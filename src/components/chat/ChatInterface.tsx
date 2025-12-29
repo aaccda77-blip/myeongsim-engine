@@ -350,28 +350,16 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                 } catch (e) { console.warn(e); }
             }
 
-            // [API] Call Supabase Edge Function 'myeongsim-engine'
-            // replacing fetch('/api/chat')
-            const { data, error } = await supabase.functions.invoke('myeongsim-engine', {
-                body: {
+            // [API] Call Next.js API Route (Corrected from Edge Function)
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     userId,
                     userName: effectiveReportData?.userName || "회원",
-                    userMessage: msgToSend, // [Changed key to match typical Edge Function expectation, or keep as 'message' if consistent]
-                    // Let's stick to 'message' to be safe or 'userMessage' if requested. The prompt said "userMessage".
-                    // "supabase.functions.invoke('myeongsim-engine', { body: { userMessage, bioData } })"
-                    message: msgToSend, // Keeping both for compatibility if needed, or just message.
-
-                    // [Bio Data Injection]
-                    bioData: {
-                        bpm: bpm || 0,
-                        isConnected: isBioConnected
-                    },
-
-                    // Context
+                    message: msgToSend,
                     messages: [...messages, userMsg],
                     stage,
-
-                    // User Info
                     birthDate: effectiveReportData?.birthDate,
                     birthTime: effectiveReportData?.birthTime,
                     gender: effectiveReportData?.gender,
@@ -381,50 +369,55 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         gender: effectiveReportData?.gender
                     },
                     sajuData: effectiveReportData?.saju,
-
-                    // Gap Analysis
                     gapData: {
                         acquiredVector: acquiredVector,
                         gapLevel: gapMetrics.gapLevel,
                         matchingScore: gapMetrics.matchingScore
                     },
-
                     sessionId: sessionIdRef.current,
                     lastBotMessage: messages.length > 0 && messages[messages.length - 1].role === 'assistant' ? messages[messages.length - 1].content : null
-                }
+                })
             });
 
-            if (error) {
-                console.error("Edge Fx Error:", error);
-                throw new Error(`Edge Function Error: ${error.message}`);
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`Server Error: ${errText}`);
             }
 
-            if (!data) throw new Error('No data received from Brain');
+            if (!response.body) throw new Error('No response stream');
 
-            // [Response Handling]
-            // Assuming Edge Function returns { reply: "...", analysis_data: ... }
-            const botContent = data.reply || data.message || "죄송합니다. 뇌와의 연결이 원활하지 않습니다.";
+            // [Stream Handling]
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let botContent = '';
 
-            // [Simulate Streaming Effect]
-            // Since Edge Functions (standard invoke) are often request-response, we stimulate typing.
-            // If streaming is implemented in Edge Function via Response object, we need custom handling.
-            // For now, let's treat it as a block response but animate it or just set it.
-            // The prompt asked to "parse JSON response", implying block response.
+            // Create specific message ID for streaming
+            const botMsgId = (Date.now() + 1).toString();
 
-            // Handle Side Effects
-            if (data.analysis_data) {
-                // e.g. updating charts?
-                console.log("Brain Analysis:", data.analysis_data);
-            }
-
+            // Initial placeholder
             setMessages(prev => [...prev, {
-                id: (Date.now() + 1).toString(),
+                id: botMsgId,
                 role: 'assistant',
-                content: botContent,
-                // Process options/cards if they come in structured JSON
-                options: data.suggestions || data.options,
-                cardData: data.card_data
+                content: ''
             }]);
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                botContent += chunk;
+
+                // Live Update
+                setMessages(prev => prev.map(msg =>
+                    msg.id === botMsgId
+                        ? { ...msg, content: botContent }
+                        : msg
+                ));
+            }
+
+            // [Post-Processing] Check for special UI data parsing if embedded in text
+            // (Current route.ts streams raw text, so no JSON parsing of full body)
 
         } catch (error: any) {
             console.error("Chat Error:", error);
@@ -517,7 +510,6 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                 className="flex-1 overflow-y-auto px-4 py-6 space-y-6 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent relative"
                 ref={scrollRef}
                 onScroll={(e) => {
-                    // [UX] Shrink Gauge on Scroll Down
                     const target = e.currentTarget;
                     if (target.scrollTop > 50) {
                         setIsCompactGauge(true);
@@ -526,6 +518,16 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                     }
                 }}
             >
+                {/* [UX] Hypnotic Loader (Breathing Circle) */}
+                {isLoading && loadingCount.current > 1 && (
+                    <div className="flex justify-center py-4">
+                        <div className="relative">
+                            <div className="w-12 h-12 rounded-full border-2 border-primary-gold/30 animate-[spin_3s_linear_infinite]" />
+                            <div className="absolute inset-0 w-12 h-12 rounded-full border-t-2 border-primary-gold animate-[spin_2s_linear_infinite_reverse]" />
+                            <div className="absolute inset-2 w-8 h-8 rounded-full bg-primary-gold/10 animate-pulse backdrop-blur-sm" />
+                        </div>
+                    </div>
+                )}
                 {/* No Static Welcome Message Here - handled by initial state */}
 
                 {/* Interrupt Overlay (30 Questions Deep Scan Mode) */}
@@ -720,12 +722,16 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                             </div>
                                         )}
 
-                                        <div className={`p-4 rounded-2xl shadow-lg relative overflow-hidden ${isPayment
-                                            ? 'bg-transparent p-0 shadow-none border-none'
-                                            : isUser
-                                                ? 'bg-primary-olive text-white rounded-tr-none'
-                                                : 'bg-gray-800 text-gray-100 border border-gray-700 rounded-tl-none'
-                                            }`}>
+                                        <div className={`
+                                            relative group backdrop-blur-md border shadow-lg transition-all duration-300
+                                            ${isPayment
+                                                ? 'bg-transparent p-0 shadow-none border-none'
+                                                : msg.role === 'user'
+                                                    ? 'bg-primary-gold/10 border-primary-gold/30 rounded-2xl rounded-tr-sm text-gray-100 ml-auto'
+                                                    : 'bg-white/5 border-white/10 rounded-2xl rounded-tl-sm text-gray-200'
+                                            }
+                                            max-w-[85%] md:max-w-[75%] px-5 py-4
+                                        `}>
                                             {isPayment ? (
                                                 <PaymentCard
                                                     onDetailedReport={handleUnlockReport}
@@ -974,15 +980,41 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                 <InterruptGauge gapLevel={gapMetrics.gapLevel} matchingScore={gapMetrics.matchingScore} isActive={true} compact={true} />
             </div>
 
-            {/* Input Area */}
-            <div className="p-4 border-t border-gray-800 bg-gray-900/50 backdrop-blur-sm flex flex-col gap-2">
+            {/* Input Area with Quick Chips */}
+            <div className="p-4 border-t border-gray-800 bg-gray-900/50 backdrop-blur-md flex flex-col gap-3">
 
+                {/* [UX] Quick Chips (Suggestion Buttons) */}
+                {!isLoading && (
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none mask-fade-sides">
+                        {[
+                            { label: "💰 재물운", query: "나의 타고난 재물운과 돈을 버는 방법을 핵심만 알려줘" },
+                            { label: "❤️ 연애운", query: "나의 연애 스타일과 잘 맞는 배우자상은?" },
+                            { label: "🚀 올해 목표", query: "올해 내가 가장 집중해야 할 성취 목표는?" },
+                            { label: "🩸 건강운", query: "주의해야 할 건강 문제와 관리법은?" },
+                            { label: "🔑 핵심 재능", query: "내가 타고난 가장 강력한 무기(재능)는 뭐야?" }
+                        ].map((chip, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => {
+                                    setMsgToSend(chip.query);
+                                    // Optional: Auto-send or just fill? Let's just fill for safety, or auto-send.
+                                    // User usually expects auto-fill + focus, or auto-send.
+                                    // Let's Auto-Fill for now so they can edit.
+                                }}
+                                className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-primary-gold/20 hover:border-primary-gold/50 hover:text-primary-gold transition-all active:scale-95 flex-shrink-0 backdrop-blur-sm"
+                            >
+                                {chip.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 <form
                     onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                     className="flex gap-2 relative"
                 >
-                    {/* [Phase 2] Bio-Data Connection Button */}
+                    {/* [Phase 2] Bio-Data Connection Button - User requested removal for now */}
+                    {/*
                     <button
                         onClick={isBioConnected ? disconnectBio : connectBio}
                         className={`p-3 rounded-full transition-all duration-300 relative group ${isBioConnected
@@ -1001,7 +1033,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                             // Wait, I see 'Zap' in imports but not 'Heart'. Let me check imports or just use Zap for "Bio Energy".
                             // Actually, the prompt said "Pulse Icon (🫀)". I should probably use 'Heart' from lucide-react or 'Activity'.
                             // I will stick to Zap for now as "Energy" or "Pulse" if Heart isn't imported, but wait, I can add Heart import.
-                            // Let's use the existing Zap for minimal diff, or assumes Heart is better context.
+                            // Let's use the existing Zap for minimal diff, or or assumes Heart is better context.
                             // I will use Zap as "Bio Signal" to avoid import error risk since I didn't verify 'Heart' import line edit.
                             // Wait, I can see imports in previous view_file. 
                             // Imports: Send, User, Bot, X, Loader2, Lock, FileText, Check, Trash2, ArrowUp, Zap.
@@ -1010,73 +1042,73 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         )}
 
                         {/* BPM Badge */}
-                        {isBioConnected && bpm > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-lg animate-bounce">
-                                {bpm}
-                            </span>
-                        )}
-                    </button>
+                    {isBioConnected && bpm > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-lg animate-bounce">
+                            {bpm}
+                        </span>
+                    )}
+                </button>
 
-                    <input
-                        type="text"
-                        value={input} onChange={(e) => setInput(e.target.value)}
-                        onFocus={() => setIsCompactGauge(true)} // [UX] Shrink on Focus
-                        onBlur={() => setIsCompactGauge(false)} // Expand on Blur (Optional, maybe keep it small?)
-                        placeholder="고민을 입력하세요..."
-                        className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-primary-gold/50 focus:ring-1 focus:ring-primary-gold/50 transition-all"
-                        disabled={isLoading}
-                    />
-                    <button
-                        type="submit"
-                        disabled={isLoading || !input.trim()}
-                        className="p-3 bg-primary-gold text-black rounded-xl hover:bg-primary-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-[0_0_15px_rgba(212,175,55,0.3)]"
-                    >
-                        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                    </button>
-                </form>
-            </div>
-
-            {/* Level Up Modal */}
-            <AnimatePresence>
-                {showModal && (
-                    <LevelUpModal
-                        level={2}
-                        onClose={() => setShowModal(false)}
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* Payment Modal (Reconnected) */}
-            <PaymentModal
-                isOpen={isPaymentModalOpen}
-                onClose={() => setIsPaymentModalOpen(false)}
-                onPaymentRequested={(depositorName) => {
-                    setPaymentStatus('SUCCESS');
-                    setIsPaymentModalOpen(false);
-                    setMessages(prev => [...prev, {
-                        id: Date.now().toString(),
-                        role: 'assistant',
-                        content: `:::LEVEL_UP:2::: '${depositorName}'님, 입금 요청이 접수되었습니다. 확인 후 정밀 분석 리포트가 해금됩니다! 🎉`
-                    }]);
-                }}
-            />
-
-            {/* Toast Notification */}
-            <AnimatePresence>
-                {showToast && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        className="fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800 border border-primary-gold/30 rounded-full shadow-2xl flex items-center gap-3 z-[100]"
-                    >
-                        <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
-                            <Check className="w-4 h-4 text-green-500" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-200">결제 요청이 전송되었습니다.</span>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                <input
+                    type="text"
+                    value={input} onChange={(e) => setInput(e.target.value)}
+                    onFocus={() => setIsCompactGauge(true)} // [UX] Shrink on Focus
+                    onBlur={() => setIsCompactGauge(false)} // Expand on Blur (Optional, maybe keep it small?)
+                    placeholder="고민을 입력하세요..."
+                    className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-primary-gold/50 focus:ring-1 focus:ring-primary-gold/50 transition-all"
+                    disabled={isLoading}
+                />
+                <button
+                    type="submit"
+                    disabled={isLoading || !input.trim()}
+                    className="p-3 bg-primary-gold text-black rounded-xl hover:bg-primary-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                >
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                </button>
+            </form>
         </div>
+
+            {/* Level Up Modal */ }
+    <AnimatePresence>
+        {showModal && (
+            <LevelUpModal
+                level={2}
+                onClose={() => setShowModal(false)}
+            />
+        )}
+    </AnimatePresence>
+
+    {/* Payment Modal (Reconnected) */ }
+    <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onPaymentRequested={(depositorName) => {
+            setPaymentStatus('SUCCESS');
+            setIsPaymentModalOpen(false);
+            setMessages(prev => [...prev, {
+                id: Date.now().toString(),
+                role: 'assistant',
+                content: `:::LEVEL_UP:2::: '${depositorName}'님, 입금 요청이 접수되었습니다. 확인 후 정밀 분석 리포트가 해금됩니다! 🎉`
+            }]);
+        }}
+    />
+
+    {/* Toast Notification */ }
+    <AnimatePresence>
+        {showToast && (
+            <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800 border border-primary-gold/30 rounded-full shadow-2xl flex items-center gap-3 z-[100]"
+            >
+                <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <Check className="w-4 h-4 text-green-500" />
+                </div>
+                <span className="text-sm font-medium text-gray-200">결제 요청이 전송되었습니다.</span>
+            </motion.div>
+        )}
+    </AnimatePresence>
+        </div >
     );
 }
