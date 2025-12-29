@@ -1013,102 +1013,67 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                     onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                     className="flex gap-2 relative"
                 >
-                    {/* [Phase 2] Bio-Data Connection Button - User requested removal for now */}
-                    {/*
+
+                    <input
+                        type="text"
+                        value={input} onChange={(e) => setInput(e.target.value)}
+                        onFocus={() => setIsCompactGauge(true)} // [UX] Shrink on Focus
+                        onBlur={() => setIsCompactGauge(false)} // Expand on Blur (Optional, maybe keep it small?)
+                        placeholder="고민을 입력하세요..."
+                        className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-primary-gold/50 focus:ring-1 focus:ring-primary-gold/50 transition-all"
+                        disabled={isLoading}
+                    />
                     <button
-                        onClick={isBioConnected ? disconnectBio : connectBio}
-                        className={`p-3 rounded-full transition-all duration-300 relative group ${isBioConnected
-                            ? 'bg-rose-500/20 text-rose-500 border border-rose-500/50'
-                            : 'bg-gray-800 text-gray-500 hover:bg-gray-700 hover:text-gray-300'
-                            }`}
-                        title={isBioConnected ? `Heart Rate: ${bpm} BPM` : "Connect Heart Rate Monitor"}
-                        disabled={isBioConnecting}
+                        type="submit"
+                        disabled={isLoading || !input.trim()}
+                        className="p-3 bg-primary-gold text-black rounded-xl hover:bg-primary-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-[0_0_15px_rgba(212,175,55,0.3)]"
                     >
-                        {isBioConnecting ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                            // Heart Icon
-                            <Zap className={`w-5 h-5 ${isBioConnected ? 'animate-pulse' : ''}`}
-                            // Using Zap as placeholder per existing icons, or swap to Heart if imported?
-                            // Wait, I see 'Zap' in imports but not 'Heart'. Let me check imports or just use Zap for "Bio Energy".
-                            // Actually, the prompt said "Pulse Icon (🫀)". I should probably use 'Heart' from lucide-react or 'Activity'.
-                            // I will stick to Zap for now as "Energy" or "Pulse" if Heart isn't imported, but wait, I can add Heart import.
-                            // Let's use the existing Zap for minimal diff, or or assumes Heart is better context.
-                            // I will use Zap as "Bio Signal" to avoid import error risk since I didn't verify 'Heart' import line edit.
-                            // Wait, I can see imports in previous view_file. 
-                            // Imports: Send, User, Bot, X, Loader2, Lock, FileText, Check, Trash2, ArrowUp, Zap.
-                            // 'Heart' is NOT imported. I will use Zap (Energy) to represent Bio Signal.
-                            />
-                        )}
+                        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                    </button>
+                </form>
+            </div>
 
-                        {/* BPM Badge */}
-                    {isBioConnected && bpm > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-lg animate-bounce">
-                            {bpm}
-                        </span>
-                    )}
-                </button>
+            {/* Level Up Modal */}
+            <AnimatePresence>
+                {showModal && (
+                    <LevelUpModal
+                        level={2}
+                        onClose={() => setShowModal(false)}
+                    />
+                )}
+            </AnimatePresence>
 
-                <input
-                    type="text"
-                    value={input} onChange={(e) => setInput(e.target.value)}
-                    onFocus={() => setIsCompactGauge(true)} // [UX] Shrink on Focus
-                    onBlur={() => setIsCompactGauge(false)} // Expand on Blur (Optional, maybe keep it small?)
-                    placeholder="고민을 입력하세요..."
-                    className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-primary-gold/50 focus:ring-1 focus:ring-primary-gold/50 transition-all"
-                    disabled={isLoading}
-                />
-                <button
-                    type="submit"
-                    disabled={isLoading || !input.trim()}
-                    className="p-3 bg-primary-gold text-black rounded-xl hover:bg-primary-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-[0_0_15px_rgba(212,175,55,0.3)]"
-                >
-                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                </button>
-            </form>
-        </div>
-
-            {/* Level Up Modal */ }
-    <AnimatePresence>
-        {showModal && (
-            <LevelUpModal
-                level={2}
-                onClose={() => setShowModal(false)}
+            {/* Payment Modal (Reconnected) */}
+            <PaymentModal
+                isOpen={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+                onPaymentRequested={(depositorName) => {
+                    setPaymentStatus('SUCCESS');
+                    setIsPaymentModalOpen(false);
+                    setMessages(prev => [...prev, {
+                        id: Date.now().toString(),
+                        role: 'assistant',
+                        content: `:::LEVEL_UP:2::: '${depositorName}'님, 입금 요청이 접수되었습니다. 확인 후 정밀 분석 리포트가 해금됩니다! 🎉`
+                    }]);
+                }}
             />
-        )}
-    </AnimatePresence>
 
-    {/* Payment Modal (Reconnected) */ }
-    <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        onPaymentRequested={(depositorName) => {
-            setPaymentStatus('SUCCESS');
-            setIsPaymentModalOpen(false);
-            setMessages(prev => [...prev, {
-                id: Date.now().toString(),
-                role: 'assistant',
-                content: `:::LEVEL_UP:2::: '${depositorName}'님, 입금 요청이 접수되었습니다. 확인 후 정밀 분석 리포트가 해금됩니다! 🎉`
-            }]);
-        }}
-    />
-
-    {/* Toast Notification */ }
-    <AnimatePresence>
-        {showToast && (
-            <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800 border border-primary-gold/30 rounded-full shadow-2xl flex items-center gap-3 z-[100]"
-            >
-                <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <Check className="w-4 h-4 text-green-500" />
-                </div>
-                <span className="text-sm font-medium text-gray-200">결제 요청이 전송되었습니다.</span>
-            </motion.div>
-        )}
-    </AnimatePresence>
+            {/* Toast Notification */}
+            <AnimatePresence>
+                {showToast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        className="fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800 border border-primary-gold/30 rounded-full shadow-2xl flex items-center gap-3 z-[100]"
+                    >
+                        <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <Check className="w-4 h-4 text-green-500" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-200">결제 요청이 전송되었습니다.</span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div >
     );
 }
