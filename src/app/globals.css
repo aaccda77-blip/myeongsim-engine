@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/* 1. Next.js 개발 표시기 숨김 (개발 편의를 위해 주석 처리를 권장하나, 요청대로 유지) */
+[data-nextjs-toast],
+div[class*="nextjs-toast"],
+div[class*="activity-indicator"] {
+  display: none !important;
+}
+
+/* 2. 테마 변수 정의 (Color Palette) */
+@theme {
+  /* Tailwind v4에서는 여기서 변수를 매핑하면 'bg-primary-olive' 처럼 바로 쓸 수 있습니다. */
+  --color-primary-olive: #658c42;
+  --color-secondary-slate: #2d3748;
+  --color-deep-slate: #1f2937;
+  --color-text-gray: #cbd5e1;
+  --color-text-highlight: #ffffff;
+
+  /* 배경/전경색 매핑 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* 폰트 매핑 (Next.js 폰트 변수 활용) */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular;
+  --font-serif: "Times New Roman", Times, serif;
+  /* 명심코칭 전용 Serif */
+}
+
+/* 3. 라이트/다크 모드 변수 설정 */
+/* Deep Tech 앱은 보통 '다크 모드'가 기본이므로, 기본값을 다크로 설정합니다. */
+:root {
+  /* Default (Dark Mode Base) */
+  --background: #1f2937;
+  /* deep-slate */
+  --foreground: #cbd5e1;
+  /* text-gray */
+
+  /* Myeongsim Custom Colors (Raw Values for reuse) */
+  --primary-olive: #658c42;
+  --deep-slate: #1f2937;
+}
+
+/* 4. 기본 스타일 리셋 */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+
+  /* 폰트: 기본은 Sans로 가되, 명리 분석 등 특정 구간만 Serif(명조)를 쓰는 것이 가독성에 좋습니다. */
+  font-family: var(--font-sans);
+
+  /* 부드러운 텍스트 렌더링 (Mac OS 최적화) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  overflow-x: hidden;
+}
+
+/* 5. 타이포그래피 유틸리티 (명조체 필요할 때 'font-serif' 클래스 사용) */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-text-highlight);
+  font-family: var(--font-serif);
+  /* 제목에는 명조체 적용 */
+  font-weight: 700;
+}
+
+/* 6. 커스텀 스크롤바 (Deep Tech 감성) */
+::-webkit-scrollbar {
+  width: 6px;
+  /* 모바일 고려하여 조금 더 얇게 */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-slate);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-olive);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4d6b32;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
