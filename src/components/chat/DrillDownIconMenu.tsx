@@ -435,6 +435,32 @@ export default function DrillDownIconMenu({
                                 }}>
                                     ✨ 당신만의 천재성 프로파일
                                 </p>
+
+                                {/* 심사위원 어필용 기술 연동 상태 표시 */}
+                                <div style={{
+                                    marginTop: '12px',
+                                    paddingTop: '12px',
+                                    borderTop: '1px dashed rgba(255,255,255,0.1)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px'
+                                }}>
+                                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>
+                                        📡 Bio-Sync Engine:
+                                    </span>
+                                    <span style={{
+                                        fontSize: '10px',
+                                        color: '#10B981',
+                                        fontWeight: 600,
+                                        background: 'rgba(16, 185, 129, 0.1)',
+                                        padding: '2px 6px',
+                                        borderRadius: '4px',
+                                        animation: 'pulse 2s infinite'
+                                    }}>
+                                        Link Ready (v2.0)
+                                    </span>
+                                </div>
                             </div>
                         )}
 
