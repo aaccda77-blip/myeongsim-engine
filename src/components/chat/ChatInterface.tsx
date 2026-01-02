@@ -310,9 +310,13 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                     console.log('✅ Expiry date synced:', data.expires_at);
                 }
 
-                // Disable trial mode for premium members
-                if (hasPremium) {
+                // Disable trial mode for premium members OR expired members (prevent free loop)
+                if (data.membership_tier !== 'FREE' || data.expires_at) {
                     setIsTrialMode(false);
+                }
+
+                if (hasPremium) {
+                    // setIsTrialMode(false); // Already covered above
                 }
             }
         };
