@@ -1,6 +1,6 @@
 import os
 import shutil
-from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
+from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader, Docx2txtLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
@@ -21,15 +21,44 @@ def ingest_documents():
             print(f"Error removing DB: {e}")
 
     # 2. Load PDFs
-    if not os.path.exists(DATA_PATH):
-        os.makedirs(DATA_PATH)
-        return "Data directory created. Please put PDF files in 'data/' folder."
+    documents = []
+    
+    # Supported extensions and their loaders
+    loaders = {
+        ".pdf": PyPDFLoader,
+        ".docx": Docx2txtLoader,
+        ".txt": TextLoader
+    }
 
-    loader = DirectoryLoader(DATA_PATH, glob="*.pdf", loader_cls=PyPDFLoader)
-    documents = loader.load()
+    print(f"Scanning {DATA_PATH}...")
+    
+    for filename in os.listdir(DATA_PATH):
+        file_path = os.path.join(DATA_PATH, filename)
+        if not os.path.isfile(file_path):
+            continue
+            
+        ext = os.path.splitext(filename)[1].lower()
+        
+        if ext in loaders:
+            try:
+                print(f"Loading {filename}...")
+                loader_cls = loaders[ext]
+                # TextLoader needs encoding sometimes
+                if ext == ".txt":
+                    loader = loader_cls(file_path, encoding="utf-8")
+                else:
+                    loader = loader_cls(file_path)
+                    
+                docs = loader.load()
+                documents.extend(docs)
+                print(f"✅ Loaded {len(docs)} pages/sections from {filename}")
+            except Exception as e:
+                print(f"❌ Failed to load {filename}: {e}")
+        else:
+            print(f"⚠️  Skipping unsupported file: {filename}")
 
     if not documents:
-        return "No PDF documents found in data/ folder."
+        return "No supported documents found in data/ folder."
 
     print(f"Loaded {len(documents)} documents.")
 

@@ -11,7 +11,7 @@ interface StageMapProps {
 }
 
 const STAGES = [
-    { id: 1, title: '진단 (Diagnosis)', desc: '사주와 심리(CBT)로 나를 알기' },
+    { id: 1, title: '발견 (Discovery)', desc: '사주와 심리(CBT)로 나를 알아차리기' },
     { id: 2, title: '융합 (Fusion)', desc: '타고난 기질과 성격의 통합' },
     { id: 3, title: '치유 (Healing)', desc: '감정 파도 타기 (DBT/마음챙김)' },
     { id: 4, title: '행동 (Action)', desc: '가치 있는 삶을 위한 약속 (ACT)' },
@@ -110,9 +110,7 @@ export default function StageMap({ currentStage, onSelectStage, onClose }: Stage
                                                 : 'bg-deep-slate border-white/10 text-gray-600'
                                         }
                             `}>
-                                        {isCompleted ? <CheckCircle className="w-4 h-4" /> :
-                                            isCurrent ? <span className="text-xs font-bold animate-pulse">{stage.id}</span> :
-                                                <Lock className="w-3 h-3" />}
+                                        <span className={`text-xs font-bold ${isCurrent ? 'animate-pulse' : ''}`}>{stage.id}</span>
                                     </div>
 
                                     {/* Text Content */}
@@ -134,10 +132,7 @@ export default function StageMap({ currentStage, onSelectStage, onClose }: Stage
                     </div>
                 </div>
 
-                {/* Footer Info */}
-                <div className="p-4 border-t border-white/5 bg-black/20 text-[10px] text-gray-500 text-center">
-                    전체 진행률: {Math.round(((currentStage - 1) / 7) * 100)}%
-                </div>
+
             </motion.div>
         </div>
     );

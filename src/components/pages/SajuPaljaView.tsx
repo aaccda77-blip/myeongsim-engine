@@ -16,7 +16,7 @@ const ELEMENT_CONFIG: Record<ElementType, { label: string; icon: any; color: str
 };
 
 const getElementKeyFromColor = (color: string | undefined): ElementType => {
-    if (!color) return 'Unknown';
+    if (!color || typeof color !== 'string') return 'Unknown';
     const c = color.toUpperCase();
     if (c.includes('10B981')) return 'Wood';
     if (c.includes('EF4444')) return 'Fire';
@@ -29,7 +29,8 @@ const getElementKeyFromColor = (color: string | undefined): ElementType => {
 export default function SajuPaljaView() {
     const { reportData } = useReportStore();
 
-    const pillars = reportData?.saju?.fourPillars || {
+    // [Safety Guard] 데이터가 없거나 형식이 깨졌을 때를 대비한 방어 로직
+    const pillars = (reportData && reportData.saju && reportData.saju.fourPillars) ? reportData.saju.fourPillars : {
         year: { gan: '?', ji: '?', ganColor: '', jiColor: '' },
         month: { gan: '?', ji: '?', ganColor: '', jiColor: '' },
         day: { gan: '?', ji: '?', ganColor: '', jiColor: '' },
@@ -47,12 +48,14 @@ export default function SajuPaljaView() {
     };
 
     const PillarCard = ({ title, subTitle, data, index }: { title: string, subTitle: string, data: any, index: number }) => {
-        const isUnknown = !data || !data.gan || data.gan === '?';
-        const ganKey = isUnknown ? 'Unknown' : getElementKeyFromColor(data.ganColor);
-        const jiKey = isUnknown ? 'Unknown' : getElementKeyFromColor(data.jiColor);
+        // [Safety Guard] data 자체가 없거나 gan이 없을 때 처리
+        const safeData = data || { gan: '?', ji: '?', ganColor: '', jiColor: '' };
+        const isUnknown = !safeData.gan || safeData.gan === '?';
+        const ganKey = isUnknown ? 'Unknown' : getElementKeyFromColor(safeData.ganColor);
+        const jiKey = isUnknown ? 'Unknown' : getElementKeyFromColor(safeData.jiColor);
 
-        const ganConf = ELEMENT_CONFIG[ganKey];
-        const jiConf = ELEMENT_CONFIG[jiKey];
+        const ganConf = ELEMENT_CONFIG[ganKey] || ELEMENT_CONFIG['Unknown'];
+        const jiConf = ELEMENT_CONFIG[jiKey] || ELEMENT_CONFIG['Unknown'];
 
         return (
             <motion.div
@@ -88,7 +91,7 @@ export default function SajuPaljaView() {
                                 className={`font-serif font-black ${isUnknown ? 'text-3xl text-gray-600' : 'text-4xl md:text-6xl'}`}
                                 style={!isUnknown ? { color: ganConf.color, textShadow: `0 0 20px ${ganConf.bgGlow}` } : {}}
                             >
-                                {isUnknown ? '?' : data.gan}
+                                {isUnknown ? '?' : safeData.gan}
                             </motion.span>
                             {!isUnknown && <span className="text-[9px] text-white/40 mt-1">{ganConf.label}</span>}
                         </div>
@@ -101,7 +104,7 @@ export default function SajuPaljaView() {
                                 className={`font-serif font-black ${isUnknown ? 'text-3xl text-gray-600' : 'text-4xl md:text-6xl'}`}
                                 style={!isUnknown ? { color: jiConf.color, textShadow: `0 0 20px ${jiConf.bgGlow}` } : {}}
                             >
-                                {isUnknown ? '?' : data.ji}
+                                {isUnknown ? '?' : safeData.ji}
                             </motion.span>
                             {!isUnknown && <span className="text-[9px] text-white/40 mt-1">{jiConf.label}</span>}
                         </div>
@@ -112,7 +115,6 @@ export default function SajuPaljaView() {
                         {!isUnknown ? (
                             <span style={{ color: jiConf.color }}>{jiConf.icon}</span>
                         ) : (
-                            // [Fix] 비어있는 대신 물음표 아이콘 표시
                             <span className="text-gray-600 flex items-center gap-1">
                                 <HelpCircle size={14} />
                                 <span className="text-[9px]">Unknown</span>
@@ -142,7 +144,7 @@ export default function SajuPaljaView() {
 
             <div className="relative z-10 w-full max-w-6xl mx-auto flex-1 flex flex-col justify-center">
 
-                {/* [Fix 1] Reading Direction Guide (Right to Left) */}
+                {/* Reading Direction Guide */}
                 <div className="hidden lg:flex justify-end w-full mb-2 opacity-50">
                     <span className="text-[10px] text-gray-400 tracking-widest uppercase flex items-center gap-1">
                         <ArrowLeft className="w-3 h-3 text-primary-olive" />
@@ -150,28 +152,16 @@ export default function SajuPaljaView() {
                     </span>
                 </div>
 
-                {/* [Fix 2] Layout Logic: 
-                    - Mobile (Grid): 년->월->일->시 (순방향, 상->하)
-                    - Desktop (Flex-Row-Reverse): 시<-일<-월<-년 (역방향, 우->좌) 
-                */}
                 <div className="grid grid-cols-2 lg:flex lg:flex-row-reverse gap-3 md:gap-6 h-auto lg:h-[500px]">
-
-                    {/* 1. 년주 (Root/조상) - PC: 맨 오른쪽, 모바일: 1번 */}
                     <div className="lg:flex-1 h-full">
                         <PillarCard title="년주 (Year)" subTitle="근(根) - 초년" data={pillars.year} index={0} />
                     </div>
-
-                    {/* 2. 월주 (Seed/부모) - PC: 오른쪽 2번째, 모바일: 2번 */}
                     <div className="lg:flex-1 h-full">
                         <PillarCard title="월주 (Month)" subTitle="묘(苗) - 청년" data={pillars.month} index={1} />
                     </div>
-
-                    {/* 3. 일주 (Flower/자신) - PC: 왼쪽 2번째, 모바일: 3번 */}
                     <div className="lg:flex-1 h-full">
                         <PillarCard title="일주 (Day)" subTitle="화(花) - 중년" data={pillars.day} index={2} />
                     </div>
-
-                    {/* 4. 시주 (Fruit/자식) - PC: 맨 왼쪽, 모바일: 4번 */}
                     <div className="lg:flex-1 h-full">
                         <PillarCard title="시주 (Time)" subTitle="실(實) - 말년" data={pillars.time} index={3} />
                     </div>

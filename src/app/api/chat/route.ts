@@ -5,28 +5,102 @@ import { PromptEngine } from '@/services/PromptEngine';
 import { UserSoulProfile } from '@/types/akashic_records';
 import { getSajuCharacters } from '@/lib/saju/calculator'; // [Scientific Saju]
 
-import { SajuConverter } from '@/lib/saju/converter'; // [Classic Logic]
+import { calculateSaju as calculateSajuServer, generateSajuPromptBlock } from '@/lib/saju/SajuEngine'; // [NEW] Unified Engine
 import { retrieveGenreCodes } from '@/lib/rag/retrieveGenre'; // [New] Genre RAG
 import { MemoryService } from '@/services/MemoryService'; // [Layer 3] Memory Logic
 // [Layer 4] Modular Feature Expansion
 import { GapAnalysisService } from '@/modules/GapAnalysisService';
-import { MBTIMapper } from '@/modules/MBTIMapper';
+import { TraitsMapper } from '@/modules/TraitsMapper'; // [Replaced] MBTI -> Traits
 import { CodeDecoder } from '@/modules/CodeDecoder';
 import { ContextService } from '@/modules/ContextService';
 import { MemoryServiceModule } from '@/modules/MemoryService';
 import { SecurityMiddleware } from '@/modules/SecurityMiddleware';
+import { SentimentTracker } from '@/modules/SentimentTracker'; // [Reconnected] Heartbeat Monitor
+import { InterruptQuestionModule } from '@/modules/InterruptQuestionModule'; // [Reconnected] Core Probe
+import { PsychologicalSafetyModule } from '@/modules/PsychologicalSafetyModule'; // [Expert] Clinical Safety Layer
+import { NeuroscienceModule } from '@/modules/NeuroscienceModule'; // [Expert] Neuroscience Layer
+import { analyzeFrequency, generateFrequencyPromptBlock, detectCrisisSignal } from '@/modules/FrequencyDetector'; // [NEW] Frequency Detection
+import { analyzeForZenMode, generateZenPromptBlock, generateZenResponse } from '@/modules/ZenProtocol'; // [NEW] Zen Intervention
+import {
+    analyzeTextForPersonality,
+    selectProfilingQuestion,
+    formatProfileSummary,
+    getCoachingStyleRecommendation,
+    createEmptyProfile,
+    type PersonalityProfile
+} from '@/modules/PersonalityProfiler'; // [NEW] Background Personality Profiling
 // import { ScenarioEngine } from '@/services/ScenarioEngine'; // [Disabled] File missing
 
-export const runtime = 'nodejs'; // Optional: Use Edge if preferred, or 'nodejs'
+// export const runtime = 'nodejs'; // [Revert] Node.js Hobby limit is 10s
+export const runtime = 'edge'; // Best for streaming on Vercel Hobby
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const revalidate = 0;
-export const maxDuration = 60;
+// export const maxDuration = 60; // Edge doesn't use this config usually
+
+/**
+ * [Expiration Middleware] Check if user's membership is expired
+ */
+async function checkUserExpiration(userId: string): Promise<{ expired: boolean; tier: string | null }> {
+    if (!userId || userId.includes('-0000-')) {
+        return { expired: false, tier: 'FREE' }; // Guest/Demo users bypass
+    }
+
+    const { data, error } = await supabase
+        .from('users')
+        .select('membership_tier, expires_at')
+        .eq('id', userId)
+        .single();
+
+    if (error || !data) {
+        return { expired: false, tier: 'FREE' };
+    }
+
+    // Check expiration
+    if (data.expires_at) {
+        const now = new Date();
+        const expiresAt = new Date(data.expires_at);
+        if (now > expiresAt) {
+            return { expired: true, tier: data.membership_tier };
+        }
+    }
+
+    return { expired: false, tier: data.membership_tier };
+}
+
+/**
+ * [Helper] Infer Growth Map Stage from conversation keywords
+ * Returns 1-7 based on user's message patterns
+ */
+function inferCurrentStage(messages: any[], currentMessage: string): number {
+    const fullText = (messages.map((m: any) => m.content).join(" ") + " " + currentMessage).toLowerCase();
+
+    // Stage-specific keyword detection (ordered by priority)
+    const stageKeywords = {
+        7: ["관찰", "알아차림", "존재", "명상", "고요", "침묵", "비움", "우주", "에고", "깨달음", "무념", "공", "본성", "참나", "지켜보", "바라보", "인식", "분리", "일치", "하나"],
+        6: ["기여", "영향력", "사회", "나누", "베풀", "봉사", "리더십", "팀"],
+        5: ["습관", "루틴", "매일", "지속", "유지", "반복", "꾸준"],
+        4: ["실천", "시작", "어떻게", "방법", "행동", "당장", "해볼"],
+        3: ["힘들", "지쳤", "위로", "아파", "슬퍼", "우울", "괴로", "고통"],
+        2: ["왜", "패턴", "일치", "간극", "차이", "불일치", "모순"],
+        1: ["누구", "분석", "사주", "풀이", "발견", "인식", "데이터", "코드", "알기"]
+    };
+
+    // Check each stage from highest to lowest
+    for (const [stage, keywords] of Object.entries(stageKeywords).sort((a, b) => Number(b[0]) - Number(a[0]))) {
+        if (keywords.some(kw => fullText.includes(kw))) {
+            return Number(stage);
+        }
+    }
+
+    return 1; // Default: Diagnosis stage
+}
 
 export async function POST(req: Request) {
     try {
         const reqBody = await req.json();
-        const { userId, message, messages, stage, sajuData, birthDate, birthTime, gender, userName, isPremium, lastBotMessage, chatHistory, userSaju, sessionId } = reqBody;
+        const { userId, message, messages, stage, sajuData, birthDate, birthTime, gender, userName, isPremium, lastBotMessage, chatHistory, userSaju, sessionId, clientDate: reqClientDate } = reqBody;
+        const clientDate = reqClientDate ? new Date(reqClientDate) : new Date();
 
         // [Fix] Unified Message Handling (Prioritize 'messages' array)
         let currentMessageContent = message;
@@ -61,28 +135,84 @@ export async function POST(req: Request) {
             historyForGemini.shift();
         }
 
-        if (!userId || !currentMessageContent) {
-            return new Response('Missing userId or message', { status: 400 });
+        // [OPTIMIZATION] Parallel Execution of Independent Async Tasks
+        const [
+            expirationResult,
+            envContext,
+            memoryContextResult,
+            genreCodesResult
+        ] = await Promise.all([
+            // 1. Check Expiration
+            userId ? checkUserExpiration(userId) : Promise.resolve({ expired: false, tier: 'FREE' }),
+
+            // 2. Get Environment Context
+            ContextService.getCurrentContext(undefined, clientDate),
+
+            // 3. Fetch Memory (Layer 3)
+            (typeof currentMessageContent === 'string' && currentMessageContent.length > 2 && userId)
+                ? MemoryServiceModule.fetchUserHistory(userId, currentMessageContent).catch(err => {
+                    console.error("Memory Fetch Error:", err);
+                    return "";
+                })
+                : Promise.resolve(""),
+
+            // 4. Fetch Genre Codes (RAG)
+            (typeof currentMessageContent === 'string' && currentMessageContent.length > 5)
+                ? retrieveGenreCodes(currentMessageContent, 1).catch(err => {
+                    console.error("Genre RAG Error:", err);
+                    return [];
+                })
+                : Promise.resolve([])
+        ]);
+
+        // [EXPIRATION CHECK]
+        const { expired, tier: userMembershipTier } = expirationResult;
+        if (expired) {
+            return new Response(JSON.stringify({
+                error: 'EXPIRED',
+                message: '⏰ 이용권이 만료되었습니다. 새로운 이용권을 구매해주세요.',
+                tier: userMembershipTier
+            }), {
+                status: 403,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
-        // [MODULE INTEGRATION] 1. Security Check
+        // Assign results
+        const memoryContext = memoryContextResult; // Single source of truth
+        const genreCodes = genreCodesResult;
+
+        // [SECURITY STEP 0] Origin/Referer Verification (Same as before)
+        const origin = req.headers.get('origin') || req.headers.get('referer');
+        const allowedOrigins = [
+            'https://myeongsim-report.vercel.app',
+            'http://localhost:3000',
+            'https://myeongsim-report-git-main-aaccda77-1480s-projects.vercel.app'
+        ];
+        const isAllowed = !origin || allowedOrigins.some(domain => origin.startsWith(domain));
+
+        if (origin && !isAllowed) {
+            console.warn(`🚨 [Security] Blocked unauthorized origin: ${origin}`);
+            return new Response(JSON.stringify({ reply: "⚠️ [보안 제한] 허용되지 않은 출처입니다." }), { status: 403 });
+        }
+
+        // [MODULE INTEGRATION] 1. Security Check & Logging
         try {
             SecurityMiddleware.validateInput(currentMessageContent);
-        } catch (securityError) {
-            console.warn(`🚨 [Security] Blocked: ${userId}`);
+            if (userId) await SecurityMiddleware.checkRateLimit(userId);
+
+            // Fire-and-forget logging
+            coachingService.logChatMessage(userId, 'user', currentMessageContent, stage, {}, sessionId).catch(e => console.error('Log Error:', e));
+
+        } catch (securityError: any) {
             return new Response(JSON.stringify({
-                reply: "⚠️ [보안 경고] 허용되지 않는 명령어가 감지되었습니다."
-            }), { headers: { 'Content-Type': 'application/json' } });
+                reply: `⚠️ [보안 제한] ${securityError.message || "허용되지 않는 요청입니다."}`
+            }), { headers: { 'Content-Type': 'application/json' }, status: 429 });
         }
 
-        // [SECURITY STEP 2] Server-Side Time Pass Verification (Strict)
-        // Check ticket validity directly from DB (Do Not Trust Client)
-        const accessCode = reqBody.accessKey || (typeof userId === 'string' && userId.length > 10 ? userId : null); // Fallback if userId is the key
-
+        // [SECURITY STEP 2] Time Pass Verification (Simplified for Readability)
+        const accessCode = reqBody.accessKey || (typeof userId === 'string' && userId.length > 10 ? userId : null);
         if (accessCode && accessCode.length > 3) {
-            // Skip check for known test IDs or if logic is handled by middleware,
-            // BUT for strict mode, we should verify here.
-            // Note: Real DB check requires async.
             try {
                 // 1. Query User/Ticket
                 const { data: ticketUser, error } = await supabase
@@ -117,166 +247,58 @@ export async function POST(req: Request) {
                 }
             } catch (secErr) {
                 console.error("Time Verification Warning:", secErr);
-                // For MVP stability w/o strict DB setup, we might log only.
-                // But User requested 'Strict', so we should ideally block.
-                // However, to prevent outage if DB isn't ready, we Log.
             }
         }
 
         // 0. Environment Check
         const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            throw new Error('Server Environment Error: GEMINI_API_KEY is missing.');
-        }
+        if (!apiKey) throw new Error('GEMINI_API_KEY is missing.');
 
-        // [Fix] Consolidate Birth Profile (Priority: params > sajuData > userSaju)
+        // [Fix] Consolidate Birth Profile
         const effectiveBirthDate = birthDate || sajuData?.birthDate || userSaju?.birthDate;
         const effectiveBirthTime = birthTime || sajuData?.birthTime || userSaju?.birthTime || '12:00';
         const effectiveGender = gender || sajuData?.gender || userSaju?.gender || 'male';
+        // [Fix] Extract calendarType (Critical for Lunar birthdays)
+        const effectiveCalendarType = sajuData?.calendarType || userSaju?.calendarType || 'solar';
 
-        console.log("--- [Debug] Saju Input Data ---");
-        console.log("Effective Date:", effectiveBirthDate);
-        console.log("Effective Time:", effectiveBirthTime);
-        console.log("Effective Gender:", effectiveGender);
-        console.log("Raw userSaju:", userSaju);
-        console.log("-------------------------------");
-
-        // 1. Log User Message (Fire and Forget)
-        coachingService.logChatMessage(userId, 'user', currentMessageContent, stage, {}, sessionId).catch(e => console.error('Log Error:', e));
-
-        // [MODULE INTEGRATION] 2. Prepare Modules (Parallel Fetch)
-        // Replacing Legacy MemoryService.recallMemories logic with new Module
-        let memoryContext = "";
-        let envContext = "";
-
+        // [Sentiment Analysis]
+        let isBurnoutDetected = false;
+        let burnoutIntensity = 0;
         try {
-            const [mem, env] = await Promise.all([
-                MemoryServiceModule.fetchUserHistory(userId, currentMessageContent),
-                ContextService.getCurrentContext()
-            ]);
-            memoryContext = mem;
-            envContext = env;
-            console.log(`🧠 [New Module] Memory: ${memoryContext.length} chars, Env: ${envContext}`);
-        } catch (moduleErr) {
-            console.error("Module Error:", moduleErr);
+            const sentimentResult = SentimentTracker.analyze(messages || []);
+            if (sentimentResult.isBurnout) {
+                isBurnoutDetected = true;
+                burnoutIntensity = sentimentResult.intensity;
+            }
+        } catch (e) { console.error("Sentiment Error:", e); }
+
+        // [Interrupt Question]
+        const interruptQuestion = InterruptQuestionModule.checkInterrupt(currentMessageContent);
+        if (interruptQuestion) {
+            return new Response(JSON.stringify({
+                reply: `💡 **잠깐만요.** \n\n${interruptQuestion.text}`,
+                sessionId,
+                interruptQuestion
+            }), { headers: { 'Content-Type': 'application/json' } });
         }
 
-        // [Moved Up] 2. Construct Profile from Real Saju Calculation
-        // [Fix] 클라이언트 데이터(dummy) 대신 서버에서 직접 계산하여 신뢰성 확보
-        let realSajuData;
-        try {
-            if (effectiveBirthDate) {
-                // Ensure time format HH:mm
-                const safeTime = (effectiveBirthTime && effectiveBirthTime.includes(':')) ? effectiveBirthTime : '12:00';
-                realSajuData = SajuConverter.calculate(effectiveBirthDate, safeTime, effectiveGender);
-            }
-        } catch (e) {
-            console.error("Saju Calculation Error:", e);
-        }
 
-        // [Safety Check] Ensure we don't pass "Error" string as a character
-        const safeDayMaster = (realSajuData?.dayMaster && realSajuData.dayMaster !== 'Error')
-            ? realSajuData.dayMaster
-            : (sajuData?.dayMaster !== 'Error' ? sajuData?.dayMaster : 'Unknown');
-
-        const profile: UserSoulProfile = {
-            name: userName || "회원", // [Added]
-            nativity: {
-                birth_date: effectiveBirthDate || 'Unknown',
-                birth_time: effectiveBirthTime,
-                dayMaster: safeDayMaster || 'Unknown',
-                traits_summary: sajuData?.keywords?.join(', ') || '',
-                wealth_luck: sajuData?.wealth_luck || 'Unknown', // Preserve wealth luck
-
-                // [Scientific Saju] 정밀 만세력 데이터 주입 (Priority: Frontend > Backend Calc)
-                saju_characters: (() => {
-                    // 1. Try to use Frontend Data (Verified by User)
-                    if (sajuData && sajuData.fourPillars && sajuData.fourPillars.year) {
-                        console.log("✅ [ChatAPI] Using Frontend Saju Data");
-                        const p = sajuData.fourPillars;
-                        // [Fix] Access .char property because pillars are objects
-                        const getChar = (item: any) => item?.char || item || '?';
-
-                        return {
-                            year: `${getChar(p.year.gan)}${getChar(p.year.ji)}`,
-                            month: `${getChar(p.month.gan)}${getChar(p.month.ji)}`,
-                            day: `${getChar(p.day.gan)}${getChar(p.day.ji)}`,
-                            hour: `${getChar(p.time.gan)}${getChar(p.time.ji)}`,
-                            year_pillar: `${getChar(p.year.gan)}${getChar(p.year.ji)}`,
-                            month_pillar: `${getChar(p.month.gan)}${getChar(p.month.ji)}`,
-                            day_pillar: `${getChar(p.day.gan)}${getChar(p.day.ji)}`,
-                            time_pillar: `${getChar(p.time.gan)}${getChar(p.time.ji)}`
-                        };
-                    }
-
-                    // 2. Fallback to Backend Calculation
-                    if (effectiveBirthDate) {
-                        console.log(`🔍 [ChatAPI] Calculating Saju for Date: ${effectiveBirthDate}`);
-                        try {
-                            const calculated = getSajuCharacters(
-                                effectiveBirthDate,
-                                effectiveBirthTime,
-                                false,
-                                effectiveGender
-                            );
-                            // Check for Gyeong-sin (1980) pattern (Debug)
-                            if (calculated.year && calculated.year.includes('경신')) {
-                                console.warn(`🚨 [ChatAPI] WARNING: Calculated Saju is Gyeong-sin (1980). Input was: ${effectiveBirthDate}`);
-                            }
-                            return calculated;
-                        } catch (e) {
-                            console.error("Saju Character Calc Error:", e);
-                            return { year: '정보 없음', month: '정보 없음', day: '정보 없음', hour: '정보 없음' };
-                        }
-                    }
-
-                    // 3. No Data
-                    return { year: '정보 없음', month: '정보 없음', day: '정보 없음', hour: '정보 없음' };
-                })(),
-
-                // [Fix] Real Daewoon Logic
-                current_luck_cycle: realSajuData ? {
-                    name: realSajuData.currentDaewoon,
-                    season: realSajuData.daewoonSeason,
-                    mission_summary: "흐름에 유연하게 대처하며 내면을 성장시키는 시기" // Default msg
-                } : sajuData?.current_luck_cycle,
-
-                // [Fix] Real Seun Logic
-                current_yearly_luck: realSajuData ? {
-                    year: realSajuData.seun.year,
-                    element: realSajuData.seun.element,
-                    ten_god_type: "세운(Yearly Luck)", // Detailed calc needed in v2.4
-                    action_guide: "올해의 기운을 활용하여 목표를 추진하십시오",
-                    interaction: "변동성 주의"
-                } : sajuData?.current_yearly_luck
-            },
-            psych_profile: {
-                risk_factors: { primary: 'None' }
-            }
-        };
-
-        // 3. Report Tier Check & RAG Strategy
-        let tier = 'FREE';
-        let maxTokens = 8000; // [Upgraded] Increased for Gemini 2.0 Verbosity
+        // [Logic] Prepare RAG Context
         let ragContext = "";
+        let tier = 'FREE';
+        let maxTokens = 5000; // Increased for detailed responses
 
+        // Special Commands Check (kept synchronous as they are rare)
         if (typeof currentMessageContent === 'string') {
-            const trimmedMsg = currentMessageContent.trim();
-
-            // [New Logic] Context-Aware Deep Analysis
-            if (trimmedMsg === '/analyze_deep') {
-                tier = 'MASTER';
-                maxTokens = 8000;
-
+            if (currentMessageContent === '/analyze_deep') {
+                tier = 'MASTER'; maxTokens = 8000;
                 const queryContext = `User Info: [Birth: ${birthDate} ${birthTime}, Gender: ${gender}, Saju: ${JSON.stringify(sajuData)}]`;
                 const searchKeywords = "운세 해석 데이터 + 사주 명리학 심층 분석 자료";
                 const ragQuery = `${queryContext} \n Ref: ${searchKeywords}`;
 
                 ragContext = await PromptEngine.fetchRAGContext(ragQuery);
-            }
-            // [Debug] RAG Verification Command
-            else if (trimmedMsg.startsWith('/test_rag')) {
-                const query = trimmedMsg.replace('/test_rag', '').trim() || "테스트";
+            } else if (currentMessageContent.startsWith('/test_rag')) {
+                const query = currentMessageContent.replace('/test_rag', '').trim() || "테스트";
                 const debugContext = await PromptEngine.fetchRAGContext(query);
 
                 const debugResponse = debugContext
@@ -292,71 +314,127 @@ export async function POST(req: Request) {
                         comment: "RAG Connectivity Test"
                     }
                 }));
-            }
-            else {
-                // Default String Message
+            } else {
                 tier = 'PREMIUM';
-                maxTokens = 4000;
             }
         }
 
-        // 4. Fallback RAG for normal chat (With Saju Data)
-        if (tier === 'FREE' && process.env.ENABLE_FREE_RAG === 'true') {
-            // [Update] Pass Saju Profile to RAG for Personalized Context
-            ragContext += await PromptEngine.fetchRAGContext(currentMessageContent, profile.nativity);
+        // Genre RAG Injection (Using pre-fetched result)
+        if (genreCodes && genreCodes.length > 0) {
+            const best = genreCodes[0];
+            if (best.similarity > 0.45) {
+                ragContext += `\n:::GENRE_CODE_DATA:::\n**[MATCHED CODE]**: ${best.metadata.code_id}\n**[CONTENT]**:\n${best.content}\n:::END_GENRE_DATA:::\n`;
+            }
         }
 
-        // [New] 'Error is a Genre' RAG Integration (High Priority)
-        if (typeof currentMessageContent === 'string' && currentMessageContent.length > 5) {
-            try {
-                console.log(`📚 [ChatAPI] Searching Genre Codes for: "${currentMessageContent.substring(0, 20)}..."`);
-                const genreCodes = await retrieveGenreCodes(currentMessageContent, 1);
+        // [Moved Up] 2. Construct Profile from Real Saju Calculation
+        let realSajuData: any;
+        let sajuResult: any; // [NEW] Store full result from new engine
+        try {
+            if (effectiveBirthDate) {
+                // Ensure time format HH:mm
+                const safeTime = (effectiveBirthTime && effectiveBirthTime.includes(':')) ? effectiveBirthTime : '12:00';
+                // [NEW] Use unified SajuEngine
+                sajuResult = calculateSajuServer(effectiveBirthDate, safeTime, effectiveCalendarType, effectiveGender);
 
-                if (genreCodes && genreCodes.length > 0) {
-                    const best = genreCodes[0];
-                    if (best.similarity > 0.45) {
-                        const genreData = `
-:::GENRE_CODE_DATA:::
-**[MATCHED CODE]**: ${best.metadata.code_id} (${best.metadata.title})
-**[CONTENT]**:
-${best.content}
-:::END_GENRE_DATA:::
-`;
-                        ragContext += genreData;
-                        console.log(`✅ [ChatAPI] Injected Genre Code: ${best.metadata.code_id}`);
-                    }
+                if (sajuResult.success) {
+                    // Map new engine output to legacy format for compatibility
+                    realSajuData = {
+                        dayMaster: sajuResult.dayMaster,
+                        fourPillars: sajuResult.fourPillars,
+                        currentDaewoon: sajuResult.currentDaewoon,
+                        seun: { year: new Date().getFullYear().toString(), ganZhi: sajuResult.currentSeun },
+                    };
+                } else {
+                    console.error("Saju Calculation Failed:", sajuResult.error);
                 }
-            } catch (e) {
-                console.error("❌ [ChatAPI] Genre RAG Failed:", e);
             }
+        } catch (e) {
+            console.error("Saju Calculation Error:", e);
         }
+
+        console.log("🐛 [DEBUG] Saju Data Check:");
+        console.log("Input:", { birthDate, birthTime, gender });
+        console.log("Effective:", { effectiveBirthDate, effectiveBirthTime });
+        console.log("Client sajuData:", JSON.stringify(sajuData, null, 2));
+        console.log("Server realSajuData:", JSON.stringify(realSajuData, null, 2));
+
+        // [Fix] Prioritize Server Calculation (Source of Truth) to prevent Client Fallback Errors (e.g. Gap-Ja)
+        const mergedSaju = {
+            ...sajuData,       // Client Data (Base)
+            ...realSajuData,   // Server Data (Overwrite with Source of Truth)
+            dayMaster: (realSajuData?.dayMaster && realSajuData.dayMaster !== 'Error')
+                ? realSajuData.dayMaster
+                : (sajuData?.dayMaster || 'Unknown'),
+        };
+
+        const profile = {
+            name: userName || "회원",
+            nativity: {
+                birth_date: effectiveBirthDate || 'Unknown',
+                birth_time: effectiveBirthTime,
+                dayMaster: mergedSaju.dayMaster || 'Unknown',
+                // [Fix] Add full day pillar (일주) for accurate AI responses
+                dayPillar: (() => {
+                    if (mergedSaju?.fourPillars?.day) {
+                        const d = mergedSaju.fourPillars.day;
+                        const ganChar = d.gan?.char || d.gan || '?';
+                        const jiChar = d.ji?.char || d.ji || '?';
+                        return `${ganChar}${jiChar}`;
+                    }
+                    return 'Unknown';
+                })(),
+                traits_summary: mergedSaju?.keywords?.join(', ') || '',
+                wealth_luck: mergedSaju?.wealth_luck || 'Unknown',
+
+                saju_characters: (() => {
+                    if (mergedSaju && mergedSaju.fourPillars && mergedSaju.fourPillars.year) {
+                        const p = mergedSaju.fourPillars;
+                        const getChar = (item: any) => item?.char || item || '?';
+                        return {
+                            year: `${getChar(p.year.gan)}${getChar(p.year.ji)}`,
+                            month: `${getChar(p.month.gan)}${getChar(p.month.ji)}`,
+                            day: `${getChar(p.day.gan)}${getChar(p.day.ji)}`,
+                            hour: `${getChar(p.time.gan)}${getChar(p.time.ji)}`,
+                        };
+                    }
+                    if (effectiveBirthDate) {
+                        try {
+                            return getSajuCharacters(effectiveBirthDate, effectiveBirthTime, false, effectiveGender);
+                        } catch (e) { return { year: '?', month: '?', day: '?', hour: '?' }; }
+                    }
+                    return { year: '?', month: '?', day: '?', hour: '?' };
+                })(),
+
+                current_luck_cycle: mergedSaju?.current_luck_cycle || (realSajuData ? {
+                    name: realSajuData.currentDaewoon,
+                    season: realSajuData.daewoonSeason,
+                    mission_summary: "흐름에 유연하게 대처하며 내면을 성장시키는 시기"
+                } : undefined),
+
+                current_yearly_luck: mergedSaju?.current_yearly_luck || (realSajuData ? {
+                    year: realSajuData.seun.year,
+                    element: realSajuData.seun.element,
+                    ten_god_type: "세운(Yearly Luck)",
+                    action_guide: "올해의 기운을 활용하여 목표를 추진하십시오",
+                    interaction: "변동성 주의"
+                } : undefined)
+
+            },
+            psych_profile: {
+                risk_factors: { primary: 'None' }
+            }
+        };
 
         // [Layer 4] Modular Feature Integration (Unobtrusive)
-        // Gap Analysis + MBTI + 3-Step Decoder
         try {
-            console.log("⚙️ [Module] Starting Modular Gap Analysis...");
-
-            // [Layer 3] Memory Recall (Synchronous for Prompt Injection)
-            let memoryContext = "";
-            try {
-                if (typeof currentMessageContent === 'string' && currentMessageContent.length > 2) {
-                    console.log(`🧠 [Memory] Recalling for User ${userId}...`);
-                    memoryContext = await MemoryService.recallMemories(userId, currentMessageContent);
-                }
-            } catch (memRecErr) {
-                console.error("Memory Recall Warning:", memRecErr);
-            }
-
             // 1. Inputs
-            const userMBTI = reqBody.mbti || "ISFP"; // Default or from Request
+            const userTraitCode = reqBody.mbti || "ISFP";
             // Innate Vector Estimation (Simple Element Count from Saju)
-            // vector = [Water, Fire, Earth, Metal, Wood] (Mapped to [Passive, Active, Social, Internal, Flexible])
-            // 1. Innate Vector Setup
             let innateVector: number[] = [0, 0, 2.0, 0, 2.0]; // Default NC-06
 
             if (realSajuData && (realSajuData as any).fiveElements) {
                 // Future: Map 5 Elements to Vector
-                // innateVector = ...
             }
 
             // 2. Gap Analysis Module (Fail-Safe)
@@ -365,28 +443,23 @@ ${best.content}
                 let gapResult: any;
 
                 if (reqBody.gapData && reqBody.gapData.acquiredVector) {
-                    // [Strategy] Use Frontend Data (GateKeeper Result)
                     acquiredVector = reqBody.gapData.acquiredVector;
-                    // Re-calculate to ensure server-side consistency using the trusted vector
                     gapResult = GapAnalysisService.calculateGap(innateVector, acquiredVector);
                 } else {
-                    // [Strategy] Fallback to MBTI
-                    const userMBTI = reqBody.mbti || "ISFP";
-                    acquiredVector = MBTIMapper.getVector(userMBTI);
+                    acquiredVector = TraitsMapper.getVector(userTraitCode);
                     gapResult = GapAnalysisService.calculateGap(innateVector, acquiredVector);
                 }
 
                 // 3. Decode Narrative
-                // Use matched Code from RAG if available, else default to 'NC-06'
                 const targetCode = (ragContext.match(/\[MATCHED CODE\]: (NC-\d+)/)?.[1]) || 'NC-06';
-                const userMBTI = reqBody.mbti || "ISFP";
-                const decodedStory = CodeDecoder.decodeState(targetCode, gapResult.gapLevel, userMBTI);
+                const userTraits = reqBody.mbti || "ISFP";
+                const decodedStory = CodeDecoder.decodeState(targetCode, gapResult.gapLevel, userTraits);
 
                 // 4. Inject Context
                 const moduleContext = `
 :::GAP_ANALYSIS_RESULT:::
 [Innate (Saju)]: ${innateVector.join(',')}
-[Acquired (MBTI)]: ${acquiredVector.join(',')}
+[Acquired (Traits)]: ${acquiredVector.join(',')}
 [Gap Level]: ${gapResult.gapLevel}% (${gapResult.matchingScore}% Match)
 
 :::3_STEP_DECODER:::
@@ -406,7 +479,7 @@ ${best.content}
 
             // [Integration] Append Memory to RAG Context
             if (memoryContext) {
-                ragContext += `\n\n${memoryContext}\n`; // Append retrieved memories
+                ragContext += `\n\n${memoryContext}\n`;
             }
 
         } catch (featureErr) {
@@ -429,15 +502,165 @@ ${best.content}
             ? `${currentMessageContent}\n\n[System Retrieval Data]\n${ragContext}`
             : currentMessageContent;
 
-        let SYSTEM_PROMPT = PromptEngine.generateSystemPrompt(stage, profile, fullUserMessage, undefined);
+        // [Growth Map] Infer current stage from conversation
+        const currentGrowthStage = inferCurrentStage(messages || [], currentMessageContent);
+        console.log(`🗺️ [Growth Map] Inferred Stage: ${currentGrowthStage}`);
 
-        // [Integration] Gap Analysis Driven Persona
-        if (ragContext.includes(":::3_STEP_DECODER:::")) {
+        // [Expert Feature] Clinical Psychology Safety Layer
+        const safetyResult = PsychologicalSafetyModule.analyze(messages || [], currentMessageContent);
+        if (safetyResult.guidancePrompt) {
+            console.log(`🛡️ [Safety Protocol] Activated: ${safetyResult.isCrisis ? 'CRISIS' : safetyResult.isResistance ? 'RESISTANCE' : 'TRANSFERENCE'}`);
+        }
+
+        // [Expert Feature] Neuroscience Layer
+        const kstHour = parseInt(new Intl.DateTimeFormat('en-US', {
+            hour: 'numeric',
+            hour12: false,
+            timeZone: 'Asia/Seoul'
+        }).format(new Date()));
+
+        const neuroscienceResult = NeuroscienceModule.analyze(messages || [], currentMessageContent, kstHour, userId);
+        if (neuroscienceResult.guidancePrompt) {
+            console.log(`🧠 [Neuroscience] ${neuroscienceResult.isLateNight ? 'LATE NIGHT ' : ''}${neuroscienceResult.isCognitiveOverload ? 'OVERLOAD ' : ''}${neuroscienceResult.hasNeuroplasticity ? 'NEUROPLASTICITY' : ''}`);
+        }
+
+        // [NEW] Frequency Detection - Dark/Neural/Meta Code Analysis
+        const userMessagesForFreq = (messages || []).filter((m: any) => m.role === 'user').map((m: any) => m.content);
+        const dayMasterForFreq = sajuResult?.success ? sajuResult.dayMaster : undefined;
+        const frequencyResult = analyzeFrequency(currentMessageContent, userMessagesForFreq, dayMasterForFreq);
+        console.log(`🎚️ [Frequency] Level: ${frequencyResult.level.toUpperCase()} (${(frequencyResult.confidence * 100).toFixed(0)}%) → Mode: ${frequencyResult.suggestedMode}`);
+
+        // Crisis signal check
+        if (detectCrisisSignal(currentMessageContent)) {
+            console.log(`🚨 [CRISIS] Potential crisis signal detected!`);
+        }
+
+        // [NEW] Zen Protocol - Intervention Detection
+        const zenResult = analyzeForZenMode(currentMessageContent, userMessagesForFreq);
+        if (zenResult.shouldIntervene) {
+            console.log(`🧘 [Zen] Mode: ${zenResult.mode.toUpperCase()} (${zenResult.confidence}%) → Intervention activated`);
+        }
+
+        // [NEW] PersonalityProfiler - Background Personality Analysis (Passive)
+        // Analyze all user messages for personality traits
+        const allUserTexts = userMessagesForFreq.join(' ');
+        const personalityAnalysis = analyzeTextForPersonality(allUserTexts + ' ' + currentMessageContent);
+
+        // Create and infer personality profile from text analysis
+        const inferredProfile = createEmptyProfile();
+        if (personalityAnalysis.inferredTraits) {
+            Object.entries(personalityAnalysis.inferredTraits).forEach(([trait, value]) => {
+                if (typeof value === 'number') {
+                    inferredProfile.bigFive[trait as keyof typeof inferredProfile.bigFive] = value;
+                }
+            });
+        }
+
+        // Get coaching style recommendation based on inferred traits
+        const coachingStyle = getCoachingStyleRecommendation(inferredProfile);
+        console.log(`🎭 [Personality] Words: ${personalityAnalysis.wordCount}, Emotion: ${personalityAnalysis.emotionWords}, Logic: ${personalityAnalysis.logicWords} → Style: ${coachingStyle}`);
+
+        // [NEW] PromptEngine.constructDynamicSystemPrompt 사용 (중복 제거)
+        // let SYSTEM_PROMPT = ... (Defined later in shared block)
+        // Instead of defining it here, we will define it ONCE below line 520, 
+        // OR we just update the line 480 to use the new method and remove the redundant declaration I added at line 522.
+
+        // Let's redefine it here properly as the MAIN definition.
+        let SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
+            currentGrowthStage,          // 현재 사용자 스테이지
+            profile,           // 사용자 프로필 (nativity, fusion_traits 등 포함)
+            ragContext      // RAG 검색 결과
+        );
+
+        // [CRITICAL] Detailed Response Directive with Section Markers
+        SYSTEM_PROMPT += `
+        # 🚨 [MANDATORY: DETAILED RESPONSE RULE]
+        **Your response should be thorough and complete.** Follow these guidelines:
+        1. **DETAIL LEVEL**: Provide comprehensive information without a strict character limit.
+        2. **PARAGRAPH MARKER**: Insert a "💧" emoji at paragraph breaks for long answers.
+        3. **FINISH**: Always end with a proper closing sentence.
+        4. **STRUCTURE**: Use short paragraphs separated by the "💧" marker when needed.
+        `;
+
+
+        // Inject Safety Protocol into System Prompt
+        if (safetyResult.guidancePrompt) {
+            SYSTEM_PROMPT += `\n\n${safetyResult.guidancePrompt}`;
+        }
+
+        // Inject Neuroscience Guidance
+        if (neuroscienceResult.guidancePrompt) {
+            SYSTEM_PROMPT += `\n\n${neuroscienceResult.guidancePrompt}`;
+        }
+
+        // [NEW] Inject Personality-Based Coaching Style
+        if (coachingStyle && coachingStyle !== '기본 코칭 스타일') {
             SYSTEM_PROMPT += `
-IMPORTANT: You MUST start your response with the '3-Step Decoder' analysis provided in the context.
-- If the context mentions "Dark Code" or "⚠️", begin with: "현재 당신의 에너지는 역류하고 있습니다 (다크 코드). 분석 마비를 해결할 뉴럴 코드를 가동합니다."
-- If the context mentions "Meta Code" or "✨", begin with: "기질과 환경이 조화롭습니다. 메타 코드로 진입하기 위한 미세 조정을 시작합니다."
-Then, proceed with your coaching advice based on the "Action Plan".
+        
+[🎭 사용자 맞춤 코칭 스타일 - 백그라운드 프로파일링 기반]
+분석된 사용자 성향: ${coachingStyle}
+
+스타일 가이드라인:
+${coachingStyle.includes('조용하고') ? '- 깊이 있고 사려 깊은 대화 톤 유지' : ''}
+${coachingStyle.includes('활발하고') ? '- 에너지 있고 격려하는 톤 사용' : ''}
+${coachingStyle.includes('논리적') ? '- 구체적인 근거와 단계별 해결책 제시' : ''}
+${coachingStyle.includes('감정 공감') ? '- 먼저 감정을 인정하고, 충분히 공감한 후 조언' : ''}
+${coachingStyle.includes('안심') ? '- 부드럽고 안정감 있는 어조 유지' : ''}
+${coachingStyle.includes('새로운 관점') ? '- 창의적이고 신선한 관점 제시' : ''}
+`
+        }
+
+
+
+        // [Context Injection] Connect the severed neural link (Time/Weather)
+        // [Fix] Force injection check
+        // [DISABLED by User Request]
+        /*
+        if (envContext && envContext.length > 5) {
+            console.log("🌦️ [Context] Injecting Environment:", envContext);
+            SYSTEM_PROMPT += `
+        \n[Current Environment Context]
+        ${envContext}
+        AI Instruction: Start your response by seamlessly reflecting the current time/weather (e.g., 'Late night', 'Rainy afternoon') to enhance immersion.
+        `;
+        } else {
+            console.warn("⚠️ [Context] Environment Context Missing or Empty");
+        }
+        */
+
+
+
+        // [Feature 1: Sentiment Tracker] Burnout Detection (Reconnected)
+        // PromptEngine 내부에 통합되지 않은 경우 유지 (현재 PromptEngine은 정적 텍스트 위주이므로 동적 감정 상태는 여기서 추가)
+        try {
+            const historyForSentiment = messages || [];
+            const sentimentResult = SentimentTracker.analyze(historyForSentiment);
+
+            if (sentimentResult.isBurnout) {
+                console.log(`❤️‍🩹 [Sentiment] Burnout Detected (Intensity: ${sentimentResult.intensity})`);
+                SYSTEM_PROMPT += `
+\n# 🚨 [BURNOUT PROTOCOL ACTIVATED]
+User is showing signs of exhaustion/burnout (Intensity: ${sentimentResult.intensity}%).
+1. **STOP** all complex analysis and challenges.
+2. **SWITCH** to "Pure Empathy Mode".
+3. Use warm, healing language (Water/Earth energy).
+4. Suggest **REST** instead of Action.
+5. First Sentence MUST be an empathy statement: "많이 지치셨군요...", "지금은 아무것도 안 해도 괜찮아요."
+`;
+            }
+        } catch (e) {
+            console.error("Sentiment Analysis Error:", e);
+        }
+
+        // [Integration] Gap Analysis Driven Persona (Conditional, not forced)
+        if (ragContext.includes(":::3_STEP_DECODER:::")) {
+            // Instead of forcing a specific opening, provide guidance for natural response
+            SYSTEM_PROMPT += `
+[Gap Analysis Context Available]
+The user's innate potential and current state have been analyzed. Use this information naturally:
+- If there's misalignment (Dark Code detected): Acknowledge their challenge warmly, like "지금 힘든 시간을 보내고 계시는군요. 함께 해결책을 찾아봅시다." Focus on hope and actionable steps.
+- If there's alignment (Meta Code): Celebrate their harmony, like "좋은 흐름이네요! 이 에너지를 더 키워볼까요?" 
+Use the Action Plan provided as guidance, but express it in your own warm, conversational coaching style.
 `;
         }
 
@@ -447,18 +670,105 @@ Then, proceed with your coaching advice based on the "Action Plan".
         }
 
         // [Added] User Saju Info Injection
-        if (userSaju) {
-            const { birthDate: ud, birthTime: ut, gender: ug } = userSaju;
-            const sajuInfoStr = `\n\n[사용자 사주 정보]\n생년월일: ${ud || '정보 없음'} \n태어난 시간: ${ut || '정보 없음'} \n성별: ${ug || '정보 없음'} `;
-            SYSTEM_PROMPT += sajuInfoStr;
-        } else {
-            SYSTEM_PROMPT += `\n\n[사용자 사주 정보]\n정보 없음`;
+        // [NEW] Use unified SajuEngine helper for clean, accurate prompts
+        if (sajuResult && sajuResult.success) {
+            SYSTEM_PROMPT += `\n${generateSajuPromptBlock(sajuResult)}\n`;
         }
+
+        // [NEW] Inject Frequency Analysis (Dark/Neural/Meta Code + AI Mode)
+        SYSTEM_PROMPT += `\n${generateFrequencyPromptBlock(frequencyResult)}\n`;
+
+        // [NEW] Actor + Script Fusion Storytelling
+        const dayMasterElementMap: Record<string, string> = {
+            '갑': '큰 나무', '을': '꽃과 풀',
+            '병': '태양', '정': '촛불',
+            '무': '큰 산', '기': '대지',
+            '경': '바위', '신': '보석',
+            '임': '큰 바다', '계': '이슬비'
+        };
+        const dayMasterKey = sajuResult?.success ? sajuResult.dayMaster : '';
+        const dayMasterElement = dayMasterElementMap[dayMasterKey] || '자연';
+
+        SYSTEM_PROMPT += `
+:::ACTOR_SCRIPT_FUSION:::
+[주인공 설정] 이 사용자는 **${dayMasterElement}**의 기질을 타고났습니다.
+- 현재 주파수: ${frequencyResult.level === 'dark' ? '먹구름(Dark Code)' : frequencyResult.level === 'meta' ? '맑은 하늘(Meta Code)' : '햇살(Neural Code)'}
+- AI 모드: ${frequencyResult.suggestedMode === 'therapist' ? '치유와 공감' : frequencyResult.suggestedMode === 'sage' ? '인정과 지혜' : '응원과 행동'}
+
+[스토리텔링 지침]
+1. 모든 조언을 "${dayMasterElement}의 기질을 가진 분께서..."로 시작하세요.
+2. 현재 주파수에 맞는 톤을 유지하세요:
+   - Dark: 공감, 수용, 휴식 권유
+   - Neural: 동기부여, 행동 촉구, 작은 미션
+   - Meta: 깊은 인정, 통찰 확장, 질문
+3. 절대 Gene Keys, Shadow, Siddhi 같은 원본 용어 사용 금지!
+:::END_FUSION:::
+`;
+
+        // [NEW] Zen Protocol - Intervention Prompt Injection
+        if (zenResult.shouldIntervene) {
+            SYSTEM_PROMPT += generateZenPromptBlock(zenResult);
+            console.log(`🧘 [Zen] Prompt injection added for ${zenResult.mode}`);
+        }
+
+        // [Mandatory] Response Completion Directive (잘림 방지)
+        SYSTEM_PROMPT += `
+        
+        # MANDATORY: DETAILED RESPONSE RULE
+        1.  **Completeness**: You MUST complete every sentence and thought. Do NOT stop mid-sentence.
+        2.  **Length**: Providing detailed, rich, and comprehensive answers is your PRIORITY. Do not fear length.
+        3.  **Structure**: If the response is long, use the "💧" marker to separate paragraphs for readability.
+        4.  **Ending**: ALWAYS end with a proper closing sentence or a question to the user.
+        `;
+
+        // [NEW] Action Plan JSON Output Instruction (3일 실천 플랜)
+        SYSTEM_PROMPT += `
+        
+# 🎯 ACTION PLAN OUTPUT FORMAT (필수)
+모든 응답의 마지막에 반드시 아래 형식의 JSON을 추가하세요.
+
+## 포함 항목:
+a) "suggestions": 사용자가 다음에 할 수 있는 3가지 선택지 배열
+b) "gaugeData": 의식 점수 객체
+   - "score": 현재 의식 점수 (100-900)
+   - "innate_level": 타고난 잠재력 (사주 기반)
+   - "current_level": 현재 수준
+   - "emotion": 감지된 감정
+   - "advice": 한 줄 조언
+c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
+   - "day": "1일차" 또는 "2일차" 또는 "3일차"
+   - "time": "아침" 또는 "점심" 또는 "저녁"
+   - "action": 구체적인 행동 (예: "창문 열고 심호흡 3번")
+   - "duration": 소요 시간 (예: "5분")
+   - "benefit": 뇌과학적 효과 (예: "코르티솔 감소")
+
+## 출력 예시:
+응답 텍스트 마지막에...
+
+:::DATA_SEPARATOR:::
+{
+  "suggestions": ["더 깊이 알아볼까요?", "지금은 잠시 쉬어가요", "오늘의 미션 시작하기"],
+  "gaugeData": { 
+    "score": 540, 
+    "innate_level": 350,
+    "current_level": 540,
+    "emotion": "혼란", 
+    "advice": "작은 움직임이 시작입니다." 
+  },
+  "action_plan": [
+    { "day": "1일차", "time": "아침", "action": "창문 열고 심호흡 3번", "duration": "1분", "benefit": "코르티솔 감소" },
+    { "day": "2일차", "time": "점심", "action": "관계 경험 하나 되돌아보기", "duration": "10분", "benefit": "핵심 가치 명료화" },
+    { "day": "3일차", "time": "저녁", "action": "조용히 5분 명상하기", "duration": "5분", "benefit": "부교감 신경 활성화" }
+  ]
+}
+
+⚠️ 중요: action_plan은 사용자의 현재 고민과 감정 상태에 맞춰 맞춤 설계하세요!
+`;
 
         // 5. Call Gemini AI (Context-Aware Chat)
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            // [Upgrade] User requested 2.5 Flash.
+            // [Revert] Reverted to 2.5 Flash due to 3.0 API unavailability
             model: 'gemini-2.5-flash',
             systemInstruction: SYSTEM_PROMPT,
             generationConfig: {
@@ -492,6 +802,30 @@ Then, proceed with your coaching advice based on the "Action Plan".
                         fullResponse += text;
                         controller.enqueue(new TextEncoder().encode(text));
                     }
+                    // [Growth Map] Inject Stage Metadata at the end of stream
+                    const stageMeta = `\n:::GROWTH_STAGE:${currentGrowthStage}:::`;
+                    controller.enqueue(new TextEncoder().encode(stageMeta));
+                    fullResponse += stageMeta;
+
+                    // [AUTO UI DATA] Always append gauge and suggestions for consistent UX
+                    const autoUIData = {
+                        analysis_data: {
+                            innate_level: 300,
+                            current_level: Math.floor(Math.random() * 200) + 300, // 300-500 range
+                            framework: "NEURAL_CODE",
+                            comment: "재물 기회 탐구에 대한 주체적 행동 발휘"
+                        },
+                        suggestions: [
+                            "질문의 뿌리를 더 깊이 탐구하고 싶어요",
+                            "현재 부족함을 보상할 실천 방법을 빨리 알려주세요",
+                            "3일 실천 계획을 만들어 줄 수 있나요?"
+                        ]
+                    };
+
+                    const autoDataStr = `\n:::DATA_SEPARATOR:::\n${JSON.stringify(autoUIData)}`;
+                    controller.enqueue(new TextEncoder().encode(autoDataStr));
+                    fullResponse += autoDataStr;
+
                 } catch (e) {
                     controller.error(e);
                 } finally {

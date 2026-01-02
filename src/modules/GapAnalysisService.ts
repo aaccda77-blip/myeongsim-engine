@@ -2,7 +2,7 @@
  * @module GapAnalysisService
  * @description
  * Implements the 'Gap Analysis' logic defined in the patent.
- * Compares 'Innate Data' (Saju) and 'Acquired Data' (MBTI/Environment).
+ * Compares 'Innate Data' (Saju) and 'Acquired Data' (Traits/Environment).
  * 
  * Logic:
  * - Matching Score: 0-100% (High means Innate ~= Acquired)
@@ -28,7 +28,7 @@ export class GapAnalysisService {
      * Uses Euclidean distance to determine disparity.
      * 
      * @param innateVector - Numerical array representing original nature (Saju)
-     * @param acquiredVector - Numerical array representing current state (MBTI/Test)
+     * @param acquiredVector - Numerical array representing current state (Traits/Test)
      * @returns GapResult object safely
      */
     public static calculateGap(innateVector: number[], acquiredVector: number[]): GapResult {

@@ -1,146 +1,248 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
-import { Check, RefreshCw, Loader2, DollarSign } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { Shield, CheckCircle, Clock, User } from 'lucide-react';
 
-interface PaymentRequest {
+interface UserRecord {
     id: string;
-    depositor_name: string;
-    amount: number;
-    item_id: string;
+    phone_hash: string;
     created_at: string;
+    membership_tier: string;
+    is_active: boolean;
+    expires_at?: string;
+    payment_amount?: number;
+    approved_at?: string;
 }
 
 export default function AdminPage() {
-    const [payments, setPayments] = useState<PaymentRequest[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [processingId, setProcessingId] = useState<string | null>(null);
+    const [password, setPassword] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [users, setUsers] = useState<UserRecord[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [selectedTiers, setSelectedTiers] = useState<Record<string, string>>({});
 
-    const fetchPayments = async () => {
-        setIsLoading(true);
+
+
+    const handleLogin = async () => {
         try {
-            const res = await fetch('/api/admin/payments');
-            const data = await res.json();
-            if (Array.isArray(data)) {
-                setPayments(data);
-            }
-        } catch (e) {
-            console.error(e);
-            alert('로드 실패');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchPayments();
-    }, []);
-
-    const handleApprove = async (id: string) => {
-        if (!confirm('입금을 확인하고 승인하시겠습니까?')) return;
-
-        setProcessingId(id);
-        try {
-            const res = await fetch('/api/admin/payments', {
-                method: 'PATCH',
+            const response = await fetch('/api/admin/auth', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id })
+                body: JSON.stringify({ password })
             });
 
-            if (res.ok) {
-                alert('승인되었습니다.');
-                fetchPayments(); // Refresh list
+            const data = await response.json();
+
+            if (data.success) {
+                setIsAuthenticated(true);
+                fetchUsers();
             } else {
-                throw new Error('처리 실패');
+                alert(data.error || '비밀번호가 틀렸습니다.');
             }
-        } catch (e) {
-            alert('오류가 발생했습니다.');
-        } finally {
-            setProcessingId(null);
+        } catch (error) {
+            alert('로그인 중 오류가 발생했습니다.');
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gray-950 text-white p-8">
-            <div className="max-w-4xl mx-auto space-y-8">
+    const fetchUsers = async () => {
+        setLoading(true);
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-                {/* Header */}
-                <div className="flex justify-between items-center border-b border-gray-800 pb-6">
-                    <div>
-                        <h1 className="text-3xl font-bold text-primary-gold mb-2">무통장 입금 관리</h1>
-                        <p className="text-gray-400">PENDING 상태의 입금 요청을 확인하고 승인합니다.</p>
+        if (data) setUsers(data);
+        if (error) console.error('User Fetch Error:', error);
+        setLoading(false);
+    };
+
+    const approveUser = async (userId: string, tier: string) => {
+        const now = new Date();
+        let expiresAt: Date | null = null;
+        let paymentAmount = 0;
+
+        // Calculate expiration based on tier
+        switch (tier) {
+            case 'TRIAL_30M':
+                expiresAt = new Date(now.getTime() + 30 * 60 * 1000); // 30 minutes
+                paymentAmount = 3900;
+                break;
+            case 'PASS_24H':
+                expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
+                paymentAmount = 9900;
+                break;
+            case 'VIP_7D':
+                expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
+                paymentAmount = 49000;
+                break;
+            default:
+                alert('올바른 이용권을 선택해주세요.');
+                return;
+        }
+
+        const { error } = await supabase
+            .from('users')
+            .update({
+                membership_tier: tier,
+                is_active: true,
+                expires_at: expiresAt.toISOString(),
+                payment_amount: paymentAmount,
+                approved_at: now.toISOString(),
+                approved_by: 'admin' // Could be dynamic in future
+            })
+            .eq('id', userId);
+
+        if (!error) {
+            alert(`승인 완료! (${tier}, 만료: ${expiresAt.toLocaleString('ko-KR')})`);
+            fetchUsers();
+        } else {
+            alert('승인 실패: ' + error.message);
+        }
+    };
+
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center p-4">
+                <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 w-full max-w-md shadow-2xl">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Shield className="w-8 h-8 text-indigo-400" />
+                        <h1 className="text-2xl font-bold text-white">관리자 로그인</h1>
                     </div>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                        placeholder="비밀번호 입력"
+                        className="w-full bg-black/50 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 mb-4 focus:outline-none focus:border-indigo-500"
+                    />
                     <button
-                        onClick={fetchPayments}
-                        className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                        onClick={handleLogin}
+                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition-colors"
                     >
-                        <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                        로그인
                     </button>
                 </div>
+            </div>
+        );
+    }
 
-                {/* List */}
-                <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
-                    <div className="grid grid-cols-5 bg-gray-800/50 p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                        <div className="col-span-1">요청 시간</div>
-                        <div className="col-span-1">입금자명</div>
-                        <div className="col-span-1">상품 (Tier)</div>
-                        <div className="col-span-1 text-right pr-4">금액</div>
-                        <div className="col-span-1 text-center">Action</div>
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 p-6">
+            <div className="max-w-6xl mx-auto">
+                <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 mb-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Shield className="w-6 h-6 text-indigo-400" />
+                            <h1 className="text-2xl font-bold text-white">회원 관리 대시보드</h1>
+                        </div>
+                        <button
+                            onClick={fetchUsers}
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                        >
+                            새로고침
+                        </button>
                     </div>
-
-                    {isLoading ? (
-                        <div className="p-12 flex justify-center text-gray-500">
-                            <Loader2 className="w-8 h-8 animate-spin" />
-                        </div>
-                    ) : payments.length === 0 ? (
-                        <div className="p-12 text-center text-gray-500">
-                            대기 중인 입금 요청이 없습니다.
-                        </div>
-                    ) : (
-                        <div className="divide-y divide-gray-800">
-                            {payments.map((payment) => (
-                                <div key={payment.id} className="grid grid-cols-5 p-4 items-center hover:bg-white/5 transition-colors">
-                                    <div className="col-span-1 text-sm text-gray-400">
-                                        {format(new Date(payment.created_at), 'MM.dd HH:mm', { locale: ko })}
-                                    </div>
-                                    <div className="col-span-1 font-bold text-white flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-primary-gold/20 flex items-center justify-center text-primary-gold text-xs">
-                                            {payment.depositor_name[0]}
-                                        </div>
-                                        {payment.depositor_name}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${payment.item_id === 'MASTER' ? 'bg-purple-900/50 text-purple-400 border border-purple-800' : 'bg-blue-900/50 text-blue-400 border border-blue-800'
-                                            }`}>
-                                            {payment.item_id}
-                                        </span>
-                                    </div>
-                                    <div className="col-span-1 text-right pr-4 text-sm font-mono text-gray-300">
-                                        {payment.amount.toLocaleString()}원
-                                    </div>
-                                    <div className="col-span-1 flex justify-center">
-                                        <button
-                                            onClick={() => handleApprove(payment.id)}
-                                            disabled={processingId === payment.id}
-                                            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            {processingId === payment.id ? (
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                            ) : (
-                                                <>
-                                                    <Check className="w-4 h-4" />
-                                                    <span>승인</span>
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
+
+                {loading ? (
+                    <div className="text-center text-white py-12">로딩 중...</div>
+                ) : (
+                    <div className="grid gap-4">
+                        {users.map((user) => {
+                            // [Security Fix] Strict Expiration Check
+                            const isActive = user.expires_at && new Date(user.expires_at) > new Date();
+                            const isExpired = user.expires_at && new Date(user.expires_at) < new Date(); // [Fix] Re-added for UI
+                            const hasPremium = user.membership_tier && user.membership_tier !== 'FREE' && isActive;
+
+                            // [Admin Dashboard Auto-Select] Map User Request to Admin Code
+                            const requestedTier = (() => {
+                                const t = user.membership_tier;
+                                if (t === 'TRIAL') return 'TRIAL_30M';
+                                if (t === 'PASS') return 'PASS_24H';
+                                if (t === 'VIP') return 'VIP_7D';
+                                if (['TRIAL_30M', 'PASS_24H', 'VIP_7D'].includes(t)) return t;
+                                return '';
+                            })();
+
+                            const selectedTier = selectedTiers[user.id] || requestedTier || '';
+
+                            return (
+                                <div
+                                    key={user.id}
+                                    className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-5 hover:bg-white/15 transition-colors"
+                                >
+                                    <div className="flex items-start justify-between gap-4 mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <User className="w-5 h-5 text-gray-400" />
+                                            <div>
+                                                <div className="text-white font-mono text-sm">
+                                                    {user.phone_hash.substring(0, 12)}...
+                                                </div>
+                                                <div className="text-gray-400 text-xs mt-1">
+                                                    가입: {new Date(user.created_at).toLocaleDateString('ko-KR')}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className={`px-3 py-1 rounded-full text-xs font-bold ${user.membership_tier === 'FREE' || !user.membership_tier
+                                            ? 'bg-gray-500/20 text-gray-300'
+                                            : isExpired
+                                                ? 'bg-red-500/20 text-red-300'
+                                                : 'bg-green-500/20 text-green-300'
+                                            }`}>
+                                            {user.membership_tier || 'FREE'}
+                                        </div>
+                                    </div>
+
+                                    {user.expires_at && (
+                                        <div className="flex items-center gap-2 text-xs mb-3">
+                                            <Clock className="w-3 h-3 text-gray-400" />
+                                            <span className={isExpired ? 'text-red-400' : 'text-gray-400'}>
+                                                {isExpired ? '만료됨' : '만료'}: {new Date(user.expires_at).toLocaleString('ko-KR')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {user.membership_tier === 'FREE' || !user.membership_tier || isExpired ? (
+                                        <div className="flex gap-2">
+                                            <select
+                                                value={selectedTier}
+                                                onChange={(e) => setSelectedTiers(prev => ({ ...prev, [user.id]: e.target.value }))}
+                                                className="flex-1 bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+                                            >
+                                                <option value="">이용권 선택</option>
+                                                <option value="TRIAL_30M">💎 맛보기 (30분) - 3,900원</option>
+                                                <option value="PASS_24H">⚡ 데이 패스 (24시간) - 9,900원</option>
+                                                <option value="VIP_7D">👑 VIP (7일) - 49,000원</option>
+                                            </select>
+                                            <button
+                                                onClick={() => selectedTier && approveUser(user.id, selectedTier)}
+                                                disabled={!selectedTier}
+                                                className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
+                                            >
+                                                <CheckCircle className="w-4 h-4" />
+                                                승인
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="text-green-400 text-sm flex items-center gap-1">
+                                            <CheckCircle className="w-4 h-4" />
+                                            승인됨 ({user.payment_amount?.toLocaleString()}원)
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+
+                        {users.length === 0 && (
+                            <div className="text-center text-gray-400 py-12">
+                                등록된 회원이 없습니다.
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

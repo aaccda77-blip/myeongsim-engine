@@ -7,6 +7,7 @@ import { useReportStore } from '@/store/useReportStore';
 import { ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
 import { calculateSaju } from '@/utils/SajuCalculator';
 import { ZODIAC_TIME_OPTIONS } from '@/constants/saju';
+import { supabase } from '@/lib/supabaseClient'; // [Fix] Use shared singleton client
 
 interface ProfileModalProps {
     onClose: () => void;
@@ -89,26 +90,24 @@ export default function ProfileModal({ onClose }: ProfileModalProps) {
         };
         const newKeywords = getKeywords(dayMaster);
 
+        // 1. Update Local Store
         updateUserData({
             userName: name,
             birthDate: birthDate,
             birthTime: birthTime,
             gender: gender,
             saju: {
-                ...reportData?.saju, // Keep existing if needed, but overwrite criticals
+                ...reportData?.saju,
                 elements: newElements,
                 dayMaster: dayMaster,
-                dayMasterTrait: "분석 중...", // Placeholder until API updates it or we add logic
+                dayMasterTrait: "분석 중...",
                 keywords: newKeywords,
                 fourPillars: {
                     year: { gan: previewPillars.year.gan.char, ji: previewPillars.year.ji.char, ganColor: previewPillars.year.gan.color, jiColor: previewPillars.year.ji.color },
                     month: { gan: previewPillars.month.gan.char, ji: previewPillars.month.ji.char, ganColor: previewPillars.month.gan.color, jiColor: previewPillars.month.ji.color },
                     day: { gan: previewPillars.day.gan.char, ji: previewPillars.day.ji.char, ganColor: previewPillars.day.gan.color, jiColor: previewPillars.day.ji.color },
-
                     time: birthTime === 'unknown' ? { gan: { char: '?' }, ji: { char: '?' } } : { gan: previewPillars.time.gan.char, ji: previewPillars.time.ji.char, ganColor: previewPillars.time.gan.color, jiColor: previewPillars.time.ji.color },
                 },
-                // [NOTE] Daewoon/Seun will be refined by Server API (PromptEngine)
-                // We provide basics here so UI doesn't crash
                 current_luck_cycle: {
                     name: "분석 중",
                     season: "Calculating...",
@@ -125,6 +124,38 @@ export default function ProfileModal({ onClose }: ProfileModalProps) {
                 }
             } as any
         });
+
+        // 2. [New] Persist to Supabase DB (Long-term Memory)
+        try {
+            // Using imported singleton supabase client
+
+            // Fire and forget update (don't block UI)
+            supabase.auth.getUser().then(({ data: { user } }: any) => {
+                if (user) {
+                    supabase.auth.updateUser({
+                        data: {
+                            user_name: name,
+                            birth_date: birthDate,
+                            birth_time: birthTime,
+                            calendar_type: calendarType, // [Fix] Persist Lunar/Solar type
+                            gender: gender,
+                            saju_data: {
+                                // Raw data for reconstruction
+                                year: previewPillars.year.gan.char + previewPillars.year.ji.char,
+                                month: previewPillars.month.gan.char + previewPillars.month.ji.char,
+                                day: previewPillars.day.gan.char + previewPillars.day.ji.char,
+                                time: birthTime !== 'unknown' ? (previewPillars.time.gan.char + previewPillars.time.ji.char) : 'unknown'
+                            }
+                        }
+                    }).then(({ error }: any) => {
+                        if (error) console.error("Cloud Save Error:", error);
+                        else console.log("✅ [Cloud] Saju Data Persisted to User Metadata");
+                    });
+                }
+            });
+        } catch (e) {
+            console.warn("Supabase Client Init Failed (Offline Mode?)", e);
+        }
 
         onClose();
     };

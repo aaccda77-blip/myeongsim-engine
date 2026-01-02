@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useSpring, useTransform } from 'framer-motion';
 
 interface LevelGaugeCardProps {
     innateLevel: number;
@@ -11,43 +11,83 @@ interface LevelGaugeCardProps {
 }
 
 export default function LevelGaugeCard({
-    innateLevel = 0,
-    currentLevel = 0,
+    innateLevel = 125, // [Realism] Default to 'Desire/Discovery' (More grounded)
+    currentLevel = 155, // [Realism] Slightly higher 'Anger/Action' energy
     framework = "Integrated Analysis",
     tip
 }: LevelGaugeCardProps) {
-    const [animatedWidth, setAnimatedWidth] = useState(0);
+    // [Living UI] Spring Animation for dynamic number counting
+    const springValue = useSpring(0, { stiffness: 50, damping: 15 });
+    const [displayLevel, setDisplayLevel] = useState(0);
 
-    useEffect(() => {
-        const timer = setTimeout(() => setAnimatedWidth(currentLevel), 100);
-        return () => clearTimeout(timer);
-    }, [currentLevel]);
-
-    const maxLevel = 1000;
-    // const innatePercent = Math.min((innateLevel / maxLevel) * 100, 100);
-    // const currentPercent = Math.min((currentLevel / maxLevel) * 100, 100);
+    // [Living UI] Calculate dynamic width percentage (Max scale 1000 for visuals)
+    const maxScale = 800;
+    const innatePercent = Math.min((innateLevel / maxScale) * 100, 100);
+    const currentPercent = Math.min((currentLevel / maxScale) * 100, 100);
     const growth = currentLevel - innateLevel;
 
-    // Badge Logic
-    const getBadgeStyle = (score: number) => {
-        // Red (>600 is high, but adhering to user design color palette if needed, or sticking to logic)
-        // User design has specific colors. Let's try to match the "Dark Navy" theme.
-        return 'border-[#e84142] text-[#ff6b6b] shadow-[0_0_10px_rgba(232,65,66,0.2)] bg-[#2a1a20]';
+    useEffect(() => {
+        // Trigger animation on mount
+        springValue.set(currentLevel);
+    }, [currentLevel, springValue]);
+
+    useEffect(() => {
+        return springValue.onChange((latest) => {
+            setDisplayLevel(Math.floor(latest));
+        });
+    }, [springValue]);
+
+    // Badge Logic - Dynamic Color based on Level
+    const getBadgeInfo = (score: number) => {
+        if (score < 200) return { color: '#ef4444', label: '탐색 (Seeking)', glow: 'rgba(239, 68, 68, 0.4)' }; // Red -> Red/Orange
+        if (score < 350) return { color: '#f59e0b', label: '도약 (Leaping)', glow: 'rgba(245, 158, 11, 0.4)' }; // Orange
+        if (score < 500) return { color: '#10b981', label: '통찰 (Insight)', glow: 'rgba(16, 185, 129, 0.4)' }; // Green
+        if (score < 600) return { color: '#3b82f6', label: '조화 (Harmony)', glow: 'rgba(59, 130, 246, 0.4)' }; // Blue
+        return { color: '#8b5cf6', label: '몰입 (Flow)', glow: 'rgba(139, 92, 246, 0.4)' }; // Violet
     };
 
+    const badgeInfo = getBadgeInfo(displayLevel);
+
     return (
-        <div className="font-sans bg-[#151922] rounded-xl p-0 w-full max-w-[300px] border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.3)] relative overflow-hidden flex text-left mb-2">
+        <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="font-sans bg-[#151922] rounded-xl p-0 w-full max-w-[320px] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden flex text-left mb-2 group"
+        >
+            {/* [Ambient Glow] */}
+            <div
+                className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-[50px] opacity-20 transition-colors duration-1000"
+                style={{ backgroundColor: badgeInfo.color }}
+            />
 
             {/* Engine Mark */}
-            <div className="absolute top-2 right-3 text-[8px] text-white/15 font-extrabold uppercase tracking-[0.5px] pointer-events-none z-10">
+            <div className="absolute top-2 right-3 text-[8px] text-white/15 font-extrabold uppercase tracking-[0.5px] pointer-events-none z-10 flex items-center gap-1">
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                    className="w-2 h-2 border border-dashed border-white/20 rounded-full"
+                />
                 코어 다이내믹스 엔진™
             </div>
 
             {/* Sidebar */}
-            <div className="bg-white/[0.03] border-r border-white/5 p-[15px_10px] flex flex-col items-center justify-center text-[#8b95a1]">
-                <span className="text-base mb-2">📡</span>
+            <div className="bg-white/[0.02] border-r border-white/5 p-[15px_10px] flex flex-col items-center justify-center text-[#8b95a1] relative">
+                <motion.div
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="text-base mb-2 relative z-10"
+                >
+                    📡
+                </motion.div>
+                {/* Scanner Line */}
+                <motion.div
+                    animate={{ y: [-20, 40, -20] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    className="absolute w-full h-[2px] bg-primary-gold/20 top-[30px] shadow-[0_0_10px_rgba(212,175,55,0.5)]"
+                />
                 <span
-                    className="text-[11px] font-semibold tracking-[2px]"
+                    className="text-[10px] font-semibold tracking-[2px] text-white/40"
                     style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
                 >
                     의식레벨측정
@@ -55,69 +95,109 @@ export default function LevelGaugeCard({
             </div>
 
             {/* Content */}
-            <div className="flex-1 p-[20px_15px_15px_15px] flex flex-col relative">
+            <div className="flex-1 p-[20px_15px_15px_15px] flex flex-col relative z-10 bg-gradient-to-r from-[#151922] to-transparent">
 
                 {/* Top Section */}
-                <div className="flex items-center gap-3 mb-[15px] mt-[5px]">
-                    <div className={`w-[50px] h-[50px] rounded-full flex flex-col justify-center items-center border ${getBadgeStyle(currentLevel)} shrink-0`}>
-                        <span className="text-[9px] opacity-80 mb-[2px]">레벨</span>
-                        <span className="text-[18px] font-extrabold leading-none">{currentLevel}</span>
+                <div className="flex items-center gap-4 mb-[15px] mt-[5px]">
+                    {/* Living Gauge Circle */}
+                    <div
+                        className="w-[54px] h-[54px] rounded-full flex flex-col justify-center items-center border-2 shrink-0 relative shadow-lg transition-colors duration-500"
+                        style={{ borderColor: badgeInfo.color, boxShadow: `0 0 15px ${badgeInfo.glow}` }}
+                    >
+                        <span className="text-[9px] opacity-70 mb-[1px] text-white/80">LEVEL</span>
+                        <span className="text-[20px] font-black leading-none text-white tracking-tight" style={{ textShadow: `0 0 10px ${badgeInfo.glow}` }}>
+                            {displayLevel}
+                        </span>
+                        {/* Dynamic Ring */}
+                        <svg className="absolute w-full h-full -rotate-90 pointer-events-none">
+                            <circle cx="50%" cy="50%" r="24" fill="none" stroke="white" strokeOpacity="0.1" strokeWidth="2" />
+                            <motion.circle
+                                cx="50%" cy="50%" r="24" fill="none" stroke={badgeInfo.color} strokeWidth="2"
+                                strokeDasharray="150"
+                                strokeDashoffset={150 - (currentPercent / 100) * 150}
+                                strokeLinecap="round"
+                                initial={{ strokeDashoffset: 150 }}
+                                animate={{ strokeDashoffset: 150 - (currentPercent / 100) * 150 }}
+                                transition={{ duration: 1.5, type: "spring", bounce: 0.2 }}
+                            />
+                        </svg>
                     </div>
+
                     <div className="flex flex-col flex-1">
-                        <div className="text-[16px] font-bold text-white mb-[3px] flex items-center">
-                            {growth > 0 ? "상승 🚀" : growth < 0 ? "휴식 💤" : "유지 😐"}
+                        <div className="text-[15px] font-bold text-white mb-[4px] flex items-center gap-2">
+                            {growth > 0 ? (
+                                <span className="text-green-400 flex items-center gap-1 animate-pulse">
+                                    상승중 <span className="text-xs">▲ {growth}</span>
+                                </span>
+                            ) : growth < 0 ? (
+                                <span className="text-orange-400 flex items-center gap-1">
+                                    에너지 감소 <span className="text-xs">▼ {Math.abs(growth)}</span>
+                                </span>
+                            ) : (
+                                <span className="text-gray-400">상태 유지 😐</span>
+                            )}
                         </div>
-                        <div className="text-[11px] text-[#6c757d] leading-[1.35] tracking-[0.3px]">
-                            <span className="text-[#8b95a1] font-bold">NC-06</span><br />
-                            기회 (OPPORTUNITY)
+                        <div className="text-[10px] text-gray-400 leading-[1.3] tracking-[0.2px] border-l-2 border-white/10 pl-2">
+                            현재 의식 상태가 <br />
+                            <span className="text-white font-bold">{badgeInfo.label} 단계</span>에 있습니다.
                         </div>
                     </div>
                 </div>
 
-                {/* Gap Visualizer */}
-                <div className="flex items-center justify-between mb-[6px] pr-[2px] relative h-[12px]">
-                    <div className="flex items-center gap-1 z-[1] bg-[#151922] px-[4px]">
-                        <span className="w-[6px] h-[6px] rounded-full bg-[#00d2ff] shadow-[0_0_5px_rgba(0,210,255,0.4)]"></span>
-                        <span className="text-[8px] text-[#666] font-semibold uppercase">선천적</span>
+                {/* Gap Visualizer (Dynamic Bar) */}
+                <div className="flex items-center justify-between mb-[6px] relative h-[14px] mt-1 select-none">
+                    {/* Labels */}
+                    <div className="absolute -top-4 w-full flex justify-between px-1">
+                        <span className="text-[8px] text-cyan-400/70 font-bold uppercase tracking-wider">Innate (선천)</span>
+                        <span className="text-[8px] text-green-400/70 font-bold uppercase tracking-wider">Acquired (후천)</span>
                     </div>
-                    {/* Line */}
-                    <div className="absolute top-1/2 left-[20px] right-[20px] h-[1px] bg-gradient-to-r from-[#00d2ff] to-[#00ff88] opacity-30 z-0"></div>
-                    <div className="flex items-center gap-1 z-[1] bg-[#151922] px-[4px]">
-                        <span className="text-[8px] text-[#666] font-semibold uppercase">후천적</span>
-                        {/* [Fix] Use Framer Motion for animation instead of custom CSS to avoid styled-jsx issues */}
-                        <motion.span
-                            animate={{
-                                scale: [1, 1.2, 1],
-                                boxShadow: [
-                                    "0 0 0 0 rgba(0, 255, 136, 0.4)",
-                                    "0 0 0 3px rgba(0, 255, 136, 0)",
-                                    "0 0 0 0 rgba(0, 255, 136, 0)"
-                                ]
+
+                    {/* Track */}
+                    <div className="w-full h-[6px] bg-[#1e232f] rounded-full overflow-hidden relative shadow-inner">
+                        {/* Fill Animation */}
+                        <motion.div
+                            className="h-full rounded-full relative"
+                            style={{
+                                background: `linear-gradient(90deg, #3b82f6 0%, ${badgeInfo.color} 100%)`
                             }}
-                            transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                            }}
-                            className="w-[6px] h-[6px] rounded-full bg-[#00ff88]"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${currentPercent}%` }}
+                            transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+                        >
+                            {/* Shimmer Effect */}
+                            <motion.div
+                                className="absolute inset-0 bg-white/20 skew-x-[-20deg]"
+                                initial={{ x: '-100%' }}
+                                animate={{ x: '200%' }}
+                                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                            />
+                        </motion.div>
+
+                        {/* Innate Marker (Fixed on Bar) */}
+                        <motion.div
+                            className="absolute top-0 bottom-0 w-[2px] bg-cyan-400 z-10 shadow-[0_0_8px_rgba(34,211,238,0.8)]"
+                            style={{ left: `${innatePercent}%` }}
+                            initial={{ opacity: 0, scaleY: 0 }}
+                            animate={{ opacity: 1, scaleY: 1 }}
+                            transition={{ delay: 1 }}
                         />
                     </div>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="flex gap-[3px] h-[6px] mb-[12px] relative">
-                    <div className="flex-[1.2] bg-[#ff6b00] rounded-[3px] shadow-[0_0_8px_rgba(255,107,0,0.4)]"></div>
-                    <div className="flex-1 bg-[#333a45] rounded-[3px]"></div>
-                    <div className="flex-1 bg-[#333a45] rounded-[3px]"></div>
-                </div>
-
-                {/* Description */}
-                <div className="text-[11px] text-[#a0a0a0] leading-[1.5] tracking-[-0.3px] italic">
-                    <span className="not-italic mr-1">💡</span>
-                    {tip || "재물 기회 탐색에 대한 구체적인 행동 제안. 의식 레벨은 기회 탐색에 대한 적극성 증가."}
-                </div>
+                {/* Description Box */}
+                <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="mt-2 text-[11px] bg-white/5 rounded-lg p-3 border border-white/5 text-gray-300 leading-relaxed font-light"
+                >
+                    <span className="mr-2 text-base align-middle">💡</span>
+                    <span className="align-middle">
+                        {tip || "현재 에너지 흐름이 매우 역동적입니다. 작은 변화가 큰 성장을 이끌어낼 수 있는 타이밍입니다."}
+                    </span>
+                </motion.div>
 
             </div>
-        </div>
+        </motion.div>
     );
 }

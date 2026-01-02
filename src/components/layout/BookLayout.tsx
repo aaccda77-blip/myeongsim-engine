@@ -10,8 +10,6 @@ import ChatInterface from '../chat/ChatInterface';
 
 // [New Imports]
 import { supabase } from '@/lib/supabaseClient';
-import LoginModal from '../auth/LoginModal';
-import ChargeModal from '../payment/ChargeModal';
 
 export default function BookLayout({ children }: { children: React.ReactNode }) {
     const { currentStep, totalSteps, nextStep, prevStep } = useReportStore();
@@ -20,9 +18,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isMapOpen, setIsMapOpen] = useState(false);
 
-    // Auth & Payment State
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
-    const [isChargeOpen, setIsChargeOpen] = useState(false);
+    // [Removed] Legacy Auth & Payment State - Replaced by Premium System
     const [user, setUser] = useState<any>(null);
     const [points, setPoints] = useState(0);
 
@@ -32,42 +28,8 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
     const progressPercentage = (currentStep / totalSteps) * 100;
 
-    // Check Access Key & Expiry
-    useEffect(() => {
-        const checkAccess = async () => {
-            const key = localStorage.getItem('access_key');
-            if (!key) {
-                setIsLoginOpen(true);
-                return;
-            }
+    // [Removed] Legacy Access Key System - Replaced by Premium Membership
 
-            // Verify with API (Security Check)
-            try {
-                const res = await fetch('/api/auth/verify-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ accessKey: key })
-                });
-                const data = await res.json();
-
-                if (!data.valid) {
-                    // Start fresh if invalid/expired
-                    localStorage.removeItem('access_key');
-                    localStorage.removeItem('session_expires_at');
-                    setIsLoginOpen(true);
-                } else {
-                    // Valid - close modal just in case
-                    setIsLoginOpen(false);
-                }
-            } catch (e) {
-                console.error("Auth Check Error", e);
-                // On network error, maybe let them stay or block? 
-                // For MVP, block if hesitant.
-            }
-        };
-
-        checkAccess();
-    }, []);
 
     // Existing User Check (Supabase) - Keep as secondary
     useEffect(() => {
@@ -80,7 +42,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
             }
         };
         checkUser();
-    }, [isLoginOpen, isChargeOpen]);
+    }, []);
 
     return (
         // [Fix 1] PC 배경과 앱 컨테이너 분리
@@ -112,7 +74,15 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
                         <button
                             className="p-2 hover:bg-white/5 rounded-full relative transition-colors"
-                            onClick={() => setIsChatOpen(!isChatOpen)}
+                            onClick={() => {
+                                // Check if birthDate exists in reportData
+                                const reportData = useReportStore.getState().reportData;
+                                if (!reportData?.birthDate) {
+                                    alert('먼저 생년월일을 입력하고 "만세력 분석하기"를 눌러주세요!');
+                                    return;
+                                }
+                                setIsChatOpen(!isChatOpen);
+                            }}
                         >
                             <MessageCircle className={`w-5 h-5 ${isChatOpen ? 'text-primary-olive' : 'text-gray-400'}`} />
                             {/* 알림 도트 (나중에 실제 알림 상태와 연동 필요) */}
@@ -130,18 +100,16 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                     )}
                     {isChatOpen && (
                         <div className="absolute inset-0 z-[55] pt-14 pb-16 bg-deep-slate/95 backdrop-blur-sm">
-                            <ChatInterface key={demoStage} onClose={() => setIsChatOpen(false)} currentStage={demoStage} />
+                            <ChatInterface
+                                key={demoStage}
+                                onClose={() => {
+                                    setIsChatOpen(false);
+                                    useReportStore.getState().setStep(1); // Return to CoverView
+                                }}
+                                currentStage={demoStage}
+                            />
                         </div>
                     )}
-                    {/* [Removed] LoginModal & ChargeModal hidden by user request */}
-                    {/* 
-                    {isLoginOpen && (
-                        <LoginModal onClose={() => setIsLoginOpen(false)} />
-                    )}
-                    {isChargeOpen && user && (
-                        <ChargeModal onClose={() => setIsChargeOpen(false)} userId={user.id} />
-                    )}
-                    */}
                 </AnimatePresence>
 
                 {/* 2. Main Content */}
@@ -163,8 +131,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                     </AnimatePresence>
                 </main>
 
-                {/* 3. Footer Navigation */}
-                {/* [Fix 3] pb-safe 대신 표준 CSS 변수 사용 (아이폰 홈바 대응) */}
+                {/* 3. Footer - Progress Bar Only */}
                 <footer className="absolute bottom-0 left-0 right-0 bg-deep-slate/90 backdrop-blur-lg border-t border-white/5 z-50 pb-[env(safe-area-inset-bottom)]">
                     {/* Progress Bar */}
                     <div className="w-full h-1 bg-gray-800">
@@ -174,30 +141,6 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                             animate={{ width: `${progressPercentage}%` }}
                             transition={{ duration: 0.5 }}
                         />
-                    </div>
-
-                    <div className="flex items-center justify-between px-6 py-3">
-                        <button
-                            onClick={prevStep}
-                            disabled={currentStep === 1}
-                            className="flex items-center gap-2 px-2 py-1 rounded-md text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 transition-all active:scale-95"
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                            <span className="text-[10px] font-bold tracking-widest uppercase">Prev</span>
-                        </button>
-
-                        <span className="text-xs font-mono text-gray-500 select-none">
-                            {currentStep} / {totalSteps}
-                        </span>
-
-                        <button
-                            onClick={nextStep}
-                            disabled={currentStep === totalSteps}
-                            className="flex items-center gap-2 px-2 py-1 rounded-md text-primary-olive hover:text-green-400 disabled:opacity-30 transition-all active:scale-95"
-                        >
-                            <span className="text-[10px] font-bold tracking-widest uppercase">Next</span>
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
                     </div>
                 </footer>
             </div>

@@ -1,7 +1,5 @@
-// @ts-ignore
-import Iztro from 'iztro';
-// @ts-ignore
-import Calendar from 'korean-lunar-calendar';
+import { Solar } from 'lunar-javascript';
+import 'server-only';
 
 export interface SajuResult {
     year: string;
@@ -10,49 +8,60 @@ export interface SajuResult {
     hour: string;
 }
 
+// Map Chinese characters to Korean
+const GAN_KR: Record<string, string> = {
+    '甲': '갑', '乙': '을', '丙': '병', '丁': '정', '戊': '무',
+    '己': '기', '庚': '경', '辛': '신', '壬': '임', '癸': '계'
+};
+
+const ZHI_KR: Record<string, string> = {
+    '子': '자', '丑': '축', '寅': '인', '卯': '묘', '辰': '진', '巳': '사',
+    '午': '오', '未': '미', '申': '신', '酉': '유', '戌': '술', '亥': '해'
+};
+
+/**
+ * Calculate Four Pillars (사주팔자) using lunar-javascript library
+ * This is the accurate server-side calculation
+ */
 export function getSajuCharacters(
     dateStr: string,
     timeStr: string,
     isLunar: boolean = false,
     gender: 'male' | 'female' = 'male'
 ): SajuResult {
-    // Default to solar Date
-    let targetDate = new Date(`${dateStr}T${timeStr}:00`);
-
-    // 1. Lunar -> Solar Conversion
-    if (isLunar) {
-        try {
-            const cal: any = new Calendar(); // Forced any cast
-            const [year, month, day] = dateStr.split('-').map(Number);
-
-            // setLunarDate(year, month, day, isLeapMonth)
-            cal.setLunarDate(year, month, day, false);
-
-            const solar = cal.getSolarDate(); // { year, month, day }
-            targetDate = new Date(`${solar.year}-${solar.month}-${solar.day}T${timeStr}:00`);
-        } catch (e) {
-            console.error("Lunar conversion failed, using solar date", e);
-        }
-    }
-
-    // 2. Calculate Saju using Iztro (High Precision)
-    let saju: any;
     try {
-        // Try constructor with any cast to avoid namespace issues
-        const IztroClass: any = Iztro;
-        saju = new IztroClass({
-            birthDate: targetDate,
-            gender: gender === 'male' ? '男' : '女',
-        });
+        // 1. Parse date and time
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const [hour, minute] = timeStr ? timeStr.split(':').map(Number) : [12, 0];
+
+        // 2. Create Solar object (lunar-javascript handles lunar conversion internally)
+        const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
+        const lunar = solar.getLunar();
+        const bazi = lunar.getEightChar();
+
+        // 3. Get pillars in Chinese characters
+        const yearGan = bazi.getYearGan();
+        const yearZhi = bazi.getYearZhi();
+        const monthGan = bazi.getMonthGan();
+        const monthZhi = bazi.getMonthZhi();
+        const dayGan = bazi.getDayGan();
+        const dayZhi = bazi.getDayZhi();
+        const timeGan = bazi.getTimeGan();
+        const timeZhi = bazi.getTimeZhi();
+
+        // 4. Convert to Korean
+        const toKorean = (gan: string, zhi: string) => {
+            return `${GAN_KR[gan] || gan}${ZHI_KR[zhi] || zhi}`;
+        };
+
+        return {
+            year: toKorean(yearGan, yearZhi),   // 년주
+            month: toKorean(monthGan, monthZhi), // 월주
+            day: toKorean(dayGan, dayZhi),       // 일주
+            hour: toKorean(timeGan, timeZhi),    // 시주
+        };
     } catch (e) {
-        console.error("Iztro init failed", e);
+        console.error("Saju calculation failed:", e);
         return { year: 'Error', month: 'Error', day: 'Error', hour: 'Error' };
     }
-
-    return {
-        year: saju?.yearPillar?.ganji || '?',  // 년주
-        month: saju?.monthPillar?.ganji || '?', // 월주
-        day: saju?.dayPillar?.ganji || '?',    // 일주
-        hour: saju?.hourPillar?.ganji || '?',   // 시주
-    };
 }

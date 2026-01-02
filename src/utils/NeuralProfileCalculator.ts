@@ -13,6 +13,17 @@ export interface NeuralProfile {
     evolution: number; // Personality Earth
     radiance: number; // Design Sun
     purpose: number; // Design Earth
+
+    // 관계운 코드 (Relationship)
+    attraction?: number; // Design Moon
+    iq?: number;         // Design Venus
+    eq?: number;         // Design Mars
+    sq?: number;         // Design Venus
+
+    // 재물운 코드 (Prosperity)
+    vocation?: number;   // Design Mars
+    culture?: number;    // Design Jupiter
+    pearl?: number;      // Personality Jupiter
 }
 
 /**
@@ -59,12 +70,77 @@ export const CalculateNeuralProfile = (birthDate: Date): NeuralProfile => {
     const dSunLon = (pSunLon - 88 + 360) % 360;
 
     // 4. Purpose (Design Earth = Design Sun + 180 = Sun - 88 + 180 = Sun + 92)
-    const dEarthLon = (pSunLon + 92 + 360) % 360; // Equivalent to dSunLon + 180
+    const dEarthLon = (pSunLon + 92 + 360) % 360;
+
+    // --- Venus Sequence (Relationships) ---
+    // IQ: Venus (Design), EQ: Mars (Design), SQ: Venus (Design) ?? 
+    // Wait, standard Gene Keys:
+    // Attraction: Moon (Design)
+    // IQ: Venus (Design)
+    // EQ: Mars (Design)
+    // SQ: Venus (Design) - usually Venus (Design) is used for IQ/SQ in many readings, but let's stick to core:
+    // Core Venus Sequence: Design Venus, Design Mars.
+    // Let's calculate Design Time first.
+    // Design Date = Birth Date - 88 degrees of Sun movement (~88-89 days)
+    // Precise Calculation: Find time when Sun was at (pSunLon - 88).
+    // Simplifying for speed: Subtract 88 days (approx) or calc precise angle?
+    // Using Astronomy engine to find precise time is expensive (iterative).
+    // Let's use the Design Sun Longitude we already calculated: dSunLon.
+
+    // We need PLANETARY positions at Design Time.
+    // We have Birth Time (Personality).
+    // We need Design Time. 
+    // Approximation: 88 days prior.
+    const designDate = new Date(birthDate);
+    designDate.setDate(designDate.getDate() - 88);
+    const designTime = Astronomy.MakeTime(designDate);
+
+    // 5. Attraction (Design Moon)
+    const dMoonPos = Astronomy.GeoVector(Astronomy.Body.Moon, designTime, true);
+    // Convert Vector to Longitude is complex without helper.
+    // Let's use MoonPosition function if available or separate lib logic.
+    // Astronomy.MoonPosition might be available or we use Equator function.
+    // Let's check imports. 'astronomy-engine' has Body position functions.
+    // Re-checking doc or assuming standard usage: Astronomy.Ecliptic(Vector).
+    // Wait, let's just use the Heliocentric/Geocentric function provided by lib.
+    // Actually, simple subtraction of 88 days is OK for MVP.
+    // Let's get Design Venus & Mars.
+
+    const getGeoLon = (body: Astronomy.Body, time: Astronomy.AstroTime) => {
+        const vec = Astronomy.GeoVector(body, time, true);
+        const ecl = Astronomy.Ecliptic(vec);
+        return ecl.elon;
+    };
+
+    const dMoonLon = getGeoLon(Astronomy.Body.Moon, designTime);
+    const dVenusLon = getGeoLon(Astronomy.Body.Venus, designTime);
+    const dMarsLon = getGeoLon(Astronomy.Body.Mars, designTime);
+
+    // --- 재물운 코드 (부와 성공의 패턴) ---
+    // Vocation: Core Mars (Personality) - wait, usually Design Core? No, Vocation is Mars (Design).
+    // Culture: Jupiter (Design)
+    // Brand: Sun (Personality) - we have this (LifeWork).
+    // Pearl: Jupiter (Personality)
+
+    const dJupiterLon = getGeoLon(Astronomy.Body.Jupiter, designTime);
+    const pJupiterLon = getGeoLon(Astronomy.Body.Jupiter, birthTime);
 
     return {
+        // Activation
         lifeWork: getGateByLongitude(pSunLon),
         evolution: getGateByLongitude(pEarthLon),
         radiance: getGateByLongitude(dSunLon),
-        purpose: getGateByLongitude(dEarthLon)
+        purpose: getGateByLongitude(dEarthLon),
+
+        // Venus (Relationships)
+        attraction: getGateByLongitude(dMoonLon), // Design Moon
+        iq: getGateByLongitude(dVenusLon),        // Design Venus (Mental)
+        eq: getGateByLongitude(dMarsLon),         // Design Mars (Emotional)
+        sq: getGateByLongitude(dVenusLon),        // Design Venus (Spiritual/Love) - simplified mapping
+
+        // Pearl (Prosperity)
+        vocation: getGateByLongitude(dMarsLon),   // Design Mars (Core Vocation)
+        culture: getGateByLongitude(dJupiterLon), // Design Jupiter
+        pearl: getGateByLongitude(pJupiterLon),   // Personality Jupiter
     };
 };

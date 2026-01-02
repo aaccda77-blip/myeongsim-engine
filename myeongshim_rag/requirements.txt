@@ -9,3 +9,4 @@ chromadb
 pypdf
 supabase
 google-generativeai
+docx2txt

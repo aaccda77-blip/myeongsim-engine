@@ -89,7 +89,7 @@ export default function FlipCardView() {
                             <div className="w-16 h-16 rounded-full bg-primary-olive/10 flex items-center justify-center mb-4">
                                 <Fingerprint className="w-8 h-8 text-primary-olive group-hover:scale-110 transition-transform duration-500" />
                             </div>
-                            <h3 className="text-xl font-serif text-white mb-2">Shadow Self</h3>
+                            <h3 className="text-xl font-serif text-white mb-2">Dark Code (다크 코드)</h3>
                             <p className="text-xs text-gray-400 mb-4 text-center">나도 모르는 나의 이면</p>
 
                             <div className="flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest mt-auto">

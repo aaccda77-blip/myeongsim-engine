@@ -326,7 +326,7 @@ export const NEURAL_KEYS: Record<number, NeuralKeyData> = {
         name: "The Will",
         dark_code: "에너지 고갈 (Exhaustion)",
         neural_code: "단호한 결단 (Resolve)",
-        meta_code: "신의 의지 (Divine Will)",
+        meta_code: "궁극의 의지력",
         description: "거절할 줄 알아야 돈이 벌립니다. 에너지를 낭비하여 고갈되지 말고(Dark), 진짜 귀한 곳에만 쓰겠다는 결단(Neural)이 필요합니다."
     },
     41: {
