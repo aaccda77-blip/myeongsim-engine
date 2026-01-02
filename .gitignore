@@ -42,3 +42,19 @@ next-env.d.ts
 # backups & large files
 *.zip
 *.tar.gz
+
+# ==========================================
+# 🔒 SECURITY - 민감 파일 절대 커밋 금지
+# ==========================================
+*_key*
+*_secret*
+*.key
+*password*
+*credential*
+*token*.txt
+*_dump*
+deploy_*.ps1
+gabia_*.txt
+*private*
+*.sqlite
+*.db
