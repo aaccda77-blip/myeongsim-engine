@@ -6,11 +6,13 @@
  * - 터치 시 서브메뉴 Bottom Sheet 펼침
  * - 사용자 맞춤 추천 배지
  * - 고급스러운 UI/UX
+ * - 성격분석 메뉴에 레이더 차트 통합
  */
 
 'use client';
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 import {
     ICON_DRILL_DOWN_MAP,
     getMainIconsWithRecommendations,
@@ -18,6 +20,9 @@ import {
     MainIcon,
     SubMenuItem
 } from '@/modules/DrillDownProtocol';
+
+// 차트 컴포넌트 동적 임포트 (SSR 방지)
+const GeniusRadarChart = dynamic(() => import('@/components/charts/GeniusRadarChart'), { ssr: false });
 
 // ============== 스타일 ==============
 const styles = {
@@ -411,6 +416,27 @@ export default function DrillDownIconMenu({
                                 </div>
                             </div>
                         </div>
+
+                        {/* 🎯 성격분석 메뉴: 레이더 차트 (Golden Zone) */}
+                        {selectedIcon.id === 'GENE_KEYS' && (
+                            <div style={{
+                                marginBottom: '20px',
+                                padding: '16px',
+                                background: 'rgba(16, 185, 129, 0.05)',
+                                borderRadius: '16px',
+                                border: '1px solid rgba(16, 185, 129, 0.1)'
+                            }}>
+                                <GeniusRadarChart compact={true} />
+                                <p style={{
+                                    textAlign: 'center',
+                                    color: 'rgba(255,255,255,0.6)',
+                                    fontSize: '11px',
+                                    marginTop: '8px'
+                                }}>
+                                    ✨ 당신만의 천재성 프로파일
+                                </p>
+                            </div>
+                        )}
 
                         {/* 서브메뉴 목록 */}
                         {selectedIcon.sub_menus.map((subItem) => {
