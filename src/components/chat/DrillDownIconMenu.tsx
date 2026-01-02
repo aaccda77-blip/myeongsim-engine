@@ -290,7 +290,7 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
     WEALTH: { main: '재물운', sub: '왜 벌어도 안 모일까?' },
     RELATIONSHIP: { main: '연애운', sub: '반복되는 상처 끊기' },
     CAREER: { main: '직업운', sub: '나는 이 일 하러 태어났다' },
-    GENE_KEYS: { main: '성격분석', sub: '숨겨진 천재성 발견' },
+    PERSONALITY_ANALYSIS: { main: '성격분석', sub: '숨겨진 천재성 발견' },
     DAILY_MISSION: { main: '오늘운세', sub: '지금 뭘 해야 운이 트일까?' },
     SAJU_ANALYSIS: { main: '사주분석', sub: '운명의 설계도 확인' },
 };
@@ -418,7 +418,7 @@ export default function DrillDownIconMenu({
                         </div>
 
                         {/* 🎯 성격분석 메뉴: 레이더 차트 (Golden Zone) */}
-                        {selectedIcon.id === 'GENE_KEYS' && (
+                        {selectedIcon.id === 'PERSONALITY_ANALYSIS' && (
                             <div style={{
                                 marginBottom: '20px',
                                 padding: '16px',
