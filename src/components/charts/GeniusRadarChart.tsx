@@ -3,39 +3,43 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+    SajuMatrix,
+    ScoreCalculator,
+    generateDefaultScores,
+    convertOhaengToRadar,
+    OhaengScores
+} from '@/utils/ScoreCalculator';
 
 /**
  * GeniusRadarChart - 8축 천재성 레이더 차트
  * 
  * 용도: 성격분석 메뉴 상단에 배치하여 사용자의 고유 에너지 프로파일을 시각화
  * 디자인: 다크 배경 + 네온 그린/골드 라인 (사이버펑크 스타일)
+ * 데이터: ScoreCalculator를 통해 사주/진키 데이터를 점수로 변환
  */
 
 interface GeniusRadarProps {
+    /** 직접 점수 입력 (우선순위 1) */
     scores?: {
-        creativity?: number;     // 창의성
-        logic?: number;          // 논리력
-        empathy?: number;        // 공감력
-        leadership?: number;     // 리더십
-        resilience?: number;     // 회복력
-        intuition?: number;      // 직관력
-        communication?: number;  // 소통력
-        execution?: number;      // 실행력
+        creativity?: number;
+        logic?: number;
+        empathy?: number;
+        leadership?: number;
+        resilience?: number;
+        intuition?: number;
+        communication?: number;
+        execution?: number;
     };
+    /** 사주 매트릭스 입력 (우선순위 2) - ScoreCalculator로 변환 */
+    sajuMatrix?: SajuMatrix;
+    /** 진키 코드 목록 */
+    myCodes?: number[];
+    /** 오행 점수만 입력 (우선순위 3) */
+    ohaeng?: OhaengScores;
+    /** 컴팩트 모드 */
     compact?: boolean;
 }
-
-// 기본값 (데이터 없을 때 사용)
-const DEFAULT_SCORES = {
-    creativity: 75,
-    logic: 65,
-    empathy: 80,
-    leadership: 70,
-    resilience: 85,
-    intuition: 90,
-    communication: 60,
-    execution: 72,
-};
 
 // 커스텀 툴팁
 const CustomTooltip = ({ active, payload }: any) => {
@@ -54,18 +58,75 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-export default function GeniusRadarChart({ scores = DEFAULT_SCORES, compact = false }: GeniusRadarProps) {
+export default function GeniusRadarChart({
+    scores,
+    sajuMatrix,
+    myCodes = [],
+    ohaeng,
+    compact = false
+}: GeniusRadarProps) {
+    // 점수 계산 (우선순위: scores > sajuMatrix > ohaeng > default)
+    const computedScores = useMemo(() => {
+        // 1. 직접 입력된 점수가 있으면 사용
+        if (scores && Object.keys(scores).length > 0) {
+            return {
+                creativity: scores.creativity || 70,
+                logic: scores.logic || 65,
+                empathy: scores.empathy || 75,
+                leadership: scores.leadership || 70,
+                resilience: scores.resilience || 80,
+                intuition: scores.intuition || 85,
+                communication: scores.communication || 60,
+                execution: scores.execution || 72,
+            };
+        }
+
+        // 2. 사주 매트릭스가 있으면 ScoreCalculator 사용
+        if (sajuMatrix) {
+            const calculator = new ScoreCalculator(sajuMatrix, myCodes);
+            return calculator.toChartFormat();
+        }
+
+        // 3. 오행 점수만 있으면 변환
+        if (ohaeng) {
+            const radarScores = convertOhaengToRadar(ohaeng);
+            return {
+                creativity: radarScores.expression,
+                logic: radarScores.mental,
+                empathy: radarScores.feeling,
+                leadership: radarScores.drive,
+                resilience: radarScores.stability,
+                intuition: radarScores.intuition,
+                communication: radarScores.expression,
+                execution: radarScores.activity,
+            };
+        }
+
+        // 4. 기본값 (데모용)
+        const defaultScores = generateDefaultScores();
+        return {
+            creativity: defaultScores.expression,
+            logic: defaultScores.mental,
+            empathy: defaultScores.feeling,
+            leadership: defaultScores.drive,
+            resilience: defaultScores.stability,
+            intuition: defaultScores.intuition,
+            communication: defaultScores.expression,
+            execution: defaultScores.activity,
+        };
+    }, [scores, sajuMatrix, myCodes, ohaeng]);
+
     // 차트 데이터 변환
     const chartData = useMemo(() => [
-        { subject: '창의성', A: scores.creativity || 0, fullMark: 100 },
-        { subject: '논리력', A: scores.logic || 0, fullMark: 100 },
-        { subject: '공감력', A: scores.empathy || 0, fullMark: 100 },
-        { subject: '리더십', A: scores.leadership || 0, fullMark: 100 },
-        { subject: '회복력', A: scores.resilience || 0, fullMark: 100 },
-        { subject: '직관력', A: scores.intuition || 0, fullMark: 100 },
-        { subject: '소통력', A: scores.communication || 0, fullMark: 100 },
-        { subject: '실행력', A: scores.execution || 0, fullMark: 100 },
-    ], [scores]);
+        { subject: '창의성', A: computedScores.creativity, fullMark: 100 },
+        { subject: '논리력', A: computedScores.logic, fullMark: 100 },
+        { subject: '공감력', A: computedScores.empathy, fullMark: 100 },
+        { subject: '리더십', A: computedScores.leadership, fullMark: 100 },
+        { subject: '회복력', A: computedScores.resilience, fullMark: 100 },
+        { subject: '직관력', A: computedScores.intuition, fullMark: 100 },
+        { subject: '소통력', A: computedScores.communication, fullMark: 100 },
+        { subject: '실행력', A: computedScores.execution, fullMark: 100 },
+    ], [computedScores]);
 
     const height = compact ? 200 : 280;
 
