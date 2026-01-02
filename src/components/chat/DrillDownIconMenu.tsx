@@ -447,7 +447,7 @@ export default function DrillDownIconMenu({
                                     gap: '6px'
                                 }}>
                                     <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>
-                                        📡 Bio-Sync Engine:
+                                        📡 웨어러블 심박 연동:
                                     </span>
                                     <span style={{
                                         fontSize: '10px',
@@ -458,7 +458,7 @@ export default function DrillDownIconMenu({
                                         borderRadius: '4px',
                                         animation: 'pulse 2s infinite'
                                     }}>
-                                        Link Ready (v2.0)
+                                        연결 대기 중 (v2.0)
                                     </span>
                                 </div>
                             </div>
