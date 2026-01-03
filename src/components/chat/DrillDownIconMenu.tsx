@@ -372,6 +372,9 @@ export default function DrillDownIconMenu({
 
     // [Security] 서버에서 특성 설명 가져오기
     const handleTraitClick = async (trait: string, score: number) => {
+        // [Neuroscientist] Physical Reward (Haptic)
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
+
         setSelectedTrait(trait);
         setIsLoadingTrait(true);
         setTraitDescription(null);
@@ -391,6 +394,7 @@ export default function DrillDownIconMenu({
 
     // 아이콘 클릭 핸들러
     const handleIconClick = (icon: MainIcon) => {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         setSelectedIcon(icon);
     };
 
