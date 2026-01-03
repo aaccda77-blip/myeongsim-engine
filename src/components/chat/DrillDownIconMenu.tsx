@@ -21,11 +21,13 @@ import {
     MainIcon,
     SubMenuItem
 } from '@/modules/DrillDownProtocol';
+import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget';
 // [Security] ScoreCalculator와 StaticTextDB는 더 이상 클라이언트에서 import하지 않음
 // 대신 /api/secure/* API를 통해 서버에서 데이터를 가져옴
 
 // 차트 컴포넌트 동적 임포트 (SSR 방지)
 const GeniusRadarChart = dynamic(() => import('@/components/charts/GeniusRadarChart'), { ssr: false });
+const VisualSajuDashboard = dynamic(() => import('@/components/visual/VisualSajuDashboard'), { ssr: false });
 
 // ============== 스타일 ==============
 const styles = {
@@ -312,6 +314,10 @@ export default function DrillDownIconMenu({
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [selectedIcon, setSelectedIcon] = useState<MainIcon | null>(null);
     const [hoveredSubItem, setHoveredSubItem] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // [Pulse 5] Visual Dashboard State
+    const [showVisualDashboard, setShowVisualDashboard] = useState(false);
 
     // 스타일 주입
     React.useEffect(() => {
@@ -321,7 +327,14 @@ export default function DrillDownIconMenu({
 
     // [New] 차트 인터랙션 상태
     const [selectedTrait, setSelectedTrait] = useState<string | null>(null);
-    const [traitDescription, setTraitDescription] = useState<{ title: string; desc: string; advice: string } | null>(null);
+    const [traitDescription, setTraitDescription] = useState<{
+        title: string;
+        subTitle?: string;
+        desc: string;
+        advice: string;
+        mission?: string;
+        superpower_badge?: string;
+    } | null>(null);
     const [chartScores, setChartScores] = useState<any>(null);
     const [isLoadingTrait, setIsLoadingTrait] = useState(false);
 
@@ -423,8 +436,36 @@ export default function DrillDownIconMenu({
         setSelectedIcon(null);
     };
 
+    // [Pulse 5] Dashboard Chat Intent Handler
+    const handleDashboardChatIntent = (intent: string, prompt: string) => {
+        setShowVisualDashboard(false);
+        onSelectIntent(intent, prompt);
+    };
+
     return (
         <>
+            {/* [Pulse 5] Visual Saju Dashboard Overlay */}
+            {showVisualDashboard && (
+                <VisualSajuDashboard
+                    onClose={() => setShowVisualDashboard(false)}
+                    onChatIntent={handleDashboardChatIntent}
+                />
+            )}
+
+            {/* [Pulse 4] Daily Biorhythm Widget (Home Screen Hero) */}
+            <div className="mb-4">
+                <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-400 text-xs font-bold px-1">TODAY'S ENERGY</span>
+                    <button
+                        onClick={() => setShowVisualDashboard(true)}
+                        className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-1 rounded border border-purple-500/50 flex items-center gap-1"
+                    >
+                        🔮 내 운명 지도 보기
+                    </button>
+                </div>
+                <DailyBiorhythmWidget dayMaster="갑" />
+            </div>
+
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>
                 {icons.map((icon) => {
@@ -525,7 +566,7 @@ export default function DrillDownIconMenu({
                                     fontSize: '11px',
                                     marginTop: '8px'
                                 }}>
-                                    ✨ 당신만의 천재성 프로파일
+                                    ✨ 당신만의 본질 에너지 지도
                                 </p>
 
                                 {/* 심사위원 어필용 기술 연동 상태 표시 */}
@@ -557,107 +598,174 @@ export default function DrillDownIconMenu({
                         )}
 
                         {/* [New] Trait Description Modal (Overlay) */}
+                        {/* [New] Trait Bottom Sheet (Premium UX) */}
                         {selectedTrait && (
-                            <div style={{
-                                position: 'fixed',
-                                top: 0, left: 0, right: 0, bottom: 0,
-                                backgroundColor: 'rgba(0,0,0,0.8)',
-                                backdropFilter: 'blur(5px)',
-                                zIndex: 1000,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                padding: '20px'
-                            }} onClick={() => setSelectedTrait(null)}>
+                            <>
+                                {/* Backdrop */}
                                 <div style={{
-                                    backgroundColor: '#1a1f2e',
-                                    border: '1px solid #10B981',
-                                    borderRadius: '16px',
-                                    padding: '24px',
-                                    maxWidth: '320px',
-                                    boxShadow: '0 0 30px rgba(16, 185, 129, 0.3)',
+                                    position: 'fixed',
+                                    top: 0, left: 0, right: 0, bottom: 0,
+                                    backgroundColor: 'rgba(0,0,0,0.6)',
+                                    backdropFilter: 'blur(3px)',
+                                    zIndex: 999,
                                     animation: 'fadeIn 0.3s ease-out'
-                                }} onClick={(e) => e.stopPropagation()}>
-                                    <h3 style={{
-                                        color: '#10B981',
-                                        fontSize: '18px',
-                                        fontWeight: 'bold',
-                                        marginBottom: '8px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px'
-                                    }}>
-                                        ✨ {isLoadingTrait ? '로딩 중...' : traitDescription?.title || selectedTrait}
-                                    </h3>
-                                    <p style={{ color: '#E5E7EB', fontSize: '14px', lineHeight: '1.6', marginBottom: '16px' }}>
-                                        {isLoadingTrait ? '설명을 불러오는 중입니다...' : traitDescription?.desc || ''}
-                                    </p>
+                                }} onClick={() => setSelectedTrait(null)} />
+
+                                {/* Bottom Sheet */}
+                                <div style={{
+                                    position: 'fixed',
+                                    bottom: 0, left: 0, right: 0,
+                                    backgroundColor: '#11131a', // 더 깊은 색상
+                                    borderTopLeftRadius: '24px',
+                                    borderTopRightRadius: '24px',
+                                    padding: '28px 24px 40px 24px',
+                                    zIndex: 1000,
+                                    borderTop: '1px solid rgba(16, 185, 129, 0.4)',
+                                    boxShadow: '0 -4px 30px rgba(0,0,0,0.6)',
+                                    animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                                    maxHeight: '85vh',
+                                    overflowY: 'auto'
+                                }}>
+                                    {/* Handle Bar */}
                                     <div style={{
-                                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                        borderRadius: '8px',
-                                        padding: '12px',
-                                        borderLeft: '3px solid #10B981'
-                                    }}>
-                                        <p style={{ color: '#10B981', fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
-                                            💡 Advice
-                                        </p>
-                                        <p style={{ color: '#D1D5DB', fontSize: '12px' }}>
-                                            {traitDescription?.advice || ''}
-                                        </p>
-                                    </div>
-                                    <button
-                                        onClick={() => setSelectedTrait(null)}
-                                        style={{
-                                            width: '100%',
-                                            marginTop: '20px',
-                                            padding: '12px',
-                                            backgroundColor: '#10B981',
-                                            color: '#000',
-                                            border: 'none',
-                                            borderRadius: '8px',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        확인
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                                        width: '40px', height: '4px',
+                                        backgroundColor: 'rgba(255,255,255,0.2)',
+                                        borderRadius: '2px',
+                                        margin: '-10px auto 20px auto'
+                                    }} />
 
-                        {/* 서브메뉴 목록 */}
-                        {selectedIcon.sub_menus.map((subItem) => {
-                            const isSubHovered = hoveredSubItem === subItem.id;
-
-                            return (
-                                <div
-                                    key={subItem.id}
-                                    style={{
-                                        ...styles.subMenuItem,
-                                        ...(isSubHovered ? styles.subMenuItemHover : {}),
-                                    }}
-                                    onMouseEnter={() => setHoveredSubItem(subItem.id)}
-                                    onMouseLeave={() => setHoveredSubItem(null)}
-                                    onClick={() => handleSubMenuSelect(subItem)}
-                                >
-                                    <span style={styles.subMenuIcon}>
-                                        {subItem.icon || '▸'}
-                                    </span>
-                                    <div>
-                                        <div style={styles.subMenuLabel}>{subItem.label}</div>
-                                        {subItem.desc && (
-                                            <div style={styles.subMenuDesc}>{subItem.desc}</div>
+                                    {/* Header: Title & Badge */}
+                                    <div className="flex justify-between items-start mb-4">
+                                        <h3 style={{
+                                            color: '#10B981',
+                                            fontSize: '20px',
+                                            fontWeight: '800',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px'
+                                        }}>
+                                            ✨ {isLoadingTrait ? '로딩 중...' : traitDescription?.title || selectedTrait}
+                                        </h3>
+                                        {traitDescription?.superpower_badge && (
+                                            <span style={{
+                                                fontSize: '11px',
+                                                fontWeight: 'bold',
+                                                color: '#FCD34D',
+                                                backgroundColor: 'rgba(252, 211, 77, 0.1)',
+                                                padding: '4px 8px',
+                                                borderRadius: '12px',
+                                                border: '1px solid rgba(252, 211, 77, 0.3)'
+                                            }}>
+                                                {traitDescription.superpower_badge}
+                                            </span>
                                         )}
                                     </div>
-                                    {subItem.isPremium && (
-                                        <span style={styles.premiumBadge}>PREMIUM</span>
+
+                                    {/* SubTitle (Emotive) */}
+                                    {traitDescription?.subTitle && (
+                                        <div style={{
+                                            fontSize: '15px',
+                                            color: '#fff',
+                                            fontWeight: '600',
+                                            marginBottom: '12px'
+                                        }}>
+                                            "{traitDescription.subTitle}"
+                                        </div>
                                     )}
+
+                                    {/* Description (Identity) */}
+                                    <p style={{ color: '#9CA3AF', fontSize: '14px', lineHeight: '1.6', marginBottom: '24px' }}>
+                                        {isLoadingTrait ? '분석 데이터를 해독하고 있습니다...' : traitDescription?.desc || ''}
+                                    </p>
+
+                                    {/* Advice (Psychology) */}
+                                    <div style={{
+                                        backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                                        borderRadius: '12px',
+                                        padding: '16px',
+                                        marginBottom: '16px',
+                                        borderLeft: '3px solid #10B981'
+                                    }}>
+                                        <p style={{ fontSize: '13px', color: '#D1FAE5', fontStyle: 'italic' }}>
+                                            💡 {isLoadingTrait ? '...' : traitDescription?.advice}
+                                        </p>
+                                    </div>
+
+                                    {/* Mission Card (Coaching) */}
+                                    {traitDescription?.mission && (
+                                        <div style={{
+                                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1))',
+                                            borderRadius: '12px',
+                                            padding: '16px',
+                                            marginBottom: '24px',
+                                            border: '1px dashed rgba(59, 130, 246, 0.3)'
+                                        }}>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="text-blue-400 text-xs font-bold uppercase tracking-wider">Today's Mission</span>
+                                            </div>
+                                            <p style={{ fontSize: '14px', color: '#fff', fontWeight: '500' }}>
+                                                ✅ {traitDescription.mission}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Share Button (Marketing) */}
+                                    <button
+                                        className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-sm shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
+                                        onClick={() => {
+                                            if (navigator.share) {
+                                                navigator.share({
+                                                    title: '나의 본질 에너지 지도',
+                                                    text: `[명심코칭] 나의 슈퍼파워는 ${traitDescription?.superpower_badge}입니다!`,
+                                                    url: window.location.href
+                                                });
+                                            } else {
+                                                alert('링크가 복사되었습니다!');
+                                            }
+                                        }}
+                                    >
+                                        <span>🚀 나의 슈퍼파워 공유하기</span>
+                                    </button>
                                 </div>
-                            );
-                        })}
+                            </>
+                        )}
+
+
+                        {/* 서브메뉴 목록 */}
+                        {
+                            selectedIcon.sub_menus.map((subItem) => {
+                                const isSubHovered = hoveredSubItem === subItem.id;
+
+                                return (
+                                    <div
+                                        key={subItem.id}
+                                        style={{
+                                            ...styles.subMenuItem,
+                                            ...(isSubHovered ? styles.subMenuItemHover : {}),
+                                        }}
+                                        onMouseEnter={() => setHoveredSubItem(subItem.id)}
+                                        onMouseLeave={() => setHoveredSubItem(null)}
+                                        onClick={() => handleSubMenuSelect(subItem)}
+                                    >
+                                        <span style={styles.subMenuIcon}>
+                                            {subItem.icon || '▸'}
+                                        </span>
+                                        <div>
+                                            <div style={styles.subMenuLabel}>{subItem.label}</div>
+                                            {subItem.desc && (
+                                                <div style={styles.subMenuDesc}>{subItem.desc}</div>
+                                            )}
+                                        </div>
+                                        {subItem.isPremium && (
+                                            <span style={styles.premiumBadge}>PREMIUM</span>
+                                        )}
+                                    </div>
+                                );
+                            })
+                        }
                     </>
                 )}
-            </div>
+            </div >
         </>
     );
 }

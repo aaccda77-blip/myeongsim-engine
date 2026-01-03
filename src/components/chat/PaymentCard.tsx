@@ -62,7 +62,10 @@ export default function PaymentCard({ onCopy, onDetailedReport }: PaymentCardPro
                     >
                         <div className="flex flex-col">
                             <span className={`text-sm font-bold ${selectedTier === 'TRIAL' ? 'text-indigo-300' : 'text-gray-300'}`}>💎 맛보기 (30분)</span>
-                            <span className="text-gray-500 text-xs line-through">5,000원</span>
+                            <div className="flex items-center gap-1">
+                                <span className="text-gray-400 text-xs line-through">10,000원</span>
+                                <span className="text-red-400 text-xs font-bold">61% OFF</span>
+                            </div>
                         </div>
                         <span className="text-xl font-bold text-white">3,900<span className="text-sm font-normal">원</span></span>
                     </div>
@@ -75,7 +78,10 @@ export default function PaymentCard({ onCopy, onDetailedReport }: PaymentCardPro
                         <div className="absolute top-0 right-0 bg-indigo-500 text-[9px] text-white px-2 py-0.5 rounded-bl-md font-bold">Best</div>
                         <div className="flex flex-col">
                             <span className={`text-sm font-bold ${selectedTier === 'PASS' ? 'text-indigo-200' : 'text-gray-400'}`}>⚡ 데이 패스 (24시간)</span>
-                            <span className="text-indigo-400/50 text-xs line-through">30,000원</span>
+                            <div className="flex items-center gap-1">
+                                <span className="text-indigo-300/60 text-xs line-through">30,000원</span>
+                                <span className="text-red-400 text-xs font-bold">67% OFF</span>
+                            </div>
                         </div>
                         <span className="text-2xl font-bold text-white">9,900<span className="text-sm font-normal">원</span></span>
                     </div>
@@ -87,7 +93,10 @@ export default function PaymentCard({ onCopy, onDetailedReport }: PaymentCardPro
                     >
                         <div className="flex flex-col">
                             <span className={`text-sm font-bold ${selectedTier === 'VIP' ? 'text-primary-gold' : 'text-primary-gold/60'}`}>👑 VIP (7일)</span>
-                            <span className="text-gray-500 text-xs line-through">100,000원</span>
+                            <div className="flex items-center gap-1">
+                                <span className="text-gray-400 text-xs line-through">150,000원</span>
+                                <span className="text-red-400 text-xs font-bold">67% OFF</span>
+                            </div>
                         </div>
                         <span className="text-xl font-bold text-white">49,000<span className="text-sm font-normal">원</span></span>
                     </div>
@@ -154,6 +163,15 @@ export default function PaymentCard({ onCopy, onDetailedReport }: PaymentCardPro
                 >
                     <ExternalLink className="w-4 h-4" />
                     <span>{getPrice()} 입금 및 전화번호 등록</span>
+                </button>
+
+                {/* [Pulse Check] Open Kakao Link for Manual Confirm */}
+                <button
+                    onClick={() => window.open('https://open.kakao.com/o/svmwpk8h', '_blank')}
+                    className="w-full py-3 bg-[#FAE300] hover:bg-[#F9D500] text-black font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors mt-2"
+                >
+                    <span className="text-lg">💬</span>
+                    <span>관리자와 1:1 대화 (입금 확인)</span>
                 </button>
             </div>
         </motion.div>

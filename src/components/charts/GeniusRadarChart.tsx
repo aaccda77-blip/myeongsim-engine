@@ -45,14 +45,14 @@ interface GeniusRadarProps {
 
 // 명심 코칭 용어 매핑 (표시용)
 const MYEONGSIM_LABELS: Record<string, string> = {
-    creativity: "Expression",
-    logic: "Structure",
-    empathy: "Connection",
-    leadership: "Drive",
-    resilience: "Grounding",
-    intuition: "Insight",
-    communication: "Flow",
-    execution: "Action",
+    creativity: "표현",
+    logic: "구조",
+    empathy: "연결",
+    leadership: "추진",
+    resilience: "기반",
+    intuition: "통찰",
+    communication: "소통",
+    execution: "실행",
 };
 
 // 커스텀 툴팁
