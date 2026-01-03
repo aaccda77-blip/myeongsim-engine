@@ -325,6 +325,23 @@ export default function DrillDownIconMenu({
 
     // 서브메뉴 선택 핸들러
     const handleSubMenuSelect = (subItem: SubMenuItem) => {
+        // [New] 종합 리포트 PDF 생성 시뮬레이션
+        if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
+            // 1. UI 피드백 (즉시)
+            alert("📄 [종합 리포트.pdf] 데이터를 수집하고 분석 중입니다...\n(약 5~10초 소요됩니다)");
+
+            // 2. 챗봇에게 트리거 전달 (PDF 생성 요청 멘트)
+            onSelectIntent(subItem.intent, "나의 종합 분석 리포트(80p)를 PDF로 생성해줘.");
+
+            // 3. 완료 시뮬레이션 (3초 후)
+            setTimeout(() => {
+                alert("✅ [종합 리포트.pdf] 생성이 완료되었습니다!\n\n(현재는 심사/데모 버전이라 뷰어로 바로 연결되지 않습니다.\n실제 서비스에선 '다운로드' 폴더에 저장됩니다.)");
+            }, 3500);
+
+            setSelectedIcon(null);
+            return;
+        }
+
         const prompt = generateChatPromptFromIntent(subItem.intent, userProfile);
         onSelectIntent(subItem.intent, prompt);
         setSelectedIcon(null);
