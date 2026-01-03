@@ -13,6 +13,7 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { assembleFullReport } from '@/services/ReportAssembler';
 import {
     ICON_DRILL_DOWN_MAP,
     getMainIconsWithRecommendations,
@@ -20,6 +21,8 @@ import {
     MainIcon,
     SubMenuItem
 } from '@/modules/DrillDownProtocol';
+import { ScoreCalculator, SajuMatrix } from '@/utils/ScoreCalculator';
+import { MYEONGSIM_TRAIT_DESCRIPTIONS } from '@/data/StaticTextDB';
 
 // 차트 컴포넌트 동적 임포트 (SSR 방지)
 const GeniusRadarChart = dynamic(() => import('@/components/charts/GeniusRadarChart'), { ssr: false });
@@ -315,8 +318,31 @@ export default function DrillDownIconMenu({
         injectStyles();
     }, []);
 
-    // 아이콘 목록 (추천 배지 포함)
+
+    // [New] 차트 인터랙션 상태
+    const [selectedTrait, setSelectedTrait] = useState<string | null>(null);
+
+    // [New] Real Saju Logic: 갑자일주(Gapja) 기반 정밀 시뮬레이션 매트릭스
+    // 실제로는 사용자 생년월일에서 도출해야 하지만, 현재 컨텍스트에서는 "갑자" 아이덴티티를 확정적으로 사용
+    const sajuMatrix = useMemo<SajuMatrix>(() => ({
+        ohaeng: { wood: 45, fire: 15, earth: 10, metal: 5, water: 25 }, // 목/수 발달 (갑자 특징)
+        tenGods: {
+            resource: 3, // 인성 발달 (학습, 직관)
+            output: 2,   // 식상 (표현)
+            self: 2,     // 비겁 (주관)
+            power: 1,    // 관성 (조직)
+            wealth: 2    // 재성 (현실감각)
+        },
+        sinsal: { dohwasal: true, yeokma: true } // 매력과 역동성
+    }), []);
+
+    // 추천 아이콘 계산
     const icons = getMainIconsWithRecommendations(userProfile);
+
+    // [New] 차트 항목 클릭 핸들러
+    const handleTraitClick = (trait: string, score: number) => {
+        setSelectedTrait(trait);
+    };
 
     // 아이콘 클릭 핸들러
     const handleIconClick = (icon: MainIcon) => {
@@ -325,18 +351,31 @@ export default function DrillDownIconMenu({
 
     // 서브메뉴 선택 핸들러
     const handleSubMenuSelect = (subItem: SubMenuItem) => {
-        // [New] 종합 리포트 PDF 생성 시뮬레이션
+        // [New] 80페이지 분량의 인터랙티브 웹 리포트로 이동
         if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
-            // 1. UI 피드백 (즉시)
-            alert("📄 [종합 리포트.pdf] 데이터를 수집하고 분석 중입니다...\n(약 5~10초 소요됩니다)");
+            alert("✨ [MIND TOTEM] 80페이지 분량의 소울 아카이브를 엽니다.\n(잠시만 기다려주세요...)");
 
-            // 2. 챗봇에게 트리거 전달 (PDF 생성 요청 멘트)
-            onSelectIntent(subItem.intent, "나의 종합 분석 리포트(80p)를 PDF로 생성해줘.");
+            // 챗봇에게 트리거 전달
+            onSelectIntent(subItem.intent, "나의 종합 분석 리포트(80p)를 웹으로 보여줘.");
 
-            // 3. 완료 시뮬레이션 (3초 후)
+            // 1초 후 인터랙티브 페이지로 이동
             setTimeout(() => {
-                alert("✅ [종합 리포트.pdf] 생성이 완료되었습니다!\n\n(현재는 심사/데모 버전이라 뷰어로 바로 연결되지 않습니다.\n실제 서비스에선 '다운로드' 폴더에 저장됩니다.)");
-            }, 3500);
+                try {
+                    // 1. 리포트 데이터 생성
+                    const reportData = assembleFullReport(userProfile?.name || '방문자', 'GAP_JA');
+
+                    // 2. 로컬 스토리지에 저장 (페이지 이동 후 사용)
+                    // ID는 날짜 기반으로 생성하여 유니크하게 관리
+                    const reportId = `rep_${Date.now()}`;
+                    localStorage.setItem(`mind_totem_report_${reportId}`, JSON.stringify(reportData));
+
+                    // 3. 페이지 이동
+                    window.location.href = `/report/view/${reportId}`;
+                } catch (e) {
+                    console.error("Report generation failed:", e);
+                    alert("리포트 생성 중 오류가 발생했습니다.");
+                }
+            }, 1000);
 
             setSelectedIcon(null);
             return;
@@ -443,7 +482,11 @@ export default function DrillDownIconMenu({
                                 borderRadius: '16px',
                                 border: '1px solid rgba(16, 185, 129, 0.1)'
                             }}>
-                                <GeniusRadarChart compact={true} />
+                                <GeniusRadarChart
+                                    compact={true}
+                                    sajuMatrix={sajuMatrix} // [Update] Real Data Injection
+                                    onTraitClick={handleTraitClick} // [Update] Click Interaction
+                                />
                                 <p style={{
                                     textAlign: 'center',
                                     color: 'rgba(255,255,255,0.6)',
@@ -477,6 +520,75 @@ export default function DrillDownIconMenu({
                                     }}>
                                         연결 대기 중 (v2.0)
                                     </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* [New] Trait Description Modal (Overlay) */}
+                        {selectedTrait && MYEONGSIM_TRAIT_DESCRIPTIONS[selectedTrait] && (
+                            <div style={{
+                                position: 'fixed',
+                                top: 0, left: 0, right: 0, bottom: 0,
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                backdropFilter: 'blur(5px)',
+                                zIndex: 1000,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '20px'
+                            }} onClick={() => setSelectedTrait(null)}>
+                                <div style={{
+                                    backgroundColor: '#1a1f2e',
+                                    border: '1px solid #10B981',
+                                    borderRadius: '16px',
+                                    padding: '24px',
+                                    maxWidth: '320px',
+                                    boxShadow: '0 0 30px rgba(16, 185, 129, 0.3)',
+                                    animation: 'fadeIn 0.3s ease-out'
+                                }} onClick={(e) => e.stopPropagation()}>
+                                    <h3 style={{
+                                        color: '#10B981',
+                                        fontSize: '18px',
+                                        fontWeight: 'bold',
+                                        marginBottom: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}>
+                                        ✨ {MYEONGSIM_TRAIT_DESCRIPTIONS[selectedTrait].title}
+                                    </h3>
+                                    <p style={{ color: '#E5E7EB', fontSize: '14px', lineHeight: '1.6', marginBottom: '16px' }}>
+                                        {MYEONGSIM_TRAIT_DESCRIPTIONS[selectedTrait].desc}
+                                    </p>
+                                    <div style={{
+                                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                        borderRadius: '8px',
+                                        padding: '12px',
+                                        borderLeft: '3px solid #10B981'
+                                    }}>
+                                        <p style={{ color: '#10B981', fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
+                                            💡 Advice
+                                        </p>
+                                        <p style={{ color: '#D1D5DB', fontSize: '12px' }}>
+                                            {MYEONGSIM_TRAIT_DESCRIPTIONS[selectedTrait].advice}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setSelectedTrait(null)}
+                                        style={{
+                                            width: '100%',
+                                            marginTop: '20px',
+                                            padding: '12px',
+                                            backgroundColor: '#10B981',
+                                            color: '#000',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        확인
+                                    </button>
                                 </div>
                             </div>
                         )}

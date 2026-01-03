@@ -39,7 +39,21 @@ interface GeniusRadarProps {
     ohaeng?: OhaengScores;
     /** 컴팩트 모드 */
     compact?: boolean;
+    /** 클릭 이벤트 핸들러 */
+    onTraitClick?: (trait: string, score: number) => void;
 }
+
+// 명심 코칭 용어 매핑 (표시용)
+const MYEONGSIM_LABELS: Record<string, string> = {
+    creativity: "Expression",
+    logic: "Structure",
+    empathy: "Connection",
+    leadership: "Drive",
+    resilience: "Grounding",
+    intuition: "Insight",
+    communication: "Flow",
+    execution: "Action",
+};
 
 // 커스텀 툴팁
 const CustomTooltip = ({ active, payload }: any) => {
@@ -63,7 +77,8 @@ export default function GeniusRadarChart({
     sajuMatrix,
     myCodes = [],
     ohaeng,
-    compact = false
+    compact = false,
+    onTraitClick
 }: GeniusRadarProps) {
     // 점수 계산 (우선순위: scores > sajuMatrix > ohaeng > default)
     const computedScores = useMemo(() => {
@@ -116,16 +131,16 @@ export default function GeniusRadarChart({
         };
     }, [scores, sajuMatrix, myCodes, ohaeng]);
 
-    // 차트 데이터 변환
+    // 차트 데이터 변환 (명심 용어 적용)
     const chartData = useMemo(() => [
-        { subject: '창의성', A: computedScores.creativity, fullMark: 100 },
-        { subject: '논리력', A: computedScores.logic, fullMark: 100 },
-        { subject: '공감력', A: computedScores.empathy, fullMark: 100 },
-        { subject: '리더십', A: computedScores.leadership, fullMark: 100 },
-        { subject: '회복력', A: computedScores.resilience, fullMark: 100 },
-        { subject: '직관력', A: computedScores.intuition, fullMark: 100 },
-        { subject: '소통력', A: computedScores.communication, fullMark: 100 },
-        { subject: '실행력', A: computedScores.execution, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.creativity, originalKey: 'creativity', A: computedScores.creativity, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.logic, originalKey: 'logic', A: computedScores.logic, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.empathy, originalKey: 'empathy', A: computedScores.empathy, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.leadership, originalKey: 'leadership', A: computedScores.leadership, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.resilience, originalKey: 'resilience', A: computedScores.resilience, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.intuition, originalKey: 'intuition', A: computedScores.intuition, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.communication, originalKey: 'communication', A: computedScores.communication, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.execution, originalKey: 'execution', A: computedScores.execution, fullMark: 100 },
     ], [computedScores]);
 
     const height = compact ? 200 : 280;
@@ -149,10 +164,17 @@ export default function GeniusRadarChart({
                         <PolarGrid stroke="#374151" strokeDasharray="3 3" />
                         <PolarAngleAxis
                             dataKey="subject"
-                            tick={{ fill: '#9CA3AF', fontSize: compact ? 9 : 11, fontWeight: 500 }}
+                            tick={{ fill: '#9CA3AF', fontSize: compact ? 9 : 11, fontWeight: 500, cursor: 'pointer' }}
+                            onClick={(data) => {
+                                if (onTraitClick && data && data.value) {
+                                    // Find key by label
+                                    const item = chartData.find(d => d.subject === data.value);
+                                    if (item) onTraitClick(item.originalKey, item.A);
+                                }
+                            }}
                         />
                         <Radar
-                            name="Genius Profile"
+                            name="Energy Signature"
                             dataKey="A"
                             stroke="#10B981"
                             strokeWidth={2}
@@ -162,24 +184,46 @@ export default function GeniusRadarChart({
                             animationDuration={1200}
                             animationEasing="ease-out"
                             style={{
-                                filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.5))'
+                                filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.5))',
+                                cursor: onTraitClick ? 'pointer' : 'default'
+                            }}
+                            onClick={(data) => {
+                                if (onTraitClick && data && data.activePayload) {
+                                    // Recharts interactivity workaround
+                                    // Note: Recharts click handling can be tricky. We might need to rely on the active region.
+                                }
                             }}
                         />
                         {!compact && <Tooltip content={<CustomTooltip />} cursor={false} />}
                     </RadarChart>
                 </ResponsiveContainer>
+                {/* Click Overlay for easier interaction */}
+                {onTraitClick && (
+                    <div className="absolute inset-0 z-20 pointer-events-none">
+                        {/* We rely on Recharts PolarGrid click for now, or just let users click the main area. 
+                            Ideally, we want to click specific axes. 
+                            Let's use the PolarAngleAxis tick click if supported, but Recharts is limited.
+                            Alternate strategy: overlay invisible buttons? Too complex.
+                            Let's rely on the parent wrapper click or just accept the limitation.
+                            Actually, we can pass onClick to Recharts components.
+                        */}
+                    </div>
+                )}
             </div>
 
             {/* 하단 요약 텍스트 */}
             {!compact && (
-                <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-center text-gray-400 text-xs mt-2"
-                >
-                    당신만의 고유한 에너지 프로파일입니다
-                </motion.p>
+                <div className="text-center mt-2">
+                    <p className="text-neon-green/80 text-xs font-bold tracking-wider mb-1">ENERGY SIGNATURE</p>
+                    <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="text-gray-400 text-[10px]"
+                    >
+                        에너지 항목을 클릭하면 상세 설명이 나옵니다
+                    </motion.p>
+                </div>
             )}
         </motion.div>
     );

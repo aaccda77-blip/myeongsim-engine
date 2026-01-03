@@ -4383,3 +4383,47 @@ export function getAllEnergyCycleKeys(): string[] {
 export function getAllVoidKeys(): string[] {
     return Object.keys(VOID_THEORY);
 }
+
+// ============== 명심 코칭 에너지 시그니처 (구 성격분석) ==============
+export const MYEONGSIM_TRAIT_DESCRIPTIONS: Record<string, { title: string, desc: string, advice: string }> = {
+    creativity: {
+        title: "Expression (표현 에너지)",
+        desc: "내면의 생각과 감정을 세상 밖으로 드러내는 창조적 힘입니다. 식상(Output)의 기운과 관련이 깊으며, 당신의 독창성을 증명하는 도구입니다.",
+        advice: "당신의 아이디어는 세상에 나올 자격이 있습니다. 완벽하지 않아도 좋으니 일단 표현하세요."
+    },
+    logic: {
+        title: "Structure (구조화 에너지)",
+        desc: "복잡한 현상에서 패턴을 찾아내고 체계화하는 지적인 힘입니다. 금(Metal)의 예리함과 인성(Resource)의 깊이가 결합된 능력입니다.",
+        advice: "당신의 논리는 혼란스러운 상황에서 길잡이가 됩니다. 다만, 너무 차가운 이성보다는 따뜻한 합리성을 추구하세요."
+    },
+    empathy: {
+        title: "Connection (연결 에너지)",
+        desc: "타인의 감정을 감지하고 유대감을 형성하는 따뜻한 힘입니다. 재성(Wealth)의 현실 감각과 수(Water)의 유연함이 어우러진 능력입니다.",
+        advice: "당신의 공감 능력은 사람을 끌어당기는 자석과 같습니다. 하지만 타인의 감정에 휩쓸리지 않도록 경계를 지키는 것도 중요합니다."
+    },
+    leadership: {
+        title: "Drive (추진 에너지)",
+        desc: "목표를 향해 거침없이 나아가고 무리를 이끄는 힘입니다. 관성(Power)의 책임감과 목(Wood)의 성장 본능이 만들어낸 에너지입니다.",
+        advice: "당신의 리더십은 주변 사람들에게 등불이 됩니다. 하지만 가끔은 뒤따라오는 사람들의 속도도 맞춰주세요."
+    },
+    resilience: {
+        title: "Grounding (기반 에너지)",
+        desc: "어떤 시련에도 흔들리지 않고 중심을 잡는 단단한 힘입니다. 토(Earth)의 포용력과 인성(Resource)의 인내심이 결합된 능력입니다.",
+        advice: "당신은 태산처럼 든든한 사람입니다. 힘들 때는 잠시 멈춰서 대지(Earth)의 기운을 받으며 충전하세요."
+    },
+    intuition: {
+        title: "Insight (통찰 에너지)",
+        desc: "눈에 보이지 않는 본질을 꿰뚫어 보는 제3의 눈입니다. 화개살의 영성과 수(Water)의 지혜가 결합된 신비로운 능력입니다.",
+        advice: "당신의 직감을 믿으세요. 논리로 설명되지 않는 그 느낌이 때로는 가장 정확한 정답일 수 있습니다."
+    },
+    communication: {
+        title: "Flow (소통 에너지)",
+        desc: "서로 다른 생각과 마음을 흐르게 하여 연결하는 힘입니다. 수(Water)의 유동성과 화(Fire)의 확산력이 조화를 이룬 능력입니다.",
+        advice: "당신의 말 한마디가 누군가에게는 큰 위로가 되고, 누군가에게는 새로운 영감이 됩니다. 진심을 담아 소통하세요."
+    },
+    execution: {
+        title: "Action (실행 에너지)",
+        desc: "생각을 현실로 구현해내는 구체적인 힘입니다. 금(Metal)의 결단력과 목(Wood)의 행동력이 만난 실천적 에너지입니다.",
+        advice: "고민만 하다가 기회를 놓치지 마세요. 작은 한 걸음이 위대한 여정의 시작입니다. Just do it."
+    }
+};

@@ -11,7 +11,7 @@ export default function ReportViewPage({ params }: { params: { id: string } }) {
 
     useEffect(() => {
         // [Data Strategy] Load data from LocalStorage using Key (id or generic)
-        const storedData = localStorage.getItem('mind_totem_report_data');
+        const storedData = localStorage.getItem(`mind_totem_report_${params.id}`);
         if (!storedData) {
             router.push('/'); // No data found, redirect to home
             return;
