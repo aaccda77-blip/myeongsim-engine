@@ -49,8 +49,9 @@ export class DailyLuckEngine {
         const lunar = solar.getLunar();
 
         // Today's Ganji
-        const dayGan = lunar.getDayGan();
-        const dayZhi = lunar.getDayZhi();
+        const baZi = lunar.getEightChar();
+        const dayGan = baZi.getDayGan();
+        const dayZhi = baZi.getDayZhi();
         const dayGanji = `${dayGan}${dayZhi}`;
 
         // Get Element of Day Master and Today

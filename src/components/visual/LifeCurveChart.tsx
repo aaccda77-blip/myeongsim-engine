@@ -21,7 +21,7 @@ export default function LifeCurveChart({ onSelectAge }: Props) {
                 <AreaChart
                     data={data}
                     margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-                    onClick={(e) => {
+                    onClick={(e: any) => {
                         if (e && e.activePayload && e.activePayload[0]) {
                             const p = e.activePayload[0].payload;
                             onSelectAge(p.age, p.score);
