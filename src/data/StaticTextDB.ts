@@ -4395,7 +4395,7 @@ export const MYEONGSIM_TRAIT_DESCRIPTIONS: Record<string, {
     superpower_badge: string; // [Marketing] Shareable Badge
 }> = {
     creativity: {
-        title: "Expression (표현)",
+        title: "창조적 표현",
         subTitle: "세상을 향한 나만의 외침 🎨",
         desc: "당신은 속에 있는 것을 꺼내야 에너지가 도는 사람입니다. 남들은 주저할 때, 당신은 당신만의 독창적인 방식으로 세상을 놀라게 할 잠재력을 가졌습니다.",
         advice: "완벽하지 않아도 괜찮습니다. 당신의 거친 아이디어조차 누군가에게는 신선한 충격이 됩니다.",
@@ -4403,7 +4403,7 @@ export const MYEONGSIM_TRAIT_DESCRIPTIONS: Record<string, {
         superpower_badge: "상위 1% '크리에이티브 아티스트'"
     },
     logic: {
-        title: "Structure (구조)",
+        title: "논리적 구조",
         subTitle: "혼란을 잠재우는 설계자 📐",
         desc: "당신은 복잡한 상황에서도 본능적으로 질서를 찾아냅니다. 감정에 휘둘리지 않고 상황을 객관적으로 분해하여 가장 효율적인 길을 찾아내는 능력이 있습니다.",
         advice: "당신의 차가운 이성은 사실 가장 뜨거운 열정에서 나옵니다. 당신의 판단을 믿으세요.",
@@ -4411,7 +4411,7 @@ export const MYEONGSIM_TRAIT_DESCRIPTIONS: Record<string, {
         superpower_badge: "소름 돋는 '전략가(Strategist)'"
     },
     empathy: {
-        title: "Connection (연결)",
+        title: "공감과 연결",
         subTitle: "마음을 여는 마스터키 🗝️",
         desc: "당신은 사람의 마음을 읽는 레이더를 켜고 태어났습니다. 말하지 않아도 상대의 기분을 감지하며, 당신 곁에 있는 사람들은 설명할 수 없는 편안함을 느낍니다.",
         advice: "당신의 공감은 약점이 아니라 가장 강력한 무기입니다. 다만, 남을 위해 쓰느라 자신을 소진하지 마세요.",
@@ -4419,7 +4419,7 @@ export const MYEONGSIM_TRAIT_DESCRIPTIONS: Record<string, {
         superpower_badge: "치유의 '휴먼 커넥터'"
     },
     leadership: {
-        title: "Drive (추진)",
+        title: "불도저 추진력",
         subTitle: "길을 만드는 개척자 🔥",
         desc: "당신은 목표가 생기면 무섭게 돌진하는 야생마와 같습니다. 남들이 '가능할까?'라고 의심할 때, 당신은 이미 첫 발을 떼고 결과를 만들어냅니다.",
         advice: "가끔은 뒤를 돌아보세요. 당신의 속도가 너무 빨라 팀원들이 숨차하고 있을지도 모릅니다.",
@@ -4427,7 +4427,7 @@ export const MYEONGSIM_TRAIT_DESCRIPTIONS: Record<string, {
         superpower_badge: "압도적 '불도저 리더'"
     },
     resilience: {
-        title: "Grounding (기반)",
+        title: "단단한 기반",
         subTitle: "흔들리지 않는 거대한 산 ⛰️",
         desc: "당신은 쉽게 요동치지 않는 묵직함을 가졌습니다. 어떤 위기가 와도 '이 또한 지나가리라'는 태도로 버텨내며, 결국엔 끝까지 살아남는 사람입니다.",
         advice: "당신의 인내심은 존경스럽지만, 가끔은 힘들다고 소리쳐도 무너지지 않습니다.",
@@ -4435,7 +4435,7 @@ export const MYEONGSIM_TRAIT_DESCRIPTIONS: Record<string, {
         superpower_badge: "절대무적 '멘탈 가디언'"
     },
     intuition: {
-        title: "Insight (통찰)",
+        title: "본질적 통찰",
         subTitle: "본질을 꿰뚫는 제3의 눈 👁️",
         desc: "당신은 논리로 설명할 수 없는 '촉'이 발달했습니다. 남들이 겉모습에 속을 때, 당신은 그 이면의 진실을 본능적으로 알아챕니다.",
         advice: "근거가 없어도 괜찮습니다. 당신의 직감이 데이터보다 정확할 때가 많으니까요.",
@@ -4443,7 +4443,7 @@ export const MYEONGSIM_TRAIT_DESCRIPTIONS: Record<string, {
         superpower_badge: "미래를 보는 '영매(Oracle)'"
     },
     communication: {
-        title: "Flow (소통)",
+        title: "유연한 소통",
         subTitle: "막힌 곳을 뚫는 윤활유 🌊",
         desc: "당신은 물처럼 어디든 스며드는 유연함을 가졌습니다. 꽉 막힌 분위기를 말 한마디로 풀어내고, 서로 다른 사람들을 하나로 묶어주는 재주가 있습니다.",
         advice: "당신의 말에는 힘이 있습니다. 농담 속에 섞인 진담으로 분위기를 반전시켜보세요.",
