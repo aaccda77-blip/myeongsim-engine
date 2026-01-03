@@ -11,7 +11,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { assembleFullReport } from '@/services/ReportAssembler';
 import {
@@ -21,8 +21,8 @@ import {
     MainIcon,
     SubMenuItem
 } from '@/modules/DrillDownProtocol';
-import { ScoreCalculator, SajuMatrix } from '@/utils/ScoreCalculator';
-import { MYEONGSIM_TRAIT_DESCRIPTIONS } from '@/data/StaticTextDB';
+// [Security] ScoreCalculator와 StaticTextDB는 더 이상 클라이언트에서 import하지 않음
+// 대신 /api/secure/* API를 통해 서버에서 데이터를 가져옴
 
 // 차트 컴포넌트 동적 임포트 (SSR 방지)
 const GeniusRadarChart = dynamic(() => import('@/components/charts/GeniusRadarChart'), { ssr: false });
@@ -321,27 +321,59 @@ export default function DrillDownIconMenu({
 
     // [New] 차트 인터랙션 상태
     const [selectedTrait, setSelectedTrait] = useState<string | null>(null);
+    const [traitDescription, setTraitDescription] = useState<{ title: string; desc: string; advice: string } | null>(null);
+    const [chartScores, setChartScores] = useState<any>(null);
+    const [isLoadingTrait, setIsLoadingTrait] = useState(false);
 
-    // [New] Real Saju Logic: 갑자일주(Gapja) 기반 정밀 시뮬레이션 매트릭스
-    // 실제로는 사용자 생년월일에서 도출해야 하지만, 현재 컨텍스트에서는 "갑자" 아이덴티티를 확정적으로 사용
-    const sajuMatrix = useMemo<SajuMatrix>(() => ({
-        ohaeng: { wood: 45, fire: 15, earth: 10, metal: 5, water: 25 }, // 목/수 발달 (갑자 특징)
-        tenGods: {
-            resource: 3, // 인성 발달 (학습, 직관)
-            output: 2,   // 식상 (표현)
-            self: 2,     // 비겁 (주관)
-            power: 1,    // 관성 (조직)
-            wealth: 2    // 재성 (현실감각)
-        },
-        sinsal: { dohwasal: true, yeokma: true } // 매력과 역동성
-    }), []);
+    // [Security] 서버에서 점수 계산 (컴포넌트 마운트 시 또는 성격분석 선택 시)
+    useEffect(() => {
+        const fetchScores = async () => {
+            try {
+                // Gapja 기반 사주 매트릭스 (이 매트릭스 구조만 클라이언트에 노출, 계산 로직은 서버)
+                const sajuMatrix = {
+                    ohaeng: { wood: 45, fire: 15, earth: 10, metal: 5, water: 25 },
+                    tenGods: { resource: 3, output: 2, self: 2, power: 1, wealth: 2 },
+                    sinsal: { yeokma: true }
+                };
+
+                const res = await fetch('/api/secure/calculate-scores', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sajuMatrix })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    setChartScores(data.scores);
+                }
+            } catch (e) {
+                console.error('Failed to fetch scores:', e);
+            }
+        };
+
+        fetchScores();
+    }, []);
 
     // 추천 아이콘 계산
     const icons = getMainIconsWithRecommendations(userProfile);
 
-    // [New] 차트 항목 클릭 핸들러
-    const handleTraitClick = (trait: string, score: number) => {
+    // [Security] 서버에서 특성 설명 가져오기
+    const handleTraitClick = async (trait: string, score: number) => {
         setSelectedTrait(trait);
+        setIsLoadingTrait(true);
+        setTraitDescription(null);
+
+        try {
+            const res = await fetch(`/api/secure/trait-description?trait=${trait}`);
+            if (res.ok) {
+                const data = await res.json();
+                setTraitDescription(data.data);
+            }
+        } catch (e) {
+            console.error('Failed to fetch trait description:', e);
+        } finally {
+            setIsLoadingTrait(false);
+        }
     };
 
     // 아이콘 클릭 핸들러
@@ -484,8 +516,8 @@ export default function DrillDownIconMenu({
                             }}>
                                 <GeniusRadarChart
                                     compact={true}
-                                    sajuMatrix={sajuMatrix} // [Update] Real Data Injection
-                                    onTraitClick={handleTraitClick} // [Update] Click Interaction
+                                    scores={chartScores} // [Security] 서버에서 받은 점수 사용
+                                    onTraitClick={handleTraitClick}
                                 />
                                 <p style={{
                                     textAlign: 'center',
@@ -525,7 +557,7 @@ export default function DrillDownIconMenu({
                         )}
 
                         {/* [New] Trait Description Modal (Overlay) */}
-                        {selectedTrait && MYEONGSIM_TRAIT_DESCRIPTIONS[selectedTrait] && (
+                        {selectedTrait && (
                             <div style={{
                                 position: 'fixed',
                                 top: 0, left: 0, right: 0, bottom: 0,
@@ -555,10 +587,10 @@ export default function DrillDownIconMenu({
                                         alignItems: 'center',
                                         gap: '8px'
                                     }}>
-                                        ✨ {MYEONGSIM_TRAIT_DESCRIPTIONS[selectedTrait].title}
+                                        ✨ {isLoadingTrait ? '로딩 중...' : traitDescription?.title || selectedTrait}
                                     </h3>
                                     <p style={{ color: '#E5E7EB', fontSize: '14px', lineHeight: '1.6', marginBottom: '16px' }}>
-                                        {MYEONGSIM_TRAIT_DESCRIPTIONS[selectedTrait].desc}
+                                        {isLoadingTrait ? '설명을 불러오는 중입니다...' : traitDescription?.desc || ''}
                                     </p>
                                     <div style={{
                                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -570,7 +602,7 @@ export default function DrillDownIconMenu({
                                             💡 Advice
                                         </p>
                                         <p style={{ color: '#D1D5DB', fontSize: '12px' }}>
-                                            {MYEONGSIM_TRAIT_DESCRIPTIONS[selectedTrait].advice}
+                                            {traitDescription?.advice || ''}
                                         </p>
                                     </div>
                                     <button

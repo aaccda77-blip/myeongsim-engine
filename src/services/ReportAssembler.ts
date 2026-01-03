@@ -1,7 +1,7 @@
 import { SAJU_ILJU } from '@/data/StaticTextDB';
 
 // Define the structure of the comprehensive report
-export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA"): string => {
+export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA") => {
     // 1. Fetch Data Blocks
     // Safety check: if iljuId doesn't exist, fallback to GAP_JA
     const iljuData = SAJU_ILJU[iljuId] || SAJU_ILJU["GAP_JA"];
@@ -29,7 +29,7 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA"):
 
     // Detailed Strength Analysis (Expansion)
     report += `### 1.2 핵심 강점 (Signature Strengths) 정밀 진단\n`;
-    iljuData.strengths.forEach((s, i) => {
+    iljuData.strengths?.forEach((s, i) => {
         report += `**Strength ${i + 1}: ${s}**\n`;
         report += `- 이 강점은 당신이 위기 상황에서 본능적으로 발휘하는 힘입니다.\n`;
         report += `- 사회적 성공을 위해 이 강점을 어떻게 활용해야 하는지 구체적으로 설계해야 합니다.\n\n`;
@@ -37,7 +37,7 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA"):
 
     // Detailed Weakness Analysis (Expansion)
     report += `### 1.3 그림자 (The Shadow)와 극복 전략\n`;
-    iljuData.weaknesses.forEach((w, i) => {
+    iljuData.weaknesses?.forEach((w, i) => {
         report += `**Shadow ${i + 1}: ${w}**\n`;
         report += `- 이 그림자는 당신이 스트레스를 받을 때 무의식적으로 튀어나옵니다.\n`;
         report += `- 해결책: 이를 억누르려 하지 말고, '아, 내 그림자가 나왔구나'라고 알아차리는 메타인지가 필요합니다.\n\n`;
@@ -48,20 +48,20 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA"):
     report += `## PART 2. 유전자 키와 의식의 진화 (Neural Keys)\n\n`;
     report += `당신의 DNA에 각인된 3단계 의식 수준을 해독합니다.\n\n`;
 
-    report += `### 🌑 1단계: 그림자 (The Shadow) - ${iljuData.dark_code.name}\n`;
+    report += `### 🌑 1단계: 그림자 (The Shadow) - ${iljuData.dark_code?.name || ''}\n`;
     report += `**"당신을 옭아매는 무의식의 공포"**\n`;
-    report += `> ${iljuData.dark_code.desc}\n\n`;
-    report += `**신체적 징후:** ${iljuData.dark_code.body_symptom}\n`;
+    report += `> ${iljuData.dark_code?.desc || ''}\n\n`;
+    report += `**신체적 징후:** ${iljuData.dark_code?.body_symptom || ''}\n`;
     report += `이 상태에 머물 때 당신은 피해자 의식에 빠지게 됩니다. 하지만 이것은 진화를 위한 연료입니다.\n\n`;
 
-    report += `### 🧬 2단계: 선물 (The Gift) - ${iljuData.neural_code.name}\n`;
+    report += `### 🧬 2단계: 선물 (The Gift) - ${iljuData.neural_code?.name || ''}\n`;
     report += `**"그림자를 수용할 때 드러나는 천재성"**\n`;
-    report += `> ${iljuData.neural_code.desc}\n\n`;
-    report += `**Action Item:** ${iljuData.neural_code.action}\n\n`;
+    report += `> ${iljuData.neural_code?.desc || ''}\n\n`;
+    report += `**Action Item:** ${iljuData.neural_code?.action || ''}\n\n`;
 
-    report += `### ✨ 3단계: 시디 (The Siddhi) - ${iljuData.meta_code.name}\n`;
+    report += `### ✨ 3단계: 시디 (The Siddhi) - ${iljuData.meta_code?.name || ''}\n`;
     report += `**"당신이 도달할 궁극의 상태"**\n`;
-    report += `> ${iljuData.meta_code.desc}\n\n`;
+    report += `> ${iljuData.meta_code?.desc || ''}\n\n`;
 
     // --- PART 3: CHRONOS (Time Flow) - 30 Pages simulation ---
     report += `\n---\n\n`;
@@ -90,7 +90,7 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA"):
     report += `## PART 4. 영역별 인생 전략 (Life Strategy)\n\n`;
 
     report += `### 💼 Career & Wealth\n`;
-    report += `- **적성 직무:** ${iljuData.career_fit.join(", ")}\n`;
+    report += `- **적성 직무:** ${iljuData.career_fit?.join(", ") || '다양한 적성'}\n`;
     report += `- **성공 전략:** 당신은 리더형이므로, 남의 밑에 있기보다 주도적으로 프로젝트를 맡아야 합니다.\n`;
     report += `- **부의 그릇:** 당신의 재물은 ${iljuData.lucky_elements?.number}와 관련이 깊습니다.\n\n`;
 
@@ -112,7 +112,7 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA"):
     return {
         full_text: report,
         saju_analysis: report, // For backward compatibility with View
-        action_now: iljuData.neural_code.action || "잠시 눈을 감고 호흡에 집중하세요.",
+        action_now: iljuData.neural_code?.action || "잠시 눈을 감고 호흡에 집중하세요.",
         action_today: `새로운 시작의 기운(${iljuData.visual_token})을 느껴보세요.`,
         action_week: `${iljuData.lucky_elements?.direction} 방향으로 산책을 다녀오세요.`
     };

@@ -187,12 +187,6 @@ export default function GeniusRadarChart({
                                 filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.5))',
                                 cursor: onTraitClick ? 'pointer' : 'default'
                             }}
-                            onClick={(data) => {
-                                if (onTraitClick && data && data.activePayload) {
-                                    // Recharts interactivity workaround
-                                    // Note: Recharts click handling can be tricky. We might need to rely on the active region.
-                                }
-                            }}
                         />
                         {!compact && <Tooltip content={<CustomTooltip />} cursor={false} />}
                     </RadarChart>
