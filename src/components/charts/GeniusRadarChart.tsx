@@ -5,11 +5,11 @@ import { useMemo } from 'react';
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer, Tooltip } from 'recharts';
 import {
     SajuMatrix,
-    ScoreCalculator,
     generateDefaultScores,
     convertOhaengToRadar,
     OhaengScores
 } from '@/utils/ScoreCalculator';
+// [Security] ScoreCalculator class is now called via API, not imported here
 
 /**
  * GeniusRadarChart - 8축 천재성 레이더 차트
@@ -96,11 +96,9 @@ export default function GeniusRadarChart({
             };
         }
 
-        // 2. 사주 매트릭스가 있으면 ScoreCalculator 사용
-        if (sajuMatrix) {
-            const calculator = new ScoreCalculator(sajuMatrix, myCodes);
-            return calculator.toChartFormat();
-        }
+        // 2. 사주 매트릭스가 있어도 API를 통해 미리 계산되어 scores로 전달되미로
+        // 직접 ScoreCalculator를 사용하지 않음 (보안 문제)
+        // 기존 sajuMatrix path는 삭제
 
         // 3. 오행 점수만 있으면 변환
         if (ohaeng) {
