@@ -149,7 +149,7 @@ export default function GeniusReportContainer() {
                     <div className="flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-amber-400" />
                         <span className="text-lg font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
-                            Genius Report
+                            강점/재능 리포트
                         </span>
                     </div>
 
@@ -170,7 +170,7 @@ export default function GeniusReportContainer() {
                     className="text-center mb-12"
                 >
                     <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
-                        <span className="text-amber-400">{effectiveData.userName}</span>님의 지니어스 리포트
+                        <span className="text-amber-400">{effectiveData.userName}</span>님의 강점/재능 리포트
                     </h1>
                     <p className="text-gray-400">당신만의 천재성과 잠재력을 시각화합니다</p>
                     {!reportData && (
