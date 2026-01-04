@@ -28,6 +28,7 @@ import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget
 // 차트 컴포넌트 동적 임포트 (SSR 방지)
 const GeniusRadarChart = dynamic(() => import('@/components/charts/GeniusRadarChart'), { ssr: false });
 const VisualSajuDashboard = dynamic(() => import('@/components/visual/VisualSajuDashboard'), { ssr: false });
+const StartupDesignScreen = dynamic(() => import('@/components/startup/StartupDesignScreen'), { ssr: false });
 
 // ============== 스타일 ==============
 const styles = {
@@ -319,6 +320,9 @@ export default function DrillDownIconMenu({
     // [Pulse 5] Visual Dashboard State
     const [showVisualDashboard, setShowVisualDashboard] = useState(false);
 
+    // [NEW] Startup Design Screen State
+    const [showStartupDesign, setShowStartupDesign] = useState(false);
+
     // [Pulse 6] Collapsible Teaser State
     const [isTeaserCollapsed, setIsTeaserCollapsed] = useState(false);
 
@@ -407,6 +411,20 @@ export default function DrillDownIconMenu({
 
     // 서브메뉴 선택 핸들러
     const handleSubMenuSelect = (subItem: SubMenuItem) => {
+        // [NEW] Startup Design Screen 열기
+        if (subItem.intent === 'startup_design_view') {
+            setSelectedIcon(null);
+            setShowStartupDesign(true);
+            return;
+        }
+
+        // [FIX] 사주 원국 분석 시 비주얼 대시보드 열기
+        if (subItem.intent === 'saju_basic_analysis') {
+            setSelectedIcon(null);
+            setShowVisualDashboard(true);
+            return;
+        }
+
         // [NEW] Genius Report 페이지로 이동
         if (subItem.intent === 'genius_report_view') {
             setSelectedIcon(null);
@@ -468,6 +486,19 @@ export default function DrillDownIconMenu({
                     onClose={() => setShowVisualDashboard(false)}
                     onChatIntent={handleDashboardChatIntent}
                     birthDate={birthDate}
+                    userProfile={userProfile}
+                    onEditBirthdate={() => {
+                        // TODO: 생년월일 수정 페이지로 이동
+                        window.location.href = '/settings/profile';
+                    }}
+                />
+            )}
+
+            {/* [NEW] 무실패 스타트업 설계 스크린 */}
+            {showStartupDesign && (
+                <StartupDesignScreen
+                    onClose={() => setShowStartupDesign(false)}
+                    onChatIntent={onSelectIntent}
                     userProfile={userProfile}
                 />
             )}
