@@ -407,6 +407,13 @@ export default function DrillDownIconMenu({
 
     // 서브메뉴 선택 핸들러
     const handleSubMenuSelect = (subItem: SubMenuItem) => {
+        // [NEW] Genius Report 페이지로 이동
+        if (subItem.intent === 'genius_report_view') {
+            setSelectedIcon(null);
+            window.location.href = '/report/genius';
+            return;
+        }
+
         // [New] 80페이지 분량의 인터랙티브 웹 리포트로 이동
         if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
             alert("✨ [MIND TOTEM] 80페이지 분량의 소울 아카이브를 엽니다.\n(잠시만 기다려주세요...)");

@@ -177,6 +177,13 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "❤️ 인연 코드",
                 desc: "관계운 핵심 코드",
                 intent: "connection_code_analysis"
+            },
+            {
+                id: "g_5",
+                label: "✨ Genius Report",
+                desc: "8축 역량 시각화 분석",
+                intent: "genius_report_view",
+                isPremium: true
             }
         ]
     },
