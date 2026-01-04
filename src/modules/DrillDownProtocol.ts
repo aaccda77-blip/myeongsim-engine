@@ -180,6 +180,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             },
             {
                 id: "g_5",
+                label: "🧠 심리 치유 아키타입",
+                desc: "DBT/ACT/MBCT 통합 처방",
+                intent: "therapy_archetype_view"
+            },
+            {
+                id: "g_6",
                 label: "✨ Genius Report",
                 desc: "8축 역량 시각화 분석",
                 intent: "genius_report_view",
