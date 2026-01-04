@@ -668,8 +668,16 @@ export default function DrillDownIconMenu({
                                         margin: '-10px auto 20px auto'
                                     }} />
 
-                                    {/* Header: Title & Badge */}
-                                    <div className="flex justify-between items-start mb-4">
+                                    {/* Header: Title & Badge & Close Button */}
+                                    <div className="flex justify-between items-start mb-4 relative">
+                                        {/* Close Button (X) - 우측 상단 */}
+                                        <button
+                                            onClick={() => setSelectedTrait(null)}
+                                            className="absolute top-0 right-0 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-400 hover:text-white transition-colors z-10"
+                                        >
+                                            ✕
+                                        </button>
+
                                         <h3 style={{
                                             color: '#10B981',
                                             fontSize: '20px',
@@ -759,6 +767,28 @@ export default function DrillDownIconMenu({
                                         }}
                                     >
                                         <span>🚀 나의 슈퍼파워 공유하기</span>
+                                    </button>
+
+                                    {/* Chat Button (상담하기) */}
+                                    <button
+                                        className="w-full py-3 mt-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
+                                        onClick={() => {
+                                            onSelectIntent(
+                                                'TRAIT_DEEP_DIVE',
+                                                `제 '${selectedTrait}' 특성에 대해 더 자세히 상담하고 싶어요. 어떻게 활용하고 발전시킬 수 있을까요?`
+                                            );
+                                            setSelectedTrait(null);
+                                        }}
+                                    >
+                                        💬 이 특성으로 상담하기
+                                    </button>
+
+                                    {/* Back to Chart Button (다른 특성 보기) */}
+                                    <button
+                                        className="w-full py-3 mt-2 rounded-xl bg-transparent border border-white/20 hover:bg-white/5 text-gray-400 hover:text-white font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                                        onClick={() => setSelectedTrait(null)}
+                                    >
+                                        ← 다른 특성 보기
                                     </button>
                                 </div>
                             </>
