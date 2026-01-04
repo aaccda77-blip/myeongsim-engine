@@ -10,9 +10,10 @@ interface Props {
     onChatIntent: (intent: string, prompt: string) => void;
     birthDate?: Date;
     userProfile?: any;
+    onEditBirthdate?: () => void;
 }
 
-export default function VisualSajuDashboard({ onClose, onChatIntent, birthDate, userProfile }: Props) {
+export default function VisualSajuDashboard({ onClose, onChatIntent, birthDate, userProfile, onEditBirthdate }: Props) {
     const [selectedAge, setSelectedAge] = useState<{ age: number, score: number } | null>(null);
 
     return (
@@ -39,7 +40,7 @@ export default function VisualSajuDashboard({ onClose, onChatIntent, birthDate, 
                 {/* 1. Saju Grid */}
                 <div className="mb-8">
                     <h3 className="text-gray-400 text-xs font-bold uppercase mb-3 px-1">기본 태생 (Nature)</h3>
-                    <SajuVisualGrid userProfile={userProfile} />
+                    <SajuVisualGrid userProfile={userProfile} onEditBirthdate={onEditBirthdate} />
                 </div>
 
                 {/* 2. Life Graph */}

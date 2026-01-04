@@ -94,9 +94,10 @@ const PillarCard = ({ label, gan, ji, tenGods, onTap, isSelected }: PillarCardPr
 
 interface SajuVisualGridProps {
     userProfile?: any;
+    onEditBirthdate?: () => void;
 }
 
-export default function SajuVisualGrid({ userProfile }: SajuVisualGridProps) {
+export default function SajuVisualGrid({ userProfile, onEditBirthdate }: SajuVisualGridProps) {
     const [selectedPillar, setSelectedPillar] = useState<number | null>(null);
 
     // Helper to get element from character or element name
@@ -174,8 +175,18 @@ export default function SajuVisualGrid({ userProfile }: SajuVisualGridProps) {
                         </h3>
                         <p className="text-gray-500 text-xs">터치하여 상세 정보 확인</p>
                     </div>
-                    <div className="bg-purple-500/20 px-2 py-1 rounded-full text-[10px] text-purple-300 border border-purple-500/30">
-                        팔자 분석
+                    <div className="flex items-center gap-2">
+                        {onEditBirthdate && (
+                            <button
+                                onClick={onEditBirthdate}
+                                className="px-2 py-1 rounded-full text-[10px] text-gray-400 border border-gray-600 hover:bg-white/10 transition-colors"
+                            >
+                                ✏️ 생년월일 수정
+                            </button>
+                        )}
+                        <div className="bg-purple-500/20 px-2 py-1 rounded-full text-[10px] text-purple-300 border border-purple-500/30">
+                            팔자 분석
+                        </div>
                     </div>
                 </div>
 
