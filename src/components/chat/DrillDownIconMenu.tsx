@@ -407,6 +407,22 @@ export default function DrillDownIconMenu({
 
     // 서브메뉴 선택 핸들러
     const handleSubMenuSelect = (subItem: SubMenuItem) => {
+        // [NEW] Startup Design Screen 열기
+        if (subItem.intent === 'startup_design_view') {
+            setSelectedIcon(null);
+            setShowStartupDesign(true);
+            return;
+        }
+
+        // [FIX] 사주 원국 분석 시 비주얼 대시보드 열기
+        // intent가 정확히 일치하는지 확인 (공백 제거)
+        if (subItem.intent.trim() === 'saju_basic_analysis') {
+            setSelectedIcon(null);
+            // 상태 업데이트 지연 없음
+            setShowVisualDashboard(true);
+            return;
+        }
+
         // [NEW] Genius Report 페이지로 이동
         if (subItem.intent === 'genius_report_view') {
             setSelectedIcon(null);
