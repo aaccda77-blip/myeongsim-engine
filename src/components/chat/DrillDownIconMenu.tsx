@@ -319,6 +319,9 @@ export default function DrillDownIconMenu({
     // [Pulse 5] Visual Dashboard State
     const [showVisualDashboard, setShowVisualDashboard] = useState(false);
 
+    // [Pulse 6] Collapsible Teaser State
+    const [isTeaserCollapsed, setIsTeaserCollapsed] = useState(false);
+
     // 스타일 주입
     React.useEffect(() => {
         injectStyles();
@@ -456,19 +459,40 @@ export default function DrillDownIconMenu({
                 />
             )}
 
-            {/* [Pulse 4] Daily Biorhythm Widget (Home Screen Hero) */}
-            <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-400 text-xs font-bold px-1">TODAY'S ENERGY</span>
+            {/* [Pulse 6] Collapsible Daily Energy Teaser */}
+            {isTeaserCollapsed ? (
+                /* Collapsed: Icon only */
+                <button
+                    onClick={() => setIsTeaserCollapsed(false)}
+                    className="fixed bottom-24 right-4 z-50 w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full shadow-lg flex items-center justify-center text-xl animate-pulse border-2 border-white/20"
+                    title="오늘의 에너지 보기"
+                >
+                    🔋
+                </button>
+            ) : (
+                /* Expanded: Full teaser */
+                <div className="mb-4 relative">
+                    {/* Close (Collapse) Button */}
                     <button
-                        onClick={() => setShowVisualDashboard(true)}
-                        className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-1 rounded border border-purple-500/50 flex items-center gap-1"
+                        onClick={() => setIsTeaserCollapsed(true)}
+                        className="absolute top-2 right-2 z-10 w-6 h-6 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                        title="최소화"
                     >
-                        🔮 내 운명 지도 보기
+                        ✕
                     </button>
+
+                    <div className="flex justify-between items-center mb-2 pr-8">
+                        <span className="text-gray-400 text-xs font-bold px-1">TODAY'S ENERGY</span>
+                        <button
+                            onClick={() => setShowVisualDashboard(true)}
+                            className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-1 rounded border border-purple-500/50 flex items-center gap-1"
+                        >
+                            🔮 내 운명 지도 보기
+                        </button>
+                    </div>
+                    <DailyBiorhythmWidget dayMaster="갑" />
                 </div>
-                <DailyBiorhythmWidget dayMaster="갑" />
-            </div>
+            )}
 
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>
