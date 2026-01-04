@@ -8,9 +8,11 @@ import LifeCurveChart from './LifeCurveChart';
 interface Props {
     onClose: () => void;
     onChatIntent: (intent: string, prompt: string) => void;
+    birthDate?: Date;
+    userProfile?: any;
 }
 
-export default function VisualSajuDashboard({ onClose, onChatIntent }: Props) {
+export default function VisualSajuDashboard({ onClose, onChatIntent, birthDate, userProfile }: Props) {
     const [selectedAge, setSelectedAge] = useState<{ age: number, score: number } | null>(null);
 
     return (
@@ -37,13 +39,13 @@ export default function VisualSajuDashboard({ onClose, onChatIntent }: Props) {
                 {/* 1. Saju Grid */}
                 <div className="mb-8">
                     <h3 className="text-gray-400 text-xs font-bold uppercase mb-3 px-1">기본 태생 (Nature)</h3>
-                    <SajuVisualGrid />
+                    <SajuVisualGrid userProfile={userProfile} />
                 </div>
 
                 {/* 2. Life Graph */}
                 <div className="mb-4">
                     <h3 className="text-gray-400 text-xs font-bold uppercase mb-1 px-1">운의 흐름 (Flow)</h3>
-                    <LifeCurveChart onSelectAge={(age, score) => setSelectedAge({ age, score })} />
+                    <LifeCurveChart onSelectAge={(age, score) => setSelectedAge({ age, score })} birthDate={birthDate} />
                 </div>
 
                 {/* Interaction Feedback */}

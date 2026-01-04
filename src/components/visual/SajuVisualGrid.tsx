@@ -44,10 +44,41 @@ const PillarCard = ({ gan, ji, tenGods, label }: PillarProps) => (
     </div>
 );
 
-export default function SajuVisualGrid() {
-    // Hardcoded for Demo (User's context would replace this)
-    // Eul-Chuk Ilju example
-    const data = [
+interface SajuVisualGridProps {
+    userProfile?: any;
+}
+
+export default function SajuVisualGrid({ userProfile }: SajuVisualGridProps) {
+    // [Saju 연동] Extract pillars from userProfile or use fallback demo data
+    const pillars = userProfile?.saju?.pillars;
+
+    const data = pillars ? [
+        {
+            label: "Hour",
+            gan: { char: pillars.hour?.stem || '?', color: getElementColor(pillars.hour?.stemElement), label: pillars.hour?.stemElement || '' },
+            ji: { char: pillars.hour?.branch || '?', color: getElementColor(pillars.hour?.branchElement), label: pillars.hour?.branchElement || '' },
+            tenGods: { gan: pillars.hour?.stemTenGod || '', ji: pillars.hour?.branchTenGod || '' }
+        },
+        {
+            label: "Day",
+            gan: { char: pillars.day?.stem || '?', color: getElementColor(pillars.day?.stemElement), label: pillars.day?.stemElement || '' },
+            ji: { char: pillars.day?.branch || '?', color: getElementColor(pillars.day?.branchElement), label: pillars.day?.branchElement || '' },
+            tenGods: { gan: '본원', ji: pillars.day?.branchTenGod || '' }
+        },
+        {
+            label: "Month",
+            gan: { char: pillars.month?.stem || '?', color: getElementColor(pillars.month?.stemElement), label: pillars.month?.stemElement || '' },
+            ji: { char: pillars.month?.branch || '?', color: getElementColor(pillars.month?.branchElement), label: pillars.month?.branchElement || '' },
+            tenGods: { gan: pillars.month?.stemTenGod || '', ji: pillars.month?.branchTenGod || '' }
+        },
+        {
+            label: "Year",
+            gan: { char: pillars.year?.stem || '?', color: getElementColor(pillars.year?.stemElement), label: pillars.year?.stemElement || '' },
+            ji: { char: pillars.year?.branch || '?', color: getElementColor(pillars.year?.branchElement), label: pillars.year?.branchElement || '' },
+            tenGods: { gan: pillars.year?.stemTenGod || '', ji: pillars.year?.branchTenGod || '' }
+        }
+    ] : [
+        // Fallback demo data
         {
             label: "Hour",
             gan: { char: '정', color: '#EF4444', label: '화' },
@@ -73,6 +104,18 @@ export default function SajuVisualGrid() {
             tenGods: { gan: '겁재', ji: '편인' }
         }
     ];
+
+    // Helper to get color from element name
+    function getElementColor(element: string | undefined): string {
+        const colorMap: Record<string, string> = {
+            '목': '#10B981', 'wood': '#10B981',
+            '화': '#EF4444', 'fire': '#EF4444',
+            '토': '#F59E0B', 'earth': '#F59E0B',
+            '금': '#9CA3AF', 'metal': '#9CA3AF',
+            '수': '#3B82F6', 'water': '#3B82F6'
+        };
+        return colorMap[element || ''] || '#6B7280';
+    }
 
     return (
         <div className="w-full overflow-x-auto">

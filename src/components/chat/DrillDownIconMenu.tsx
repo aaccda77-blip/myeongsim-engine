@@ -345,8 +345,8 @@ export default function DrillDownIconMenu({
     useEffect(() => {
         const fetchScores = async () => {
             try {
-                // Gapja 기반 사주 매트릭스 (이 매트릭스 구조만 클라이언트에 노출, 계산 로직은 서버)
-                const sajuMatrix = {
+                // [Saju 연동] 사용자 사주 매트릭스 사용 (or fallback)
+                const sajuMatrix = userProfile?.saju || {
                     ohaeng: { wood: 45, fire: 15, earth: 10, metal: 5, water: 25 },
                     tenGods: { resource: 3, output: 2, self: 2, power: 1, wealth: 2 },
                     sinsal: { yeokma: true }
@@ -368,7 +368,11 @@ export default function DrillDownIconMenu({
         };
 
         fetchScores();
-    }, []);
+    }, [userProfile]);
+
+    // [Saju 연동] 사용자 일주 천간 추출 (Day Master)
+    const dayMaster = userProfile?.saju?.dayPillar?.stem || userProfile?.dayMaster || '갑';
+    const birthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : new Date('1990-01-01');
 
     // 추천 아이콘 계산
     const icons = getMainIconsWithRecommendations(userProfile);
@@ -456,6 +460,8 @@ export default function DrillDownIconMenu({
                 <VisualSajuDashboard
                     onClose={() => setShowVisualDashboard(false)}
                     onChatIntent={handleDashboardChatIntent}
+                    birthDate={birthDate}
+                    userProfile={userProfile}
                 />
             )}
 
@@ -490,7 +496,7 @@ export default function DrillDownIconMenu({
                             🔮 내 운명 지도 보기
                         </button>
                     </div>
-                    <DailyBiorhythmWidget dayMaster="갑" />
+                    <DailyBiorhythmWidget dayMaster={dayMaster} />
                 </div>
             )}
 

@@ -6,13 +6,15 @@ import { LifeCycleEngine } from '@/lib/saju/LifeCycleEngine';
 
 interface Props {
     onSelectAge: (age: number, score: number) => void;
+    birthDate?: Date;
 }
 
-export default function LifeCurveChart({ onSelectAge }: Props) {
+export default function LifeCurveChart({ onSelectAge, birthDate }: Props) {
     const data = useMemo(() => {
-        // Mock birthdate for demo
-        return LifeCycleEngine.calculate(new Date('1990-01-01')).chartData;
-    }, []);
+        // [Saju 연동] Use actual birthDate or fallback
+        const actualDate = birthDate || new Date('1990-01-01');
+        return LifeCycleEngine.calculate(actualDate).chartData;
+    }, [birthDate]);
 
     return (
         <div className="w-full h-[250px] mt-6 relative">
