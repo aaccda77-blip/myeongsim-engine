@@ -186,8 +186,8 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             },
             {
                 id: "g_6",
-                label: "✨ 강점/재능(인적자원)리포트",
-                desc: "8축 역량 시각화 분석",
+                label: "💎 강점/재능(인적자원)리포트",
+                desc: "생년월일 기반 8축 역량 분석",
                 intent: "strength_report_view",
                 isPremium: true
             }
