@@ -296,7 +296,7 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
     WEALTH: { main: '재물운', sub: '왜 벌어도 안 모일까?' },
     RELATIONSHIP: { main: '연애운', sub: '반복되는 상처 끊기' },
     CAREER: { main: '직업운', sub: '나는 이 일 하러 태어났다' },
-    PERSONALITY_ANALYSIS: { main: '성격분석', sub: '숨겨진 천재성 발견' },
+    PERSONALITY_ANALYSIS: { main: '성격분석', sub: '강점/재능(인적자원)리포트' },
     DAILY_MISSION: { main: '오늘운세', sub: '지금 뭘 해야 운이 트일까?' },
     SAJU_ANALYSIS: { main: '사주분석', sub: '운명의 설계도 확인' },
 };
