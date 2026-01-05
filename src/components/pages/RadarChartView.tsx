@@ -162,7 +162,7 @@ export default function RadarChartView() {
                     ))}
                 </div>
 
-                {/* Genius Report CTA Button */}
+                {/* Strength Report CTA Button */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -170,11 +170,11 @@ export default function RadarChartView() {
                     className="mt-8"
                 >
                     <a
-                        href="/report/genius"
+                        href="/report/strength"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/40 rounded-full text-amber-400 hover:from-amber-500/30 hover:to-amber-600/30 hover:border-amber-400/60 transition-all duration-300 shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20"
                     >
                         <span className="text-lg">✨</span>
-                        <span className="font-bold text-sm">상세 Genius Report 보기</span>
+                        <span className="font-bold text-sm">상세 강점/재능 리포트 보기</span>
                         <span className="text-xs bg-amber-500/30 px-2 py-0.5 rounded-full">NEW</span>
                     </a>
                 </motion.div>

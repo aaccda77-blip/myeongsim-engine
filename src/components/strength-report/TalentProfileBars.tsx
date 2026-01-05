@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TalentProfileData } from '@/types/genius-report';
+import { TalentProfileData } from '@/types/strength-report';
 import { Zap, Users, Target, Wrench, Search, Flame } from 'lucide-react';
 
 interface TalentProfileBarsProps {
@@ -62,7 +62,7 @@ export default function TalentProfileBars({ data }: TalentProfileBarsProps) {
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
             {/* Header */}
             <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-2">
-                📊 MY TALENT PROFILE
+                📊 업무 성향 프로필
             </h3>
             <p className="text-xs text-gray-400 mb-6">나의 업무 스타일과 선호하는 역할을 보여줍니다</p>
 

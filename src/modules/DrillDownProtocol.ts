@@ -188,14 +188,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 id: "g_6",
                 label: "✨ 강점/재능(인적자원) 리포트",
                 desc: "8축 역량 시각화 분석",
-                intent: "genius_report_view",
-                isPremium: true
-            },
-            {
-                id: "g_7",
-                label: "🚀 무실패 스타트업 설계",
-                desc: "강점 기반 5단계 창업 로드맵",
-                intent: "startup_design_view",
+                intent: "strength_report_view",
                 isPremium: true
             }
         ]

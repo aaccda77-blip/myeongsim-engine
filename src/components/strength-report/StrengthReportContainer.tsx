@@ -2,18 +2,24 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import GeniusForceField from './GeniusForceField';
+import StrengthForceField from './StrengthForceField';
 import TalentProfileBars from './TalentProfileBars';
 import CooperationProfile from './CooperationProfile';
 import PowerbaseDonut from './PowerbaseDonut';
 import SpecificTalentCards from './SpecificTalentCards';
 import { useReportStore } from '@/store/useReportStore';
-import { GeniusReportData } from '@/types/genius-report';
+import { StrengthReportData } from '@/types/strength-report';
 import { ArrowLeft, Download, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// 사주 데이터로부터 지니어스 리포트 데이터 계산
-function calculateGeniusData(reportData: any): GeniusReportData {
+/**
+ * [Myeongsim Branding]
+ * 강점/재능 (인적자원) 리포트 브랜딩
+ * Force Field -> 본질 에너지 포스필드
+ */
+
+// 사주 데이터로부터 강점/재능 리포트 데이터 계산
+function calculateStrengthData(reportData: any): StrengthReportData {
     const { saju, stats } = reportData;
     const elements = saju?.elements || { wood: 20, fire: 20, earth: 20, metal: 20, water: 20 };
 
@@ -103,12 +109,12 @@ function calculateGeniusData(reportData: any): GeniusReportData {
         teamRole,
         teamRoleDescription,
         specificTalents,
-        leadershipStyle: elements.fire > elements.water ? 'CONFIDENT / determining' : 'ANALYTICAL / contemplative',
-        motivation: elements.metal > elements.wood ? 'ENSURING SAFETY WITH INTELLIGENCE' : 'DRIVING CHANGE WITH PASSION',
+        leadershipStyle: elements.fire > elements.water ? 'CONFIDENT / 주도적 의사결정' : 'ANALYTICAL / 신중한 성찰',
+        motivation: elements.metal > elements.wood ? '지적인 안정과 보안 확보' : '열정적인 변화와 혁신 지향',
     };
 }
 
-export default function GeniusReportContainer() {
+export default function StrengthReportContainer() {
     const router = useRouter();
     const { reportData } = useReportStore();
 
@@ -124,7 +130,7 @@ export default function GeniusReportContainer() {
 
     // 데이터가 없으면 데모 데이터 사용
     const effectiveData = reportData || demoReportData;
-    const geniusData = calculateGeniusData(effectiveData);
+    const strengthData = calculateStrengthData(effectiveData);
 
     return (
         <div className="min-h-screen bg-[#0A0A0F] text-white overflow-x-hidden">
@@ -155,7 +161,7 @@ export default function GeniusReportContainer() {
 
                     <button className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-400 hover:bg-amber-500/20 transition-colors text-sm">
                         <Download size={16} />
-                        PDF
+                        PDF 저장
                     </button>
                 </div>
             </header>
@@ -170,9 +176,9 @@ export default function GeniusReportContainer() {
                     className="text-center mb-12"
                 >
                     <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
-                        <span className="text-amber-400">{effectiveData.userName}</span>님의 강점/재능(인적자원) 리포트
+                        <span className="text-amber-400">{effectiveData.userName}</span>님의 강점/재능 리포트
                     </h1>
-                    <p className="text-gray-400">당신만의 천재성과 잠재력을 시각화합니다</p>
+                    <p className="text-gray-400">당신만의 본질 에너지를 시각화합니다</p>
                     {!reportData && (
                         <p className="text-xs text-amber-500/70 mt-2">📌 데모 모드: 실제 분석은 리포트 입력 후 확인하세요</p>
                     )}
@@ -181,13 +187,13 @@ export default function GeniusReportContainer() {
                 {/* Grid Layout */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                    {/* Left Column: Force Field (8각 레이더) */}
+                    {/* Left Column: Force Field (본질 에너지 포스필드) */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
                     >
-                        <GeniusForceField data={geniusData.forceField} />
+                        <StrengthForceField data={strengthData.forceField} />
                     </motion.div>
 
                     {/* Right Column: Profiles */}
@@ -197,7 +203,7 @@ export default function GeniusReportContainer() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.3 }}
                         >
-                            <TalentProfileBars data={geniusData.talentProfile} />
+                            <TalentProfileBars data={strengthData.talentProfile} />
                         </motion.div>
 
                         <motion.div
@@ -205,7 +211,7 @@ export default function GeniusReportContainer() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4 }}
                         >
-                            <CooperationProfile data={geniusData.cooperationProfile} />
+                            <CooperationProfile data={strengthData.cooperationProfile} />
                         </motion.div>
                     </div>
                 </div>
@@ -217,7 +223,7 @@ export default function GeniusReportContainer() {
                     transition={{ delay: 0.5 }}
                     className="mt-12"
                 >
-                    <SpecificTalentCards talents={geniusData.specificTalents} />
+                    <SpecificTalentCards talents={strengthData.specificTalents} />
                 </motion.div>
 
                 {/* Bottom Section: Powerbase + Role */}
@@ -228,9 +234,9 @@ export default function GeniusReportContainer() {
                         transition={{ delay: 0.6 }}
                     >
                         <PowerbaseDonut
-                            data={geniusData.powerbase}
-                            teamRole={geniusData.teamRole}
-                            teamRoleDescription={geniusData.teamRoleDescription}
+                            data={strengthData.powerbase}
+                            teamRole={strengthData.teamRole}
+                            teamRoleDescription={strengthData.teamRoleDescription}
                         />
                     </motion.div>
 
@@ -245,13 +251,13 @@ export default function GeniusReportContainer() {
 
                         <div className="space-y-6">
                             <div>
-                                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">MY LEADERSHIP STYLE</p>
-                                <p className="text-xl font-bold text-amber-400">{geniusData.leadershipStyle}</p>
+                                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">MY LEADERSHIP STYLE</p>
+                                <p className="text-xl font-bold text-amber-400">{strengthData.leadershipStyle}</p>
                             </div>
 
                             <div className="border-t border-white/10 pt-6">
                                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">MY MOTIVATION</p>
-                                <p className="text-lg text-white">{geniusData.motivation}</p>
+                                <p className="text-lg text-white">{strengthData.motivation}</p>
                             </div>
                         </div>
                     </motion.div>

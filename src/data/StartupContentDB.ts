@@ -1,12 +1,7 @@
-/**
- * StartupContentDB.ts - 스타트업 코칭 콘텐츠 데이터베이스
- * 
- * 천재적 사고 공식, 무실패 전략, 성장 전술을 구조화한 데이터
- * 사용자의 Genius Report 결과에 맞춰 매칭됩니다.
- */
+ * 사용자의 강점 리포트 결과에 맞춰 매칭됩니다.
 
 // ============================================================================
-// 1. 천재적 사고 공식 (Genius Thinking Formulas)
+// 1. 강점 기반 사고 공식 (Strength Thinking Formulas)
 // ============================================================================
 
 export interface ThinkingFormula {
@@ -21,7 +16,7 @@ export interface ThinkingFormula {
 export const THINKING_FORMULAS: ThinkingFormula[] = [
     {
         id: "TF_01",
-        name: "천재적 통찰 공식",
+        name: "강점 기반 통찰 공식",
         formula_text: "문제 × 반전 = 기회",
         description: "모든 불편함 속에는 비즈니스 기회가 숨어있다. 불편함을 180도 뒤집어 해결책으로 만들어라.",
         application_guide: "1. 일상에서 '짜증나는' 순간 3개를 적기\n2. 각각을 180도 뒤집어 생각하기\n3. '만약 이것이 해결된다면?'이라고 질문하기",

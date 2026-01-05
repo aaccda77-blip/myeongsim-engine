@@ -26,7 +26,7 @@ export default function StartupDesignScreen({ onClose, onChatIntent, userProfile
         // reportData 또는 userProfile에서 데이터 추출
         const effectiveData = userProfile || reportData;
 
-        // Genius Report 데이터 변환
+        // 강점 리포트 데이터 변환
         const profile = {
             powerbase: effectiveData?.stats ? {
                 communication: effectiveData.stats.empathy || 50,

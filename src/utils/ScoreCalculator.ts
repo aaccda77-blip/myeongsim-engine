@@ -134,7 +134,7 @@ export class ScoreCalculator {
     }
 
     /**
-     * GeniusRadarChart 형식으로 변환
+     * StrengthRadarChart 형식으로 변환
      */
     toChartFormat(): {
         creativity: number;
@@ -291,7 +291,7 @@ export class ScoreCalculator {
 /**
  * 사주 데이터에서 레이더 점수 계산 (간편 호출)
  */
-export function calculateGeniusScores(
+export function calculateStrengthScores(
     sajuMatrix: SajuMatrix,
     myCodes: number[] = []
 ): RadarScores {
@@ -330,5 +330,5 @@ export function convertOhaengToRadar(ohaeng: OhaengScores): RadarScores {
             wealth: Math.round((ohaeng.earth + ohaeng.metal) / 40),
         }
     };
-    return calculateGeniusScores(sajuMatrix, []);
+    return calculateStrengthScores(sajuMatrix, []);
 }

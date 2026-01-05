@@ -26,9 +26,9 @@ import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget
 // 대신 /api/secure/* API를 통해 서버에서 데이터를 가져옴
 
 // 차트 컴포넌트 동적 임포트 (SSR 방지)
-const GeniusRadarChart = dynamic(() => import('@/components/charts/GeniusRadarChart'), { ssr: false });
+const StrengthRadarChart = dynamic(() => import('@/components/charts/StrengthRadarChart'), { ssr: false });
 const VisualSajuDashboard = dynamic(() => import('@/components/visual/VisualSajuDashboard'), { ssr: false });
-const StartupDesignScreen = dynamic(() => import('@/components/startup/StartupDesignScreen'), { ssr: false });
+
 
 // ============== 스타일 ==============
 const styles = {
@@ -320,8 +320,7 @@ export default function DrillDownIconMenu({
     // [Pulse 5] Visual Dashboard State
     const [showVisualDashboard, setShowVisualDashboard] = useState(false);
 
-    // [NEW] Startup Design Screen State
-    const [showStartupDesign, setShowStartupDesign] = useState(false);
+
 
     // [Pulse 6] Collapsible Teaser State
     const [isTeaserCollapsed, setIsTeaserCollapsed] = useState(false);
@@ -411,12 +410,7 @@ export default function DrillDownIconMenu({
 
     // 서브메뉴 선택 핸들러
     const handleSubMenuSelect = (subItem: SubMenuItem) => {
-        // [NEW] Startup Design Screen 열기
-        if (subItem.intent === 'startup_design_view') {
-            setSelectedIcon(null);
-            setShowStartupDesign(true);
-            return;
-        }
+
 
         // [FIX] 사주 원국 분석 시 비주얼 대시보드 열기
         if (subItem.intent === 'saju_basic_analysis') {
@@ -425,10 +419,10 @@ export default function DrillDownIconMenu({
             return;
         }
 
-        // [NEW] Genius Report 페이지로 이동
-        if (subItem.intent === 'genius_report_view') {
+        // [NEW] 강점 리포트(인적자원) 페이지로 이동
+        if (subItem.intent === 'strength_report_view') {
             setSelectedIcon(null);
-            window.location.href = '/report/genius';
+            window.location.href = '/report/strength';
             return;
         }
 
@@ -494,14 +488,7 @@ export default function DrillDownIconMenu({
                 />
             )}
 
-            {/* [NEW] 무실패 스타트업 설계 스크린 */}
-            {showStartupDesign && (
-                <StartupDesignScreen
-                    onClose={() => setShowStartupDesign(false)}
-                    onChatIntent={onSelectIntent}
-                    userProfile={userProfile}
-                />
-            )}
+
 
             {/* [Pulse 6] Collapsible Daily Energy Teaser */}
             {isTeaserCollapsed ? (
@@ -627,7 +614,7 @@ export default function DrillDownIconMenu({
                                 borderRadius: '16px',
                                 border: '1px solid rgba(16, 185, 129, 0.1)'
                             }}>
-                                <GeniusRadarChart
+                                <StrengthRadarChart
                                     compact={true}
                                     scores={chartScores} // [Security] 서버에서 받은 점수 사용
                                     onTraitClick={handleTraitClick}

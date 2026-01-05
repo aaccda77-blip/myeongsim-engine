@@ -12,14 +12,14 @@ import {
 // [Security] ScoreCalculator class is now called via API, not imported here
 
 /**
- * GeniusRadarChart - 8축 천재성 레이더 차트
+ * StrengthRadarChart - 8축 강점/본질 에너지 레이더 차트
  * 
  * 용도: 성격분석 메뉴 상단에 배치하여 사용자의 고유 에너지 프로파일을 시각화
  * 디자인: 다크 배경 + 네온 그린/골드 라인 (사이버펑크 스타일)
  * 데이터: ScoreCalculator를 통해 사주/진키 데이터를 점수로 변환
  */
 
-interface GeniusRadarProps {
+interface StrengthRadarProps {
     /** 직접 점수 입력 (우선순위 1) */
     scores?: {
         creativity?: number;
@@ -72,14 +72,14 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-export default function GeniusRadarChart({
+export default function StrengthRadarChart({
     scores,
     sajuMatrix,
     myCodes = [],
     ohaeng,
     compact = false,
     onTraitClick
-}: GeniusRadarProps) {
+}: StrengthRadarProps) {
     // 점수 계산 (우선순위: scores > sajuMatrix > ohaeng > default)
     const computedScores = useMemo(() => {
         // 1. 직접 입력된 점수가 있으면 사용

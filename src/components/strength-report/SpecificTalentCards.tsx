@@ -41,9 +41,9 @@ export default function SpecificTalentCards({ talents }: SpecificTalentCardsProp
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
             {/* Header */}
             <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-2">
-                ✨ MY SPECIFIC TALENTS AND SKILLS
+                ✨ 구체적 재능과 핵심 역량
             </h3>
-            <p className="text-xs text-gray-400 mb-6">당신만의 구체적인 재능과 기술입니다</p>
+            <p className="text-xs text-gray-400 mb-6">당신이 타고난 구체적인 고유 역량입니다</p>
 
             {/* Cards Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

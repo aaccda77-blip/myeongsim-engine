@@ -1,6 +1,6 @@
 /**
- * Genius Report 전용 타입 정의
- * 지니어스 리포트의 5가지 핵심 시각화를 위한 데이터 구조
+ * 강점/재능(인적자원) 리포트 전용 타입 정의
+ * 리포트의 5가지 핵심 시각화를 위한 데이터 구조
  */
 
 // 8각 레이더 차트용 축 데이터
@@ -49,8 +49,8 @@ export type TeamRoleType =
     | 'RELATIONSHIP_BUILDER' // 관계 구축자
     | 'EXECUTION_DRIVER';   // 실행 추진자
 
-// 지니어스 리포트 전체 데이터
-export interface GeniusReportData {
+// 강점 리포트 전체 데이터
+export interface StrengthReportData {
     forceField: ForceFieldData;
     talentProfile: TalentProfileData;
     cooperationProfile: CooperationProfileData;

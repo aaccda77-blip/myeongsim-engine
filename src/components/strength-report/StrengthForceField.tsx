@@ -12,9 +12,9 @@ import {
     Legend,
     Tooltip
 } from 'recharts';
-import { ForceFieldData } from '@/types/genius-report';
+import { ForceFieldData } from '@/types/strength-report';
 
-interface GeniusForceFieldProps {
+interface StrengthForceFieldProps {
     data: ForceFieldData;
 }
 
@@ -60,7 +60,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-export default function GeniusForceField({ data }: GeniusForceFieldProps) {
+export default function StrengthForceField({ data }: StrengthForceFieldProps) {
     // 차트 데이터 변환
     const chartData = data.axisLabels.map((label, idx) => ({
         axis: label,
@@ -76,7 +76,7 @@ export default function GeniusForceField({ data }: GeniusForceFieldProps) {
             {/* Header */}
             <div className="relative z-10 mb-4">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    🕸️ MY GENIUS FORCE FIELD
+                    🕸️ 본질 에너지 포스필드
                 </h3>
                 <p className="text-xs text-gray-400 mt-1">나의 에너지 흐름을 8가지 축으로 시각화합니다</p>
             </div>

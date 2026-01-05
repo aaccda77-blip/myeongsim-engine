@@ -1,7 +1,7 @@
 /**
  * StartupCoachingEngine.ts - 강점 기반 스타트업 코칭 엔진
  * 
- * 사용자의 Genius Report / Saju 데이터를 분석하여
+ * 사용자의 강점 리포트 / 사주 데이터를 분석하여
  * 개인화된 스타트업 로드맵을 생성합니다.
  */
 
