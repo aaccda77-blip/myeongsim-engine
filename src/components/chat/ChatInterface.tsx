@@ -68,6 +68,10 @@ interface ChatInterfaceProps {
 
 export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfaceProps) {
     const { reportData } = useReportStore();
+    // [Wearable] Bio Data Hook
+    const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName } = useBioData();
+    const [showBioSync, setShowBioSync] = useState(false); // [New Menu]
+
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 'welcome',
@@ -1559,6 +1563,27 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
                     {/* [NEW] Quick Suggestion Chips (질문 가이드) */}
                     <div className="flex gap-2 overflow-x-auto pb-2 mb-2 px-1 scrollbar-hide">
+                        {/* [Wearable] BioSync Button */}
+                        <button
+                            onClick={() => setShowBioSync(true)}
+                            className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${isConnected
+                                ? 'bg-red-500/20 border-red-500 text-red-400 animate-pulse'
+                                : 'bg-gray-800/80 border-purple-500/30 text-purple-300 hover:bg-gray-700'
+                                }`}
+                        >
+                            {isConnecting ? (
+                                <span>⏳ ...</span>
+                            ) : isConnected ? (
+                                <>
+                                    <span>❤️ {bpm}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span>⌚ 바이오싱크</span>
+                                </>
+                            )}
+                        </button>
+
                         {[
                             "오늘 운세 어때? 🌞",
                             "내 재물운 알려줘 💰",
@@ -1581,11 +1606,108 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         userProfile={reportData}
                         hideTodayEnergy={true}
                         onSelectIntent={(intent, prompt) => {
+                            // [New] Bio-Sync Dashboard View
+                            if (intent === 'bio_sync_dashboard_view') {
+                                setShowBioSync(true);
+                                return;
+                            }
+
+                            // [New] Patent Demo Scenario (심사위원 시연용)
+                            if (intent === 'demo_patent_features') {
+                                setShowBioSync(true); // 1. 모달 열기
+                                simulate(); // 2. 가상 연결 시작 (BPM 시뮬레이션)
+
+                                // 3. 특허 기능 시나리오 연출 (타임라인)
+                                setTimeout(() => {
+                                    // 사용자 입장에서 감지 메시지 자동 발송 (시스템 로그처럼)
+                                    handleSend("⚠️ [System Alert] 생체 신호 이상 패턴 감지 (BPM 115 구간 진입)");
+                                }, 3000);
+
+                                setTimeout(() => {
+                                    // AI의 능동적 개입 (Active Intervention)
+                                    const interventionMsg: Message = {
+                                        id: Date.now().toString(),
+                                        role: 'assistant',
+                                        content: "🚨 **[긴급 생체 반응 감지]**\n\n고객님, 현재 심박수가 급격히 상승하여 '불안/스트레스' 패턴(Red Zone)에 진입했습니다.\n\n이는 단순한 감정 변화가 아닌, 신경계의 과부하 신호일 수 있습니다.\n\n**특허 기반 능동 처방:**\n즉시 하던 일을 멈추고 심호흡을 3회 실시하세요. 제가 진정 주파수(432Hz)를 재생하겠습니다. (특허 제 10-2025-0166877 구현 예시)"
+                                    };
+                                    setMessages((prev) => [...prev, interventionMsg]);
+                                    playGameSound('levelup'); // 알림음 대용
+                                }, 5500);
+                                return;
+                            }
+
                             setInput(prompt);
                             // Auto-send after selection
                             setTimeout(() => handleSend(prompt), 100);
                         }}
                     />
+
+                    {/* [NEW] Bio-Sync Modal (Wearable Connection Interface) */}
+                    {showBioSync && (
+                        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in" style={{ zIndex: 2000 }}>
+                            <div className="bg-[#1A1F2B] w-full max-w-sm rounded-3xl p-6 border border-white/10 shadow-2xl relative">
+                                <button
+                                    onClick={() => setShowBioSync(false)}
+                                    className="absolute top-4 right-4 text-gray-500 hover:text-white w-8 h-8 flex items-center justify-center rounded-full bg-white/5"
+                                >✕</button>
+
+                                <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
+                                    <span className="text-purple-400">⚡</span> Bio-Sync
+                                </h3>
+                                <p className="text-xs text-gray-400 mb-6">생체 데이터를 AI에 실시간 동기화합니다</p>
+
+                                <div className="flex flex-col items-center justify-center py-6">
+                                    {/* Heart Animation */}
+                                    <div className={`w-32 h-32 rounded-full flex items-center justify-center mb-6 transition-all duration-500 ${isConnected ? 'bg-red-500/10 shadow-[0_0_50px_rgba(239,68,68,0.2)]' : 'bg-gray-800/50'}`}>
+                                        {isConnected ? (
+                                            <div className="text-center">
+                                                <span className="block text-5xl font-black text-red-500 animate-pulse tracking-tighter">{bpm > 0 ? bpm : '--'}</span>
+                                                <span className="text-[10px] text-red-300 font-bold tracking-[0.2em] uppercase mt-1 block">BPM</span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-gray-600 text-4xl font-thin">--</span>
+                                        )}
+                                    </div>
+
+                                    <div className="text-center mb-8">
+                                        <p className="text-sm font-bold text-white mb-1">
+                                            {isConnecting ? "연결 시도 중..." : isConnected ? (deviceName || "Galaxy Watch") : "기기 연결 대기 중"}
+                                        </p>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-600'}`}></span>
+                                            <span className="text-xs text-gray-500">{isConnected ? "실시간 데이터 전송 중" : "연결 안 됨"}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="w-full flex flex-col gap-3">
+                                        {!isConnected ? (
+                                            <>
+                                                <button
+                                                    onClick={connect}
+                                                    className="w-full py-3.5 bg-purple-600 hover:bg-purple-500 rounded-xl text-white font-bold transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
+                                                >
+                                                    <span>📡</span> 블루투스 기기 찾기
+                                                </button>
+                                                <button
+                                                    onClick={simulate}
+                                                    className="w-full py-3.5 bg-gray-700 hover:bg-gray-600 rounded-xl text-gray-300 font-medium transition-all text-sm flex items-center justify-center gap-2 border border-white/5"
+                                                >
+                                                    <span>🧪</span> 가상 시뮬레이션 모드
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <button
+                                                onClick={disconnect}
+                                                className="w-full py-3.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 font-bold transition-all"
+                                            >
+                                                연결 해제
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Ghost Bubble Input */}
                     <form

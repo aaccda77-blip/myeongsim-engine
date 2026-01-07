@@ -290,6 +290,36 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 intent: "saju_yearly_monthly"
             }
         ]
+    },
+
+    // 7. ⌚ 바이오싱크 (NEW! - 웨어러블 연동)
+    BIO_SYNC: {
+        id: 'BIO_SYNC',
+        label: "생체 연동",
+        icon: "⌚",
+        neuro_trigger: "실시간 운명 동기화",
+        style: 'default',
+        sub_menus: [
+            {
+                id: "b_1",
+                label: "⚡ Bio-Sync 대시보드",
+                desc: "웨어러블 연결 및 데이터 확인",
+                intent: "bio_sync_dashboard_view"
+            },
+            {
+                id: "b_2",
+                label: "🧘 생체 리듬 명상",
+                desc: "심박수에 맞춘 호흡 가이드",
+                intent: "bio_rhythm_meditation"
+            },
+            {
+                id: "b_patent",
+                label: "🧪 [심사위원용] 특허 기능 시연",
+                desc: "생체 신호 기반 능동형 AI 개입 시나리오",
+                intent: "demo_patent_features",
+                isPremium: true
+            }
+        ]
     }
 };
 

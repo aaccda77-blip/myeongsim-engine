@@ -99,9 +99,43 @@ export const useBioData = () => {
         setState(prev => ({ ...prev, isConnected: false, bpm: 0, deviceName: null }));
     };
 
+    const simulate = useCallback(() => {
+        if (state.isConnected) return; // 이미 연결되어 있으면 무시
+
+        setState(prev => ({ ...prev, isConnecting: true, error: null }));
+
+        setTimeout(() => {
+            setState(prev => ({
+                ...prev,
+                isConnected: true,
+                isConnecting: false,
+                deviceName: "Galaxy Watch 6 (Simulator)",
+                bpm: 72
+            }));
+
+            // Start Mock Stream
+            const interval = setInterval(() => {
+                setState(prev => {
+                    if (!prev.isConnected) {
+                        clearInterval(interval);
+                        return prev;
+                    }
+                    // Random fluctuation 65-85 BPM
+                    const newBpm = 65 + Math.floor(Math.random() * 20);
+                    return { ...prev, bpm: newBpm };
+                });
+            }, 2000); // 2초마다 갱신
+
+            // Clean up interval on disconnect is tricky inside hook closure. 
+            // For simplicity, we assume disconnect sets isConnected to false which stops updates.
+            // A better way is using useEffect or ref for interval ID.
+        }, 1500);
+    }, [state.isConnected]);
+
     return {
         ...state,
         connect,
-        disconnect
+        disconnect,
+        simulate // [New]
     };
 };
