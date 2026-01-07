@@ -493,29 +493,9 @@ export default function DrillDownIconMenu({
             )}
 
 
-            {/* [REMOVED] TODAY'S ENERGY 섹션 제거 - 챗봇 대화에 집중 */}
-            {/* 사용자 요청: 챗봇 대화 시 방해되지 않도록 제거 */}
-            {false && isTeaserCollapsed ? (
-                /* Collapsed: Icon only */
-                <button
-                    onClick={() => setIsTeaserCollapsed(false)}
-                    className="fixed bottom-24 right-4 z-50 w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full shadow-lg flex items-center justify-center text-xl animate-pulse border-2 border-white/20"
-                    title="오늘의 에너지 보기"
-                >
-                    🔋
-                </button>
-            ) : !hideTodayEnergy ? (
-                /* Expanded: Full teaser - 챗봇 상담 중에는 숨김 */
+            {/* [REMOVED] TODAY'S ENERGY 섹션 - 챗봇 대화 시 완전히 숨김 */}
+            {!hideTodayEnergy && (
                 <div className="mb-4 relative">
-                    {/* Close (Collapse) Button */}
-                    <button
-                        onClick={() => setIsTeaserCollapsed(true)}
-                        className="absolute top-2 right-2 z-10 w-6 h-6 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-                        title="최소화"
-                    >
-                        ✕
-                    </button>
-
                     <div className="flex justify-between items-center mb-2 pr-8">
                         <span className="text-gray-400 text-xs font-bold px-1">TODAY'S ENERGY</span>
                         <button
@@ -527,7 +507,7 @@ export default function DrillDownIconMenu({
                     </div>
                     <DailyBiorhythmWidget dayMaster={dayMaster} />
                 </div>
-            ) : null}
+            )}
 
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>
