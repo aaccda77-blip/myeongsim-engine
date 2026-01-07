@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 
 // [Optimization] Heavy component loaded on demand
 const TodayEnergyDashboard = dynamic(
@@ -19,5 +20,26 @@ const TodayEnergyDashboard = dynamic(
 );
 
 export default function TodayPage() {
-    return <TodayEnergyDashboard />;
+    const router = useRouter();
+
+    // [NEW] 오늘운세 메시지 클릭 시 챗봇 상담으로 이동
+    const handleDailyMessageClick = (dailyGanji: string, message: string) => {
+        // localStorage에 오늘운세 상담 요청 저장
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('myeongsim_today_consult', JSON.stringify({
+                ganji: dailyGanji,
+                message: message,
+                requestedAt: new Date().toISOString()
+            }));
+        }
+        // 챗봇 페이지로 이동
+        router.push('/?intent=daily_fortune');
+    };
+
+    return (
+        <TodayEnergyDashboard
+            onBack={() => router.push('/')}
+            onDailyMessageClick={handleDailyMessageClick}
+        />
+    );
 }
