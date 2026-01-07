@@ -40,8 +40,8 @@ export const usePassTimer = (expiryTimestamp: string | null, onExpire?: () => vo
             const currentPercent = Math.min(100, (distance / totalDuration) * 100);
             setPercent(currentPercent);
 
-            // 4. 긴급 모드 (1시간 미만 남았을 때)
-            setIsUrgent(distance < 60 * 60 * 1000);
+            // 4. 긴급 모드 (10분 미만 남았을 때 - 30분 이용권 고려)
+            setIsUrgent(distance < 10 * 60 * 1000);
 
         }, 1000);
 
