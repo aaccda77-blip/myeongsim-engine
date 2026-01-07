@@ -500,12 +500,37 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
     const icons = Object.values(ICON_DRILL_DOWN_MAP);
     const recommendations = userProfile ? getRecommendedIcons(userProfile) : [];
 
-    return icons.map(icon => {
+    // 1. 배지와 우선순위 매핑
+    const mappedIcons = icons.map(icon => {
         const rec = recommendations.find(r => r.id === icon.id);
         return {
             ...icon,
-            badge: rec?.badge
+            badge: rec?.badge,
+            _priority: rec?.priority ?? 99 // 추천 없으면 뒤로 보냄
         };
+    });
+
+    // 2. 우선순위 정렬 (낮은 숫자가 먼저)
+    // 추천된 것은 priority값 사용 (0~3), 추천 안 된 것은 기본 순서 유지
+
+    const DEFAULT_PRIORITY: Record<string, number> = {
+        'BIO_SYNC': 5,             // 0순위 추천 (무조건 1등)
+        'WEALTH': 10,              // 부의 그릇 (중요)
+        'RELATIONSHIP': 11,        // 관계의 멍
+        'CAREER': 12,              // 천직 발견
+        'PERSONALITY_ANALYSIS': 13,// 성격분석
+        'DAILY_MISSION': 14,       // 데일리 미션
+        'SAJU_ANALYSIS': 15        // 정밀 사주
+    };
+
+    return mappedIcons.sort((a, b) => {
+        // 1. 추천 아이콘이면 우선순위 사용 (추천 우선순위는 보통 1~3, BIO_SYNC는 0)
+        // 추천 안 된 것은 99였는데, 이걸 기본 우선순위로 대체
+
+        const priorityA = a._priority !== 99 ? a._priority : (DEFAULT_PRIORITY[a.id] || 99);
+        const priorityB = b._priority !== 99 ? b._priority : (DEFAULT_PRIORITY[b.id] || 99);
+
+        return priorityA - priorityB;
     });
 }
 
