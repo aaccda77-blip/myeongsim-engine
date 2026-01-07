@@ -100,7 +100,7 @@ ICHING_WHEEL_ORDER.forEach((gate, index) => {
 // Gate 41의 시작 황경 (Human Design 표준)
 // Gate 41은 Aquarius 2도에서 시작 (약 302도)
 // 정밀 조정: 1980-07-07이 Gate 53이 되도록 미세 조정
-const GATE_41_START_LONGITUDE = 301.0; // 미세 조정된 값
+const GATE_41_START_LONGITUDE = 296.0; // [FIX] NeuralProfileCalculator와 동일하게 조정
 
 /**
  * 황경(Longitude)을 Gate + Line으로 변환

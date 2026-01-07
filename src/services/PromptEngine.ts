@@ -952,8 +952,19 @@ ${this.sanitize(ragContext, 1500)}
 `;
     }
 
-    // 4. 최종 프롬프트 조립 (Structure + Emotion + Gene Keys)
+    // 4. 현재 날짜/시간 컨텍스트 생성
+    const now = new Date();
+    const dateContext = `
+[📅 현재 시점 (Current Date Context)]
+- 오늘 날짜: ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일
+- 요일: ${['일', '월', '화', '수', '목', '금', '토'][now.getDay()]}요일
+- 현재 시간: ${now.getHours()}시 ${now.getMinutes()}분
+`;
+
+    // 5. 최종 프롬프트 조립 (Structure + Emotion + Gene Keys)
     return `
+${dateContext}
+
 ${this.MASTER_H_IDENTITY}
 
 ${this.GENE_KEYS_PROTOCOL}
@@ -1054,8 +1065,19 @@ ${memoryBlock}
     const personaConfig = this.GROWTH_MAP_PERSONAS[validStage as keyof typeof this.GROWTH_MAP_PERSONAS];
     const personaInstruction = personaConfig ? personaConfig.instruction : "";
 
+    // 현재 날짜/시간 컨텍스트
+    const now = new Date();
+    const dateContext = `
+[📅 현재 시점 (Current Date Context)]
+- 오늘 날짜: ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일
+- 요일: ${['일', '월', '화', '수', '목', '금', '토'][now.getDay()]}요일
+- 현재 시간: ${now.getHours()}시 ${now.getMinutes()}분
+`;
+
     // 4. 최종 프롬프트 조립 (샌드위치 방어 적용)
     return `
+${dateContext}
+
 ${this.MASTER_H_IDENTITY}
 ${this.NEURAL_LOGIC}
 
