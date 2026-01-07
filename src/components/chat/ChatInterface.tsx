@@ -1636,6 +1636,76 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                 return;
                             }
 
+                            // [New] Patent Demo 2: 선제적 예방 (Preventive Care)
+                            if (intent === 'demo_preventive_care') {
+                                setShowBioSync(true);
+                                simulate();
+
+                                setTimeout(() => {
+                                    handleSend("🔎 [Pattern Analysis] 지난 2주간 데이터와 대조 중... 미세 변동 감지");
+                                }, 2000);
+
+                                setTimeout(() => {
+                                    const preventiveMsg: Message = {
+                                        id: Date.now().toString(),
+                                        role: 'assistant',
+                                        content: "🛡️ **[선제적 스트레스 예방 알림]**\n\n고객님, 현재 심박수는 정상이지만 '심박 변이도(HRV)'가 급격히 낮아지고 있습니다.\n\n이는 통계적으로 30분 내에 스트레스성 긴장이 올 확률이 85%임을 시사합니다.\n\n**AI 추천 예방책:**\n지금 하시는 업무를 잠시 멈추고 5분간 창밖을 보거나 따뜻한 차를 마시는 것이 효율을 20% 높여줄 것입니다."
+                                    };
+                                    setMessages((prev) => [...prev, preventiveMsg]);
+                                    playGameSound('normal');
+                                }, 4500);
+                                return;
+                            }
+
+                            // [New] Patent Demo 3: 통합 치유 프로토콜 (Integrated Therapy)
+                            if (intent === 'demo_integrated_therapy') {
+                                setShowBioSync(true);
+                                simulate();
+
+                                setTimeout(() => {
+                                    handleSend("🧠 [Protocol Start] 통합 심리 치유 시퀀스 가동 (CBT + DBT + ACT)");
+                                }, 2000);
+
+                                // Step 1: 알아차림 (Mindfulness)
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_1",
+                                        role: 'assistant',
+                                        content: "1️⃣ **[알아차림]**: 지금 심장이 조금 빠르게 뛰는 것을 느끼시나요? 그것을 '나쁜 것'으로 판단하지 말고, 단지 '몸의 감각'으로만 바라봐주세요. (메타인지 활성화)"
+                                    }]);
+                                }, 4000);
+
+                                // Step 2: 수용 (DBT)
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_2",
+                                        role: 'assistant',
+                                        content: "2️⃣ **[수용]**: 불안해도 괜찮습니다. 이 감정은 지나가는 파도와 같습니다. 억지로 없애려 하지 말고 파도 타듯이 맡겨보세요. (감정 조절)"
+                                    }]);
+                                }, 8000);
+
+                                // Step 3: 인지 재구성 (CBT)
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_3",
+                                        role: 'assistant',
+                                        content: "3️⃣ **[인지 재구성]**: 지금 드는 걱정이 '팩트'인가요, 아니면 두려움이 만들어낸 '상상'인가요? 최악의 상황이 실제로 일어날 확률은 얼마나 될까요? (현실 검증)"
+                                    }]);
+                                }, 12000);
+
+                                // Step 4: 행동 활성화 (ACT)
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_4",
+                                        role: 'assistant',
+                                        content: "4️⃣ **[가치 전념 행동]**: 지금 당장, 내가 추구하는 가치를 위해 할 수 있는 가장 작은 행동 하나는 무엇인가요? 그것을 지금 실행합시다. (실행력 회복)"
+                                    }]);
+                                    playGameSound('cheer');
+                                }, 16000);
+
+                                return;
+                            }
+
                             setInput(prompt);
                             // Auto-send after selection
                             setTimeout(() => handleSend(prompt), 100);

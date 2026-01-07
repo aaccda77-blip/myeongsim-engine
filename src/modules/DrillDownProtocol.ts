@@ -313,10 +313,24 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 intent: "bio_rhythm_meditation"
             },
             {
-                id: "b_patent",
-                label: "🧪 [심사위원용] 특허 기능 시연",
-                desc: "생체 신호 기반 능동형 AI 개입 시나리오",
-                intent: "demo_patent_features",
+                id: "b_patent_1",
+                label: "🚨 [특허 시연] 위기 개입",
+                desc: "급격한 스트레스 발생 시 능동 개입",
+                intent: "demo_patent_features", // 기존 것
+                isPremium: true
+            },
+            {
+                id: "b_patent_2",
+                label: "🛡️ [특허 시연] 선제적 예방",
+                desc: "패턴 분석을 통한 스트레스 사전 차단",
+                intent: "demo_preventive_care",
+                isPremium: true
+            },
+            {
+                id: "b_patent_3",
+                label: "🧠 [특허 시연] 통합 치유",
+                desc: "CBT+DBT+ACT 순차적 심리 처방",
+                intent: "demo_integrated_therapy",
                 isPremium: true
             }
         ]
