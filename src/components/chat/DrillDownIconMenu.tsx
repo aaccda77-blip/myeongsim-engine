@@ -411,6 +411,12 @@ export default function DrillDownIconMenu({
     // 추천 아이콘 계산
     const icons = getMainIconsWithRecommendations(userProfile);
 
+    // [Emergency Fix] BIO_SYNC 아이콘 강제 포함 (렌더링 누락 방지)
+    if (!icons.find(i => i.id === 'BIO_SYNC') && ICON_DRILL_DOWN_MAP['BIO_SYNC']) {
+        // console.log("Force inserting BIO_SYNC icon");
+        icons.push(ICON_DRILL_DOWN_MAP['BIO_SYNC']);
+    }
+
     // [Security] 서버에서 특성 설명 가져오기
     const handleTraitClick = async (trait: string, score: number) => {
         // [Neuroscientist] Physical Reward (Haptic)
@@ -583,7 +589,10 @@ export default function DrillDownIconMenu({
             <div style={styles.container}>
                 {icons.map((icon) => {
                     const isHovered = hoveredIcon === icon.id;
-                    const friendlyLabel = FRIENDLY_LABELS[icon.id];
+                    const friendlyLabel = FRIENDLY_LABELS[icon.id] || {
+                        main: icon.label,
+                        sub: icon.neuro_trigger
+                    };
 
                     return (
                         <button
