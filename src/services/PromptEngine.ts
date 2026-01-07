@@ -956,11 +956,28 @@ ${this.sanitize(ragContext, 1500)}
     const now = new Date();
     const kstOffset = 9 * 60; // KST is UTC+9
     const kstTime = new Date(now.getTime() + (kstOffset + now.getTimezoneOffset()) * 60000);
+
+    // [NEW] 일진(日辰) 계산 - lunar-javascript 사용
+    let dailyPillar = "정보 없음";
+    try {
+      // Dynamic import to avoid client-side issues
+      const { Solar } = require('lunar-javascript');
+      const solar = Solar.fromYmdHms(kstTime.getFullYear(), kstTime.getMonth() + 1, kstTime.getDate(), 12, 0, 0);
+      const lunar = solar.getLunar();
+      const baZi = lunar.getEightChar();
+      const dayGan = baZi.getDayGan(); // 예: "辛"
+      const dayZhi = baZi.getDayZhi(); // 예: "巳"
+      dailyPillar = `${dayGan}${dayZhi}`; // 예: "辛巳"
+    } catch (e) {
+      console.warn("일진 계산 실패:", e);
+    }
+
     const dateContext = `
 [📅 현재 시점 (Current Date Context)]
 - 오늘 날짜: ${kstTime.getFullYear()}년 ${kstTime.getMonth() + 1}월 ${kstTime.getDate()}일
 - 요일: ${['일', '월', '화', '수', '목', '금', '토'][kstTime.getDay()]}요일
 - 현재 시간: ${kstTime.getHours()}시 ${kstTime.getMinutes()}분 (한국시간 KST)
+- ⚠️ 오늘 일진(日辰): ${dailyPillar}일 (이 정보를 사용자에게 정확히 전달할 것!)
 `;
 
     // 5. 최종 프롬프트 조립 (Structure + Emotion + Gene Keys)
@@ -1071,11 +1088,25 @@ ${memoryBlock}
     const now = new Date();
     const kstOffset = 9 * 60; // KST is UTC+9
     const kstTime = new Date(now.getTime() + (kstOffset + now.getTimezoneOffset()) * 60000);
+
+    // [NEW] 일진(日辰) 계산
+    let dailyPillar = "정보 없음";
+    try {
+      const { Solar } = require('lunar-javascript');
+      const solar = Solar.fromYmdHms(kstTime.getFullYear(), kstTime.getMonth() + 1, kstTime.getDate(), 12, 0, 0);
+      const lunar = solar.getLunar();
+      const baZi = lunar.getEightChar();
+      dailyPillar = `${baZi.getDayGan()}${baZi.getDayZhi()}`;
+    } catch (e) {
+      console.warn("일진 계산 실패:", e);
+    }
+
     const dateContext = `
 [📅 현재 시점 (Current Date Context)]
 - 오늘 날짜: ${kstTime.getFullYear()}년 ${kstTime.getMonth() + 1}월 ${kstTime.getDate()}일
 - 요일: ${['일', '월', '화', '수', '목', '금', '토'][kstTime.getDay()]}요일
 - 현재 시간: ${kstTime.getHours()}시 ${kstTime.getMinutes()}분 (한국시간 KST)
+- ⚠️ 오늘 일진(日辰): ${dailyPillar}일 (정확히 전달할 것!)
 `;
 
     // 4. 최종 프롬프트 조립 (샌드위치 방어 적용)
