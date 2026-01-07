@@ -75,7 +75,51 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 2. ❤️ 관계의 멍 (코칭/치유 접근)
+    // 2. ⌚ 바이오싱크 (NEW! - 웨어러블 연동) [UPGRADED PRIORITY]
+    BIO_SYNC: {
+        id: 'BIO_SYNC',
+        label: "생체 연동",
+        icon: "⌚",
+        neuro_trigger: "실시간 운명 동기화",
+        style: 'default',
+        sub_menus: [
+            {
+                id: "b_1",
+                label: "⚡ Bio-Sync 대시보드",
+                desc: "웨어러블 연결 및 데이터 확인",
+                intent: "bio_sync_dashboard_view"
+            },
+            {
+                id: "b_2",
+                label: "🧘 생체 리듬 명상",
+                desc: "심박수에 맞춘 호흡 가이드",
+                intent: "bio_rhythm_meditation"
+            },
+            {
+                id: "b_patent_1",
+                label: "🚨 [특허 시연] 위기 개입",
+                desc: "급격한 스트레스 발생 시 능동 개입",
+                intent: "demo_patent_features",
+                isPremium: true
+            },
+            {
+                id: "b_patent_2",
+                label: "🛡️ [특허 시연] 선제적 예방",
+                desc: "패턴 분석을 통한 스트레스 사전 차단",
+                intent: "demo_preventive_care",
+                isPremium: true
+            },
+            {
+                id: "b_patent_3",
+                label: "🧠 [특허 시연] 통합 치유",
+                desc: "CBT+DBT+ACT 순차적 심리 처방",
+                intent: "demo_integrated_therapy",
+                isPremium: true
+            }
+        ]
+    },
+
+    // 3. ❤️ 관계의 멍 (코칭/치유 접근)
     RELATIONSHIP: {
         id: 'RELATIONSHIP',
         label: "관계의 멍",
@@ -437,6 +481,13 @@ export function getRecommendedIcons(userProfile: any): IconRecommendation[] {
             priority: 2
         });
     }
+
+    // [NEW] 바이오싱크는 항상 최우선 추천 (특허 기능 강조)
+    recommendations.push({
+        id: 'BIO_SYNC',
+        badge: 'NEW',
+        priority: 0 // 최상위 우선순위
+    });
 
     // 우선순위로 정렬
     return recommendations.sort((a, b) => (a.priority || 99) - (b.priority || 99));
