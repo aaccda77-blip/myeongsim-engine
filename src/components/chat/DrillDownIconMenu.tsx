@@ -493,9 +493,9 @@ export default function DrillDownIconMenu({
             )}
 
 
-
-            {/* [Pulse 6] Collapsible Daily Energy Teaser */}
-            {isTeaserCollapsed ? (
+            {/* [REMOVED] TODAY'S ENERGY 섹션 제거 - 챗봇 대화에 집중 */}
+            {/* 사용자 요청: 챗봇 대화 시 방해되지 않도록 제거 */}
+            {false && isTeaserCollapsed ? (
                 /* Collapsed: Icon only */
                 <button
                     onClick={() => setIsTeaserCollapsed(false)}
