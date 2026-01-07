@@ -69,8 +69,9 @@ interface ChatInterfaceProps {
 export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfaceProps) {
     const { reportData } = useReportStore();
     // [Wearable] Bio Data Hook
-    const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName } = useBioData();
+    const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName, simulateRecovery } = useBioData();
     const [showBioSync, setShowBioSync] = useState(false); // [New Menu]
+    const [emdrActive, setEmdrActive] = useState(false); // [New] EMDR Mode State
 
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -1703,6 +1704,143 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                     playGameSound('cheer');
                                 }, 16000);
 
+                                return;
+                            }
+
+                            // [New] Patent Demo 4: 실시간 진정 효과 (Real-time Recovery)
+                            if (intent === 'demo_realtime_recovery') {
+                                setShowBioSync(true);
+                                setEmdrActive(false);
+                                simulateRecovery();
+
+                                handleSend("📉 [Bio-Feedback] 실시간 진정 프로토콜 시작. 화면의 박동에 맞춰 호흡하세요.");
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString(),
+                                        role: 'assistant',
+                                        content: "🌬️ **[호흡 동기화 가이드]**\n\n현재 심박수: **118 BPM** (과각성)\n\n제 신호에 맞춰주세요:\n1. 들이마시고... (4초)\n2. 멈추고... (4초)\n3. 내쉬세요... (4초)\n\n(이 과정을 반복하면 심박수가 안정됩니다)"
+                                    }]);
+                                }, 1000);
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_complete",
+                                        role: 'assistant',
+                                        content: "✅ **[안정화 완료]**\n\n심박수가 정상 범위(**72 BPM**)로 돌아왔습니다. 미주신경 활성화가 확인되었습니다."
+                                    }]);
+                                    playGameSound('levelup');
+                                }, 22000);
+                                return;
+                            }
+
+                            // [New] Patent Demo 5: EMDR 트라우마 케어
+                            if (intent === 'demo_emdr_session') {
+                                setShowBioSync(true);
+                                setEmdrActive(true); // Enable EMDR Mode
+                                simulateRecovery();
+
+                                handleSend("👁️ [EMDR Protocol] 안구 운동 정보처리 모드 활성화. 트라우마 네트워크 재처리 시작.");
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString(),
+                                        role: 'assistant',
+                                        content: "🧠 **[EMDR 가이드]**\n\n1. 고개를 고정한 채, **눈동자만** 움직여 화면의 불빛을 따라가세요.\n2. 지금 느끼는 불안한 감정을 떠올리세요.\n3. 불빛을 따라 좌우로 눈을 움직이며 그 감정이 어떻게 변하는지 관찰하세요."
+                                    }]);
+                                }, 1500);
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_emdr_end",
+                                        role: 'assistant',
+                                        content: "✅ **[세션 완료]**\n\n뇌의 정보 처리 시스템이 활성화되어 부정적 감정의 강도가 감소했습니다. (BPM 118 -> 72 안정화)"
+                                    }]);
+                                    setEmdrActive(false); // Stop Animation
+                                }, 25000);
+                                return;
+                            }
+
+                            // [World Class Idea 1] Neuro-Saju Resonance
+                            if (intent === 'demo_neuro_saju') {
+                                setShowBioSync(true);
+                                handleSend("🧬 [Neuro-Saju Test] 사주 데이터를 신경계와 대조합니다. '화(火)' 기운에 대한 반응을 측정하겠습니다.");
+                                simulate(); // Start Normal
+
+                                setTimeout(() => {
+                                    // Trigger Spike
+                                    simulateRecovery(); // Reset
+                                    handleSend("⚠️ 시각 자극: [丙火 - 병화] (귀하의 기신)");
+                                }, 3000);
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString(),
+                                        role: 'assistant',
+                                        content: "📈 **[공명 현상 감지]**\n\n'불(Fire)'의 기운을 마주하자 심박수가 15% 급상승(98 BPM ↗ 115 BPM)했습니다.\n\n이는 귀하의 세포가 과거의 '화(火)'와 관련된 트라우마를 기억하고 있다는 생물학적 증거입니다. 이 운명을 피하지 않고 다룰 수 있도록 뇌신경 훈련을 제안합니다."
+                                    }]);
+                                    playGameSound('levelup');
+                                }, 6000);
+                                return;
+                            }
+
+                            // [World Class Idea 2] Subconscious Truth Detector
+                            if (intent === 'demo_subconscious_check') {
+                                setShowBioSync(true);
+                                handleSend("🎭 [Deep Mind] 무의식 정합성 테스트를 시작합니다. 제가 묻는 말에 마음속으로 대답하세요.");
+                                simulate();
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_q",
+                                        role: 'assistant',
+                                        content: "❓ **질문**: 당신은 지금 하고 있는 일에서 진정한 의미를 찾고 있습니까?"
+                                    }]);
+                                }, 2500);
+
+                                setTimeout(() => {
+                                    // Spike BPM
+                                    handleSend("🗣️ 사용자 답변(가정): \"네, 그렇습니다.\"");
+                                }, 5000);
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_a",
+                                        role: 'assistant',
+                                        content: "🚨 **[부조화 경고]**\n\n언어적 답변은 긍정이었으나, 자율신경계는 '거부 반응(Stress Spike)'을 보였습니다.\n\n이것은 **'착한 아이 콤플렉스'**로 인한 무의식적 거짓말일 가능성이 92%입니다. 솔직한 내면을 마주하는 '그림자 작업(Shadow Work)' 챕터로 이동하시겠습니까?"
+                                    }]);
+                                    playGameSound('normal');
+                                }, 7500);
+                                return;
+                            }
+
+                            // [World Class Idea 3] Frequency Tuning
+                            if (intent === 'demo_frequency_tuning') {
+                                setShowBioSync(true);
+                                simulate(); // Low Hz simulation implicitly
+                                handleSend("🌌 [Bio-Quantum] 현재 생체 에너지의 '의식 주파수(Hz)'를 측정합니다...");
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_hz_1",
+                                        role: 'assistant',
+                                        content: "📉 **현재 상태: 75 Hz (슬픔/후회)**\n현재 에너지가 무겁게 가라앉아 있습니다. 상위 차원으로 튜닝을 시도합니다."
+                                    }]);
+                                }, 3000);
+
+                                setTimeout(() => {
+                                    handleSend("🎵 [Tuning] 528Hz 솔페지오 주파수(DNA 복구) 재생 중...");
+                                    simulateRecovery(); // Calm down
+                                }, 5000);
+
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString() + "_hz_done",
+                                        role: 'assistant',
+                                        content: "✨ **[튜닝 완료]**\n\n**현재 상태: 350 Hz (수용/용기)**\n\n심박 변이도가 안정화되었으며, 뇌파가 '알파파' 대역에 진입했습니다. 이제 중요한 결정을 내리셔도 좋습니다."
+                                    }]);
+                                    playGameSound('cheer');
+                                }, 9000);
                                 return;
                             }
 

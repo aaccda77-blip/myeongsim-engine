@@ -332,6 +332,42 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "CBT+DBT+ACT 순차적 심리 처방",
                 intent: "demo_integrated_therapy",
                 isPremium: true
+            },
+            {
+                id: "b_patent_recovery",
+                label: "📉 [특허 시연] 실시간 진정 효과",
+                desc: "호흡 가이드에 따른 심박수 안정화 시각화",
+                intent: "demo_realtime_recovery",
+                isPremium: true
+            },
+            {
+                id: "b_patent_emdr",
+                label: "👁️ [특허 시연] EMDR 트라우마 케어",
+                desc: "안구 운동을 통한 불안 정보처리 시연",
+                intent: "demo_emdr_session",
+                isPremium: true
+            },
+            // [세계 최초] 융합 특허 아이디어
+            {
+                id: "b_idea_1",
+                label: "🧬 [Neuro-Saju] 운명-신경 공명",
+                desc: "사주 오행에 반응하는 자율신경계 테스트",
+                intent: "demo_neuro_saju",
+                isPremium: true
+            },
+            {
+                id: "b_idea_2",
+                label: "🎭 [Deep Mind] 무의식 진실 탐지",
+                desc: "답변과 생체 반응의 불일치(인지부조화) 분석",
+                intent: "demo_subconscious_check",
+                isPremium: true
+            },
+            {
+                id: "b_idea_3",
+                label: "🌌 [Bio-Quantum] 감정 주파수 튜닝",
+                desc: "생체 에너지를 Hz 단위로 측정 및 승화",
+                intent: "demo_frequency_tuning",
+                isPremium: true
             }
         ]
     }
