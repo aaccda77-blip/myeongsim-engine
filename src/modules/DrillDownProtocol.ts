@@ -35,11 +35,11 @@ export interface IconRecommendation {
     priority?: number;
 }
 
-// ============== 메인 아이콘 맵 (6개) ==============
+// ============== 메인 아이콘 맵 (최종 정리본) ==============
 
 export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
 
-    // 1. 💰 부의 그릇 (코칭/치유 접근)
+    // 1. 💰 부의 그릇 (가장 대중적인 니즈)
     WEALTH: {
         id: 'WEALTH',
         label: "부의 그릇",
@@ -75,7 +75,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 2. ⌚ 바이오싱크 (NEW! - 웨어러블 연동) [UPGRADED PRIORITY]
+    // 2. ⌚ 바이오싱크 (특허 기술 강조 - 위치 이동 및 통합 완료)
     BIO_SYNC: {
         id: 'BIO_SYNC',
         label: "생체 연동",
@@ -95,31 +95,40 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "심박수에 맞춘 호흡 가이드",
                 intent: "bio_rhythm_meditation"
             },
+            // [특허 핵심 기능 배치]
             {
                 id: "b_patent_1",
-                label: "🚨 [특허 시연] 위기 개입",
-                desc: "급격한 스트레스 발생 시 능동 개입",
+                label: "🚨 [특허] 위기 개입",
+                desc: "급성 스트레스 차단 (S-C-A-R)",
                 intent: "demo_patent_features",
                 isPremium: true
             },
             {
                 id: "b_patent_2",
-                label: "🛡️ [특허 시연] 선제적 예방",
-                desc: "패턴 분석을 통한 스트레스 사전 차단",
+                label: "🛡️ [특허] 선제적 예방",
+                desc: "스트레스 패턴 예측 및 알림",
                 intent: "demo_preventive_care",
                 isPremium: true
             },
             {
-                id: "b_patent_3",
-                label: "🧠 [특허 시연] 통합 치유",
-                desc: "CBT+DBT+ACT 순차적 심리 처방",
-                intent: "demo_integrated_therapy",
+                id: "b_patent_recovery",
+                label: "📉 [특허] 실시간 진정",
+                desc: "심박수 안정화 시각화",
+                intent: "demo_realtime_recovery",
+                isPremium: true
+            },
+            // [융합 아이디어]
+            {
+                id: "b_idea_1",
+                label: "🧬 Neuro-Saju",
+                desc: "오행-신경계 공명 테스트",
+                intent: "demo_neuro_saju",
                 isPremium: true
             }
         ]
     },
 
-    // 3. ❤️ 관계의 멍 (코칭/치유 접근)
+    // 3. ❤️ 관계의 멍
     RELATIONSHIP: {
         id: 'RELATIONSHIP',
         label: "관계의 멍",
@@ -154,7 +163,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 3. 🚀 천직 발견 (성장 접근)
+    // 4. 🚀 천직 발견
     CAREER: {
         id: 'CAREER',
         label: "천직 발견",
@@ -190,7 +199,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 4. 🧬 성격분석 (자아 탐구) - 명심코칭 브랜드
+    // 5. 🧬 성격분석 (명심코칭 시그니처)
     PERSONALITY_ANALYSIS: {
         id: 'PERSONALITY_ANALYSIS',
         label: "성격분석",
@@ -207,13 +216,13 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             {
                 id: "g_neural",
                 label: "🧬 뉴럴 프로필 분석",
-                desc: "Life's Work, Evolution, Radiance, Purpose 4대 코드",
+                desc: "Life's Work, Evolution, Radiance, Purpose",
                 intent: "neural_profile_analysis"
             },
             {
                 id: "g_2",
                 label: "⚡ 다크코드 → 뉴럴코드",
-                desc: "아픔을 힘으로",
+                desc: "아픔을 힘으로 바꾸는 법",
                 intent: "dark_to_neural"
             },
             {
@@ -233,25 +242,11 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "🧠 심리 치유 아키타입",
                 desc: "DBT/ACT/MBCT 통합 처방",
                 intent: "therapy_archetype_view"
-            },
-            {
-                id: "g_6",
-                label: "💎 강점/재능(인적자원)리포트",
-                desc: "생년월일 기반 8축 역량 분석",
-                intent: "strength_report_view",
-                isPremium: true
-            },
-            {
-                id: "g_7",
-                label: "🚀 스타트업 창업 전략",
-                desc: "강점 기반 사업 유형 & 성장 공식",
-                intent: "startup_strategy_view",
-                isPremium: true
             }
         ]
     },
 
-    // 5. 💊 데일리 미션 (실천)
+    // 6. 💊 데일리 미션
     DAILY_MISSION: {
         id: 'DAILY_MISSION',
         label: "데일리 미션",
@@ -282,18 +277,11 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "🧘 명상 가이드",
                 desc: "5분 마음 정화",
                 intent: "meditation_guide"
-            },
-            {
-                id: "d_4",
-                label: "✅ 미션 기록",
-                desc: "실천 이력 확인",
-                intent: "mission_history"
             }
         ]
     },
 
-    // 6. 🔮 정밀 사주 (NEW! - 분석 접근)
-    // 사주만 딱 보고 싶은 사람을 위한 전용 메뉴
+    // 7. 🔮 정밀 사주 (전통적인 니즈)
     SAJU_ANALYSIS: {
         id: 'SAJU_ANALYSIS',
         label: "정밀 사주",
@@ -332,86 +320,6 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "📅 세운/월운 분석",
                 desc: "올해와 이달의 운세",
                 intent: "saju_yearly_monthly"
-            }
-        ]
-    },
-
-    // 7. ⌚ 바이오싱크 (NEW! - 웨어러블 연동)
-    BIO_SYNC: {
-        id: 'BIO_SYNC',
-        label: "생체 연동",
-        icon: "⌚",
-        neuro_trigger: "실시간 운명 동기화",
-        style: 'default',
-        sub_menus: [
-            {
-                id: "b_1",
-                label: "⚡ Bio-Sync 대시보드",
-                desc: "웨어러블 연결 및 데이터 확인",
-                intent: "bio_sync_dashboard_view"
-            },
-            {
-                id: "b_2",
-                label: "🧘 생체 리듬 명상",
-                desc: "심박수에 맞춘 호흡 가이드",
-                intent: "bio_rhythm_meditation"
-            },
-            {
-                id: "b_patent_1",
-                label: "🚨 [특허 시연] 위기 개입",
-                desc: "급격한 스트레스 발생 시 능동 개입",
-                intent: "demo_patent_features", // 기존 것
-                isPremium: true
-            },
-            {
-                id: "b_patent_2",
-                label: "🛡️ [특허 시연] 선제적 예방",
-                desc: "패턴 분석을 통한 스트레스 사전 차단",
-                intent: "demo_preventive_care",
-                isPremium: true
-            },
-            {
-                id: "b_patent_3",
-                label: "🧠 [특허 시연] 통합 치유",
-                desc: "CBT+DBT+ACT 순차적 심리 처방",
-                intent: "demo_integrated_therapy",
-                isPremium: true
-            },
-            {
-                id: "b_patent_recovery",
-                label: "📉 [특허 시연] 실시간 진정 효과",
-                desc: "호흡 가이드에 따른 심박수 안정화 시각화",
-                intent: "demo_realtime_recovery",
-                isPremium: true
-            },
-            {
-                id: "b_patent_emdr",
-                label: "👁️ [특허 시연] EMDR 트라우마 케어",
-                desc: "안구 운동을 통한 불안 정보처리 시연",
-                intent: "demo_emdr_session",
-                isPremium: true
-            },
-            // [세계 최초] 융합 특허 아이디어
-            {
-                id: "b_idea_1",
-                label: "🧬 [Neuro-Saju] 운명-신경 공명",
-                desc: "사주 오행에 반응하는 자율신경계 테스트",
-                intent: "demo_neuro_saju",
-                isPremium: true
-            },
-            {
-                id: "b_idea_2",
-                label: "🎭 [Deep Mind] 무의식 진실 탐지",
-                desc: "답변과 생체 반응의 불일치(인지부조화) 분석",
-                intent: "demo_subconscious_check",
-                isPremium: true
-            },
-            {
-                id: "b_idea_3",
-                label: "🌌 [Bio-Quantum] 감정 주파수 튜닝",
-                desc: "생체 에너지를 Hz 단위로 측정 및 승화",
-                intent: "demo_frequency_tuning",
-                isPremium: true
             }
         ]
     }
