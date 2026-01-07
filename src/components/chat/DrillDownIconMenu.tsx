@@ -23,6 +23,8 @@ import {
     MainIcon,
     SubMenuItem
 } from '@/modules/DrillDownProtocol';
+import TherapyCard from '@/components/therapy/TherapyCard'; // [NEW] 심리 치유 아키타입 카드
+import { findTherapyArchetype, TherapyArchetype } from '@/data/TherapyDB'; // [NEW] 아키타입 매칭 엔진
 import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget';
 // [Security] ScoreCalculator와 StaticTextDB는 더 이상 클라이언트에서 import하지 않음
 // 대신 /api/secure/* API를 통해 서버에서 데이터를 가져옴
@@ -329,6 +331,10 @@ export default function DrillDownIconMenu({
     // [Pulse 6] Collapsible Teaser State
     const [isTeaserCollapsed, setIsTeaserCollapsed] = useState(false);
 
+    // [New] Therapy Archetype Modal State
+    const [selectedTherapyArchetype, setSelectedTherapyArchetype] = useState<TherapyArchetype | null>(null);
+    const [showTherapyModal, setShowTherapyModal] = useState(false);
+
     // [NEW] 이용권 상태 확인
     const { isExpired } = useSubscription();
 
@@ -459,6 +465,39 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] 심리 치유 아키타입 보기 (Therapy Card)
+        if (subItem.intent === 'therapy_archetype_view') {
+            setSelectedIcon(null);
+
+            // 1. 사용자 프로필 매핑
+            const sajuMatrix = userProfile?.saju?.ohaeng || { wood: 20, fire: 20, earth: 20, metal: 20, water: 20 };
+            const scores = [
+                { el: '목', score: sajuMatrix.wood || 0 },
+                { el: '화', score: sajuMatrix.fire || 0 },
+                { el: '토', score: sajuMatrix.earth || 0 },
+                { el: '금', score: sajuMatrix.metal || 0 },
+                { el: '수', score: sajuMatrix.water || 0 }
+            ];
+            const dominantOhaeng = scores.sort((a, b) => b.score - a.score).slice(0, 2).map(s => s.el as any);
+
+            // 2. 추천 아키타입 찾기
+            const recommendations = findTherapyArchetype({
+                dominantOhaeng,
+                userType: 'emotional' // 기본값 (추후 정교화)
+            });
+
+            if (recommendations.length > 0) {
+                setSelectedTherapyArchetype(recommendations[0]);
+                setShowTherapyModal(true);
+            } else {
+                // Fallback (데이터가 없을 경우) - '통제자' 유형
+                const { THERAPY_ARCHETYPES } = require('@/data/TherapyDB');
+                setSelectedTherapyArchetype(THERAPY_ARCHETYPES["ARCH_ACT_CONTROLLER"]);
+                setShowTherapyModal(true);
+            }
+            return;
+        }
+
         const prompt = generateChatPromptFromIntent(subItem.intent, userProfile);
         onSelectIntent(subItem.intent, prompt);
         setSelectedIcon(null);
@@ -488,6 +527,19 @@ export default function DrillDownIconMenu({
                         // [Fix] Navigate to CoverView (Saju input form) instead of non-existent settings page
                         setShowVisualDashboard(false); // Close dashboard first
                         useReportStore.getState().setStep(1); // Return to CoverView form
+                    }}
+                />
+            )}
+
+            {/* [NEW] Therapy Archetype Modal */}
+            {showTherapyModal && selectedTherapyArchetype && (
+                <TherapyCard
+                    archetype={selectedTherapyArchetype}
+                    isOpen={showTherapyModal}
+                    onClose={() => setShowTherapyModal(false)}
+                    onChatIntent={(intent, prompt) => {
+                        setShowTherapyModal(false);
+                        onSelectIntent(intent, prompt);
                     }}
                 />
             )}
