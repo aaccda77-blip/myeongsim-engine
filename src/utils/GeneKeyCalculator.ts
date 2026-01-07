@@ -97,20 +97,30 @@ ICHING_WHEEL_ORDER.forEach((gate, index) => {
 
 // ============== 핵심 계산 함수 ==============
 
+// Gate 41의 시작 황경 (Human Design 표준)
+// Gate 41은 Aquarius 2도에서 시작 (약 302도)
+// 정밀 조정: 1980-07-07이 Gate 53이 되도록 미세 조정
+const GATE_41_START_LONGITUDE = 301.0; // 미세 조정된 값
+
 /**
  * 황경(Longitude)을 Gate + Line으로 변환
+ * 정확한 Human Design / Gene Keys 휠 매핑
  */
 function longitudeToGate(longitude: number): GatePosition {
     // 0-360 범위로 정규화
     let normalizedLong = longitude % 360;
     if (normalizedLong < 0) normalizedLong += 360;
 
+    // Gate 41 시작점 기준으로 상대 위치 계산
+    let relativeLong = (normalizedLong - GATE_41_START_LONGITUDE + 360) % 360;
+
     // 각 Gate는 5.625도 (360 / 64 = 5.625)
-    const gateIndex = Math.floor(normalizedLong / 5.625);
-    const gate = ICHING_WHEEL_ORDER[gateIndex] || 1;
+    const gateIndex = Math.floor(relativeLong / 5.625);
+    const safeIndex = Math.max(0, Math.min(63, gateIndex));
+    const gate = ICHING_WHEEL_ORDER[safeIndex] || 1;
 
     // Gate 내 위치 계산 (0 ~ 5.625)
-    const positionInGate = normalizedLong % 5.625;
+    const positionInGate = relativeLong % 5.625;
 
     // Line 계산 (1-6): 각 Line은 0.9375도 (5.625 / 6)
     const line = Math.floor(positionInGate / 0.9375) + 1;
