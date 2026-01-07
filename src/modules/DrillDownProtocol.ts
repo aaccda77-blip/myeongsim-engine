@@ -161,6 +161,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 intent: "core_myeongsim_codes"
             },
             {
+                id: "g_neural",
+                label: "🧬 뉴럴 프로필 분석",
+                desc: "Life's Work, Evolution, Radiance, Purpose 4대 코드",
+                intent: "neural_profile_analysis"
+            },
+            {
                 id: "g_2",
                 label: "⚡ 다크코드 → 뉴럴코드",
                 desc: "아픔을 힘으로",
