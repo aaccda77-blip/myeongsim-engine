@@ -320,6 +320,7 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
     PERSONALITY_ANALYSIS: { main: '성격분석', sub: '강점/재능(인적자원)리포트' },
     DAILY_MISSION: { main: '오늘운세', sub: '지금 뭘 해야 운이 트일까?' },
     SAJU_ANALYSIS: { main: '사주분석', sub: '운명의 설계도 확인' },
+    BIO_SYNC: { main: '생체연동', sub: '실시간 운명 동기화' }, // [Fix] Missing Label
 };
 
 // ============== Props ==============
