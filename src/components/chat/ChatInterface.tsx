@@ -174,6 +174,9 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     const [isPremiumMember, setIsPremiumMember] = useState(false); // Premium status
     const [userExpiryDate, setUserExpiryDate] = useState<string | null>(null); // Ticket expiry
 
+    // [Security] Calculate if membership is expired
+    const isExpired = userExpiryDate ? new Date(userExpiryDate) < new Date() : false;
+
     // [Focus Mode - Cognitive Load Reduction]
     const [isFocusMode, setIsFocusMode] = useState(false);
 
@@ -1575,9 +1578,10 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="이곳을 터치해서 대화를 시작하세요..."
-                            className="w-full bg-[#1A1F2B] backdrop-blur-xl border border-white/20 rounded-2xl pl-6 pr-14 py-5 text-white placeholder-gray-400 focus:outline-none focus:border-primary-gold focus:ring-1 focus:ring-primary-gold/50 transition-all relative z-10 text-lg shadow-inner"
+                            placeholder={isExpired ? "🔒 이용권이 만료되었습니다. 충전 후 이용해주세요." : "이곳을 터치해서 대화를 시작하세요..."}
+                            className={`w-full bg-[#1A1F2B] backdrop-blur-xl border rounded-2xl pl-6 pr-14 py-5 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-lg shadow-inner ${isExpired ? 'border-red-500/50 cursor-not-allowed opacity-60' : 'border-white/20 focus:border-primary-gold focus:ring-1 focus:ring-primary-gold/50'}`}
                             autoFocus
+                            disabled={isExpired}
                         />
                         <button
                             type="submit"

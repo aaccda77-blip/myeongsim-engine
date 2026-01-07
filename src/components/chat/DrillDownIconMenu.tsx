@@ -14,6 +14,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { assembleFullReport } from '@/services/ReportAssembler';
+import { useReportStore } from '@/store/useReportStore'; // [New] Import for navigation
+import { useSubscription } from '@/hooks/useSubscription'; // [NEW] 이용권 상태 확인
 import {
     ICON_DRILL_DOWN_MAP,
     getMainIconsWithRecommendations,
@@ -325,6 +327,9 @@ export default function DrillDownIconMenu({
     // [Pulse 6] Collapsible Teaser State
     const [isTeaserCollapsed, setIsTeaserCollapsed] = useState(false);
 
+    // [NEW] 이용권 상태 확인
+    const { isExpired } = useSubscription();
+
     // 스타일 주입
     React.useEffect(() => {
         injectStyles();
@@ -404,6 +409,11 @@ export default function DrillDownIconMenu({
 
     // 아이콘 클릭 핸들러
     const handleIconClick = (icon: MainIcon) => {
+        // [NEW] 이용권 만료 시 클릭 차단
+        if (isExpired) {
+            alert('이용권이 만료되었습니다. 이용권을 갱신해주세요.');
+            return;
+        }
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         setSelectedIcon(icon);
     };
@@ -426,33 +436,24 @@ export default function DrillDownIconMenu({
             return;
         }
 
-        // [New] 80페이지 분량의 인터랙티브 웹 리포트로 이동
-        if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
-            alert("✨ [MIND TOTEM] 80페이지 분량의 소울 아카이브를 엽니다.\n(잠시만 기다려주세요...)");
-
-            // 챗봇에게 트리거 전달
-            onSelectIntent(subItem.intent, "나의 종합 분석 리포트(80p)를 웹으로 보여줘.");
-
-            // 1초 후 인터랙티브 페이지로 이동
-            setTimeout(() => {
-                try {
-                    // 1. 리포트 데이터 생성
-                    const reportData = assembleFullReport(userProfile?.name || '방문자', 'GAP_JA');
-
-                    // 2. 로컬 스토리지에 저장 (페이지 이동 후 사용)
-                    // ID는 날짜 기반으로 생성하여 유니크하게 관리
-                    const reportId = `rep_${Date.now()}`;
-                    localStorage.setItem(`mind_totem_report_${reportId}`, JSON.stringify(reportData));
-
-                    // 3. 페이지 이동
-                    window.location.href = `/report/view/${reportId}`;
-                } catch (e) {
-                    console.error("Report generation failed:", e);
-                    alert("리포트 생성 중 오류가 발생했습니다.");
-                }
-            }, 1000);
-
+        // [NEW] 스타트업 창업 전략 페이지로 이동
+        if (subItem.intent === 'startup_strategy_view') {
             setSelectedIcon(null);
+            window.location.href = '/report/startup';
+            return;
+        }
+
+        // [NEW] 에너지 대시보드 페이지로 이동
+        if (subItem.intent === 'energy_dashboard_view') {
+            setSelectedIcon(null);
+            window.location.href = '/today';
+            return;
+        }
+
+        // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동
+        if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
+            setSelectedIcon(null);
+            window.location.href = '/report/soul-archive';
             return;
         }
 
@@ -482,8 +483,9 @@ export default function DrillDownIconMenu({
                     birthDate={birthDate}
                     userProfile={userProfile}
                     onEditBirthdate={() => {
-                        // TODO: 생년월일 수정 페이지로 이동
-                        window.location.href = '/settings/profile';
+                        // [Fix] Navigate to CoverView (Saju input form) instead of non-existent settings page
+                        setShowVisualDashboard(false); // Close dashboard first
+                        useReportStore.getState().setStep(1); // Return to CoverView form
                     }}
                 />
             )}

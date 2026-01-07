@@ -156,8 +156,8 @@ export default function StrengthRadarChart({
             </div>
 
             {/* 레이더 차트 */}
-            <div style={{ height }} className="w-full relative z-10">
-                <ResponsiveContainer width="100%" height="100%">
+            <div style={{ height, minHeight: 200 }} className="w-full relative z-10">
+                <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
                     <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
                         <PolarGrid stroke="#374151" strokeDasharray="3 3" />
                         <PolarAngleAxis

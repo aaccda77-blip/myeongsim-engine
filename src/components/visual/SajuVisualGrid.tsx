@@ -113,32 +113,34 @@ export default function SajuVisualGrid({ userProfile, onEditBirthdate }: SajuVis
         return map[element.toLowerCase()] || '목';
     };
 
+
     // Extract pillars from userProfile or use demo data
-    const pillars = userProfile?.saju?.pillars;
+    // [Fix] Support both 'pillars' and 'fourPillars' naming conventions
+    const pillars = userProfile?.saju?.pillars || userProfile?.saju?.fourPillars;
 
     const data: PillarData[] = pillars ? [
         {
             label: "Hour",
-            gan: { char: pillars.hour?.stem || '?', color: '', element: getElement(pillars.hour?.stemElement) },
-            ji: { char: pillars.hour?.branch || '?', color: '', element: getElement(pillars.hour?.branchElement) },
+            gan: { char: pillars.hour?.stem || pillars.time?.gan?.char || '?', color: '', element: getElement(pillars.hour?.stemElement || pillars.time?.gan?.element) },
+            ji: { char: pillars.hour?.branch || pillars.time?.ji?.char || '?', color: '', element: getElement(pillars.hour?.branchElement || pillars.time?.ji?.element) },
             tenGods: { gan: pillars.hour?.stemTenGod || '', ji: pillars.hour?.branchTenGod || '' }
         },
         {
             label: "Day",
-            gan: { char: pillars.day?.stem || '?', color: '', element: getElement(pillars.day?.stemElement) },
-            ji: { char: pillars.day?.branch || '?', color: '', element: getElement(pillars.day?.branchElement) },
+            gan: { char: pillars.day?.stem || pillars.day?.gan?.char || '?', color: '', element: getElement(pillars.day?.stemElement || pillars.day?.gan?.element) },
+            ji: { char: pillars.day?.branch || pillars.day?.ji?.char || '?', color: '', element: getElement(pillars.day?.branchElement || pillars.day?.ji?.element) },
             tenGods: { gan: '본원', ji: pillars.day?.branchTenGod || '' }
         },
         {
             label: "Month",
-            gan: { char: pillars.month?.stem || '?', color: '', element: getElement(pillars.month?.stemElement) },
-            ji: { char: pillars.month?.branch || '?', color: '', element: getElement(pillars.month?.branchElement) },
+            gan: { char: pillars.month?.stem || pillars.month?.gan?.char || '?', color: '', element: getElement(pillars.month?.stemElement || pillars.month?.gan?.element) },
+            ji: { char: pillars.month?.branch || pillars.month?.ji?.char || '?', color: '', element: getElement(pillars.month?.branchElement || pillars.month?.ji?.element) },
             tenGods: { gan: pillars.month?.stemTenGod || '', ji: pillars.month?.branchTenGod || '' }
         },
         {
             label: "Year",
-            gan: { char: pillars.year?.stem || '?', color: '', element: getElement(pillars.year?.stemElement) },
-            ji: { char: pillars.year?.branch || '?', color: '', element: getElement(pillars.year?.branchElement) },
+            gan: { char: pillars.year?.stem || pillars.year?.gan?.char || '?', color: '', element: getElement(pillars.year?.stemElement || pillars.year?.gan?.element) },
+            ji: { char: pillars.year?.branch || pillars.year?.ji?.char || '?', color: '', element: getElement(pillars.year?.branchElement || pillars.year?.ji?.element) },
             tenGods: { gan: pillars.year?.stemTenGod || '', ji: pillars.year?.branchTenGod || '' }
         }
     ] : [

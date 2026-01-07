@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Smartphone, ChevronRight, Loader2, ShieldCheck } from 'lucide-react';
 import { AuthService } from '@/modules/AuthService';
+import { generateDeviceFingerprint } from '@/modules/SessionManager';
 
 interface PhoneAuthModalProps {
     isOpen: boolean;
@@ -45,16 +46,30 @@ export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, select
 
         setIsLoading(true);
         try {
-            // [Module Call] Auth Service with Tier
-            const user = await AuthService.loginWithPhone(phone, selectedTier);
+            // [FIX] Generate device fingerprint
+            const deviceFingerprint = await generateDeviceFingerprint();
+
+            // [Module Call] Auth Service with Tier (correct parameter order)
+            const user = await AuthService.loginWithPhone(phone, deviceFingerprint, selectedTier);
 
             if (user) {
-                // Success
+                // [FIX] Tier별 한글 설명 매핑
+                const tierNames: Record<string, string> = {
+                    'TRIAL_30M': '💎 맛보기 30분',
+                    'TRIAL': '💎 맛보기 30분',
+                    'PASS_24H': '⭐ 자유이용권 24시간',
+                    'PASS': '⭐ 자유이용권 24시간',
+                    'VIP_7D': '👑 VIP 7일권',
+                    'VIP': '👑 VIP 7일권',
+                    'FREE': '무료 체험'
+                };
+
                 let successMsg = '로그인되었습니다.';
                 if (user.membership_tier && user.membership_tier !== 'FREE') {
-                    successMsg = `[프리미엄 인증] ${user.membership_tier} 이용권이 확인되었습니다.`;
+                    const tierDisplay = tierNames[user.membership_tier] || user.membership_tier;
+                    successMsg = `[프리미엄 인증] ${tierDisplay} 이용권이 활성화되었습니다. ✨`;
                 }
-                alert(successMsg); // Simple feedback for now, or use toast
+                alert(successMsg);
 
                 onLoginSuccess(user.id, user.is_new_user);
                 onClose();

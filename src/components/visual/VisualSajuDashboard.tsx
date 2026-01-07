@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import SajuVisualGrid from './SajuVisualGrid';
+import SajuWongukCard from './SajuWongukCard'; // [NEW] Premium Design
 import LifeCurveChart from './LifeCurveChart';
 
 interface Props {
@@ -37,10 +37,10 @@ export default function VisualSajuDashboard({ onClose, onChatIntent, birthDate, 
             </div>
 
             <div className="p-4 pb-32">
-                {/* 1. Saju Grid */}
+                {/* 1. Premium Saju Wonguk Card */}
                 <div className="mb-8">
                     <h3 className="text-gray-400 text-xs font-bold uppercase mb-3 px-1">기본 태생 (Nature)</h3>
-                    <SajuVisualGrid userProfile={userProfile} onEditBirthdate={onEditBirthdate} />
+                    <SajuWongukCard userProfile={userProfile} onEditBirthdate={onEditBirthdate} />
                 </div>
 
                 {/* 2. Life Graph */}

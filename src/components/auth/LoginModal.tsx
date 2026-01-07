@@ -53,7 +53,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
 
     const handleContact = () => {
         // [User Request] Link to Kakao Open Chat
-        window.open('https://open.kakao.com/o/svmwpk8h', '_blank');
+        window.open('https://open.kakao.com/o/spgWFR8h', '_blank');
     };
 
     return (
