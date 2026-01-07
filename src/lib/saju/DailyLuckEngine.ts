@@ -3,7 +3,7 @@ import { Solar, Lunar } from 'lunar-javascript';
 // Types
 export interface DailyBiorhythm {
     date: string;
-    ganji: string; // e.g. "갑자"
+    ganji: string; // e.g. "신사"
     energyScore: number; // 0-100
     energyLevel: 'High' | 'Medium' | 'Low';
     mode: 'Attack' | 'Defense' | 'Recovery'; // 코칭 모드
@@ -11,6 +11,17 @@ export interface DailyBiorhythm {
     goldenTime: string; // 뇌과학적 골든타임
     luckyColor: string;
 }
+
+// [FIX] 한자 → 한글 변환 매핑
+const HANJA_TO_HANGUL_GAN: Record<string, string> = {
+    '甲': '갑', '乙': '을', '丙': '병', '丁': '정', '戊': '무',
+    '己': '기', '庚': '경', '辛': '신', '壬': '임', '癸': '계'
+};
+
+const HANJA_TO_HANGUL_ZHI: Record<string, string> = {
+    '子': '자', '丑': '축', '寅': '인', '卯': '묘', '辰': '진', '巳': '사',
+    '午': '오', '未': '미', '申': '신', '酉': '유', '戌': '술', '亥': '해'
+};
 
 // 10 Gods (Ten Dieties) Relationship Helper
 // Simple mapping for MVP:
@@ -48,11 +59,15 @@ export class DailyLuckEngine {
         const solar = Solar.fromYmdHms(today.getFullYear(), today.getMonth() + 1, today.getDate(), 12, 0, 0);
         const lunar = solar.getLunar();
 
-        // Today's Ganji
+        // Today's Ganji (한자로 반환됨)
         const baZi = lunar.getEightChar();
-        const dayGan = baZi.getDayGan();
-        const dayZhi = baZi.getDayZhi();
-        const dayGanji = `${dayGan}${dayZhi}`;
+        const dayGanHanja = baZi.getDayGan(); // 예: "辛"
+        const dayZhiHanja = baZi.getDayZhi(); // 예: "巳"
+
+        // [FIX] 한자 → 한글 변환
+        const dayGan = HANJA_TO_HANGUL_GAN[dayGanHanja] || dayGanHanja;
+        const dayZhi = HANJA_TO_HANGUL_ZHI[dayZhiHanja] || dayZhiHanja;
+        const dayGanji = `${dayGan}${dayZhi}`; // 예: "신사"
 
         // Get Element of Day Master and Today
         const myElement = ELEMENTS[dayMasterChar as keyof typeof ELEMENTS] || 'wood'; // Default
