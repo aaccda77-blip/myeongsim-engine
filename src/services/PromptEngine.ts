@@ -952,13 +952,15 @@ ${this.sanitize(ragContext, 1500)}
 `;
     }
 
-    // 4. 현재 날짜/시간 컨텍스트 생성
+    // 4. 현재 날짜/시간 컨텍스트 생성 (한국 시간대 KST = UTC+9)
     const now = new Date();
+    const kstOffset = 9 * 60; // KST is UTC+9
+    const kstTime = new Date(now.getTime() + (kstOffset + now.getTimezoneOffset()) * 60000);
     const dateContext = `
 [📅 현재 시점 (Current Date Context)]
-- 오늘 날짜: ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일
-- 요일: ${['일', '월', '화', '수', '목', '금', '토'][now.getDay()]}요일
-- 현재 시간: ${now.getHours()}시 ${now.getMinutes()}분
+- 오늘 날짜: ${kstTime.getFullYear()}년 ${kstTime.getMonth() + 1}월 ${kstTime.getDate()}일
+- 요일: ${['일', '월', '화', '수', '목', '금', '토'][kstTime.getDay()]}요일
+- 현재 시간: ${kstTime.getHours()}시 ${kstTime.getMinutes()}분 (한국시간 KST)
 `;
 
     // 5. 최종 프롬프트 조립 (Structure + Emotion + Gene Keys)
@@ -1065,13 +1067,15 @@ ${memoryBlock}
     const personaConfig = this.GROWTH_MAP_PERSONAS[validStage as keyof typeof this.GROWTH_MAP_PERSONAS];
     const personaInstruction = personaConfig ? personaConfig.instruction : "";
 
-    // 현재 날짜/시간 컨텍스트
+    // 현재 날짜/시간 컨텍스트 (한국 시간대 KST = UTC+9)
     const now = new Date();
+    const kstOffset = 9 * 60; // KST is UTC+9
+    const kstTime = new Date(now.getTime() + (kstOffset + now.getTimezoneOffset()) * 60000);
     const dateContext = `
 [📅 현재 시점 (Current Date Context)]
-- 오늘 날짜: ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일
-- 요일: ${['일', '월', '화', '수', '목', '금', '토'][now.getDay()]}요일
-- 현재 시간: ${now.getHours()}시 ${now.getMinutes()}분
+- 오늘 날짜: ${kstTime.getFullYear()}년 ${kstTime.getMonth() + 1}월 ${kstTime.getDate()}일
+- 요일: ${['일', '월', '화', '수', '목', '금', '토'][kstTime.getDay()]}요일
+- 현재 시간: ${kstTime.getHours()}시 ${kstTime.getMinutes()}분 (한국시간 KST)
 `;
 
     // 4. 최종 프롬프트 조립 (샌드위치 방어 적용)
