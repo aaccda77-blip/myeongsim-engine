@@ -1557,6 +1557,25 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
             {!isLoading && (
                 <div className="p-4 animate-fade-in-up max-w-[95%] md:max-w-[85%] mx-auto w-full mt-4">
 
+                    {/* [NEW] Quick Suggestion Chips (질문 가이드) */}
+                    <div className="flex gap-2 overflow-x-auto pb-2 mb-2 px-1 scrollbar-hide">
+                        {[
+                            "오늘 운세 어때? 🌞",
+                            "내 재물운 알려줘 💰",
+                            "심리 치유가 필요해 🧠",
+                            "나의 타고난 강점은? ✨",
+                            "올해 연애운 궁금해 ❤️"
+                        ].map((q, i) => (
+                            <button
+                                key={i}
+                                onClick={() => handleSend(q)}
+                                className="bg-gray-800/80 hover:bg-gray-700 border border-white/10 rounded-full px-4 py-1.5 text-xs text-gray-300 whitespace-nowrap transition-colors flex-shrink-0 backdrop-blur-sm"
+                            >
+                                {q}
+                            </button>
+                        ))}
+                    </div>
+
                     {/* [NEW] DrillDown 3D Icon Menu */}
                     <DrillDownIconMenu
                         userProfile={reportData}
