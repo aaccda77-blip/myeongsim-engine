@@ -411,10 +411,27 @@ export default function DrillDownIconMenu({
     // 추천 아이콘 계산
     const icons = getMainIconsWithRecommendations(userProfile);
 
-    // [Emergency Fix] BIO_SYNC 아이콘 강제 포함 (렌더링 누락 방지)
-    if (!icons.find(i => i.id === 'BIO_SYNC') && ICON_DRILL_DOWN_MAP['BIO_SYNC']) {
-        // console.log("Force inserting BIO_SYNC icon");
-        icons.push(ICON_DRILL_DOWN_MAP['BIO_SYNC']);
+    // [Ultimate Fix] BIO_SYNC 아이콘 하드코딩 강제 삽입 (무조건 보장)
+    const hasBioSync = icons.some(i => i.id === 'BIO_SYNC');
+    if (!hasBioSync) {
+        icons.push({
+            id: 'BIO_SYNC',
+            label: "생체 연동",
+            icon: "⌚",
+            neuro_trigger: "실시간 운명 동기화",
+            style: 'default',
+            sub_menus: [
+                { id: "b_1", label: "⚡ Bio-Sync 대시보드", desc: "웨어러블 연결 및 데이터 확인", intent: "bio_sync_dashboard_view" },
+                { id: "b_patent_1", label: "🚨 [특허 시연] 위기 개입", desc: "급격한 스트레스 발생 시 능동 개입", intent: "demo_patent_features" },
+                { id: "b_patent_2", label: "🛡️ [특허 시연] 선제적 예방", desc: "패턴 분석을 통한 스트레스 사전 차단", intent: "demo_preventive_care" },
+                { id: "b_patent_3", label: "🧠 [특허 시연] 통합 치유", desc: "CBT+DBT+ACT 순차적 심리 처방", intent: "demo_integrated_therapy" },
+                { id: "b_patent_recovery", label: "📉 [특허 시연] 실시간 진정", desc: "호흡 가이드에 따른 안정화", intent: "demo_realtime_recovery" },
+                { id: "b_patent_emdr", label: "👁️ [특허 시연] EMDR", desc: "안구 운동 트라우마 케어", intent: "demo_emdr_session" },
+                { id: "b_idea_1", label: "🧬 Neuro-Saju", desc: "운명-신경 공명 테스트", intent: "demo_neuro_saju" },
+                { id: "b_idea_2", label: "🎭 Deep Mind", desc: "무의식 진실 탐지", intent: "demo_subconscious_check" },
+                { id: "b_idea_3", label: "🌌 Bio-Quantum", desc: "감정 주파수 튜닝", intent: "demo_frequency_tuning" }
+            ]
+        } as any);
     }
 
     // [Security] 서버에서 특성 설명 가져오기
