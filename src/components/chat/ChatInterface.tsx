@@ -1016,9 +1016,8 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                 <UrgentNoticeModal
                     expiryDate={userExpiryDate}
                     onExtend={() => {
-                        // Open payment modal for extension
-                        setIsPaymentModalOpen(true);
-                        setSelectedPaymentTier('PASS'); // Default to PASS for extension
+                        // [FIX] Navigate to login page for payment/extension
+                        window.location.href = '/login?action=extend';
                     }}
                 />
             )}

@@ -54,6 +54,7 @@ interface TodayEnergyDashboardProps {
     onBack?: () => void;
     onSettings?: () => void;
     onAttack?: () => void;
+    onDailyMessageClick?: (dailyGanji: string, message: string) => void; // [NEW] 오늘의 메시지 클릭 시 챗봇 상담
 }
 
 // 바이오리듬 데이터 타입
@@ -68,7 +69,8 @@ interface BiorhythmData {
 export default function TodayEnergyDashboard({
     onBack,
     onSettings,
-    onAttack
+    onAttack,
+    onDailyMessageClick
 }: TodayEnergyDashboardProps) {
     const { reportData } = useReportStore();
 
@@ -293,14 +295,27 @@ export default function TodayEnergyDashboard({
                     {/* 구분선 */}
                     <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
 
-                    {/* 오늘의 메시지 */}
-                    <div className="relative px-2">
+                    {/* 오늘의 메시지 - 클릭 시 챗봇 상담 */}
+                    <div
+                        className="relative px-2 cursor-pointer hover:bg-white/5 rounded-xl py-3 transition-colors group"
+                        onClick={() => {
+                            if (onDailyMessageClick) {
+                                const ganji = `${todayGan}${todayZhi}`;
+                                const message = `${dailyMessage.highlight} ${dailyMessage.sub}`;
+                                onDailyMessageClick(ganji, message);
+                            }
+                        }}
+                    >
                         <span className="absolute -top-3 -left-1 text-4xl text-amber-400/20 font-serif leading-none">"</span>
                         <p className="text-base font-serif text-gray-300 leading-relaxed text-center italic tracking-wide">
                             <span className="text-white drop-shadow-md">{dailyMessage.highlight}</span><br />
                             <span className="text-gray-400">{dailyMessage.sub}</span>
                         </p>
                         <span className="absolute -bottom-5 -right-1 text-4xl text-amber-400/20 font-serif leading-none">"</span>
+                        {/* 클릭 유도 텍스트 */}
+                        <div className="absolute bottom-0 right-2 text-[10px] text-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                            👆 터치하여 상세 상담
+                        </div>
                     </div>
                 </motion.div>
 
