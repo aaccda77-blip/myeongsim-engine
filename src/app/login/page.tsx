@@ -1,18 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthService } from '@/modules/AuthService';
-import { Sparkles, Lock, Phone, ArrowRight } from 'lucide-react';
+import { Sparkles, Lock, Phone, ArrowRight, Clock, CreditCard } from 'lucide-react';
 import { PrivacyPolicyModal } from '@/components/modals/PrivacyPolicyModal';
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const isExtendMode = searchParams?.get('action') === 'extend'; // [NEW] 연장 모드 감지
+
     const [phoneNumber, setPhoneNumber] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
     const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+    const [selectedTier, setSelectedTier] = useState<'TRIAL' | 'PASS' | 'VIP'>('PASS'); // [NEW] 선택된 이용권
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -74,11 +78,42 @@ export default function LoginPage() {
             <div className="relative w-full max-w-md">
                 {/* Logo/Title */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-gold to-orange-500 rounded-2xl mb-4 shadow-lg">
-                        <Sparkles className="w-8 h-8 text-white" />
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 shadow-lg ${isExtendMode
+                            ? 'bg-gradient-to-br from-red-500 to-orange-500'
+                            : 'bg-gradient-to-br from-primary-gold to-orange-500'
+                        }`}>
+                        {isExtendMode ? <Clock className="w-8 h-8 text-white" /> : <Sparkles className="w-8 h-8 text-white" />}
                     </div>
-                    <h1 className="text-3xl font-bold text-white mb-2">명심코칭</h1>
-                    <p className="text-slate-400">이용권 로그인</p>
+                    <h1 className="text-3xl font-bold text-white mb-2">
+                        {isExtendMode ? '이용권 연장' : '명심코칭'}
+                    </h1>
+                    <p className="text-slate-400">
+                        {isExtendMode ? '대화를 계속하려면 이용권을 갱신하세요' : '이용권 로그인'}
+                    </p>
+
+                    {/* [NEW] 연장 모드 이용권 선택 */}
+                    {isExtendMode && (
+                        <div className="mt-6 grid grid-cols-3 gap-2">
+                            {[
+                                { tier: 'TRIAL' as const, label: '💎 30분', price: '3,900원' },
+                                { tier: 'PASS' as const, label: '⭐ 24시간', price: '29,000원' },
+                                { tier: 'VIP' as const, label: '👑 7일', price: '49,000원' }
+                            ].map((opt) => (
+                                <button
+                                    key={opt.tier}
+                                    type="button"
+                                    onClick={() => setSelectedTier(opt.tier)}
+                                    className={`p-3 rounded-xl border-2 transition-all ${selectedTier === opt.tier
+                                            ? 'border-primary-gold bg-primary-gold/20 text-white'
+                                            : 'border-slate-600 bg-slate-800/50 text-slate-400 hover:border-slate-500'
+                                        }`}
+                                >
+                                    <div className="text-lg">{opt.label}</div>
+                                    <div className="text-xs mt-1">{opt.price}</div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Login Form */}

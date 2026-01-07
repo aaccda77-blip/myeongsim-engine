@@ -307,12 +307,14 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
 interface DrillDownIconMenuProps {
     userProfile?: any;
     onSelectIntent: (intent: string, prompt: string) => void;
+    hideTodayEnergy?: boolean; // [NEW] 챗봇 상담 중 Today Energy 숨기기
 }
 
 // ============== 메인 컴포넌트 ==============
 export default function DrillDownIconMenu({
     userProfile,
-    onSelectIntent
+    onSelectIntent,
+    hideTodayEnergy = false
 }: DrillDownIconMenuProps) {
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [selectedIcon, setSelectedIcon] = useState<MainIcon | null>(null);
@@ -502,8 +504,8 @@ export default function DrillDownIconMenu({
                 >
                     🔋
                 </button>
-            ) : (
-                /* Expanded: Full teaser */
+            ) : !hideTodayEnergy ? (
+                /* Expanded: Full teaser - 챗봇 상담 중에는 숨김 */
                 <div className="mb-4 relative">
                     {/* Close (Collapse) Button */}
                     <button
@@ -525,7 +527,7 @@ export default function DrillDownIconMenu({
                     </div>
                     <DailyBiorhythmWidget dayMaster={dayMaster} />
                 </div>
-            )}
+            ) : null}
 
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>
