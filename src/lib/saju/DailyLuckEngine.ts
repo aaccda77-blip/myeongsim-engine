@@ -55,8 +55,12 @@ const ELEMENT_RELATIONS = {
 export class DailyLuckEngine {
 
     static calculate(dayMasterChar: string): DailyBiorhythm {
-        const today = new Date();
-        const solar = Solar.fromYmdHms(today.getFullYear(), today.getMonth() + 1, today.getDate(), 12, 0, 0);
+        // [FIX] Use Korea Standard Time (KST = UTC+9) for accurate daily pillar calculation
+        const now = new Date();
+        const kstOffset = 9 * 60; // KST is UTC+9
+        const kstTime = new Date(now.getTime() + (kstOffset + now.getTimezoneOffset()) * 60000);
+
+        const solar = Solar.fromYmdHms(kstTime.getFullYear(), kstTime.getMonth() + 1, kstTime.getDate(), 12, 0, 0);
         const lunar = solar.getLunar();
 
         // Today's Ganji (한자로 반환됨)
@@ -114,7 +118,7 @@ export class DailyLuckEngine {
         // score += Math.floor(Math.random() * 10) - 5; 
 
         return {
-            date: `${today.getFullYear()}.${today.getMonth() + 1}.${today.getDate()}`,
+            date: `${kstTime.getFullYear()}.${kstTime.getMonth() + 1}.${kstTime.getDate()}`,
             ganji: dayGanji,
             energyScore: score,
             energyLevel: score >= 80 ? 'High' : score >= 50 ? 'Medium' : 'Low',
