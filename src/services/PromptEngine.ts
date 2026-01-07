@@ -3,12 +3,20 @@
 // import { SentimentTracker } from '@/modules/SentimentTracker'; // [Mod] Inlined for stability
 import { CalculateNeuralProfile } from '@/utils/NeuralProfileCalculator';
 import { getNeuralKey } from '@/data/neural_keys_db';
+// [NEW] 특허 로직 모듈 import
+import {
+  injectPatentProtocols,
+  analyzeBaselineDeviation,
+  EnhancedBioSignal
+} from '@/modules/PatentProtocols';
 
-// [Type Definition] 웨어러블 생체 데이터 인터페이스
+// [Type Definition] 웨어러블 생체 데이터 인터페이스 (특허 확장 버전)
 export interface BioSignal {
-  heartRate: number;     // 심박수 (BPM)
-  hrv: number;           // 심박변이도 (ms) - 스트레스 저항력
-  skinTemp?: number;     // 피부 온도
+  heartRate: number;       // 실시간 심박수 (BPM)
+  baselineHR?: number;     // [Patent] 안정 시 심박수 기준선
+  hrv: number;             // 심박변이도 (ms) - 스트레스 저항력
+  baselineHRV?: number;    // [Patent] 개인별 HRV 기준선
+  skinTemp?: number;       // 피부 온도
   deviceStatus: 'active' | 'disconnected' | 'noise';
 }
 
