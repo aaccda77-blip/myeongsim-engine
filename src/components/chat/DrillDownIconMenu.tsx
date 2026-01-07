@@ -14,6 +14,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { assembleFullReport } from '@/services/ReportAssembler';
+import { useReportStore } from '@/store/useReportStore'; // [New] Import for navigation
+import { useSubscription } from '@/hooks/useSubscription'; // [NEW] 이용권 상태 확인
 import {
     ICON_DRILL_DOWN_MAP,
     getMainIconsWithRecommendations,
@@ -26,8 +28,9 @@ import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget
 // 대신 /api/secure/* API를 통해 서버에서 데이터를 가져옴
 
 // 차트 컴포넌트 동적 임포트 (SSR 방지)
-const GeniusRadarChart = dynamic(() => import('@/components/charts/GeniusRadarChart'), { ssr: false });
+const StrengthRadarChart = dynamic(() => import('@/components/charts/StrengthRadarChart'), { ssr: false });
 const VisualSajuDashboard = dynamic(() => import('@/components/visual/VisualSajuDashboard'), { ssr: false });
+
 
 // ============== 스타일 ==============
 const styles = {
@@ -295,7 +298,7 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
     WEALTH: { main: '재물운', sub: '왜 벌어도 안 모일까?' },
     RELATIONSHIP: { main: '연애운', sub: '반복되는 상처 끊기' },
     CAREER: { main: '직업운', sub: '나는 이 일 하러 태어났다' },
-    PERSONALITY_ANALYSIS: { main: '성격분석', sub: '숨겨진 천재성 발견' },
+    PERSONALITY_ANALYSIS: { main: '성격분석', sub: '강점/재능(인적자원)리포트' },
     DAILY_MISSION: { main: '오늘운세', sub: '지금 뭘 해야 운이 트일까?' },
     SAJU_ANALYSIS: { main: '사주분석', sub: '운명의 설계도 확인' },
 };
@@ -304,12 +307,14 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
 interface DrillDownIconMenuProps {
     userProfile?: any;
     onSelectIntent: (intent: string, prompt: string) => void;
+    hideTodayEnergy?: boolean; // [NEW] 챗봇 상담 중 Today Energy 숨기기
 }
 
 // ============== 메인 컴포넌트 ==============
 export default function DrillDownIconMenu({
     userProfile,
-    onSelectIntent
+    onSelectIntent,
+    hideTodayEnergy = false
 }: DrillDownIconMenuProps) {
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [selectedIcon, setSelectedIcon] = useState<MainIcon | null>(null);
@@ -319,8 +324,13 @@ export default function DrillDownIconMenu({
     // [Pulse 5] Visual Dashboard State
     const [showVisualDashboard, setShowVisualDashboard] = useState(false);
 
+
+
     // [Pulse 6] Collapsible Teaser State
     const [isTeaserCollapsed, setIsTeaserCollapsed] = useState(false);
+
+    // [NEW] 이용권 상태 확인
+    const { isExpired } = useSubscription();
 
     // 스타일 주입
     React.useEffect(() => {
@@ -401,62 +411,51 @@ export default function DrillDownIconMenu({
 
     // 아이콘 클릭 핸들러
     const handleIconClick = (icon: MainIcon) => {
+        // [NEW] 이용권 만료 시 클릭 차단
+        if (isExpired) {
+            alert('이용권이 만료되었습니다. 이용권을 갱신해주세요.');
+            return;
+        }
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         setSelectedIcon(icon);
     };
 
     // 서브메뉴 선택 핸들러
     const handleSubMenuSelect = (subItem: SubMenuItem) => {
-        // [NEW] Startup Design Screen 열기
-        if (subItem.intent === 'startup_design_view') {
-            setSelectedIcon(null);
-            setShowStartupDesign(true);
-            return;
-        }
+
 
         // [FIX] 사주 원국 분석 시 비주얼 대시보드 열기
-        // intent가 정확히 일치하는지 확인 (공백 제거)
-        if (subItem.intent.trim() === 'saju_basic_analysis') {
+        if (subItem.intent === 'saju_basic_analysis') {
             setSelectedIcon(null);
-            // 상태 업데이트 지연 없음
             setShowVisualDashboard(true);
             return;
         }
 
-        // [NEW] Genius Report 페이지로 이동
-        if (subItem.intent === 'genius_report_view') {
+        // [NEW] 강점 리포트(인적자원) 페이지로 이동
+        if (subItem.intent === 'strength_report_view') {
             setSelectedIcon(null);
-            window.location.href = '/report/genius';
+            window.location.href = '/report/strength';
             return;
         }
 
-        // [New] 80페이지 분량의 인터랙티브 웹 리포트로 이동
-        if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
-            alert("✨ [MIND TOTEM] 80페이지 분량의 소울 아카이브를 엽니다.\n(잠시만 기다려주세요...)");
-
-            // 챗봇에게 트리거 전달
-            onSelectIntent(subItem.intent, "나의 종합 분석 리포트(80p)를 웹으로 보여줘.");
-
-            // 1초 후 인터랙티브 페이지로 이동
-            setTimeout(() => {
-                try {
-                    // 1. 리포트 데이터 생성
-                    const reportData = assembleFullReport(userProfile?.name || '방문자', 'GAP_JA');
-
-                    // 2. 로컬 스토리지에 저장 (페이지 이동 후 사용)
-                    // ID는 날짜 기반으로 생성하여 유니크하게 관리
-                    const reportId = `rep_${Date.now()}`;
-                    localStorage.setItem(`mind_totem_report_${reportId}`, JSON.stringify(reportData));
-
-                    // 3. 페이지 이동
-                    window.location.href = `/report/view/${reportId}`;
-                } catch (e) {
-                    console.error("Report generation failed:", e);
-                    alert("리포트 생성 중 오류가 발생했습니다.");
-                }
-            }, 1000);
-
+        // [NEW] 스타트업 창업 전략 페이지로 이동
+        if (subItem.intent === 'startup_strategy_view') {
             setSelectedIcon(null);
+            window.location.href = '/report/startup';
+            return;
+        }
+
+        // [NEW] 에너지 대시보드 페이지로 이동
+        if (subItem.intent === 'energy_dashboard_view') {
+            setSelectedIcon(null);
+            window.location.href = '/today';
+            return;
+        }
+
+        // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동
+        if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
+            setSelectedIcon(null);
+            window.location.href = '/report/soul-archive';
             return;
         }
 
@@ -485,11 +484,18 @@ export default function DrillDownIconMenu({
                     onChatIntent={handleDashboardChatIntent}
                     birthDate={birthDate}
                     userProfile={userProfile}
+                    onEditBirthdate={() => {
+                        // [Fix] Navigate to CoverView (Saju input form) instead of non-existent settings page
+                        setShowVisualDashboard(false); // Close dashboard first
+                        useReportStore.getState().setStep(1); // Return to CoverView form
+                    }}
                 />
             )}
 
-            {/* [Pulse 6] Collapsible Daily Energy Teaser */}
-            {isTeaserCollapsed ? (
+
+            {/* [REMOVED] TODAY'S ENERGY 섹션 제거 - 챗봇 대화에 집중 */}
+            {/* 사용자 요청: 챗봇 대화 시 방해되지 않도록 제거 */}
+            {false && isTeaserCollapsed ? (
                 /* Collapsed: Icon only */
                 <button
                     onClick={() => setIsTeaserCollapsed(false)}
@@ -498,8 +504,8 @@ export default function DrillDownIconMenu({
                 >
                     🔋
                 </button>
-            ) : (
-                /* Expanded: Full teaser */
+            ) : !hideTodayEnergy ? (
+                /* Expanded: Full teaser - 챗봇 상담 중에는 숨김 */
                 <div className="mb-4 relative">
                     {/* Close (Collapse) Button */}
                     <button
@@ -521,7 +527,7 @@ export default function DrillDownIconMenu({
                     </div>
                     <DailyBiorhythmWidget dayMaster={dayMaster} />
                 </div>
-            )}
+            ) : null}
 
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>
@@ -612,7 +618,7 @@ export default function DrillDownIconMenu({
                                 borderRadius: '16px',
                                 border: '1px solid rgba(16, 185, 129, 0.1)'
                             }}>
-                                <GeniusRadarChart
+                                <StrengthRadarChart
                                     compact={true}
                                     scores={chartScores} // [Security] 서버에서 받은 점수 사용
                                     onTraitClick={handleTraitClick}

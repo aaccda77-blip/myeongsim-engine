@@ -12,12 +12,8 @@
 
 import { useState, useCallback } from 'react';
 import { calculateSaju, SajuResult } from '@/lib/saju/SajuEngine';
-import {
-    calculateMyeongsimProfile,
-    parseBirthDate,
-    MyeongsimProfile,
-    formatGatePosition
-} from '@/utils/GeneKeyCalculator';
+// [FIX] 서버 API 호출 방식으로 변경 - 타입만 import
+import { MyeongsimProfile } from '@/utils/GeneKeyCalculator';
 import {
     analyzeFrequency,
     FrequencyAnalysis
@@ -114,27 +110,46 @@ export function useMyeongsimProfile() {
             // ===== 엔진 A: 사주 계산 =====
             const sajuResult = calculateSaju(birthDate, birthTime, calendarType, gender);
 
-            // ===== 엔진 B: 천문 계산 =====
-            const birthDateObj = parseBirthDate(birthDate, birthTime, timezoneOffset);
-            const astroResult = calculateMyeongsimProfile(birthDateObj);
-
-            // ===== 융합 데이터 생성 =====
+            // ===== 엔진 B: 천문 계산 (서버 API 호출) =====
+            let astroResult: MyeongsimProfile | null = null;
             let fusionData = null;
 
-            if (sajuResult.success && astroResult) {
-                const dayMaster = sajuResult.dayMaster || '?';
-                const dayMasterElement = ELEMENT_MAP[dayMaster] || '?';
-                const lifeOSGate = formatGatePosition(astroResult.activation.lifeOS);
+            try {
+                const response = await fetch('/api/gene-keys', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        birthDate,
+                        birthTime,
+                        timezone: timezoneOffset
+                    })
+                });
 
-                fusionData = {
-                    dayMaster,
-                    dayMasterElement,
-                    lifeOSGate,
-                    growthTriggerGate: formatGatePosition(astroResult.activation.growthTrigger),
-                    bioEngineGate: formatGatePosition(astroResult.activation.bioEngine),
-                    rootPurposeGate: formatGatePosition(astroResult.activation.rootPurpose),
-                    summary: generateFusionSummary(dayMaster, dayMasterElement, lifeOSGate)
-                };
+                if (response.ok) {
+                    const data = await response.json();
+                    astroResult = data.data?.rawProfile || null;
+
+                    // 융합 데이터 생성
+                    if (sajuResult.success && data.data?.activation) {
+                        const dayMaster = sajuResult.dayMaster || '?';
+                        const dayMasterElement = ELEMENT_MAP[dayMaster] || '?';
+                        const lifeOSGate = data.data.activation.lifeWork?.formatted || '?';
+
+                        fusionData = {
+                            dayMaster,
+                            dayMasterElement,
+                            lifeOSGate,
+                            growthTriggerGate: data.data.activation.evolution?.formatted || '?',
+                            bioEngineGate: data.data.activation.radiance?.formatted || '?',
+                            rootPurposeGate: data.data.activation.purpose?.formatted || '?',
+                            summary: generateFusionSummary(dayMaster, dayMasterElement, lifeOSGate)
+                        };
+                    }
+                } else {
+                    console.error('[useMyeongsimProfile] API failed:', await response.text());
+                }
+            } catch (apiError) {
+                console.error('[useMyeongsimProfile] Gene Keys API error:', apiError);
             }
 
             setProfile({
@@ -198,61 +213,5 @@ export function useMyeongsimProfile() {
     };
 }
 
-// ============== 서버 사이드용 함수 ==============
-/**
- * 서버에서 듀얼 엔진 계산 (API route용)
- */
-export function calculateDualEngineProfile(
-    birthDate: string,
-    birthTime: string = '12:00',
-    calendarType: 'solar' | 'lunar' = 'solar',
-    gender: 'male' | 'female' = 'male',
-    timezoneOffset: number = 9
-): DualEngineProfile {
-    try {
-        // 엔진 A: 사주
-        const sajuResult = calculateSaju(birthDate, birthTime, calendarType, gender);
-
-        // 엔진 B: 천문
-        const birthDateObj = parseBirthDate(birthDate, birthTime, timezoneOffset);
-        const astroResult = calculateMyeongsimProfile(birthDateObj);
-
-        // 융합
-        let fusionData = null;
-
-        if (sajuResult.success && astroResult) {
-            const dayMaster = sajuResult.dayMaster || '?';
-            const dayMasterElement = ELEMENT_MAP[dayMaster] || '?';
-            const lifeOSGate = formatGatePosition(astroResult.activation.lifeOS);
-
-            fusionData = {
-                dayMaster,
-                dayMasterElement,
-                lifeOSGate,
-                growthTriggerGate: formatGatePosition(astroResult.activation.growthTrigger),
-                bioEngineGate: formatGatePosition(astroResult.activation.bioEngine),
-                rootPurposeGate: formatGatePosition(astroResult.activation.rootPurpose),
-                summary: generateFusionSummary(dayMaster, dayMasterElement, lifeOSGate)
-            };
-        }
-
-        return {
-            saju: sajuResult,
-            astro: astroResult,
-            fusion: fusionData,
-            frequency: null,
-            isCalculated: true,
-            error: sajuResult.success ? null : (sajuResult.error || 'Calculation failed')
-        };
-
-    } catch (error) {
-        return {
-            saju: null,
-            astro: null,
-            fusion: null,
-            frequency: null,
-            isCalculated: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
-        };
-    }
-}
+// NOTE: calculateDualEngineProfile 함수는 /api/gene-keys API route로 이동됨
+// 서버에서 Gene Keys 계산이 필요하면 /api/gene-keys 엔드포인트를 사용하세요

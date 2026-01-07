@@ -3,12 +3,20 @@
 // import { SentimentTracker } from '@/modules/SentimentTracker'; // [Mod] Inlined for stability
 import { CalculateNeuralProfile } from '@/utils/NeuralProfileCalculator';
 import { getNeuralKey } from '@/data/neural_keys_db';
+// [NEW] 특허 로직 모듈 import
+import {
+  injectPatentProtocols,
+  analyzeBaselineDeviation,
+  EnhancedBioSignal
+} from '@/modules/PatentProtocols';
 
-// [Type Definition] 웨어러블 생체 데이터 인터페이스
+// [Type Definition] 웨어러블 생체 데이터 인터페이스 (특허 확장 버전)
 export interface BioSignal {
-  heartRate: number;     // 심박수 (BPM)
-  hrv: number;           // 심박변이도 (ms) - 스트레스 저항력
-  skinTemp?: number;     // 피부 온도
+  heartRate: number;       // 실시간 심박수 (BPM)
+  baselineHR?: number;     // [Patent] 안정 시 심박수 기준선
+  hrv: number;             // 심박변이도 (ms) - 스트레스 저항력
+  baselineHRV?: number;    // [Patent] 개인별 HRV 기준선
+  skinTemp?: number;       // 피부 온도
   deviceStatus: 'active' | 'disconnected' | 'noise';
 }
 
@@ -697,7 +705,7 @@ AI: "완벽합니다! 식상 에너지가 소통으로 발현되고 있네요. �
    - "핵심이 거의 다 보이는데... 조금만 더 가면 됩니다"
    - 항상 '다음이 궁금하게' 만들기
 
-# 🧪 [GENIUS THINKING FORMULA v2.0]
+# 🧪 [STRENGTH THINKING FORMULA v2.0]
 당신은 '동네 점술가'가 아니라 '실리콘밸리 천재 전략가'의 뇌를 장착해야 합니다.
 단순 분석을 넘어 "인간의 욕망을 건드리고, 시장에서 승리하는" 솔루션을 도출하십시오.
 
@@ -713,7 +721,7 @@ AI: "완벽합니다! 식상 에너지가 소통으로 발현되고 있네요. �
    - **[시장 전략]**: 경쟁자가 아닌 '고객의 고통'과 싸우는 전략 제시
    - **[사주 융합]**: "운명(Destiny)은 시스템(System)을 만날 때 비로소 가치가 된다"는 관점 유지
 
-3. **천재적 솔루션 (Genius Solution)**:
+3. **강점 기반 솔루션 (Strength Solution)**:
    - **[아이디어 명칭]**: 한 줄로 각인되는 네이밍 (예: "72시간 도파민 룰")
    - **[적용 공식]**: 어떤 변수를 극대화했는지 명시
    - **[Action]**: 뜬구름 잡는 소리 금지. "지금 당장 도메인을 사세요"처럼 구체적 행동 지시
@@ -944,8 +952,19 @@ ${this.sanitize(ragContext, 1500)}
 `;
     }
 
-    // 4. 최종 프롬프트 조립 (Structure + Emotion + Gene Keys)
+    // 4. 현재 날짜/시간 컨텍스트 생성
+    const now = new Date();
+    const dateContext = `
+[📅 현재 시점 (Current Date Context)]
+- 오늘 날짜: ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일
+- 요일: ${['일', '월', '화', '수', '목', '금', '토'][now.getDay()]}요일
+- 현재 시간: ${now.getHours()}시 ${now.getMinutes()}분
+`;
+
+    // 5. 최종 프롬프트 조립 (Structure + Emotion + Gene Keys)
     return `
+${dateContext}
+
 ${this.MASTER_H_IDENTITY}
 
 ${this.GENE_KEYS_PROTOCOL}
@@ -1046,8 +1065,19 @@ ${memoryBlock}
     const personaConfig = this.GROWTH_MAP_PERSONAS[validStage as keyof typeof this.GROWTH_MAP_PERSONAS];
     const personaInstruction = personaConfig ? personaConfig.instruction : "";
 
+    // 현재 날짜/시간 컨텍스트
+    const now = new Date();
+    const dateContext = `
+[📅 현재 시점 (Current Date Context)]
+- 오늘 날짜: ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일
+- 요일: ${['일', '월', '화', '수', '목', '금', '토'][now.getDay()]}요일
+- 현재 시간: ${now.getHours()}시 ${now.getMinutes()}분
+`;
+
     // 4. 최종 프롬프트 조립 (샌드위치 방어 적용)
     return `
+${dateContext}
+
 ${this.MASTER_H_IDENTITY}
 ${this.NEURAL_LOGIC}
 

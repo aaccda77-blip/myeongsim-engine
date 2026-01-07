@@ -118,3 +118,51 @@ export const calculateSaju = (
 
     return result;
 };
+
+/**
+ * 오늘의 일진 계산 함수 (Today's Daily Pillar)
+ * lunar-javascript를 사용하여 정확한 일진 계산
+ */
+export const getTodayDailyPillar = (): {
+    gan: string;
+    zhi: string;
+    ganElement: string;
+    zhiElement: string;
+    ganColor: string;
+    zhiColor: string;
+} => {
+    try {
+        const now = new Date();
+        const solar = Solar.fromYmdHms(now.getFullYear(), now.getMonth() + 1, now.getDate(), 12, 0, 0);
+        const lunar = solar.getLunar();
+        const bazi = lunar.getEightChar();
+
+        const dayGanHanja = bazi.getDayGan();
+        const dayZhiHanja = bazi.getDayZhi();
+
+        const ganIdx = GAN_MAP[dayGanHanja];
+        const zhiIdx = ZHI_MAP[dayZhiHanja];
+
+        const gan = HEAVENLY_STEMS[ganIdx] || HEAVENLY_STEMS[5]; // 기 기본값
+        const zhi = EARTHLY_BRANCHES[zhiIdx] || EARTHLY_BRANCHES[3]; // 묘 기본값
+
+        return {
+            gan: gan.char,
+            zhi: zhi.char,
+            ganElement: gan.label,
+            zhiElement: zhi.label,
+            ganColor: gan.color,
+            zhiColor: zhi.color
+        };
+    } catch (e) {
+        console.error('Daily pillar calculation error:', e);
+        return {
+            gan: '기',
+            zhi: '묘',
+            ganElement: '토',
+            zhiElement: '목',
+            ganColor: '#F59E0B',
+            zhiColor: '#10B981'
+        };
+    }
+};

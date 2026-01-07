@@ -167,7 +167,7 @@ export default function PaymentCard({ onCopy, onDetailedReport }: PaymentCardPro
 
                 {/* [Pulse Check] Open Kakao Link for Manual Confirm */}
                 <button
-                    onClick={() => window.open('https://open.kakao.com/o/svmwpk8h', '_blank')}
+                    onClick={() => window.open('https://open.kakao.com/o/spgWFR8h', '_blank')}
                     className="w-full py-3 bg-[#FAE300] hover:bg-[#F9D500] text-black font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors mt-2"
                 >
                     <span className="text-lg">💬</span>

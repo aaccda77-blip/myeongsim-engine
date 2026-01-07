@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { PowerbaseData, TeamRoleType, POWERBASE_COLORS, POWERBASE_LABELS } from '@/types/genius-report';
+import { PowerbaseData, TeamRoleType, POWERBASE_COLORS, POWERBASE_LABELS } from '@/types/strength-report';
 import { Crown } from 'lucide-react';
 
 interface PowerbaseDonutProps {
@@ -59,9 +59,9 @@ export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: 
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
             {/* Header */}
             <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-2">
-                🍩 MY POWERBASE*
+                🍩 조직 기여 에너지 (파워베이스)
             </h3>
-            <p className="text-xs text-gray-400 mb-4">(which organizational forces I support)</p>
+            <p className="text-xs text-gray-400 mb-4">(내가 조직 내에서 주로 발휘하는 힘의 원천)</p>
 
             <div className="flex flex-col md:flex-row items-center gap-6">
                 {/* Donut Chart */}
@@ -139,7 +139,7 @@ export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: 
                         <Crown className="w-6 h-6 text-amber-400" />
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400 uppercase tracking-wider">YOUR TEAM ROLE</p>
+                        <p className="text-xs text-gray-400 uppercase tracking-wider">조직 내 나의 역할</p>
                         <p className="text-lg font-bold text-amber-400">{TEAM_ROLE_KO[teamRole]}</p>
                         <p className="text-xs text-gray-300 mt-0.5">{teamRoleDescription}</p>
                     </div>
@@ -148,7 +148,7 @@ export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: 
 
             {/* Footnote */}
             <p className="text-[10px] text-gray-600 mt-4">
-                * The Powerbase shows my natural way of supporting an organization.
+                * 파워베이스는 당신이 조직에 기여하는 가장 자연스러운 방식입니다.
             </p>
         </div>
     );

@@ -12,14 +12,38 @@ interface MindSyncStatusBarProps {
 // [Growth Map Configuration]
 
 
-// [UX] Glitch Text Component for "Hacking" feel
-const GlitchText = ({ text }: { text: string }) => {
+// [UX] Premium Status Label - 고급스러운 인터렉티브 라벨
+const PremiumStatusLabel = ({ text }: { text: string }) => {
     return (
-        <span className="relative inline-block group">
-            <span className="relative z-10">{text}</span>
-            <span className="absolute top-0 left-0 -z-10 w-full h-full text-cyan-500 opacity-0 group-hover:opacity-70 animate-pulse translate-x-[1px] skew-x-12">{text}</span>
-            <span className="absolute top-0 left-0 -z-10 w-full h-full text-red-500 opacity-0 group-hover:opacity-70 animate-pulse -translate-x-[1px] -skew-x-12">{text}</span>
-        </span>
+        <motion.span
+            className="relative inline-flex items-center gap-1.5 group cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
+            {/* 메인 텍스트 - 부드러운 그라데이션 */}
+            <motion.span
+                className="relative z-10 font-bold tracking-wide bg-gradient-to-r from-emerald-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent bg-[length:200%_100%]"
+                animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            >
+                {text}
+            </motion.span>
+
+            {/* 호버 시 부드러운 언더라인 효과 */}
+            <motion.span
+                className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent"
+                initial={{ scaleX: 0, opacity: 0 }}
+                whileHover={{ scaleX: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+            />
+
+            {/* 부드러운 글로우 오버레이 */}
+            <motion.span
+                className="absolute inset-0 -z-10 rounded-md bg-emerald-500/0 blur-md"
+                whileHover={{ backgroundColor: 'rgba(16, 185, 129, 0.1)' }}
+                transition={{ duration: 0.3 }}
+            />
+        </motion.span>
     );
 };
 
@@ -103,7 +127,7 @@ export const MindSyncStatusBar: React.FC<MindSyncStatusBarProps> = ({
                         <div className="flex items-center gap-2">
                             {isLevelUp ? <Zap className="w-3 h-3 text-yellow-400 animate-bounce" /> : <Brain className="w-3 h-3 text-cyan-400" />}
                             <span className={`text-sm font-bold tracking-wider ${level >= 5 ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400' : 'text-gray-200'}`}>
-                                <GlitchText text={stateLabel} />
+                                <PremiumStatusLabel text={stateLabel} />
                             </span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">

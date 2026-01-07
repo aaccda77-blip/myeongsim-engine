@@ -151,7 +151,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         id: 'PERSONALITY_ANALYSIS',
         label: "성격분석",
         icon: "🧬",
-        neuro_trigger: "내 안의 숨겨진 천재성",
+        neuro_trigger: "나만의 본질 에너지 코드",
         style: 'premium_purple',
         sub_menus: [
             {
@@ -159,6 +159,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "🌟 핵심 코드 분석",
                 desc: "천직(天職) / 성장 과제",
                 intent: "core_myeongsim_codes"
+            },
+            {
+                id: "g_neural",
+                label: "🧬 뉴럴 프로필 분석",
+                desc: "Life's Work, Evolution, Radiance, Purpose 4대 코드",
+                intent: "neural_profile_analysis"
             },
             {
                 id: "g_2",
@@ -186,9 +192,16 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             },
             {
                 id: "g_6",
-                label: "✨ Genius Report",
-                desc: "8축 역량 시각화 분석",
-                intent: "genius_report_view",
+                label: "💎 강점/재능(인적자원)리포트",
+                desc: "생년월일 기반 8축 역량 분석",
+                intent: "strength_report_view",
+                isPremium: true
+            },
+            {
+                id: "g_7",
+                label: "🚀 스타트업 창업 전략",
+                desc: "강점 기반 사업 유형 & 성장 공식",
+                intent: "startup_strategy_view",
                 isPremium: true
             }
         ]
@@ -202,6 +215,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         neuro_trigger: "오늘 뭘 해야 운이 트일까?",
         style: 'default',
         sub_menus: [
+            {
+                id: "d_0",
+                label: "⚡ 에너지 대시보드",
+                desc: "오늘의 에너지 & 골든 타임",
+                intent: "energy_dashboard_view"
+            },
             {
                 id: "d_1",
                 label: "☀️ 오늘의 운세",
@@ -269,13 +288,6 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "📅 세운/월운 분석",
                 desc: "올해와 이달의 운세",
                 intent: "saju_yearly_monthly"
-            },
-            {
-                id: "s_6",
-                label: "📊 종합 리포트",
-                desc: "80페이지 프리미엄 PDF",
-                intent: "premium_report_full",
-                isPremium: true
             }
         ]
     }

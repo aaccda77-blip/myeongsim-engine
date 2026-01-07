@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CooperationProfileData } from '@/types/genius-report';
+import { CooperationProfileData } from '@/types/strength-report';
 import { Building2, Network, Users2, Handshake, User, Shuffle } from 'lucide-react';
 
 interface CooperationProfileProps {
@@ -56,7 +56,7 @@ export default function CooperationProfile({ data }: CooperationProfileProps) {
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
             {/* Header */}
             <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-2">
-                🤝 MY COOPERATION PROFILE
+                🤝 협력 스타일 프로필
             </h3>
             <p className="text-xs text-gray-400 mb-6">어떤 환경에서 일할 때 가장 좋은 성과를 내는지 보여줍니다</p>
 
@@ -105,9 +105,9 @@ export default function CooperationProfile({ data }: CooperationProfileProps) {
 
             {/* Preferred Team Role */}
             <div className="mt-6 pt-4 border-t border-white/10">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">MY PREFERRED TEAM ROLE</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">선호하는 협력 방식</p>
                 <p className="text-sm text-white">
-                    "<span className="text-amber-400 font-bold">TEAM SUPPORTER</span>", supportive, communicative, process-oriented
+                    "<span className="text-amber-400 font-bold">팀 서포터</span>", 협력적이고 소통 중심적인 프로세스 지향형
                 </p>
             </div>
         </div>
