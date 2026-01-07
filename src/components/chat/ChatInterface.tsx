@@ -1560,6 +1560,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                     {/* [NEW] DrillDown 3D Icon Menu */}
                     <DrillDownIconMenu
                         userProfile={reportData}
+                        hideTodayEnergy={true}
                         onSelectIntent={(intent, prompt) => {
                             setInput(prompt);
                             // Auto-send after selection
