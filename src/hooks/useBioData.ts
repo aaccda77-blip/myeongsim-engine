@@ -132,10 +132,47 @@ export const useBioData = () => {
         }, 1500);
     }, [state.isConnected]);
 
+    const simulateRecovery = useCallback(() => {
+        // 이미 연결되어 있어도 강제로 시뮬레이션 모드로 전환 (데모용)
+        setState(prev => ({
+            ...prev,
+            isConnecting: false,
+            isConnected: true,
+            deviceName: "Galaxy Watch 6 (Recovery Demo)",
+            bpm: 118 // Start High (Panic level)
+        }));
+
+        let currentBpm = 118;
+        const targetBpm = 72;
+
+        const interval = setInterval(() => {
+            setState(prev => {
+                // 목표 도달 시 종료
+                if (currentBpm <= targetBpm) {
+                    clearInterval(interval);
+                    return { ...prev, bpm: targetBpm };
+                }
+
+                // 불규칙하게 감소 (자연스러운 연출)
+                // 30% 확률로 유지, 70% 확률로 1~3 감소
+                if (Math.random() > 0.3) {
+                    const drop = Math.floor(Math.random() * 3) + 1;
+                    currentBpm -= drop;
+                }
+
+                return { ...prev, bpm: currentBpm };
+            });
+        }, 500); // 0.5초마다 업데이트 (약 15~20초 소요)
+
+        // Cleanup function for this specific interval is tricky here, 
+        // relying on component unmount or new simulation overwriting state.
+    }, []);
+
     return {
         ...state,
         connect,
         disconnect,
-        simulate // [New]
+        simulate,
+        simulateRecovery // [New]
     };
 };
