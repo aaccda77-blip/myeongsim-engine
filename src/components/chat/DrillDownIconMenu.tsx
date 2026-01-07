@@ -50,7 +50,9 @@ const styles = {
         flexWrap: 'nowrap' as const,
         width: '100%',
         maxWidth: '100%',
-        overflow: 'hidden',
+        overflowX: 'auto', // [Fix] 가로 스크롤 허용
+        overflowY: 'hidden',
+        WebkitOverflowScrolling: 'touch',
     } as React.CSSProperties,
 
     iconButton: {
@@ -65,9 +67,9 @@ const styles = {
         cursor: 'pointer',
         transition: 'all 0.3s ease',
         position: 'relative' as const,
-        flex: '1 1 0',
-        minWidth: '0',
-        maxWidth: 'calc(100% / 7)', // [Fix] 7 Icons support
+        flex: '0 0 auto', // [Fix] 찌그러짐 방지
+        minWidth: '64px', // [Fix] 최소 너비 보장
+        maxWidth: '80px',
     } as React.CSSProperties,
 
     // 3D 아이콘 컨테이너 (CSS 3D 효과)
