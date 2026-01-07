@@ -486,7 +486,7 @@ export function getRecommendedIcons(userProfile: any): IconRecommendation[] {
     recommendations.push({
         id: 'BIO_SYNC',
         badge: 'NEW',
-        priority: 0 // 최상위 우선순위
+        // priority 제거 -> DEFAULT_PRIORITY(11)을 따라 2번째 위치
     });
 
     // 우선순위로 정렬
@@ -514,13 +514,13 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
     // 추천된 것은 priority값 사용 (0~3), 추천 안 된 것은 기본 순서 유지
 
     const DEFAULT_PRIORITY: Record<string, number> = {
-        'BIO_SYNC': 5,             // 0순위 추천 (무조건 1등)
-        'WEALTH': 10,              // 부의 그릇 (중요)
-        'RELATIONSHIP': 11,        // 관계의 멍
-        'CAREER': 12,              // 천직 발견
-        'PERSONALITY_ANALYSIS': 13,// 성격분석
-        'DAILY_MISSION': 14,       // 데일리 미션
-        'SAJU_ANALYSIS': 15        // 정밀 사주
+        'WEALTH': 10,              // 1. 부의 그릇 (가장 중요)
+        'BIO_SYNC': 11,            // 2. 생체 연동 (User Request: 아이콘 사이에 배치)
+        'RELATIONSHIP': 12,        // 3. 관계의 멍
+        'CAREER': 13,              // 4. 천직 발견
+        'PERSONALITY_ANALYSIS': 14,// 5. 성격분석
+        'DAILY_MISSION': 15,       // 6. 데일리 미션
+        'SAJU_ANALYSIS': 16        // 7. 정밀 사주
     };
 
     return mappedIcons.sort((a, b) => {
