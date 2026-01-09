@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NeuralProfile } from '@/utils/NeuralProfileCalculator';
-import { getNeuralKey } from '@/data/neural_keys_db';
+import { getNeuralKey } from '@/data/NeuralGateDb';
 
 interface NeuralProfileCardProps {
     profile: NeuralProfile;
@@ -10,11 +10,12 @@ interface NeuralProfileCardProps {
 const NeuralProfileCard: React.FC<NeuralProfileCardProps> = ({ profile }) => {
     const [selectedKey, setSelectedKey] = React.useState<{ gate: number, term: string, fullData: any, label: string } | null>(null);
 
-    const getKey = (gate: number) => {
-        const data = getNeuralKey(gate);
+    const getKey = (gateVal: number) => {
+        const gateId = Math.floor(gateVal); // Floor 53.1 -> 53
+        const data = getNeuralKey(gateId);
         return {
-            gate,
-            term: data.neural_code, // Main term is Neural Code (Gift)
+            gate: gateVal, // Keep 53.1 for display
+            term: data.neural_code,
             fullData: data
         };
     };
@@ -26,7 +27,7 @@ const NeuralProfileCard: React.FC<NeuralProfileCardProps> = ({ profile }) => {
 
     // Initial select
     React.useEffect(() => {
-        setSelectedKey({ ...lifeWork, label: "Life's Work" });
+        setSelectedKey({ ...lifeWork, label: "천명 (天命)" });
     }, [profile]);
 
     const Circle = ({ data, label, position }: { data: any, label: string, position: string }) => (
@@ -49,7 +50,7 @@ const NeuralProfileCard: React.FC<NeuralProfileCardProps> = ({ profile }) => {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"></div>
 
             <h3 className="text-center text-emerald-400 font-bold mb-8 text-lg flex items-center justify-center gap-2">
-                <span className="text-xl">🧬</span> Neural Code Architecture
+                <span className="text-xl">🧬</span> 명심 코드 분석 (Myeongsim Code)
             </h3>
 
             <div className="relative w-64 h-64 mx-auto mb-6">
@@ -58,10 +59,10 @@ const NeuralProfileCard: React.FC<NeuralProfileCardProps> = ({ profile }) => {
                 <div className="absolute top-0 left-1/2 h-full w-[1px] bg-gradient-to-b from-transparent via-emerald-500/50 to-transparent -translate-x-1/2 animate-pulse"></div>
 
                 {/* Circles */}
-                <Circle data={lifeWork} label="Life's Work" position="top-0 left-1/2 -translate-x-1/2" />
-                <Circle data={radiance} label="Radiance" position="top-1/2 left-0 -translate-y-1/2" />
-                <Circle data={evolution} label="Evolution" position="top-1/2 right-0 -translate-y-1/2" />
-                <Circle data={purpose} label="Purpose" position="bottom-0 left-1/2 -translate-x-1/2" />
+                <Circle data={lifeWork} label="천명 (天命)" position="top-0 left-1/2 -translate-x-1/2" />
+                <Circle data={radiance} label="활력 (Vitality)" position="top-1/2 left-0 -translate-y-1/2" />
+                <Circle data={evolution} label="도전 (Challenge)" position="top-1/2 right-0 -translate-y-1/2" />
+                <Circle data={purpose} label="소명 (Calling)" position="bottom-0 left-1/2 -translate-x-1/2" />
 
                 {/* Center Core */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] animate-pulse z-20"></div>
@@ -72,7 +73,7 @@ const NeuralProfileCard: React.FC<NeuralProfileCardProps> = ({ profile }) => {
                 <div className="mt-8 pt-6 border-t border-emerald-500/30 animate-in slide-in-from-bottom-5 duration-300">
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-sm text-emerald-400 font-bold uppercase tracking-widest">{selectedKey.label}</span>
-                        <span className="text-2xl font-black text-white">Gate {selectedKey.gate}</span>
+                        <span className="text-2xl font-black text-white">Code {selectedKey.gate}</span>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 mb-4 text-center">

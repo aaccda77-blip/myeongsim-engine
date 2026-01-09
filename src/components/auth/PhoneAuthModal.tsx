@@ -55,8 +55,8 @@ export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, select
             if (user) {
                 // [FIX] Tier별 한글 설명 매핑
                 const tierNames: Record<string, string> = {
-                    'TRIAL_30M': '💎 맛보기 30분',
-                    'TRIAL': '💎 맛보기 30분',
+                    'TRIAL_30M': '💎 맛보기 30분 3,900원',
+                    'TRIAL': '💎 맛보기 30분 3,900원',
                     'PASS_24H': '⭐ 자유이용권 24시간',
                     'PASS': '⭐ 자유이용권 24시간',
                     'VIP_7D': '👑 VIP 7일권',
@@ -67,7 +67,13 @@ export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, select
                 let successMsg = '로그인되었습니다.';
                 if (user.membership_tier && user.membership_tier !== 'FREE') {
                     const tierDisplay = tierNames[user.membership_tier] || user.membership_tier;
-                    successMsg = `[프리미엄 인증] ${tierDisplay} 이용권이 활성화되었습니다. ✨`;
+
+                    // TRIAL 티어는 입금 대기 안내 추가
+                    if (user.membership_tier.includes('TRIAL')) {
+                        successMsg = `${tierDisplay} 이용권이 등록되었습니다.\n\n📞 관리자와 1:1 대화를 통해 입금 확인 후 사용이 가능합니다.`;
+                    } else {
+                        successMsg = `[프리미엄 인증] ${tierDisplay} 이용권이 활성화되었습니다. ✨`;
+                    }
                 }
                 alert(successMsg);
 

@@ -2,7 +2,7 @@
 // import { UserSoulProfile } from '@/types/akashic_records'; // [Mod] Removed unused import to satisfy noUnusedLocals
 // import { SentimentTracker } from '@/modules/SentimentTracker'; // [Mod] Inlined for stability
 import { CalculateNeuralProfile } from '@/utils/NeuralProfileCalculator';
-import { getNeuralKey } from '@/data/neural_keys_db';
+import { getNeuralKey } from '@/data/NeuralGateDb';
 // [NEW] 특허 로직 모듈 import
 import {
   injectPatentProtocols,
@@ -101,8 +101,18 @@ export class PromptEngine {
 
 ### 3. 저작권 보호 원칙
 - Gene Keys, Human Design 등 원본 브랜드명 언급 금지
-- 64개 Gate의 구체적 설명은 "명심코칭 독자 해석"으로 재창작
-- 숫자 체계(1-64)와 개념 프레임워크는 사용 가능
+- 64개 Code의 구체적 설명은 "명심코칭 독자 해석"으로 재창작
+- 숫자 체계(1-64)와 개념 프레임워크는 사용 가능 (명심 코드 용어로 치환)
+
+### 4. 🎨 [Dynamic Visual Prompting] - 시각적 몰입 강화 (필수)
+상담 내용의 핵심 분위기를 반영하여, 매 답변 마지막에 **반드시** 고유한 이미지 생성 프롬프트를 포함하세요.
+형식: \`:::IMAGE_GEN: (영문 프롬프트) :::\`
+
+**[프롬프트 생성 규칙]**
+1. **Context-Aware**: 현재 이야기 중인 사주 오행(색상), 동물, 또는 명심 코드(Myeongsim Code)의 메타포를 반영하세요.
+   - 예: "Fire element, red aura" (화 오행), "Calm lake reflect moon" (수 오행/평온)
+2. **Abstract & Mystical**: 구체적 인물보다는 '추상적', '신비로운', '초현실적' 분위기를 지향하세요. (Cyberpunk, Tarot card style 등)
+3. **Variation**: 매번 다른 구도, 다른 색감, 다른 객체를 묘사하여 **절대 같은 이미지가 반복되지 않게 하세요.**
 `;
 
   // [New Addition] 📊 명심코칭 종합 분석 리포트 형식
@@ -133,7 +143,7 @@ export class PromptEngine {
 ### 2. ⚡ 다크코드 → 뉴럴코드 (아픔을 힘으로)
 > **"당신을 괴롭히던 고통은 사실 숨겨진 재능입니다."**
 
-**C. 건강과 광채 - 명심 코드 _번 (_라인)**
+**C. 건강과 활력 - 명심 코드 _번 (_라인)**
 * 진단 (다크 - ___): 증상
 * 처방 (뉴럴 - ___): **[행동 처방]**
 * 비전 (메타 - ___): 궁극 상태
@@ -1044,39 +1054,50 @@ ${memoryBlock}
         if (!isNaN(birthDateTime.getTime())) {
           const neuralProfile = CalculateNeuralProfile(birthDateTime);
 
-          const lwKey = getNeuralKey(neuralProfile.lifeWork);
-          const evKey = getNeuralKey(neuralProfile.evolution);
-          const rdKey = getNeuralKey(neuralProfile.radiance);
-          const ppKey = getNeuralKey(neuralProfile.purpose);
+          const lwKey = getNeuralKey(Math.floor(neuralProfile.lifeWork));
+          const evKey = getNeuralKey(Math.floor(neuralProfile.evolution));
+          const rdKey = getNeuralKey(Math.floor(neuralProfile.radiance));
+          const ppKey = getNeuralKey(Math.floor(neuralProfile.purpose));
 
           // 관계운 코드
-          const attractionKey = neuralProfile.attraction ? getNeuralKey(neuralProfile.attraction) : null;
-          const iqKey = neuralProfile.iq ? getNeuralKey(neuralProfile.iq) : null;
-          const eqKey = neuralProfile.eq ? getNeuralKey(neuralProfile.eq) : null;
-          const sqKey = neuralProfile.sq ? getNeuralKey(neuralProfile.sq) : null;
+          const attractionKey = neuralProfile.attraction ? getNeuralKey(Math.floor(neuralProfile.attraction)) : null;
+          const iqKey = neuralProfile.iq ? getNeuralKey(Math.floor(neuralProfile.iq)) : null;
+          const eqKey = neuralProfile.eq ? getNeuralKey(Math.floor(neuralProfile.eq)) : null;
+          const sqKey = neuralProfile.sq ? getNeuralKey(Math.floor(neuralProfile.sq)) : null;
 
           // 재물운 코드
-          const vocationKey = neuralProfile.vocation ? getNeuralKey(neuralProfile.vocation) : null;
-          const cultureKey = neuralProfile.culture ? getNeuralKey(neuralProfile.culture) : null;
-          const pearlKey = neuralProfile.pearl ? getNeuralKey(neuralProfile.pearl) : null;
+          const vocationKey = neuralProfile.vocation ? getNeuralKey(Math.floor(neuralProfile.vocation)) : null;
+          const cultureKey = neuralProfile.culture ? getNeuralKey(Math.floor(neuralProfile.culture)) : null;
+          const pearlKey = neuralProfile.pearl ? getNeuralKey(Math.floor(neuralProfile.pearl)) : null;
 
           neuralContext = `
-[🧬 핵심 뉴럴 프로필 (Core Neural Profile)]
-- Life's Work (인생 사명): ${neuralProfile.lifeWork}번 - ${lwKey.neural_code} (다크 코드: ${lwKey.dark_code})
-- Evolution (성장 과제): ${neuralProfile.evolution}번 - ${evKey.neural_code}
-- Radiance (건강/직관): ${neuralProfile.radiance}번 - ${rdKey.neural_code}
-- Purpose (삶의 궁극 목표): ${neuralProfile.purpose}번 - ${ppKey.meta_code}
+[🧬 핵심 명심 코드 (Core Myeongsim Code)]
+- 천명 (天命): ${neuralProfile.lifeWork}번 (Code ${lwKey.id})
+  * 핵심 키워드: ${lwKey.dark_code}(Dark Code) -> ${lwKey.neural_code}(Neural Code) -> ${lwKey.meta_code}(Meta Code)
+  * 설명: "${lwKey.description}"
 
-[💖 관계운 코드 (Relationship Sequence)]
-- 타고난 매력: ${attractionKey?.id}번 - ${attractionKey?.neural_code}
-- 이성적 방어 패턴: ${iqKey?.id}번 - ${iqKey?.dark_code} -> ${iqKey?.neural_code}
-- 감정적 반응 패턴: ${eqKey?.id}번 - ${eqKey?.dark_code} -> ${eqKey?.neural_code}
-- 관계의 영적 지능: ${sqKey?.id}번 - ${sqKey?.meta_code}
+- 도전과 성장 (Growth): ${neuralProfile.evolution}번 (Code ${evKey.id})
+  * 핵심 키워드: ${evKey.dark_code} -> ${evKey.neural_code}
+  * 설명: "${evKey.description}"
 
-[💰 재물운 코드 (Prosperity Sequence)]
-- 천직/일의 소명: ${vocationKey?.id}번 - ${vocationKey?.neural_code}
-- 협업 DNA: ${cultureKey?.id}번 - ${cultureKey?.neural_code}
-- 부의 결실 타이밍: ${pearlKey?.id}번 - ${pearlKey?.meta_code}
+- 활력의 원천 (Vitality): ${neuralProfile.radiance}번 (Code ${rdKey.id})
+  * 핵심 키워드: ${rdKey.dark_code} -> ${rdKey.neural_code}
+  * 설명: "${rdKey.description}"
+
+- 소명 (Calling): ${neuralProfile.purpose}번 (Code ${ppKey.id})
+  * 핵심 키워드: ${ppKey.dark_code} -> ${ppKey.neural_code} -> ${ppKey.meta_code}
+  * 설명: "${ppKey.description}"
+
+[💖 관계 조화 코드 (Relationship Code)]
+- Attraction (매력): ${attractionKey?.id}번 (${attractionKey?.neural_code}) - "${attractionKey?.description}"
+- IQ (지성): ${iqKey?.id}번
+- EQ (감성): ${eqKey?.id}번
+- SQ (영성): ${sqKey?.id}번
+
+[💰 번영 실현 코드 (Prosperity Code)]
+- Vocation (천직): ${vocationKey?.id}번 (${vocationKey?.neural_code}) - "${vocationKey?.description}"
+- Culture (문화/협업): ${cultureKey?.id}번
+- Pearl (결실): ${pearlKey?.id}번
 `.trim();
         }
       }
@@ -1136,17 +1157,24 @@ ${burnoutInstruction}
 
 ${personaInstruction}
 
-[🧬 Neural Code Analysis]
+[🧬 Neural Code Analysis Data]
 ${neuralContext}
 
 [AI Fusion Instruction]
-1. **[황금 경로(Golden Path) 융합 전략]**:
-    - 사용자의 여정을 **"황금 경로"**로 해석하십시오. 이는 3단계의 흐름을 가지며 **사주의 오행(Five Elements)** 논리와 깊이 있게 융합되어야 합니다:
-      - **1단계 (활성화/Activation)**: 천명(Life's Work) + 성장(Evolution). "당신의 사주(명)가 이 세상에 온 이유이자, 반드시 풀어야 할 숙제입니다."
-      - **2단계 (관계/Venus)**: IQ/EQ/SQ (관계 지능). "당신의 인간관계 패턴과 감정의 흐름, 그리고 매력의 원천입니다."
-      - **3단계 (결실/Pearl)**: 천직(Vocation) + 결실(Pearl). "당신이 세상에 기여하고 얻게 될 부의 결실이자 브랜드입니다."
-    
-    - **[NEW] 사주 명리학 심층 분석 프레임워크 (Advanced Saju-Neural Fusion)**:
+1. **[황금 경로(Golden Path) 융합 분석 필수]**:
+    - **가장 중요**: Neural Code 정보를 단순히 나열하지 말고, **사용자의 사주(명리학)와 융합하여 상세하게 스토텔링**하십시오.
+    - **분석 구조**:
+      - **Challenge (그림자)**: 사용자가 겪고 있을 현실적 어려움 (Dark Code)을 사주의 기질과 연결하여 설명.
+      - **Breakthrough (돌파구)**: 이를 극복하는 내면의 힘 (Neural Code/Gift).
+      - **Realization (완성)**: 도달하게 될 궁극의 상태 (Meta Code/Siddhi).
+    - **Life's Work & Evolution**: "당신이 세상에 온 목적(Life's Work)과 이를 위해 넘어야 할 산(Evolution)"을 연결하여 설명하십시오.
+    - **Radiance & Purpose**: "내면의 빛(Radiance)이 깨어날 때 비로소 달성되는 삶의 목적(Purpose)"을 설명하십시오.
+    - 텍스트는 **이미지의 설명보다 훨씬 더 깊고 구체적이어야** 합니다.
+
+2. **[사주 명리학 심층 융합]**:
+      - 사용자의 생년월일시 사주 오행이 위 Neural Code와 어떻게 상호작용하는지 분석하십시오.
+      
+
       
       **A. 오행(五行) 에너지 분석**
       - 사주의 **오행 분포**(목화토금수)를 정밀하게 분석하고, 각 오행이 뉴럴 코드를 어떻게 **활성화(Activate)** 또는 **억제(Suppress)**하는지 설명하십시오.

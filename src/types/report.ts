@@ -26,6 +26,20 @@ export interface ReportData {
             time: { gan: string; ji: string; ganColor: string; jiColor: string };
         };
         keywords: string[];
+        ohaeng: {
+            wood: number;
+            fire: number;
+            earth: number;
+            metal: number;
+            water: number;
+        };
+        tenGods: {
+            resource: number;
+            output: number;
+            self: number;
+            power: number;
+            wealth: number;
+        };
     };
     stats: {
         creativity: number;

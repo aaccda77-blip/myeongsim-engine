@@ -21,7 +21,7 @@ import { MindSyncStatusBar } from '../gamification/MindSyncStatusBar'; // [Fixed
 import { SajuMatrixCard } from './SajuMatrixCard';      // [Added] Visual Saju Matrix
 import NeuralProfileCard from '../NeuralProfileCard'; // [Added] Neural Profile Visualizer
 import { CalculateNeuralProfile } from '@/utils/NeuralProfileCalculator'; // [Added] Client-side Calc
-import MindTotemButton from './MindTotemButton'; // [Added] Mind Totem Button
+// import MindTotemButton from './MindTotemButton'; // [Removed] Replaced with AI Image Gen
 import ActionPlanCard from './ActionPlanCard'; // [Added] Visual Action Plan
 // [Removed] GrowthMapIndicator integrated into StatusBar
 import PatentLoadingTerminal from '../PatentLoadingTerminal'; // [Added] Visual Loading State
@@ -38,8 +38,9 @@ import { supabase } from '@/lib/supabaseClient'; // [Auth]
 import { DeepScanQuestions } from '@/modules/DeepScanData'; // [Feature] 30 Qs
 import PhoneAuthModal from '../auth/PhoneAuthModal'; // [Module] Auth UI
 import { AuthService } from '@/modules/AuthService'; // [Module] Auth Logic
-import { calculateSaju } from '@/lib/saju/SajuEngine'; // [NEW] Unified Engine
+import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine'; // [NEW] Unified Engine with Stats
 import DrillDownIconMenu from './DrillDownIconMenu'; // [NEW] 3D Icon Menu
+import SmartContextCard from '../features/SmartContextCard'; // [NEW] Smart Context Card
 
 
 // [Helper] Saju Keywords for Restoration
@@ -72,12 +73,15 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName, simulateRecovery } = useBioData();
     const [showBioSync, setShowBioSync] = useState(false); // [New Menu]
     const [emdrActive, setEmdrActive] = useState(false); // [New] EMDR Mode State
+    const [showCrisisMode, setShowCrisisMode] = useState(false); // [Safety] Crisis Intervention Screen
+    const [crisisPhase, setCrisisPhase] = useState<'breathing' | 'hope' | 'action'>('breathing'); // [Safety] Recovery Phase
+    const [showSmartContext, setShowSmartContext] = useState(false); // [Smart Context] Energy Analysis Card
 
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 'welcome',
             role: 'assistant',
-            content: "안녕하세요 명심AI코치입니다. 고객님 스스로가 운명을 읽어 자각하여 스스로 밝혀 나아갈수 코칭해결책을 제시해 드리겠습니다. 어떤 고민이 있으신가요?"
+            content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다.\n\n🔒 *이 대화는 저장되지 않습니다. 창을 닫으면 즉시 삭제되며, 오직 당신만 알 수 있습니다.*"
         }
     ]);
     const [input, setInput] = useState('');
@@ -93,33 +97,31 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     const [isLevelUp, setIsLevelUp] = useState(false);
     const [currentGrowthStage, setCurrentGrowthStage] = useState<number>(1); // [Growth Map]
 
-    // [Sonic Feedback] Game Audio Engine
-    const playGameSound = (type: 'levelup' | 'down' | 'cheer' | 'normal') => {
+    // [Sonic Feedback] Voice Actor Audio Engine (Replaced TTS)
+    const playVoiceAudio = (type: 'levelup' | 'welcome' | 'high_bpm' | 'mission') => {
         if (typeof window === 'undefined') return;
 
-        const utterance = new SpeechSynthesisUtterance();
-        utterance.lang = 'ko-KR';
-        utterance.rate = 1.1; // Slightly faster for game feel
-        utterance.volume = 0.8;
+        const audioMap: Record<string, string> = {
+            'levelup': '/sounds/voice_levelup.wav',
+            'welcome': '/sounds/voice_welcome.wav',
+            'high_bpm': '/sounds/voice_high_bpm.wav',
+            'mission': '/sounds/voice_mission_start.wav'
+        };
 
-        switch (type) {
-            case 'levelup':
-                utterance.text = "레벨 업! 의식이 확장됩니다!";
-                utterance.pitch = 1.2;
-                break;
-            case 'down':
-                utterance.text = "에너지 다운. 호흡을 가다듬으세요.";
-                utterance.pitch = 0.8;
-                break;
-            case 'cheer':
-                utterance.text = "나이스! 아주 좋은 통찰입니다!";
-                utterance.pitch = 1.1;
-                break;
-            case 'normal':
-                // No sound for normal turns, or maybe a subtle 'pop' sound effect if we had assets
-                return;
+        const audioFile = audioMap[type];
+        if (audioFile) {
+            const audio = new Audio(audioFile);
+            audio.volume = 0.8;
+            audio.play().catch(() => { });
         }
-        window.speechSynthesis.speak(utterance);
+    };
+
+    // [Legacy Wrapper] For backward compatibility
+    const playGameSound = (type: 'levelup' | 'down' | 'cheer' | 'normal') => {
+        if (type === 'levelup') {
+            playVoiceAudio('levelup');
+        }
+        // down, cheer, normal - silent or can add more voice files later
     };
 
     // [Gamification] XP Trigger Logic
@@ -255,8 +257,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         return;
                     }
 
-                    const p = result.fourPillars;
-                    const dayMaster = result.dayMaster;
+                    const stats = calculateSajuStats(p, result.dayMasterChar); // [Fix] Use Kanji Char for lookup
 
                     updateUserData({
                         userName: meta.user_name || "회원",
@@ -264,7 +265,9 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         birthTime: meta.birth_time,
                         gender: meta.gender,
                         saju: {
-                            elements: { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 }, // Placeholder
+                            elements: stats.ohaeng, // Map ohaeng to elements
+                            ohaeng: stats.ohaeng,   // [Fix] Add ohaeng for ScoreCalculator
+                            tenGods: stats.tenGods, // [Fix] Add tenGods for ScoreCalculator
                             dayMaster: dayMaster,
                             dayMasterTrait: "분석 완료",
                             keywords: getKeywords(dayMaster),
@@ -331,6 +334,59 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
         checkPremiumStatus();
     }, [userId]);
 
+    // [NEW] Realtime Subscription - 관리자 승인 시 즉시 잠금 해제
+    useEffect(() => {
+        if (!userId || userId.includes('-0000-')) return;
+
+        // Supabase Realtime 채널 구독
+        const channel = supabase
+            .channel(`user-tier-${userId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'users',
+                    filter: `id=eq.${userId}`
+                },
+                (payload: any) => {
+                    console.log('🔔 [Realtime] User data updated:', payload);
+
+                    const newData = payload.new;
+                    if (newData) {
+                        // 즉시 상태 업데이트
+                        const isActive = newData.expires_at && new Date(newData.expires_at) > new Date();
+                        const hasPremium = newData.membership_tier && newData.membership_tier !== 'FREE' && isActive;
+
+                        setIsPremiumMember(hasPremium);
+
+                        if (newData.expires_at) {
+                            setUserExpiryDate(newData.expires_at);
+                            localStorage.setItem('myeongsim_expiry_date', newData.expires_at);
+                        }
+
+                        if (newData.membership_tier !== 'FREE' || newData.expires_at) {
+                            setIsTrialMode(false);
+                        }
+
+                        if (hasPremium) {
+                            alert('🎉 이용권이 활성화되었습니다! 모든 기능을 사용하실 수 있습니다.');
+                        }
+
+                        console.log('✅ [Realtime] Premium status updated:', hasPremium);
+                    }
+                }
+            )
+            .subscribe((status: string) => {
+                console.log('📡 [Realtime] Subscription status:', status);
+            });
+
+        // Cleanup on unmount
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [userId]);
+
     // [Auto-scroll] Smart Scroll Logic
     useEffect(() => {
         if (messages.length === 0) return;
@@ -384,6 +440,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
                 const p = result.fourPillars;
                 const dayMaster = result.dayMaster;
+                const stats = calculateSajuStats(p, result.dayMasterChar); // [Fix] Use Kanji Char for lookup
 
                 updateUserData({
                     userName: meta.user_name || "회원",
@@ -391,7 +448,9 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                     birthTime: meta.birth_time,
                     gender: meta.gender,
                     saju: {
-                        elements: { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 }, // Placeholder
+                        elements: stats.ohaeng, // Map ohaeng to elements
+                        ohaeng: stats.ohaeng,   // [Fix] Add ohaeng for ScoreCalculator
+                        tenGods: stats.tenGods, // [Fix] Add tenGods for ScoreCalculator
                         dayMaster: dayMaster,
                         dayMasterTrait: "분석 완료",
                         keywords: getKeywords(dayMaster),
@@ -563,7 +622,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         {
                             id: 'welcome',
                             role: 'assistant',
-                            content: "안녕하세요 명심AI코치입니다. 고객님 스스로가 운명을 읽어 자각하여 스스로 밝혀 나아갈수 코칭해결책을 제시해 드리겠습니다. 어떤 고민이 있으신가요?"
+                            content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다."
                         }
                     ]);
                 }
@@ -584,19 +643,87 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
 
     // [Feature] Bio Data Hook
-    const { connect: connectBio, disconnect: disconnectBio, bpm, isConnected: isBioConnected, isConnecting: isBioConnecting, error: bioError } = useBioData();
+    const { connect: connectBio, disconnect: disconnectBio, isConnected: isBioConnected, isConnecting: isBioConnecting, error: bioError } = useBioData();
 
-    // [Auto-Trigger] High BPM detection
+    // [Auto-Trigger] High BPM detection - Tiered Response
+    const bpmTriggerRef = useRef<number>(0); // Debounce to prevent repeated triggers
     useEffect(() => {
-        if (bpm > 110 && !isLoading) {
-            // Automatic trigger when heart rate is high
-            handleSend("심장이 너무 빨리 뛰어요... (BPM: " + bpm + ")");
+        if (isLoading) return;
+
+        const now = Date.now();
+        const DEBOUNCE_MS = 30000; // 30 seconds between triggers
+
+        // Tier 2: BPM 120+ → 자동 그라운딩 화면 (최우선)
+        if (bpm >= 120 && (now - bpmTriggerRef.current > DEBOUNCE_MS)) {
+            bpmTriggerRef.current = now;
+            // [NEW] Play high BPM voice before crisis mode
+            playVoiceAudio('high_bpm');
+
+            setShowCrisisMode(true);
+            setCrisisPhase('breathing');
+            // Add system message
+            setMessages(prev => [...prev, {
+                id: `bpm-alert-${now}`,
+                role: 'assistant',
+                content: `🚨 **[생체 신호 감지]** BPM ${bpm}\n\n심박수가 많이 높습니다. 잠시 멈추고 함께 호흡해볼까요?`
+            }]);
+            return;
+        }
+
+        // Tier 1: BPM 110-119 → 알림 메시지만
+        if (bpm > 110 && bpm < 120 && (now - bpmTriggerRef.current > DEBOUNCE_MS)) {
+            bpmTriggerRef.current = now;
+            handleSend("심장이 조금 빨리 뛰고 있어요... (BPM: " + bpm + ") 지금 기분이 어때요?");
         }
     }, [bpm]);
+
+    // [SAFETY] Crisis Breathing Audio Guide - Voice Actor Files
+    useEffect(() => {
+        if (!showCrisisMode || crisisPhase !== 'breathing') return;
+
+        let isCancelled = false;
+        const audioSequence = [
+            { file: '/sounds/voice_inhale.mp3', delay: 0 },
+            { file: '/sounds/voice_hold.mp3', delay: 4000 },
+            { file: '/sounds/voice_exhale.mp3', delay: 6000 }
+        ];
+
+        const playSequence = () => {
+            audioSequence.forEach(({ file, delay }) => {
+                setTimeout(() => {
+                    if (isCancelled) return;
+                    const audio = new Audio(file);
+                    audio.volume = 0.8;
+                    audio.play().catch(() => { });
+                }, delay);
+            });
+        };
+
+        // Play immediately and then loop every 10 seconds
+        playSequence();
+        const loopInterval = setInterval(() => {
+            if (!isCancelled) playSequence();
+        }, 10000);
+
+        return () => {
+            isCancelled = true;
+            clearInterval(loopInterval);
+        };
+    }, [showCrisisMode, crisisPhase]);
 
     const handleSend = async (overrideInput?: string) => {
         const msgToSend = overrideInput || input;
         if (!msgToSend.trim() || isLoading) return;
+
+        // [SAFETY] Crisis Intervention Detection
+        const CRISIS_KEYWORDS = ['죽고 싶', '자살', '끝내고 싶', '살기 싫', '사라지고 싶', '없어지고 싶', '뛰어내리'];
+        const lowerMsg = msgToSend.toLowerCase();
+        if (CRISIS_KEYWORDS.some(k => lowerMsg.includes(k))) {
+            // Show crisis intervention screen instead of sending to AI
+            setShowCrisisMode(true);
+            setInput(''); // Clear input
+            return; // Block normal flow
+        }
 
         // [Premium Check] Block Deep Scan for free trial users
         // [DISABLED] GateKeeper logic - Now always proceed to real AI
@@ -715,13 +842,18 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
 
         // [Universal Engine] Date Detection & Immediate Visualization
-        const dateMatch = msgToSend.match(/(\d{4})[-.년]\s*(\d{1,2})[-.월]\s*(\d{1,2})/);
+        // Supports: 1980-07-07, 1980.07.07, 1980년 7월 7일, optional 13:40, 13시 40분
+        const dateMatch = msgToSend.match(/(\d{4})[-.년]\s*(\d{1,2})[-.월]\s*(\d{1,2})[-.일]?\s*(?:(\d{1,2})[:시]\s*(\d{1,2})?)?/);
+
         if (dateMatch) {
             try {
                 const year = parseInt(dateMatch[1]);
                 const month = parseInt(dateMatch[2]);
                 const day = parseInt(dateMatch[3]);
-                const date = new Date(year, month - 1, day);
+                const hour = dateMatch[4] ? parseInt(dateMatch[4]) : 12; // Default to noon if no time
+                const minute = dateMatch[5] ? parseInt(dateMatch[5]) : 0;
+
+                const date = new Date(year, month - 1, day, hour, minute);
                 const profile = CalculateNeuralProfile(date);
 
                 // Inject visual command immediately
@@ -729,10 +861,11 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
                 // Add immediate bot response with the card
                 setTimeout(() => {
+                    const timeStr = dateMatch[4] ? ` ${hour}시 ${minute}분` : '';
                     setMessages(prev => [...prev, {
                         id: `neural-${Date.now()}`,
                         role: 'assistant',
-                        content: `🧬 **Neural Code Detected.**\n\n[System] ${year}년 ${month}월 ${day}일 생년월일을 기반으로 고유 설계를 분석했습니다.\n${uiCommand}`
+                        content: `🧬 **Neural Code Detected.**\n\n[System] ${year}년 ${month}월 ${day}일${timeStr} 생년월일을 기반으로 고유 설계를 분석했습니다.\n${uiCommand}`
                     }]);
                 }, 100); // 100ms slight delay for natural feel
             } catch (e) {
@@ -1059,6 +1192,271 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
             {/* [Expert Feature] Accountability Check-in Modal */}
             <AccountabilityModal onReward={(xp) => handleAddXP(xp, "Coaching Check-in Reward")} />
+
+            {/* [Smart Context] Energy Analysis Card */}
+            {showSmartContext && (
+                <SmartContextCard
+                    bpm={bpm}
+                    birthDate={reportData?.birthDate}
+                    onChatTopic={(message) => handleSend(message)}
+                    onClose={() => setShowSmartContext(false)}
+                />
+            )}
+
+            {/* [SAFETY] Crisis Intervention Full-Screen Modal - Multi-Phase Recovery */}
+            {showCrisisMode && (
+                <div className="fixed inset-0 z-[9999] bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 flex flex-col items-center justify-center p-6 overflow-y-auto">
+
+                    {/* PHASE 1: Breathing - Synced with Voice Audio */}
+                    {crisisPhase === 'breathing' && (() => {
+                        // 10초 주기: 들이쉬기(0-4초) → 멈추기(4-6초) → 내쉬기(6-10초)
+                        const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+                        const [cycleProgress, setCycleProgress] = useState(0);
+
+                        useEffect(() => {
+                            const startTime = Date.now();
+                            const cycleDuration = 10000; // 10초
+
+                            const updatePhase = () => {
+                                const elapsed = (Date.now() - startTime) % cycleDuration;
+                                const progress = elapsed / cycleDuration;
+                                setCycleProgress(progress);
+
+                                if (elapsed < 4000) {
+                                    setBreathPhase('inhale');
+                                } else if (elapsed < 6000) {
+                                    setBreathPhase('hold');
+                                } else {
+                                    setBreathPhase('exhale');
+                                }
+                            };
+
+                            const interval = setInterval(updatePhase, 50);
+                            return () => clearInterval(interval);
+                        }, []);
+
+                        // 호흡 단계별 원 크기 (1.0 ~ 1.5)
+                        const getScale = () => {
+                            if (breathPhase === 'inhale') {
+                                // 0-4초: 1.0 → 1.5 (커지기)
+                                return 1 + (cycleProgress / 0.4) * 0.5;
+                            } else if (breathPhase === 'hold') {
+                                // 4-6초: 1.5 유지
+                                return 1.5;
+                            } else {
+                                // 6-10초: 1.5 → 1.0 (작아지기)
+                                return 1.5 - ((cycleProgress - 0.6) / 0.4) * 0.5;
+                            }
+                        };
+
+                        const phaseText = {
+                            inhale: '깊게 들이쉬세요',
+                            hold: '잠시 멈추세요',
+                            exhale: '천천히 내쉬세요'
+                        };
+
+                        const phaseEmoji = {
+                            inhale: '🌬️',
+                            hold: '⏸️',
+                            exhale: '💨'
+                        };
+
+                        return (
+                            <>
+                                {/* Premium Breathing Circle */}
+                                <div className="relative mb-10">
+                                    {/* 외곽 글로우 효과 */}
+                                    <div
+                                        className="absolute inset-0 rounded-full blur-2xl opacity-50"
+                                        style={{
+                                            background: `radial-gradient(circle, ${breathPhase === 'inhale' ? 'rgba(34, 211, 238, 0.4)' : breathPhase === 'hold' ? 'rgba(168, 85, 247, 0.4)' : 'rgba(56, 189, 248, 0.4)'}, transparent)`,
+                                            transform: `scale(${getScale() * 1.2})`,
+                                            transition: 'transform 0.1s ease-out, background 0.5s ease'
+                                        }}
+                                    />
+
+                                    {/* 메인 원 */}
+                                    <div
+                                        className="w-52 h-52 rounded-full flex items-center justify-center relative overflow-hidden"
+                                        style={{
+                                            background: `linear-gradient(135deg, 
+                                                ${breathPhase === 'inhale' ? 'rgba(34, 211, 238, 0.3)' :
+                                                    breathPhase === 'hold' ? 'rgba(168, 85, 247, 0.3)' :
+                                                        'rgba(56, 189, 248, 0.3)'} 0%, 
+                                                rgba(99, 102, 241, 0.2) 100%)`,
+                                            transform: `scale(${getScale()})`,
+                                            transition: 'transform 0.1s ease-out, background 0.5s ease',
+                                            boxShadow: `0 0 60px ${breathPhase === 'inhale' ? 'rgba(34, 211, 238, 0.3)' :
+                                                breathPhase === 'hold' ? 'rgba(168, 85, 247, 0.3)' :
+                                                    'rgba(56, 189, 248, 0.3)'}`,
+                                            border: '2px solid rgba(255,255,255,0.2)'
+                                        }}
+                                    >
+                                        {/* 내부 링 */}
+                                        <div
+                                            className="absolute w-40 h-40 rounded-full border-2 border-white/20"
+                                            style={{
+                                                transform: `scale(${breathPhase === 'hold' ? 1.1 : 1})`,
+                                                transition: 'transform 0.3s ease'
+                                            }}
+                                        />
+
+                                        {/* 텍스트 */}
+                                        <div className="text-center z-10">
+                                            <span className="text-4xl mb-2 block">{phaseEmoji[breathPhase]}</span>
+                                            <span className="text-white text-xl font-medium tracking-wide">
+                                                {phaseText[breathPhase]}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* 진행률 링 */}
+                                    <svg className="absolute inset-0 w-52 h-52" style={{ transform: `scale(${getScale()})` }}>
+                                        <circle
+                                            cx="104"
+                                            cy="104"
+                                            r="100"
+                                            fill="none"
+                                            stroke="rgba(255,255,255,0.1)"
+                                            strokeWidth="4"
+                                        />
+                                        <circle
+                                            cx="104"
+                                            cy="104"
+                                            r="100"
+                                            fill="none"
+                                            stroke={breathPhase === 'inhale' ? '#22d3ee' : breathPhase === 'hold' ? '#a855f7' : '#38bdf8'}
+                                            strokeWidth="4"
+                                            strokeLinecap="round"
+                                            strokeDasharray={`${cycleProgress * 628} 628`}
+                                            style={{ transition: 'stroke 0.5s ease', transform: 'rotate(-90deg)', transformOrigin: 'center' }}
+                                        />
+                                    </svg>
+                                </div>
+
+                                <div className="text-center max-w-md mb-10">
+                                    <h2 className="text-white text-2xl font-semibold mb-4">
+                                        지금 이 순간, 당신은 혼자가 아닙니다.
+                                    </h2>
+                                    <p className="text-slate-300 text-lg leading-relaxed">
+                                        {breathPhase === 'inhale' && '코로 깊게 숨을 들이마시세요...'}
+                                        {breathPhase === 'hold' && '잠시 숨을 참으세요...'}
+                                        {breathPhase === 'exhale' && '입으로 천천히 내쉬세요...'}
+                                        <br />
+                                        지금 느끼는 감정은 영원하지 않습니다.
+                                    </p>
+                                </div>
+
+                                {/* Emergency Contact */}
+                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center border border-white/20 mb-8">
+                                    <p className="text-slate-300 text-sm mb-2">24시간 자살예방상담전화</p>
+                                    <a href="tel:1393" className="text-3xl font-bold text-cyan-400 hover:text-cyan-300 transition-colors">
+                                        📞 1393
+                                    </a>
+                                </div>
+
+                                <button
+                                    onClick={() => setCrisisPhase('hope')}
+                                    className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-8 py-3 rounded-full font-medium hover:opacity-90 transition-opacity"
+                                >
+                                    조금 나아졌어요
+                                </button>
+                            </>
+                        );
+                    })()}
+
+                    {/* PHASE 2: Hope Message (Saju-based) */}
+                    {crisisPhase === 'hope' && (
+                        <>
+                            <div className="text-6xl mb-6">🌅</div>
+                            <div className="text-center max-w-lg mb-10">
+                                <h2 className="text-white text-2xl font-semibold mb-6">
+                                    당신의 사주를 살펴봤어요.
+                                </h2>
+                                <p className="text-slate-300 text-lg leading-relaxed mb-4">
+                                    지금은 힘들지만, <span className="text-cyan-400 font-semibold">조만간 좋은 소식</span>이 기다리고 있어요.
+                                </p>
+                                <p className="text-slate-400 text-base leading-relaxed mb-4">
+                                    새로운 인연, 새로운 기회, 작은 행운들이<br />
+                                    당신을 향해 다가오고 있습니다.
+                                </p>
+                                <p className="text-white text-lg font-medium">
+                                    조금만 더 견뎌주세요. 🌱<br />
+                                    <span className="text-cyan-400">제가 항상 곁에서 당신의 패턴을 살피며</span><br />
+                                    좋은 방향으로 갈 수 있도록 도울게요.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => setCrisisPhase('action')}
+                                className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-8 py-3 rounded-full font-medium hover:opacity-90 transition-opacity"
+                            >
+                                작은 씨앗 하나 뿌려볼래요 🌱
+                            </button>
+                        </>
+                    )}
+
+                    {/* PHASE 3: Action / Self-Awareness Question */}
+                    {crisisPhase === 'action' && (
+                        <>
+                            <div className="text-6xl mb-6">💭</div>
+                            <div className="text-center max-w-lg mb-8">
+                                <h2 className="text-white text-2xl font-semibold mb-6">
+                                    자각의 질문
+                                </h2>
+                                <p className="text-slate-300 text-lg leading-relaxed mb-6">
+                                    지금 바로 할 수 있는<br />
+                                    <span className="text-cyan-400 font-semibold">아주 작은 한 가지</span>가 있다면 뭘까요?
+                                </p>
+                                <div className="grid grid-cols-1 gap-3 w-full max-w-sm mx-auto">
+                                    {[
+                                        "🚶 잠깐 밖에 나가서 걷기",
+                                        "💧 물 한 잔 마시기",
+                                        "📱 좋아하는 사람에게 연락하기",
+                                        "🎵 좋아하는 노래 듣기",
+                                        "📝 지금 느낌 한 줄로 적기"
+                                    ].map((action, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => {
+                                                // Add recovery message to chat
+                                                setMessages(prev => [...prev, {
+                                                    id: `recovery-${Date.now()}`,
+                                                    role: 'assistant',
+                                                    content: `🌱 **좋아요!** "${action}"을 선택하셨군요.\n\n작은 행동 하나가 큰 변화의 시작입니다. 당신은 이미 한 발짝 나아갔어요. 언제든 이야기 나누고 싶으면 말씀해주세요. 제가 항상 곁에 있을게요. 💚`
+                                                }]);
+                                                setShowCrisisMode(false);
+                                                setCrisisPhase('breathing'); // Reset for next time
+                                            }}
+                                            className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-3 rounded-xl text-left transition-all hover:translate-x-1"
+                                        >
+                                            {action}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    setShowCrisisMode(false);
+                                    setCrisisPhase('breathing'); // Reset
+                                }}
+                                className="text-slate-400 hover:text-white transition-colors text-sm underline mt-4"
+                            >
+                                지금은 그냥 대화하고 싶어요
+                            </button>
+                        </>
+                    )}
+
+                    {/* Breathing Animation Keyframes */}
+                    <style>{`
+                        @keyframes breathe {
+                            0%, 100% { transform: scale(1); opacity: 0.6; }
+                            50% { transform: scale(1.2); opacity: 1; }
+                        }
+                    `}</style>
+                </div>
+            )}
 
             {/* Chat Area */}
             <div
@@ -1478,24 +1876,56 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                             )}
                                         </div>
 
-                                        {/* [Mind Totem Save Button] Show only if visual data exists */}
-                                        {(analysisData || uiData) && (
-                                            <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[85%] mt-2 mb-6 animate-fade-in-up">
-                                                <MindTotemButton
-                                                    targetId={captureTargetId}
-                                                    content={displayText || msg.content}
-                                                    tier={selectedPaymentTier === 'VIP' ? 'PREMIUM' : 'DELUXE'}
-                                                    profile={{
-                                                        name: reportData?.userName || "회원",
-                                                        nativity: {
-                                                            birth_date: reportData?.birthDate || '',
-                                                            birth_time: reportData?.birthTime || '',
-                                                            dayMaster: reportData?.saju?.dayMaster || '',
-                                                        }
-                                                    } as any}
-                                                />
-                                            </div>
-                                        )}
+                                        {/* [AI Image Gen] Auto-generated consultation image */}
+                                        {msg.role === 'assistant' && displayText && displayText.length > 50 && (() => {
+                                            // 상담 주제 키워드 추출
+                                            const topicKeywords: Record<string, string> = {
+                                                '연애|사랑|이별|결혼|배우자|짝|소개팅': 'romantic love couple heart connection pink sunset',
+                                                '직장|회사|상사|동료|이직|취업|승진': 'professional career success mountain peak sunrise triumph',
+                                                '돈|재물|재정|투자|부자|재산': 'golden prosperity wealth coins treasure abundance light',
+                                                '건강|몸|스트레스|불안|피곤|잠': 'peaceful healing calm nature zen meditation water',
+                                                '가족|부모|자녀|아이|형제|집안': 'warm family home tree roots nurturing embrace',
+                                                '미래|운세|앞으로|목표|꿈': 'mystical cosmic future stars universe destiny path',
+                                                '힘들|고통|슬픔|우울|외로': 'hope healing light emerging from darkness comfort warmth'
+                                            };
+
+                                            // 텍스트에서 주제 찾기
+                                            const lowerText = displayText.toLowerCase();
+                                            let imageTheme = 'spiritual coaching healing warm light mystical';
+
+                                            for (const [pattern, theme] of Object.entries(topicKeywords)) {
+                                                const regex = new RegExp(pattern);
+                                                if (regex.test(lowerText)) {
+                                                    imageTheme = theme;
+                                                    break;
+                                                }
+                                            }
+
+                                            // 핵심 문구 추출 (첫 30자 + 주제)
+                                            const cleanText = displayText
+                                                .replace(/\*\*/g, '')
+                                                .replace(/\n/g, ' ')
+                                                .replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣]/g, '')
+                                                .slice(0, 30);
+
+                                            const imagePrompt = `${imageTheme} beautiful artistic digital art, ${cleanText}`;
+
+                                            return (
+                                                <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[400px] mt-3 mb-4 animate-fade-in-up">
+                                                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+                                                        <img
+                                                            src={`https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=600&height=400&nologo=true`}
+                                                            alt="상담 이미지"
+                                                            className="w-full h-auto object-cover"
+                                                            loading="lazy"
+                                                        />
+                                                        <div className="bg-gradient-to-r from-purple-900/80 to-indigo-900/80 px-3 py-2">
+                                                            <p className="text-xs text-slate-300 text-center">🎨 AI가 생성한 상담 이미지</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
 
                                         {/* [Action Plan Card] (New) */}
                                         {analysisData && analysisData.action_plan && Array.isArray(analysisData.action_plan) && (
@@ -1609,11 +2039,152 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         onSelectIntent={(intent, prompt) => {
                             // [New] Bio-Sync Dashboard View
                             if (intent === 'bio_sync_dashboard_view') {
-                                setShowBioSync(true);
+                                setShowBioSync(true); // Open Dashboard
                                 return;
                             }
 
-                            // [New] Patent Demo Scenario (심사위원 시연용)
+                            // [New] Bio Rhythm Meditation
+                            if (intent === 'bio_rhythm_meditation') {
+                                setShowBioSync(true);
+                                simulateRecovery(); // Start decreasing BPM simulation
+                                setTimeout(() => {
+                                    handleSend("🧘 **[생체 리듬 명상 시작]**\n\n현재 심박수와 호흡을 동기화합니다.\n화면의 원이 커질 때 숨을 들이마시고, 작아질 때 내쉬세요.\n(Bio-Feedback Loop 활성화)");
+                                }, 1000);
+                                return;
+                            }
+
+                            // [New] Patent 1: Neuro-Saju Resonance
+                            if (intent === 'bio_patent_1') {
+                                setShowBioSync(true);
+                                simulate();
+                                setTimeout(() => {
+                                    handleSend("🧬 **[뉴로-사주 공명 분석]**\n\n고객님의 사주 오행(Wood/Fire) 에너지와 현재 생체 리듬의 공명도를 측정합니다.\n\n...데이터 동기화 중...\n\n✅ 공명 지수: 87% (매우 높음)\n현재 직관력이 극대화된 상태입니다. 중요한 결정을 내리기 좋은 타이밍입니다.");
+                                }, 1500);
+                                return;
+                            }
+
+                            // [New] Patent 2: Subconscious Truth Detector
+                            if (intent === 'bio_patent_2') {
+                                setShowBioSync(true);
+                                simulate();
+                                setTimeout(() => {
+                                    handleSend("🕵️ **[무의식 진실 탐지기]**\n\n표면적 대답이 아닌, 미세한 생체 신호 변동(GSR/HRV)을 통해 무의식의 진실을 포착합니다.\n\n질문을 던져보세요. 몸이 반응하는 그 순간이 진짜 정답입니다.");
+                                }, 1500);
+                                return;
+                            }
+
+                            // [New] Smart Context Card - 오늘의 에너지 분석
+                            if (intent === 'smart_context_card') {
+                                setShowSmartContext(true);
+                                return;
+                            }
+
+                            // [New] Golden Time Analysis - 골든타임 알림
+                            if (intent === 'golden_time_analysis') {
+                                const hour = new Date().getHours();
+                                let goldenMsg = '';
+                                if (hour >= 9 && hour < 12) {
+                                    goldenMsg = '🌅 **[골든타임 분석]**\n\n지금은 **오전 집중 구간**입니다!\n\n당신의 사주와 현재 바이오리듬을 분석한 결과:\n- 🧠 창의적 작업에 최적\n- 💡 중요한 아이디어 정리\n- ❌ 단순 반복 업무는 피하세요\n\n**지금 가장 집중해야 할 한 가지는 뭔가요?**';
+                                } else if (hour >= 14 && hour < 17) {
+                                    goldenMsg = '☀️ **[골든타임 분석]**\n\n지금은 **오후 결정 구간**입니다!\n\n당신의 사주와 현재 바이오리듬을 분석한 결과:\n- ⚖️ 중요한 결정 내리기에 최적\n- 🤝 미팅/협상에 유리\n- ❌ 새로운 학습은 비효율적\n\n**미루고 있던 결정이 있다면 지금이 타이밍이에요!**';
+                                } else {
+                                    goldenMsg = '🌙 **[골든타임 분석]**\n\n지금은 **휴식 & 정리 구간**입니다.\n\n당신의 사주와 현재 바이오리듬을 분석한 결과:\n- 📝 하루 정리/회고에 최적\n- 🧘 명상/산책 추천\n- ❌ 중요한 결정은 내일로\n\n**오늘 하루 중 가장 잘한 일은 뭐였나요?**';
+                                }
+                                handleSend(goldenMsg);
+                                return;
+                            }
+
+                            // [New] Neural Profile Analysis Breakdown
+                            if (intent === 'neural_profile_analysis') {
+                                // Explicitly request the detailed fusion analysis
+                                handleSend("나의 **Gene Keys(황금 경로)**와 **사주(Self)**를 융합하여, **Life's Work 부터 Purpose 까지** 상세하게 분석해줘. 각 Gate의 그림자(Shadow), 선물(Gift), 시디(Siddhi)에 대한 설명도 포함해줘.");
+                                return;
+                            }
+
+                            // ============================================
+                            // [NEW] 중독 회복 & SOS 긴급 - 심리치료 기반
+                            // ============================================
+
+                            // [ACT] 금연 알아차림 - 수용전념치료
+                            if (intent === 'quit_smoking_act') {
+                                const actMsg = `🚭 **[금연 알아차림 - ACT 기반]**
+
+**지금 이 순간, 흡연 욕구를 느끼고 계신가요?**
+
+✨ **알아차림의 알아차림:**
+> "욕구가 있다"는 것을 알아차린 당신은
+> 이미 욕구에 지배당하지 않는 상태입니다.
+
+🌊 **파도 타기 기법 (Urge Surfing):**
+욕구는 파도처럼 밀려왔다가 반드시 사라집니다.
+지금부터 3분만 함께 파도를 타볼까요?
+
+1. 👃 깊게 숨을 들이쉬세요 (4초)
+2. 🫁 천천히 내쉬세요 (6초)
+3. 🧠 "이 욕구도 지나갈 것이다"라고 관찰하세요
+
+**지금 무엇이 당신을 담배로 이끌고 있나요?**`;
+                                handleSend(actMsg);
+                                return;
+                            }
+
+                            // [CBT] 금주 알아차림 - 인지행동치료
+                            if (intent === 'quit_drinking_cbt') {
+                                const cbtMsg = `🍺 **[금주 알아차림 - CBT 기반]**
+
+**음주 충동이 느껴지시나요?**
+
+🧠 **인지 재구성 질문:**
+> "술을 마시면 정말 기분이 나아질까요?"
+> "내일 아침의 나는 어떤 기분일까요?"
+
+📝 **생각-감정-행동 연결:**
+| 상황 | 자동적 생각 | 감정 | 대안적 생각 |
+|---|---|---|---|
+| 스트레스 | "한 잔만..." | 충동 | "이건 착각이다" |
+
+⚡ **즉각 대처 행동:**
+1. 🚶 장소를 바꾸세요 (5분만)
+2. 📞 지인에게 전화하세요
+3. 💧 물을 크게 한 잔 마시세요
+
+**지금 술을 마시고 싶게 만드는 상황이 뭔가요?**`;
+                                handleSend(cbtMsg);
+                                return;
+                            }
+
+                            // [DBT] 중독 탈출 - 변증법적행동치료
+                            if (intent === 'addiction_escape_dbt') {
+                                const dbtMsg = `🎮 **[중독 탈출 - DBT 기반]**
+
+**디지털/도박/쇼핑... 멈출 수 없는 느낌인가요?**
+
+🔥 **고통 감내 기술 (Distress Tolerance):**
+
+**TIPP 기법으로 즉시 진정:**
+- **T**emperature: 찬물로 세수하기 🧊
+- **I**ntense Exercise: 10초 제자리 뛰기 🏃
+- **P**aced Breathing: 4-7-8 호흡 🫁
+- **P**aired Relaxation: 근육 이완 💆
+
+🛡️ **STOP 기술:**
+- **S**top: 멈춰!
+- **T**ake a step back: 한 발 물러나
+- **O**bserve: 관찰해
+- **P**roceed mindfully: 현명하게 행동해
+
+**지금 가장 하고 싶은 충동적 행동은 뭔가요?**`;
+                                handleSend(dbtMsg);
+                                return;
+                            }
+
+                            // [MBCT] SOS 긴급 - 마음챙김인지치료 + 위기개입
+                            if (intent === 'sos_crisis_mbct') {
+                                // 직접 위기 개입 화면 활성화
+                                setShowCrisisMode(true);
+                                setCrisisPhase('breathing');
+                                return;
+                            }
                             if (intent === 'demo_patent_features') {
                                 setShowBioSync(true); // 1. 모달 열기
                                 simulate(); // 2. 가상 연결 시작 (BPM 시뮬레이션)

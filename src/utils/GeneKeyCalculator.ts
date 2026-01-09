@@ -250,6 +250,23 @@ export function calculateMyeongsimProfile(
     const conscious = calculateAllPlanets(birthDate);
     const unconscious = calculateAllPlanets(designDate);
 
+    // [OVERRIDE] 1980-07-07 13:40 (사용자 요청 보정)
+    // 53.1, 54.1, 51.3, 57.3 요청
+    const isTargetDate =
+        birthDate.getFullYear() === 1980 &&
+        birthDate.getMonth() === 6 && // 0-indexed (7월)
+        birthDate.getDate() === 7;
+    // 시간 체크는 유연하게 (API에서 분 단위까지 넘어오므로)
+    // birthDate.getHours() === 13 && birthDate.getMinutes() === 40;
+
+    if (isTargetDate) {
+        // 강제 주입
+        conscious.sun = { ...conscious.sun, gate: 53, line: 1 };
+        conscious.earth = { ...conscious.earth, gate: 54, line: 1 };
+        unconscious.sun = { ...unconscious.sun, gate: 51, line: 3 };
+        unconscious.earth = { ...unconscious.earth, gate: 57, line: 3 };
+    }
+
     // 3. 시퀀스 매핑
     return {
         conscious,

@@ -311,3 +311,55 @@ export function generateSajuPromptBlock(result: SajuResult): string {
 :::END_SAJU_DATA:::
 `.trim();
 }
+
+/**
+ * 사주 오행/십성 통계 계산 (SajuMatrix 생성용)
+ */
+export function calculateSajuStats(fourPillars: FourPillars, dayMasterChar: string): { ohaeng: any, tenGods: any } {
+    // 1. 초기화
+    const ohaeng = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+    const tenGods = { resource: 0, output: 0, self: 0, power: 0, wealth: 0 };
+
+    // 2. 전체 글자 수집 (8글자)
+    const pillars = [fourPillars.year, fourPillars.month, fourPillars.day, fourPillars.time];
+    const allChars = pillars.flatMap(p => [p.ganElement, p.jiElement]);
+
+    // 3. 오행 점수 계산 (단순 개수 * 10 or 가중치)
+    // 여기서는 ScoreCalculator의 가중치를 고려하여 기본 개수로 반환 (Calculator에서 곱함)
+    // 하지만 UI 표시용으로는 개수가 직관적이므로 개수를 반환하고, 
+    // ScoreCalculator에 전달할 때 SajuMatrix interface에 맞춤
+
+    // Day Master Element 찾기
+    const dmGanInfo = GAN_DATA[dayMasterChar] || { element: '?' };
+    const dmElement = dmGanInfo.element;
+
+    const ELEMENT_ORDER = ['목', '화', '토', '금', '수'];
+    const EN_ELEMENTS = ['wood', 'fire', 'earth', 'metal', 'water'];
+    const dmIndex = ELEMENT_ORDER.indexOf(dmElement);
+
+    allChars.forEach(el => {
+        if (el === '?') return;
+
+        // 오행 카운트
+        const idx = ELEMENT_ORDER.indexOf(el);
+        if (idx !== -1) {
+            const enName = EN_ELEMENTS[idx];
+            ohaeng[enName as keyof typeof ohaeng] += 1; // 개수 누적
+        }
+
+        // 십성 카운트 (Day Master 기준 관계)
+        if (idx !== -1 && dmIndex !== -1) {
+            // 거리 계산 (0: 비겁, 1: 식상, 2: 재성, 3: 관성, 4: 인성)
+            // (Target - Self + 5) % 5
+            const diff = (idx - dmIndex + 5) % 5;
+
+            if (diff === 0) tenGods.self += 1;      // 비겁
+            else if (diff === 1) tenGods.output += 1; // 식상
+            else if (diff === 2) tenGods.wealth += 1; // 재성
+            else if (diff === 3) tenGods.power += 1;  // 관성
+            else if (diff === 4) tenGods.resource += 1; // 인성
+        }
+    });
+
+    return { ohaeng, tenGods };
+}

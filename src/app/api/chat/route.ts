@@ -20,6 +20,7 @@ import { InterruptQuestionModule } from '@/modules/InterruptQuestionModule'; // 
 import { PsychologicalSafetyModule } from '@/modules/PsychologicalSafetyModule'; // [Expert] Clinical Safety Layer
 import { NeuroscienceModule } from '@/modules/NeuroscienceModule'; // [Expert] Neuroscience Layer
 import { analyzeFrequency, generateFrequencyPromptBlock, detectCrisisSignal } from '@/modules/FrequencyDetector'; // [NEW] Frequency Detection
+import { SajuPerspectiveRotator } from '@/modules/SajuPerspectiveRotator'; // [NEW] Pillar Rotation
 import { analyzeForZenMode, generateZenPromptBlock, generateZenResponse } from '@/modules/ZenProtocol'; // [NEW] Zen Intervention
 import {
     analyzeTextForPersonality,
@@ -66,6 +67,57 @@ async function checkUserExpiration(userId: string): Promise<{ expired: boolean; 
     }
 
     return { expired: false, tier: data.membership_tier };
+}
+
+/**
+ * [Simple Memory] Fetch recent chat history from chat_messages table
+ * Uses chat_sessions to find user's conversations
+ */
+async function fetchRecentChatHistory(userId: string, limit: number = 10): Promise<string> {
+    if (!userId || userId.includes('-0000-')) return '';
+
+    try {
+        // First get user's recent sessions
+        const { data: sessions } = await supabase
+            .from('chat_sessions')
+            .select('id')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(3);
+
+        if (!sessions || sessions.length === 0) {
+            console.log('📭 [Memory] No previous sessions found');
+            return '';
+        }
+
+        const sessionIds = sessions.map(s => s.id);
+
+        // Get messages from user's recent sessions
+        const { data, error } = await supabase
+            .from('chat_messages')
+            .select('role, content, created_at')
+            .in('session_id', sessionIds)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        if (error || !data || data.length === 0) {
+            console.log('📭 [Memory] No previous chat messages found');
+            return '';
+        }
+
+        // Format as context for AI
+        const historyText = data.reverse().map((msg: any) => {
+            const date = new Date(msg.created_at).toLocaleDateString('ko-KR');
+            return `[${date}] ${msg.role === 'user' ? '사용자' : 'AI'}: ${msg.content.slice(0, 200)}`;
+        }).join('\n');
+
+        console.log(`📚 [Memory] Loaded ${data.length} previous messages`);
+        return `\n[이전 대화 기록 (최근 ${data.length}개)]\n${historyText}\n`;
+
+    } catch (e) {
+        console.error('Memory Fetch Error:', e);
+        return '';
+    }
 }
 
 /**
@@ -148,13 +200,8 @@ export async function POST(req: Request) {
             // 2. Get Environment Context
             ContextService.getCurrentContext(undefined, clientDate),
 
-            // 3. Fetch Memory (Layer 3)
-            (typeof currentMessageContent === 'string' && currentMessageContent.length > 2 && userId)
-                ? MemoryServiceModule.fetchUserHistory(userId, currentMessageContent).catch(err => {
-                    console.error("Memory Fetch Error:", err);
-                    return "";
-                })
-                : Promise.resolve(""),
+            // 3. Fetch Memory (Simple - from chat_history table)
+            userId ? fetchRecentChatHistory(userId, 10) : Promise.resolve(""),
 
             // 4. Fetch Genre Codes (RAG)
             (typeof currentMessageContent === 'string' && currentMessageContent.length > 5)
@@ -689,19 +736,55 @@ Use the Action Plan provided as guidance, but express it in your own warm, conve
         const dayMasterKey = sajuResult?.success ? sajuResult.dayMaster : '';
         const dayMasterElement = dayMasterElementMap[dayMasterKey] || '자연';
 
+        // [NEW] Dynamic Saju Perspective Rotation
+        const perspectiveInjection = SajuPerspectiveRotator.generateSystemPromptInjection(currentMessageContent);
+        const selectedPillar = SajuPerspectiveRotator.selectPillar(currentMessageContent);
+        const pillarIntro = SajuPerspectiveRotator.getIntroPhrase(selectedPillar);
+        console.log(`🔮 [Saju Rotator] Selected: ${selectedPillar} for topic`);
+
+        // 4기둥 데이터 추출
+        const fourPillars = sajuResult?.success ? sajuResult.fourPillars : null;
+        const getPillarString = (p: any) => p ? `${p.gan?.char || p.gan || '?'}${p.ji?.char || p.ji || '?'}` : '?';
+
+        const yearPillar = fourPillars ? getPillarString(fourPillars.year) : '?';
+        const monthPillar = fourPillars ? getPillarString(fourPillars.month) : '?';
+        const dayPillar = fourPillars ? getPillarString(fourPillars.day) : '?';
+        const hourPillar = fourPillars ? getPillarString(fourPillars.time) : '?';
+
         SYSTEM_PROMPT += `
 :::ACTOR_SCRIPT_FUSION:::
-[주인공 설정] 이 사용자는 **${dayMasterElement}**의 기질을 타고났습니다.
-- 현재 주파수: ${frequencyResult.level === 'dark' ? '먹구름(Dark Code)' : frequencyResult.level === 'meta' ? '맑은 하늘(Meta Code)' : '햇살(Neural Code)'}
-- AI 모드: ${frequencyResult.suggestedMode === 'therapist' ? '치유와 공감' : frequencyResult.suggestedMode === 'sage' ? '인정과 지혜' : '응원과 행동'}
 
-[스토리텔링 지침]
-1. 모든 조언을 "${dayMasterElement}의 기질을 가진 분께서..."로 시작하세요.
-2. 현재 주파수에 맞는 톤을 유지하세요:
-   - Dark: 공감, 수용, 휴식 권유
-   - Neural: 동기부여, 행동 촉구, 작은 미션
-   - Meta: 깊은 인정, 통찰 확장, 질문
-3. 절대 Gene Keys, Shadow, Siddhi 같은 원본 용어 사용 금지!
+# 📊 [사용자 사주 4기둥 데이터]
+| 기둥 | 글자 | 의미 | 활용 상황 |
+|---|---|---|---|
+| 년주(年柱) | ${yearPillar} | 조상/뿌리/사회적 이미지/어린 시절 | 첫인상, 외부 이미지 질문 시 |
+| 월주(月柱) | ${monthPillar} | 직업/사회적 역할/20-40대 | 직장, 커리어, 승진 질문 시 |
+| 일주(日柱) | ${dayPillar} | 본질적 자아/배우자/40-60대 | 연애, 결혼, 내면 질문 시 |
+| 시주(時柱) | ${hourPillar} | 자녀/말년/숨겨진 욕망 | 미래, 자녀, 숨은 소망 질문 시 |
+
+**일간(日干)**: ${dayMasterKey || '?'} - ${dayMasterElement} 기질
+
+${perspectiveInjection}
+
+# 🚨 [CRITICAL - 일간 반복 금지]
+다음 표현들은 **절대 사용하지 마세요**:
+- ❌ "신금 일간이세요" / "○○ 일간인 당신은..."
+- ❌ "자연의 기질을 가진 분께서..."
+- ❌ "당신은 ○○의 기질을 타고났습니다"
+
+대신 **상황에 맞는 기둥**을 언급하세요:
+- 직장 고민 → "월주 ${monthPillar}를 보니 당신의 사회적 역할은..."
+- 연애 고민 → "일주 ${dayPillar}를 보니 당신의 내면은..."
+- 미래 고민 → "시주 ${hourPillar}를 보니 숨겨진 소망은..."
+- 가족 고민 → "년주 ${yearPillar}를 보니 당신의 뿌리는..."
+
+# 💡 [다양한 시작 문구 예시]
+- ✅ "${pillarIntro}"
+- ✅ "지금 마음이 많이 무거우시죠..."
+- ✅ "그런 고민이 있으셨군요..."
+- ✅ "말씀하신 상황을 보니..."
+
+[현재 선택된 관점: ${selectedPillar}]
 :::END_FUSION:::
 `;
 

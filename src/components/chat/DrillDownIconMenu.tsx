@@ -12,6 +12,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { assembleFullReport } from '@/services/ReportAssembler';
 import { useReportStore } from '@/store/useReportStore'; // [New] Import for navigation
@@ -26,6 +27,8 @@ import {
 import TherapyCard from '@/components/therapy/TherapyCard'; // [NEW] 심리 치유 아키타입 카드
 import { findTherapyArchetype, TherapyArchetype } from '@/data/TherapyDB'; // [NEW] 아키타입 매칭 엔진
 import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget';
+// [NEW] Integral Check-in Modal
+const IntegralCheckinModal = dynamic(() => import('@/components/bio/IntegralCheckinModal'), { ssr: false });
 // [Security] ScoreCalculator와 StaticTextDB는 더 이상 클라이언트에서 import하지 않음
 // 대신 /api/secure/* API를 통해 서버에서 데이터를 가져옴
 
@@ -77,195 +80,183 @@ const styles = {
         width: '44px',
         height: '44px',
         display: 'flex',
-        iconWrapper: {
-            width: '44px',
-            height: '44px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: '14px',
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
-            boxShadow: `
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '14px',
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
+        boxShadow: `
             0 4px 15px rgba(0,0,0,0.3),
             0 1px 3px rgba(0,0,0,0.2),
             inset 0 1px 0 rgba(255,255,255,0.1)
         `,
-            transform: 'perspective(500px) rotateX(5deg)',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        } as React.CSSProperties,
+        transform: 'perspective(500px) rotateX(5deg)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    } as React.CSSProperties,
 
-        iconWrapperHover: {
-            transform: 'perspective(500px) rotateX(0deg) translateY(-4px) scale(1.05)',
-            boxShadow: `
+    iconWrapperHover: {
+        transform: 'perspective(500px) rotateX(0deg) translateY(-4px) scale(1.05)',
+        boxShadow: `
             0 12px 30px rgba(102, 126, 234, 0.4),
             0 4px 10px rgba(0,0,0,0.3),
             inset 0 1px 0 rgba(255,255,255,0.2)
         `,
-        } as React.CSSProperties,
+    } as React.CSSProperties,
 
-        // 3D 아이콘 이미지 (실제 3D 아이콘 또는 이모지)
-        icon3D: {
-            fontSize: '22px',
-            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-        } as React.CSSProperties,
+    // 3D 아이콘 이미지 (실제 3D 아이콘 또는 이모지)
+    icon3D: {
+        fontSize: '22px',
+        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+    } as React.CSSProperties,
 
-        iconLabel: {
-            fontSize: '10px',
-            fontWeight: 600,
-            color: 'rgba(255,255,255,0.85)',
-            textAlign: 'center' as const,
-            letterSpacing: '-0.3px',
-            whiteSpace: 'nowrap' as const,
-        } as React.CSSProperties,
+    iconLabel: {
+        fontSize: '10px',
+        fontWeight: 600,
+        color: 'rgba(255,255,255,0.85)',
+        textAlign: 'center' as const,
+        letterSpacing: '-0.3px',
+        whiteSpace: 'nowrap' as const,
+    } as React.CSSProperties,
 
-        // 추천 배지
-        badge: {
-            position: 'absolute' as const,
-            top: '4px',
-            right: '4px',
-            fontSize: '12px',
-            animation: 'pulse 2s infinite',
-        } as React.CSSProperties,
+    // 추천 배지
+    badge: {
+        position: 'absolute' as const,
+        top: '4px',
+        right: '4px',
+        fontSize: '12px',
+        animation: 'pulse 2s infinite',
+    } as React.CSSProperties,
 
-        // 뇌과학 트리거 텍스트
-        neuroTrigger: {
-            fontSize: '9px',
-            color: 'rgba(255,255,255,0.5)',
-            maxWidth: '60px',
-            textAlign: 'center' as const,
-            lineHeight: 1.2,
-            marginTop: '2px',
-        } as React.CSSProperties,
+    // 뇌과학 트리거 텍스트
+    neuroTrigger: {
+        fontSize: '9px',
+        color: 'rgba(255,255,255,0.5)',
+        maxWidth: '60px',
+        textAlign: 'center' as const,
+        lineHeight: 1.2,
+        marginTop: '2px',
+    } as React.CSSProperties,
 
-        // Bottom Sheet 오버레이
-        overlay: {
-            position: 'fixed' as const,
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.6)',
-            backdropFilter: 'blur(4px)',
-            zIndex: 999,
-            opacity: 0,
-            visibility: 'hidden' as const,
-            transition: 'all 0.3s ease',
-        } as React.CSSProperties,
+    // Bottom Sheet 오버레이
+    overlay: {
+        position: 'fixed' as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(4px)',
+        zIndex: 999,
+        opacity: 0,
+        visibility: 'hidden' as const,
+        transition: 'all 0.3s ease',
+    } as React.CSSProperties,
 
-        overlayVisible: {
-            opacity: 1,
-            visibility: 'visible' as const,
-        } as React.CSSProperties,
+    overlayVisible: {
+        opacity: 1,
+        visibility: 'visible' as const,
+    } as React.CSSProperties,
 
-        // Bottom Sheet
-        bottomSheet: {
-            position: 'fixed' as const,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: 'linear-gradient(180deg, rgba(30,30,60,0.98) 0%, rgba(20,20,40,0.99) 100%)',
-            backdropFilter: 'blur(30px)',
-            borderRadius: '24px 24px 0 0',
-            padding: '20px',
-            zIndex: 1000,
-            transform: 'translateY(100%)',
-            transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            maxHeight: '70vh',
-            overflowY: 'auto' as const,
-        } as React.CSSProperties,
+    // Bottom Sheet
+    bottomSheet: {
+        position: 'fixed' as const,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: 'linear-gradient(180deg, rgba(30,30,60,0.98) 0%, rgba(20,20,40,0.99) 100%)',
+        backdropFilter: 'blur(30px)',
+        borderRadius: '24px 24px 0 0',
+        padding: '20px',
+        zIndex: 1000,
+        transform: 'translateY(100%)',
+        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        maxHeight: '70vh',
+        overflowY: 'auto' as const,
+    } as React.CSSProperties,
 
-        bottomSheetOpen: {
-            transform: 'translateY(0)',
-        } as React.CSSProperties,
+    bottomSheetOpen: {
+        transform: 'translateY(0)',
+    } as React.CSSProperties,
 
-        sheetHandle: {
-            width: '40px',
-            height: '4px',
-            background: 'rgba(255,255,255,0.3)',
-            borderRadius: '2px',
-            margin: '0 auto 16px',
-        } as React.CSSProperties,
+    sheetHandle: {
+        width: '40px',
+        height: '4px',
+        background: 'rgba(255,255,255,0.3)',
+        borderRadius: '2px',
+        margin: '0 auto 16px',
+    } as React.CSSProperties,
 
-        sheetHeader: {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '20px',
-        } as React.CSSProperties,
+    sheetHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        marginBottom: '20px',
+    } as React.CSSProperties,
 
-        sheetIcon: {
-            fontSize: '36px',
-        } as React.CSSProperties,
+    sheetIcon: {
+        fontSize: '36px',
+    } as React.CSSProperties,
 
-        sheetTitle: {
-            fontSize: '20px',
-            fontWeight: 700,
-            color: '#fff',
-        } as React.CSSProperties,
+    sheetTitle: {
+        fontSize: '20px',
+        fontWeight: 700,
+        color: '#fff',
+    } as React.CSSProperties,
 
-        sheetSubtitle: {
-            fontSize: '13px',
-            color: 'rgba(255,255,255,0.6)',
-            marginTop: '2px',
-        } as React.CSSProperties,
+    sheetSubtitle: {
+        fontSize: '13px',
+        color: 'rgba(255,255,255,0.6)',
+        marginTop: '2px',
+    } as React.CSSProperties,
 
-        // 서브메뉴 아이템
-        subMenuItem: {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '14px',
-            padding: '16px',
-            borderRadius: '14px',
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            marginBottom: '10px',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-        } as React.CSSProperties,
+    // 서브메뉴 아이템
+    subMenuItem: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px',
+        padding: '16px',
+        borderRadius: '14px',
+        background: 'rgba(255,255,255,0.05)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        marginBottom: '10px',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+    } as React.CSSProperties,
 
-        subMenuItemHover: {
-            background: 'rgba(102, 126, 234, 0.15)',
-            border: '1px solid rgba(102, 126, 234, 0.3)',
-            transform: 'translateX(4px)',
-        } as React.CSSProperties,
+    subMenuItemHover: {
+        background: 'rgba(102, 126, 234, 0.15)',
+        border: '1px solid rgba(102, 126, 234, 0.3)',
+        transform: 'translateX(4px)',
+    } as React.CSSProperties,
 
-        subMenuIcon: {
-            fontSize: '24px',
-        } as React.CSSProperties,
+    subMenuIcon: {
+        fontSize: '24px',
+    } as React.CSSProperties,
 
-        subMenuLabel: {
-            fontSize: '15px',
-            fontWeight: 600,
-            color: '#fff',
-        } as React.CSSProperties,
+    subMenuLabel: {
+        fontSize: '15px',
+        fontWeight: 600,
+        color: '#fff',
+    } as React.CSSProperties,
 
-        subMenuDesc: {
-            fontSize: '12px',
-            color: 'rgba(255,255,255,0.5)',
-            marginTop: '2px',
-        } as React.CSSProperties,
+    subMenuDesc: {
+        fontSize: '12px',
+        color: 'rgba(255,255,255,0.5)',
+        marginTop: '2px',
+    } as React.CSSProperties,
 
-        premiumBadge: {
-            marginLeft: 'auto',
-            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-            color: '#000',
-            fontSize: '10px',
-            fontWeight: 700,
-            padding: '4px 8px',
-            borderRadius: '12px',
-        } as React.CSSProperties,
-    };
+    premiumBadge: {
+        marginLeft: 'auto',
+        background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+        color: '#000',
+        fontSize: '10px',
+        fontWeight: 700,
+        padding: '4px 8px',
+        borderRadius: '12px',
+    },
+};
 
-    // ============== 친숙한 라벨 매핑 ==============
-    const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
-        WEALTH: { main: '재물운', sub: '왜 벌어도 안 모일까?' },
-        RELATIONSHIP: { main: '연애운', sub: '반복되는 상처 끊기' },
-        CAREER: { main: '직업운', sub: '나는 이 일 하러 태어났다' },
-        PERSONALITY_ANALYSIS: { main: '성격분석', sub: '강점/재능(인적자원)리포트' },
-        DAILY_MISSION: { main: '오늘운세', sub: '지금 뭘 해야 운이 트일까?' },
-        SAJU_ANALYSIS: { main: '사주분석', sub: '운명의 설계도 확인' },
-        BIO_SYNC: { main: '생체동기화', sub: '실시간 운명 동기화' }, // [NEW]
-    };
+
+
 
 // ============== CSS 애니메이션 ==============
 const injectStyles = () => {
@@ -352,6 +343,9 @@ export default function DrillDownIconMenu({
     // [New] Therapy Archetype Modal State
     const [selectedTherapyArchetype, setSelectedTherapyArchetype] = useState<TherapyArchetype | null>(null);
     const [showTherapyModal, setShowTherapyModal] = useState(false);
+
+    // [New] Integral Check-in Modal State
+    const [showIntegralCheckin, setShowIntegralCheckin] = useState(false);
 
     // [NEW] 이용권 상태 확인
     const { isExpired } = useSubscription();
@@ -479,6 +473,13 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] 통합 체크인 (Integral Check-in)
+        if (subItem.intent === 'integral_checkin_view') {
+            setSelectedIcon(null);
+            setShowIntegralCheckin(true);
+            return;
+        }
+
         // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동
         if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
             setSelectedIcon(null);
@@ -538,49 +539,73 @@ export default function DrillDownIconMenu({
     return (
         <>
             {/* [Pulse 5] Visual Saju Dashboard Overlay */}
-            {showVisualDashboard && (
-                <VisualSajuDashboard
-                    onClose={() => setShowVisualDashboard(false)}
-                    onChatIntent={handleDashboardChatIntent}
-                    birthDate={birthDate}
-                    userProfile={userProfile}
-                    onEditBirthdate={() => {
-                        // [Fix] Navigate to CoverView (Saju input form) instead of non-existent settings page
-                        setShowVisualDashboard(false); // Close dashboard first
-                        useReportStore.getState().setStep(1); // Return to CoverView form
-                    }}
-                />
-            )}
+            {
+                showVisualDashboard && (
+                    <VisualSajuDashboard
+                        onClose={() => setShowVisualDashboard(false)}
+                        onChatIntent={handleDashboardChatIntent}
+                        birthDate={birthDate}
+                        userProfile={userProfile}
+                        onEditBirthdate={() => {
+                            // [Fix] Navigate to CoverView (Saju input form) instead of non-existent settings page
+                            setShowVisualDashboard(false); // Close dashboard first
+                            useReportStore.getState().setStep(1); // Return to CoverView form
+                        }}
+                    />
+                )
+            }
 
             {/* [NEW] Therapy Archetype Modal */}
-            {showTherapyModal && selectedTherapyArchetype && (
-                <TherapyCard
-                    archetype={selectedTherapyArchetype}
-                    isOpen={showTherapyModal}
-                    onClose={() => setShowTherapyModal(false)}
-                    onChatIntent={(intent, prompt) => {
-                        setShowTherapyModal(false);
-                        onSelectIntent(intent, prompt);
-                    }}
-                />
-            )}
+            {
+                showTherapyModal && selectedTherapyArchetype && (
+                    <TherapyCard
+                        archetype={selectedTherapyArchetype}
+                        isOpen={showTherapyModal}
+                        onClose={() => setShowTherapyModal(false)}
+                        onChatIntent={(intent, prompt) => {
+                            setShowTherapyModal(false);
+                            onSelectIntent(intent, prompt);
+                        }}
+                    />
+                )
+            }
+
+            {/* [NEW] Integral Check-in Modal */}
+            <AnimatePresence>
+                {showIntegralCheckin && (
+                    <IntegralCheckinModal
+                        isOpen={showIntegralCheckin}
+                        onClose={() => setShowIntegralCheckin(false)}
+                        userId={userProfile?.id || 'guest'} // Security: Pass explicit user ID
+                        onComplete={(advice, context) => {
+                            setShowIntegralCheckin(false);
+                            // Trigger Chat with the result
+                            const prompt = `오늘의 통합 체크인 결과입니다:\n\n"${advice}"\n\n이 분석 내용을 바탕으로 오늘 하루를 어떻게 보내면 좋을지, 12운성 에너지와 연관지어 구체적인 가이드를 주세요.`;
+                            onSelectIntent('integral_result', prompt);
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+
 
 
             {/* [REMOVED] TODAY'S ENERGY 섹션 - 챗봇 대화 시 완전히 숨김 */}
-            {!hideTodayEnergy && (
-                <div className="mb-4 relative">
-                    <div className="flex justify-between items-center mb-2 pr-8">
-                        <span className="text-gray-400 text-xs font-bold px-1">TODAY'S ENERGY</span>
-                        <button
-                            onClick={() => setShowVisualDashboard(true)}
-                            className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-1 rounded border border-purple-500/50 flex items-center gap-1"
-                        >
-                            🔮 내 운명 지도 보기
-                        </button>
+            {
+                !hideTodayEnergy && (
+                    <div className="mb-4 relative">
+                        <div className="flex justify-between items-center mb-2 pr-8">
+                            <span className="text-gray-400 text-xs font-bold px-1">TODAY'S ENERGY</span>
+                            <button
+                                onClick={() => setShowVisualDashboard(true)}
+                                className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-1 rounded border border-purple-500/50 flex items-center gap-1"
+                            >
+                                🔮 내 운명 지도 보기
+                            </button>
+                        </div>
+                        <DailyBiorhythmWidget dayMaster={dayMaster} />
                     </div>
-                    <DailyBiorhythmWidget dayMaster={dayMaster} />
-                </div>
-            )}
+                )
+            }
 
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>

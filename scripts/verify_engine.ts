@@ -1,6 +1,6 @@
 
 import { CalculateNeuralProfile } from '../src/utils/NeuralProfileCalculator';
-import { getNeuralKey } from '../src/data/neural_keys_db';
+import { getNeuralKey } from '../src/data/NeuralGateDb';
 
 const testDates = [
     { name: "Master H (Example)", date: "1980-05-20T00:00:00" },

@@ -89,6 +89,13 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "웨어러블 연결 및 데이터 확인",
                 intent: "bio_sync_dashboard_view"
             },
+            // [New] Integral Check-in (Myeongshim Engine)
+            {
+                id: "b_checkin",
+                label: "🩺 통합 체크인",
+                desc: "Saju + 4분면 정밀 분석",
+                intent: "integral_checkin_view"
+            },
             {
                 id: "b_2",
                 label: "🧘 생체 리듬 명상",
@@ -124,6 +131,44 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "오행-신경계 공명 테스트",
                 intent: "demo_neuro_saju",
                 isPremium: true
+            },
+            // [Smart Context - 상황 인식형 코칭]
+            {
+                id: "b_context",
+                label: "🌅 오늘의 에너지 분석",
+                desc: "BPM + 사주 + 바이오리듬 통합",
+                intent: "smart_context_card"
+            },
+            {
+                id: "b_golden",
+                label: "⏰ 골든타임 알림",
+                desc: "지금 뭐하면 좋을까?",
+                intent: "golden_time_analysis"
+            },
+            // [중독 회복 - 심리치료 기반]
+            {
+                id: "b_quit_smoke",
+                label: "🚭 금연 알아차림",
+                desc: "ACT 기반 흡연 욕구 대처",
+                intent: "quit_smoking_act"
+            },
+            {
+                id: "b_quit_drink",
+                label: "🍺 금주 알아차림",
+                desc: "CBT 기반 음주 충동 관리",
+                intent: "quit_drinking_cbt"
+            },
+            {
+                id: "b_addiction",
+                label: "🎮 중독 탈출",
+                desc: "DBT 기반 디지털/도박 대처",
+                intent: "addiction_escape_dbt"
+            },
+            {
+                id: "b_sos",
+                label: "🆘 SOS 긴급",
+                desc: "MBCT 기반 즉각 위기 개입",
+                intent: "sos_crisis_mbct"
             }
         ]
     },
@@ -242,11 +287,32 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "🧠 심리 치유 아키타입",
                 desc: "DBT/ACT/MBCT 통합 처방",
                 intent: "therapy_archetype_view"
+            },
+            {
+                id: "g_strength",
+                label: "📊 강점/재능 리포트",
+                desc: "인적자원 역량 분석",
+                intent: "strength_talent_report",
+                isPremium: true
+            },
+            {
+                id: "g_startup_1",
+                label: "🚀 무실패 스타트업 설계",
+                desc: "사주 기반 창업 전략",
+                intent: "startup_design_analysis",
+                isPremium: true
+            },
+            {
+                id: "g_startup_2",
+                label: "💡 사업 아이디어 검증",
+                desc: "내 사주에 맞는 업종",
+                intent: "startup_idea_validation",
+                isPremium: true
             }
         ]
     },
 
-    // 6. 💊 데일리 미션
+    // 6. 💊 데일리 미션 (실천)
     DAILY_MISSION: {
         id: 'DAILY_MISSION',
         label: "데일리 미션",
@@ -277,49 +343,47 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "🧘 명상 가이드",
                 desc: "5분 마음 정화",
                 intent: "meditation_guide"
+            },
+            {
+                id: "d_4",
+                label: "✅ 미션 기록",
+                desc: "실천 이력 확인",
+                intent: "mission_history"
             }
         ]
     },
 
-    // 7. 🔮 정밀 사주 (전통적인 니즈)
+    // 7. 정밀 사주 (Restored)
     SAJU_ANALYSIS: {
         id: 'SAJU_ANALYSIS',
-        label: "정밀 사주",
+        label: "사주분석",
         icon: "🔮",
-        neuro_trigger: "내 운명의 설계도 확인",
-        style: 'premium_gold',
+        neuro_trigger: "운명의 설계도 확인",
+        style: 'premium_purple', // 프리미엄 느낌 강조
         sub_menus: [
             {
-                id: "s_1",
-                label: "📜 사주 원국 분석",
-                desc: "오행과 십성으로 보는 타고난 기질",
+                id: "s_0",
+                label: "💎 사주 원국 분석",
+                desc: "나의 타고난 설계도",
                 intent: "saju_basic_analysis"
             },
             {
-                id: "s_2",
-                label: "🌊 대운 흐름 분석",
-                desc: "10년 단위로 바뀌는 인생의 계절",
-                intent: "saju_daewoon_flow",
-                isPremium: true
+                id: "s_1",
+                label: "🌊 대운의 흐름",
+                desc: "10년 단위 인생 날씨",
+                intent: "saju_daewoon_flow"
             },
             {
-                id: "s_3",
-                label: "💼 직업/사업운 심층",
-                desc: "직장인이 맞을까? 사업이 맞을까?",
+                id: "s_2",
+                label: "💼 직업/사업운",
+                desc: "성공을 부르는 타이밍",
                 intent: "saju_career_detail"
             },
             {
-                id: "s_4",
-                label: "💍 결혼/배우자운",
-                desc: "배우자 성향과 결혼 적령기",
-                intent: "saju_marriage_timing",
-                isPremium: true
-            },
-            {
-                id: "s_5",
-                label: "📅 세운/월운 분석",
-                desc: "올해와 이달의 운세",
-                intent: "saju_yearly_monthly"
+                id: "s_3",
+                label: "❤️ 결혼/연애운",
+                desc: "나의 인연과 시기",
+                intent: "saju_marriage_timing"
             }
         ]
     }
@@ -422,13 +486,13 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
     // 추천된 것은 priority값 사용 (0~3), 추천 안 된 것은 기본 순서 유지
 
     const DEFAULT_PRIORITY: Record<string, number> = {
-        'WEALTH': 10,              // 1. 부의 그릇 (가장 중요)
-        'BIO_SYNC': 11,            // 2. 생체 연동 (User Request: 아이콘 사이에 배치)
+        'WEALTH': 10,              // 1. 부의 그릇
+        'BIO_SYNC': 11,            // 2. 생체 연동 (New)
         'RELATIONSHIP': 12,        // 3. 관계의 멍
         'CAREER': 13,              // 4. 천직 발견
         'PERSONALITY_ANALYSIS': 14,// 5. 성격분석
         'DAILY_MISSION': 15,       // 6. 데일리 미션
-        'SAJU_ANALYSIS': 16        // 7. 정밀 사주
+        'SAJU_ANALYSIS': 16        // 7. 사주분석 (Restored)
     };
 
     return mappedIcons.sort((a, b) => {
@@ -483,7 +547,10 @@ export function generateChatPromptFromIntent(intent: string, userProfile?: any):
         'saju_career_detail': '내 직업운과 사업운을 심층 분석해주세요.',
         'saju_marriage_timing': '결혼 적령기와 배우자상을 분석해주세요.',
         'saju_yearly_monthly': '올해와 이달의 운세를 분석해주세요.',
-        'premium_report_full': '80페이지 프리미엄 리포트를 생성해주세요.'
+        'premium_report_full': '80페이지 프리미엄 리포트를 생성해주세요.',
+
+        // 통합 체크인 (System)
+        'integral_checkin_view': '오늘의 통합 체크인을 시작합니다.'
     };
 
     return prompts[intent] || '이 주제에 대해 분석해주세요.';
