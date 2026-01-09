@@ -257,6 +257,8 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         return;
                     }
 
+                    const p = result.fourPillars;
+                    const dayMaster = result.dayMaster;
                     const stats = calculateSajuStats(p, result.dayMasterChar); // [Fix] Use Kanji Char for lookup
 
                     updateUserData({

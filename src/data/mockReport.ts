@@ -11,6 +11,20 @@ export const mockReport: ReportData = {
             metal: 20,
             water: 20,
         },
+        ohaeng: {
+            wood: 2,
+            fire: 2,
+            earth: 2,
+            metal: 1,
+            water: 1,
+        },
+        tenGods: {
+            resource: 1,
+            output: 2,
+            self: 2,
+            power: 1,
+            wealth: 2,
+        },
         dayMaster: "본원(태어난 날)", // Generic
         dayMasterTrait: "성향 키워드",
         fourPillars: {
@@ -21,6 +35,7 @@ export const mockReport: ReportData = {
         },
         keywords: ["키워드1", "키워드2"],
     },
+
     stats: {
         creativity: 50,
         leadership: 50,
