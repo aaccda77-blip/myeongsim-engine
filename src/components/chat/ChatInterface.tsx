@@ -42,6 +42,7 @@ import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine'; // [N
 import DrillDownIconMenu from './DrillDownIconMenu'; // [NEW] 3D Icon Menu
 import SmartContextCard from '../features/SmartContextCard'; // [NEW] Smart Context Card
 import BreathingGuideModal from '../bio/BreathingGuideModal'; // [NEW] SOS Breathing Guide
+import { ETHICAL_GUIDELINES } from '@/constants/CodeOfEthics'; // [NEW] Safety Protocol
 
 
 // [Helper] Saju Keywords for Restoration
@@ -715,14 +716,37 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
         const msgToSend = overrideInput || input;
         if (!msgToSend.trim() || isLoading) return;
 
-        // [SAFETY] Crisis Intervention Detection - Opens Breathing Guide Modal
-        const CRISIS_KEYWORDS = ['죽고 싶', '자살', '끝내고 싶', '살기 싫', '사라지고 싶', '없어지고 싶', '뛰어내리'];
+        // [SAFETY] 1. Emergency Crisis Intervention (SOS Modal)
         const lowerMsg = msgToSend.toLowerCase();
-        if (CRISIS_KEYWORDS.some(k => lowerMsg.includes(k))) {
-            // Open SOS Breathing Guide Modal instead of old crisis mode
+
+        // Expanded Crisis Keywords
+        if (ETHICAL_GUIDELINES.CRISIS_KEYWORDS.some(k => lowerMsg.includes(k))) {
             setShowBreathingGuideFromChat(true);
-            setInput(''); // Clear input
-            return; // Block normal flow
+            setInput('');
+            return;
+        }
+
+        // [SAFETY] 2. Ethical Refusal & Safety Warning
+        if (ETHICAL_GUIDELINES.PROHIBITED_KEYWORDS.some(k => lowerMsg.includes(k))) {
+            setMessages(prev => [...prev, {
+                id: `refusal-${Date.now()}`,
+                role: 'assistant',
+                content: ETHICAL_GUIDELINES.REFUSAL_MESSAGE.content,
+                type: 'text'
+            }]);
+
+            // Show Hotline Info below
+            setTimeout(() => {
+                const hotlineInfo = ETHICAL_GUIDELINES.EMERGENCY_CONTACTS.map(c => `- ${c.name}: **${c.number}**`).join('\n');
+                setMessages(prev => [...prev, {
+                    id: `hotline-${Date.now()}`,
+                    role: 'assistant',
+                    content: `🚨 **긴급 도움 기관 안내**\n\n${hotlineInfo}`
+                }]);
+            }, 500);
+
+            setInput('');
+            return;
         }
 
         // [Premium Check] Block Deep Scan for free trial users
@@ -1209,24 +1233,24 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                     isOpen={showBreathingGuideFromChat}
                     onClose={() => setShowBreathingGuideFromChat(false)}
                     onComplete={() => {
-                        // Send supportive messages to chat after breathing exercise
-                        const supportiveMessages: Message[] = [
-                            {
-                                id: `sos-complete-${Date.now()}`,
-                                role: 'assistant',
-                                content: "✅ **잘하셨습니다.**\n\n호흡 운동을 완료하셨네요. 지금 느끼는 감정이 어떠신가요?"
-                            }
-                        ];
-                        setMessages(prev => [...prev, ...supportiveMessages]);
+                        // 1. Send supportive closing
+                        setMessages(prev => [...prev, {
+                            id: `sos-complete-${Date.now()}`,
+                            role: 'assistant',
+                            content: "✅ **잘하셨습니다.**\n\n호흡이 조금 차분해지셨나요? 당신은 혼자가 아닙니다."
+                        }]);
 
-                        // Follow-up message after 3 seconds
+                        // 2. Distraction Technique (Choice Architecture) after 2 seconds
                         setTimeout(() => {
+                            const option = ETHICAL_GUIDELINES.DISTRACTION_OPTIONS[Math.floor(Math.random() * ETHICAL_GUIDELINES.DISTRACTION_OPTIONS.length)];
+
                             setMessages(prev => [...prev, {
-                                id: `sos-followup-${Date.now()}`,
+                                id: `distraction-${Date.now()}`,
                                 role: 'assistant',
-                                content: "💚 **당신은 혼자가 아닙니다.**\n\n지금 겪고 있는 고통은 영원하지 않습니다. 전문가와 상담을 원하시면 **자살예방상담전화 1393**에 연락해주세요.\n\n저와 계속 이야기 나누셔도 됩니다. 무슨 생각이 드시나요?"
+                                content: `🧠 **잠시 주의를 돌려볼까요?**\n\n${option.label}`,
+                                options: ["미션 완료", "다른 미션 줘"]
                             }]);
-                        }, 3000);
+                        }, 2000);
                     }}
                 />
             )}
@@ -1968,11 +1992,9 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                 {suggestions.map((opt: any, idx: number) => {
                                                     const label = typeof opt === 'string' ? opt : opt.label || JSON.stringify(opt);
                                                     const value = typeof opt === 'string' ? opt : opt.value || label;
-
                                                     // Icons based on position/intent
                                                     const icons = ["💡", "🌿", "⚡"];
                                                     const icon = icons[idx % 3];
-
                                                     return (
                                                         <button
                                                             key={idx}
@@ -1983,9 +2005,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                             <div className="w-8 h-8 min-w-[32px] rounded-full bg-gray-900/80 flex items-center justify-center border border-gray-700 group-hover:border-primary-gold group-hover:bg-primary-gold/10 transition-colors shadow-sm">
                                                                 <span className="text-sm">{icon}</span>
                                                             </div>
-                                                            <span className="text-gray-200 text-sm font-medium leading-tight">
-                                                                {label}
-                                                            </span>
+                                                            <span className="text-gray-200 text-sm font-medium leading-tight">{label}</span>
                                                             <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
                                                                 <span className="text-primary-gold/50 text-xs">select →</span>
                                                             </div>
@@ -1995,10 +2015,25 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                             </div>
                                         )}
 
-                                        {/* [Legacy Options Block Removed] Replacement: Dynamic Suggestions Rendered from JSON above */}
-
-
-                                        {/* [Legacy Emotional Chips Block Removed] Replacement: Dynamic Suggestions Rendered from JSON above */}
+                                        {/* [NEW] Message Options (Safety Distraction & Standard Choices) */}
+                                        {msg.options && msg.options.length > 0 && (
+                                            <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[85%] mt-4 mb-6 flex flex-col gap-2 animate-fade-in-up">
+                                                {msg.options.map((option, idx) => (
+                                                    <button
+                                                        key={`opt-${idx}`}
+                                                        onClick={() => handleSend(option)}
+                                                        disabled={isLoading}
+                                                        className="w-full text-left p-3 rounded-xl bg-indigo-900/30 border border-indigo-500/30 hover:bg-indigo-900/50 hover:border-indigo-400 transition-all flex items-center gap-3 group"
+                                                    >
+                                                        <div className="w-8 h-8 min-w-[32px] rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/50 text-indigo-300 group-hover:bg-indigo-500/40">
+                                                            <span className="text-sm">{idx + 1}</span>
+                                                        </div>
+                                                        <span className="text-gray-100 text-sm font-medium">{option}</span>
+                                                        <ArrowUp className="w-4 h-4 ml-auto text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity transform rotate-90" />
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
                                     </>
                                 );
                             })()}
