@@ -642,8 +642,8 @@ export default function DrillDownIconMenu({
 
                             <div className="bg-black/40 rounded-xl p-4 border border-white/5 shadow-inner">
                                 <audio controls autoPlay controlsList="nodownload" className="w-full accent-green-500" style={{ filter: 'hue-rotate(90deg)' }}>
-                                    <source src="/audio/healing_song.wav" type="audio/wav" />
-                                    <source src="/audio/그냥두는연습노래.wav" type="audio/wav" />
+                                    <source src="/audio/그냥두는연습.wav" type="audio/wav" />
+                                    <source src="/audio/알아차림의 알아차림.wav" type="audio/wav" />
                                     브라우저가 오디오 재생을 지원하지 않습니다.
                                 </audio>
                             </div>
