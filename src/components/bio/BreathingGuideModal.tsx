@@ -7,6 +7,7 @@ import { X, Play, Pause, RotateCcw } from 'lucide-react';
 interface BreathingGuideModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onComplete?: () => void; // Callback when user wants to connect to chat
 }
 
 type BreathingPhase = 'ready' | 'inhale' | 'hold' | 'exhale' | 'complete';
@@ -17,7 +18,7 @@ const PHASE_DURATIONS = {
     exhale: 8000    // 8초
 };
 
-export default function BreathingGuideModal({ isOpen, onClose }: BreathingGuideModalProps) {
+export default function BreathingGuideModal({ isOpen, onClose, onComplete }: BreathingGuideModalProps) {
     const [phase, setPhase] = useState<BreathingPhase>('ready');
     const [cycleCount, setCycleCount] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -205,13 +206,27 @@ export default function BreathingGuideModal({ isOpen, onClose }: BreathingGuideM
                         )}
 
                         {phase === 'complete' && (
-                            <button
-                                onClick={() => { setPhase('ready'); setCycleCount(0); }}
-                                className="px-6 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium flex items-center gap-2 hover:bg-white/20 transition-all"
-                            >
-                                <RotateCcw size={18} />
-                                다시 하기
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => { setPhase('ready'); setCycleCount(0); }}
+                                    className="px-6 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium flex items-center gap-2 hover:bg-white/20 transition-all"
+                                >
+                                    <RotateCcw size={18} />
+                                    다시 하기
+                                </button>
+                                {onComplete && (
+                                    <button
+                                        onClick={() => {
+                                            stopBreathing();
+                                            onClose();
+                                            onComplete();
+                                        }}
+                                        className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full text-white font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-emerald-500/30 transition-all"
+                                    >
+                                        💬 코치와 대화하기
+                                    </button>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

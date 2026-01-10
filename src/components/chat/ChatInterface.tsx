@@ -41,6 +41,7 @@ import { AuthService } from '@/modules/AuthService'; // [Module] Auth Logic
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine'; // [NEW] Unified Engine with Stats
 import DrillDownIconMenu from './DrillDownIconMenu'; // [NEW] 3D Icon Menu
 import SmartContextCard from '../features/SmartContextCard'; // [NEW] Smart Context Card
+import BreathingGuideModal from '../bio/BreathingGuideModal'; // [NEW] SOS Breathing Guide
 
 
 // [Helper] Saju Keywords for Restoration
@@ -76,6 +77,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     const [showCrisisMode, setShowCrisisMode] = useState(false); // [Safety] Crisis Intervention Screen
     const [crisisPhase, setCrisisPhase] = useState<'breathing' | 'hope' | 'action'>('breathing'); // [Safety] Recovery Phase
     const [showSmartContext, setShowSmartContext] = useState(false); // [Smart Context] Energy Analysis Card
+    const [showBreathingGuideFromChat, setShowBreathingGuideFromChat] = useState(false); // [NEW] SOS from chat crisis keywords
 
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -713,12 +715,12 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
         const msgToSend = overrideInput || input;
         if (!msgToSend.trim() || isLoading) return;
 
-        // [SAFETY] Crisis Intervention Detection
+        // [SAFETY] Crisis Intervention Detection - Opens Breathing Guide Modal
         const CRISIS_KEYWORDS = ['죽고 싶', '자살', '끝내고 싶', '살기 싫', '사라지고 싶', '없어지고 싶', '뛰어내리'];
         const lowerMsg = msgToSend.toLowerCase();
         if (CRISIS_KEYWORDS.some(k => lowerMsg.includes(k))) {
-            // Show crisis intervention screen instead of sending to AI
-            setShowCrisisMode(true);
+            // Open SOS Breathing Guide Modal instead of old crisis mode
+            setShowBreathingGuideFromChat(true);
             setInput(''); // Clear input
             return; // Block normal flow
         }
@@ -1198,6 +1200,34 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                     birthDate={reportData?.birthDate}
                     onChatTopic={(message) => handleSend(message)}
                     onClose={() => setShowSmartContext(false)}
+                />
+            )}
+
+            {/* [NEW] SOS Breathing Guide from Chat Crisis Detection */}
+            {showBreathingGuideFromChat && (
+                <BreathingGuideModal
+                    isOpen={showBreathingGuideFromChat}
+                    onClose={() => setShowBreathingGuideFromChat(false)}
+                    onComplete={() => {
+                        // Send supportive messages to chat after breathing exercise
+                        const supportiveMessages: Message[] = [
+                            {
+                                id: `sos-complete-${Date.now()}`,
+                                role: 'assistant',
+                                content: "✅ **잘하셨습니다.**\n\n호흡 운동을 완료하셨네요. 지금 느끼는 감정이 어떠신가요?"
+                            }
+                        ];
+                        setMessages(prev => [...prev, ...supportiveMessages]);
+
+                        // Follow-up message after 3 seconds
+                        setTimeout(() => {
+                            setMessages(prev => [...prev, {
+                                id: `sos-followup-${Date.now()}`,
+                                role: 'assistant',
+                                content: "💚 **당신은 혼자가 아닙니다.**\n\n지금 겪고 있는 고통은 영원하지 않습니다. 전문가와 상담을 원하시면 **자살예방상담전화 1393**에 연락해주세요.\n\n저와 계속 이야기 나누셔도 됩니다. 무슨 생각이 드시나요?"
+                            }]);
+                        }, 3000);
+                    }}
                 />
             )}
 
