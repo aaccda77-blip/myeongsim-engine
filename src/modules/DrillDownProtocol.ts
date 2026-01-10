@@ -163,12 +163,6 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "🎮 중독 탈출",
                 desc: "DBT 기반 디지털/도박 대처",
                 intent: "addiction_escape_dbt"
-            },
-            {
-                id: "b_sos",
-                label: "🆘 SOS 긴급",
-                desc: "MBCT 기반 즉각 위기 개입",
-                intent: "sos_crisis_mbct"
             }
         ]
     },
@@ -550,10 +544,7 @@ export function generateChatPromptFromIntent(intent: string, userProfile?: any):
         'premium_report_full': '80페이지 프리미엄 리포트를 생성해주세요.',
 
         // 통합 체크인 (System)
-        'integral_checkin_view': '오늘의 통합 체크인을 시작합니다.',
-
-        // SOS 긴급 (Bio-Sync)
-        'sos_crisis_mbct': '[SOS] 긴급 위기 개입 프로토콜을 실행합니다.'
+        'integral_checkin_view': '오늘의 통합 체크인을 시작합니다.'
     };
 
     return prompts[intent] || '이 주제에 대해 분석해주세요.';

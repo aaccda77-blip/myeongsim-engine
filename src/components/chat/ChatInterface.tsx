@@ -2206,55 +2206,6 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                 return;
                             }
 
-                            // [Fix] SOS Crisis Intervention (User Request)
-                            if (intent === 'sos_crisis_mbct') {
-                                setShowBioSync(true);
-                                setEmdrActive(false);
-                                simulateRecovery();
-
-                                handleSend("🚨 [SOS] 긴급 위기 개입 프로토콜을 가동합니다. 제 목소리에 귀 기울여주세요.");
-
-                                // Voice Guide Sequence
-                                setTimeout(() => {
-                                    setMessages(prev => [...prev, {
-                                        id: Date.now().toString(),
-                                        role: 'assistant',
-                                        content: "🌬️ **[호흡 가이드]**\n\n지금은 아무 생각도 하지 마세요.\n오직 제 목소리와 호흡에만 집중합니다.\n\n🔊 **(성우 음성 재생 중...)**"
-                                    }]);
-
-                                    // Play Inhale
-                                    try {
-                                        const audioIn = new Audio('/sounds/voice_inhale.mp3');
-                                        audioIn.play().catch(e => console.error('Audio play failed', e));
-                                    } catch (e) { console.error('Audio Init Failed', e); }
-                                }, 1000);
-
-                                setTimeout(() => {
-                                    // Play Hold
-                                    try {
-                                        const audioHold = new Audio('/sounds/voice_hold.mp3');
-                                        audioHold.play().catch(e => console.error('Audio play failed', e));
-                                    } catch (e) { }
-                                }, 5000);
-
-                                setTimeout(() => {
-                                    // Play Exhale
-                                    try {
-                                        const audioOut = new Audio('/sounds/voice_exhale.mp3');
-                                        audioOut.play().catch(e => console.error('Audio play failed', e));
-                                    } catch (e) { }
-                                }, 9000);
-
-                                setTimeout(() => {
-                                    setMessages(prev => [...prev, {
-                                        id: Date.now().toString() + "_sos_end",
-                                        role: 'assistant',
-                                        content: "✅ **[안정화 확인]**\n\n잘하셨습니다. 당신은 혼자가 아닙니다. \n지금 느끼는 고통은 잠시 지나가는 소나기일 뿐입니다."
-                                    }]);
-                                }, 13000);
-                                return;
-                            }
-
                             // [New] Patent Demo 2: 선제적 예방 (Preventive Care)
                             if (intent === 'demo_preventive_care') {
                                 setShowBioSync(true);
