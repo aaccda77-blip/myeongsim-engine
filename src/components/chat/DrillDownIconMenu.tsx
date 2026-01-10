@@ -351,6 +351,8 @@ export default function DrillDownIconMenu({
 
     // [NEW] SOS Breathing Guide Modal State
     const [showBreathingGuide, setShowBreathingGuide] = useState(false);
+    // [NEW] Stress Relief Music Player State
+    const [showMusicPlayer, setShowMusicPlayer] = useState(false);
 
     // [NEW] 이용권 상태 확인
     const { isExpired } = useSubscription();
@@ -492,6 +494,13 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] 힐링 음악 플레이어
+        if (subItem.intent === 'play_healing_music') {
+            setSelectedIcon(null);
+            setShowMusicPlayer(true);
+            return;
+        }
+
         // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동
         if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
             setSelectedIcon(null);
@@ -596,6 +605,53 @@ export default function DrillDownIconMenu({
                             onSelectIntent('integral_result', prompt);
                         }}
                     />
+                )}
+                            )}
+            </AnimatePresence>
+
+            {/* [NEW] Healing Music Player Modal */}
+            <AnimatePresence>
+                {showMusicPlayer && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                        onClick={() => setShowMusicPlayer(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-gray-900 border border-green-500/30 rounded-2xl p-6 w-full max-w-sm text-center shadow-2xl relative"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="absolute top-0 right-0 p-4">
+                                <button onClick={() => setShowMusicPlayer(false)} className="text-gray-400 hover:text-white transition-colors">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                                <Music size={32} className="text-green-400" />
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2">명심 힐링 음악</h3>
+                            <p className="text-sm text-green-300/80 mb-6">"그냥 두는 연습"</p>
+
+                            <div className="bg-black/40 rounded-xl p-4 border border-white/5 shadow-inner">
+                                <audio controls autoPlay controlsList="nodownload" className="w-full accent-green-500" style={{ filter: 'hue-rotate(90deg)' }}>
+                                    <source src="/audio/healing_song.wav" type="audio/wav" />
+                                    <source src="/audio/그냥두는연습노래.wav" type="audio/wav" />
+                                    브라우저가 오디오 재생을 지원하지 않습니다.
+                                </audio>
+                            </div>
+
+                            <p className="text-xs text-gray-500 mt-4 leading-relaxed">
+                                눈을 감고 편안하게 호흡하며<br />소리의 파동을 느껴보세요.
+                            </p>
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 

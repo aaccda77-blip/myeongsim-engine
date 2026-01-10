@@ -386,6 +386,23 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 intent: "saju_marriage_timing"
             }
         ]
+    },
+
+    // 8. 힐링/스트레스 (New)
+    STRESS_RELIEF: {
+        id: 'STRESS_RELIEF',
+        label: "명심 힐링",
+        icon: "🌿",
+        neuro_trigger: "지친 마음 쉬어가기",
+        style: 'healing_green',
+        sub_menus: [
+            {
+                id: "h_music",
+                label: "🎵 힐링 음악 (심박 안정)",
+                desc: "그냥 두는 연습 듣기",
+                intent: "play_healing_music"
+            }
+        ]
     }
 };
 
@@ -492,7 +509,8 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
         'CAREER': 13,              // 4. 천직 발견
         'PERSONALITY_ANALYSIS': 14,// 5. 성격분석
         'DAILY_MISSION': 15,       // 6. 데일리 미션
-        'SAJU_ANALYSIS': 16        // 7. 사주분석 (Restored)
+        'SAJU_ANALYSIS': 16,       // 7. 사주분석 (Restored)
+        'STRESS_RELIEF': 17        // 8. 명심 힐링 (New)
     };
 
     return mappedIcons.sort((a, b) => {
