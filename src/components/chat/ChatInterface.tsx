@@ -43,6 +43,8 @@ import DrillDownIconMenu from './DrillDownIconMenu'; // [NEW] 3D Icon Menu
 import SmartContextCard from '../features/SmartContextCard'; // [NEW] Smart Context Card
 import BreathingGuideModal from '../bio/BreathingGuideModal'; // [NEW] SOS Breathing Guide
 import { ETHICAL_GUIDELINES } from '@/constants/CodeOfEthics'; // [NEW] Safety Protocol
+import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule'; // [NEW] Talent Analysis
+import TalentReportCard from './TalentReportCard'; // [NEW] Talent Card UI
 
 
 // [Helper] Saju Keywords for Restoration
@@ -746,6 +748,35 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
             }, 500);
 
             setInput('');
+            return;
+        }
+
+        // [Feature] Personalized Talent & Strength Report (Local Simulation)
+        const TALENT_KEYWORDS = ['재능', '강점', '적성', '잘하는', '천직', '직업', '커리어'];
+        if (TALENT_KEYWORDS.some(k => lowerMsg.includes(k)) && reportData?.saju) {
+            setIsLoading(true);
+            setInput('');
+
+            // 1. User Message
+            setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', content: msgToSend }]);
+
+            // 2. Analyze
+            const analysis = TalentAnalysisModule.analyze(reportData.saju);
+
+            // 3. Construct Response with JSON Data for Renderer
+            setTimeout(() => {
+                const jsonPayload = JSON.stringify({
+                    talent_report: analysis
+                });
+
+                setMessages(prev => [...prev, {
+                    id: `talent-${Date.now()}`,
+                    role: 'assistant',
+                    content: `📊 **${reportData.userName}님의 타고난 강점 분석**\n\n사주 구조(OS)를 바탕으로 분석된 핵심 재능 리포트입니다.:::DATA_SEPARATOR:::${jsonPayload}`
+                }]);
+                setIsLoading(false);
+                playGameSound('levelup');
+            }, 1500);
             return;
         }
 
@@ -1803,33 +1834,17 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                             if (!analysisData) analysisData = {};
                                             analysisData.action_plan = parsedData.action_plan;
                                         }
+                                        // [Fix] Extract talent_report
+                                        if (parsedData.talent_report) {
+                                            if (!analysisData) analysisData = {};
+                                            analysisData.talent_report = parsedData.talent_report;
+                                        }
                                         // [Fix] Extract gaugeData (uiData) and map to analysisData for LevelGaugeCard
                                         if (parsedData.gaugeData) {
                                             if (!analysisData) analysisData = {};
                                             // Map gaugeData fields to analysisData for LevelGaugeCard compatibility
                                             analysisData.innate_level = parsedData.gaugeData.innate_level || 300;
                                             analysisData.current_level = parsedData.gaugeData.current_level || parsedData.gaugeData.score || 400;
-
-                                            // Also set uiData for other components if needed
-                                            // uiData = parsedData.gaugeData; (Not defined in this scope, handled by useState or other logic?)
-                                            // Actually uiData is probably derived from analysisData in render?
-                                            // Wait, let's check line 878. 'let uiData = null' or similar?
-                                            // Ah, this block is IIFE. It returns JSX.
-                                            // But wait, the previous code block I saw was line 872: {(() => { ...
-                                            // It defines `analysisData`, `suggestions`.
-                                            // It does NOT define `uiData` in the scope of IIFE?
-                                            // Let's check line 967: <BioSyncDashboard data={uiData} />
-                                            // Where does uiData come from in the IIFE?
-                                        }
-                                        // Also capture gaugeData for consciousness gauge
-                                        if (parsedData.gaugeData) {
-                                            // If we want to render ConsciousnessCard, we need to set uiData or similar
-                                            // Looking at line 957: uiData && uiData.ui_type === 'consciousness_gauge'
-                                            // But wait, the Prompt says "gaugeData".
-                                            // Existing code uses 'uiData'.
-                                            // We might need to map gaugeData to uiData format if they differ,
-                                            // OR update the rendering logic.
-                                            // Let's look at line 957 again in view_file.
                                         }
                                     } catch (e) {
                                         // Fallback: Regex extraction on the JSON part
@@ -1983,6 +1998,13 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                         {analysisData && analysisData.action_plan && Array.isArray(analysisData.action_plan) && (
                                             <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-md mt-4 mb-6 animate-fade-in-up">
                                                 <ActionPlanCard plan={analysisData.action_plan} />
+                                            </div>
+                                        )}
+
+                                        {/* [Talent Report Card] (New) */}
+                                        {analysisData && analysisData.talent_report && (
+                                            <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-md mt-4 mb-6 animate-fade-in-up">
+                                                <TalentReportCard data={analysisData.talent_report} />
                                             </div>
                                         )}
 
