@@ -758,8 +758,7 @@ export default function DrillDownIconMenu({
                                     눈을 감고 편안하게 호흡하며 소리의 파동을 느껴보세요.
                                 </p>
                             </>
-                            );
-                            })()}
+
                         </motion.div>
                     </motion.div>
                 )}
