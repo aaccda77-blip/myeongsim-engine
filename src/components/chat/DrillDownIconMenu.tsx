@@ -708,15 +708,29 @@ export default function DrillDownIconMenu({
                                         </div>
 
                                         {/* EMDR Visual Stimulation - Bilateral Eye Movement */}
-                                        <div className="bg-black/30 rounded-xl p-3 border border-cyan-500/20 mb-4">
-                                            <p className="text-[10px] text-cyan-400/70 uppercase tracking-wider mb-2 text-center">
-                                                👁️ EMDR 시선 안정화 (공을 눈으로 따라가세요)
-                                            </p>
-                                            <div className="relative h-8 bg-gradient-to-r from-cyan-900/30 via-black/50 to-cyan-900/30 rounded-full overflow-hidden">
+                                        <div className="bg-black/30 rounded-xl p-4 border border-cyan-500/20 mb-4">
+                                            <div className="flex items-center justify-center gap-2 mb-3">
+                                                <span className="text-lg">👁️</span>
+                                                <p className="text-xs text-cyan-400 font-bold uppercase tracking-wider">
+                                                    EMDR 시선 안정화
+                                                </p>
+                                            </div>
+
+                                            {/* Instructions */}
+                                            <div className="bg-cyan-900/20 rounded-lg p-2 mb-3 text-left">
+                                                <p className="text-[10px] text-cyan-300/90 leading-relaxed">
+                                                    💡 <strong>사용법:</strong> 노래를 들으며 아래 움직이는 공을 <strong>눈으로만</strong> 따라가세요.
+                                                    머리는 고정하고 눈동자만 좌우로 움직입니다.
+                                                    잡생각이 떠오르면 그냥 흘려보내세요.
+                                                </p>
+                                            </div>
+
+                                            {/* Moving Ball */}
+                                            <div className="relative h-10 bg-gradient-to-r from-cyan-900/30 via-black/50 to-cyan-900/30 rounded-full overflow-hidden border border-cyan-500/30">
                                                 <motion.div
-                                                    className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-cyan-400 to-green-400 rounded-full shadow-lg shadow-cyan-500/50"
+                                                    className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-cyan-400 to-green-400 rounded-full shadow-lg shadow-cyan-500/50"
                                                     animate={{
-                                                        x: ["0%", "calc(100% - 20px)", "0%"]
+                                                        x: ["0%", "calc(100% - 24px)", "0%"]
                                                     }}
                                                     transition={{
                                                         duration: 2.5,
@@ -725,8 +739,10 @@ export default function DrillDownIconMenu({
                                                     }}
                                                 />
                                             </div>
-                                            <p className="text-[9px] text-gray-500 mt-2 text-center">
-                                                양측성 자극으로 잡생각을 흘려보내세요
+
+                                            <p className="text-[9px] text-gray-500 mt-3 text-center">
+                                                ✨ 양측성 자극(Bilateral Stimulation)으로 뇌의 좌우 반구를 교차 활성화하여<br />
+                                                스트레스와 부정적 생각을 자연스럽게 해소합니다.
                                             </p>
                                         </div>
 
