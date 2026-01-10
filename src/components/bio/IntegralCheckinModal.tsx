@@ -65,7 +65,7 @@ export default function IntegralCheckinModal({ isOpen, onClose, userId, onComple
                 setResultData(data.data);
                 setStep('result');
             } else {
-                alert('잠시 후 다시 시도해주세요.');
+                alert(data.message || '잠시 후 다시 시도해주세요.');
                 setStep('input');
             }
         } catch (e) {
