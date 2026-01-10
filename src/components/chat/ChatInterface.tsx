@@ -751,34 +751,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
             return;
         }
 
-        // [Feature] Personalized Talent & Strength Report (Local Simulation)
-        const TALENT_KEYWORDS = ['재능', '강점', '적성', '잘하는', '천직', '직업', '커리어', '잘해', '성격', '기질'];
-        if (TALENT_KEYWORDS.some(k => lowerMsg.includes(k)) && reportData?.saju) {
-            setIsLoading(true);
-            setInput('');
 
-            // 1. User Message
-            setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', content: msgToSend }]);
-
-            // 2. Analyze
-            const analysis = TalentAnalysisModule.analyze(reportData.saju);
-
-            // 3. Construct Response with JSON Data for Renderer
-            setTimeout(() => {
-                const jsonPayload = JSON.stringify({
-                    talent_report: analysis
-                });
-
-                setMessages(prev => [...prev, {
-                    id: `talent-${Date.now()}`,
-                    role: 'assistant',
-                    content: `📊 **${reportData.userName}님의 타고난 강점 분석**\n\n${analysis.detailedAnalysis}\n\n사주 구조(OS)를 바탕으로 분석된 핵심 재능 리포트입니다.:::DATA_SEPARATOR:::${jsonPayload}`
-                }]);
-                setIsLoading(false);
-                playGameSound('levelup');
-            }, 1500);
-            return;
-        }
 
         // [Premium Check] Block Deep Scan for free trial users
         // [DISABLED] GateKeeper logic - Now always proceed to real AI
