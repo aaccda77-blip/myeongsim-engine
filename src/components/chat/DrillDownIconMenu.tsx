@@ -15,6 +15,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Music, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import TalentAnalysisModule from '@/modules/TalentAnalysisModule';
+import TalentReportCard from '@/components/chat/TalentReportCard';
 import { assembleFullReport } from '@/services/ReportAssembler';
 import { useReportStore } from '@/store/useReportStore'; // [New] Import for navigation
 import { useSubscription } from '@/hooks/useSubscription'; // [NEW] 이용권 상태 확인
@@ -354,6 +356,9 @@ export default function DrillDownIconMenu({
     const [showBreathingGuide, setShowBreathingGuide] = useState(false);
     // [NEW] Stress Relief Music Player State
     const [showMusicPlayer, setShowMusicPlayer] = useState(false);
+    // [NEW] Talent Report Modal State
+    const [showTalentReportModal, setShowTalentReportModal] = useState(false);
+    const [talentReportData, setTalentReportData] = useState<any>(null);
 
     // [NEW] 이용권 상태 확인
     const { isExpired } = useSubscription();
@@ -460,10 +465,13 @@ export default function DrillDownIconMenu({
             return;
         }
 
-        // [NEW] 강점 리포트(인적자원) 페이지로 이동
+        // [NEW] 강점 리포트(인적자원) 모달 표시
         if (subItem.intent === 'strength_report_view') {
             setSelectedIcon(null);
-            window.location.href = '/report/strength';
+            // TalentAnalysisModule로 분석 실행
+            const analysis = TalentAnalysisModule.analyze(userProfile?.saju || {});
+            setTalentReportData(analysis);
+            setShowTalentReportModal(true);
             return;
         }
 
@@ -656,7 +664,40 @@ export default function DrillDownIconMenu({
                 )}
             </AnimatePresence>
 
+            {/* [NEW] Talent Report Card Modal */}
+            <AnimatePresence>
+                {showTalentReportModal && talentReportData && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                        onClick={() => setShowTalentReportModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-gray-900 border border-purple-500/30 rounded-2xl p-4 w-full max-w-md max-h-[85vh] overflow-y-auto shadow-2xl relative"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="absolute top-0 right-0 p-3">
+                                <button onClick={() => setShowTalentReportModal(false)} className="text-gray-400 hover:text-white transition-colors">
+                                    <X size={24} />
+                                </button>
+                            </div>
 
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">🧬 나의 강점/재능 리포트</h3>
+
+                            <TalentReportCard data={talentReportData} />
+
+                            <p className="text-xs text-gray-500 mt-4 text-center">
+                                사주 OS 기반 핵심 재능 분석
+                            </p>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* [REMOVED] TODAY'S ENERGY 섹션 - 챗봇 대화 시 완전히 숨김 */}
             {
