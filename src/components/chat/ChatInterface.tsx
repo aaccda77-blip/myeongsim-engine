@@ -168,12 +168,8 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     const [gapMetrics, setGapMetrics] = useState({ gapLevel: 10, matchingScore: 90 }); // Initial: Stable
     const [interruptQuestion, setInterruptQuestion] = useState<any | null>(null);
     const [isInterrupted, setIsInterrupted] = useState(false);
-    const [isSurveyCompleted, setIsSurveyCompleted] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('myeongsim_deep_scan_completed') === 'true';
-        }
-        return false;
-    });
+    const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
+
 
     // [Auth Module]
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
