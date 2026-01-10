@@ -12,7 +12,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Music, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { assembleFullReport } from '@/services/ReportAssembler';
 import { useReportStore } from '@/store/useReportStore'; // [New] Import for navigation
@@ -313,9 +314,9 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
     PERSONALITY_ANALYSIS: { main: '성격분석', sub: '강점/재능(인적자원)리포트' },
     DAILY_MISSION: { main: '오늘운세', sub: '지금 뭘 해야 운이 트일까?' },
     SAJU_ANALYSIS: { main: '사주분석', sub: '운명의 설계도 확인' },
-    BIO_SYNC: { main: '생체연동', sub: '실시간 운명 동기화' }, // [Fix] Missing Label
+    BIO_SYNC: { main: '생체연동', sub: '실시간 운명 동기화' },
+    STRESS_RELIEF: { main: '명심힐링', sub: '지친 마음 쉬어가기' }, // [New] Added label
 };
-
 // ============== Props ==============
 interface DrillDownIconMenuProps {
     userProfile?: any;
@@ -606,7 +607,7 @@ export default function DrillDownIconMenu({
                         }}
                     />
                 )}
-                            )}
+
             </AnimatePresence>
 
             {/* [NEW] Healing Music Player Modal */}
