@@ -163,6 +163,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 label: "🎮 중독 탈출",
                 desc: "DBT 기반 디지털/도박 대처",
                 intent: "addiction_escape_dbt"
+            },
+            {
+                id: "b_sos",
+                label: "🆘 SOS 긴급",
+                desc: "4-7-8 호흡 가이드 (성우 음성)",
+                intent: "sos_breathing_guide"
             }
         ]
     },

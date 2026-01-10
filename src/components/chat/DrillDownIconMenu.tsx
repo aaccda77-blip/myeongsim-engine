@@ -29,6 +29,8 @@ import { findTherapyArchetype, TherapyArchetype } from '@/data/TherapyDB'; // [N
 import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget';
 // [NEW] Integral Check-in Modal
 const IntegralCheckinModal = dynamic(() => import('@/components/bio/IntegralCheckinModal'), { ssr: false });
+// [NEW] SOS Breathing Guide Modal
+const BreathingGuideModal = dynamic(() => import('@/components/bio/BreathingGuideModal'), { ssr: false });
 // [Security] ScoreCalculator와 StaticTextDB는 더 이상 클라이언트에서 import하지 않음
 // 대신 /api/secure/* API를 통해 서버에서 데이터를 가져옴
 
@@ -347,6 +349,9 @@ export default function DrillDownIconMenu({
     // [New] Integral Check-in Modal State
     const [showIntegralCheckin, setShowIntegralCheckin] = useState(false);
 
+    // [NEW] SOS Breathing Guide Modal State
+    const [showBreathingGuide, setShowBreathingGuide] = useState(false);
+
     // [NEW] 이용권 상태 확인
     const { isExpired } = useSubscription();
 
@@ -477,6 +482,13 @@ export default function DrillDownIconMenu({
         if (subItem.intent === 'integral_checkin_view') {
             setSelectedIcon(null);
             setShowIntegralCheckin(true);
+            return;
+        }
+
+        // [NEW] SOS 호흡 가이드
+        if (subItem.intent === 'sos_breathing_guide') {
+            setSelectedIcon(null);
+            setShowBreathingGuide(true);
             return;
         }
 
@@ -940,6 +952,27 @@ export default function DrillDownIconMenu({
                     </>
                 )}
             </div >
+
+            {/* Integral Check-in Modal */}
+            {showIntegralCheckin && (
+                <IntegralCheckinModal
+                    isOpen={showIntegralCheckin}
+                    onClose={() => setShowIntegralCheckin(false)}
+                    userId={userProfile?.id || ''}
+                    onComplete={(advice, context) => {
+                        console.log('[Integral Check-in] Completed:', { advice, context });
+                        setShowIntegralCheckin(false);
+                    }}
+                />
+            )}
+
+            {/* SOS Breathing Guide Modal */}
+            {showBreathingGuide && (
+                <BreathingGuideModal
+                    isOpen={showBreathingGuide}
+                    onClose={() => setShowBreathingGuide(false)}
+                />
+            )}
         </>
     );
 }
