@@ -72,8 +72,8 @@ export default function HealingMusicPlayerModal({ isOpen, onClose }: HealingMusi
                                     key={song.id}
                                     onClick={() => setCurrentSongIndex(index)}
                                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${currentSongIndex === index
-                                            ? 'bg-green-500 text-black'
-                                            : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                        ? 'bg-green-500 text-black'
+                                        : 'bg-white/10 text-gray-300 hover:bg-white/20'
                                         }`}
                                 >
                                     🎵 {song.title}
@@ -116,14 +116,14 @@ export default function HealingMusicPlayerModal({ isOpen, onClose }: HealingMusi
                             </div>
 
                             {/* Moving Ball */}
-                            <div className="relative h-10 bg-gradient-to-r from-cyan-900/30 via-black/50 to-cyan-900/30 rounded-full overflow-hidden border border-cyan-500/30">
+                            <div className="relative h-14 bg-gradient-to-r from-cyan-900/30 via-black/50 to-cyan-900/30 rounded-full overflow-hidden border border-cyan-500/30">
                                 <motion.div
-                                    className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-cyan-400 to-green-400 rounded-full shadow-lg shadow-cyan-500/50"
+                                    className="absolute top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-cyan-400 to-green-400 rounded-full shadow-lg shadow-cyan-500/50"
                                     animate={{
-                                        x: ["0%", "calc(100% - 24px)", "0%"]
+                                        left: ["0%", "calc(100% - 32px)", "0%"]
                                     }}
                                     transition={{
-                                        duration: 2.5,
+                                        duration: 3, // Slightly slower for better following
                                         repeat: Infinity,
                                         ease: "easeInOut"
                                     }}
