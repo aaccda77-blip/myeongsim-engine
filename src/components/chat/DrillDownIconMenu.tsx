@@ -15,7 +15,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Music, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import TalentAnalysisModule from '@/modules/TalentAnalysisModule';
+import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule';
 import TalentReportCard from '@/components/chat/TalentReportCard';
 import { assembleFullReport } from '@/services/ReportAssembler';
 import { useReportStore } from '@/store/useReportStore'; // [New] Import for navigation
