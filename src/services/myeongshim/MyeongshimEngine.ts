@@ -62,7 +62,7 @@ export class MyeongshimEngine {
                         action_mode: 'Rest'
                     }
                 } as MyeongshimContext,
-                advice: `잠시 명상하며 쉬어가는 하루 되세요. (AI 오류: ${error instanceof Error ? error.message : String(error)})`
+                advice: "잠시 명상하며 쉬어가는 하루 되세요. (현재 AI 사용량이 많아 기본 가이드를 제공합니다.)"
             };
         }
     }
@@ -171,7 +171,8 @@ export class MyeongshimEngine {
     }
 
     private async _callAI(context: MyeongshimContext, state: IntegralState): Promise<string> {
-        const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // Upgrade to Gemini 2.5 Flash (User Request)
+        const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
 You are the 'Myeongshim Coach' (명심 코치).
