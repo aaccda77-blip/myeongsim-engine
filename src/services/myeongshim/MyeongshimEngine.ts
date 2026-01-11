@@ -62,7 +62,7 @@ export class MyeongshimEngine {
                         action_mode: 'Rest'
                     }
                 } as MyeongshimContext,
-                advice: "잠시 명상하며 쉬어가는 하루 되세요. (현재 AI 연결 상태가 불안정하여 기본 가이드를 제공합니다.)"
+                advice: `잠시 명상하며 쉬어가는 하루 되세요. (AI 오류: ${error instanceof Error ? error.message : String(error)})`
             };
         }
     }
