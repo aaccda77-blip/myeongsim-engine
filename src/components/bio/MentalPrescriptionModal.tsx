@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 // Icons
 import { Heart, Activity, Users, Zap, X, ChevronRight, MessageCircle, Frown, Smile, Lock } from 'lucide-react';
 
-interface IntegralCheckinModalProps {
+interface MentalPrescriptionModalProps {
     isOpen: boolean;
     onClose: () => void;
     userId: string;
@@ -28,12 +28,11 @@ const MOOD_KEYWORDS = [
     { id: 'anger', label: '😡 분노/짜증', type: 'neg' },
 ];
 
-export default function IntegralCheckinModal({ isOpen, onClose, userId, onComplete }: IntegralCheckinModalProps) {
+export default function MentalPrescriptionModal({ isOpen, onClose, userId, onComplete }: MentalPrescriptionModalProps) {
     // Check-in State
     const [step, setStep] = useState<'input' | 'loading' | 'result'>('input');
 
     // Initial scores are 0 (user must slide them)
-    // We treat 0 as "unselected" visually, but mathematically it's 0.
     const [scores, setScores] = useState({
         ul_mind: 0,
         ur_body: 0,
@@ -109,18 +108,13 @@ export default function IntegralCheckinModal({ isOpen, onClose, userId, onComple
         if (isOpen) {
             setShowValidation(false);
             setStep('input');
+            // Reset scores ? Optional. Let's keep them 0 if re-opened to force fresh check.
+            setScores({ ul_mind: 0, ur_body: 0, ll_relation: 0, lr_system: 0 });
+            setSelectedSymptoms([]);
         }
     }, [isOpen]);
 
     if (!isOpen) return null;
-
-    // Helper to get color based on score
-    const getScoreColor = (score: number) => {
-        if (score === 0) return 'bg-gray-700';
-        if (score <= 3) return 'bg-red-500';
-        if (score <= 6) return 'bg-yellow-500';
-        return 'bg-green-500';
-    };
 
     return (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
@@ -307,25 +301,6 @@ export default function IntegralCheckinModal({ isOpen, onClose, userId, onComple
 
 // Sub-component for Slider
 function ScoreSlider({ label, icon, value, onChange, accentColor }: { label: string, icon: React.ReactNode, value: number, onChange: (v: number) => void, accentColor: string }) {
-    // Gradient Logic based on value
-    const getTrackStyle = (val: number) => {
-        if (val === 0) return { background: '#374151' }; // gray-700
-        const percentage = (val / 10) * 100;
-        // Gradient from Red(low) to Green(high)
-        return {
-            background: `linear-gradient(to right, #ef4444 0%, #eab308 50%, #22c55e 100%)`,
-            // Masking to show gradient only up to thumb? Native input range doesn't support easy gradient track natively without vendor prefixes or JS updates.
-            // Simplified approach: Background gradient fixed, mask it? 
-            // Better: Simple filled track color using CSS variable or Linear Gradient stops.
-            backgroundSize: '100% 100%',
-        };
-    };
-
-    // We will use a simpler approach for gradient: 
-    // Dynamic color class for the "Active" part is hard with native input.
-    // Let's use a dynamic track background color instead of gradient if gradient is too complex for native input styling in one go.
-    // Actually, `accent-color` css property (Tailwind `accent-*`) handles the thumb and filled track in Chrome/Edge decently.
-
     return (
         <div className="space-y-3">
             <div className="flex justify-between items-center text-sm">
@@ -337,7 +312,7 @@ function ScoreSlider({ label, icon, value, onChange, accentColor }: { label: str
                 </span>
             </div>
 
-            <div className="relative h-10 flex items-center"> {/* Increased touch area container */}
+            <div className="relative h-10 flex items-center">
                 {/* Left Icon (Sad) */}
                 <Frown size={16} className={`absolute left-0 -ml-1 ${value > 0 && value <= 3 ? 'text-red-400' : 'text-gray-600'}`} />
 
@@ -357,36 +332,22 @@ function ScoreSlider({ label, icon, value, onChange, accentColor }: { label: str
                     }}
                 />
 
-                {/* Thumb Touch Area Enhancement is handled by padding in CSS usually or making input tall. 
-                    Here we made container h-10 and input centered. 
-                    To fix thumb size: Custom CSS is needed for full control, but `accent` class does a lot.
-                    The inline style above simulates the filled track!
-                */}
-
                 {/* Right Icon (Smile) */}
                 <Smile size={16} className={`absolute right-0 -mr-1 ${value >= 8 ? 'text-green-400' : 'text-gray-600'}`} />
-
-                {/* Live Tooltip (Optional, showing value above thumb) 
-                    - Complicated to position perfectly without specific calculations. 
-                    - Skipping for now as the number is shown at top right.
-                */}
             </div>
 
-            {/* Custom Thumb Style Injection */}
             <style jsx>{`
                 input[type=range]::-webkit-slider-thumb {
                     -webkit-appearance: none;
-                    height: 24px; /* Visible size */
+                    height: 24px;
                     width: 24px;
                     border-radius: 50%;
                     background: #fff;
                     cursor: pointer;
-                    margin-top: -8px; /* Offset for track */
+                    margin-top: -8px; 
                     box-shadow: 0 0 10px rgba(0,0,0,0.5);
                     border: 2px solid rgba(255,255,255,0.1);
                 }
-                /* Expand touch area invisible pseudo-element not possible easily in inline styles */
-                /* But making the thumb larger (24px) helps. User requested 44px touch area. */
             `}</style>
         </div>
     );

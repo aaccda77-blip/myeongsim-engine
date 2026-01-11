@@ -31,8 +31,8 @@ import {
 import TherapyCard from '@/components/therapy/TherapyCard'; // [NEW] 심리 치유 아키타입 카드
 import { findTherapyArchetype, TherapyArchetype } from '@/data/TherapyDB'; // [NEW] 아키타입 매칭 엔진
 import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget';
-// [NEW] Integral Check-in Modal
-const IntegralCheckinModal = dynamic(() => import('@/components/bio/IntegralCheckinModal'), { ssr: false });
+// [NEW] Mental Prescription Modal (Clean Install)
+const MentalPrescriptionModal = dynamic(() => import('@/components/bio/MentalPrescriptionModal'), { ssr: false });
 // [NEW] SOS Breathing Guide Modal
 const BreathingGuideModal = dynamic(() => import('@/components/bio/BreathingGuideModal'), { ssr: false });
 // [Security] ScoreCalculator와 StaticTextDB는 더 이상 클라이언트에서 import하지 않음
@@ -604,7 +604,7 @@ export default function DrillDownIconMenu({
             {/* [NEW] Integral Check-in Modal */}
             <AnimatePresence>
                 {showIntegralCheckin && (
-                    <IntegralCheckinModal
+                    <MentalPrescriptionModal
                         isOpen={showIntegralCheckin}
                         onClose={() => setShowIntegralCheckin(false)}
                         userId={userProfile?.id || 'guest'} // Security: Pass explicit user ID
