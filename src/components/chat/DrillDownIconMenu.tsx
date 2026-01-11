@@ -611,7 +611,8 @@ export default function DrillDownIconMenu({
                         onComplete={(advice, context) => {
                             setShowIntegralCheckin(false);
                             // Trigger Chat with the result
-                            const prompt = `오늘의 통합 체크인 결과입니다:\n\n"${advice}"\n\n이 분석 내용을 바탕으로 오늘 하루를 어떻게 보내면 좋을지, 12운성 에너지와 연관지어 구체적인 가이드를 주세요.`;
+                            // Reinforced Connection: Use rich prompt from Modal if available
+                            const prompt = context.initialPrompt || `오늘의 통합 체크인 결과입니다:\n\n"${advice}"\n\n이 분석 내용을 바탕으로 오늘 하루를 어떻게 보내면 좋을지, 12운성 에너지와 연관지어 구체적인 가이드를 주세요.`;
                             onSelectIntent('integral_result', prompt);
                         }}
                     />

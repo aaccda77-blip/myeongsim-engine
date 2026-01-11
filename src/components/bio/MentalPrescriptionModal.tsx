@@ -99,7 +99,26 @@ export default function MentalPrescriptionModal({ isOpen, onClose, userId, onCom
 
     const handleStartChat = () => {
         if (resultData) {
-            onComplete(resultData.advice, resultData.context);
+            // Reinforced Connection: Pass simple context first, but rich prompt text
+            const scoreDetails = `
+- 몸(Body): ${scores.ur_body}/10
+- 마음(Mind): ${scores.ul_mind}/10
+- 관계(Relation): ${scores.ll_relation}/10
+- 환경(Environment): ${scores.lr_system}/10
+- 키워드: ${selectedSymptoms.map(s => MOOD_KEYWORDS.find(k => k.id === s)?.label || s).join(', ')}
+            `.trim();
+
+            const richPrompt = `[마음 처방 데이터 수신]
+            
+나의 현재 상태:
+${scoreDetails}
+
+AI 1차 분석:
+"${resultData.advice}"
+
+위 수치와 상태를 바탕으로, 특히 점수가 낮은 영역을 케어할 수 있는 구체적이고 실천 가능한 행동 가이드를 '용한 코치' 페르소나로 제시해줘.`;
+
+            onComplete(resultData.advice, { ...resultData.context, initialPrompt: richPrompt });
             onClose();
         }
     };
@@ -192,10 +211,10 @@ export default function MentalPrescriptionModal({ isOpen, onClose, userId, onCom
                                                 whileTap={{ scale: 0.95 }}
                                                 onClick={() => toggleSymptom(sym.id)}
                                                 className={`px-3 py-2 rounded-xl text-xs font-medium transition-all border ${isSelected
-                                                        ? isPos
-                                                            ? 'bg-green-500/20 text-green-300 border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]'
-                                                            : 'bg-red-500/20 text-red-300 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
-                                                        : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700'
+                                                    ? isPos
+                                                        ? 'bg-green-500/20 text-green-300 border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]'
+                                                        : 'bg-red-500/20 text-red-300 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
+                                                    : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700'
                                                     }`}
                                             >
                                                 {sym.label}
@@ -219,8 +238,8 @@ export default function MentalPrescriptionModal({ isOpen, onClose, userId, onCom
                                 onClick={handleSubmit}
                                 disabled={!isValid}
                                 className={`w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all relative overflow-hidden group ${isValid
-                                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-purple-500/25'
-                                        : 'bg-gray-700 text-gray-400 cursor-not-allowed grayscale'
+                                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-purple-500/25'
+                                    : 'bg-gray-700 text-gray-400 cursor-not-allowed grayscale'
                                     }`}
                             >
                                 {isValid ? (
