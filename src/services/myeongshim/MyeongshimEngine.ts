@@ -43,8 +43,26 @@ export class MyeongshimEngine {
         } catch (error) {
             console.error("MyeongshimEngine Error:", error);
             return {
-                context: {} as any,
-                advice: "잠시 명상하며 쉬어가는 하루 되세요. (분석 시스템 일시 점검 중)"
+                context: {
+                    saju: {
+                        energy_level: 'Normal',
+                        is_gongmang: false,
+                        gongmang_type: undefined,
+                        sip_seong: '비겁/겁재 (Self)',
+                        unseong_phase: 'Normal'
+                    },
+                    gene_keys: {
+                        lifes_work: 1.1,
+                        evolution: 2.2,
+                        radiance: 3.3,
+                        purpose: 4.4
+                    },
+                    integral_synthesis: {
+                        primary_issue: 'None',
+                        action_mode: 'Rest'
+                    }
+                } as MyeongshimContext,
+                advice: "잠시 명상하며 쉬어가는 하루 되세요. (현재 AI 연결 상태가 불안정하여 기본 가이드를 제공합니다.)"
             };
         }
     }

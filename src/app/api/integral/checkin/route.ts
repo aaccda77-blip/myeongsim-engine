@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
             data: {
                 advice,
                 context,
-                energy_level: context.saju.energy_level
+                energy_level: context?.saju?.energy_level || 'Normal'
             }
         });
 
