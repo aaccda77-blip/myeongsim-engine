@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
         console.error('API Error:', error);
         return NextResponse.json({
             success: false,
-            message: "잠시 쉬어가세요. (서버 오류)"
+            message: `Server Logic Error: ${error instanceof Error ? error.message : String(error)}`
         }, { status: 500 });
     }
 }
