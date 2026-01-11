@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
         const { userId, dailyState } = body;
 
         if (!userId || !dailyState) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+            return NextResponse.json({
+                success: false,
+                message: '필수 정보가 누락되었습니다.'
+            }, { status: 400 });
         }
 
         // 1. Fetch User Profile (DOB)
@@ -55,24 +58,26 @@ export async function POST(req: NextRequest) {
         const engine = new MyeongshimEngine();
         const { context, advice } = await engine.generateDailyCoaching(engineInput);
 
-        // 4. Save to DB (IntegralLog)
-        const { error: logError } = await supabase
-            .from('integral_logs')
-            .insert({
-                user_id: userId,
-                date: new Date().toISOString().split('T')[0], // YYYY-MM-DD
-                ul_mind: dailyState.ul_mind,
-                ur_body: dailyState.ur_body,
-                ll_relation: dailyState.ll_relation,
-                lr_system: dailyState.lr_system,
-                symptoms: dailyState.symptoms,
-                calculated_context: context,
-                ai_coaching_message: advice
-            });
+        // 4. Save to DB (IntegralLog) - Only for real users
+        if (userId !== 'guest') {
+            const { error: logError } = await supabase
+                .from('integral_logs')
+                .insert({
+                    user_id: userId,
+                    date: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+                    ul_mind: dailyState.ul_mind,
+                    ur_body: dailyState.ur_body,
+                    ll_relation: dailyState.ll_relation,
+                    lr_system: dailyState.lr_system,
+                    symptoms: dailyState.symptoms,
+                    calculated_context: context,
+                    ai_coaching_message: advice
+                });
 
-        if (logError) {
-            console.error('Failed to save log:', logError);
-            // We continue anyway to return the advice to the user
+            if (logError) {
+                console.error('Failed to save log:', logError);
+                // We continue anyway to return the advice to the user
+            }
         }
 
         return NextResponse.json({
