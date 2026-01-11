@@ -1,10 +1,11 @@
+
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Icons
-import { Heart, Activity, Users, Briefcase, X, ChevronRight, MessageCircle } from 'lucide-react';
+import { Heart, Activity, Users, Zap, X, ChevronRight, MessageCircle, Frown, Smile, Lock } from 'lucide-react';
 
 interface IntegralCheckinModalProps {
     isOpen: boolean;
@@ -13,27 +14,35 @@ interface IntegralCheckinModalProps {
     onComplete: (advice: string, context: any) => void; // Trigger Chat
 }
 
-const SYMPTOMS = [
-    { id: 'headache', label: '🤕 두통/편두통' },
-    { id: 'anxiety', label: '😰 막연한 불안' },
-    { id: 'drunk', label: '🍺 숙취/음주' },
-    { id: 'insomnia', label: '😴 수면 부족' },
-    { id: 'anger', label: '😡 분노/짜증' },
-    { id: 'indigestion', label: '🤢 소화 불량' },
-    { id: 'lethargy', label: '🫠 무기력' },
-    { id: 'conflict', label: '🤬 관계 갈등' },
+// Mixed Keywords: Positive & Negative
+const MOOD_KEYWORDS = [
+    { id: 'headache', label: '🤕 두통/편두통', type: 'neg' },
+    { id: 'refreshing', label: '🌿 상쾌함', type: 'pos' },
+    { id: 'anxiety', label: '😰 막연한 불안', type: 'neg' },
+    { id: 'focused', label: '🧠 집중 잘됨', type: 'pos' },
+    { id: 'peaceful', label: '🕊️ 평온함', type: 'pos' },
+    { id: 'insomnia', label: '😴 수면 부족', type: 'neg' },
+    { id: 'flutter', label: '💓 설렘', type: 'pos' },
+    { id: 'lethargy', label: '🫠 무기력', type: 'neg' },
+    { id: 'grateful', label: '🙏 감사함', type: 'pos' },
+    { id: 'anger', label: '😡 분노/짜증', type: 'neg' },
 ];
 
 export default function IntegralCheckinModal({ isOpen, onClose, userId, onComplete }: IntegralCheckinModalProps) {
     // Check-in State
     const [step, setStep] = useState<'input' | 'loading' | 'result'>('input');
+
+    // Initial scores are 0 (user must slide them)
+    // We treat 0 as "unselected" visually, but mathematically it's 0.
     const [scores, setScores] = useState({
-        ul_mind: 5,
-        ur_body: 5,
-        ll_relation: 5,
-        lr_system: 5
+        ul_mind: 0,
+        ur_body: 0,
+        ll_relation: 0,
+        lr_system: 0
     });
+
     const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+    const [showValidation, setShowValidation] = useState(false);
 
     // Result State
     const [resultData, setResultData] = useState<{ advice: string, context: any } | null>(null);
@@ -46,11 +55,22 @@ export default function IntegralCheckinModal({ isOpen, onClose, userId, onComple
         setSelectedSymptoms(prev =>
             prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
         );
+        if (showValidation) setShowValidation(false);
     };
 
+    const isValid = selectedSymptoms.length > 0;
+
     const handleSubmit = async () => {
+        if (!isValid) {
+            setShowValidation(true);
+            return;
+        }
+
         setStep('loading');
         try {
+            // Simulate API delay for UX (minimum 1.5s)
+            // const timer = new Promise(resolve => setTimeout(resolve, 1500));
+
             const res = await fetch('/api/integral/checkin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -61,6 +81,9 @@ export default function IntegralCheckinModal({ isOpen, onClose, userId, onComple
             });
 
             const data = await res.json();
+
+            // await timer; // Ensure spinner shows long enough
+
             if (data.success) {
                 setResultData(data.data);
                 setStep('result');
@@ -81,128 +104,163 @@ export default function IntegralCheckinModal({ isOpen, onClose, userId, onComple
         }
     };
 
+    // Reset validation when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setShowValidation(false);
+            setStep('input');
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
+    // Helper to get color based on score
+    const getScoreColor = (score: number) => {
+        if (score === 0) return 'bg-gray-700';
+        if (score <= 3) return 'bg-red-500';
+        if (score <= 6) return 'bg-yellow-500';
+        return 'bg-green-500';
+    };
+
     return (
-        <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-md bg-[#11131a] rounded-2xl border border-gray-800 shadow-2xl overflow-hidden"
+                className="w-full max-w-md bg-[#11131a] rounded-2xl border border-gray-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
                 {/* Header */}
-                <div className="flex justify-between items-center p-4 border-b border-gray-800">
+                <div className="flex justify-between items-center p-4 border-b border-gray-800 shrink-0">
                     <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                        🩺 통합 체크인 <span className="text-xs text-gray-500 font-normal">Integral Check-in</span>
+                        🩺 통합 체크인 <span className="text-xs text-gray-500 font-normal">Mental Prescription</span>
                     </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white">
+                    <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
                         <X size={20} />
                     </button>
                 </div>
 
-                <div className="p-6 max-h-[80vh] overflow-y-auto">
+                <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
                     {step === 'input' && (
-                        <div className="space-y-6">
-                            <p className="text-sm text-gray-400 text-center mb-4">
-                                "머리가 아닌 <b>몸(Body)</b>이 느끼는 그대로 입력해주세요."
-                            </p>
+                        <div className="space-y-8">
+                            <div className="text-center space-y-1">
+                                <p className="text-sm text-gray-400">
+                                    "머리가 아닌 <b>몸(Body)</b>이 느끼는 그대로"
+                                </p>
+                            </div>
 
-                            {/* UR Body */}
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-emerald-400 font-bold flex gap-1 items-center"><Activity size={14} /> 몸 (Body)</span>
-                                    <span className="text-white font-mono">{scores.ur_body}</span>
-                                </div>
-                                <input
-                                    type="range" min="1" max="10"
+                            {/* Sliders Group */}
+                            <div className="space-y-6">
+                                {/* Component: Custom Slider */}
+                                <ScoreSlider
+                                    label="몸 (Body)"
+                                    icon={<Activity size={16} className="text-emerald-400" />}
                                     value={scores.ur_body}
-                                    onChange={(e) => handleScoreChange('ur_body', parseInt(e.target.value))}
-                                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                                    onChange={(v) => handleScoreChange('ur_body', v)}
+                                    accentColor="accent-emerald-500"
                                 />
-                                <p className="text-xs text-gray-500 text-right">{scores.ur_body < 4 ? "아파요/피곤해요" : scores.ur_body > 7 ? "날아갈 것 같아요" : "평범해요"}</p>
-                            </div>
-
-                            {/* UL Mind */}
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-purple-400 font-bold flex gap-1 items-center"><Heart size={14} /> 마음 (Mind)</span>
-                                    <span className="text-white font-mono">{scores.ul_mind}</span>
-                                </div>
-                                <input
-                                    type="range" min="1" max="10"
+                                <ScoreSlider
+                                    label="마음 (Mind)"
+                                    icon={<Heart size={16} className="text-purple-400" />}
                                     value={scores.ul_mind}
-                                    onChange={(e) => handleScoreChange('ul_mind', parseInt(e.target.value))}
-                                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                                    onChange={(v) => handleScoreChange('ul_mind', v)}
+                                    accentColor="accent-purple-500"
                                 />
-                            </div>
-
-                            {/* LL Relation */}
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-pink-400 font-bold flex gap-1 items-center"><Users size={14} /> 관계 (Relation)</span>
-                                    <span className="text-white font-mono">{scores.ll_relation}</span>
-                                </div>
-                                <input
-                                    type="range" min="1" max="10"
+                                <ScoreSlider
+                                    label="관계 (Relation)"
+                                    icon={<Users size={16} className="text-pink-400" />}
                                     value={scores.ll_relation}
-                                    onChange={(e) => handleScoreChange('ll_relation', parseInt(e.target.value))}
-                                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-pink-500"
+                                    onChange={(v) => handleScoreChange('ll_relation', v)}
+                                    accentColor="accent-pink-500"
                                 />
-                            </div>
-
-                            {/* LR System */}
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-blue-400 font-bold flex gap-1 items-center"><Briefcase size={14} /> 일/돈 (System)</span>
-                                    <span className="text-white font-mono">{scores.lr_system}</span>
-                                </div>
-                                <input
-                                    type="range" min="1" max="10"
+                                <ScoreSlider
+                                    label="환경/성취 (Environment)"
+                                    icon={<Zap size={16} className="text-blue-400" />}
                                     value={scores.lr_system}
-                                    onChange={(e) => handleScoreChange('lr_system', parseInt(e.target.value))}
-                                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                                    onChange={(v) => handleScoreChange('lr_system', v)}
+                                    accentColor="accent-blue-500"
                                 />
                             </div>
 
-                            {/* Symptoms */}
+                            {/* Keywords Section */}
                             <div>
-                                <label className="text-sm text-gray-400 mb-2 block">오늘의 증상 (선택)</label>
+                                <label className="text-sm font-bold text-gray-200 mb-3 block">
+                                    지금 내 기분은? <span className="text-gray-500 font-normal text-xs">(키워드 선택)</span>
+                                </label>
                                 <div className="flex flex-wrap gap-2">
-                                    {SYMPTOMS.map(sym => (
-                                        <button
-                                            key={sym.id}
-                                            onClick={() => toggleSymptom(sym.id)}
-                                            className={`px-3 py-1.5 rounded-full text-xs transition-colors border \${
-                                                selectedSymptoms.includes(sym.id) 
-                                                ? 'bg-red-500/20 text-red-300 border-red-500/50' 
-                                                : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700'
-                                            }`}
-                                        >
-                                            {sym.label}
-                                        </button>
-                                    ))}
+                                    {MOOD_KEYWORDS.map(sym => {
+                                        const isSelected = selectedSymptoms.includes(sym.id);
+                                        const isPos = sym.type === 'pos';
+
+                                        return (
+                                            <motion.button
+                                                key={sym.id}
+                                                whileTap={{ scale: 0.95 }}
+                                                onClick={() => toggleSymptom(sym.id)}
+                                                className={`px-3 py-2 rounded-xl text-xs font-medium transition-all border ${isSelected
+                                                        ? isPos
+                                                            ? 'bg-green-500/20 text-green-300 border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]'
+                                                            : 'bg-red-500/20 text-red-300 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
+                                                        : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700'
+                                                    }`}
+                                            >
+                                                {sym.label}
+                                            </motion.button>
+                                        );
+                                    })}
                                 </div>
+                                {showValidation && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
+                                        className="text-red-400 text-xs mt-2 pl-1 flex items-center gap-1"
+                                    >
+                                        <X size={12} /> 증상을 하나 이상 선택해주세요.
+                                    </motion.p>
+                                )}
                             </div>
 
-                            <button
+                            {/* Submit Button */}
+                            <motion.button
+                                whileTap={isValid ? { scale: 0.98 } : {}}
                                 onClick={handleSubmit}
-                                className="w-full py-3 mt-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl text-white font-bold hover:shadow-lg transition-all"
+                                disabled={!isValid}
+                                className={`w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all relative overflow-hidden group ${isValid
+                                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-purple-500/25'
+                                        : 'bg-gray-700 text-gray-400 cursor-not-allowed grayscale'
+                                    }`}
                             >
-                                분석 시작
-                            </button>
+                                {isValid ? (
+                                    <>
+                                        <Zap size={20} className="group-hover:text-yellow-300 transition-colors" />
+                                        내 마음 처방받기
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock size={18} />
+                                        키워드를 선택해주세요
+                                    </>
+                                )}
+                            </motion.button>
                         </div>
                     )}
 
                     {step === 'loading' && (
-                        <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                            <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
-                            <p className="text-gray-400 text-sm animate-pulse">Saju Data 동기화 중...</p>
+                        <div className="flex flex-col items-center justify-center h-full py-12 space-y-6">
+                            <div className="relative">
+                                <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <Activity size={20} className="text-purple-400 animate-pulse" />
+                                </div>
+                            </div>
+                            <div className="text-center space-y-2">
+                                <p className="text-white font-bold text-lg animate-pulse">상태를 분석하고 있습니다...</p>
+                                <p className="text-gray-500 text-sm">잠시만 기다려주세요.</p>
+                            </div>
                         </div>
                     )}
 
                     {step === 'result' && resultData && (
-                        <div className="space-y-6">
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {/* Insight Card */}
                             <div className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-xl p-5 shadow-inner">
                                 <div className="flex items-center justify-between mb-4">
@@ -210,8 +268,8 @@ export default function IntegralCheckinModal({ isOpen, onClose, userId, onComple
                                     {/* Energy Battery */}
                                     <div className="flex items-center gap-1 bg-black/40 px-2 py-1 rounded">
                                         <span className="text-[10px] text-gray-400">ENERGY</span>
-                                        <div className={`w-2 h-4 rounded-sm \${resultData.context?.saju?.energy_level === 'Critical_Heat' ? 'bg-red-500' : 'bg-green-500'}`}></div>
-                                        <div className={`w-2 h-4 rounded-sm \${resultData.context?.saju?.energy_level === 'Critical_Heat' ? 'bg-red-500/50' : 'bg-green-500'}`}></div>
+                                        <div className={`w-2 h-4 rounded-sm ${resultData.context?.saju?.energy_level === 'Critical_Heat' ? 'bg-red-500' : 'bg-green-500'}`}></div>
+                                        <div className={`w-2 h-4 rounded-sm ${resultData.context?.saju?.energy_level === 'Critical_Heat' ? 'bg-red-500/50' : 'bg-green-500'}`}></div>
                                         <div className={`w-2 h-4 rounded-sm bg-gray-700`}></div>
                                     </div>
                                 </div>
@@ -230,17 +288,106 @@ export default function IntegralCheckinModal({ isOpen, onClose, userId, onComple
                             </div>
 
                             {/* Call to Action */}
-                            <button
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                                 onClick={handleStartChat}
-                                className="w-full py-3 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+                                className="w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors shadow-lg shadow-white/10"
                             >
-                                <MessageCircle size={18} />
-                                코치와 상담 시작하기
-                            </button>
+                                <MessageCircle size={20} />
+                                코치와 깊이 상담하기
+                            </motion.button>
                         </div>
                     )}
                 </div>
             </motion.div>
+        </div>
+    );
+}
+
+// Sub-component for Slider
+function ScoreSlider({ label, icon, value, onChange, accentColor }: { label: string, icon: React.ReactNode, value: number, onChange: (v: number) => void, accentColor: string }) {
+    // Gradient Logic based on value
+    const getTrackStyle = (val: number) => {
+        if (val === 0) return { background: '#374151' }; // gray-700
+        const percentage = (val / 10) * 100;
+        // Gradient from Red(low) to Green(high)
+        return {
+            background: `linear-gradient(to right, #ef4444 0%, #eab308 50%, #22c55e 100%)`,
+            // Masking to show gradient only up to thumb? Native input range doesn't support easy gradient track natively without vendor prefixes or JS updates.
+            // Simplified approach: Background gradient fixed, mask it? 
+            // Better: Simple filled track color using CSS variable or Linear Gradient stops.
+            backgroundSize: '100% 100%',
+        };
+    };
+
+    // We will use a simpler approach for gradient: 
+    // Dynamic color class for the "Active" part is hard with native input.
+    // Let's use a dynamic track background color instead of gradient if gradient is too complex for native input styling in one go.
+    // Actually, `accent-color` css property (Tailwind `accent-*`) handles the thumb and filled track in Chrome/Edge decently.
+
+    return (
+        <div className="space-y-3">
+            <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-200 font-bold flex gap-2 items-center">
+                    {icon} {label}
+                </span>
+                <span className={`font-mono font-bold text-lg ${value > 0 ? 'text-white' : 'text-gray-600'}`}>
+                    {value > 0 ? value : '-'}
+                </span>
+            </div>
+
+            <div className="relative h-10 flex items-center"> {/* Increased touch area container */}
+                {/* Left Icon (Sad) */}
+                <Frown size={16} className={`absolute left-0 -ml-1 ${value > 0 && value <= 3 ? 'text-red-400' : 'text-gray-600'}`} />
+
+                {/* Range Input */}
+                <input
+                    type="range" min="0" max="10" step="1"
+                    value={value}
+                    onChange={(e) => onChange(parseInt(e.target.value))}
+                    className={`
+                        w-full h-2 rounded-lg appearance-none cursor-pointer z-10 mx-6
+                         focus:outline-none focus:ring-2 focus:ring-opacity-50
+                    `}
+                    style={{
+                        background: value === 0
+                            ? '#374151'
+                            : `linear-gradient(to right, ${value <= 3 ? '#ef4444' : value <= 7 ? '#eab308' : '#22c55e'} 0%, ${value <= 3 ? '#ef4444' : value <= 7 ? '#eab308' : '#22c55e'} ${(value / 10) * 100}%, #374151 ${(value / 10) * 100}%, #374151 100%)`
+                    }}
+                />
+
+                {/* Thumb Touch Area Enhancement is handled by padding in CSS usually or making input tall. 
+                    Here we made container h-10 and input centered. 
+                    To fix thumb size: Custom CSS is needed for full control, but `accent` class does a lot.
+                    The inline style above simulates the filled track!
+                */}
+
+                {/* Right Icon (Smile) */}
+                <Smile size={16} className={`absolute right-0 -mr-1 ${value >= 8 ? 'text-green-400' : 'text-gray-600'}`} />
+
+                {/* Live Tooltip (Optional, showing value above thumb) 
+                    - Complicated to position perfectly without specific calculations. 
+                    - Skipping for now as the number is shown at top right.
+                */}
+            </div>
+
+            {/* Custom Thumb Style Injection */}
+            <style jsx>{`
+                input[type=range]::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    height: 24px; /* Visible size */
+                    width: 24px;
+                    border-radius: 50%;
+                    background: #fff;
+                    cursor: pointer;
+                    margin-top: -8px; /* Offset for track */
+                    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+                    border: 2px solid rgba(255,255,255,0.1);
+                }
+                /* Expand touch area invisible pseudo-element not possible easily in inline styles */
+                /* But making the thumb larger (24px) helps. User requested 44px touch area. */
+            `}</style>
         </div>
     );
 }
