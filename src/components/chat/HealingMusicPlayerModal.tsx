@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, X } from 'lucide-react';
 
@@ -34,6 +34,37 @@ const HEALING_SONGS = [
 export default function HealingMusicPlayerModal({ isOpen, onClose }: HealingMusicPlayerModalProps) {
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const currentSong = HEALING_SONGS[currentSongIndex];
+    const lyricsRef = useRef<HTMLDivElement>(null);
+
+    // Auto-scroll lyrics
+    useEffect(() => {
+        const scrollContainer = lyricsRef.current;
+        if (!scrollContainer || !isOpen) return;
+
+        // Reset scroll position on song change
+        scrollContainer.scrollTop = 0;
+
+        let scrollInterval: NodeJS.Timeout;
+
+        // Start scrolling after 3 seconds (intro time)
+        const startTimeout = setTimeout(() => {
+            scrollInterval = setInterval(() => {
+                if (scrollContainer) {
+                    // Stop if reached near bottom
+                    if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 2) {
+                        clearInterval(scrollInterval);
+                        return;
+                    }
+                    scrollContainer.scrollTop += 1; // 1px
+                }
+            }, 100); // every 100ms = 10px/second (very slow and readable)
+        }, 3000);
+
+        return () => {
+            clearTimeout(startTimeout);
+            if (scrollInterval) clearInterval(scrollInterval);
+        };
+    }, [currentSongIndex, isOpen]);
 
     return (
         <AnimatePresence>
@@ -138,7 +169,7 @@ export default function HealingMusicPlayerModal({ isOpen, onClose }: HealingMusi
                         </div>
 
                         {/* Lyrics Display */}
-                        <div className="bg-gradient-to-b from-green-900/20 to-black/30 rounded-xl p-4 border border-green-500/10 text-left max-h-40 overflow-y-auto">
+                        <div ref={lyricsRef} className="bg-gradient-to-b from-green-900/20 to-black/30 rounded-xl p-4 border border-green-500/10 text-left max-h-40 overflow-y-auto">
                             <p className="text-[10px] text-green-400/60 uppercase tracking-wider mb-2">가사 / Lyrics</p>
                             <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">
                                 {currentSong.lyrics}
