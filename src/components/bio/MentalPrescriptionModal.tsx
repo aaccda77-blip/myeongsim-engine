@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // Icons
 import { Heart, Activity, Users, Zap, X, ChevronRight, MessageCircle, Frown, Smile, Lock } from 'lucide-react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Radar as RadarComponent } from 'recharts';
 
 interface MentalPrescriptionModalProps {
     isOpen: boolean;
@@ -108,7 +109,6 @@ export default function MentalPrescriptionModal({ isOpen, onClose, userId, onCom
         if (isOpen) {
             setShowValidation(false);
             setStep('input');
-            // Reset scores ? Optional. Let's keep them 0 if re-opened to force fresh check.
             setScores({ ul_mind: 0, ur_body: 0, ll_relation: 0, lr_system: 0 });
             setSelectedSymptoms([]);
         }
@@ -255,6 +255,35 @@ export default function MentalPrescriptionModal({ isOpen, onClose, userId, onCom
 
                     {step === 'result' && resultData && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                            {/* Multidimensional Result Chart */}
+                            <div className="bg-[#1a1d26] rounded-2xl p-4 border border-gray-800 shadow-inner relative overflow-hidden">
+                                <h3 className="text-gray-400 text-xs font-bold uppercase tracking-wider text-center mb-2">Integral Balance</h3>
+                                <div className="h-56 w-full relative z-10">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={[
+                                            { subject: '몸 (Body)', A: scores.ur_body * 10, fullMark: 100 },
+                                            { subject: '마음 (Mind)', A: scores.ul_mind * 10, fullMark: 100 },
+                                            { subject: '관계 (Rel)', A: scores.ll_relation * 10, fullMark: 100 },
+                                            { subject: '환경 (Env)', A: scores.lr_system * 10, fullMark: 100 },
+                                        ]}>
+                                            <PolarGrid stroke="#374151" />
+                                            <PolarAngleAxis dataKey="subject" tick={{ fill: '#9CA3AF', fontSize: 11, fontWeight: '600' }} />
+                                            <RadarComponent
+                                                name="My Status"
+                                                dataKey="A"
+                                                stroke="#8b5cf6"
+                                                strokeWidth={2}
+                                                fill="#8b5cf6"
+                                                fillOpacity={0.4}
+                                            />
+                                        </RadarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                {/* Background Glow */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                            </div>
+
                             {/* Insight Card */}
                             <div className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-xl p-5 shadow-inner">
                                 <div className="flex items-center justify-between mb-4">
