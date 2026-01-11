@@ -88,11 +88,14 @@ export default function MentalPrescriptionModal({ isOpen, onClose, userId, onCom
                 setResultData(data.data);
                 setStep('result');
             } else {
-                alert(data.message || '잠시 후 다시 시도해주세요.');
+                // Debugging: Show exact error from server
+                console.error("Check-in Error:", data);
+                alert(`[Server Error] ${data.message || JSON.stringify(data)}`);
                 setStep('input');
             }
         } catch (e) {
             console.error(e);
+            alert("Network Error: " + String(e));
             setStep('input');
         }
     };
