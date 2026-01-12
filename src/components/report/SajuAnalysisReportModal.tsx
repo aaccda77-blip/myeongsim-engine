@@ -73,7 +73,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose }: SajuAnalysi
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={onClose}
-                className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
+                className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
             >
                 {/* Modal Container - Obsidian Glass Style */}
                 <motion.div

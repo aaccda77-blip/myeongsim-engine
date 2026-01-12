@@ -895,7 +895,9 @@ export default function DrillDownIconMenu({
                         // Special Gold Styling for Report
                         background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(180, 83, 9, 0.2))',
                         border: '1px solid rgba(251, 191, 36, 0.3)',
-                        boxShadow: '0 4px 15px rgba(251, 191, 36, 0.2)'
+                        boxShadow: '0 4px 15px rgba(251, 191, 36, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
                     }}>
                         {/* Clipboard Icon */}
                         <span style={{ fontSize: '20px' }}>📋</span>
