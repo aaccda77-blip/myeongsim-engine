@@ -71,8 +71,9 @@ export default function SajuSummaryModal({ isOpen, onClose, userProfile, onStart
     const ganji = useMemo(() => {
         const pillars = saju.fourPillars || {};
         const mapPillar = (p: any, type: string) => ({
-            stem: p?.gan || '?',
-            branch: p?.ji || '?',
+            // [Fix] Extract char string if object (SajuCalculator returns objects)
+            stem: typeof p?.gan === 'object' ? p.gan.char : (p?.gan || '?'),
+            branch: typeof p?.ji === 'object' ? p.ji.char : (p?.ji || '?'),
             // TODO: Implement proper TenGod calculation if missing in data
             tenGod: p?.tenGod || (type === 'day' ? 'Me' : '-'),
             ganColor: p?.ganColor,
