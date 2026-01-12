@@ -24,6 +24,7 @@ const getNextBotResponse = (step: number, userText: string, userProfile: any, in
     // [Fix] Robust DayMaster Extraction
     const dayMaster = userProfile?.saju?.dayMasterChar
         || userProfile?.saju?.fourPillars?.day?.gan
+        || userProfile?.saju?.day?.gan // [Fix] Support flat structure
         || (typeof userProfile?.saju?.dayMaster === 'string' ? userProfile?.saju?.dayMaster.charAt(0) : '본질');
 
     // [Scenario A] 일간 심층 분석 (Day Master) - 기존 로직 유지 및 고도화

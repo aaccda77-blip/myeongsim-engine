@@ -88,7 +88,10 @@ export default function SajuSummaryModal({ isOpen, onClose, userProfile, onStart
     // Safety check: Ensure pillar objects exist
     // [Fix] Data Structure Mismatch Resolution: Map 'fourPillars' (ReportData) to 'saju' (Component)
     const ganji = useMemo(() => {
-        const pillars = saju.fourPillars || {};
+        // [Fix] Robust Data Access: Check both 'fourPillars' wrapper and flat structure
+        // Some states might have saju = { year: ..., month: ... } directly
+        const source = saju.fourPillars || saju;
+        const pillars = (source.year && source.day) ? source : {};
         const mapPillar = (p: any, type: string) => ({
             // [Fix] Extract char string if object (SajuCalculator returns objects)
             stem: typeof p?.gan === 'object' ? p.gan.char : (p?.gan || '?'),
