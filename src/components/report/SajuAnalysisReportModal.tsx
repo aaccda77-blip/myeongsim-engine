@@ -1,6 +1,5 @@
-'use client';
-
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ClipboardList, Activity, Zap, TrendingUp, AlertCircle } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
@@ -12,6 +11,12 @@ interface SajuAnalysisReportModalProps {
 
 export default function SajuAnalysisReportModal({ isOpen, onClose }: SajuAnalysisReportModalProps) {
     const { reportData } = useReportStore();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true); // Client-side check
+        return () => setMounted(false);
+    }, []);
 
     // 1. Data Calculation (Real-time)
     const analysis = useMemo(() => {
@@ -63,9 +68,10 @@ export default function SajuAnalysisReportModal({ isOpen, onClose }: SajuAnalysi
         };
     }, [reportData]);
 
-    if (!isOpen) return null;
+    // Portal Target Logic
+    if (!isOpen || !mounted) return null;
 
-    return (
+    const modalContent = (
         <React.Fragment>
             {/* Backdrop */}
             <motion.div
@@ -195,6 +201,8 @@ export default function SajuAnalysisReportModal({ isOpen, onClose }: SajuAnalysi
             </motion.div>
         </React.Fragment>
     );
+
+    return createPortal(modalContent, document.body);
 }
 
 // Subcomponents based on design spec
