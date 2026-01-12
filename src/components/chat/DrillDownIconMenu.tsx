@@ -44,6 +44,7 @@ const VisualSajuDashboard = dynamic(() => import('@/components/visual/VisualSaju
 // [NEW] 108 자각 Content Modals
 const SajuSummaryModal = dynamic(() => import('@/components/coaching/SajuSummaryModal'), { ssr: false });
 const DiscoveryChatModal = dynamic(() => import('@/components/coaching/DiscoveryChatModal'), { ssr: false });
+const SajuAnalysisReportModal = dynamic(() => import('@/components/report/SajuAnalysisReportModal'), { ssr: false });
 
 
 
@@ -888,10 +889,7 @@ export default function DrillDownIconMenu({
                 {/* [NEW] My Report Icon (Fixed First Position) */}
                 <button
                     style={styles.iconButton}
-                    onClick={() => {
-                        console.log('📋 My Report Button Clicked!');
-                        setShowReportModal(true);
-                    }}
+                    onClick={() => setShowReportModal(true)}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1301,6 +1299,17 @@ export default function DrillDownIconMenu({
                     }}
                 />
             )}
+
+            {/* [NEW] Saju Analysis Report Modal */}
+            <AnimatePresence>
+                {showReportModal && (
+                    <SajuAnalysisReportModal
+                        isOpen={showReportModal}
+                        onClose={() => setShowReportModal(false)}
+                        userProfile={userProfile}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* SOS Breathing Guide Modal */}
             {showBreathingGuide && (

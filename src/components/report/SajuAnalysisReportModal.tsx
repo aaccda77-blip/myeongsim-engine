@@ -7,10 +7,14 @@ import { useReportStore } from '@/store/useReportStore';
 interface SajuAnalysisReportModalProps {
     isOpen: boolean;
     onClose: () => void;
+    userProfile?: any | null; // [Fix] Accept fallback data
 }
 
-export default function SajuAnalysisReportModal({ isOpen, onClose }: SajuAnalysisReportModalProps) {
-    const { reportData } = useReportStore();
+export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }: SajuAnalysisReportModalProps) {
+    const { reportData: storeData } = useReportStore();
+    const reportData = storeData || userProfile; // Priority: Store > Prop (or Prop > Store? Usually Store is updated latest, but Prop might ensure hydration)
+    // Actually, if store is empty, userProfile might be the initial hydration passed from page.
+
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
