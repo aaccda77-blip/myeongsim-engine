@@ -11,23 +11,72 @@ export interface CoachingQuestion {
     options?: string[]; // Optional user choice buttons
 }
 
-// Basic Ten God Mapping (Simplified for MVP)
-// This maps the relationship between Day Master and Month Branch (or dominant energy)
+// --- Saju Element & Polarity Database ---
+// H: Heavenly Stem (Gan)
+const STEM_DATA: Record<string, { element: string; polarity: string }> = {
+    '갑': { element: 'wood', polarity: '+' }, '을': { element: 'wood', polarity: '-' },
+    '병': { element: 'fire', polarity: '+' }, '정': { element: 'fire', polarity: '-' },
+    '무': { element: 'earth', polarity: '+' }, '기': { element: 'earth', polarity: '-' },
+    '경': { element: 'metal', polarity: '+' }, '신': { element: 'metal', polarity: '-' }, // 辛 (Yin Metal)
+    '임': { element: 'water', polarity: '+' }, '계': { element: 'water', polarity: '-' },
+
+    // English Code Fallbacks
+    'Gap': { element: 'wood', polarity: '+' }, 'Eul': { element: 'wood', polarity: '-' }
+};
+
+// E: Earthly Branch (Ji)
+const BRANCH_DATA: Record<string, { element: string; polarity: string }> = {
+    '자': { element: 'water', polarity: '+' }, '축': { element: 'earth', polarity: '-' },
+    '인': { element: 'wood', polarity: '+' }, '묘': { element: 'wood', polarity: '-' },
+    '진': { element: 'earth', polarity: '+' }, '사': { element: 'fire', polarity: '+' },
+    '오': { element: 'fire', polarity: '-' }, '미': { element: 'earth', polarity: '-' },
+    '신': { element: 'metal', polarity: '+' }, // 申 (Yang Metal) - Collision resolved by splitting maps
+    '유': { element: 'metal', polarity: '-' }, '술': { element: 'earth', polarity: '+' },
+    '해': { element: 'water', polarity: '-' },
+
+    // English Code Fallbacks
+    'Ja': { element: 'water', polarity: '+' }, 'Chuk': { element: 'earth', polarity: '-' }
+};
+
+const ELEMENT_RELATION: Record<string, string> = {
+    'wood': 'fire', 'fire': 'earth', 'earth': 'metal', 'metal': 'water', 'water': 'wood' // Generating (Producing)
+};
+const ELEMENT_CONTROL: Record<string, string> = {
+    'wood': 'earth', 'fire': 'metal', 'earth': 'water', 'metal': 'wood', 'water': 'fire' // Controlling (Conquering)
+};
+
+// --- Logic: Calculate Ten God (Sibseong) ---
+// Compares Day Master (Self) with Month Branch (Society/Environment)
 const calculateTenGod = (dayMaster: string, monthBranch: string): string => {
-    // Basic Element Mapping
-    const elements = { 'G': 'wood', 'E': 'wood', 'B': 'fire', 'J': 'fire', 'M': 'earth', 'K': 'earth', 'G2': 'metal', 'S': 'metal', 'I': 'water', 'G3': 'water' };
+    // 1. Get Element & Polarity
+    // Fallback to Gap/Ja if invalid
+    const dm = STEM_DATA[dayMaster] || { element: 'wood', polarity: '+' };
+    const mb = BRANCH_DATA[monthBranch] || { element: 'water', polarity: '+' };
 
-    // Ensure we have strings
-    const dm = String(dayMaster || '').charAt(0);
-    const mb = String(monthBranch || '').charAt(0);
+    const me = dm.element;
+    const you = mb.element;
+    const samePolarity = dm.polarity === mb.polarity;
 
-    // If we have actual Korean characters (e.g. 갑, 자), use a hash to ensure VARIETY.
-    // Real Saju logic would require checking Element relationships (Wood vs Fire etc).
-    // For this MVP to show *different* results for *different* inputs:
-    const hash = (dm.charCodeAt(0) + mb.charCodeAt(0));
-    const roles = ['bi', 'sik', 'jae', 'gwan', 'in', 'pyun_gwan', 'pyun_in', 'sang_gwan'];
+    // 2. Compare Relationships
+    if (me === you) {
+        // [Friend / Robber] Same Element
+        return samePolarity ? 'bi' : 'geop';
+    } else if (ELEMENT_RELATION[me] === you) {
+        // [Expression] I produce You
+        return samePolarity ? 'sik' : 'sang_gwan';
+    } else if (ELEMENT_CONTROL[me] === you) {
+        // [Wealth] I control You
+        return samePolarity ? 'pyun_jae' : 'jae';
+    } else if (ELEMENT_CONTROL[you] === me) {
+        // [Power/Official] You control Me
+        return samePolarity ? 'pyun_gwan' : 'gwan';
+    } else if (ELEMENT_RELATION[you] === me) {
+        // [Resource/Seal] You produce Me
+        return samePolarity ? 'pyun_in' : 'in';
+    }
 
-    return roles[hash % roles.length];
+    // Fallback
+    return 'bi';
 };
 
 /**
@@ -40,13 +89,12 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     if (!report?.saju) return [];
 
     // --- Step 1: Social Persona (Month Pillar) ---
-    // Extract REAL data points.
-    // report.saju.fourPillars.day.gan -> "갑" (Gap)
-    // report.saju.fourPillars.month.ji -> "자" (Ja)
+    // Handle both 'dayMaster' (direct) and 'fourPillars.day.gan' (nested)
+    // IMPORTANT: Prefer Korean characters "갑", "자" etc. which are usually in `gan` and `ji`
     const dayMaster = report.saju.dayMaster || report.saju.fourPillars?.day?.gan || '갑';
     const monthBranch = report.saju.fourPillars?.month?.ji || '자';
 
-    // Calculate distinct code based on the specific characters
+    // Calculate REAL Ten God
     const monthTenGodCode = calculateTenGod(dayMaster, monthBranch);
     const socialRole = getSocialRole(monthTenGodCode) || getSocialRole('pyun_gwan')!;
 
