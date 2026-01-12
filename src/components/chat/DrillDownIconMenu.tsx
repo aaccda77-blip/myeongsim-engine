@@ -332,7 +332,6 @@ const resolveDynamicText = (text: string | undefined, userProfile: any): string 
     if (!userProfile?.saju) return text.replace(/\{\{.*?\}\}/g, '...'); // Fallback if no data
 
     let resolved = text;
-    let resolved = text;
     const saju = userProfile.saju;
 
     // [Fix] Robust Pillar Extraction (Handle Flat vs Nested)
