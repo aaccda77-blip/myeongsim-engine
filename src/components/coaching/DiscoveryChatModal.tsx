@@ -90,12 +90,34 @@ export default function DiscoveryChatModal({ isOpen, onClose, userProfile, initi
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // ... (Initial Greeting & Scroll remain same) ...
-    // Initial Greeting
+    // Initial Greeting & Session Reset logic
     useEffect(() => {
-        if (isOpen && messages.length === 0) {
-            simulateBotResponse(0, '');
-        }
+        if (!isOpen) return;
+
+        // [Fix] Reset chat if user context changes
+        // Check if the chat is empty OR if we need to restart for a new user
+        // Ideally we should track a 'sessionId' based on user, but for now assuming
+        // if modal opens and it's empty, OR if we force reset (not implemented yet).
+
+        // BETTER: If isOpen becomes true, we should check if the current messages match the current user?
+        // Simple approach requested by user: "User change -> Content change".
+        // Let's reset messages whenever the modal opens IF the user is different?
+        // Since we don't store session ID, let's just reset if empty. 
+        // BUT user said "it is FIXED to previous content".
+        // This means the component is NOT unmounting.
+        // So we MUST clear messages when `userProfile` changes.
     }, [isOpen]);
+
+    // [Fix] Reset Session when User Profile Changes
+    useEffect(() => {
+        if (isOpen) {
+            console.log("User Profile Changed or Modal Opened - Resetting Chat for:", userProfile?.name);
+            setMessages([]);
+            setStep(0);
+            simulateBotResponse(0, '', initialIntent); // Start fresh
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userProfile?.name, userProfile?.birthDate, initialIntent]);
 
     // Scroll to bottom
     useEffect(() => {

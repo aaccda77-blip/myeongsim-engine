@@ -10,42 +10,61 @@ interface SajuSummaryModalProps {
 }
 
 // Helper: 일간별 특성 매핑
+// Helper: 일간별 특성 매핑
 const getDayMasterTrait = (stem: string) => {
     const traits: Record<string, string> = {
-        '甲': '곧게 뻗은 나무처럼 성장과 시작을 주도하는 리더',
-        '乙': '유연한 덩굴처럼 어디서든 살아남는 끈기의 적응가',
-        '丙': '태양처럼 온 세상을 비추며 열정을 전파하는 아이콘',
-        '丁': '촛불처럼 어둠을 밝히고 사람을 모으는 따뜻한 멘토',
-        '戊': '거대한 산처럼 흔들리지 않는 신뢰와 포용의 중심',
-        '己': '비옥한 땅처럼 만물을 길러내고 실속을 챙기는 현실가',
-        '庚': '다듬어지지 않은 원석처럼 강한 신념과 의리의 혁명가',
-        '辛': '잘 세공된 보석처럼 섬세하고 예리하며 완벽을 추구하는 장인',
-        '壬': '드넓은 바다처럼 지혜롭고 유연하게 흐르는 전략가',
-        '癸': '봄비처럼 조용히 스며들어 생명을 키우는 감성 지성인'
+        '甲': '곧게 뻗은 나무처럼 성장과 시작을 주도하는 리더', '갑': '곧게 뻗은 나무처럼 성장과 시작을 주도하는 리더',
+        '乙': '유연한 덩굴처럼 어디서든 살아남는 끈기의 적응가', '을': '유연한 덩굴처럼 어디서든 살아남는 끈기의 적응가',
+        '丙': '태양처럼 온 세상을 비추며 열정을 전파하는 아이콘', '병': '태양처럼 온 세상을 비추며 열정을 전파하는 아이콘',
+        '丁': '촛불처럼 어둠을 밝히고 사람을 모으는 따뜻한 멘토', '정': '촛불처럼 어둠을 밝히고 사람을 모으는 따뜻한 멘토',
+        '戊': '거대한 산처럼 흔들리지 않는 신뢰와 포용의 중심', '무': '거대한 산처럼 흔들리지 않는 신뢰와 포용의 중심',
+        '己': '비옥한 땅처럼 만물을 길러내고 실속을 챙기는 현실가', '기': '비옥한 땅처럼 만물을 길러내고 실속을 챙기는 현실가',
+        '庚': '다듬어지지 않은 원석처럼 강한 신념과 의리의 혁명가', '경': '다듬어지지 않은 원석처럼 강한 신념과 의리의 혁명가',
+        '辛': '잘 세공된 보석처럼 섬세하고 예리하며 완벽을 추구하는 장인', '신': '잘 세공된 보석처럼 섬세하고 예리하며 완벽을 추구하는 장인',
+        '壬': '드넓은 바다처럼 지혜롭고 유연하게 흐르는 전략가', '임': '드넓은 바다처럼 지혜롭고 유연하게 흐르는 전략가',
+        '癸': '봄비처럼 조용히 스며들어 생명을 키우는 감성 지성인', '계': '봄비처럼 조용히 스며들어 생명을 키우는 감성 지성인'
     };
-    // 한자만 추출 (예: '甲(갑목)' -> '甲')
-    const key = stem.charAt(0);
+    // 한자/한글만 추출
+    const key = stem.replace(/[^가-h힣甲-癸]/g, '').charAt(0) || stem.charAt(0);
     return traits[key] || '무한한 잠재력을 가진 미지의 탐험가';
 };
 
 // Helper: 오행 계산 (간이)
 const calculateOhaeng = (ganji: any) => {
-    // 천간/지지 오행 매핑
-    const elementMap: Record<string, string> = {
-        '甲': 'wood', '乙': 'wood', '寅': 'wood', '卯': 'wood',
-        '丙': 'fire', '丁': 'fire', '巳': 'fire', '午': 'fire',
-        '戊': 'earth', '己': 'earth', '辰': 'earth', '戌': 'earth', '丑': 'earth', '未': 'earth',
-        '庚': 'metal', '辛': 'metal', '申': 'metal', '酉': 'metal',
-        '壬': 'water', '癸': 'water', '子': 'water', '亥': 'water'
-    };
-
     const counts = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
     const pillars = [ganji.year, ganji.month, ganji.day, ganji.hour];
 
+    // Element Lookup Map (Supports Hanja, Korean Char, and Korean Label)
+    const toElementStr = (char: string, label?: string): string | null => {
+        if (label) {
+            if (label === '목') return 'wood';
+            if (label === '화') return 'fire';
+            if (label === '토') return 'earth';
+            if (label === '금') return 'metal';
+            if (label === '수') return 'water';
+        }
+
+        const map: Record<string, string> = {
+            '甲': 'wood', '乙': 'wood', '寅': 'wood', '卯': 'wood',
+            '갑': 'wood', '을': 'wood', '인': 'wood', '묘': 'wood',
+            '丙': 'fire', '丁': 'fire', '巳': 'fire', '午': 'fire',
+            '병': 'fire', '정': 'fire', '사': 'fire', '오': 'fire',
+            '戊': 'earth', '己': 'earth', '辰': 'earth', '戌': 'earth', '丑': 'earth', '未': 'earth',
+            '무': 'earth', '기': 'earth', '진': 'earth', '술': 'earth', '축': 'earth', '미': 'earth',
+            '庚': 'metal', '辛': 'metal', '申': 'metal', '酉': 'metal',
+            '경': 'metal', '신': 'metal', '신(申)': 'metal', // 신 is duplicated for Metal+ and Monkey
+            '壬': 'water', '癸': 'water', '子': 'water', '亥': 'water',
+            '임': 'water', '계': 'water', '자': 'water', '해': 'water'
+        };
+        // Handle "신" ambiguity: '신' can be Metal(Stem) or Monkey(Branch-Metal). Both are Metal. Safe.
+        return map[char.charAt(0)] || null;
+    };
+
     pillars.forEach(p => {
         if (!p) return;
-        const stemEl = elementMap[p.stem?.charAt(0)];
-        const branchEl = elementMap[p.branch?.charAt(0)];
+        const stemEl = toElementStr(p.stem, p.ganElement);
+        const branchEl = toElementStr(p.branch, p.jiElement);
+
         if (stemEl) counts[stemEl as keyof typeof counts]++;
         if (branchEl) counts[branchEl as keyof typeof counts]++;
     });
@@ -74,6 +93,10 @@ export default function SajuSummaryModal({ isOpen, onClose, userProfile, onStart
             // [Fix] Extract char string if object (SajuCalculator returns objects)
             stem: typeof p?.gan === 'object' ? p.gan.char : (p?.gan || '?'),
             branch: typeof p?.ji === 'object' ? p.ji.char : (p?.ji || '?'),
+            // [Fix] Extract Element Label for robust Ohaeng calculation
+            ganElement: typeof p?.gan === 'object' ? p.gan.label : '',
+            jiElement: typeof p?.ji === 'object' ? p.ji.label : '',
+
             // TODO: Implement proper TenGod calculation if missing in data
             tenGod: p?.tenGod || (type === 'day' ? 'Me' : '-'),
             ganColor: p?.ganColor,
