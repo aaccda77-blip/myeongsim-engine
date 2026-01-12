@@ -13,7 +13,7 @@ export interface ChatSessionSummary {
 export const createConsultationPrompt = (session: ChatSessionSummary): string => {
     const { userProfile, chatHistory, detectedEmotions } = session;
     const name = userProfile.userName || '사용자';
-    const dayMaster = userProfile.saju.day.ganji.charAt(0); // 일간
+    const dayMaster = userProfile.saju.dayMaster || userProfile.saju.fourPillars.day.gan; // 일간
 
     // Analyze chat history for key themes
     const themes = chatHistory.map(h => `Q: ${h.question} -> A: ${h.answer}`).join('\n');

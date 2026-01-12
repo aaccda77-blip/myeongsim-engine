@@ -20,8 +20,8 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     // 1. [Clash Check] Saju interaction (e.g. Day vs Month Clash)
     // Note: In a real implementation this would calculate dynamic clashes based on today's date or Saju structure.
     // For now, we mock a check or use existing data if available.
-    const monthBranch = report.saju.month.ganji.charAt(1); // 월지
-    const dayBranch = report.saju.day.ganji.charAt(1);   // 일지
+    const monthBranch = report.saju.fourPillars?.month?.ji || ''; // 월지
+    const dayBranch = report.saju.fourPillars?.day?.ji || '';   // 일지
 
     // Simple mock clash check (e.g. 자-오 충)
     if ((monthBranch === '자' && dayBranch === '오') || (monthBranch === '오' && dayBranch === '자')) {
