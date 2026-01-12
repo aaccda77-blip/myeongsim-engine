@@ -1,6 +1,6 @@
 // src/app/api/user/status/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export async function GET(request: NextRequest) {
     try {
@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
         // Token is actually the user ID in our system
         const userId = token;
 
-        // Fetch user data from Supabase
-        const { data: user, error } = await supabase
+        // Fetch user data from Supabase using Admin Client
+        const { data: user, error } = await supabaseAdmin
             .from('users')
             .select('id, phone_hash, membership_tier, expires_at, created_at')
             .eq('id', userId)

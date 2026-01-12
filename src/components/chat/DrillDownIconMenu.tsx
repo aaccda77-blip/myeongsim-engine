@@ -43,7 +43,7 @@ const StrengthRadarChart = dynamic(() => import('@/components/charts/StrengthRad
 const VisualSajuDashboard = dynamic(() => import('@/components/visual/VisualSajuDashboard'), { ssr: false });
 // [NEW] 108 자각 Content Modals
 const SajuSummaryModal = dynamic(() => import('@/components/coaching/SajuSummaryModal'), { ssr: false });
-const DiscoveryChatModal = dynamic(() => import('@/components/coaching/DiscoveryChatModal'), { ssr: false });
+const AwakeningChat = dynamic(() => import('@/components/coaching/AwakeningChat'), { ssr: false });
 const SajuAnalysisReportModal = dynamic(() => import('@/components/report/SajuAnalysisReportModal'), { ssr: false });
 
 
@@ -764,15 +764,6 @@ export default function DrillDownIconMenu({
                 }}
             />
 
-            {/* [NEW] Discovery Chat Modal (AI Coach) */}
-            <DiscoveryChatModal
-                isOpen={showDiscoveryChat}
-                onClose={() => setShowDiscoveryChat(false)}
-                userProfile={userProfile}
-                initialIntent={discoveryChatIntent}
-                title={FRIENDLY_LABELS['PATH_108']?.main || '내면의 빛 탐구'}
-            />
-
             {/* [NEW] Therapy Archetype Modal */}
             {
                 showTherapyModal && selectedTherapyArchetype && (
@@ -788,21 +779,26 @@ export default function DrillDownIconMenu({
                 )
             }
 
-            {/* [NEW] AI Chat Modal for '108 Paths' */}
+            {/* [NEW] Awakening Chat Modal (Step 1 -> Handoff) */}
             <AnimatePresence>
                 {showDiscoveryChat && (
-                    <DiscoveryChatModal
-                        isOpen={showDiscoveryChat}
-                        onClose={() => setShowDiscoveryChat(false)}
-                        userProfile={userProfile}
-                        initialIntent={discoveryChatIntent || '108_awareness'}
-                        title="108 자각 탐구 프로토콜"
-                        onConvertToMainChat={(summary) => {
-                            // 메인 채팅으로 컨텍스트 전달
-                            const contextPrompt = `[SYSTEM] 사용자가 '108 자각' 모드에서 깊은 상담을 요청했습니다. 아래 대화 맥락을 이어서 진행해주세요.\n\n[이전 대화 요약]\n${summary}\n\n[요청]\n위 내용을 바탕으로, 사용자의 내면 탐구를 더 깊이 도와주는 코칭을 시작하세요.`;
-                            onSelectIntent('chat_handoff', contextPrompt);
-                        }}
-                    />
+                    <div className="fixed inset-0 z-[1050] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="w-full max-w-lg h-[600px] shadow-2xl"
+                        >
+                            <AwakeningChat
+                                onClose={() => setShowDiscoveryChat(false)}
+                                onComplete={(prompt) => {
+                                    setShowDiscoveryChat(false);
+                                    // 메인 채팅으로 컨텍스트 전달 (Handoff)
+                                    onSelectIntent('chat_handoff', prompt);
+                                }}
+                            />
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
 
