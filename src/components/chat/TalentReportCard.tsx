@@ -21,10 +21,16 @@ interface TalentReportCardProps {
 }
 
 export default function TalentReportCard({ data }: TalentReportCardProps) {
-    const { coreStrength, keywords, jobAptitude, elements } = data;
+    const {
+        coreStrength = { title: '분석 중...', description: '데이터를 불러오는 중입니다.' },
+        keywords = [],
+        jobAptitude = [],
+        elements = { wood: 20, fire: 20, earth: 20, metal: 20, water: 20 }
+    } = data || {};
 
-    // Normalize for bar chart (assuming total is around 100 or relative)
-    const maxVal = Math.max(...Object.values(elements));
+    // Normalize for bar chart (Check for valid elements object)
+    const validElements = elements || { wood: 20, fire: 20, earth: 20, metal: 20, water: 20 };
+    const maxVal = Math.max(...Object.values(validElements), 1); // Avoid 0 division
     const getPercent = (val: number) => Math.min(100, (val / maxVal) * 100);
 
     return (
