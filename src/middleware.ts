@@ -144,7 +144,7 @@ export function middleware(request: NextRequest) {
         block-all-mixed-content;
     `.replace(/\s{2,}/g, ' ').trim();
 
-    response.headers.set('Content-Security-Policy', csp);
+    // response.headers.set('Content-Security-Policy', csp);
 
     // ===== 4. Admin Route Protection =====
     if (request.nextUrl.pathname.startsWith('/admin')) {

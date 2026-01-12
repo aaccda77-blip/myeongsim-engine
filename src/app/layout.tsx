@@ -39,7 +39,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased notranslate`}
             >
                 <SafetyDisclaimerModal />
-                <PushTestButton />
+                {/* <PushTestButton /> - Debug Only */}
                 <AuthGuard>
                     {children}
                 </AuthGuard>
