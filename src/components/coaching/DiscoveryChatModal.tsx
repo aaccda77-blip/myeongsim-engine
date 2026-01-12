@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, User, Bot, Sparkles } from 'lucide-react';
+import { DAY_MASTER_SCENARIOS, DEFAULT_SCENARIO } from '../../data/SajuContentDB';
 
 interface DiscoveryChatModalProps {
     isOpen: boolean;
@@ -31,8 +32,7 @@ const getNextBotResponse = (step: number, userText: string, userProfile: any, in
 
     const dayMaster = getChar(dayMasterRaw);
 
-    // [Fix] Import Scenarios
-    import { DAY_MASTER_SCENARIOS, DEFAULT_SCENARIO } from '../../data/SajuContentDB';
+
 
     // [Scenario A] 일간 심층 분석 (Day Master) - Dynamic Content Loading
     if (intent === 'day_master_deep') {
