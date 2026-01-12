@@ -275,10 +275,10 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                             dayMasterTrait: "분석 완료",
                             keywords: getKeywords(dayMaster),
                             fourPillars: {
-                                year: { gan: p.year.ganKor, ji: p.year.jiKor, ganColor: p.year.ganColor, jiColor: p.year.jiColor },
-                                month: { gan: p.month.ganKor, ji: p.month.jiKor, ganColor: p.month.ganColor, jiColor: p.month.jiColor },
-                                day: { gan: p.day.ganKor, ji: p.day.jiKor, ganColor: p.day.ganColor, jiColor: p.day.jiColor },
-                                time: meta.birth_time === 'unknown' ? { gan: '?', ji: '?', ganColor: '#888', jiColor: '#888' } : { gan: p.time.ganKor, ji: p.time.jiKor, ganColor: p.time.ganColor, jiColor: p.time.jiColor },
+                                year: { gan: p.year.ganKor, ji: p.year.jiKor, ganElement: p.year.ganElement, jiElement: p.year.jiElement, ganColor: p.year.ganColor, jiColor: p.year.jiColor },
+                                month: { gan: p.month.ganKor, ji: p.month.jiKor, ganElement: p.month.ganElement, jiElement: p.month.jiElement, ganColor: p.month.ganColor, jiColor: p.month.jiColor },
+                                day: { gan: p.day.ganKor, ji: p.day.jiKor, ganElement: p.day.ganElement, jiElement: p.day.jiElement, ganColor: p.day.ganColor, jiColor: p.day.jiColor },
+                                time: meta.birth_time === 'unknown' ? { gan: '?', ji: '?', ganElement: '?', jiElement: '?', ganColor: '#888', jiColor: '#888' } : { gan: p.time.ganKor, ji: p.time.jiKor, ganElement: p.time.ganElement, jiElement: p.time.jiElement, ganColor: p.time.ganColor, jiColor: p.time.jiColor },
                             },
                             current_luck_cycle: { name: result.currentDaewoon || "로딩 중", season: "-", direction: "-", is_transition: false, mission_summary: "" },
                             current_yearly_luck: { year: new Date().getFullYear().toString(), element: "-", ten_god_type: "-", action_guide: "-", interaction: "-" }
@@ -458,10 +458,10 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                         dayMasterTrait: "분석 완료",
                         keywords: getKeywords(dayMaster),
                         fourPillars: {
-                            year: { gan: p.year.ganKor, ji: p.year.jiKor, ganColor: p.year.ganColor, jiColor: p.year.jiColor },
-                            month: { gan: p.month.ganKor, ji: p.month.jiKor, ganColor: p.month.ganColor, jiColor: p.month.jiColor },
-                            day: { gan: p.day.ganKor, ji: p.day.jiKor, ganColor: p.day.ganColor, jiColor: p.day.jiColor },
-                            time: meta.birth_time === 'unknown' ? { gan: '?', ji: '?', ganColor: '#888', jiColor: '#888' } : { gan: p.time.ganKor, ji: p.time.jiKor, ganColor: p.time.ganColor, jiColor: p.time.jiColor },
+                            year: { gan: p.year.ganKor, ji: p.year.jiKor, ganElement: p.year.ganElement, jiElement: p.year.jiElement, ganColor: p.year.ganColor, jiColor: p.year.jiColor },
+                            month: { gan: p.month.ganKor, ji: p.month.jiKor, ganElement: p.month.ganElement, jiElement: p.month.jiElement, ganColor: p.month.ganColor, jiColor: p.month.jiColor },
+                            day: { gan: p.day.ganKor, ji: p.day.jiKor, ganElement: p.day.ganElement, jiElement: p.day.jiElement, ganColor: p.day.ganColor, jiColor: p.day.jiColor },
+                            time: meta.birth_time === 'unknown' ? { gan: '?', ji: '?', ganElement: '?', jiElement: '?', ganColor: '#888', jiColor: '#888' } : { gan: p.time.ganKor, ji: p.time.jiKor, ganElement: p.time.ganElement, jiElement: p.time.jiElement, ganColor: p.time.ganColor, jiColor: p.time.jiColor },
                         },
                         current_luck_cycle: { name: result.currentDaewoon || "로딩 중", season: "-", direction: "-", is_transition: false, mission_summary: "" },
                         current_yearly_luck: { year: new Date().getFullYear().toString(), element: "-", ten_god_type: "-", action_guide: "-", interaction: "-" }

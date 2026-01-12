@@ -93,9 +93,9 @@ export default function SajuSummaryModal({ isOpen, onClose, userProfile, onStart
             // [Fix] Extract char string if object (SajuCalculator returns objects)
             stem: typeof p?.gan === 'object' ? p.gan.char : (p?.gan || '?'),
             branch: typeof p?.ji === 'object' ? p.ji.char : (p?.ji || '?'),
-            // [Fix] Extract Element Label for robust Ohaeng calculation
-            ganElement: typeof p?.gan === 'object' ? p.gan.label : '',
-            jiElement: typeof p?.ji === 'object' ? p.ji.label : '',
+            // [Fix] Extract Element Label for robust Ohaeng calculation (Prioritize explicit prop)
+            ganElement: p?.ganElement || (typeof p?.gan === 'object' ? p.gan.label : ''),
+            jiElement: p?.jiElement || (typeof p?.ji === 'object' ? p.ji.label : ''),
 
             // TODO: Implement proper TenGod calculation if missing in data
             tenGod: p?.tenGod || (type === 'day' ? 'Me' : '-'),

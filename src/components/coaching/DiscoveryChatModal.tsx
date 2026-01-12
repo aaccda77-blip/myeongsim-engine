@@ -21,13 +21,16 @@ interface ChatMessage {
 // [Simulation] 3-Step Flow Logic
 const getNextBotResponse = (step: number, userText: string, userProfile: any, intent: string, title?: string) => {
     const name = userProfile?.name || '사용자';
-    const dayMaster = userProfile?.saju?.dayPillar?.stem || '본질';
+    // [Fix] Robust DayMaster Extraction
+    const dayMaster = userProfile?.saju?.dayMasterChar
+        || userProfile?.saju?.fourPillars?.day?.gan
+        || (typeof userProfile?.saju?.dayMaster === 'string' ? userProfile?.saju?.dayMaster.charAt(0) : '본질');
 
     // [Scenario A] 일간 심층 분석 (Day Master) - 기존 로직 유지 및 고도화
     if (intent === 'day_master_deep') {
         if (step === 0) {
             return {
-                text: `안녕하세요, ${name}님! ${dayMaster}(일간)은 당신의 가장 깊은 본질을 상징합니다. ✨ 혹시 살면서 남들보다 예민하다고 느꼈던 순간이, 사실은 남들이 못 보는 걸 보는 **섬세한 능력**이었다는 걸 알고 계셨나요?`,
+                text: `안녕하세요, ${name}님! **${dayMaster} (일간)**은 당신의 가장 깊은 본질을 상징합니다. ✨ 혹시 살면서 남들보다 예민하다고 느꼈던 순간이, 사실은 남들이 못 보는 걸 보는 **섬세한 능력**이었다는 걸 알고 계셨나요?`,
                 choices: [
                     '네, 예민함 때문에 힘들 때가 많았어요',
                     '나만의 특별한 감각이라고 생각했어요',
