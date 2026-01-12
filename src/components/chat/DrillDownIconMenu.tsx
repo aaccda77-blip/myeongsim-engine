@@ -332,17 +332,55 @@ const resolveDynamicText = (text: string | undefined, userProfile: any): string 
     if (!userProfile?.saju) return text.replace(/\{\{.*?\}\}/g, '...'); // Fallback if no data
 
     let resolved = text;
+    let resolved = text;
     const saju = userProfile.saju;
+
+    // [Fix] Robust Pillar Extraction (Handle Flat vs Nested)
+    const getPillar = (type: 'year' | 'month' | 'day' | 'time') => {
+        // 1. Try Legacy Flat (e.g. saju.yearPillar)
+        const flatKey = `${type}Pillar` as keyof typeof saju;
+        if (saju[flatKey]) return saju[flatKey];
+
+        // 2. Try Nested (e.g. saju.fourPillars.year)
+        if (saju.fourPillars && saju.fourPillars[type]) return saju.fourPillars[type];
+
+        // 3. Try Direct (e.g. saju.year) - unlikely but possible in some legacy states
+        if (saju[type]) return saju[type];
+
+        return null;
+    };
+
+    const p = {
+        year: getPillar('year'),
+        month: getPillar('month'),
+        day: getPillar('day'),
+        time: getPillar('time')
+    };
+
+    // Helper to get stem/branch char
+    const getChar = (obj: any, part: 'stem' | 'branch') => {
+        if (!obj) return '';
+        // If obj has stem/branch props (legacy)
+        if (part === 'stem' && obj.stem) return obj.stem;
+        if (part === 'branch' && obj.branch) return obj.branch;
+
+        // If obj is SajuPillar { gan: { char... }, ji: { char... } } (new)
+        if (part === 'stem') return obj.gan?.char || obj.gan || '?';
+        if (part === 'branch') return obj.ji?.char || obj.ji || '?';
+
+        return '';
+    };
+
     const Ganji = {
-        year: `${saju.yearPillar?.stem || ''}${saju.yearPillar?.branch || ''}`,
-        month: `${saju.monthPillar?.stem || ''}${saju.monthPillar?.branch || ''}`,
-        day: `${saju.dayPillar?.stem || ''}${saju.dayPillar?.branch || ''}`,
-        hour: `${saju.hourPillar?.stem || ''}${saju.hourPillar?.branch || ''}`,
+        year: `${getChar(p.year, 'stem')}${getChar(p.year, 'branch')}`,
+        month: `${getChar(p.month, 'stem')}${getChar(p.month, 'branch')}`,
+        day: `${getChar(p.day, 'stem')}${getChar(p.day, 'branch')}`,
+        hour: `${getChar(p.time, 'stem')}${getChar(p.time, 'branch')}`,
     };
 
     // 1. Ganji Placeholders
     resolved = resolved.replace('{{SAJU_GANJI}}', `${Ganji.year} ${Ganji.month} ${Ganji.day} ${Ganji.hour}`);
-    resolved = resolved.replace('{{DAY_MASTER}}', saju.dayPillar?.stem || '일간');
+    resolved = resolved.replace('{{DAY_MASTER}}', getChar(p.day, 'stem') || '일간'); // [Fix] Robust DayMaster
     resolved = resolved.replace('{{YEAR_PILLAR}}', Ganji.year || '년주');
     resolved = resolved.replace('{{MONTH_PILLAR}}', Ganji.month || '월주');
     resolved = resolved.replace('{{HOUR_PILLAR}}', Ganji.hour || '시주');

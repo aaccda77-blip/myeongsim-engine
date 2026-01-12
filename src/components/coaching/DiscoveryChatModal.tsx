@@ -21,11 +21,15 @@ interface ChatMessage {
 // [Simulation] 3-Step Flow Logic
 const getNextBotResponse = (step: number, userText: string, userProfile: any, intent: string, title?: string) => {
     const name = userProfile?.name || '사용자';
-    // [Fix] Robust DayMaster Extraction
-    const dayMaster = userProfile?.saju?.dayMasterChar
+    // [Fix] Robust DayMaster Extraction (Handle Object vs String)
+    const getChar = (val: any) => (typeof val === 'object' && val?.char) ? val.char : val;
+
+    const dayMasterRaw = userProfile?.saju?.dayMasterChar
         || userProfile?.saju?.fourPillars?.day?.gan
         || userProfile?.saju?.day?.gan // [Fix] Support flat structure
         || (typeof userProfile?.saju?.dayMaster === 'string' ? userProfile?.saju?.dayMaster.charAt(0) : '본질');
+
+    const dayMaster = getChar(dayMasterRaw);
 
     // [Scenario A] 일간 심층 분석 (Day Master) - 기존 로직 유지 및 고도화
     if (intent === 'day_master_deep') {
