@@ -497,11 +497,14 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
     // [Logic] Check for triggers on input change or before send
     const handleInterruptCheck = (text: string) => {
+        // [Feedback] Disabled Interrupt Logic by User Request
+        /*
         const question = InterruptQuestionModule.checkInterrupt(text);
         if (question && !isInterrupted && !isSurveyCompleted) {
             setInterruptQuestion(question);
             return true; // Triggered
         }
+        */
         return false;
     };
 
