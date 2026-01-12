@@ -25,7 +25,7 @@ const getDayMasterTrait = (stem: string) => {
         '癸': '봄비처럼 조용히 스며들어 생명을 키우는 감성 지성인', '계': '봄비처럼 조용히 스며들어 생명을 키우는 감성 지성인'
     };
     // 한자/한글만 추출
-    const key = stem.replace(/[^가-h힣甲-癸]/g, '').charAt(0) || stem.charAt(0);
+    const key = stem.replace(/[^가-힣甲-癸]/g, '').charAt(0) || stem.charAt(0);
     return traits[key] || '무한한 잠재력을 가진 미지의 탐험가';
 };
 
