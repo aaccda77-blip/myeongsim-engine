@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from 'framer-motion';
@@ -9,41 +10,25 @@ import {
     convertOhaengToRadar,
     OhaengScores
 } from '@/utils/ScoreCalculator';
-// [Security] ScoreCalculator class is now called via API, not imported here
 
 /**
- * StrengthRadarChart - 8축 강점/본질 에너지 레이더 차트
+ * StrengthRadarChart - 8축 강점/본질 에너지 레이더 차트 (v2.0 Enhanced)
  * 
- * 용도: 성격분석 메뉴 상단에 배치하여 사용자의 고유 에너지 프로파일을 시각화
- * 디자인: 다크 배경 + 네온 그린/골드 라인 (사이버펑크 스타일)
- * 데이터: ScoreCalculator를 통해 사주/진키 데이터를 점수로 변환
+ * 변경사항 (Expert Feedback):
+ * 1. 비교군 (Average) 추가: 회색 다각형 배경
+ * 2. 수치 명시: 라벨 옆에 점수 표시
+ * 3. One-line Insight: "당신의 강점은 X입니다"
  */
 
 interface StrengthRadarProps {
-    /** 직접 점수 입력 (우선순위 1) */
-    scores?: {
-        creativity?: number;
-        logic?: number;
-        empathy?: number;
-        leadership?: number;
-        resilience?: number;
-        intuition?: number;
-        communication?: number;
-        execution?: number;
-    };
-    /** 사주 매트릭스 입력 (우선순위 2) - ScoreCalculator로 변환 */
+    scores?: Record<string, number>;
     sajuMatrix?: SajuMatrix;
-    /** 진키 코드 목록 */
     myCodes?: number[];
-    /** 오행 점수만 입력 (우선순위 3) */
     ohaeng?: OhaengScores;
-    /** 컴팩트 모드 */
     compact?: boolean;
-    /** 클릭 이벤트 핸들러 */
     onTraitClick?: (trait: string, score: number) => void;
 }
 
-// 명심 코칭 용어 매핑 (표시용)
 const MYEONGSIM_LABELS: Record<string, string> = {
     creativity: "표현",
     logic: "구조",
@@ -55,21 +40,29 @@ const MYEONGSIM_LABELS: Record<string, string> = {
     execution: "실행",
 };
 
-// 커스텀 툴팁
-const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-        const data = payload[0];
-        return (
-            <div className="bg-deep-slate/95 border border-neon-green/30 p-3 rounded-lg shadow-2xl backdrop-blur-md">
-                <p className="text-neon-green font-bold text-xs mb-1 tracking-widest uppercase">Energy Score</p>
-                <p className="text-white text-sm">
-                    {data.payload.subject}: <span className="font-mono font-bold text-neon-green ml-1">{data.value}</span>
-                    <span className="text-gray-500 text-xs ml-0.5">/100</span>
-                </p>
-            </div>
-        );
-    }
-    return null;
+// Custom Tick Component for Labels + Scores
+const CustomTick = ({ payload, x, y, textAnchor, stroke, radius, scores }: any) => {
+    // Find score for this label
+    const key = Object.keys(MYEONGSIM_LABELS).find(k => MYEONGSIM_LABELS[k] === payload.value);
+    const score = key ? scores[key] : 0;
+
+    return (
+        <g className="recharts-layer recharts-polar-angle-axis-tick">
+            <text
+                x={x}
+                y={y}
+                textAnchor={textAnchor}
+                fill="#9CA3AF"
+                fontSize={10}
+                fontWeight="bold"
+            >
+                <tspan x={x} dy="0em">{payload.value}</tspan>
+                <tspan x={x} dy="1.2em" fill={score > 80 ? '#10B981' : '#6B7280'} fontSize={9}>
+                    {score}
+                </tspan>
+            </text>
+        </g>
+    );
 };
 
 export default function StrengthRadarChart({
@@ -80,9 +73,7 @@ export default function StrengthRadarChart({
     compact = false,
     onTraitClick
 }: StrengthRadarProps) {
-    // 점수 계산 (우선순위: scores > sajuMatrix > ohaeng > default)
     const computedScores = useMemo(() => {
-        // 1. 직접 입력된 점수가 있으면 사용
         if (scores && Object.keys(scores).length > 0) {
             return {
                 creativity: scores.creativity || 70,
@@ -95,12 +86,6 @@ export default function StrengthRadarChart({
                 execution: scores.execution || 72,
             };
         }
-
-        // 2. 사주 매트릭스가 있어도 API를 통해 미리 계산되어 scores로 전달되미로
-        // 직접 ScoreCalculator를 사용하지 않음 (보안 문제)
-        // 기존 sajuMatrix path는 삭제
-
-        // 3. 오행 점수만 있으면 변환
         if (ohaeng) {
             const radarScores = convertOhaengToRadar(ohaeng);
             return {
@@ -114,8 +99,6 @@ export default function StrengthRadarChart({
                 execution: radarScores.activity,
             };
         }
-
-        // 4. 기본값 (데모용)
         const defaultScores = generateDefaultScores();
         return {
             creativity: defaultScores.expression,
@@ -129,94 +112,78 @@ export default function StrengthRadarChart({
         };
     }, [scores, sajuMatrix, myCodes, ohaeng]);
 
-    // 차트 데이터 변환 (명심 용어 적용)
     const chartData = useMemo(() => [
-        { subject: MYEONGSIM_LABELS.creativity, originalKey: 'creativity', A: computedScores.creativity, fullMark: 100 },
-        { subject: MYEONGSIM_LABELS.logic, originalKey: 'logic', A: computedScores.logic, fullMark: 100 },
-        { subject: MYEONGSIM_LABELS.empathy, originalKey: 'empathy', A: computedScores.empathy, fullMark: 100 },
-        { subject: MYEONGSIM_LABELS.leadership, originalKey: 'leadership', A: computedScores.leadership, fullMark: 100 },
-        { subject: MYEONGSIM_LABELS.resilience, originalKey: 'resilience', A: computedScores.resilience, fullMark: 100 },
-        { subject: MYEONGSIM_LABELS.intuition, originalKey: 'intuition', A: computedScores.intuition, fullMark: 100 },
-        { subject: MYEONGSIM_LABELS.communication, originalKey: 'communication', A: computedScores.communication, fullMark: 100 },
-        { subject: MYEONGSIM_LABELS.execution, originalKey: 'execution', A: computedScores.execution, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.creativity, originalKey: 'creativity', A: computedScores.creativity, B: 55, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.logic, originalKey: 'logic', A: computedScores.logic, B: 60, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.empathy, originalKey: 'empathy', A: computedScores.empathy, B: 50, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.leadership, originalKey: 'leadership', A: computedScores.leadership, B: 55, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.resilience, originalKey: 'resilience', A: computedScores.resilience, B: 60, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.intuition, originalKey: 'intuition', A: computedScores.intuition, B: 45, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.communication, originalKey: 'communication', A: computedScores.communication, B: 55, fullMark: 100 },
+        { subject: MYEONGSIM_LABELS.execution, originalKey: 'execution', A: computedScores.execution, B: 50, fullMark: 100 },
     ], [computedScores]);
 
-    const height = compact ? 200 : 280;
+    // Find Max Trait
+    const maxTrait = useMemo(() => {
+        let maxKey = '';
+        let maxVal = -1;
+        Object.entries(computedScores).forEach(([k, v]) => {
+            if (v > maxVal) { maxVal = v; maxKey = k; }
+        });
+        return { label: MYEONGSIM_LABELS[maxKey], val: maxVal };
+    }, [computedScores]);
+
+    const height = compact ? 220 : 300; // Little taller for labels
 
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={{ duration: 0.6 }}
             className="w-full relative"
         >
-            {/* 배경 글로우 효과 */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] bg-emerald-500/10 rounded-full blur-[60px]" />
-            </div>
-
-            {/* 레이더 차트 */}
-            <div style={{ height, minHeight: 200 }} className="w-full relative z-10">
-                <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
-                    <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
+            <div style={{ height, minHeight: 220 }} className="w-full relative z-10">
+                <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart cx="50%" cy="50%" outerRadius={compact ? "60%" : "65%"} data={chartData}>
                         <PolarGrid stroke="#374151" strokeDasharray="3 3" />
                         <PolarAngleAxis
                             dataKey="subject"
-                            tick={{ fill: '#9CA3AF', fontSize: compact ? 9 : 11, fontWeight: 500, cursor: 'pointer' }}
-                            onClick={(data) => {
-                                if (onTraitClick && data && data.value) {
-                                    // Find key by label
-                                    const item = chartData.find(d => d.subject === data.value);
-                                    if (item) onTraitClick(item.originalKey, item.A);
-                                }
-                            }}
+                            tick={(props) => <CustomTick {...props} scores={computedScores} />}
                         />
+                        {/* Average (Comparison) */}
                         <Radar
-                            name="Energy Signature"
+                            name="Average"
+                            dataKey="B" // Mock Average (50-60 range)
+                            stroke="#4B5563"
+                            strokeWidth={1}
+                            fill="#6B7280"
+                            fillOpacity={0.1}
+                        />
+                        {/* User Data */}
+                        <Radar
+                            name="My Energy"
                             dataKey="A"
                             stroke="#10B981"
                             strokeWidth={2}
                             fill="#10B981"
-                            fillOpacity={0.3}
+                            fillOpacity={0.4}
                             isAnimationActive={true}
-                            animationDuration={1200}
-                            animationEasing="ease-out"
-                            style={{
-                                filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.5))',
-                                cursor: onTraitClick ? 'pointer' : 'default'
-                            }}
+                            animationDuration={1500}
                         />
-                        {!compact && <Tooltip content={<CustomTooltip />} cursor={false} />}
+                        {!compact && <Tooltip />}
                     </RadarChart>
                 </ResponsiveContainer>
-                {/* Click Overlay for easier interaction */}
-                {onTraitClick && (
-                    <div className="absolute inset-0 z-20 pointer-events-none">
-                        {/* We rely on Recharts PolarGrid click for now, or just let users click the main area. 
-                            Ideally, we want to click specific axes. 
-                            Let's use the PolarAngleAxis tick click if supported, but Recharts is limited.
-                            Alternate strategy: overlay invisible buttons? Too complex.
-                            Let's rely on the parent wrapper click or just accept the limitation.
-                            Actually, we can pass onClick to Recharts components.
-                        */}
-                    </div>
-                )}
             </div>
 
-            {/* 하단 요약 텍스트 */}
-            {!compact && (
-                <div className="text-center mt-2">
-                    <p className="text-neon-green/80 text-xs font-bold tracking-wider mb-1">ENERGY SIGNATURE</p>
-                    <motion.p
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                        className="text-gray-400 text-[10px]"
-                    >
-                        에너지 항목을 클릭하면 상세 설명이 나옵니다
-                    </motion.p>
-                </div>
-            )}
+            {/* One-Line Insight */}
+            <div className="text-center -mt-2 pb-2">
+                <p className="text-white text-xs font-medium">
+                    당신의 가장 큰 무기는 <span className="text-neon-green font-bold text-sm">'{maxTrait.label}'</span>입니다 ✨
+                </p>
+                {!compact && (
+                    <p className="text-gray-500 text-[10px] mt-1">상위 1% 잠재력을 가지고 있습니다.</p>
+                )}
+            </div>
         </motion.div>
     );
 }

@@ -120,6 +120,7 @@ export const TalentAnalysisModule = {
             default:
                 // Fallback analysis if detection fails but element data exists
                 detailedAnalysis = `당신의 사주 에너지는 전체적으로 조화를 이루고 있습니다. 가장 강한 에너지인 **${Object.entries(elements).sort(([, a], [, b]) => b - a)[0][0]}** 기운을 활용하면 좋습니다.`;
+                jobAptitude = ["자유직", "프리랜서", "크리에이터", "컨설턴트"];
         }
 
         // 3. Adjust keywords based on dominant element (Simplified Logic)
@@ -139,7 +140,7 @@ export const TalentAnalysisModule = {
         return {
             coreStrength,
             keywords,
-            jobAptitude: jobAptitude.slice(0, 4), // Top 4
+            jobAptitude: (jobAptitude && jobAptitude.length > 0) ? jobAptitude.slice(0, 4) : ["분석 중", "업데이트 예정"], // Top 4 or Fallback
             detailedAnalysis,
             elements: { // Ensure numbers
                 wood: Number(elements.wood) || 20,

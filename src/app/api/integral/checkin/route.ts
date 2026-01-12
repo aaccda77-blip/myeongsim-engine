@@ -25,6 +25,20 @@ export async function POST(req: NextRequest) {
             }, { status: 400 });
         }
 
+        // 0. Security: Rate Limiting (Cost Protection)
+        if (userId !== 'guest') {
+            const { checkRateLimit } = await import('@/services/security/RateLimitService');
+            const isAllowed = await checkRateLimit(supabase, userId);
+            console.log(`[RateLimit] User: ${userId}, Allowed: ${isAllowed}`);
+
+            if (!isAllowed) {
+                return NextResponse.json({
+                    success: false,
+                    message: '너무 많은 요청이 감지되었습니다. 1분 후 다시 시도해주세요. (도배 방지)'
+                }, { status: 429 });
+            }
+        }
+
         // 1. Fetch User Profile (DOB)
         let dob = '2000-01-01T00:00:00'; // Default for guest
 

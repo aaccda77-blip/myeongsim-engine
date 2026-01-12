@@ -28,7 +28,7 @@ const MOOD_KEYWORDS = [
     { id: 'anger', label: '😡 분노/짜증', type: 'neg' },
 ];
 
-export default function MentalPrescriptionModal({ isOpen, onClose, userId, onComplete }: MentalPrescriptionModalProps) {
+export default function MentalPrescriptionV2({ isOpen, onClose, userId, onComplete }: MentalPrescriptionModalProps) {
     const [step, setStep] = useState<'input' | 'loading' | 'result'>('input');
     const [scores, setScores] = useState({ ul_mind: 0, ur_body: 0, ll_relation: 0, lr_system: 0 });
     const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
@@ -110,7 +110,7 @@ export default function MentalPrescriptionModal({ isOpen, onClose, userId, onCom
                 {/* Header: [FIX] Larger padding-top for Safe Area */}
                 <div className="flex justify-between items-center px-6 pt-10 pb-4 border-b border-gray-800 shrink-0 bg-[#11131a]/95 backdrop-blur-xl z-20">
                     <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                        🩺 통합 체크인 <span className="text-xs text-gray-500 font-normal">Mental Prescription</span>
+                        🩺 통합 체크인 <span className="text-xs text-green-400 font-bold border border-green-500/50 px-2 rounded-full">v2.0 New</span>
                     </h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors p-1">
                         <X size={24} />

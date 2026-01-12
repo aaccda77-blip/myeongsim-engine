@@ -32,7 +32,7 @@ import TherapyCard from '@/components/therapy/TherapyCard'; // [NEW] 심리 치�
 import { findTherapyArchetype, TherapyArchetype } from '@/data/TherapyDB'; // [NEW] 아키타입 매칭 엔진
 import { DailyBiorhythmWidget } from '@/components/features/DailyBiorhythmWidget';
 // [NEW] Mental Prescription Modal (Clean Install)
-const MentalPrescriptionModal = dynamic(() => import('@/components/bio/MentalPrescriptionModal'), { ssr: false });
+const MentalPrescriptionModal = dynamic(() => import('@/components/bio/MentalPrescriptionV2'), { ssr: false });
 // [NEW] SOS Breathing Guide Modal
 const BreathingGuideModal = dynamic(() => import('@/components/bio/BreathingGuideModal'), { ssr: false });
 // [Security] ScoreCalculator와 StaticTextDB는 더 이상 클라이언트에서 import하지 않음
@@ -432,7 +432,17 @@ export default function DrillDownIconMenu({
         setTraitDescription(null);
 
         try {
-            const res = await fetch(`/api/secure/trait-description?trait=${trait}`);
+            // [REINFORCED] Use POST to send Saju Context for Hyper-Personalization
+            const res = await fetch('/api/secure/trait-description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    trait,
+                    userId: userProfile?.id,
+                    saju: userProfile?.saju
+                })
+            });
+
             if (res.ok) {
                 const data = await res.json();
                 setTraitDescription(data.data);
@@ -466,13 +476,22 @@ export default function DrillDownIconMenu({
             return;
         }
 
-        // [NEW] 강점 리포트(인적자원) 모달 표시
-        if (subItem.intent === 'strength_report_view') {
+        // [V3 REBUILD] 강점 리포트 모달 (User Request: 기존 삭제 후 재설치)
+        if (subItem.intent === 'strength_talent_report' || subItem.intent === 'strength_report_view') {
+            // 1. 하위 메뉴 닫기
             setSelectedIcon(null);
-            // TalentAnalysisModule로 분석 실행
-            const analysis = TalentAnalysisModule.analyze(userProfile?.saju || {});
-            setTalentReportData(analysis);
+
+            // 2. 사용자 사주 데이터 추출 (안전한 폴백 포함)
+            const userSaju = userProfile?.saju || {};
+
+            // 3. 분석 엔진 실행
+            const analysisResult = TalentAnalysisModule.analyze(userSaju);
+
+            // 4. 모달에 데이터 전달 및 열기
+            setTalentReportData(analysisResult);
             setShowTalentReportModal(true);
+
+            // 5. 여기서 무조건 리턴 (챗봇으로 절대 안감)
             return;
         }
 

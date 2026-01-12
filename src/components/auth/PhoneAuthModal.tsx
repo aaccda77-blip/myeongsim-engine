@@ -13,11 +13,14 @@ interface PhoneAuthModalProps {
     selectedTier?: 'TRIAL' | 'PASS' | 'VIP';
 }
 
+import SimpleCaptcha from './SimpleCaptcha';
+
 export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, selectedTier = 'TRIAL' }: PhoneAuthModalProps) {
     const [phone, setPhone] = useState('');
-    const [agreed, setAgreed] = useState(false); // [Legal]
+    const [agreed, setAgreed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
 
     const formatPhone = (value: string) => {
         const numbers = value.replace(/[^0-9]/g, '');
@@ -39,12 +42,18 @@ export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, select
             return;
         }
 
+        if (!isCaptchaVerified) {
+            setError('자동 입력 방지 퀴즈를 풀어주세요.');
+            return;
+        }
+
         if (phone.length < 12) {
             setError('올바른 휴대폰 번호를 입력해주세요.');
             return;
         }
 
         setIsLoading(true);
+        // ... (rest logic)
         try {
             // [FIX] Generate device fingerprint
             const deviceFingerprint = await generateDeviceFingerprint();
@@ -154,10 +163,18 @@ export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, select
                             </label>
                         </div>
 
+                        {/* Captcha */}
+                        <div className="px-1">
+                            <SimpleCaptcha onVerify={setIsCaptchaVerified} />
+                        </div>
+
                         <button
                             type="submit"
-                            disabled={isLoading}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all active:scale-95"
+                            disabled={isLoading || !isCaptchaVerified}
+                            className={`w-full font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 ${isLoading || !isCaptchaVerified
+                                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed hidden-shadow'
+                                    : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/20'
+                                }`}
                         >
                             {isLoading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
