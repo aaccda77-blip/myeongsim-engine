@@ -20,10 +20,18 @@ const calculateTenGod = (dayMaster: string, monthBranch: string): string => {
     // ... (Implementation concealed for brevity, using simplified mapping for demo)
 
     // Quick Demo Logic: Hash the combination to deterministicly pick a role
-    // This ensures consistency for the same user, but variety across users.
-    const combination = dayMaster + monthBranch;
+    // Ensure inputs are strings to avoid runtime errors
+    const dm = String(dayMaster || 'Gap').charAt(0);
+    const mb = String(monthBranch || 'Ja').charAt(0);
+
+    const combination = dm + mb;
     const roles = ['bi', 'sik', 'jae', 'gwan', 'in', 'pyun_gwan', 'pyun_in', 'sang_gwan'];
-    const index = (combination.charCodeAt(0) + combination.charCodeAt(1)) % roles.length;
+
+    // Safety check for charCodeAt
+    const code1 = combination.length > 0 ? combination.charCodeAt(0) : 0;
+    const code2 = combination.length > 1 ? combination.charCodeAt(1) : 0;
+
+    const index = (code1 + code2) % roles.length;
     return roles[index];
 };
 
@@ -33,9 +41,14 @@ const calculateTenGod = (dayMaster: string, monthBranch: string): string => {
 export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     const questions: CoachingQuestion[] = [];
 
+    // Safety: Ensure report.saju exists
+    if (!report?.saju) return [];
+
     // --- Step 1: Social Persona (Month Pillar) ---
-    const dayMaster = report.saju.dayMaster || report.saju.fourPillars.day.gan;
-    const monthBranch = report.saju.fourPillars.month.ji;
+    // Safe extraction with optional chaining and fallbacks
+    // Handle both 'dayMaster' (direct) and 'fourPillars.day.gan' (nested)
+    const dayMaster = report.saju.dayMaster || report.saju.fourPillars?.day?.gan || '';
+    const monthBranch = report.saju.fourPillars?.month?.ji || '';
 
     const monthTenGodCode = calculateTenGod(dayMaster, monthBranch);
     const socialRole = getSocialRole(monthTenGodCode) || getSocialRole('pyun_gwan')!;
@@ -53,7 +66,10 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     });
 
     // --- Step 2: Inner Shadow (Hidden Mind / Jijanggan) ---
-    const dayBranch = report.saju.fourPillars?.day?.ji;
+    // Safe extraction
+    const dayBranchRaw = report.saju.fourPillars?.day?.ji;
+    const dayBranch = typeof dayBranchRaw === 'string' ? dayBranchRaw : String(dayBranchRaw || '');
+
     const hiddenMind = dayBranch ? getHiddenMind(dayBranch) : null;
 
     questions.push({
@@ -71,7 +87,9 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     });
 
     // --- Step 3: Lifecycle Void (Gongmang / Deficiency) ---
-    const isVoid = (dayBranch?.charCodeAt(0) || 0) % 3 === 0;
+    // Safety check for charCodeAt
+    const charCode = dayBranch.length > 0 ? dayBranch.charCodeAt(0) : 0;
+    const isVoid = charCode % 3 === 0;
 
     questions.push({
         id: 'step3_void',
