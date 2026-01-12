@@ -320,6 +320,8 @@ export async function POST(req: Request) {
         } catch (e) { console.error("Sentiment Error:", e); }
 
         // [Interrupt Question]
+        // [Interrupt Question] (Disabled by User Request)
+        /*
         const interruptQuestion = InterruptQuestionModule.checkInterrupt(currentMessageContent);
         if (interruptQuestion) {
             return new Response(JSON.stringify({
@@ -328,6 +330,7 @@ export async function POST(req: Request) {
                 interruptQuestion
             }), { headers: { 'Content-Type': 'application/json' } });
         }
+        */
 
 
         // [Logic] Prepare RAG Context
