@@ -154,7 +154,7 @@ export default function AwakeningChat({ onComplete, onClose }: AwakeningChatProp
             } else {
                 // End of Stage 1
                 setIsCompleted(true);
-                addBotMessage(`${reaction}이제 당신의 마음을 충분히 알겠습니다. 더 깊은 해결책을 드리기 위해 마스터에게 이 내용을 전달할까요?`);
+                addBotMessage(`${reaction}이제 당신의 마음을 충분히 알겠습니다. 더 깊은 해결책을 드리기 위해 명심 AI 코치에게 이 내용을 전달할까요?`);
             }
         }, 800);
     };
@@ -254,7 +254,7 @@ export default function AwakeningChat({ onComplete, onClose }: AwakeningChatProp
                         onClick={handleHandoff}
                         className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
                     >
-                        <span>마스터와 심층 상담 시작하기</span>
+                        <span>명심 AI 코치와 심층 상담 시작하기</span>
                         <ArrowRight size={18} />
                     </button>
                 )}

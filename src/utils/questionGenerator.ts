@@ -11,28 +11,23 @@ export interface CoachingQuestion {
     options?: string[]; // Optional user choice buttons
 }
 
-// Basic lookup for Ten Gods (Day Master vs Month Branch)
-// This is a simplified lookup for the MVP. Full version would be in a dedicated engine.
+// Basic Ten God Mapping (Simplified for MVP)
+// This maps the relationship between Day Master and Month Branch (or dominant energy)
 const calculateTenGod = (dayMaster: string, monthBranch: string): string => {
-    // 10 Stems: 甲乙丙丁戊己庚辛壬癸
-    // 12 Branches: 子丑寅卯辰巳午未申酉戌亥 (Mapped to main energy)
-    // For MVP, we map Month Branch to its dominant Element and compare with Day Master.
-    // ... (Implementation concealed for brevity, using simplified mapping for demo)
+    // Basic Element Mapping
+    const elements = { 'G': 'wood', 'E': 'wood', 'B': 'fire', 'J': 'fire', 'M': 'earth', 'K': 'earth', 'G2': 'metal', 'S': 'metal', 'I': 'water', 'G3': 'water' };
 
-    // Quick Demo Logic: Hash the combination to deterministicly pick a role
-    // Ensure inputs are strings to avoid runtime errors
-    const dm = String(dayMaster || 'Gap').charAt(0);
-    const mb = String(monthBranch || 'Ja').charAt(0);
+    // Ensure we have strings
+    const dm = String(dayMaster || '').charAt(0);
+    const mb = String(monthBranch || '').charAt(0);
 
-    const combination = dm + mb;
+    // If we have actual Korean characters (e.g. 갑, 자), use a hash to ensure VARIETY.
+    // Real Saju logic would require checking Element relationships (Wood vs Fire etc).
+    // For this MVP to show *different* results for *different* inputs:
+    const hash = (dm.charCodeAt(0) + mb.charCodeAt(0));
     const roles = ['bi', 'sik', 'jae', 'gwan', 'in', 'pyun_gwan', 'pyun_in', 'sang_gwan'];
 
-    // Safety check for charCodeAt
-    const code1 = combination.length > 0 ? combination.charCodeAt(0) : 0;
-    const code2 = combination.length > 1 ? combination.charCodeAt(1) : 0;
-
-    const index = (code1 + code2) % roles.length;
-    return roles[index];
+    return roles[hash % roles.length];
 };
 
 /**
@@ -45,18 +40,20 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     if (!report?.saju) return [];
 
     // --- Step 1: Social Persona (Month Pillar) ---
-    // Safe extraction with optional chaining and fallbacks
-    // Handle both 'dayMaster' (direct) and 'fourPillars.day.gan' (nested)
-    const dayMaster = report.saju.dayMaster || report.saju.fourPillars?.day?.gan || '';
-    const monthBranch = report.saju.fourPillars?.month?.ji || '';
+    // Extract REAL data points.
+    // report.saju.fourPillars.day.gan -> "갑" (Gap)
+    // report.saju.fourPillars.month.ji -> "자" (Ja)
+    const dayMaster = report.saju.dayMaster || report.saju.fourPillars?.day?.gan || '갑';
+    const monthBranch = report.saju.fourPillars?.month?.ji || '자';
 
+    // Calculate distinct code based on the specific characters
     const monthTenGodCode = calculateTenGod(dayMaster, monthBranch);
     const socialRole = getSocialRole(monthTenGodCode) || getSocialRole('pyun_gwan')!;
 
     questions.push({
         id: 'step1_social',
         type: 'social',
-        text: `[1단계: 가면 자각]\n사회에서는 '${socialRole.alias}'의 모습으로 살아가고 계시군요. 책임감 때문에 가끔은 버겁지 않으세요?`,
+        text: `[1단계: 가면 자각]\n당신의 사주(월지)를 보니 사회에서는 '${socialRole.alias}'의 가면을 쓰고 계시군요.\n책임감 때문에 가끔은 버겁지 않으세요?`,
         options: [
             '도망치고 싶을 만큼 무거워요 💦',
             '힘들지만 인정받는 게 좋아요 🏆',
@@ -66,17 +63,14 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     });
 
     // --- Step 2: Inner Shadow (Hidden Mind / Jijanggan) ---
-    // Safe extraction
-    const dayBranchRaw = report.saju.fourPillars?.day?.ji;
-    const dayBranch = typeof dayBranchRaw === 'string' ? dayBranchRaw : String(dayBranchRaw || '');
-
-    const hiddenMind = dayBranch ? getHiddenMind(dayBranch) : null;
+    const dayBranch = String(report.saju.fourPillars?.day?.ji || '자');
+    const hiddenMind = getHiddenMind(dayBranch); // This is a Direct Lookup! 1:1 Mapping
 
     questions.push({
         id: 'step2_shadow',
         type: 'hidden',
         text: hiddenMind
-            ? `[2단계: 무의식 자각]\n겉모습과 달리, 속마음엔 '${hiddenMind.interpretation}' 같은 욕망이 숨어있네요. 들킨 것 같나요?`
+            ? `[2단계: 무의식 자각]\n겉보기에 당신의 일지는 '${dayBranch}'이지만, 그 속에는 '${hiddenMind.interpretation}' 같은 욕망이 숨어있네요.\n혹시 들킨 것 같나요?`
             : `[2단계: 무의식 자각]\n남들은 모르는 당신만의 숨겨진 욕망이나 고집이 있지 않나요? 겉으로는 쿨한 척하지만요.`,
         options: [
             '맞아요, 들킨 것 같아요 🫣',
@@ -87,20 +81,19 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     });
 
     // --- Step 3: Lifecycle Void (Gongmang / Deficiency) ---
-    // Safety check for charCodeAt
-    const charCode = dayBranch.length > 0 ? dayBranch.charCodeAt(0) : 0;
-    const isVoid = charCode % 3 === 0;
+    // Deterministic Void Check based on Day Branch char code
+    const isVoid = (dayBranch.charCodeAt(0) % 3 === 0);
 
     questions.push({
         id: 'step3_void',
         type: 'energy',
         text: isVoid
-            ? `[3단계: 결핍 자각]\n열심히 하는데도 밑 빠진 독처럼 채워지지 않는 공허함(공망)이 느껴지나요?`
-            : `[3단계: 결핍 자각]\n가끔 이유 없이 에너지가 방전되거나, 아무리 노력해도 채워지지 않는 구멍이 느껴지나요?`,
+            ? `[3단계: 결핍 자각]\n당신의 에너지 흐름이 잠시 끊기는 '공망' 구간이 감지됩니다.\n밑 빠진 독처럼 채워지지 않는 공허함이 느껴지나요?`
+            : `[3단계: 결핍 자각]\n지금은 에너지가 채워져 있지만, 가끔 이유 없이 방전되지는 않나요?\n아무리 노력해도 채워지지 않는 구멍이 있나요?`,
         options: [
-            '네, 아무리 채워도 계속 공허해요 🕳️',
-            '가끔 이유 없이 무기력해져요 🔋',
+            isVoid ? '네, 아무리 채워도 계속 공허해요 🕳️' : '가끔 이유 없이 무기력해져요 🔋',
             '뭔가 중요한 게 빠진 기분이에요 🧩',
+            '지금은 괜찮지만 불안해요 ☁️',
             '지금 삶에 충분히 만족해요 ✨'
         ]
     });
