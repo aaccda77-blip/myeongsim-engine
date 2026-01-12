@@ -55,7 +55,7 @@ export default function AwakeningChat({ onComplete, onClose }: AwakeningChatProp
 
             // Start first question
             if (fullCourse.length > 0) {
-                addBotMessage(fullCourse[0].text, fullCourse[0].options);
+                addBotMessage(fullCourse[0].text);
             }
         } else {
             addBotMessage("사용자 데이터를 불러오는 중 오류가 발생했습니다.");
