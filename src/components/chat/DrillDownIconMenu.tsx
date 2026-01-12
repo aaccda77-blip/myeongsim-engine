@@ -446,6 +446,9 @@ export default function DrillDownIconMenu({
     const [showDiscoveryChat, setShowDiscoveryChat] = useState(false);
     const [discoveryChatIntent, setDiscoveryChatIntent] = useState<string>('');
 
+    const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
+    const { reportData } = useReportStore();
+
 
     // [NEW] 이용권 상태 확인
     const { isExpired } = useSubscription();
@@ -882,6 +885,27 @@ export default function DrillDownIconMenu({
 
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>
+                {/* [NEW] My Report Icon (Fixed First Position) */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowReportModal(true)}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        // Special Gold Styling for Report
+                        background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(180, 83, 9, 0.2))',
+                        border: '1px solid rgba(251, 191, 36, 0.3)',
+                        boxShadow: '0 4px 15px rgba(251, 191, 36, 0.2)'
+                    }}>
+                        {/* Clipboard Icon */}
+                        <span style={{ fontSize: '20px' }}>📋</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#FCD34D' }}>내 리포트</div>
+                        <div style={styles.neuroTrigger}>진단요약</div>
+                    </div>
+                </button>
+
                 {icons.map((icon) => {
                     const isHovered = hoveredIcon === icon.id;
                     const friendlyLabel = FRIENDLY_LABELS[icon.id] || {
