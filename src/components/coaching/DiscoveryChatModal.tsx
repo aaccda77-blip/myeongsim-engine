@@ -31,32 +31,36 @@ const getNextBotResponse = (step: number, userText: string, userProfile: any, in
 
     const dayMaster = getChar(dayMasterRaw);
 
-    // [Scenario A] 일간 심층 분석 (Day Master) - 기존 로직 유지 및 고도화
+    // [Fix] Import Scenarios
+    import { DAY_MASTER_SCENARIOS, DEFAULT_SCENARIO } from '../../data/SajuContentDB';
+
+    // [Scenario A] 일간 심층 분석 (Day Master) - Dynamic Content Loading
     if (intent === 'day_master_deep') {
+        const scenario = DAY_MASTER_SCENARIOS[dayMaster] || DEFAULT_SCENARIO;
+
         if (step === 0) {
             return {
-                text: `안녕하세요, ${name}님! **${dayMaster} (일간)**은 당신의 가장 깊은 본질을 상징합니다. ✨ 혹시 살면서 남들보다 예민하다고 느꼈던 순간이, 사실은 남들이 못 보는 걸 보는 **섬세한 능력**이었다는 걸 알고 계셨나요?`,
+                text: scenario.step1_text.replace(/\$\{name\}/g, name).replace(/\$\{dayMaster\}/g, dayMaster),
                 choices: [
-                    '네, 예민함 때문에 힘들 때가 많았어요',
-                    '나만의 특별한 감각이라고 생각했어요',
+                    '네, 그런 것 같아요',
+                    '나만의 특별한 점이라고 생각했어요',
                     '잘 모르겠어요, 더 알려주세요'
                 ]
             };
         }
         if (step === 1) {
             return {
-                text: `그렇군요. 그 예민함은 사실 ${name}님만이 가진 **'${dayMaster}의 금빛 레이더'**입니다. 하지만 이 감각이 제어가 안 되면 나를 찌르는 칼날이 되기도 하죠. 혹시 완벽하게 하고 싶어서 시작조차 못 했던 경험이 있지 않으신가요?`,
-                choices: ['맞아요, 생각만 하다가 포기한 적 많아요', '실수할까 봐 늘 불안해요', '완벽주의 성향이 강한 편이에요', '아니요, 저는 일단 저지르는 편이에요']
+                text: scenario.step2_text.replace(/\$\{name\}/g, name),
+                choices: ['맞아요, 공감됩니다', '비슷한 경험이 있어요', '어떻게 고쳐야 할까요?', '아니요, 저는 좀 다른 것 같아요']
             };
         }
         if (step === 2) {
             return {
-                text: `바로 그겁니다. ${name}님의 **완벽주의**는 재능이지만, 동시에 가장 큰 **다크 코드**이기도 합니다. 이제 그 예민함을 '나를 찌르는 칼'이 아니라 '세상을 조각하는 조각칼'로 써보세요. 오늘 딱 하나, 마음에 안 들어도 그냥 끝까지 해보는 **'하루 1번 대충하기 미션'**을 제안드리고 싶습니다. 어떠신가요?`,
-                choices: ['재미있겠네요, 해볼게요!', '어떤 행동부터 할까요?', '혼자서는 힘들 것 같아요']
+                text: scenario.step3_text.replace(/\$\{name\}/g, name),
+                choices: ['재미있겠네요, 해볼게요!', '오늘 바로 시도해볼게요', '혼자서는 힘들 것 같아요']
             };
         }
     }
-
     // [Scenario B] 일반적인 자각 탐구 (Generic Fallback)
     const topic = title || '이 주제';
     if (step === 0) {
