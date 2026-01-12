@@ -124,10 +124,10 @@ export default function MentalPrescriptionV2({ isOpen, onClose, userId, onComple
                                 <p className="text-sm text-gray-400">"머리가 아닌 <b>몸(Body)</b>이 느끼는 그대로"</p>
                             </div>
                             <div className="space-y-6">
-                                <ScoreSlider label="몸 (Body)" icon={<Activity size={16} className="text-emerald-400" />} value={scores.ur_body} onChange={(v) => handleScoreChange('ur_body', v)} accentColor="accent-emerald-500" />
-                                <ScoreSlider label="마음 (Mind)" icon={<Heart size={16} className="text-purple-400" />} value={scores.ul_mind} onChange={(v) => handleScoreChange('ul_mind', v)} accentColor="accent-purple-500" />
-                                <ScoreSlider label="관계 (Relation)" icon={<Users size={16} className="text-pink-400" />} value={scores.ll_relation} onChange={(v) => handleScoreChange('ll_relation', v)} accentColor="accent-pink-500" />
-                                <ScoreSlider label="환경/성취 (Env)" icon={<Zap size={16} className="text-blue-400" />} value={scores.lr_system} onChange={(v) => handleScoreChange('lr_system', v)} accentColor="accent-blue-500" />
+                                <ScoreSlider label="몸 (Body)" icon={<Activity size={16} className="text-emerald-400" />} value={scores.ur_body} onChange={(v: number) => handleScoreChange('ur_body', v)} accentColor="accent-emerald-500" />
+                                <ScoreSlider label="마음 (Mind)" icon={<Heart size={16} className="text-purple-400" />} value={scores.ul_mind} onChange={(v: number) => handleScoreChange('ul_mind', v)} accentColor="accent-purple-500" />
+                                <ScoreSlider label="관계 (Relation)" icon={<Users size={16} className="text-pink-400" />} value={scores.ll_relation} onChange={(v: number) => handleScoreChange('ll_relation', v)} accentColor="accent-pink-500" />
+                                <ScoreSlider label="환경/성취 (Env)" icon={<Zap size={16} className="text-blue-400" />} value={scores.lr_system} onChange={(v: number) => handleScoreChange('lr_system', v)} accentColor="accent-blue-500" />
                             </div>
                             <div>
                                 <label className="text-sm font-bold text-gray-200 mb-3 block">지금 내 기분은?</label>

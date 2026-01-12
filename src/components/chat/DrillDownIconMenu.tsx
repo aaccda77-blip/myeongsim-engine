@@ -41,6 +41,10 @@ const BreathingGuideModal = dynamic(() => import('@/components/bio/BreathingGuid
 // 차트 컴포넌트 동적 임포트 (SSR 방지)
 const StrengthRadarChart = dynamic(() => import('@/components/charts/StrengthRadarChart'), { ssr: false });
 const VisualSajuDashboard = dynamic(() => import('@/components/visual/VisualSajuDashboard'), { ssr: false });
+// [NEW] 108 자각 Content Modals
+const SajuSummaryModal = dynamic(() => import('@/components/coaching/SajuSummaryModal'), { ssr: false });
+const DiscoveryChatModal = dynamic(() => import('@/components/coaching/DiscoveryChatModal'), { ssr: false });
+
 
 
 // ============== 스타일 ==============
@@ -318,8 +322,40 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
     DAILY_MISSION: { main: '오늘운세', sub: '지금 뭘 해야 운이 트일까?' },
     SAJU_ANALYSIS: { main: '사주분석', sub: '운명의 설계도 확인' },
     BIO_SYNC: { main: '생체연동', sub: '실시간 운명 동기화' },
-    STRESS_RELIEF: { main: '명심힐링', sub: '지친 마음 쉬어가기' }, // [New] Added label
+    STRESS_RELIEF: { main: '명심힐링', sub: '지친 마음 쉬어가기' },
+    PATH_108: { main: '108자각', sub: '내면의 빛을 찾는 여정' }, // [New] Added label
 };
+
+// ============== Helper: Dynamic Text Resolution ==============
+const resolveDynamicText = (text: string | undefined, userProfile: any): string => {
+    if (!text) return '';
+    if (!userProfile?.saju) return text.replace(/\{\{.*?\}\}/g, '...'); // Fallback if no data
+
+    let resolved = text;
+    const saju = userProfile.saju;
+    const Ganji = {
+        year: `${saju.yearPillar?.stem || ''}${saju.yearPillar?.branch || ''}`,
+        month: `${saju.monthPillar?.stem || ''}${saju.monthPillar?.branch || ''}`,
+        day: `${saju.dayPillar?.stem || ''}${saju.dayPillar?.branch || ''}`,
+        hour: `${saju.hourPillar?.stem || ''}${saju.hourPillar?.branch || ''}`,
+    };
+
+    // 1. Ganji Placeholders
+    resolved = resolved.replace('{{SAJU_GANJI}}', `${Ganji.year} ${Ganji.month} ${Ganji.day} ${Ganji.hour}`);
+    resolved = resolved.replace('{{DAY_MASTER}}', saju.dayPillar?.stem || '일간');
+    resolved = resolved.replace('{{YEAR_PILLAR}}', Ganji.year || '년주');
+    resolved = resolved.replace('{{MONTH_PILLAR}}', Ganji.month || '월주');
+    resolved = resolved.replace('{{HOUR_PILLAR}}', Ganji.hour || '시주');
+
+    // 2. Logic Placeholders (Simplified for now)
+    resolved = resolved.replace('{{WEAK_ELEMENT}}', '부족한 기운'); // TODO: Implement logic
+    resolved = resolved.replace('{{GONGMANG}}', '공망');             // TODO: Implement logic
+    resolved = resolved.replace('{{CURRENT_DAEWOON}}', '현재 대운'); // TODO: Implement logic
+    resolved = resolved.replace('{{CURRENT_YEAR_GANJI}}', '을사(乙巳)'); // 2025 Fixed
+
+    return resolved;
+};
+
 // ============== Props ==============
 interface DrillDownIconMenuProps {
     userProfile?: any;
@@ -336,7 +372,13 @@ export default function DrillDownIconMenu({
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [selectedIcon, setSelectedIcon] = useState<MainIcon | null>(null);
     const [hoveredSubItem, setHoveredSubItem] = useState<string | null>(null);
+
     const [isLoading, setIsLoading] = useState(false);
+
+    // [New] Nested Navigation State
+    const [currentMenuDepth, setCurrentMenuDepth] = useState<SubMenuItem[] | null>(null); // 현재 보여줄 하위 메뉴 리스트
+    const [menuBreadcrumb, setMenuBreadcrumb] = useState<{ id: string, label: string }[]>([]); // 네비게이션 경로
+
 
     // [Pulse 5] Visual Dashboard State
     const [showVisualDashboard, setShowVisualDashboard] = useState(false);
@@ -359,7 +401,14 @@ export default function DrillDownIconMenu({
     const [showMusicPlayer, setShowMusicPlayer] = useState(false);
     // [NEW] Talent Report Modal State
     const [showTalentReportModal, setShowTalentReportModal] = useState(false);
+
     const [talentReportData, setTalentReportData] = useState<any>(null);
+
+    // [NEW] 108 자각 Modals State
+    const [showSajuSummary, setShowSajuSummary] = useState(false);
+    const [showDiscoveryChat, setShowDiscoveryChat] = useState(false);
+    const [discoveryChatIntent, setDiscoveryChatIntent] = useState<string>('');
+
 
     // [NEW] 이용권 상태 확인
     const { isExpired } = useSubscription();
@@ -463,10 +512,23 @@ export default function DrillDownIconMenu({
         }
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         setSelectedIcon(icon);
+
+        // [Reset] Navigation State Reset on Main Icon Click
+        setCurrentMenuDepth(icon.sub_menus);
+        setMenuBreadcrumb([]);
     };
 
     // 서브메뉴 선택 핸들러
+    // 서브메뉴 선택 핸들러
     const handleSubMenuSelect = (subItem: SubMenuItem) => {
+
+        // [Navigation] 하위 메뉴가 있는 경우 (Depth 진입)
+        if (subItem.children && subItem.children.length > 0) {
+            setMenuBreadcrumb(prev => [...prev, { id: subItem.id, label: subItem.label }]);
+            setCurrentMenuDepth(subItem.children);
+            if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(5);
+            return;
+        }
 
 
         // [FIX] 사주 원국 분석 시 비주얼 대시보드 열기
@@ -530,6 +592,24 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
+        if (subItem.id.startsWith('p_')) {
+            setSelectedIcon(null);
+
+            // p_1 (사주 핵심 요약)은 전용 시각화 모달 사용
+            if (subItem.intent === 'saju_core_summary') {
+                setShowSajuSummary(true);
+                return;
+            }
+
+            // 나머지는 모두 Discovery Chat 실행
+            console.log('Starting Discovery Chat for:', subItem.intent);
+            setDiscoveryChatIntent(subItem.intent);
+            setShowDiscoveryChat(true);
+            return;
+        }
+
+
         // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동
         if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
             setSelectedIcon(null);
@@ -576,8 +656,34 @@ export default function DrillDownIconMenu({
     };
 
     // Bottom Sheet 닫기
+    // Bottom Sheet 닫기
     const handleClose = () => {
         setSelectedIcon(null);
+        setCurrentMenuDepth(null);
+        setMenuBreadcrumb([]);
+    };
+
+    // [Navigation] 뒤로가기 핸들러
+    const handleBack = () => {
+        if (menuBreadcrumb.length === 0) return; // 최상위면 동작 X
+
+        const newBreadcrumb = [...menuBreadcrumb];
+        newBreadcrumb.pop(); // 현재 위치 제거
+        setMenuBreadcrumb(newBreadcrumb);
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(5);
+
+        // 이전 뎁스의 메뉴 리스트 찾기 (Recalculate path)
+        // 1. 최상위(selectedIcon.sub_menus)부터 시작
+        let targetList = selectedIcon?.sub_menus || [];
+
+        // 2. 남은 breadcrumb를 따라 내려감
+        for (const crumb of newBreadcrumb) {
+            const found = targetList.find(item => item.id === crumb.id);
+            if (found && found.children) {
+                targetList = found.children;
+            }
+        }
+        setCurrentMenuDepth(targetList);
     };
 
     // [Pulse 5] Dashboard Chat Intent Handler
@@ -605,6 +711,27 @@ export default function DrillDownIconMenu({
                 )
             }
 
+            {/* [NEW] Saju Summary Modal */}
+            <SajuSummaryModal
+                isOpen={showSajuSummary}
+                onClose={() => setShowSajuSummary(false)}
+                userProfile={userProfile}
+                onStartChat={(intent) => {
+                    setShowSajuSummary(false);
+                    setDiscoveryChatIntent(intent);
+                    setTimeout(() => setShowDiscoveryChat(true), 300); // 딜레이 후 대화창 오픈
+                }}
+            />
+
+            {/* [NEW] Discovery Chat Modal (AI Coach) */}
+            <DiscoveryChatModal
+                isOpen={showDiscoveryChat}
+                onClose={() => setShowDiscoveryChat(false)}
+                userProfile={userProfile}
+                initialIntent={discoveryChatIntent}
+                title={FRIENDLY_LABELS['PATH_108']?.main || '내면의 빛 탐구'}
+            />
+
             {/* [NEW] Therapy Archetype Modal */}
             {
                 showTherapyModal && selectedTherapyArchetype && (
@@ -619,6 +746,24 @@ export default function DrillDownIconMenu({
                     />
                 )
             }
+
+            {/* [NEW] AI Chat Modal for '108 Paths' */}
+            <AnimatePresence>
+                {showDiscoveryChat && (
+                    <DiscoveryChatModal
+                        isOpen={showDiscoveryChat}
+                        onClose={() => setShowDiscoveryChat(false)}
+                        userProfile={userProfile}
+                        initialIntent={discoveryChatIntent || '108_awareness'}
+                        title="108 자각 탐구 프로토콜"
+                        onConvertToMainChat={(summary) => {
+                            // 메인 채팅으로 컨텍스트 전달
+                            const contextPrompt = `[SYSTEM] 사용자가 '108 자각' 모드에서 깊은 상담을 요청했습니다. 아래 대화 맥락을 이어서 진행해주세요.\n\n[이전 대화 요약]\n${summary}\n\n[요청]\n위 내용을 바탕으로, 사용자의 내면 탐구를 더 깊이 도와주는 코칭을 시작하세요.`;
+                            onSelectIntent('chat_handoff', contextPrompt);
+                        }}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* [NEW] Integral Check-in Modal */}
             <AnimatePresence>
@@ -770,19 +915,47 @@ export default function DrillDownIconMenu({
 
                         {/* 헤더 */}
                         <div style={styles.sheetHeader}>
-                            <span style={styles.sheetIcon}>{selectedIcon.icon}</span>
+                            {/* [Navigation] Back Button (Breadcrumb 있을 때만 표시) */}
+                            {menuBreadcrumb.length > 0 ? (
+                                <button
+                                    onClick={handleBack}
+                                    style={{
+                                        background: 'rgba(255,255,255,0.1)',
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        width: '32px',
+                                        height: '32px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#fff',
+                                        cursor: 'pointer',
+                                        marginRight: '8px'
+                                    }}
+                                >
+                                    ←
+                                </button>
+                            ) : (
+                                <span style={styles.sheetIcon}>{selectedIcon.icon}</span>
+                            )}
+
                             <div>
                                 <div style={styles.sheetTitle}>
-                                    {FRIENDLY_LABELS[selectedIcon.id]?.main || selectedIcon.label}
+                                    {/* Breadcrumb가 있으면 마지막 항목 이름을 타이틀로, 아니면 메인 타이틀 */}
+                                    {menuBreadcrumb.length > 0
+                                        ? menuBreadcrumb[menuBreadcrumb.length - 1].label
+                                        : (FRIENDLY_LABELS[selectedIcon.id]?.main || selectedIcon.label)}
                                 </div>
                                 <div style={styles.sheetSubtitle}>
-                                    {selectedIcon.neuro_trigger}
+                                    {menuBreadcrumb.length > 0
+                                        ? '상세 항목을 선택해주세요'
+                                        : selectedIcon.neuro_trigger}
                                 </div>
                             </div>
                         </div>
 
-                        {/* 🎯 성격분석 메뉴: 레이더 차트 (Golden Zone) */}
-                        {selectedIcon.id === 'PERSONALITY_ANALYSIS' && (
+                        {/* 🎯 성격분석 메뉴: 레이더 차트 (Golden Zone) - 최상위 레벨에서만 표시 */}
+                        {selectedIcon.id === 'PERSONALITY_ANALYSIS' && menuBreadcrumb.length === 0 && (
                             <div style={{
                                 marginBottom: '20px',
                                 padding: '16px',
@@ -805,6 +978,49 @@ export default function DrillDownIconMenu({
                                 </p>
                             </div>
                         )}
+
+                        {/* 서브메뉴 리스트 (Dynamic Rendering) */}
+                        <div style={{ paddingBottom: '40px' }}>
+                            {/* currentMenuDepth를 우선 사용, 없으면(초기) selectedIcon.sub_menus 사용 */}
+                            {(currentMenuDepth || selectedIcon.sub_menus).map((subItem) => {
+                                const isHovered = hoveredSubItem === subItem.id;
+
+                                // [Dynamic] 텍스트 치환 (사용자 사주 정보 반영)
+                                const resolvedLabel = resolveDynamicText(subItem.label, userProfile);
+                                const resolvedDesc = resolveDynamicText(subItem.desc, userProfile);
+
+                                return (
+                                    <div
+                                        key={subItem.id}
+                                        style={{
+                                            ...styles.subMenuItem,
+                                            ...(isHovered ? styles.subMenuItemHover : {}),
+                                        }}
+                                        onMouseEnter={() => setHoveredSubItem(subItem.id)}
+                                        onMouseLeave={() => setHoveredSubItem(null)}
+                                        onClick={() => handleSubMenuSelect(subItem)}
+                                    >
+                                        <span style={styles.subMenuIcon}>
+                                            {/* 하위 메뉴가 있으면 폴더 아이콘, 아니면 메인 아이콘/기본값 */}
+                                            {subItem.children ? '📂' : (subItem.icon || selectedIcon.icon)}
+                                        </span>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={styles.subMenuLabel}>{resolvedLabel}</div>
+                                            {resolvedDesc && (
+                                                <div style={styles.subMenuDesc}>{resolvedDesc}</div>
+                                            )}
+                                        </div>
+
+                                        {/* 네비게이션 화살표 or 프리미엄 배지 */}
+                                        {subItem.children ? (
+                                            <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>ᐳ</span>
+                                        ) : subItem.isPremium && (
+                                            <span style={styles.premiumBadge}>PRO</span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
 
                         {/* [New] Trait Description Modal (Overlay) */}
                         {/* [New] Trait Bottom Sheet (Premium UX) */}

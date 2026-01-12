@@ -18,6 +18,7 @@ export interface SubMenuItem {
     intent: string;
     icon?: string;
     isPremium?: boolean;
+    children?: SubMenuItem[]; // [NEW] 3단계 중첩 메뉴 지원
 }
 
 export interface MainIcon {
@@ -403,6 +404,44 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 intent: "play_healing_music"
             }
         ]
+    },
+
+    // ============== 108 자각 (New Nested Menu) ==============
+    // 9. 108 자각 (내면의 빛)
+    PATH_108: {
+        id: 'PATH_108',
+        label: "108 자각",
+        icon: "🧘",
+        neuro_trigger: "내면의 빛을 깨우는 여정",
+        style: 'premium_purple',
+        sub_menus: [
+            {
+                id: "cat_know_myself",
+                label: "🧭 나를 알기 (Discover My Blueprint)",
+                desc: "나의 본질 탐구 (18 Paths)",
+                intent: "NAV_KNOW_MYSELF",
+                children: [
+                    { id: "p_1", label: "1. 나의 사주 핵심 요약", desc: "{{SAJU_GANJI}} 상세 분석", intent: "saju_core_summary" },
+                    { id: "p_2", label: "2. 일간(日干) 심층 분석", desc: "{{DAY_MASTER}}의 본질적 특성과 잠재력", intent: "day_master_deep" },
+                    { id: "p_3", label: "3. 월주(月柱) 사회적 역할", desc: "{{MONTH_PILLAR}}를 통한 사회적 관계와 직업 통찰", intent: "month_pillar_role" },
+                    { id: "p_4", label: "4. 년주(年柱) 뿌리 & 잠재력", desc: "{{YEAR_PILLAR}}의 강인함과 공망의 재해석", intent: "year_pillar_roots" },
+                    { id: "p_5", label: "5. 시주(時柱) 숨겨진 욕망", desc: "{{HOUR_PILLAR}}를 통한 말년 운과 자녀 관계", intent: "hour_pillar_desire" },
+                    { id: "p_6", label: "6. 나의 오행 균형 리포트", desc: "{{WEAK_ELEMENT}} 부족 심층 해설", intent: "ohaeng_balance_report" },
+                    { id: "p_7", label: "7. 오행 에너지 보충 가이드", desc: "부족한 {{WEAK_ELEMENT}} 보완 전략", intent: "ohaeng_supplement_guide" },
+                    { id: "p_8", label: "8. 나의 공망(空亡) 심층 해석", desc: "{{GONGMANG}} 공망의 의미와 재해석", intent: "gongmang_deep_analysis" },
+                    { id: "p_9", label: "9. 공망의 '숨겨진 선물' 탐색", desc: "독창성, 개척 정신 발견", intent: "gongmang_gift_discovery" },
+                    { id: "p_10", label: "10. 현재 대운(大運) 흐름", desc: "{{CURRENT_DAEWOON}} 대운의 의미와 영향", intent: "daewoon_flow_current" },
+                    { id: "p_11", label: "11. 현재 세운(歲運) 에너지", desc: "{{CURRENT_YEAR_GANJI}} 세운의 기회와 도전", intent: "seun_energy_current" },
+                    { id: "p_12", label: "12. 나의 인생 챕터 전환", desc: "현재 대운/세운을 통한 삶의 전환점", intent: "life_chapter_transition" },
+                    { id: "p_13", label: "13. 핵심 자아 강점 시각화", desc: "내면의 빛나는 특성 이미지화", intent: "core_strength_visualization" },
+                    { id: "p_14", label: "14. 타고난 기질 Q&A", desc: "나의 선천적 기질에 대한 궁금증 해소", intent: "innate_temperament_qna" },
+                    { id: "p_15", label: "15. 사주와 내 성격 연결하기", desc: "성격 형성 과정에서의 사주 영향", intent: "saju_personality_link" },
+                    { id: "p_16", label: "16. 나의 운명 키워드 3가지", desc: "AI가 추출한 핵심 키워드", intent: "fate_keywords_3" },
+                    { id: "p_17", label: "17. 사주 물상론적 해석", desc: "나를 자연에 비유한 이야기", intent: "saju_nature_metaphor" },
+                    { id: "p_18", label: "18. 사주를 통한 천직(天職) 탐색", desc: "나에게 맞는 업의 형태", intent: "saju_calling_exploration" }
+                ]
+            }
+        ]
     }
 };
 
@@ -510,7 +549,8 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
         'PERSONALITY_ANALYSIS': 14,// 5. 성격분석
         'DAILY_MISSION': 15,       // 6. 데일리 미션
         'SAJU_ANALYSIS': 16,       // 7. 사주분석 (Restored)
-        'STRESS_RELIEF': 17        // 8. 명심 힐링 (New)
+        'STRESS_RELIEF': 17,       // 8. 명심 힐링 (New)
+        'PATH_108': 1              // [New] 108 자각 (최상단 배치)
     };
 
     return mappedIcons.sort((a, b) => {
@@ -568,7 +608,27 @@ export function generateChatPromptFromIntent(intent: string, userProfile?: any):
         'premium_report_full': '80페이지 프리미엄 리포트를 생성해주세요.',
 
         // 통합 체크인 (System)
-        'integral_checkin_view': '오늘의 통합 체크인을 시작합니다.'
+        'integral_checkin_view': '오늘의 통합 체크인을 시작합니다.',
+
+        // [NEW] 108 자각 (나를 알기) Intents
+        'saju_core_summary': '나의 사주 팔자(사주 원국)를 상세히 분석해주세요.',
+        'day_master_deep': '내 일간(Day Master)의 본질적 특성과 잠재력에 대해 깊이 있게 대화하고 싶습니다.',
+        'month_pillar_role': '내 월주(Month Pillar)가 의미하는 사회적 역할과 직업적 특성은 무엇인가요?',
+        'year_pillar_roots': '내 년주(Year Pillar)에 담긴 나의 뿌리와 초기 잠재력은 무엇인가요?',
+        'hour_pillar_desire': '내 시주(Hour Pillar)에 숨겨진 말년의 욕망과 자녀 운은 어떤가요?',
+        'ohaeng_balance_report': '내 사주의 오행 균형 상태를 분석하고, 과하거나 부족한 기운에 대해 알려주세요.',
+        'ohaeng_supplement_guide': '내 사주에서 부족한 오행 에너지를 어떻게 보충할 수 있나요? 구체적인 가이드를 주세요.',
+        'gongmang_deep_analysis': '내 사주의 공망(Void)이 의미하는 바를 심층적으로 해석해주세요.',
+        'gongmang_gift_discovery': '공망이 주는 긍정적인 면, 즉 숨겨진 선물과 독창성은 무엇인가요?',
+        'daewoon_flow_current': '현재 대운의 흐름과 그것이 내 삶에 미치는 영향을 분석해주세요.',
+        'seun_energy_current': '올해 세운(Yearly Luck)의 에너지와 내가 맞이할 기회와 도전은 무엇인가요?',
+        'life_chapter_transition': '대운과 세운의 변화를 통해 내 인생의 챕터가 어떻게 바뀌고 있는지 알려주세요.',
+        'core_strength_visualization': '내 사주의 핵심 강점을 시각적인 이미지로 묘사해주세요.',
+        'innate_temperament_qna': '나의 타고난 기질에 대해 궁금한 점이 있습니다. 질의응답을 시작해주세요.',
+        'saju_personality_link': '내 성격이 형성된 과정을 사주적 관점에서 연결하여 설명해주세요.',
+        'fate_keywords_3': '내 운명을 관통하는 핵심 키워드 3가지를 추출하고 설명해주세요.',
+        'saju_nature_metaphor': '나를 자연물(물상)에 비유한다면 어떤 모습인가요? 이야기로 들려주세요.',
+        'saju_calling_exploration': '내 사주에 맞는 천직(Calling)과 업의 형태를 탐색하고 싶습니다.'
     };
 
     return prompts[intent] || '이 주제에 대해 분석해주세요.';
