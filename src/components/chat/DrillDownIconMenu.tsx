@@ -888,7 +888,10 @@ export default function DrillDownIconMenu({
                 {/* [NEW] My Report Icon (Fixed First Position) */}
                 <button
                     style={styles.iconButton}
-                    onClick={() => setShowReportModal(true)}
+                    onClick={() => {
+                        console.log('📋 My Report Button Clicked!');
+                        setShowReportModal(true);
+                    }}
                 >
                     <div style={{
                         ...styles.iconWrapper,
