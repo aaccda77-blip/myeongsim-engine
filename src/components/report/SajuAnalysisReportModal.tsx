@@ -49,11 +49,18 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
             wood: '🌲', fire: '🔥', earth: '⛰️', metal: '⚔️', water: '🌊'
         };
 
-        // State (Mock Core Dynamics Engine for now - consistent hash based on dayMaster)
-        // In a real app, this would come from the expensive calculation engine
-        const levelBase = 400;
-        const levelOffset = (dmChar.charCodeAt(0) % 100);
-        const level = levelBase + levelOffset;
+        // State: Dynamic Consciousness Level Calculation
+        const levelBase = 350;
+        const identityOffset = (dmChar.charCodeAt(0) % 100); // 0~99 (User Fixed)
+
+        // Date Variance (Changes daily)
+        const today = new Date();
+        const dailyOffset = ((today.getDate() * 13) + (today.getMonth() * 7)) % 50; // 0~49
+
+        // Session Variance (Changes on refresh)
+        const sessionOffset = Math.floor(Math.random() * 20); // 0~19
+
+        const level = levelBase + identityOffset + dailyOffset + sessionOffset;
 
         return {
             identity: {
