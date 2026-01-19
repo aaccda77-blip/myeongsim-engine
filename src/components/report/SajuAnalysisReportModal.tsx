@@ -50,15 +50,16 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
         };
 
         // State: Dynamic Consciousness Level Calculation
-        const levelBase = 350;
+        const levelBase = 355;
         const identityOffset = (dmChar.charCodeAt(0) % 100); // 0~99 (User Fixed)
 
         // Date Variance (Changes daily)
         const today = new Date();
         const dailyOffset = ((today.getDate() * 13) + (today.getMonth() * 7)) % 50; // 0~49
 
-        // Session Variance (Changes on refresh)
-        const sessionOffset = Math.floor(Math.random() * 20); // 0~19
+        // Session Variance (Client-side only)
+        // Ensure this changes on every component mount (if client-side)
+        const sessionOffset = typeof window !== 'undefined' ? Math.floor(Math.random() * 25) : 0;
 
         const level = levelBase + identityOffset + dailyOffset + sessionOffset;
 
@@ -181,7 +182,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
 
                                     <div className="relative z-10 flex justify-between items-end">
                                         <div>
-                                            <p className="text-xs text-gray-400 mb-1">의식 레벨 (Consciousness)</p>
+                                            <p className="text-xs text-emerald-400 mb-1 animate-pulse">의식 레벨 (Real-time Scan)</p>
                                             <div className="flex items-baseline gap-2">
                                                 <span className="text-3xl font-serif font-bold text-white">{analysis.state.level}</span>
                                                 <span className="text-xs text-emerald-400 font-bold">{analysis.state.msg}</span>
