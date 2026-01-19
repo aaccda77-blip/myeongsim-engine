@@ -1945,7 +1945,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     <div className="h-48 relative group">
                                                         {/* Real Image Rendering via Pollinations AI (Generative) */}
                                                         <img
-                                                            src={`https://image.pollinations.ai/prompt/${encodeURIComponent((imageGenPrompt || 'Quantum Neural Network, holographic data stream, glowing golden particles, hyper-realistic, 8k, futuristic UI interface, deep cybernetic background, Unreal Engine 5 render, no text').replace(/nature|forest|flower/gi, 'digital constructs') + ' futuristic sci-fi style, glowing neon gold and blue, cinematic lighting, 3d render')}?width=800&height=600&nologo=true`}
+                                                            src={`https://image.pollinations.ai/prompt/${encodeURIComponent((imageGenPrompt || 'Quantum Neural Network, holographic data stream, glowing golden particles, hyper-realistic, 8k, futuristic UI interface, deep cybernetic background, Unreal Engine 5 render, no text').replace(/nature|forest|flower/gi, 'digital constructs') + ' futuristic sci-fi style, glowing neon gold and blue, cinematic lighting, 3d render')}?width=800&height=600&nologo=true&private=true&model=flux&enhance=false`}
                                                             alt={imageGenPrompt || "Visualizing..."}
                                                             className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
                                                             onError={(e) => {
@@ -2194,7 +2194,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[400px] mt-3 mb-4 animate-fade-in-up">
                                                         <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg">
                                                             <img
-                                                                src={`https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=600&height=400&nologo=true&seed=${randomSeed}`}
+                                                                src={`https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=600&height=400&nologo=true&private=true&model=flux&enhance=false&seed=${randomSeed}`}
                                                                 alt="상담 이미지"
                                                                 className="w-full h-auto object-cover"
                                                                 loading="lazy"
