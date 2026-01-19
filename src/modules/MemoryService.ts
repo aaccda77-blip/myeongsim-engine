@@ -74,4 +74,43 @@ export class MemoryServiceModule {
             console.error("Memory Save Error:", e);
         }
     }
+    /**
+     * [NEW] Persistent Chat History (Session Restore)
+     * Fetches the last N messages for the chat window.
+     */
+    static async fetchRecentChatLogs(userId: string, limit: number = 50): Promise<any[]> {
+        try {
+            const { data, error } = await supabase
+                .from('chat_logs')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false }) // Latest first to limit
+                .limit(limit);
+
+            if (error) throw error;
+
+            // Return in chronological order
+            return data ? data.reverse() : [];
+        } catch (e) {
+            console.error("Chat Log Fetch Error:", e);
+            return [];
+        }
+    }
+
+    /**
+     * [NEW] Save individual chat message
+     */
+    static async saveChatLog(userId: string, role: 'user' | 'assistant', message: string, stage: number = 1) {
+        try {
+            const { error } = await supabase.from('chat_logs').insert({
+                user_id: userId,
+                role: role,
+                message: message,
+                stage: stage
+            });
+            if (error) throw error;
+        } catch (e) {
+            console.error("Chat Log Save Error:", e);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * DrillDownProtocol.ts - 아이콘 확장 및 심층 탐색 프로토콜
+ * DrillDownProtocol.ts - 아이콘 확장 및 심층 탐색 프로토콜 (Fixed Ver.)
  * 
  * 목적: Progressive Disclosure (점진적 공개) 패턴 구현
  * 특징:
@@ -8,6 +8,8 @@
  *  - 사용자 사주 데이터 기반 추천 배지
  *  - 뇌과학/심리학 기반 호기심 자극 문구
  */
+
+import { generateAwakeningPrompt } from './AwakeningPromptEngine';
 
 // ============== 타입 정의 ==============
 
@@ -39,407 +41,533 @@ export interface IconRecommendation {
 // ============== 메인 아이콘 맵 (최종 정리본) ==============
 
 export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
+    // ============================================
+    // [NEW] 5-Section Hierarchy (Expanded Logic)
+    // ============================================
 
-    // 1. 💰 부의 그릇 (가장 대중적인 니즈)
+    // 0. [퀀텀 자각] (Quantum Awakening) - NEW Hidden Room
+    QUANTUM_AWAKENING: {
+        id: 'QUANTUM_AWAKENING',
+        label: "0. 퀀텀 자각",
+        icon: "🌌",
+        neuro_trigger: "무의식의 별을 연결하는 히든 룸",
+        style: 'premium_purple',
+        sub_menus: [
+            { id: "qa_1", label: "0-1. 108 자각 프로토콜", desc: "무의식을 깨우는 108가지 질문", intent: "saju_108_awakening" },
+            { id: "qa_2", label: "0-2. 감정 연금술 (Emotion Alchemy)", desc: "감정을 에너지로 변환하는 기술", intent: "ms_emotion_alchemy" },
+            { id: "qa_3", label: "0-3. 그림자 작업 (Shadow Work)", desc: "내면의 어둠과 대화하기", intent: "ms_shadow_work" }
+        ]
+    },
+
+    // 1. [나의 명심] (My Core)
+    MY_CORE: {
+        id: 'MY_CORE',
+        label: "1. 나의 명심",
+        icon: "🔮",
+        neuro_trigger: "나의 본질과 재능 정밀 분석",
+        style: 'premium_purple',
+        sub_menus: [
+            {
+                id: "core_1_1",
+                label: "1-1. 본질 분석 (Identity)",
+                desc: "나의 영혼과 사회적 그릇",
+                intent: "NAV_CORE_IDENTITY",
+                children: [
+                    { id: "mc_1", label: "1. 내 영혼의 씨앗 (일간/일주)", desc: "나의 본질과 기질 분석", intent: "saju_core_summary" },
+                    { id: "mc_2", label: "2. 일간 심층 분석", desc: "나의 잠재력 깊이 보기", intent: "day_master_deep" },
+                    { id: "mc_3", label: "3. 사회적 가면 (십성/격국)", desc: "나의 사회적 역할과 그릇 크기", intent: "deep_gyeokguk_weapon" },
+                    { id: "mc_6", label: "6. 숨겨진 욕망 (지장간/심리)", desc: "무의식과 내면의 심리", intent: "hour_pillar_desire" },
+                    { id: "mc_4", label: "4. 인생 배터리 (12운성)", desc: "나의 에너지 총량과 흐름", intent: "deep_12_wunsung_cycle" }
+                ]
+            },
+            {
+                id: "core_1_2",
+                label: "1-2. 재능과 결핍 (Talent & Lack)",
+                desc: "나만의 필살기와 보완점",
+                intent: "NAV_CORE_TALENT",
+                children: [
+                    { id: "mc_5", label: "5. 나의 필살기 (신살)", desc: "나만의 특수 능력과 매력", intent: "deep_special_stars" },
+                    { id: "mc_7", label: "7. 채워야 할 구멍 (공망/조후)", desc: "인생의 결핍과 온도 조절", intent: "gongmang_deep_analysis" },
+                    { id: "mc_14", label: "14. 운명의 풍경화 (물상론)", desc: "그림으로 보는 내 사주 이미지", intent: "ms_pical_image" }
+                ]
+            },
+            {
+                id: "core_1_3",
+                label: "1-3. 신체 프로파일링 (Body Scan)",
+                desc: "사주로 보는 건강과 스타일",
+                intent: "NAV_CORE_BODY",
+                children: [
+                    { id: "mc_27", label: "27. 사주 의학 검진", desc: "오행으로 보는 취약 장기 예보", intent: "deep_health_weakness" },
+                    { id: "mc_47", label: "47. 보이스 건강 스캔", desc: "목소리(Hz)로 진단하는 오장육부", intent: "ms_voice_scan" },
+                    { id: "mc_44", label: "44. DNA 크로스 체크", desc: "유전자 검사와 사주의 교차 검증", intent: "ms_dna_check" },
+                    { id: "mc_28", label: "28. 형상과 스타일", desc: "내 외모 특징과 맞춤 스타일링", intent: "ms_style_guide" }
+                ]
+            }
+        ]
+    },
+
+    // 2. [실전 코칭] (Strategy Lab)
+    STRATEGY_LAB: {
+        id: 'STRATEGY_LAB',
+        label: "2. 실전 코칭",
+        icon: "🎯",
+        neuro_trigger: "이기는 타이밍과 전략의 모든 것",
+        style: 'premium_gold',
+        sub_menus: [
+            {
+                id: "strat_2_1",
+                label: "2-1. 타이밍 전략 (Timing)",
+                desc: "승부수와 골든타임",
+                intent: "NAV_STRAT_TIMING",
+                children: [
+                    { id: "sl_15", label: "15. 올해의 승부수 (세운/대운)", desc: "1년 및 10년 단위 인생 판세 분석", intent: "saju_daewoon_flow" },
+                    { id: "sl_20", label: "20. 오늘의 미션 (일진/월운)", desc: "매일 아침 받는 구체적 행동 지침", intent: "daily_fortune" },
+                    { id: "sl_26", label: "26. 골든 타임 (바이오 클락)", desc: "하루 중 가장 운이 좋은 시간대", intent: "golden_time_analysis" },
+                    { id: "sl_17", label: "17. 전략 포지션 (12신살)", desc: "올해 내가 취해야 할 태도(공격/수비)", intent: "ms_12sinsal_strategy" }
+                ]
+            },
+            {
+                id: "strat_2_2",
+                label: "2-2. 개운 솔루션 (Solution)",
+                desc: "부족한 운을 채우는 비법",
+                intent: "NAV_STRAT_SOLUTION",
+                children: [
+                    { id: "sl_16", label: "16. 오행 에너지 점수", desc: "실시간 내 운의 수치화 그래프", intent: "ohaeng_balance_report" },
+                    { id: "sl_18", label: "18. 비밀 병기 (허자/입묘)", desc: "위기 탈출을 위한 히든카드", intent: "ms_hidden_weapon" },
+                    { id: "sl_39", label: "39. AI 작명소 (성명학)", desc: "부족한 운을 채우는 이름/닉네임", intent: "ms_naming_ai" },
+                    { id: "sl_21", label: "21. 하늘의 조언 (주역)", desc: "답답할 때 던지는 동양 철학의 신탁", intent: "ms_iching_oracle" }
+                ]
+            },
+            {
+                id: "strat_2_3",
+                label: "2-3. 현실 조작 (Tactics)",
+                desc: "환경과 방향을 활용한 개운",
+                intent: "NAV_STRAT_TACTICS",
+                children: [
+                    { id: "sl_29", label: "29. 방위 나침반 (기문둔갑)", desc: "지금 행운을 잡으러 가는 방향", intent: "ms_lucky_direction" },
+                    { id: "sl_32", label: "32. 리얼타임 싱크", desc: "날씨, 뉴스 등 외부 환경 연동 조언", intent: "smart_context_card" }
+                ]
+            }
+        ]
+    },
+
+    // 3. [명심 라이프] (Life & Healing)
+    LIFE_HEALING: {
+        id: 'LIFE_HEALING',
+        label: "3. 명심 라이프",
+        icon: "🌿",
+        neuro_trigger: "관계 회복과 일상의 힐링",
+        style: 'healing_green',
+        sub_menus: [
+            {
+                id: "life_3_1",
+                label: "3-1. 관계와 소통 (Connection)",
+                desc: "나와 타인의 에너지 균형",
+                intent: "NAV_LIFE_CONNECTION",
+                children: [
+                    { id: "lh_22", label: "22. 정밀 궁합 (케미스트리)", desc: "연인, 친구와의 전생 및 속궁합", intent: "saju_compatibility" },
+                    { id: "lh_35", label: "35. 귀인 레이더", desc: "내 운명을 채워줄 사람 찾기 (LBS)", intent: "deep_noble_connection" },
+                    { id: "lh_31", label: "31. 조직 명리학", desc: "우리 가족, 회사 팀의 에너지 균형", intent: "ms_team_chemistry" },
+                    { id: "lh_30", label: "30. 디지털 트윈 대화", desc: "나와 똑같은 AI 페르소나와 상담", intent: "ms_digital_twin_talk" }
+                ]
+            },
+            {
+                id: "life_3_2",
+                label: "3-2. 패밀리 케어 (Family)",
+                desc: "가족과 반려동물을 위한 명리",
+                intent: "NAV_LIFE_FAMILY",
+                children: [
+                    { id: "lh_36", label: "36. 영재 육아 코칭", desc: "아이의 적성과 맞춤 훈육법", intent: "ms_parenting_coach" },
+                    { id: "lh_38", label: "38. 멍냥 명리", desc: "반려동물의 속마음과 집사 궁합", intent: "ms_pet_saju" },
+                    { id: "lh_51", label: "51. 디지털 제사상", desc: "AI로 복원된 조상님과의 대화", intent: "ms_digital_ritual" }
+                ]
+            },
+            {
+                id: "life_3_3",
+                label: "3-3. 힐링과 공간 (Healing)",
+                desc: "공간과 소리로 치유하기",
+                intent: "NAV_LIFE_HEALING",
+                children: [
+                    { id: "lh_34", label: "34. 소닉 테라피 (EMDR/음악)", desc: "나에게 필요한 주파수(ASMR) 처방", intent: "play_healing_music" },
+                    { id: "lh_37", label: "37. 꿈 해몽 분석", desc: "무의식의 메시지를 오행으로 해석", intent: "ms_dream_analysis" },
+                    { id: "lh_42", label: "42. 스마트 풍수 (IoT)", desc: "집안 조명/온도 자동 제어", intent: "ms_smart_fengshui" },
+                    { id: "lh_24", label: "24. 개운 인테리어", desc: "나를 살리는 잠자리 방향과 배치", intent: "ms_interior_lucky" }
+                ]
+            }
+        ]
+    },
+
+    // 4. [세상과 부] (World & Wealth)
+    WORLD_WEALTH: {
+        id: 'WORLD_WEALTH',
+        label: "4. 세상과 부",
+        icon: "🌍",
+        neuro_trigger: "경제 흐름과 사회적 성공",
+        style: 'default',
+        sub_menus: [
+            {
+                id: "world_4_1",
+                label: "4-1. 부의 흐름 (Economy)",
+                desc: "국가와 기업, 그리고 나의 부",
+                intent: "NAV_WORLD_ECONOMY",
+                children: [
+                    { id: "ww_40", label: "40. 주식/국운 명리", desc: "투자 타이밍과 기업 운세", intent: "ms_stock_saju" },
+                    { id: "ww_50", label: "50. 글로벌 운세 지도", desc: "나에게 맞는 이민/여행 국가", intent: "ms_global_map" },
+                    { id: "ww_43", label: "43. 나비 효과 계산기", desc: "나의 행동이 미치는 사회적 파장", intent: "ms_butterfly_effect" }
+                ]
+            },
+            {
+                id: "world_4_2",
+                label: "4-2. 사회와 미래 (Society)",
+                desc: "사회적 트렌드와 나의 미래",
+                intent: "NAV_WORLD_SOCIETY",
+                children: [
+                    { id: "ww_52", label: "52. 집단 무의식 예보", desc: "오늘의 사회적 분위기(Big Data)", intent: "ms_collective_forecast" },
+                    { id: "ww_33", label: "33. 운명 아트", desc: "내 사주를 AI 예술로 시각화", intent: "ms_fate_art" },
+                    { id: "ww_41", label: "41. 운명 NFT", desc: "블록체인에 기록되는 디지털 부적", intent: "ms_fate_nft" }
+                ]
+            }
+        ]
+    },
+
+    // 5. [초월 연구소] (X-Lab)
+    X_LAB: {
+        id: 'X_LAB',
+        label: "5. 초월 연구소",
+        icon: "🧬",
+        neuro_trigger: "과학과 신비의 경계를 넘다",
+        style: 'premium_purple',
+        sub_menus: [
+            {
+                id: "xlab_5_1",
+                label: "5-1. 우주와 차원 (Universe)",
+                desc: "우주적 관점의 운명",
+                intent: "NAV_XLAB_UNIVERSE",
+                children: [
+                    { id: "xl_46", label: "46. 천문 사주 (NASA)", desc: "태어난 날의 실제 우주 지도", intent: "ms_astronomy_saju" },
+                    { id: "xl_55", label: "55. 화성 만세력", desc: "다행성 시대를 위한 화성 운세", intent: "ms_mars_cal" },
+                    { id: "xl_45", label: "45. 멀티버스 시뮬레이션", desc: "다른 선택의 평행 우주 확인", intent: "ms_multiverse_sim" },
+                    { id: "xl_57", label: "57. 아카식 레코드", desc: "영혼의 우주 로그 파일 열람", intent: "ms_akashic_record" }
+                ]
+            },
+            {
+                id: "xlab_5_2",
+                label: "5-2. 생명과 신 (God Mode)",
+                desc: "생명과 업보의 비밀",
+                intent: "NAV_XLAB_GOD",
+                children: [
+                    { id: "xl_48", label: "48. 제왕 메이커", desc: "완벽한 운명을 가진 아이 택일", intent: "ms_king_maker" },
+                    { id: "xl_49", label: "49. 수명 시계", desc: "생명 에너지 고갈 시기 예측", intent: "ms_lifespan_clock" },
+                    { id: "xl_25", label: "25. 전생 리딩", desc: "현생의 업보와 전생 추적", intent: "ms_past_life" }
+                ]
+            },
+            {
+                id: "xlab_5_3",
+                label: "5-3. 시스템 제어 (System)",
+                desc: "운명 시스템 직접 개입",
+                intent: "NAV_XLAB_SYSTEM",
+                children: [
+                    { id: "xl_54", label: "54. 뉴럴 사주 (BCI)", desc: "뇌파 제어를 통한 멘탈 케어", intent: "ms_neural_bci" },
+                    { id: "xl_56", label: "56. 현실 조작 (양자 해킹)", desc: "확률을 확정 짓는 운명 개입", intent: "ms_reality_hack" },
+                    { id: "xl_58", label: "58. 유니버스 메이커", desc: "나만의 물리 법칙 창조", intent: "ms_universe_maker" },
+                    { id: "xl_59", label: "59. 열반 (로그아웃)", desc: "데이터 완전 삭제 및 졸업", intent: "ms_nirvana_logout" }
+                ]
+            }
+        ]
+    },
+
+    // 5.5. [3D 정밀 진단] (Neural Engineering) - NEW System Persona Mode
+    NEURAL_ENGINEERING: {
+        id: 'NEURAL_ENGINEERING',
+        label: "3D 정밀 진단",
+        icon: "🧬",
+        neuro_trigger: "내면의 3차원 에너지 좌표 분석",
+        style: 'premium_purple',
+        sub_menus: [
+            {
+                id: "ne_1",
+                label: "3D 좌표 스캔 (Full Scan)",
+                desc: "X(의식), Y(주파수), Z(벡터) 전체 정밀 분석",
+                intent: "ms_3d_full_scan"
+            },
+            {
+                id: "ne_x",
+                label: "X축: 의식 코드 (Code)",
+                desc: "Dark vs Neural vs Meta 현위치 확인",
+                intent: "ms_3d_x_axis"
+            },
+            {
+                id: "ne_y",
+                label: "Y축: 주파수 측정 (Freq)",
+                desc: "나의 행동이 생산적인가? 파괴적인가?",
+                intent: "ms_3d_y_axis"
+            },
+            {
+                id: "ne_z",
+                label: "Z축: 에너지 벡터 (Vector)",
+                desc: "폭발(Out) vs 함몰(In) 위험도 진단",
+                intent: "ms_3d_z_axis"
+            },
+            {
+                id: "ne_64",
+                label: "64비트 뉴럴 코드 (Decoder)",
+                desc: "나의 DNA에 각인된 64가지 원형 분석",
+                intent: "ms_64_neural_code" // New Intent
+            },
+            {
+                id: "ne_action",
+                label: "🚀 3S 솔루션 실행 (Action)",
+                desc: "진단 결과를 실행 코드로 변환 (Scan-Sync-Shift)",
+                intent: "ms_3s_protocol_start"
+            }
+        ]
+    },
+
+    // ============================================
+    // [LEGACY] Original Functions (Restored)
+    // ============================================
+
+    // 6. 💰 부의 그릇 (WEALTH)
     WEALTH: {
         id: 'WEALTH',
-        label: "부의 그릇",
+        label: "부의 그릇 (Original)",
         icon: "💰",
         neuro_trigger: "왜 벌어도 모이지 않을까?",
         style: 'default',
         sub_menus: [
-            {
-                id: "w_1",
-                label: "💸 돈이 새는 구멍",
-                desc: "무의식에 심어진 결핍 패턴",
-                intent: "shadow_exhaustion"
-            },
-            {
-                id: "w_2",
-                label: "💎 나만의 부자 코드",
-                desc: "타고난 재물 운용 방식",
-                intent: "gift_divine_will"
-            },
-            {
-                id: "w_3",
-                label: "📈 올해 재물 흐름",
-                desc: "월별 재운 분석",
-                intent: "fortune_wealth_year"
-            },
-            {
-                id: "w_4",
-                label: "🧪 재물운 강화 코칭",
-                desc: "AI 맞춤 실천 과제",
-                intent: "coaching_wealth_action",
-                isPremium: true
-            }
+            { id: "w_1", label: "🕳️ '밑 빠진 독' 탐지기 (Leak)", desc: "돈이 새는 운명의 구멍 찾기", intent: "ms_wealth_leak" },
+            { id: "w_2", label: "💎 '돈을 부르는' 무기 (Weapon)", desc: "투자형 vs 저축형 부자 코드", intent: "ms_wealth_weapon" },
+            { id: "w_3", label: "📈 인생의 '잭팟' 타이밍 (Timing)", desc: "자산 증식의 골든타임", intent: "ms_wealth_timing" },
+            { id: "w_4", label: "🧪 재물운 강화 코칭", desc: "AI 맞춤 실천 과제", intent: "coaching_wealth_action", isPremium: true }
         ]
     },
 
-    // 2. ⌚ 바이오싱크 (특허 기술 강조 - 위치 이동 및 통합 완료)
+    // 7. ⌚ 바이오싱크 (BIO_SYNC)
     BIO_SYNC: {
         id: 'BIO_SYNC',
-        label: "생체 연동",
+        label: "생체 연동 (Bio-Sync)",
         icon: "⌚",
         neuro_trigger: "실시간 운명 동기화",
         style: 'default',
         sub_menus: [
-            {
-                id: "b_1",
-                label: "⚡ Bio-Sync 대시보드",
-                desc: "웨어러블 연결 및 데이터 확인",
-                intent: "bio_sync_dashboard_view"
-            },
-            // [New] Integral Check-in (Myeongshim Engine)
-            {
-                id: "b_checkin",
-                label: "🩺 통합 체크인",
-                desc: "Saju + 4분면 정밀 분석",
-                intent: "integral_checkin_view"
-            },
-            {
-                id: "b_2",
-                label: "🧘 생체 리듬 명상",
-                desc: "심박수에 맞춘 호흡 가이드",
-                intent: "bio_rhythm_meditation"
-            },
-            // [특허 핵심 기능 배치]
-            {
-                id: "b_patent_1",
-                label: "🚨 [특허] 위기 개입",
-                desc: "급성 스트레스 차단 (S-C-A-R)",
-                intent: "demo_patent_features",
-                isPremium: true
-            },
-            {
-                id: "b_patent_2",
-                label: "🛡️ [특허] 선제적 예방",
-                desc: "스트레스 패턴 예측 및 알림",
-                intent: "demo_preventive_care",
-                isPremium: true
-            },
-            {
-                id: "b_patent_recovery",
-                label: "📉 [특허] 실시간 진정",
-                desc: "심박수 안정화 시각화",
-                intent: "demo_realtime_recovery",
-                isPremium: true
-            },
-            // [융합 아이디어]
-            {
-                id: "b_idea_1",
-                label: "🧬 Neuro-Saju",
-                desc: "오행-신경계 공명 테스트",
-                intent: "demo_neuro_saju",
-                isPremium: true
-            },
-            // [Smart Context - 상황 인식형 코칭]
-            {
-                id: "b_context",
-                label: "🌅 오늘의 에너지 분석",
-                desc: "BPM + 사주 + 바이오리듬 통합",
-                intent: "smart_context_card"
-            },
-            {
-                id: "b_golden",
-                label: "⏰ 골든타임 알림",
-                desc: "지금 뭐하면 좋을까?",
-                intent: "golden_time_analysis"
-            },
-            // [중독 회복 - 심리치료 기반]
-            {
-                id: "b_quit_smoke",
-                label: "🚭 금연 알아차림",
-                desc: "ACT 기반 흡연 욕구 대처",
-                intent: "quit_smoking_act"
-            },
-            {
-                id: "b_quit_drink",
-                label: "🍺 금주 알아차림",
-                desc: "CBT 기반 음주 충동 관리",
-                intent: "quit_drinking_cbt"
-            },
-            {
-                id: "b_addiction",
-                label: "🎮 중독 탈출",
-                desc: "DBT 기반 디지털/도박 대처",
-                intent: "addiction_escape_dbt"
-            },
-            {
-                id: "b_sos",
-                label: "🆘 SOS 긴급",
-                desc: "4-7-8 호흡 가이드 (성우 음성)",
-                intent: "sos_breathing_guide"
-            }
+            { id: "b_1", label: "⚡ Bio-Sync 대시보드", desc: "웨어러블 연결 및 데이터 확인", intent: "bio_sync_dashboard_view" },
+            { id: "b_checkin", label: "🩺 통합 체크인", desc: "Saju + 4분면 정밀 분석", intent: "integral_checkin_view" },
+            { id: "b_2", label: "🧘 생체 리듬 명상", desc: "심박수에 맞춘 호흡 가이드", intent: "bio_rhythm_meditation" },
+            { id: "b_patent_1", label: "🚨 [특허] 위기 개입", desc: "급성 스트레스 차단 (S-C-A-R)", intent: "demo_patent_features", isPremium: true },
+            { id: "b_patent_2", label: "🛡️ [특허] 선제적 예방", desc: "스트레스 패턴 예측 및 알림", intent: "demo_preventive_care", isPremium: true },
+            { id: "b_patent_recovery", label: "📉 [특허] 실시간 진정", desc: "심박수 안정화 시각화", intent: "demo_realtime_recovery", isPremium: true },
+            { id: "b_idea_1", label: "🧬 Neuro-Saju", desc: "오행-신경계 공명 테스트", intent: "demo_neuro_saju", isPremium: true },
+            { id: "b_context", label: "🌅 오늘의 에너지 분석", desc: "BPM + 사주 + 바이오리듬 통합", intent: "smart_context_card" },
+            { id: "b_golden", label: "⏰ 골든타임 알림", desc: "지금 뭐하면 좋을까?", intent: "golden_time_analysis" },
+            { id: "b_quit_smoke", label: "🚭 금연 알아차림", desc: "ACT 기반 흡연 욕구 대처", intent: "quit_smoking_act" },
+            { id: "b_quit_drink", label: "🍺 금주 알아차림", desc: "CBT 기반 음주 충동 관리", intent: "quit_drinking_cbt" },
+            { id: "b_addiction", label: "🎮 중독 탈출", desc: "DBT 기반 디지털/도박 대처", intent: "addiction_escape_dbt" },
+            { id: "b_sos", label: "🆘 SOS 긴급", desc: "4-7-8 호흡 가이드 (성우 음성)", intent: "sos_breathing_guide" }
         ]
     },
 
-    // 3. ❤️ 관계의 멍
+    // 8. ❤️ 관계의 멍 (RELATIONSHIP)
     RELATIONSHIP: {
         id: 'RELATIONSHIP',
-        label: "관계의 멍",
+        label: "관계의 멍 (Original)",
         icon: "❤️",
         neuro_trigger: "반복되는 상처 끊어내기",
         style: 'healing_green',
         sub_menus: [
-            {
-                id: "r_1",
-                label: "💔 이별의 진짜 원인",
-                desc: "관계 패턴 심층 분석",
-                intent: "shadow_conflict"
-            },
-            {
-                id: "r_2",
-                label: "👩‍❤️‍👨 내게 맞는 인연",
-                desc: "배우자상 / 궁합 분석",
-                intent: "saju_compatibility"
-            },
-            {
-                id: "r_3",
-                label: "🛡️ 감정 방어기제 해제",
-                desc: "친밀감 회피 패턴 치유",
-                intent: "venus_sequence_defense"
-            },
-            {
-                id: "r_4",
-                label: "💞 인연 유형 테스트",
-                desc: "나의 관계 스타일은?",
-                intent: "relationship_type_quiz"
-            }
+            { id: "r_1", label: "💘 매력의 법칙 (Attraction)", desc: "나는 어떤 사람에게 끌리는가?", intent: "ms_rel_attraction" },
+            { id: "r_2", label: "🪞 관계의 거울 (Mirror)", desc: "상대방은 나의 무엇을 비추는가?", intent: "ms_rel_mirror" },
+            { id: "r_3", label: "⏳ 사랑의 타이밍 (Timing)", desc: "언제 운명의 상대를 만나는가?", intent: "ms_rel_timing" },
+            { id: "r_4", label: "💞 정밀 궁합 (Compatibility)", desc: "상대방과의 에너지 조화도", intent: "saju_compatibility" }
         ]
     },
 
-    // 4. 🚀 천직 발견
+    // 9. 🚀 천직 발견 (CAREER)
     CAREER: {
         id: 'CAREER',
-        label: "천직 발견",
+        label: "천직 발견 (Original)",
         icon: "🚀",
         neuro_trigger: "나는 이 일을 하려고 태어났다",
         style: 'default',
         sub_menus: [
-            {
-                id: "c_1",
-                label: "🎯 타고난 재능 분석",
-                desc: "사주로 보는 핵심 강점",
-                intent: "innate_talent_analysis"
-            },
-            {
-                id: "c_2",
-                label: "💼 직장 vs 사업",
-                desc: "어떤 길이 맞을까?",
-                intent: "career_path_direction"
-            },
-            {
-                id: "c_3",
-                label: "🔥 번아웃 탈출 코칭",
-                desc: "일에서 의미 찾기",
-                intent: "burnout_escape_coaching"
-            },
-            {
-                id: "c_4",
-                label: "📊 커리어 타이밍",
-                desc: "이직/승진 최적 시기",
-                intent: "career_timing_analysis",
-                isPremium: true
-            }
+            { id: "c_1", label: "🗡️ 나만의 '히든 스킬' (Skill)", desc: "남들은 모르는 나의 사기급 능력", intent: "ms_career_skill" },
+            { id: "c_2", label: "⚖️ 월급 vs 야생마 (Path)", desc: "직장인인가, 사업가인가?", intent: "ms_career_path" },
+            { id: "c_3", label: "🔋 '무한 동력' 에너지 (Energy)", desc: "번아웃 없이 일하는 법", intent: "ms_career_energy" },
+            { id: "c_4", label: "📊 커리어 타이밍", desc: "이직/승진 최적 시기", intent: "career_timing_analysis", isPremium: true }
         ]
     },
 
-    // 5. 🧬 성격분석 (명심코칭 시그니처)
+    // 10. 🧬 성격분석 (PERSONALITY -> Soul Architecture)
     PERSONALITY_ANALYSIS: {
         id: 'PERSONALITY_ANALYSIS',
-        label: "성격분석",
+        label: "성격분석 (Original)",
         icon: "🧬",
         neuro_trigger: "나만의 본질 에너지 코드",
         style: 'premium_purple',
         sub_menus: [
-            {
-                id: "g_1",
-                label: "🌟 핵심 코드 분석",
-                desc: "천직(天職) / 성장 과제",
-                intent: "core_myeongsim_codes"
-            },
-            {
-                id: "g_neural",
-                label: "🧬 뉴럴 프로필 분석",
-                desc: "Life's Work, Evolution, Radiance, Purpose",
-                intent: "neural_profile_analysis"
-            },
-            {
-                id: "g_2",
-                label: "⚡ 다크코드 → 뉴럴코드",
-                desc: "아픔을 힘으로 바꾸는 법",
-                intent: "dark_to_neural"
-            },
-            {
-                id: "g_3",
-                label: "💫 번영 열쇠",
-                desc: "재물운 핵심 코드",
-                intent: "prosperity_key_analysis"
-            },
-            {
-                id: "g_4",
-                label: "❤️ 인연 코드",
-                desc: "관계운 핵심 코드",
-                intent: "connection_code_analysis"
-            },
-            {
-                id: "g_5",
-                label: "🧠 심리 치유 아키타입",
-                desc: "DBT/ACT/MBCT 통합 처방",
-                intent: "therapy_archetype_view"
-            },
-            {
-                id: "g_strength",
-                label: "📊 강점/재능 리포트",
-                desc: "인적자원 역량 분석",
-                intent: "strength_talent_report",
-                isPremium: true
-            },
-            {
-                id: "g_startup_1",
-                label: "🚀 무실패 스타트업 설계",
-                desc: "사주 기반 창업 전략",
-                intent: "startup_design_analysis",
-                isPremium: true
-            },
-            {
-                id: "g_startup_2",
-                label: "💡 사업 아이디어 검증",
-                desc: "내 사주에 맞는 업종",
-                intent: "startup_idea_validation",
-                isPremium: true
-            }
+            { id: "g_1", label: "🏛️ 소울 아키텍처 (Soul)", desc: "내 영혼의 설계도 해킹", intent: "ms_soul_arch" },
+            { id: "g_2", label: "🌑 다크 사이드 & 빛 (Shadow)", desc: "단점이 최고의 무기가 된다", intent: "ms_dark_side" },
+            { id: "g_3", label: "💫 번영 열쇠", desc: "재물운 핵심 코드", intent: "prosperity_key_analysis" },
+            { id: "g_neural", label: "🧬 뉴럴 프로필", desc: "Life's Work, Evolution", intent: "neural_profile_analysis" },
+            { id: "g_5", label: "🧠 심리 치유 아키타입", desc: "DBT/ACT/MBCT 통합 처방", intent: "therapy_archetype_view" },
+            { id: "g_strength", label: "📊 강점/재능 리포트", desc: "인적자원 역량 분석", intent: "strength_talent_report", isPremium: true }
         ]
     },
 
-    // 6. 💊 데일리 미션 (실천)
+    // 11. 💊 데일리 미션 (DAILY -> Energy Cheat Key)
     DAILY_MISSION: {
         id: 'DAILY_MISSION',
-        label: "데일리 미션",
+        label: "데일리 미션 (Original)",
         icon: "💊",
         neuro_trigger: "오늘 뭘 해야 운이 트일까?",
         style: 'default',
         sub_menus: [
-            {
-                id: "d_0",
-                label: "⚡ 에너지 대시보드",
-                desc: "오늘의 에너지 & 골든 타임",
-                intent: "energy_dashboard_view"
-            },
-            {
-                id: "d_1",
-                label: "☀️ 오늘의 운세",
-                desc: "일진 분석 + 조언",
-                intent: "daily_fortune"
-            },
-            {
-                id: "d_2",
-                label: "🎯 3일 실천 플랜",
-                desc: "뇌과학 기반 미션",
-                intent: "action_plan_3day"
-            },
-            {
-                id: "d_3",
-                label: "🧘 명상 가이드",
-                desc: "5분 마음 정화",
-                intent: "meditation_guide"
-            },
-            {
-                id: "d_4",
-                label: "✅ 미션 기록",
-                desc: "실천 이력 확인",
-                intent: "mission_history"
-            }
+            { id: "d_0", label: "⚔️ 오늘의 퀘스트 (Quest)", desc: "오늘의 운을 200% 활용법", intent: "ms_daily_quest" },
+            { id: "d_1", label: "🔋 오행 에너지 충전소 (Charge)", desc: "부족한 기운 즉시 처방", intent: "ms_energy_station" },
+            { id: "d_3", label: "🧘 명상 가이드", desc: "5분 마음 정화", intent: "meditation_guide" },
+            { id: "d_4", label: "✅ 미션 기록", desc: "실천 이력 확인", intent: "mission_history" }
         ]
     },
 
-    // 7. 정밀 사주 (Restored)
+    // 12. 🔮 사주분석 (SAJU -> Destiny GPS)
     SAJU_ANALYSIS: {
         id: 'SAJU_ANALYSIS',
-        label: "사주분석",
+        label: "사주분석 (Original)",
         icon: "🔮",
         neuro_trigger: "운명의 설계도 확인",
-        style: 'premium_purple', // 프리미엄 느낌 강조
+        style: 'premium_purple',
         sub_menus: [
-            {
-                id: "s_0",
-                label: "💎 사주 원국 분석",
-                desc: "나의 타고난 설계도",
-                intent: "saju_basic_analysis"
-            },
-            {
-                id: "s_1",
-                label: "🌊 대운의 흐름",
-                desc: "10년 단위 인생 날씨",
-                intent: "saju_daewoon_flow"
-            },
-            {
-                id: "s_2",
-                label: "💼 직업/사업운",
-                desc: "성공을 부르는 타이밍",
-                intent: "saju_career_detail"
-            },
-            {
-                id: "s_3",
-                label: "❤️ 결혼/연애운",
-                desc: "나의 인연과 시기",
-                intent: "saju_marriage_timing"
-            }
+            { id: "s_0", label: "🌦️ 인생의 날씨 예보 (Weather)", desc: "내일 비가 올까, 해가 뜰까?", intent: "ms_destiny_weather" },
+            { id: "s_1", label: "🌊 10년 대운 파도타기 (Wave)", desc: "지금 노를 저을 때인가?", intent: "ms_life_wave" },
+            { id: "s_2", label: "💼 직업/사업운", desc: "성공을 부르는 타이밍", intent: "saju_career_detail" },
+            { id: "s_3", label: "❤️ 결혼/연애운", desc: "나의 인연과 시기", intent: "saju_marriage_timing" }
         ]
     },
 
-    // 8. 힐링/스트레스 (New)
+    // 13. 🌿 명심 힐링 (HEALING -> Neural Healing)
     STRESS_RELIEF: {
         id: 'STRESS_RELIEF',
-        label: "명심 힐링",
+        label: "명심 힐링 (Original)",
         icon: "🌿",
         neuro_trigger: "지친 마음 쉬어가기",
         style: 'healing_green',
         sub_menus: [
+            { id: "h_sonic", label: "🎧 주파수 처방전 (Sonic)", desc: "듣기만 해도 운이 좋아진다?", intent: "ms_sonic_cure" },
+            { id: "h_detox", label: "🧠 멘탈 디톡스 (Detox)", desc: "뇌파를 씻어내는 호흡법", intent: "ms_mental_detox" },
+            { id: "h_music", label: "🎵 힐링 음악 (소닉 테라피)", desc: "그냥 두는 연습 듣기", intent: "play_healing_music" }
+        ]
+    },
+
+    // 14. 108 자각 (AWARENESS_108 - Quantum Upgrade)
+    AWARENESS_108: {
+        id: 'AWARENESS_108',
+        label: "108 자각 (Quantum)",
+        icon: "🧘",
+        neuro_trigger: "당신의 운명을 해킹하는 108가지 코드",
+        style: 'premium_purple',
+        sub_menus: [
             {
-                id: "h_music",
-                label: "🎵 힐링 음악 (심박 안정)",
-                desc: "그냥 두는 연습 듣기",
-                intent: "play_healing_music"
+                id: "phase_1",
+                label: "Phase 1: 소울 해킹 (1~18)",
+                desc: "영혼의 설계도 해독",
+                intent: "NAV_PHASE_1",
+                children: [
+                    { id: "qk_1", label: "01. 📜 내 영혼의 설계도", desc: "태어난 순간의 운명 지도", intent: "ms_soul_blueprint" },
+                    { id: "qk_2", label: "02. 💎 내면의 절대 코어", desc: "흔들리지 않는 진짜 나", intent: "ms_inner_core" },
+                    { id: "qk_3", label: "03. 🎭 사회적 가면 (Persona)", desc: "세상이 원하는 나 vs 진짜 나", intent: "ms_social_persona" },
+                    { id: "qk_4", label: "04. 🐍 금지된 욕망", desc: "나조차 몰랐던 은밀한 본능", intent: "ms_forbidden_desire" },
+                    { id: "qk_5", label: "05. 🕳️ 운명의 웜홀 (Void)", desc: "채워지지 않는 구멍의 비밀", intent: "ms_void_wormhole" },
+                    { id: "qk_6", label: "06. 🔋 퀀텀 배터리 (12운성)", desc: "나의 에너지 레벨 측정", intent: "deep_12_wunsung_cycle" },
+                    { id: "qk_7", label: "07. ⚔️ 비밀 무기 (신살)", desc: "위기에 발동하는 특수 스킬", intent: "deep_special_stars" },
+                    { id: "qk_8", label: "08. ⚖️ 오행 연금술", desc: "결핍을 에너지로 바꾸는 법", intent: "ohaeng_balance_report" }
+                ]
+            },
+            {
+                id: "phase_2",
+                label: "Phase 2: 리얼타임 스캔 (19~36)",
+                desc: "현재 에너지 상태 진단",
+                intent: "NAV_PHASE_2",
+                children: [
+                    { id: "qk_19", label: "19. ☁️ 영혼의 날씨 예보", desc: "지금 내 마음의 기상도", intent: "ms_soul_weather" },
+                    { id: "qk_20", label: "20. 🎭 갭 스캐너 (Gap)", desc: "이상과 현실의 오차 측정", intent: "ms_gap_scanner" },
+                    { id: "qk_21", label: "21. 👾 내 안의 버그 탐지", desc: "반복되는 시스템 오류 수정", intent: "ms_dark_bug" },
+                    { id: "qk_22", label: "22. 🩸 에너지 뱀파이어 식별", desc: "내 기를 뺏는 존재 차단", intent: "ms_energy_vampire" },
+                    { id: "qk_23", label: "23. 🔋 활력 충전소", desc: "나만의 고속 충전 방식", intent: "assess_energy_source" },
+                    { id: "qk_24", label: "24. 🧱 변화 저항값 측정", desc: "변화를 거부하는 에고 확인", intent: "assess_change_resistance" }
+                ]
+            },
+            {
+                id: "phase_3",
+                label: "Phase 3: 운명 연금술 (37~54)",
+                desc: "운명의 궤도 수정",
+                intent: "NAV_PHASE_3",
+                children: [
+                    { id: "qk_37", label: "37. 🧠 뇌 회로 재배선", desc: "생각 패턴 바꾸기 리부트", intent: "ms_brain_rewire" },
+                    { id: "qk_38", label: "38. ⏳ 타임라인 접속", desc: "미래의 내가 보내는 신호", intent: "ms_timeline_connect" },
+                    { id: "qk_39", label: "39. 🌑 쉐도우 댄스", desc: "그림자와 친구가 되는 법", intent: "ms_shadow_dance" },
+                    { id: "qk_40", label: "40. 🌊 무위(Wu-Wei) 흐름", desc: "가장 쉬운 성공 경로 찾기", intent: "ms_wu_wei" },
+                    { id: "qk_41", label: "41. 🖼️ 운명 리프레이밍", desc: "불행을 서사로 바꾸는 기술", intent: "assess_perspective_quiz" },
+                    { id: "qk_42", label: "42. ❤️ 사랑의 거울 (Mirror)", desc: "관계에서 나를 보기", intent: "ms_rel_mirror" }
+                ]
+            },
+            {
+                id: "phase_4",
+                label: "Phase 4: 메타 뷰 (55~90)",
+                desc: "관찰자 시점 획득",
+                intent: "NAV_PHASE_4",
+                children: [
+                    { id: "qk_55", label: "55. ☁️ 생각의 하늘 날기", desc: "생각과 나 분리하기", intent: "ms_sky_view" },
+                    { id: "qk_56", label: "56. 🎧 내면의 악플러 음소거", desc: "비판적 자아 끄기", intent: "ms_mute_hater" },
+                    { id: "qk_57", label: "57. 🌌 우주적 자아 접속", desc: "Big Mind와의 동기화", intent: "ms_cosmos_login" },
+                    { id: "qk_58", label: "58. 🧬 DNA 카르마 정화", desc: "물려받은 운명 끊기", intent: "year_pillar_roots" },
+                    { id: "qk_59", label: "59. 👁️ 제3의 눈 (직관)", desc: "논리를 넘어선 통찰", intent: "ms_iching_oracle" }
+                ]
+            },
+            {
+                id: "phase_5",
+                label: "Phase 5: 마스터리 (91~108)",
+                desc: "자유의지 발현",
+                intent: "NAV_PHASE_5",
+                children: [
+                    { id: "qk_91", label: "91. 🔑 마스터 키 획득", desc: "내 운명의 핵심 코드", intent: "ms_master_key" },
+                    { id: "qk_92", label: "92. 🛡️ 쉐도우 헌터 자격", desc: "어둠을 다스리는 자", intent: "ms_shadow_hunter" },
+                    { id: "qk_93", label: "93. 🎨 내 운명 작곡하기", desc: "새로운 삶의 악보 쓰기", intent: "ms_compose_destiny" },
+                    { id: "qk_108", label: "108. 🏁 여정의 완성", desc: "새로운 시작을 위한 축배", intent: "ms_journey_end" }
+                ]
             }
         ]
     },
 
-    // ============== 108 자각 (New Nested Menu) ==============
-    // 9. 108 자각 (내면의 빛)
-    PATH_108: {
-        id: 'PATH_108',
-        label: "108 자각",
-        icon: "🧘",
-        neuro_trigger: "내면의 빛을 깨우는 여정",
-        style: 'premium_purple',
+
+
+
+
+
+
+    // 15. 🚀 무실패 스타트업 설계 (STARTUP_DESIGN - Restored)
+    STARTUP_DESIGN: {
+        id: 'STARTUP_DESIGN',
+        label: "무실패 스타트업 (Original)",
+        icon: "🚀",
+        neuro_trigger: "내 사주에 맞는 무실패 창업 전략",
+        style: 'premium_gold',
         sub_menus: [
             {
-                id: "cat_know_myself",
-                label: "🧭 나를 알기 (Discover My Blueprint)",
-                desc: "나의 본질 탐구 (18 Paths)",
-                intent: "NAV_KNOW_MYSELF",
-                children: [
-                    { id: "p_1", label: "1. 나의 사주 핵심 요약", desc: "{{SAJU_GANJI}} 상세 분석", intent: "saju_core_summary" },
-                    { id: "p_2", label: "2. 일간(日干) 심층 분석", desc: "{{DAY_MASTER}}의 본질적 특성과 잠재력", intent: "day_master_deep" },
-                    { id: "p_3", label: "3. 월주(月柱) 사회적 역할", desc: "{{MONTH_PILLAR}}를 통한 사회적 관계와 직업 통찰", intent: "month_pillar_role" },
-                    { id: "p_4", label: "4. 년주(年柱) 뿌리 & 잠재력", desc: "{{YEAR_PILLAR}}의 강인함과 공망의 재해석", intent: "year_pillar_roots" },
-                    { id: "p_5", label: "5. 시주(時柱) 숨겨진 욕망", desc: "{{HOUR_PILLAR}}를 통한 말년 운과 자녀 관계", intent: "hour_pillar_desire" },
-                    { id: "p_6", label: "6. 나의 오행 균형 리포트", desc: "{{WEAK_ELEMENT}} 부족 심층 해설", intent: "ohaeng_balance_report" },
-                    { id: "p_7", label: "7. 오행 에너지 보충 가이드", desc: "부족한 {{WEAK_ELEMENT}} 보완 전략", intent: "ohaeng_supplement_guide" },
-                    { id: "p_8", label: "8. 나의 공망(空亡) 심층 해석", desc: "{{GONGMANG}} 공망의 의미와 재해석", intent: "gongmang_deep_analysis" },
-                    { id: "p_9", label: "9. 공망의 '숨겨진 선물' 탐색", desc: "독창성, 개척 정신 발견", intent: "gongmang_gift_discovery" },
-                    { id: "p_10", label: "10. 현재 대운(大運) 흐름", desc: "{{CURRENT_DAEWOON}} 대운의 의미와 영향", intent: "daewoon_flow_current" },
-                    { id: "p_11", label: "11. 현재 세운(歲運) 에너지", desc: "{{CURRENT_YEAR_GANJI}} 세운의 기회와 도전", intent: "seun_energy_current" },
-                    { id: "p_12", label: "12. 나의 인생 챕터 전환", desc: "현재 대운/세운을 통한 삶의 전환점", intent: "life_chapter_transition" },
-                    { id: "p_13", label: "13. 핵심 자아 강점 시각화", desc: "내면의 빛나는 특성 이미지화", intent: "core_strength_visualization" },
-                    { id: "p_14", label: "14. 타고난 기질 Q&A", desc: "나의 선천적 기질에 대한 궁금증 해소", intent: "innate_temperament_qna" },
-                    { id: "p_15", label: "15. 사주와 내 성격 연결하기", desc: "성격 형성 과정에서의 사주 영향", intent: "saju_personality_link" },
-                    { id: "p_16", label: "16. 나의 운명 키워드 3가지", desc: "AI가 추출한 핵심 키워드", intent: "fate_keywords_3" },
-                    { id: "p_17", label: "17. 사주 물상론적 해석", desc: "나를 자연에 비유한 이야기", intent: "saju_nature_metaphor" },
-                    { id: "p_18", label: "18. 사주를 통한 천직(天職) 탐색", desc: "나에게 맞는 업의 형태", intent: "saju_calling_exploration" }
-                ]
+                id: "sd_dna",
+                label: "🧠 CEO DNA (리더십 코드)",
+                desc: "나는 스티브 잡스형인가, 관리자형인가?",
+                intent: "ms_startup_dna"
+            },
+            {
+                id: "sd_wealth",
+                label: "🔥 머니 마그넷 (부의 필살기)",
+                desc: "내 사주가 돈을 버는 가장 빠른 길",
+                intent: "ms_startup_wealth"
+            },
+            {
+                id: "sd_timing",
+                label: "🚀 퀀텀 스케일 (확장 타이밍)",
+                desc: "언제 엑셀을 밟아야 하는가?",
+                intent: "ms_startup_timing"
             }
         ]
     }
@@ -456,110 +584,81 @@ export function getRecommendedIcons(userProfile: any): IconRecommendation[] {
 
     if (!userProfile?.saju) return recommendations;
 
-    // 1. 재성(돈)이 깨져있는 경우 -> 부의 그릇 추천
+    // 1. 재성(돈) 이슈 -> 세상과 부
     if (userProfile.saju?.wealth_status === 'broken' || userProfile.saju?.wealth_status === 'weak') {
-        recommendations.push({
-            id: 'WEALTH',
-            badge: '🔥 지금 필요',
-            priority: 1
-        });
+        recommendations.push({ id: 'WORLD_WEALTH', badge: '🔥 부의 흐름', priority: 1 });
     }
-
-    // 2. 대운이 바뀌는 시기(교운기) -> 정밀 사주 추천
+    // 2. 교운기 -> 실전 코칭
     if (userProfile.saju?.is_changing_period) {
-        recommendations.push({
-            id: 'SAJU_ANALYSIS',
-            badge: '⏳ 중요 시기',
-            priority: 1
-        });
+        recommendations.push({ id: 'STRATEGY_LAB', badge: '⏳ 타이밍', priority: 1 });
     }
-
-    // 3. 관성(관계)이 충돌하는 경우 -> 관계의 멍 추천
+    // 3. 관성(관계) 충돌 -> 명심 라이프
     if (userProfile.saju?.relationship_clash) {
-        recommendations.push({
-            id: 'RELATIONSHIP',
-            badge: '💔 치유 필요',
-            priority: 2
-        });
+        recommendations.push({ id: 'LIFE_HEALING', badge: '💔 관계 치유', priority: 2 });
     }
-
-    // 4. 식상(표현)이 막혀있는 경우 -> 천직 발견 추천
+    // 4. 식상(표현) 막힘 -> 나의 명심
     if (userProfile.saju?.expression_blocked) {
-        recommendations.push({
-            id: 'CAREER',
-            badge: '🔓 잠재력 해방',
-            priority: 2
-        });
+        recommendations.push({ id: 'MY_CORE', badge: '🔓 잠재력 발견', priority: 2 });
     }
 
-    // 5. 신경성이 높은 경우 (PersonalityProfiler 연동) -> 데일리 미션 추천
-    if (userProfile.personality?.neuroticism > 60) {
-        recommendations.push({
-            id: 'DAILY_MISSION',
-            badge: '🧘 마음 정화',
-            priority: 3
-        });
-    }
-
-    // 6. 대운 시작 첫 해 -> 성격분석 추천
-    if (userProfile.saju?.daewoon_first_year) {
-        recommendations.push({
-            id: 'PERSONALITY_ANALYSIS',
-            badge: '✨ 새로운 시작',
-            priority: 2
-        });
-    }
-
-    // [NEW] 바이오싱크는 항상 최우선 추천 (특허 기능 강조)
+    // [NEW] 초월 연구소는 호기심 자극
     recommendations.push({
-        id: 'BIO_SYNC',
-        badge: 'NEW',
-        // priority 제거 -> DEFAULT_PRIORITY(11)을 따라 2번째 위치
+        id: 'X_LAB',
+        badge: 'NEW'
     });
 
-    // 우선순위로 정렬
     return recommendations.sort((a, b) => (a.priority || 99) - (b.priority || 99));
 }
 
 /**
- * 메인 아이콘 목록 가져오기 (추천 배지 포함)
+ * 메인 아이콘 목록 가져오기 (추천 배지 포함 + 정렬 로직 수정됨)
  */
 export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & { badge?: string })[] {
     const icons = Object.values(ICON_DRILL_DOWN_MAP);
     const recommendations = userProfile ? getRecommendedIcons(userProfile) : [];
 
-    // 1. 배지와 우선순위 매핑
+    // 1. 배지와 추천 우선순위(_recommendedPriority) 매핑
     const mappedIcons = icons.map(icon => {
         const rec = recommendations.find(r => r.id === icon.id);
         return {
             ...icon,
             badge: rec?.badge,
-            _priority: rec?.priority ?? 99 // 추천 없으면 뒤로 보냄
+            _recommendedPriority: rec?.priority ?? 999 // 추천된 경우 우선순위, 없으면 999
         };
     });
 
-    // 2. 우선순위 정렬 (낮은 숫자가 먼저)
-    // 추천된 것은 priority값 사용 (0~3), 추천 안 된 것은 기본 순서 유지
-
+    // 2. 기본 우선순위 정의 (1.나의명심 ~ 5.초월연구소 / 6.Legacy)
     const DEFAULT_PRIORITY: Record<string, number> = {
-        'WEALTH': 10,              // 1. 부의 그릇
-        'BIO_SYNC': 11,            // 2. 생체 연동 (New)
-        'RELATIONSHIP': 12,        // 3. 관계의 멍
-        'CAREER': 13,              // 4. 천직 발견
-        'PERSONALITY_ANALYSIS': 14,// 5. 성격분석
-        'DAILY_MISSION': 15,       // 6. 데일리 미션
-        'SAJU_ANALYSIS': 16,       // 7. 사주분석 (Restored)
-        'STRESS_RELIEF': 17,       // 8. 명심 힐링 (New)
-        'PATH_108': 1              // [New] 108 자각 (최상단 배치)
+        'QUANTUM_AWAKENING': -1, // [Top Priority]
+        'NEURAL_ENGINEERING': -0.8, // [New Top Priority]
+        'AWARENESS_108': 0, // [Restored Top]
+        'STARTUP_DESIGN': 0.5, // [Restored High Priority]
+        'MY_CORE': 1,
+        'STRATEGY_LAB': 2,
+        'LIFE_HEALING': 3,
+        'WORLD_WEALTH': 4,
+        'X_LAB': 5,
+        // Legacy Menus (Appended as requested)
+        'WEALTH': 6,
+        'BIO_SYNC': 7,
+        'RELATIONSHIP': 8,
+        'CAREER': 9,
+        'PERSONALITY_ANALYSIS': 10,
+        'DAILY_MISSION': 11,
+        'SAJU_ANALYSIS': 12,
+        'STRESS_RELIEF': 13
     };
 
+    // 3. 정렬 로직
     return mappedIcons.sort((a, b) => {
-        // 1. 추천 아이콘이면 우선순위 사용 (추천 우선순위는 보통 1~3, BIO_SYNC는 0)
-        // 추천 안 된 것은 99였는데, 이걸 기본 우선순위로 대체
+        if (a._recommendedPriority !== 999 && b._recommendedPriority !== 999) {
+            return a._recommendedPriority - b._recommendedPriority;
+        }
+        if (a._recommendedPriority !== 999) return -1;
+        if (b._recommendedPriority !== 999) return 1;
 
-        const priorityA = a._priority !== 99 ? a._priority : (DEFAULT_PRIORITY[a.id] || 99);
-        const priorityB = b._priority !== 99 ? b._priority : (DEFAULT_PRIORITY[b.id] || 99);
-
+        const priorityA = DEFAULT_PRIORITY[a.id] ?? 99;
+        const priorityB = DEFAULT_PRIORITY[b.id] ?? 99;
         return priorityA - priorityB;
     });
 }
@@ -568,70 +667,32 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
  * 서브메뉴 아이템으로 AI 대화 시작 프롬프트 생성
  */
 export function generateChatPromptFromIntent(intent: string, userProfile?: any): string {
+    // 0. [Self-Coaching] 대화형 코칭 엔진 트리거 (Backend Interception)
+    const selfCoachingIntents = [
+        'saju_core_summary', 'day_master_deep', 'month_pillar_role', 'year_pillar_roots',
+        'hour_pillar_desire', 'ohaeng_balance_report', 'gongmang_deep_analysis'
+    ];
+
+    // [New] 'ms_'(Myeongsim) prefix for new features
+    if (selfCoachingIntents.includes(intent) || intent.startsWith('assess_') || intent.startsWith('deep_') || intent.startsWith('ms_') || intent.startsWith('NAV_')) {
+        return `[INTENT:${intent}]`;
+    }
+
+    // 1. 108 자각 엔진 우선 시도
+    const awakeningPrompt = generateAwakeningPrompt(intent, userProfile);
+    if (awakeningPrompt) {
+        return awakeningPrompt;
+    }
+
+    // 2. 기본 프롬프트 맵 (Fallback)
     const prompts: Record<string, string> = {
-        // 부의 그릇
-        'shadow_exhaustion': '내가 돈을 벌어도 모이지 않는 이유가 뭘까요? 무의식적인 돈에 대한 패턴을 분석해주세요.',
-        'gift_divine_will': '내 사주에서 재물을 모으는 가장 좋은 방법은 뭔가요?',
-        'fortune_wealth_year': '올해 나의 재물운은 어떤가요? 월별로 알려주세요.',
-        'coaching_wealth_action': '재물운을 높이기 위한 실천 과제를 주세요.',
-
-        // 관계의 멍
-        'shadow_conflict': '나는 왜 연애가 잘 안될까요? 반복되는 패턴이 있나요?',
-        'saju_compatibility': '나에게 잘 맞는 이성의 사주 유형은 어떤 건가요?',
-        'venus_sequence_defense': '나의 감정 방어기제가 뭔지 분석해주세요.',
-        'relationship_type_quiz': '나의 연애 스타일을 분석해주세요.',
-
-        // 천직 발견
-        'innate_talent_analysis': '내 사주로 볼 때 타고난 재능과 강점은 뭔가요?',
-        'career_path_direction': '나는 직장생활이 맞을까요, 사업이 맞을까요?',
-        'burnout_escape_coaching': '일에 대한 의미를 잃었어요. 어떻게 해야 할까요?',
-        'career_timing_analysis': '이직이나 승진하기 좋은 시기는 언제인가요?',
-
-        // 성격분석 (명심코칭)
-        'core_myeongsim_codes': '내 핵심 명심코드(천직/성장과제)를 분석해주세요. 다크코드, 뉴럴코드, 메타코드로 설명해주세요.',
-        'dark_to_neural': '내 다크코드를 뉴럴코드로 바꾸는 행동 처방을 알려주세요.',
-        'prosperity_key_analysis': '번영 열쇠(재물운 핵심 코드)로 내 재물 패턴을 분석해주세요.',
-        'connection_code_analysis': '인연 코드(관계운 핵심 코드)로 내 관계 패턴을 분석해주세요.',
-
-        // 데일리 미션
-        'daily_fortune': '오늘 나의 운세는 어때요?',
-        'action_plan_3day': '3일 실천 플랜을 만들어주세요.',
-        'meditation_guide': '5분 명상 가이드를 해주세요.',
-        'mission_history': '내가 완료한 미션들을 보여주세요.',
-
-        // 정밀 사주
-        'saju_basic_analysis': '내 사주 원국을 상세히 분석해주세요.',
-        'saju_daewoon_flow': '내 대운의 흐름을 10년 단위로 분석해주세요.',
-        'saju_career_detail': '내 직업운과 사업운을 심층 분석해주세요.',
-        'saju_marriage_timing': '결혼 적령기와 배우자상을 분석해주세요.',
-        'saju_yearly_monthly': '올해와 이달의 운세를 분석해주세요.',
-        'premium_report_full': '80페이지 프리미엄 리포트를 생성해주세요.',
-
-        // 통합 체크인 (System)
-        'integral_checkin_view': '오늘의 통합 체크인을 시작합니다.',
-
-        // [NEW] 108 자각 (나를 알기) Intents
-        'saju_core_summary': '나의 사주 팔자(사주 원국)를 상세히 분석해주세요.',
-        'day_master_deep': '내 일간(Day Master)의 본질적 특성과 잠재력에 대해 깊이 있게 대화하고 싶습니다.',
-        'month_pillar_role': '내 월주(Month Pillar)가 의미하는 사회적 역할과 직업적 특성은 무엇인가요?',
-        'year_pillar_roots': '내 년주(Year Pillar)에 담긴 나의 뿌리와 초기 잠재력은 무엇인가요?',
-        'hour_pillar_desire': '내 시주(Hour Pillar)에 숨겨진 말년의 욕망과 자녀 운은 어떤가요?',
-        'ohaeng_balance_report': '내 사주의 오행 균형 상태를 분석하고, 과하거나 부족한 기운에 대해 알려주세요.',
-        'ohaeng_supplement_guide': '내 사주에서 부족한 오행 에너지를 어떻게 보충할 수 있나요? 구체적인 가이드를 주세요.',
-        'gongmang_deep_analysis': '내 사주의 공망(Void)이 의미하는 바를 심층적으로 해석해주세요.',
-        'gongmang_gift_discovery': '공망이 주는 긍정적인 면, 즉 숨겨진 선물과 독창성은 무엇인가요?',
-        'daewoon_flow_current': '현재 대운의 흐름과 그것이 내 삶에 미치는 영향을 분석해주세요.',
-        'seun_energy_current': '올해 세운(Yearly Luck)의 에너지와 내가 맞이할 기회와 도전은 무엇인가요?',
-        'life_chapter_transition': '대운과 세운의 변화를 통해 내 인생의 챕터가 어떻게 바뀌고 있는지 알려주세요.',
-        'core_strength_visualization': '내 사주의 핵심 강점을 시각적인 이미지로 묘사해주세요.',
-        'innate_temperament_qna': '나의 타고난 기질에 대해 궁금한 점이 있습니다. 질의응답을 시작해주세요.',
-        'saju_personality_link': '내 성격이 형성된 과정을 사주적 관점에서 연결하여 설명해주세요.',
-        'fate_keywords_3': '내 운명을 관통하는 핵심 키워드 3가지를 추출하고 설명해주세요.',
-        'saju_nature_metaphor': '나를 자연물(물상)에 비유한다면 어떤 모습인가요? 이야기로 들려주세요.',
-        'saju_calling_exploration': '내 사주에 맞는 천직(Calling)과 업의 형태를 탐색하고 싶습니다.'
+        // 기존 프롬프트 유지 (필요시)
+        'shadow_exhaustion': '돈이 새는 패턴을 분석해주세요.',
+        'gift_divine_will': '나만의 부자 코드를 알려주세요.',
+        // ... (Legacy prompts can remain as fallback or be removed if unused)
     };
 
-    return prompts[intent] || '이 주제에 대해 분석해주세요.';
+    return prompts[intent] || '이 주제에 대해 깊이 있게 분석해주세요.';
 }
 
 /**

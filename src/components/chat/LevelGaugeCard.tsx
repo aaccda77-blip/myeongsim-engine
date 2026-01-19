@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { motion, useSpring } from 'framer-motion';
+import { ConsciousnessEngine } from '@/components/features/ConsciousnessEngine';
 
 interface LevelGaugeCardProps {
     innateLevel: number;
@@ -11,7 +12,7 @@ interface LevelGaugeCardProps {
 }
 
 export default function LevelGaugeCard({
-    innateLevel = 125, // [Realism] Default to 'Desire/Discovery' (More grounded)
+    innateLevel = 125, // [Realism] Default to 'Desire/Discovery'
     currentLevel = 155, // [Realism] Slightly higher 'Anger/Action' energy
     framework = "Integrated Analysis",
     tip
@@ -20,14 +21,13 @@ export default function LevelGaugeCard({
     const springValue = useSpring(0, { stiffness: 50, damping: 15 });
     const [displayLevel, setDisplayLevel] = useState(0);
 
-    // [Living UI] Calculate dynamic width percentage (Max scale 1000 for visuals)
+    // [Living UI] Calculate dynamic width percentage (Max scale 800)
     const maxScale = 800;
     const innatePercent = Math.min((innateLevel / maxScale) * 100, 100);
     const currentPercent = Math.min((currentLevel / maxScale) * 100, 100);
     const growth = currentLevel - innateLevel;
 
     useEffect(() => {
-        // Trigger animation on mount
         springValue.set(currentLevel);
     }, [currentLevel, springValue]);
 
@@ -39,11 +39,11 @@ export default function LevelGaugeCard({
 
     // Badge Logic - Dynamic Color based on Level
     const getBadgeInfo = (score: number) => {
-        if (score < 200) return { color: '#ef4444', label: '탐색 (Seeking)', glow: 'rgba(239, 68, 68, 0.4)' }; // Red -> Red/Orange
-        if (score < 350) return { color: '#f59e0b', label: '도약 (Leaping)', glow: 'rgba(245, 158, 11, 0.4)' }; // Orange
-        if (score < 500) return { color: '#10b981', label: '통찰 (Insight)', glow: 'rgba(16, 185, 129, 0.4)' }; // Green
-        if (score < 600) return { color: '#3b82f6', label: '조화 (Harmony)', glow: 'rgba(59, 130, 246, 0.4)' }; // Blue
-        return { color: '#8b5cf6', label: '몰입 (Flow)', glow: 'rgba(139, 92, 246, 0.4)' }; // Violet
+        if (score < 200) return { color: '#ef4444', label: '탐색 (Seeking)', glow: 'rgba(239, 68, 68, 0.4)' };
+        if (score < 350) return { color: '#f59e0b', label: '도약 (Leaping)', glow: 'rgba(245, 158, 11, 0.4)' };
+        if (score < 500) return { color: '#10b981', label: '통찰 (Insight)', glow: 'rgba(16, 185, 129, 0.4)' };
+        if (score < 600) return { color: '#3b82f6', label: '조화 (Harmony)', glow: 'rgba(59, 130, 246, 0.4)' };
+        return { color: '#8b5cf6', label: '몰입 (Flow)', glow: 'rgba(139, 92, 246, 0.4)' };
     };
 
     const badgeInfo = getBadgeInfo(displayLevel);
@@ -99,28 +99,13 @@ export default function LevelGaugeCard({
 
                 {/* Top Section */}
                 <div className="flex items-center gap-4 mb-[15px] mt-[5px]">
-                    {/* Living Gauge Circle */}
-                    <div
-                        className="w-[54px] h-[54px] rounded-full flex flex-col justify-center items-center border-2 shrink-0 relative shadow-lg transition-colors duration-500"
-                        style={{ borderColor: badgeInfo.color, boxShadow: `0 0 15px ${badgeInfo.glow}` }}
-                    >
-                        <span className="text-[9px] opacity-70 mb-[1px] text-white/80">LEVEL</span>
-                        <span className="text-[20px] font-black leading-none text-white tracking-tight" style={{ textShadow: `0 0 10px ${badgeInfo.glow}` }}>
-                            {displayLevel}
-                        </span>
-                        {/* Dynamic Ring */}
-                        <svg className="absolute w-full h-full -rotate-90 pointer-events-none">
-                            <circle cx="50%" cy="50%" r="24" fill="none" stroke="white" strokeOpacity="0.1" strokeWidth="2" />
-                            <motion.circle
-                                cx="50%" cy="50%" r="24" fill="none" stroke={badgeInfo.color} strokeWidth="2"
-                                strokeDasharray="150"
-                                strokeDashoffset={150 - (currentPercent / 100) * 150}
-                                strokeLinecap="round"
-                                initial={{ strokeDashoffset: 150 }}
-                                animate={{ strokeDashoffset: 150 - (currentPercent / 100) * 150 }}
-                                transition={{ duration: 1.5, type: "spring", bounce: 0.2 }}
-                            />
-                        </svg>
+                    {/* [Living Engine] Replaced static SVG with Dynamic Engine */}
+                    <div className="shrink-0 relative scale-90">
+                        <ConsciousnessEngine
+                            baseLevel={springValue.get()} // Live Spring Value
+                            trend={growth > 0 ? 'up' : growth < 0 ? 'down' : 'stable'}
+                            size="md"
+                        />
                     </div>
 
                     <div className="flex flex-col flex-1">

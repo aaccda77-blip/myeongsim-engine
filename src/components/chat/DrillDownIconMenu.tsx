@@ -82,8 +82,8 @@ const styles = {
         transition: 'all 0.3s ease',
         position: 'relative' as const,
         flex: '0 0 auto', // [Fix] 찌그러짐 방지
-        minWidth: '64px', // [Fix] 최소 너비 보장
-        maxWidth: '80px',
+        minWidth: '76px', // [Fix] 겹침 방지: 최소 너비 증가
+        maxWidth: 'none', // [Fix] 텍스트 길이에 따라 늘어남
     } as React.CSSProperties,
 
     // 3D 아이콘 컨테이너 (CSS 3D 효과)
@@ -125,7 +125,11 @@ const styles = {
         color: 'rgba(255,255,255,0.85)',
         textAlign: 'center' as const,
         letterSpacing: '-0.3px',
-        whiteSpace: 'nowrap' as const,
+        whiteSpace: 'normal' as const, // [Fix] 텍스트 줄바꿈 허용
+        lineHeight: 1.2, // [Fix] 줄간격 조정
+        marginTop: '4px',
+        width: '100%',
+        wordBreak: 'keep-all' as const, // [Fix] 단어 단위 줄바꿈
     } as React.CSSProperties,
 
     // 추천 배지
@@ -634,6 +638,10 @@ export default function DrillDownIconMenu({
         }
 
         // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
+        // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
+        // [UPDATE] User requested to run this in Main Chatbot instead of Modal
+        // We allow this to fall through to default 'onSelectIntent'
+        /*
         if (subItem.id.startsWith('p_')) {
             setSelectedIcon(null);
 
@@ -649,6 +657,7 @@ export default function DrillDownIconMenu({
             setShowDiscoveryChat(true);
             return;
         }
+        */
 
 
         // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동

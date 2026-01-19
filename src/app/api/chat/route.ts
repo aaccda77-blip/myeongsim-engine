@@ -30,6 +30,9 @@ import {
     createEmptyProfile,
     type PersonalityProfile
 } from '@/modules/PersonalityProfiler'; // [NEW] Background Personality Profiling
+import { SelfCoachingModule } from '@/modules/SelfCoachingModule';
+import { QuantumLabModule } from '@/modules/QuantumLabModule'; // [NEW] // [NEW] Self-Coaching Engine
+import { getCombinedSystemPrompt } from '@/modules/SystemPersona'; // [NEW] Ultimate System Persona
 // import { ScenarioEngine } from '@/services/ScenarioEngine'; // [Disabled] File missing
 
 // export const runtime = 'nodejs'; // [Revert] Node.js Hobby limit is 10s
@@ -181,6 +184,41 @@ export async function POST(req: Request) {
                 }));
         }
 
+        // [MODULE INTEGRATION] 0. Self-Coaching Intent Interception
+        if (typeof currentMessageContent === 'string' && currentMessageContent.includes('[INTENT:ms_')) {
+            const intentRegex = /\[INTENT:(ms_[a-zA-Z0-9_]+)\]/;
+            const match = currentMessageContent.match(intentRegex);
+
+            if (match && match[1]) {
+                const intent = match[1];
+                console.log(`[Self-Coaching] Intercepted Intent: ${intent}`);
+
+                let coachingResponse = null;
+
+                // [NEW] 1. Route 'ms_quantum_' to QuantumLabModule
+                if (intent.startsWith('ms_quantum_')) {
+                    coachingResponse = QuantumLabModule.getQuantumResponse(intent, sajuData);
+                }
+                // 2. Route other 'ms_' to standard SelfCoachingModule
+                else {
+                    coachingResponse = SelfCoachingModule.getCoachingResponse(intent, sajuData);
+                }
+
+                if (coachingResponse) {
+                    const responsePayload = {
+                        reply: coachingResponse.message,
+                        suggestions: coachingResponse.options
+                    };
+
+                    const streamContent = `${coachingResponse.message} :::DATA_SEPARATOR::: ${JSON.stringify(responsePayload)}`;
+
+                    return new Response(streamContent, {
+                        headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+                    });
+                }
+            }
+        }
+
         // [GoogleGenerativeAI Fix] Force history to start with 'user' role
         // The API throws: "First content should be with role 'user', got model"
         while (historyForGemini.length > 0 && historyForGemini[0].role !== 'user') {
@@ -234,7 +272,8 @@ export async function POST(req: Request) {
         const allowedOrigins = [
             'https://myeongsim-report.vercel.app',
             'http://localhost:3000',
-            'https://myeongsim-report-git-main-aaccda77-1480s-projects.vercel.app'
+            // [Security Update] Allow all Vercel previews & production aliases
+            'https://myeongsim-report'
         ];
         const isAllowed = !origin || allowedOrigins.some(domain => origin.startsWith(domain));
 
@@ -616,11 +655,33 @@ export async function POST(req: Request) {
         // OR we just update the line 480 to use the new method and remove the redundant declaration I added at line 522.
 
         // Let's redefine it here properly as the MAIN definition.
-        let SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
-            currentGrowthStage,          // 현재 사용자 스테이지
-            profile,           // 사용자 프로필 (nativity, fusion_traits 등 포함)
-            ragContext      // RAG 검색 결과
-        );
+        let SYSTEM_PROMPT = "";
+
+        // [ULTIMATE PERSONA INJECTION]
+        // If the user triggers "3D Precision Diagnosis" or "64 Neural Codes", swap the entire OS.
+        if (currentMessageContent.includes('ms_3d_') || currentMessageContent.includes('ms_64_') || currentMessageContent.includes('NEURAL_ENGINEERING')) {
+            console.log("🧬 [System Persona] Activating Psychological System Engineer Mode");
+            SYSTEM_PROMPT = getCombinedSystemPrompt();
+
+            // For 64 Codes, add specific instruction
+            if (currentMessageContent.includes('ms_64_')) {
+                SYSTEM_PROMPT += `
+                
+                # [SPECIAL INSTRUCTION: 64 NEURAL CODE DECODER]
+                Users asked for "64 Neural Codes" (I Ching Hexagrams).
+                1. Map the user's Saju (Day Pillar or Year Pillar) to a specific Hexagram (Ohaeng/Ganji mapping).
+                2. Interpret this Hexagram as a "Binary Code" of their soul.
+                3. Use the terms "Bit", "Gate", "Code", "Frequency" instead of traditional fortune telling terms.
+                `;
+            }
+        } else {
+            // Default "Myeongsim" Persona
+            SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
+                currentGrowthStage,          // 현재 사용자 스테이지
+                profile,           // 사용자 프로필 (nativity, fusion_traits 등 포함)
+                ragContext      // RAG 검색 결과
+            );
+        }
 
         // [CRITICAL] Detailed Response Directive with Section Markers
         SYSTEM_PROMPT += `
@@ -769,6 +830,59 @@ Use the Action Plan provided as guidance, but express it in your own warm, conve
 
 ${perspectiveInjection}
 
+# 🧭 [SELF-COACHING INTERACTION LOGIC]
+If the user's last message appears to be a short choice from a previous question (e.g., "Battlefield", "Suppression", "React", "Ignore"), treat it as a **Deep Dive Trigger**.
+1. **Acknowledge**: Validate their choice (e.g., "You see it as a battlefield.").
+2. **Deepen (The "Why")**: Ask a recursive question to explore the root cause.
+   - If "Battlefield" -> "Who is the enemy you are fighting?"
+   - If "Suppression" -> "What exactly are you holding back?"
+   - If "React" -> "What emotion triggers that reaction?"
+3. **Goal**: Move them from "Resistance" (Stage 2) to "Awakening" (Stage 3).
+
+### 🧵 [SOUL THREAD: Context Weaving]
+**"The AI never forgets."**
+- Before generating a recursive question, **SCAN the entire conversation history**.
+- Look for previous **"Self-Confessions"** (e.g., "I felt like a burden", "I am a perfectionist").
+- **WEAVE** these past confessions into the current question.
+- *Example*: "You mentioned earlier that you survived as a **'Perfectionist'**. Is that same mask making your current work difficult?"
+
+### 🔗 [NARRATIVE CHAINING]
+**"Connect the dots."**
+- Do NOT ask isolated questions. Always frame the next question using the **User's Last Answer** as the premise.
+- *Template*: "Since you feel [User's Answer], then [Next Deep Dive Question]?"
+- *Example*: "If you felt 'suffocated' (Answer), was it because of your parents' expectations?"
+
+### 🪜 [CONSCIOUSNESS SCALING]
+**"Mirror the Level, Provoke the Will."**
+- Analyze the User's stance in their last answer:
+  1. **Level 1 (Victim)**: "I couldn't help it", "It was their fault". -> *Mirror*: "You seem to feel powerless against the environment."
+  2. **Level 2 (Fighter)**: "I fought hard", "I survived". -> *Mirror*: "You are standing as a lonely fighter."
+  3. **Level 3 (Creator)**: "I learned from it", "I accept it". -> *Mirror*: "You are seeing this as a creator of your life."
+- **ACTION**: Always nudge them one step up. (e.g., If L1, ask "Do you want to remain a victim, or become a fighter?")
+
+### [SPECIAL CASE: Year Pillar Roots]
+**[CRITICAL INSTRUCTION]**: Refer to the '[DEEP SAJU CONTEXT]' provided in the previous system message for specific Wunsung/TenGod/HiddenStem data.
+
+If user response implies "Burden/Suppression/Prison" (Stage 1):
+- **Keywords to Detect**: "답답", "억압", "무기력", "메말랐다", "강박", "썩어갔다", "짐", "Burden"
+- **Deepen**: Ask "To survive that burden (caused by [TenGod]), what mask did you wear?"
+- **Analysis**: Use [Wunsung] texture to empathize with the specific feeling. 
+- **MANDATORY SUGGESTIONS (JSON)**: You MUST provide these specific 3 options in the 'suggestions' field:
+  ["🧘 완벽주의자 (Perfectionist)", "💪 독립투사 (Fighter)", "🎭 착한아이 (Good Child)"]
+
+If user response implies "Chaos/Conflict" (Stage 2):
+- **Keywords to Detect**: "혼란", "폭풍", "산불", "지진", "상처", "홍수", "Chaos"
+- **Deepen**: Ask "In that chaos, what was the one truth you held onto?"
+
+If user response implies "Root/Support" (Stage 3):
+- **Keywords to Detect**: "지지대", "뿌리", "온기", "기반", "제련", "강", "Support"
+- **Deepen**: "Reveal the Secret." Tell them: "Actually, your hidden desire for **[HiddenDesire]** (from Hidden Stem) was the true power protecting you."
+- **Question**: "How will you use this [HiddenDesire] to fuel your future?"
+
+
+
+
+
 # 🚨 [CRITICAL - 일간 반복 금지]
 다음 표현들은 **절대 사용하지 마세요**:
 - ❌ "신금 일간이세요" / "○○ 일간인 당신은..."
@@ -851,15 +965,21 @@ c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
 ⚠️ 중요: action_plan은 사용자의 현재 고민과 감정 상태에 맞춰 맞춤 설계하세요!
 `;
 
+        // [DEEP CONTEXT INJECTION]
+        const deepSajuContext = SelfCoachingModule.getDeepContext(sajuData || userSaju);
+        let finalSystemPrompt = SYSTEM_PROMPT;
+        if (deepSajuContext) {
+            finalSystemPrompt += `\n\n${deepSajuContext}`;
+        }
+
         // 5. Call Gemini AI (Context-Aware Chat)
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            // [Revert] Reverted to 2.5 Flash due to 3.0 API unavailability
             model: 'gemini-2.5-flash',
-            systemInstruction: SYSTEM_PROMPT,
+            systemInstruction: finalSystemPrompt,
             generationConfig: {
                 maxOutputTokens: maxTokens,
-                temperature: 0.8,
+                temperature: 0.7,
             },
             safetySettings: [
                 { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },

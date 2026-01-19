@@ -1,15 +1,5 @@
-import { ReportData } from '@/types/report';
-import { getSocialRole } from '@/data/socialRoleData';
-import { getWunsungData } from '@/data/wunsungData';
-import { getHiddenMind } from '@/data/deepAnalysisData';
-import { getInteractionInfo } from '@/data/advancedAnalysisData';
-
-export interface CoachingQuestion {
-    id: string;
-    type: 'social' | 'hidden' | 'energy' | 'clash';
-    text: string;
-    options?: string[]; // Optional user choice buttons
-}
+import { analyzeDivineSoul, DivineSoulAnalysisResult } from './sajuLogic';
+import { CoachingQuestion, ReportData } from '../types/report';
 
 // --- Saju Element & Polarity Database ---
 // H: Heavenly Stem (Gan)
@@ -79,29 +69,34 @@ const calculateTenGod = (dayMaster: string, monthBranch: string): string => {
     return 'bi';
 };
 
-/**
- * Generates dynamic questions based on user's Saju profile using a STRICT 4-STAGE FLOW.
- */
+// --- NEW V2 GENERATOR: Using "Divine Soul Engine" ---
 export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     const questions: CoachingQuestion[] = [];
 
     // Safety: Ensure report.saju exists
     if (!report?.saju) return [];
 
-    // --- Step 1: Social Persona (Month Pillar) ---
-    // Handle both 'dayMaster' (direct) and 'fourPillars.day.gan' (nested)
-    // IMPORTANT: Prefer Korean characters "갑", "자" etc. which are usually in `gan` and `ji`
+    // Extract Basic Data (Defensive)
     const dayMaster = report.saju.dayMaster || report.saju.fourPillars?.day?.gan || '갑';
     const monthBranch = report.saju.fourPillars?.month?.ji || '자';
+    const dayBranch = String(report.saju.fourPillars?.day?.ji || '자');
 
-    // Calculate REAL Ten God
-    const monthTenGodCode = calculateTenGod(dayMaster, monthBranch);
-    const socialRole = getSocialRole(monthTenGodCode) || getSocialRole('pyun_gwan')!;
+    // Run Divine Analysis
+    const soul: DivineSoulAnalysisResult = analyzeDivineSoul(dayMaster, monthBranch, dayBranch);
+
+    // --- Step 1: Social Persona (Ten God + Micro/Gyeokguk) ---
+    // Use "Cross Analysis" message if available, else Ten God
+    let step1Text = `[1단계: 가면 자각]\n당신은 사회에서 '${soul.tenGod.name}'의 역할을 맡고 있군요.`;
+    if (soul.micro.cross) {
+        step1Text += `\n특히 ${soul.micro.cross.message}`;
+    } else {
+        step1Text += `\n책임감 때문에 가끔은 버겁지 않으세요?`;
+    }
 
     questions.push({
         id: 'step1_social',
         type: 'social',
-        text: `[1단계: 가면 자각]\n당신의 사주(월지)를 보니 사회에서는 '${socialRole.alias}'의 가면을 쓰고 계시군요.\n책임감 때문에 가끔은 버겁지 않으세요?`,
+        text: step1Text,
         options: [
             '도망치고 싶을 만큼 무거워요 💦',
             '힘들지만 인정받는 게 좋아요 🏆',
@@ -110,16 +105,20 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
         ]
     });
 
-    // --- Step 2: Inner Shadow (Hidden Mind / Jijanggan) ---
-    const dayBranch = String(report.saju.fourPillars?.day?.ji || '자');
-    const hiddenMind = getHiddenMind(dayBranch); // This is a Direct Lookup! 1:1 Mapping
+    // --- Step 2: Inner Shadow (Hidden Mind / Jijanggan / Complex) ---
+    // Use "Psychological Complex" if active, else Hidden Stem
+    let step2Text = "";
+    if (soul.micro.complex.length > 0) {
+        const complex = soul.micro.complex[0];
+        step2Text = `[2단계: 무의식 자각]\n가끔 설명할 수 없는 감정이 올라오지 않나요? 당신에겐 '${complex.name}(${complex.keyword})'이 있어, ${complex.psychology}`;
+    } else {
+        step2Text = `[2단계: 무의식 자각]\n겉모습과 달리, 속마음엔 '${soul.hiddenStem?.interpretation}'이 숨어있네요. 남들은 모르는 당신만의 반전 매력이자 욕망입니다.`;
+    }
 
     questions.push({
         id: 'step2_shadow',
         type: 'hidden',
-        text: hiddenMind
-            ? `[2단계: 무의식 자각]\n겉보기에 당신의 일지는 '${dayBranch}'이지만, 그 속에는 '${hiddenMind.interpretation}' 같은 욕망이 숨어있네요.\n혹시 들킨 것 같나요?`
-            : `[2단계: 무의식 자각]\n남들은 모르는 당신만의 숨겨진 욕망이나 고집이 있지 않나요? 겉으로는 쿨한 척하지만요.`,
+        text: step2Text,
         options: [
             '맞아요, 들킨 것 같아요 🫣',
             '가끔 그런 생각이 들긴 해요 🤔',
@@ -128,31 +127,43 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
         ]
     });
 
-    // --- Step 3: Lifecycle Void (Gongmang / Deficiency) ---
-    // Deterministic Void Check based on Day Branch char code
-    const isVoid = (dayBranch.charCodeAt(0) % 3 === 0);
+    // --- Step 3: Lifecycle Void (Gongmang / Climate / Constitution) ---
+    // Prioritize Void > Climate > Energy Weakness
+    let step3Text = "";
+    if (soul.gongmang.isVoid) {
+        step3Text = `[3단계: 결핍 자각]\n${soul.gongmang.message}`;
+    } else if (soul.climate.message.includes('난로') || soul.climate.message.includes('용광로')) {
+        step3Text = `[3단계: 에너지 자각]\n${soul.climate.message}`;
+    } else if (soul.wunsung?.energyLevel === 'weak') {
+        step3Text = `[3단계: 에너지 자각]\n당신의 에너지는 무리하면 쉽게 방전되는 '섬세한(Weak)' 상태입니다. 육체적 노동보다는 전략을 써야 합니다.`;
+    } else {
+        step3Text = `[3단계: 에너지 자각]\n지금 당신은 에너지가 채워져 있지만, 가끔 이유 없이 방전되지는 않나요? 스스로를 충전하는 법을 알고 계신가요?`;
+    }
 
     questions.push({
         id: 'step3_void',
         type: 'energy',
-        text: isVoid
-            ? `[3단계: 결핍 자각]\n당신의 에너지 흐름이 잠시 끊기는 '공망' 구간이 감지됩니다.\n밑 빠진 독처럼 채워지지 않는 공허함이 느껴지나요?`
-            : `[3단계: 결핍 자각]\n지금은 에너지가 채워져 있지만, 가끔 이유 없이 방전되지는 않나요?\n아무리 노력해도 채워지지 않는 구멍이 있나요?`,
+        text: step3Text,
         options: [
-            isVoid ? '네, 아무리 채워도 계속 공허해요 🕳️' : '가끔 이유 없이 무기력해져요 🔋',
-            '뭔가 중요한 게 빠진 기분이에요 🧩',
-            '지금은 괜찮지만 불안해요 ☁️',
+            '네, 그 점이 항상 고민이었어요 💧',
+            '가끔 그렇게 느껴요 🔋',
+            '어떻게 채워야 할지 모르겠어요 🧩',
             '지금 삶에 충분히 만족해요 ✨'
         ]
     });
 
-    return questions;
-}
+    // Step 4 is Destiny Choice (Free Will) - logic remains external or appended later specific to Destiny
+    // (Handled by getDestinyChoice in main component usually, or if we want to integrate it here, we keep it separate as it's a generated 'Conclusion' question)
 
-/**
- * Returns the final "Destiny Choice" question. (Step 4)
- */
-export const getDestinyChoice = (roleAlias: string): CoachingQuestion => {
+    return questions;
+};
+
+export const getQuestions = generateQuestions; // Alias if needed
+
+export const getDestinyChoice = (report: ReportData): CoachingQuestion => {
+    // Generate simple Destiny Choice based on Day Master simply, or use Soul Analysis if desired.
+    // For now, keep it simple or strictly Saju based.
+
     return {
         id: 'destiny_choice',
         type: 'social',

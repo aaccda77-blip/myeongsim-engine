@@ -74,3 +74,11 @@ export interface ReportData {
         todos: string[];
     };
 }
+
+// Added for Awakening Chat
+export interface CoachingQuestion {
+    id: string;
+    type: 'social' | 'hidden' | 'energy' | 'destiny';
+    text: string;
+    options: string[];
+}

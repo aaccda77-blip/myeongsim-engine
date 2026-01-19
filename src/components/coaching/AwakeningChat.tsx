@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReportStore } from '@/store/useReportStore';
-import { generateQuestions, CoachingQuestion, getDestinyChoice } from '@/utils/questionGenerator';
+import { generateQuestions, getDestinyChoice } from '@/utils/questionGenerator';
+import { CoachingQuestion } from '@/types/report';
 import { analyzeEmotion } from '@/utils/emotionAnalyzer';
 import { createConsultationPrompt } from '@/utils/promptBuilder';
 import { Send, ArrowRight, User } from 'lucide-react';
@@ -45,12 +46,14 @@ export default function AwakeningChat({ onComplete, onClose }: AwakeningChatProp
             const generated = generateQuestions(reportData);
 
             // Generate Step 4 (Destiny Choice)
+            // Generate Step 4 (Destiny Choice)
             const roleAlias = generated[0]?.text.includes("'") ? generated[0].text.split("'")[1] : '나';
             setRoleAlias(roleAlias);
-            const finalChoice = getDestinyChoice(roleAlias);
 
-            // Combine
+            // Use reportData (which serves as userProfile) for destiny choice
+            const finalChoice = getDestinyChoice(reportData);
             const fullCourse = [...generated, finalChoice];
+
             setQuestions(fullCourse);
 
             // Start first question
