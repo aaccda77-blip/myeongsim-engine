@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, X, Loader2, Lock, FileText, Check, Trash2, ArrowUp, Zap, Volume2, CircleStop, Mic } from 'lucide-react';
+import { Send, User, Bot, X, Loader2, Lock, FileText, Check, Trash2, ArrowUp, Zap, Volume2, CircleStop } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GateKeeperModule } from '@/modules/GateKeeperModule';
 import { QuestionModule } from '@/modules/QuestionModule';
@@ -35,7 +35,7 @@ import UserStatusHUD from '@/components/UserStatusHUD'; // [Added] User Status H
 import { useFcmToken } from '@/hooks/useFcmToken'; // [Added] Hook Import
 import { useBioData } from '@/hooks/useBioData'; // [Phase 2]
 import { useVoice } from '@/hooks/useVoice'; // [Feature] Supertone Voice
-import { useSpeechRecognition } from '@/hooks/useSpeechRecognition'; // [Feature] STT
+// import { useSpeechRecognition } from '@/hooks/useSpeechRecognition'; // [Feature] STT (Removed by User Request)
 import { supabase } from '@/lib/supabaseClient'; // [Auth]
 import { DeepScanQuestions } from '@/modules/DeepScanData'; // [Feature] 30 Qs
 import PhoneAuthModal from '../auth/PhoneAuthModal'; // [Module] Auth UI
@@ -47,7 +47,7 @@ import BreathingGuideModal from '../bio/BreathingGuideModal'; // [NEW] SOS Breat
 import { ETHICAL_GUIDELINES } from '@/constants/CodeOfEthics'; // [NEW] Safety Protocol
 import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule'; // [NEW] Talent Analysis
 import TalentReportCard from './TalentReportCard'; // [NEW] Talent Card UI
-import MicPermissionGuideModal from '../modals/MicPermissionGuideModal'; // [NEW] Mic Guide
+// import MicPermissionGuideModal from '../modals/MicPermissionGuideModal'; // [NEW] Mic Guide (Removed)
 
 
 // [Helper] Saju Keywords for Restoration
@@ -79,55 +79,15 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     // [Wearable] Bio Data Hook
     const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName, simulateRecovery } = useBioData();
     const { speak, speakScript, stop: stopVoice, isPlaying: isVoicePlaying, isLoading: isVoiceLoading } = useVoice(); // [Feature] Voice
-    const { isListening, transcript, startListening, stopListening, error: sttError } = useSpeechRecognition(); // [Feature] STT
+    // const { isListening, transcript, startListening, stopListening, error: sttError } = useSpeechRecognition(); // [Removed]
     const [isVoiceMode, setIsVoiceMode] = useState(false); // Flag for Auto-TTS
 
-    const [showMicGuide, setShowMicGuide] = useState(false); // [Feature] Mic Guide Modal
-
     // [Fix] STT Alert Replaced with Friendly Modal
-    useEffect(() => {
-        if (sttError) {
-            // Only show guide for permission issues, ignore minor errors or just log them
-            if (sttError.includes('권한') || sttError.includes('Permission') || sttError.includes('not-allowed')) {
-                setShowMicGuide(true);
-            } else {
-                console.warn("STT Error:", sttError); // Silent log for other errors
-            }
-        }
-    }, [sttError]);
+    // [Removed] STT Error Handling
 
     // [Voice Logic] Sync Transcript to Input & Auto-Send
-    useEffect(() => {
-        if (transcript) {
-            setInput(transcript);
-        }
-    }, [transcript]);
-
-
-
-    // [Voice Logic] Manual Stop - DISABLED for Build Fix (Replaced by handleMicClick below)
-    // [Feature] Auto-handle Mic Stop (Send on Silence)
-    useEffect(() => {
-        if (!isListening && transcript.trim() && isVoiceMode) {
-            handleSend(transcript.trim());
-            setIsVoiceMode(false); // Reset to prevent loop/double-send
-        }
-    }, [isListening]); // Only trigger when listening state changes
-
-    // [Feature] Auto-handle Mic Stop - Restored Correctly
-    const handleMicClick = () => {
-        if (isListening) {
-            stopListening();
-            if (transcript.trim()) {
-                handleSend(transcript.trim());
-                setIsVoiceMode(true);
-                setInput('');
-            }
-        } else {
-            startListening();
-            setIsVoiceMode(true);
-        }
-    };
+    // [Removed] Auto-Mic Stop Logic
+    // [Removed] Mic Handler
 
     const [showBioSync, setShowBioSync] = useState(false); // [New Menu]
     const [emdrActive, setEmdrActive] = useState(false); // [New] EMDR Mode State
@@ -845,6 +805,19 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
         const msgToSend = overrideInput || input;
         if (!msgToSend.trim() || isLoading) return;
 
+        // [Feature] Radio Mode Intervention (Simple Type)
+        // If voice is playing, treat text input as a "listener comment" intervention
+        let effectiveHiddenPayload = hiddenPayload;
+
+        if (isVoicePlaying && !overrideInput && !hiddenPayload) {
+            console.log("📻 [Radio] User Intervention Detected!");
+            stopVoice(); // Stop current broadcast immediately
+            playGameSound('cheer'); // Sound effect for entry
+
+            // Inject context so AI knows this is an interruption
+            effectiveHiddenPayload = `[청취자 실시간 참여] (방송 중 청취자가 실시간으로 의견을 남겼습니다): "${msgToSend}"\n(DJ처럼 자연스럽게 "아, 청취자분이 이런 의견을 주셨네요!" 하고 받아서 반응해주세요)`;
+        }
+
         // [SAFETY] 1. Emergency Crisis Intervention (SOS Modal)
         const lowerMsg = msgToSend.toLowerCase();
 
@@ -1069,8 +1042,8 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                 body: JSON.stringify({
                     userId,
                     userName: effectiveReportData?.userName || "회원",
-                    // [FIX] Use hiddenPayload if provided (for Intents), otherwise use visible msg
-                    message: hiddenPayload || msgToSend,
+                    // [FIX] Use effectiveHiddenPayload if provided (for Intents/Intervention), otherwise use visible msg
+                    message: effectiveHiddenPayload || hiddenPayload || msgToSend,
                     messages: [...messages, userMsg],
                     stage,
                     birthDate: effectiveReportData?.birthDate,
@@ -2830,20 +2803,12 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder={isExpired ? "🔒 이용권이 만료되었습니다. 충전 후 이용해주세요." : "이곳을 터치해서 대화를 시작하세요..."}
-                                className={`w-full bg-[#1A1F2B] backdrop-blur-xl border rounded-2xl pl-6 pr-28 py-5 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-lg shadow-inner ${isExpired ? 'border-red-500/50 cursor-not-allowed opacity-60' : 'border-white/20 focus:border-primary-gold focus:ring-1 focus:ring-primary-gold/50'}`}
+                                className={`w-full bg-[#1A1F2B] backdrop-blur-xl border rounded-2xl pl-6 pr-14 py-5 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-lg shadow-inner ${isExpired ? 'border-red-500/50 cursor-not-allowed opacity-60' : 'border-white/20 focus:border-primary-gold focus:ring-1 focus:ring-primary-gold/50'}`}
                                 autoFocus
                                 disabled={isExpired}
                             />
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 z-20">
-                                {/* [Feature] Mic Button (STT) */}
-                                <button
-                                    type="button"
-                                    onClick={handleMicClick}
-                                    className={`p-2 rounded-full transition-all ${isListening ? 'bg-red-500/20 text-red-500 animate-pulse' : 'hover:bg-white/10 text-gray-400 hover:text-white'}`}
-                                    title="음성으로 입력"
-                                >
-                                    <Mic className={`w-5 h-5 ${isListening ? 'fill-current' : ''}`} />
-                                </button>
+                                {/* [Removed] Mic Button */}
 
                                 <button
                                     type="submit"
@@ -2897,11 +2862,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                 )}
             </AnimatePresence>
 
-            {/* [Feature] Mic Permission Guide */}
-            <MicPermissionGuideModal
-                isOpen={showMicGuide}
-                onClose={() => setShowMicGuide(false)}
-            />
+            {/* [Removed] Mic Permission Guide */}
         </div >
     );
 }

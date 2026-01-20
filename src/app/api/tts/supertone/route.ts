@@ -55,17 +55,17 @@ export async function POST(req: NextRequest) {
 
         if (voice_settings) {
             if (voice_settings.pitch > 1) {
-                // [Host Mode] MC Joy (Energetic Female)
-                voiceName = 'ko-KR-Neural2-B'; // Female (Young/Bright)
-                ssmlGender = 'FEMALE';
-                speakingRate = 1.15; // Fast, energetic
-                pitch = 1.2; // Higher pitch
-            } else {
-                // [Coach Mode] Myeongsim (Deep Male)
-                voiceName = 'ko-KR-Neural2-C'; // Male (Deep/Authoritative)
+                // [Host Mode] Narrator (Calm Male) - "진행자 낭독 톤"
+                voiceName = 'ko-KR-Neural2-C'; // Male
                 ssmlGender = 'MALE';
-                speakingRate = 0.90; // Slow, deliberate
-                pitch = -2.0; // Deep bass
+                speakingRate = 0.95; // Steady, slightly slow
+                pitch = -0.5; // Natural deep (Narrator like)
+            } else {
+                // [Coach Mode] Myeongsim (Deep Male) - "명심 코치"
+                voiceName = 'ko-KR-Neural2-C'; // Male
+                ssmlGender = 'MALE';
+                speakingRate = 0.88; // Very deliberate, authoritative
+                pitch = -2.5; // Extra Deep bass (Guru style)
             }
         } else if (voiceId === 'onyx' || voiceId === 'expert') {
             // Explicit Expert
