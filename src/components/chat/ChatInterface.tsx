@@ -47,6 +47,7 @@ import BreathingGuideModal from '../bio/BreathingGuideModal'; // [NEW] SOS Breat
 import { ETHICAL_GUIDELINES } from '@/constants/CodeOfEthics'; // [NEW] Safety Protocol
 import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule'; // [NEW] Talent Analysis
 import TalentReportCard from './TalentReportCard'; // [NEW] Talent Card UI
+import MicPermissionGuideModal from '../modals/MicPermissionGuideModal'; // [NEW] Mic Guide
 
 
 // [Helper] Saju Keywords for Restoration
@@ -81,10 +82,17 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     const { isListening, transcript, startListening, stopListening, error: sttError } = useSpeechRecognition(); // [Feature] STT
     const [isVoiceMode, setIsVoiceMode] = useState(false); // Flag for Auto-TTS
 
-    // [Fix] STT Alert
+    const [showMicGuide, setShowMicGuide] = useState(false); // [Feature] Mic Guide Modal
+
+    // [Fix] STT Alert Replaced with Friendly Modal
     useEffect(() => {
         if (sttError) {
-            alert(`음성 인식 오류: ${sttError}\n(마이크 권한을 확인해주세요)`);
+            // Only show guide for permission issues, ignore minor errors or just log them
+            if (sttError.includes('권한') || sttError.includes('Permission') || sttError.includes('not-allowed')) {
+                setShowMicGuide(true);
+            } else {
+                console.warn("STT Error:", sttError); // Silent log for other errors
+            }
         }
     }, [sttError]);
 
@@ -2874,6 +2882,12 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* [Feature] Mic Permission Guide */}
+            <MicPermissionGuideModal
+                isOpen={showMicGuide}
+                onClose={() => setShowMicGuide(false)}
+            />
         </div >
     );
 }
