@@ -2808,7 +2808,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder={isExpired ? "🔒 이용권이 만료되었습니다. 충전 후 이용해주세요." : "이곳을 터치해서 대화를 시작하세요..."}
-                                className={`w-full bg-[#1A1F2B] backdrop-blur-xl border rounded-2xl pl-6 pr-14 py-5 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-lg shadow-inner ${isExpired ? 'border-red-500/50 cursor-not-allowed opacity-60' : 'border-white/20 focus:border-primary-gold focus:ring-1 focus:ring-primary-gold/50'}`}
+                                className={`w-full bg-[#1A1F2B] backdrop-blur-xl border rounded-2xl pl-6 pr-28 py-5 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-lg shadow-inner ${isExpired ? 'border-red-500/50 cursor-not-allowed opacity-60' : 'border-white/20 focus:border-primary-gold focus:ring-1 focus:ring-primary-gold/50'}`}
                                 autoFocus
                                 disabled={isExpired}
                             />
