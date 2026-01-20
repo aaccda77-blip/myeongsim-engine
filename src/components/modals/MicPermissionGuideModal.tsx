@@ -67,12 +67,23 @@ export default function MicPermissionGuideModal({ isOpen, onClose }: MicPermissi
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => window.location.reload()}
-                            className="w-full py-3 bg-primary-gold text-black font-bold rounded-xl hover:bg-amber-400 transition-colors shadow-lg shadow-amber-900/20"
-                        >
-                            설정 완료 (새로고침)
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    alert("링크가 복사되었습니다. 크롬(Chrome)이나 삼성인터넷 주소창에 붙여넣어주세요.");
+                                }}
+                                className="flex-1 py-3 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-600 transition-colors"
+                            >
+                                🔗 링크 복사
+                            </button>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="flex-1 py-3 bg-primary-gold text-black font-bold rounded-xl hover:bg-amber-400 transition-colors shadow-lg shadow-amber-900/20"
+                            >
+                                설정 완료 (새로고침)
+                            </button>
+                        </div>
 
                         {/* Debug Info */}
                         <div className="mt-4 pt-4 border-t border-white/5 text-[10px] text-gray-600 font-mono text-center">
