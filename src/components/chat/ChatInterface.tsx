@@ -146,6 +146,20 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    // [Feature] TTS Text Cleaner (Markdown Stripper)
+    const cleanTextForTTS = (text: string) => {
+        if (!text) return "";
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '$1') // Remove Bold
+            .replace(/\[INTENT:.*?\]/g, '') // Remove Hidden Intents
+            .replace(/\[.*?\]/g, '') // Remove System Tags like [공명 현상]
+            .replace(/#{1,6}\s?/g, '') // Remove Headers
+            .replace(/!\[.*?\]\(.*?\)/g, '') // Remove Images
+            .replace(/`{1,3}/g, '') // Remove Code ticks
+            .replace(/📈|✨|🔒|🎵|🗣️|❓|🚨|📉/g, '') // Remove Common Emojis (Optional, but often preferred for clean reading)
+            .trim();
+    };
+
     // [Voice Logic] Auto-Play TTS when AI Responds in Voice Mode
     useEffect(() => {
         if (!isVoiceMode || isLoading) return;
@@ -155,7 +169,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
         // Ideally we compare IDs, here we rely on the effect trigger
         if (lastMsg && lastMsg.role === 'assistant' && !isVoicePlaying) {
             // Delay slightly to ensure UI catchup
-            setTimeout(() => speak(lastMsg.content), 500);
+            setTimeout(() => speak(cleanTextForTTS(lastMsg.content)), 500);
         }
     }, [messages, isLoading, isVoiceMode]);
 

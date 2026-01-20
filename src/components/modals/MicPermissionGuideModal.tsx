@@ -85,6 +85,13 @@ export default function MicPermissionGuideModal({ isOpen, onClose }: MicPermissi
                             </button>
                         </div>
 
+                        <button
+                            onClick={onClose}
+                            className="w-full py-3 mt-2 bg-white/5 text-gray-400 font-medium rounded-xl hover:bg-white/10 hover:text-white transition-colors text-sm"
+                        >
+                            ⌨️ 마이크 포기하고 텍스트로 입력하기
+                        </button>
+
                         {/* Debug Info */}
                         <div className="mt-4 pt-4 border-t border-white/5 text-[10px] text-gray-600 font-mono text-center">
                             DEBUG: {typeof window !== 'undefined' ? (window.navigator.userAgent.includes('KAKAOTALK') ? 'KAKAO-WEBVIEW' : 'BROWSER') : 'SERVER'} /
