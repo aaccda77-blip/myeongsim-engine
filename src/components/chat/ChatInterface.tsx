@@ -78,7 +78,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     const { reportData } = useReportStore();
     // [Wearable] Bio Data Hook
     const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName, simulateRecovery } = useBioData();
-    const { speak, speakScript, stop: stopVoice, isPlaying: isVoicePlaying, isLoading: isVoiceLoading } = useVoice(); // [Feature] Voice
+    const { speak, speakScript, isPlaying: isVoicePlaying, stop: stopVoice } = useVoice(); // [Feature] Voice
     // const { isListening, transcript, startListening, stopListening, error: sttError } = useSpeechRecognition(); // [Removed]
     const [isVoiceMode, setIsVoiceMode] = useState(false); // Flag for Auto-TTS
 
@@ -1958,30 +1958,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
                                             {/* [Myeongsim Talk Session - Interrupt Button] */}
                                             {/* Appears only when Voice is Playing (Talk Session Mode) */}
-                                            <AnimatePresence>
-                                                {isVoicePlaying && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, y: 20 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        exit={{ opacity: 0, y: 20 }}
-                                                        className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50"
-                                                    >
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                stopVoice(); // Stop audio immediately
-                                                                handleMicClick(); // Auto-start STT for natural flow
-                                                                // Optional: Visual cue
-                                                                // alert("말씀하세요! 코치가 듣고 있습니다."); 
-                                                            }}
-                                                            className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg border-2 border-white/20 backdrop-blur-md animate-pulse"
-                                                        >
-                                                            <span className="text-xl">✋</span>
-                                                            <span className="font-bold">잠깐, 질문있어요!</span>
-                                                        </button>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+
 
                                             {imageMatch && (
                                                 <div className="mt-4 mb-2 overflow-hidden rounded-lg border border-primary-gold/30 bg-black/50">
