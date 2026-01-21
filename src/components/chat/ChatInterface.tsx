@@ -1837,7 +1837,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     ? 'bg-primary-gold/10 border-primary-gold/30 rounded-2xl rounded-tr-sm text-gray-100 ml-auto'
                                                     : 'bg-white/5 border-white/10 rounded-2xl rounded-tl-sm text-gray-200'
                                             }
-                                            w-fit max-w-full md:max-w-[85%] px-5 py-4 min-w-[200px]
+                                            w-fit max-w-full md:max-w-[85%] px-5 py-4 min-w-[200px] ${!isUser ? 'pr-12' : ''}
                                         `}>
                                             {isPayment ? (
                                                 <PaymentCard
@@ -1864,7 +1864,9 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     {/* [Feature] Message Speaker Button */}
                                                     {/* [Feature] Message Speaker Button (Dual Mode) */}
                                                     {!isUser && (
-                                                        <div className="absolute -right-2 -bottom-8">
+                                                        {/* [Feature] Message Speaker Button (Top-Right Integrated) */ }
+                                                    {!isUser && (
+                                                        <div className="absolute top-2 right-2">
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
