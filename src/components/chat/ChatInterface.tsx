@@ -1893,6 +1893,8 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                                     >
                                                                         <span>📖</span> 낭독 듣기
                                                                     </button>
+                                                                    {/* [Removed] Talk Session Button by User Request */}
+                                                                    {/* 
                                                                     <button
                                                                         onClick={async (e) => {
                                                                             e.stopPropagation();
@@ -1901,11 +1903,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
 
                                                                             // [Radio Logic]
                                                                             try {
-                                                                                // 1. Alert user (toast/visual) - handled by loading state in useVoice ideally, but let's show visual feedback?
-                                                                                // Using a simpler alert for now or utilize speak's isLoading if I could trigger it manually?
-                                                                                // I will call a local async handler.
                                                                                 console.log("Generating Radio Script...");
-
                                                                                 const res = await fetch('/api/tts/script', {
                                                                                     method: 'POST',
                                                                                     body: JSON.stringify({ text: displayContent })
@@ -1926,6 +1924,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                                     >
                                                                         <span>📻</span> 명심 토크 세션
                                                                     </button>
+                                                                    */}
                                                                 </div>
                                                             )}
                                                         </div>
