@@ -48,15 +48,15 @@ export async function POST(req: NextRequest) {
         4. Language: Korean.
         `;
 
-        // [User Request] Primary: gemini-2.5-flash
-        // Fallback: gemini-1.5-flash if 2.5 fails
-        let model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        // [User Request] Primary: gemini-1.5-pro (Latest High-Intelligence Model)
+        // Fallback: gemini-1.5-flash (High Speed)
+        let model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
         let result;
         try {
             result = await model.generateContent(systemPrompt);
         } catch (modelError: any) {
-            console.warn(`[Gemini] Primary model 'gemini-2.5-flash' failed: ${modelError.message}. Falling back to 'gemini-1.5-flash'.`);
+            console.warn(`[Gemini] Primary model 'gemini-1.5-pro' failed: ${modelError.message}. Falling back to 'gemini-1.5-flash'.`);
             model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
             result = await model.generateContent(systemPrompt);
         }

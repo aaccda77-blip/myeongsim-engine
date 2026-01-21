@@ -55,17 +55,17 @@ export async function POST(req: NextRequest) {
 
         if (voice_settings) {
             if (voice_settings.pitch > 1) {
-                // [Host Mode] Narrator (Calm Male) - "진행자 낭독 톤"
+                // [Host Mode] Narrator (Natural Reading) - "진행자 낭독 톤"
                 voiceName = 'ko-KR-Neural2-C'; // Male
                 ssmlGender = 'MALE';
-                speakingRate = 0.95; // Steady, slightly slow
-                pitch = -0.5; // Natural deep (Narrator like)
+                speakingRate = 0.92; // Natural reading speed (neither too fast nor slow)
+                pitch = -0.0; // Minimal shift for maximum naturalness
             } else {
-                // [Coach Mode] Myeongsim (Deep Male) - "명심 코치"
+                // [Coach Mode] Myeongsim (Deep Resonance) - "명심 코치"
                 voiceName = 'ko-KR-Neural2-C'; // Male
                 ssmlGender = 'MALE';
-                speakingRate = 0.88; // Very deliberate, authoritative
-                pitch = -2.5; // Extra Deep bass (Guru style)
+                speakingRate = 0.85; // Deliberate, thoughtful pace
+                pitch = -1.5; // Deep but within natural range to avoid robotic artifacts
             }
         } else if (voiceId === 'onyx' || voiceId === 'expert') {
             // Explicit Expert
