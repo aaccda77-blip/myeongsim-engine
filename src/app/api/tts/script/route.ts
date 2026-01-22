@@ -48,9 +48,9 @@ export async function POST(req: NextRequest) {
         4. Language: Korean.
         `;
 
-        // [User Request] Primary: gemini-1.5-pro (Latest High-Intelligence Model)
-        // Fallback: gemini-1.5-flash (High Speed)
-        let model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+        // [User Request] Primary: gemini-2.5-flash (Latest Fast Model)
+        // Fallback: gemini-1.5-flash (Reliable Backup)
+        let model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         let result;
         try {
