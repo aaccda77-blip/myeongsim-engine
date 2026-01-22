@@ -1863,8 +1863,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     </div>
                                                     {/* [Feature] Message Speaker Button */}
                                                     {/* [Feature] Message Speaker Button (Dual Mode) */}
-                                                    {!isUser && (
-                                                        {/* [Feature] Message Speaker Button (Top-Right Integrated) */ }
+                                                    {/* [Feature] Message Speaker Button (Top-Right Integrated) */}
                                                     {!isUser && (
                                                         <div className="absolute top-2 right-2">
                                                             <button
