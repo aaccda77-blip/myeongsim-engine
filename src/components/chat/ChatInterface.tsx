@@ -1940,7 +1940,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     <div className="h-48 relative group">
                                                         {/* Real Image Rendering via Pollinations AI (Generative) */}
                                                         <img
-                                                            src={`https://image.pollinations.ai/prompt/${encodeURIComponent((imageGenPrompt || 'Quantum Neural Network, holographic data stream, glowing golden particles, hyper-realistic, 8k, futuristic UI interface, deep cybernetic background, Unreal Engine 5 render, no text').replace(/nature|forest|flower/gi, 'digital constructs') + ' futuristic sci-fi style, glowing neon gold and blue, cinematic lighting, 3d render')}?width=800&height=600&nologo=true&private=true&model=flux&enhance=false&seed=${Math.floor(Math.random() * 10000)}`}
+                                                            src={`https://images.unsplash.com/photo-${['1620641782983-5acd79044472', '1635070041078-e363dbe005cb', '1677442120370-9831d044733e', '1451187580459-43490279c0fa'][Math.floor(Math.random() * 4)]}?auto=format&fit=crop&w=800&q=80`}
                                                             alt={imageGenPrompt || "Visualizing..."}
                                                             className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
                                                             onError={(e) => {
