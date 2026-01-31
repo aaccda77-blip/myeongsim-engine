@@ -457,6 +457,35 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
+    // 14. 💡 오늘의 건강상식 (HEALTH_QA - NEW)
+    HEALTH_QA: {
+        id: 'HEALTH_QA',
+        label: "오늘의 건강상식",
+        icon: "💡",
+        neuro_trigger: "매일 새로운 헬스케어 지식",
+        style: 'healing_green',
+        sub_menus: [
+            {
+                id: "hq_today",
+                label: "💬 오늘의 Q&A",
+                desc: "AI가 매일 생성하는 건강 상담",
+                intent: "daily_health_qa"
+            },
+            {
+                id: "hq_archive",
+                label: "📚 지난 상담 보기",
+                desc: "이전 건강상식 아카이브",
+                intent: "health_qa_archive"
+            },
+            {
+                id: "hq_custom",
+                label: "🔍 맞춤 질문하기",
+                desc: "궁금한 건강 주제 직접 물어보기",
+                intent: "health_qa_custom"
+            }
+        ]
+    },
+
     // 14. 108 자각 (AWARENESS_108 - Quantum Upgrade)
     AWARENESS_108: {
         id: 'AWARENESS_108',
@@ -646,7 +675,8 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
         'PERSONALITY_ANALYSIS': 10,
         'DAILY_MISSION': 11,
         'SAJU_ANALYSIS': 12,
-        'STRESS_RELIEF': 13
+        'STRESS_RELIEF': 13,
+        'HEALTH_QA': 14 // [NEW] 오늘의 건강상식
     };
 
     // 3. 정렬 로직

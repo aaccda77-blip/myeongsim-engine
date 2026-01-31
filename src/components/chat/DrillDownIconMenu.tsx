@@ -637,6 +637,26 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] 건강상식 Q&A 메뉴
+        if (subItem.intent === 'daily_health_qa') {
+            setSelectedIcon(null);
+            window.location.href = '/health-qa';
+            return;
+        }
+
+        if (subItem.intent === 'health_qa_archive') {
+            setSelectedIcon(null);
+            window.location.href = '/health-qa/archive';
+            return;
+        }
+
+        if (subItem.intent === 'health_qa_custom') {
+            setSelectedIcon(null);
+            // TODO: 맞춤 질문 입력 모달 열기
+            alert('맞춤 질문 기능은 곧 추가됩니다!');
+            return;
+        }
+
         // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
         // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
         // [UPDATE] User requested to run this in Main Chatbot instead of Modal
