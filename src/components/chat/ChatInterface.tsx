@@ -2146,7 +2146,7 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     .replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣]/g, '')
                                                     .slice(0, 30);
 
-                                                // [Visuals] Natural Healing Theme (User Request)
+                                                // [FIX] Use stable style based on message index, not random
                                                 const healingStyles = [
                                                     'ethereal nature photography',
                                                     'soft morning sunlight',
@@ -2157,12 +2157,14 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     'blooming flowers macro',
                                                     'peaceful clouds and sky'
                                                 ];
-                                                const selectedStyle = healingStyles[Math.floor(Math.random() * healingStyles.length)];
+                                                // Use message index for stable style selection
+                                                const selectedStyle = healingStyles[idx % healingStyles.length];
 
-                                                // Create prompt for Pexels
+                                                // Create stable prompt for Pexels
                                                 const imagePrompt = `beautiful healing nature, ${selectedStyle}, ${cleanText}, soft colors, peaceful atmosphere`;
 
-                                                return <PexelsImage prompt={imagePrompt} />;
+                                                // [FIX] Add key prop to prevent re-render on typing
+                                                return <PexelsImage key={`pexels-${idx}`} prompt={imagePrompt} />;
                                             })()}
 
                                             {/* [Action Plan Card] (New) */}
