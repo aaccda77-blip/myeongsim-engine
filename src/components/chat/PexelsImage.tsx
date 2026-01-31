@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import { searchPexelsImage, optimizePexelsQuery } from '@/utils/pexelsClient';
 
@@ -10,23 +10,33 @@ interface PexelsImageProps {
 
 /**
  * Pexels Image Component
- * Separate component to properly use React hooks
+ * Loads image only once per unique prompt to prevent reload on typing
  */
 export function PexelsImage({ prompt }: PexelsImageProps) {
     const [imageUrl, setImageUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
+    const loadedPromptRef = useRef<string>('');
+
+    // Memoize the optimized query to prevent recalculation
+    const optimizedQuery = useMemo(() => optimizePexelsQuery(prompt), [prompt]);
 
     useEffect(() => {
+        // Only load if this is a new prompt (not already loaded)
+        if (loadedPromptRef.current === prompt) {
+            return; // Skip if already loaded this exact prompt
+        }
+
         const loadImage = async () => {
             setIsLoading(true);
-            const optimizedQuery = optimizePexelsQuery(prompt);
             const apiKey = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
             const url = await searchPexelsImage(optimizedQuery, apiKey);
             setImageUrl(url);
             setIsLoading(false);
+            loadedPromptRef.current = prompt; // Mark as loaded
         };
+
         loadImage();
-    }, [prompt]);
+    }, [prompt, optimizedQuery]);
 
     return (
         <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[400px] mt-3 mb-4 animate-fade-in-up">
