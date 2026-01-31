@@ -75,7 +75,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 children: [
                     { id: "mc_1", label: "1. 내 영혼의 씨앗 (일간/일주)", desc: "나의 본질과 기질 분석", intent: "saju_core_summary" },
                     { id: "mc_2", label: "2. 일간 심층 분석", desc: "나의 잠재력 깊이 보기", intent: "day_master_deep" },
-                    { id: "hq_today", label: "💬 오늘의 Q&A", desc: "명심 AI 코치가 매일 생성하는 건강 상담", intent: "daily_health_qa" },
+                    { id: "hq_today", label: "💬 오늘의 Q&A", desc: "명심 AI 코치가 매일 함께하는 건강 상담", intent: "daily_health_qa" },
                     { id: "mc_3", label: "3. 사회적 가면 (십성/격국)", desc: "나의 사회적 역할과 그릇 크기", intent: "deep_gyeokguk_weapon" },
                     { id: "mc_6", label: "6. 숨겨진 욕망 (지장간/심리)", desc: "무의식과 내면의 심리", intent: "hour_pillar_desire" },
                     { id: "mc_4", label: "4. 인생 배터리 (12운성)", desc: "나의 에너지 총량과 흐름", intent: "deep_12_wunsung_cycle" }
