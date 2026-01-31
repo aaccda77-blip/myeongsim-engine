@@ -67,30 +67,69 @@ export async function searchPexelsImage(
 }
 
 /**
- * Get optimized search query for healing/meditation context
- * @param originalPrompt - Original image prompt
- * @returns Optimized search keyword
+ * Get optimized search query based on conversation context
+ * @param originalPrompt - Original image prompt (includes conversation content)
+ * @returns Optimized search keyword for nature-themed images
  */
 export function optimizePexelsQuery(originalPrompt: string): string {
-    // Extract key themes
-    const keywords = originalPrompt.toLowerCase();
+    const text = originalPrompt.toLowerCase();
 
-    if (keywords.includes('healing') || keywords.includes('치유')) {
-        return 'peaceful nature healing meditation';
-    }
-    if (keywords.includes('meditation') || keywords.includes('명상')) {
-        return 'meditation zen peaceful';
-    }
-    if (keywords.includes('nature') || keywords.includes('자연')) {
-        return 'beautiful nature landscape peaceful';
-    }
-    if (keywords.includes('ocean') || keywords.includes('바다')) {
-        return 'ocean waves peaceful sunset';
-    }
-    if (keywords.includes('mountain') || keywords.includes('산')) {
-        return 'mountain landscape peaceful';
+    // 감정/상태 키워드 매핑 (한국어 + 영어)
+    const emotionKeywords: Record<string, string> = {
+        // 긍정적 감정
+        '기쁨|행복|즐거움|happy|joy': 'sunrise golden light happiness',
+        '평화|평온|고요|peace|calm|tranquil': 'peaceful lake reflection calm',
+        '희망|꿈|미래|hope|dream|future': 'sunrise mountain hope new beginning',
+        '사랑|애정|따뜻|love|warm|affection': 'warm sunset heart nature',
+        '감사|축복|grateful|blessing': 'blooming flowers gratitude spring',
+
+        // 부정적 감정 → 치유 이미지
+        '불안|걱정|anxiety|worry': 'calm forest peaceful meditation',
+        '슬픔|우울|sad|depression': 'gentle rain nature healing',
+        '분노|화|anger|frustration': 'ocean waves calming blue',
+        '외로움|고독|lonely|alone': 'starry night peaceful solitude',
+        '스트레스|피곤|stress|tired': 'misty forest relaxation zen',
+
+        // 주제별 키워드
+        '돈|재물|부|wealth|money': 'golden wheat abundance harvest',
+        '관계|인연|사랑|relationship|love': 'intertwined trees nature connection',
+        '건강|치유|health|healing': 'green forest healing nature',
+        '성공|성취|success|achievement': 'mountain peak sunrise victory',
+        '변화|전환|change|transformation': 'butterfly nature transformation',
+        '시작|출발|beginning|start': 'sunrise new day beginning',
+        '끝|마무리|ending|closure': 'sunset peaceful ending',
+
+        // 자연 요소
+        '산|mountain': 'mountain landscape peaceful',
+        '바다|ocean|sea': 'ocean waves peaceful sunset',
+        '숲|forest|tree': 'forest sunlight peaceful',
+        '꽃|flower|bloom': 'blooming flowers nature',
+        '하늘|sky|cloud': 'peaceful clouds sky',
+        '강|river|stream': 'river flowing nature peaceful',
+        '별|star|night': 'starry night peaceful',
+        '해|sun|sunrise|sunset': 'golden hour sunset sunrise',
+    };
+
+    // 키워드 매칭
+    for (const [pattern, query] of Object.entries(emotionKeywords)) {
+        const regex = new RegExp(pattern);
+        if (regex.test(text)) {
+            return query;
+        }
     }
 
-    // Default: peaceful nature
-    return 'peaceful nature meditation';
+    // 계절 감지
+    if (/봄|spring/.test(text)) return 'spring flowers blooming nature';
+    if (/여름|summer/.test(text)) return 'summer green nature vibrant';
+    if (/가을|autumn|fall/.test(text)) return 'autumn leaves golden nature';
+    if (/겨울|winter/.test(text)) return 'winter snow peaceful nature';
+
+    // 시간대 감지
+    if (/아침|morning|dawn/.test(text)) return 'morning sunrise peaceful nature';
+    if (/저녁|evening|dusk/.test(text)) return 'evening sunset peaceful nature';
+    if (/밤|night/.test(text)) return 'night starry sky peaceful';
+
+    // 기본값: 평화로운 자연
+    return 'peaceful nature landscape meditation';
 }
+

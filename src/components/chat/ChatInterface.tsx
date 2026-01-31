@@ -48,6 +48,7 @@ import { ETHICAL_GUIDELINES } from '@/constants/CodeOfEthics'; // [NEW] Safety P
 import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule'; // [NEW] Talent Analysis
 import TalentReportCard from './TalentReportCard'; // [NEW] Talent Card UI
 import { searchPexelsImage, optimizePexelsQuery } from '@/utils/pexelsClient'; // [NEW] Pexels API (replaces Pollinations)
+import { PexelsImage } from './PexelsImage'; // [NEW] Pexels Image Component
 // import MicPermissionGuideModal from '../modals/MicPermissionGuideModal'; // [NEW] Mic Guide (Removed)
 
 
@@ -2146,7 +2147,6 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     .slice(0, 30);
 
                                                 // [Visuals] Natural Healing Theme (User Request)
-                                                // Removing cyberpunk/random chaos. Focusing on peace, nature, and light.
                                                 const healingStyles = [
                                                     'ethereal nature photography',
                                                     'soft morning sunlight',
@@ -2158,45 +2158,11 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                     'peaceful clouds and sky'
                                                 ];
                                                 const selectedStyle = healingStyles[Math.floor(Math.random() * healingStyles.length)];
-                                                const randomSeed = Math.floor(Math.random() * 10000);
 
-                                                // Force 'healing' keywords to override any dark context
+                                                // Create prompt for Pexels
                                                 const imagePrompt = `beautiful healing nature, ${selectedStyle}, ${cleanText}, soft colors, peaceful atmosphere`;
 
-                                                // [NEW] Pexels API Integration (replaces Pollinations)
-                                                const [pexelsImageUrl, setPexelsImageUrl] = React.useState<string>('');
-
-                                                React.useEffect(() => {
-                                                    const loadPexelsImage = async () => {
-                                                        const optimizedQuery = optimizePexelsQuery(imagePrompt);
-                                                        const apiKey = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
-                                                        const imageUrl = await searchPexelsImage(optimizedQuery, apiKey);
-                                                        setPexelsImageUrl(imageUrl);
-                                                    };
-                                                    loadPexelsImage();
-                                                }, [imagePrompt]);
-
-                                                return (
-                                                    <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[400px] mt-3 mb-4 animate-fade-in-up">
-                                                        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg">
-                                                            {pexelsImageUrl ? (
-                                                                <img
-                                                                    src={pexelsImageUrl}
-                                                                    alt="상담 이미지"
-                                                                    className="w-full h-auto object-cover"
-                                                                    loading="lazy"
-                                                                />
-                                                            ) : (
-                                                                <div className="w-full h-64 bg-gradient-to-br from-emerald-900/20 to-teal-900/20 flex items-center justify-center">
-                                                                    <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
-                                                                </div>
-                                                            )}
-                                                            <div className="bg-gradient-to-r from-emerald-900/80 to-teal-900/80 px-3 py-2">
-                                                                <p className="text-xs text-emerald-100 text-center">🌿 치유 이미지 (Pexels)</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                );
+                                                return <PexelsImage prompt={imagePrompt} />;
                                             })()}
 
                                             {/* [Action Plan Card] (New) */}
