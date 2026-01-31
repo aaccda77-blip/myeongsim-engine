@@ -183,23 +183,23 @@ export default function ShareInsightModal({ qaData, onClose }: ShareInsightModal
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="relative w-full flex flex-col bg-white dark:bg-[#1C1C1E] rounded-t-[32px] shadow-2xl max-w-md mx-auto"
+                className="relative w-full flex flex-col bg-[#1f2937] rounded-t-[32px] shadow-2xl max-w-md mx-auto border-t border-gray-700"
             >
                 {/* Handle */}
                 <div className="flex h-5 w-full items-center justify-center pt-5 pb-1">
-                    <div className="h-1 w-9 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                    <div className="h-1 w-9 rounded-full bg-gray-600"></div>
                 </div>
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 pt-3 pb-2">
-                    <h3 className="text-[#111813] dark:text-white tracking-tight text-xl font-bold">
+                    <h3 className="text-white tracking-tight text-xl font-bold font-serif">
                         인사이트 공유하기
                     </h3>
                     <button
                         onClick={onClose}
-                        className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors"
                     >
-                        <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 text-xl">
+                        <span className="material-symbols-outlined text-gray-400 text-xl">
                             close
                         </span>
                     </button>
@@ -207,14 +207,14 @@ export default function ShareInsightModal({ qaData, onClose }: ShareInsightModal
 
                 {/* Preview Image */}
                 <div className="px-6 py-4">
-                    <div className="relative overflow-hidden rounded-2xl shadow-lg">
+                    <div className="relative overflow-hidden rounded-2xl shadow-lg border border-gray-700">
                         <canvas
                             ref={canvasRef}
                             className="w-full h-auto"
                             style={{ aspectRatio: '9/16' }}
                         />
                     </div>
-                    <p className="text-center text-[11px] text-gray-400 dark:text-gray-500 mt-4 font-medium tracking-tight">
+                    <p className="text-center text-[11px] text-gray-500 mt-4 font-medium tracking-tight">
                         공유될 이미지 미리보기
                     </p>
                 </div>
@@ -226,12 +226,12 @@ export default function ShareInsightModal({ qaData, onClose }: ShareInsightModal
                             onClick={handleKakaoShare}
                             className="flex flex-col items-center gap-2 group"
                         >
-                            <div className="w-14 h-14 rounded-full bg-[#FEE500] flex items-center justify-center shadow-sm group-active:scale-95 transition-transform">
+                            <div className="w-14 h-14 rounded-full bg-[#FEE500] flex items-center justify-center shadow-md group-active:scale-95 transition-transform">
                                 <span className="material-symbols-outlined text-[#3C1E1E] text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                                     chat_bubble
                                 </span>
                             </div>
-                            <span className="text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                            <span className="text-[11px] font-semibold text-gray-300">
                                 카카오톡
                             </span>
                         </button>
@@ -240,12 +240,12 @@ export default function ShareInsightModal({ qaData, onClose }: ShareInsightModal
                             onClick={handleInstagramShare}
                             className="flex flex-col items-center gap-2 group"
                         >
-                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#FFDC80] via-[#FD1D1D] to-[#833AB4] flex items-center justify-center shadow-sm group-active:scale-95 transition-transform">
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#FFDC80] via-[#FD1D1D] to-[#833AB4] flex items-center justify-center shadow-md group-active:scale-95 transition-transform">
                                 <span className="material-symbols-outlined text-white text-[28px]">
                                     photo_camera
                                 </span>
                             </div>
-                            <span className="text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                            <span className="text-[11px] font-semibold text-gray-300">
                                 인스타그램
                             </span>
                         </button>
@@ -254,12 +254,12 @@ export default function ShareInsightModal({ qaData, onClose }: ShareInsightModal
                             onClick={handleSMSShare}
                             className="flex flex-col items-center gap-2 group"
                         >
-                            <div className="w-14 h-14 rounded-full bg-[#34C759] flex items-center justify-center shadow-sm group-active:scale-95 transition-transform">
+                            <div className="w-14 h-14 rounded-full bg-[#34C759] flex items-center justify-center shadow-md group-active:scale-95 transition-transform">
                                 <span className="material-symbols-outlined text-white text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                                     sms
                                 </span>
                             </div>
-                            <span className="text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                            <span className="text-[11px] font-semibold text-gray-300">
                                 메시지
                             </span>
                         </button>
@@ -268,12 +268,12 @@ export default function ShareInsightModal({ qaData, onClose }: ShareInsightModal
                             onClick={handleCopyLink}
                             className="flex flex-col items-center gap-2 group"
                         >
-                            <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center shadow-sm group-active:scale-95 transition-transform text-gray-600 dark:text-gray-300">
+                            <div className="w-14 h-14 rounded-full bg-gray-700 flex items-center justify-center shadow-md group-active:scale-95 transition-transform text-white border border-gray-600">
                                 <span className="material-symbols-outlined text-[28px]">
                                     ios_share
                                 </span>
                             </div>
-                            <span className="text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                            <span className="text-[11px] font-semibold text-gray-300">
                                 더보기
                             </span>
                         </button>
@@ -284,7 +284,7 @@ export default function ShareInsightModal({ qaData, onClose }: ShareInsightModal
                 <div className="px-6 pb-10">
                     <button
                         onClick={handleCopyLink}
-                        className="flex w-full items-center justify-center gap-2 rounded-2xl h-14 bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-[0.98] transition-all text-[#111813] dark:text-white text-[15px] font-bold"
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl h-14 bg-gray-800 hover:bg-gray-700 active:scale-[0.98] transition-all text-white text-[15px] font-bold border border-gray-700"
                     >
                         <span className="material-symbols-outlined text-xl">link</span>
                         <span>링크 복사하기</span>
