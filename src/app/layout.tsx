@@ -31,6 +31,11 @@ export default function RootLayout({
         <html lang="ko" translate="no">
             <head>
                 <meta name="google" content="notranslate" />
+                {/* [Fix] Google Fonts for Health Q&A UI */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
             </head>
             {/* 4. Body 클래스 통합 (폰트 + 안티앨리어싱 + 번역방지) */}
             <body
