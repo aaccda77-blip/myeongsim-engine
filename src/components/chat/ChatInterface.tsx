@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send, User, Bot, X, Loader2, Lock, FileText, Check, Trash2, ArrowUp, Zap, Volume2, CircleStop } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GateKeeperModule } from '@/modules/GateKeeperModule';
@@ -47,6 +47,7 @@ import BreathingGuideModal from '../bio/BreathingGuideModal'; // [NEW] SOS Breat
 import { ETHICAL_GUIDELINES } from '@/constants/CodeOfEthics'; // [NEW] Safety Protocol
 import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule'; // [NEW] Talent Analysis
 import TalentReportCard from './TalentReportCard'; // [NEW] Talent Card UI
+import { searchPexelsImage, optimizePexelsQuery } from '@/utils/pexelsClient'; // [NEW] Pexels API (replaces Pollinations)
 // import MicPermissionGuideModal from '../modals/MicPermissionGuideModal'; // [NEW] Mic Guide (Removed)
 
 
@@ -2162,17 +2163,36 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
                                                 // Force 'healing' keywords to override any dark context
                                                 const imagePrompt = `beautiful healing nature, ${selectedStyle}, ${cleanText}, soft colors, peaceful atmosphere`;
 
+                                                // [NEW] Pexels API Integration (replaces Pollinations)
+                                                const [pexelsImageUrl, setPexelsImageUrl] = React.useState<string>('');
+
+                                                React.useEffect(() => {
+                                                    const loadPexelsImage = async () => {
+                                                        const optimizedQuery = optimizePexelsQuery(imagePrompt);
+                                                        const apiKey = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
+                                                        const imageUrl = await searchPexelsImage(optimizedQuery, apiKey);
+                                                        setPexelsImageUrl(imageUrl);
+                                                    };
+                                                    loadPexelsImage();
+                                                }, [imagePrompt]);
+
                                                 return (
                                                     <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[400px] mt-3 mb-4 animate-fade-in-up">
                                                         <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg">
-                                                            <img
-                                                                src={`https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=600&height=400&nologo=true&private=true&model=flux&enhance=false&seed=${randomSeed}`}
-                                                                alt="상담 이미지"
-                                                                className="w-full h-auto object-cover"
-                                                                loading="lazy"
-                                                            />
+                                                            {pexelsImageUrl ? (
+                                                                <img
+                                                                    src={pexelsImageUrl}
+                                                                    alt="상담 이미지"
+                                                                    className="w-full h-auto object-cover"
+                                                                    loading="lazy"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-full h-64 bg-gradient-to-br from-emerald-900/20 to-teal-900/20 flex items-center justify-center">
+                                                                    <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+                                                                </div>
+                                                            )}
                                                             <div className="bg-gradient-to-r from-emerald-900/80 to-teal-900/80 px-3 py-2">
-                                                                <p className="text-xs text-emerald-100 text-center">🌿 AI 치유 이미지 ({selectedStyle})</p>
+                                                                <p className="text-xs text-emerald-100 text-center">🌿 치유 이미지 (Pexels)</p>
                                                             </div>
                                                         </div>
                                                     </div>
