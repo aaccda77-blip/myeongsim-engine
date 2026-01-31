@@ -331,3 +331,75 @@ export function getHealthQAByCategory(category: string): HealthQATemplate[] {
 export function getHealthQAById(id: string): HealthQATemplate | undefined {
     return HEALTH_KNOWLEDGE_DB.find(q => q.id === id);
 }
+
+/**
+ * [NEW] 맞춤 질문 검색 및 생성
+ * 사용자의 질문에서 키워드를 찾아 가장 적절한 답변을 반환하거나 폴백 답변 생성
+ */
+export function searchHealthQA(userQuestion: string): HealthQATemplate {
+    const question = userQuestion.toLowerCase();
+
+    // 1. 키워드 매칭 점수 계산
+    const scored = HEALTH_KNOWLEDGE_DB.map(item => {
+        let score = 0;
+        // 태그 매칭 (높은 점수)
+        item.tags.forEach(tag => {
+            if (question.includes(tag)) score += 5;
+        });
+        // 카테고리 매칭
+        if (question.includes(CATEGORY_LABELS[item.category])) score += 3;
+        // 본문 키워드 매칭
+        if (item.question.includes(question) || question.includes(item.question)) score += 10;
+
+        return { item, score };
+    });
+
+    // 2. 점수순 정렬
+    scored.sort((a, b) => b.score - a.score);
+
+    // 3. 매칭된 결과가 있으면 반환 (점수 3점 이상)
+    if (scored[0].score >= 3) {
+        return {
+            ...scored[0].item,
+            question: userQuestion // 질문은 사용자가 입력한 그대로 표시
+        };
+    }
+
+    // 4. 매칭 실패 시 폴백(Fallback) 답변 반환
+    return generateFallbackQA(userQuestion);
+}
+
+/**
+ * 폴백 답변 생성기 (DB에 없는 질문일 경우)
+ */
+function generateFallbackQA(userQuestion: string): HealthQATemplate {
+    return {
+        id: `custom_${Date.now()}`,
+        category: 'hypertension', // 기본값
+        question: userQuestion,
+        answer: {
+            greeting: '회원님의 고민, 깊이 공감합니다.',
+            core_message: '정말 중요한 질문을 해주셨네요. 해당 증상은 개인의 상태에 따라 다를 수 있어 더 세심한 주의가 필요합니다. 일반적인 건강 원칙에 따라 답변드릴게요.',
+            advice_cards: [
+                {
+                    icon: 'medical_services',
+                    title: '전문가와 상담 권장',
+                    content: '정확한 진단을 위해 가까운 병원이나 보건소에서 전문가의 조언을 듣는 것이 가장 안전해요.'
+                },
+                {
+                    icon: 'sentiment_satisfied',
+                    title: '무리하지 않기',
+                    content: '통증이나 불편함이 느껴진다면 즉시 멈추고 휴식을 취하세요. 내 몸의 신호를 듣는 것이 중요해요.'
+                },
+                {
+                    icon: 'edit_note',
+                    title: '증상 기록하기',
+                    content: '언제, 어떻게 아픈지 구체적으로 메모해두면 나중에 의사 선생님께 큰 도움이 됩니다.'
+                }
+            ],
+            closing: '💡 이 답변은 일반적인 정보이며, 전문적인 의학적 진단을 대신할 수 없습니다.'
+        },
+        tags: ['일반상담', '건강관리'],
+        difficulty: 'beginner'
+    };
+}

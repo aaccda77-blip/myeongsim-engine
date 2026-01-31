@@ -652,8 +652,8 @@ export default function DrillDownIconMenu({
 
         if (subItem.intent === 'health_qa_custom') {
             setSelectedIcon(null);
-            // TODO: 맞춤 질문 입력 모달 열기
-            alert('맞춤 질문 기능은 곧 추가됩니다!');
+            // [UPDATE] 맞춤 질문 페이지로 이동
+            window.location.href = '/health-qa/custom';
             return;
         }
 
