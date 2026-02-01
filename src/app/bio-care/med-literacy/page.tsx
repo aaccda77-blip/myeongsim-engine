@@ -97,6 +97,27 @@ export default function MedLiteracyPage() {
                             ))}
                         </ul>
                     </div>
+
+                    {/* 심화 가이드 (삭센다 전용) */}
+                    {selectedMed.id === 'saxenda' && (
+                        <button
+                            onClick={() => router.push('/bio-care/med-literacy/saxenda-guide')}
+                            className="w-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl p-5 hover:from-blue-500/30 hover:to-purple-500/30 transition-all active:scale-[0.98]"
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="text-left">
+                                    <h4 className="text-white font-bold mb-1 flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-blue-400">school</span>
+                                        담낭 건강 심화 가이드
+                                    </h4>
+                                    <p className="text-gray-400 text-sm">
+                                        왜 '잘 먹는 것'이 중요한지 알아보세요
+                                    </p>
+                                </div>
+                                <span className="material-symbols-outlined text-blue-400">arrow_forward</span>
+                            </div>
+                        </button>
+                    )}
                 </main>
             </div>
         );
