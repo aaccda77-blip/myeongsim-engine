@@ -543,7 +543,17 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                     { id: "qk_5", label: "05. 🕳️ 운명의 웜홀 (Void)", desc: "채워지지 않는 구멍의 비밀", intent: "ms_void_wormhole" },
                     { id: "qk_6", label: "06. 🔋 퀀텀 배터리 (12운성)", desc: "나의 에너지 레벨 측정", intent: "deep_12_wunsung_cycle" },
                     { id: "qk_7", label: "07. ⚔️ 비밀 무기 (신살)", desc: "위기에 발동하는 특수 스킬", intent: "deep_special_stars" },
-                    { id: "qk_8", label: "08. ⚖️ 오행 연금술", desc: "결핍을 에너지로 바꾸는 법", intent: "ohaeng_balance_report" }
+                    { id: "qk_8", label: "08. ⚖️ 오행 연금술", desc: "결핍을 에너지로 바꾸는 법", intent: "ohaeng_balance_report" },
+                    { id: "qk_9", label: "09. ☁️ 감정 기상도", desc: "오늘 내 마음의 날씨", intent: "p_9" },
+                    { id: "qk_10", label: "10. 🔋 스트레스 측정", desc: "신경계 경보 레벨 체크", intent: "p_10" },
+                    { id: "qk_11", label: "11. 🪞 이상 vs 현실 갭", desc: "되고 싶은 나 vs 지금의 나", intent: "p_11" },
+                    { id: "qk_12", label: "12. 🌑 다크 코드 감지", desc: "반복되는 인생의 덫", intent: "p_12" },
+                    { id: "qk_13", label: "13. 🧬 천재성 발현", desc: "자연스럽게 잘하는 것", intent: "p_13" },
+                    { id: "qk_14", label: "14. 🎭 동일시 진단", desc: "나를 가두는 꼬리표", intent: "p_14" },
+                    { id: "qk_15", label: "15. 🕸️ 무의식 습관", desc: "자동 반응 패턴 포착", intent: "p_15" },
+                    { id: "qk_16", label: "16. ⚖️ 내면의 재판관", desc: "스스로를 평가하는 목소리", intent: "p_16" },
+                    { id: "qk_17", label: "17. 🎭 사회적 가면", desc: "남들에게 보여주는 모습", intent: "p_17" },
+                    { id: "qk_18", label: "18. 🕳️ 에너지 누수", desc: "생명력을 빼앗는 구멍", intent: "p_18" }
                 ]
             },
             {
