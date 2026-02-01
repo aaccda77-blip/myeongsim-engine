@@ -21,9 +21,7 @@ export default function HealthQAPage() {
     // 레벨에 맞는 Q&A 가져오기
     useEffect(() => {
         if (!isLoading && hasCompletedAssessment) {
-            // 레벨에 맞는 랜덤 Q&A 선택
             const allQA = getRandomHealthQA();
-            // TODO: 실제로는 level에 맞는 것만 필터링해야 하지만, 현재는 일부만 확장했으므로 임시로 랜덤 선택
             setQaData(allQA);
         }
     }, [level, isLoading, hasCompletedAssessment]);
@@ -41,12 +39,12 @@ export default function HealthQAPage() {
         setShowAssessment(false);
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#FDFCF8]">
+            <div className="flex items-center justify-center min-h-screen bg-[#1f2937]">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-[#6B8E23] border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-[#583101] font-medium">오늘의 건강상식을 불러오는 중...</p>
+                    <div className="w-12 h-12 border-4 border-[#658c42] border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-white font-medium">오늘의 건강상식을 불러오는 중...</p>
                 </div>
             </div>
         );
@@ -54,12 +52,12 @@ export default function HealthQAPage() {
 
     if (!qaData) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#FDFCF8]">
+            <div className="flex items-center justify-center min-h-screen bg-[#1f2937]">
                 <div className="text-center">
-                    <p className="text-[#583101] font-medium mb-4">Q&A를 불러올 수 없습니다.</p>
+                    <p className="text-white font-medium mb-4">Q&A를 불러올 수 없습니다.</p>
                     <button
-                        onClick={loadDailyQA}
-                        className="px-6 py-3 bg-[#6B8E23] text-white rounded-full font-bold hover:bg-[#5A7A1E] transition-colors"
+                        onClick={() => window.location.reload()}
+                        className="px-6 py-3 bg-[#658c42] text-white rounded-full font-bold hover:bg-[#547a35] transition-colors"
                     >
                         다시 시도
                     </button>
@@ -69,9 +67,18 @@ export default function HealthQAPage() {
     }
 
     return (
-        <HealthQAView
-            qaData={qaData}
-            onClose={() => router.back()}
-        />
+        <>
+            <HealthQAView
+                qaData={qaData}
+                onClose={() => router.back()}
+            />
+
+            {showAssessment && (
+                <LevelAssessmentModal
+                    onComplete={handleAssessmentComplete}
+                    onClose={() => setShowAssessment(false)}
+                />
+            )}
+        </>
     );
 }
