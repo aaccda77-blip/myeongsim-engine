@@ -88,7 +88,7 @@ export default function CustomHealthQAPage() {
                         건강 고민이 있으신가요?
                     </h3>
                     <p className="text-gray-400 text-sm">
-                        Gemini 2.5 Flash AI가 전문적으로 답변해 드려요.<br />레벨에 맞춰 쉽게 또는 깊이있게!
+                        명심 AI 코치가 전문적으로 답변해 드려요.<br />레벨에 맞춰 쉽게 또는 깊이있게!
                     </p>
                 </div>
 
