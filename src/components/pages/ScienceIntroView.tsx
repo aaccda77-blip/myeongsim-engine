@@ -188,21 +188,30 @@ export default function ScienceIntroView() {
                 </div>
 
                 <p className="text-gray-300 text-xs mb-4 leading-relaxed italic">
-                    "특허 출원 기술로 완성된 개인 맞춤형 토탈 케어"
+                    "특허 출원으로 검증된 독보적인 융합 분석 기술"
                 </p>
 
                 <div className="space-y-3">
                     <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-4">
-                        <h3 className="text-purple-300 font-bold text-sm mb-1">특허 기술 적용</h3>
-                        <p className="text-gray-300 text-xs leading-relaxed">
-                            사주/심리 데이터와 헬스케어 솔루션을 매칭하는 알고리즘
+                        <h3 className="text-purple-300 font-bold text-sm mb-2 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-xs">verified</span>
+                            특허 출원 기술 적용
+                        </h3>
+                        <p className="text-gray-300 text-[10px] leading-relaxed mb-2">
+                            <strong>발명의 명칭:</strong> 심리 및 생체데이터 기반 스트레스 관리 솔루션 제공 장치 및 이를 이용한 스트레스 관리 솔루션 제공 방법
+                        </p>
+                        <p className="text-gray-400 text-[10px] leading-relaxed mb-2">
+                            <strong>출원 번호:</strong> 10-2025-0166877
+                        </p>
+                        <p className="text-gray-300 text-[10px] leading-relaxed">
+                            <strong>핵심 기술:</strong> 사용자 단말기 및 웨어러블 기기를 통해 수집된 심리·생체 데이터를 융합 분석하여, 개인 맞춤형 스트레스 관리 및 예방 솔루션을 제공하는 통합 시스템
                         </p>
                     </div>
 
                     <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4">
                         <h3 className="text-blue-300 font-bold text-sm mb-1">Total Wellness Solution</h3>
                         <p className="text-gray-300 text-xs leading-relaxed">
-                            정신적(Mental), 신체적(Physical), 사회적(Social) 건강을 아우르는 통합 라이프 코칭
+                            동양의 통찰과 현대의 생체 데이터 분석 기술을 결합하여, 정신적(Mental), 신체적(Physical), 사회적(Social) 건강을 아우르는 통합 라이프 코칭
                         </p>
                     </div>
                 </div>
