@@ -17,6 +17,7 @@ export default function FacilitationPage() {
     const [userInput, setUserInput] = useState('');
     const [isSessionActive, setIsSessionActive] = useState(false);
     const [canInterrupt, setCanInterrupt] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // [New] Loading State
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -25,66 +26,234 @@ export default function FacilitationPage() {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [messages, isLoading]);
 
-    const startSession = () => {
+    const startSession = async () => {
         setIsSessionActive(true);
-        setMessages([
-            {
-                id: '1',
-                speaker: 'facilitator',
-                content: '안녕하세요! 오늘 창업 전략 토론 세션을 시작하겠습니다. 저는 진행자 역할을 맡은 AI입니다.',
-                timestamp: new Date()
-            },
-            {
-                id: '2',
-                speaker: 'coach',
-                content: '반갑습니다. 저는 사주 기반 창업 전문 코치입니다. 오늘은 회원님의 창업 아이템과 전략에 대해 심도 있게 논의하겠습니다.',
-                timestamp: new Date()
-            },
-            {
-                id: '3',
-                speaker: 'facilitator',
-                content: '먼저, 회원님의 사주 분석 결과를 바탕으로 AI 코치님께서 초기 진단을 해주시겠습니다. 언제든지 궁금한 점이나 의견이 있으시면 아래 입력창으로 끼어드실 수 있습니다.',
-                timestamp: new Date()
-            }
-        ]);
         setCanInterrupt(true);
+        // [Auto-Trigger] Start with AI Analysis immediately
+        await generateOpeningRemarks();
     };
 
-    const handleUserMessage = () => {
-        if (!userInput.trim()) return;
+    const generateOpeningRemarks = async () => {
+        setIsLoading(true);
+        try {
+            const systemPrompt = `
+                [Role Definition]
+                You are simulating a "3-Way Facilitation Session".
+                Roles:
+                1. [FACILITATOR]: Warm leader. 
+                2. [COACH]: Sharp, Saju-based (Bazi) strategist.
 
+                [Goal]
+                The User has just started the session. 
+                [FACILITATOR] must welcome the user and immediately ask [COACH] to analyze the user's "Startup Luck" based on their Bazi (Simulate Bazi if no data: assume 'Wood/Fire' energy for creativity).
+                [COACH] must then give a detailed, preemptive analysis of their current startup luck and suggest a strategic direction.
+
+                [Format]
+                :::FACILITATOR:::
+                (Welcome & Request to Coach)
+                :::COACH:::
+                (Preemptive Saju Analysis & Strategy)
+            `;
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: 'facility-guest',
+                    userName: '대표님',
+                    message: `[SYSTEM_TRIGGER]: Start the session. Analyze my Saju for startup success.`,
+                    messages: [{ role: 'system', content: systemPrompt }], // Context
+                    stage: 1,
+                    clientTimestamp: new Date().toISOString()
+                })
+            });
+
+            if (!response.ok) throw new Error('API Error');
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullContent = '';
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    fullContent += decoder.decode(value, { stream: true });
+                }
+            }
+
+            // Parsing Logic (Reuse or Refactor to shared function ideally, but keeping inline for safety)
+            const facilitatorMatch = fullContent.split(':::FACILITATOR:::')[1]?.split(':::COACH:::')[0]?.trim();
+            const coachMatch = fullContent.split(':::COACH:::')[1]?.trim();
+
+            if (facilitatorMatch) {
+                setMessages(prev => [...prev, {
+                    id: Date.now().toString(),
+                    speaker: 'facilitator',
+                    content: facilitatorMatch,
+                    timestamp: new Date()
+                }]);
+            }
+
+            if (coachMatch) {
+                setTimeout(() => {
+                    setMessages(prev => [...prev, {
+                        id: (Date.now() + 1).toString(),
+                        speaker: 'coach',
+                        content: coachMatch!,
+                        timestamp: new Date()
+                    }]);
+                }, 1500);
+            }
+
+        } catch (e) {
+            console.error(e);
+            // Fallback
+            setMessages([
+                {
+                    id: '1',
+                    speaker: 'facilitator',
+                    content: '안녕하세요! 진행을 맡은 AI입니다. 바로 코치님 연결해드리겠습니다.',
+                    timestamp: new Date()
+                }
+            ]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // [AI Integration] Real Chat Logic
+    const handleUserMessage = async () => {
+        if (!userInput.trim() || isLoading) return;
+
+        const userMsgContent = userInput;
         const newUserMessage: Message = {
             id: Date.now().toString(),
             speaker: 'user',
-            content: userInput,
+            content: userMsgContent,
             timestamp: new Date()
         };
 
         setMessages(prev => [...prev, newUserMessage]);
         setUserInput('');
+        setIsLoading(true);
 
-        // AI 응답 시뮬레이션
-        setTimeout(() => {
-            const facilitatorResponse: Message = {
-                id: (Date.now() + 1).toString(),
+        try {
+            // [System Prompt] 3-Way Facilitation Persona
+            const systemPrompt = `
+                [Role Definition]
+                You are simulating a "3-Way Facilitation Session" for a startup founder.
+                You must act as TWO distinct personas:
+                1. [FACILITATOR]: Coordinates the discussion, asks clarifying questions, and ensures the user feels heard. Warm and professional tone.
+                2. [COACH]: Provides sharp, Saju-based (bazi), and strategic business advice. Analytical, authoritative, but supportive tone.
+
+                [Output Format]
+                You MUST format your response as a script using these exact headers:
+                :::FACILITATOR:::
+                (Content for facilitator)
+                :::COACH:::
+                (Content for coach)
+                
+                [Instructions]
+                - If the user asks a question, [FACILITATOR] should acknowledge it and pass it to [COACH].
+                - [COACH] should give a detailed answer based on business strategy + Saju principles (simulated if no data).
+                - Sometimes [FACILITATOR] can summarize or ask the user a follow-up question after [COACH] speaks.
+                - Keep the conversation dynamic and engaging.
+            `;
+
+            // Prepare context
+            const previousMessages = messages.map(m => ({
+                role: m.speaker === 'user' ? 'user' : 'assistant',
+                content: `${m.speaker === 'facilitator' ? '[FACILITATOR]: ' : m.speaker === 'coach' ? '[COACH]: ' : ''}${m.content}`
+            }));
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: 'facility-guest', // Temporary guest ID
+                    userName: '대표님',
+                    message: `[SYSTEM_INSTRUCTION]: ${systemPrompt}\n\n[USER_INPUT]: ${userMsgContent}`,
+                    messages: previousMessages,
+                    stage: 1, // Default stage
+                    clientTimestamp: new Date().toISOString()
+                })
+            });
+
+            if (!response.ok) throw new Error('API Error');
+
+            // [Stream Handling & Parsing]
+            // Ideally we stream, but for script parsing, full buffering is safer for now to ensure we split correctly.
+            // But let's try reading the stream to build the full text first.
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullContent = '';
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    fullContent += decoder.decode(value, { stream: true });
+                }
+            }
+
+            // [Script Parsing Protocol]
+            // Expected format options:
+            // 1. :::FACILITATOR::: ... :::COACH::: ...
+            // 2. :::COACH::: ... (Direct answer)
+            // 3. Just text (Fallback to Facilitator)
+
+            const facilitatorMatch = fullContent.split(':::FACILITATOR:::')[1]?.split(':::COACH:::')[0]?.trim();
+            const coachMatch = fullContent.split(':::COACH:::')[1]?.trim();
+
+            // Fallback Logic if AI ignores format
+            let facilitatorText = facilitatorMatch;
+            let coachText = coachMatch;
+
+            if (!facilitatorText && !coachText) {
+                // Determine who should speak based on content or random
+                if (fullContent.includes("명리학") || fullContent.includes("운세") || fullContent.includes("전략")) {
+                    coachText = fullContent;
+                } else {
+                    facilitatorText = fullContent;
+                }
+            }
+
+            // [Display Logic] Sequential Display
+            if (facilitatorText) {
+                setMessages(prev => [...prev, {
+                    id: Date.now().toString(),
+                    speaker: 'facilitator',
+                    content: facilitatorText!,
+                    timestamp: new Date()
+                }]);
+            }
+
+            if (coachText) {
+                // Delay for Coach to simulate thinking/listening to facilitator
+                setTimeout(() => {
+                    setMessages(prev => [...prev, {
+                        id: (Date.now() + 1).toString(),
+                        speaker: 'coach',
+                        content: coachText!,
+                        timestamp: new Date()
+                    }]);
+                }, facilitatorText ? 1500 : 0); // Short delay if Facilitator spoke first
+            }
+
+        } catch (error) {
+            console.error(error);
+            setMessages(prev => [...prev, {
+                id: Date.now().toString(),
                 speaker: 'facilitator',
-                content: '좋은 질문입니다. AI 코치님, 이 부분에 대해 설명해 주시겠습니까?',
+                content: '죄송합니다. 통신 상태가 좋지 않아 답변을 가져오지 못했습니다. 다시 말씀해 주시겠습니까?',
                 timestamp: new Date()
-            };
-            setMessages(prev => [...prev, facilitatorResponse]);
-        }, 1000);
-
-        setTimeout(() => {
-            const coachResponse: Message = {
-                id: (Date.now() + 2).toString(),
-                speaker: 'coach',
-                content: `"${userInput}"에 대해 말씀드리겠습니다. 회원님의 사주를 보면, 이 부분은 매우 중요한 포인트입니다. 구체적으로...`,
-                timestamp: new Date()
-            };
-            setMessages(prev => [...prev, coachResponse]);
-        }, 3000);
+            }]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const getSpeakerInfo = (speaker: Message['speaker']) => {
@@ -135,7 +304,7 @@ export default function FacilitationPage() {
                             <span className="material-symbols-outlined text-white text-2xl">groups</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-extrabold tracking-tight text-white">팀 퍼실리테이션</h1>
+                            <h1 className="text-lg font-extrabold tracking-tight text-white">팀 퍼실리테이션 <span className="ml-2 text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full border border-red-500/30">LIVE AI</span></h1>
                             <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">3-Way Coaching Session</p>
                         </div>
                     </div>
@@ -218,13 +387,27 @@ export default function FacilitationPage() {
                                                         {message.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
-                                                <div className={`inline-block ${speakerInfo.bgColor} border border-white/10 rounded-2xl px-6 py-4 max-w-2xl`}>
-                                                    <p className="text-white leading-relaxed">{message.content}</p>
+                                                <div className={`inline-block ${speakerInfo.bgColor} border border-white/10 rounded-2xl px-6 py-4 max-w-2xl text-left`}>
+                                                    <p className="text-white leading-relaxed whitespace-pre-wrap">{message.content}</p>
                                                 </div>
                                             </div>
                                         </motion.div>
                                     );
                                 })}
+                                {isLoading && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="mb-6 flex gap-4"
+                                    >
+                                        <div className="flex-shrink-0 size-12 rounded-xl bg-white/5 flex items-center justify-center animate-pulse">
+                                            <span className="material-symbols-outlined text-white/20">more_horiz</span>
+                                        </div>
+                                        <div className="flex items-center items-center h-12 text-slate-500 text-sm">
+                                            AI가 답변을 생성하고 있습니다...
+                                        </div>
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
                             <div ref={messagesEndRef} />
                         </div>
@@ -247,12 +430,13 @@ export default function FacilitationPage() {
                                         onChange={(e) => setUserInput(e.target.value)}
                                         onKeyPress={(e) => e.key === 'Enter' && handleUserMessage()}
                                         placeholder="질문이나 의견을 입력하세요..."
-                                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                                        disabled={isLoading}
+                                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors disabled:opacity-50"
                                     />
                                     <button
                                         onClick={handleUserMessage}
-                                        disabled={!userInput.trim()}
-                                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-slate-700 disabled:to-slate-700 text-white px-8 py-4 rounded-xl font-bold shadow-xl shadow-emerald-500/20 transition-all flex items-center gap-2"
+                                        disabled={!userInput.trim() || isLoading}
+                                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-500 text-white px-8 py-4 rounded-xl font-bold shadow-xl shadow-emerald-500/20 transition-all flex items-center gap-2"
                                     >
                                         <span className="material-symbols-outlined">send</span>
                                         전송

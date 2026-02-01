@@ -109,16 +109,26 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // [New] Auto-Start Intent Logic
+    // [New] Auto-Start Intent Logic (Updated for Natural Language Prompts)
     const hasStartedRef = useRef(false);
     useEffect(() => {
         if (initialIntent && !hasStartedRef.current && !isLoading) {
             hasStartedRef.current = true;
             console.log("🚀 [Auto-Start] Intent detected:", initialIntent);
 
+            // Decode URI component just in case, though usually handled by frameworks
+            const decodedIntent = decodeURIComponent(initialIntent);
+
             // 약간의 딜레이 후 실행 (초기화 안정성)
             setTimeout(() => {
-                handleSend(initialIntent, "SYSTEM_TRIGGER"); // true = hidden (system trigger)
+                // Check if it's a known System Code (starts with 'ms_') or a Natural Language Prompt
+                const isSystemCode = decodedIntent.startsWith('ms_') || decodedIntent === 'facilitation';
+
+                if (isSystemCode) {
+                    handleSend(decodedIntent, "SYSTEM_TRIGGER"); // Hidden System Trigger
+                } else {
+                    handleSend(decodedIntent); // Visible User Prompt
+                }
             }, 800);
         }
     }, [initialIntent]);
