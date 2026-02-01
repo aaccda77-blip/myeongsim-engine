@@ -118,7 +118,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
 
             // 약간의 딜레이 후 실행 (초기화 안정성)
             setTimeout(() => {
-                handleSend(initialIntent, true); // true = hidden (system trigger)
+                handleSend(initialIntent, "SYSTEM_TRIGGER"); // true = hidden (system trigger)
             }, 800);
         }
     }, [initialIntent]);
@@ -934,7 +934,10 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
         }
 
         const userMsg: Message = { id: Date.now().toString(), role: 'user', content: msgToSend };
-        setMessages(prev => [...prev, userMsg]);
+
+        if (hiddenPayload !== "SYSTEM_TRIGGER") {
+            setMessages(prev => [...prev, userMsg]);
+        }
         setInput('');
 
         // [Memory] Save User Message Immediately
