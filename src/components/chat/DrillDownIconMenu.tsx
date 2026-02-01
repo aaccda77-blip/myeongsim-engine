@@ -555,6 +555,13 @@ export default function DrillDownIconMenu({
             alert('이용권이 만료되었습니다. 이용권을 갱신해주세요.');
             return;
         }
+
+        // [NEW] STARTUP 아이콘 클릭 시 독립 페이지로 이동
+        if (icon.id === 'STARTUP') {
+            window.location.href = '/startup';
+            return;
+        }
+
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         setSelectedIcon(icon);
 
