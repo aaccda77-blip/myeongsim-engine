@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AIzaSyCK6FLzJ-jEqOhAcYvhesnLSk_Lf8bu50M');
 
 export async function POST(request: NextRequest) {
     try {
@@ -93,7 +93,7 @@ ${levelInstructions[level as keyof typeof levelInstructions]}
 4. 따뜻하고 격려하는 톤을 유지하세요
 `;
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         const result = await model.generateContent(prompt);
         const responseText = result.response.text();
 
@@ -131,9 +131,40 @@ ${levelInstructions[level as keyof typeof levelInstructions]}
 
     } catch (error) {
         console.error('Gemini API 오류:', error);
-        return NextResponse.json(
-            { error: 'AI 답변 생성에 실패했습니다.' },
-            { status: 500 }
-        );
+
+        // API 키 만료 등의 오류 발생 시 폴백(Fallback) 답변 제공
+        // 사용자에게 에러를 보여주는 대신, 정해진 답변을 제공하여 경험 유지
+
+        const fallbackAnswer = {
+            id: `fallback_${Date.now()}`,
+            category: 'general',
+            question: question,
+            answer: {
+                greeting: "현재 AI 연결이 불안정하여 안전한 일반 가이드로 답변드릴게요.",
+                core_message: "질문하신 내용은 전문가의 진단이 필요한 중요한 주제입니다. 일반적인 원칙으로는 무리하지 않는 선에서 시작하고, 통증 발생 시 즉시 중단하는 것이 중요합니다.",
+                advice_cards: [
+                    {
+                        icon: "priority_high",
+                        title: "안전 최우선",
+                        content: "새로운 운동이나 식단을 시도할 때는 반드시 낮은 강도부터 시작하세요."
+                    },
+                    {
+                        icon: "medical_services",
+                        title: "전문가 상담",
+                        content: "기저질환이 있다면 주취의와 상담 후 진행하는 것이 가장 안전합니다."
+                    },
+                    {
+                        icon: "monitor_heart",
+                        title: "신체 반응 체크",
+                        content: "어지러움, 흉통, 심한 호흡 곤란이 있다면 즉시 119에 연락하세요."
+                    }
+                ],
+                closing: "💡 잠시 후 다시 시도해주시면 명심 AI 코치가 더 자세히 알려드릴게요!"
+            },
+            tags: ['AI연결지연', '안전가이드'],
+            difficulty: level
+        };
+
+        return NextResponse.json(fallbackAnswer);
     }
 }
