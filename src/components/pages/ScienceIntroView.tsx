@@ -161,7 +161,7 @@ export default function ScienceIntroView() {
                     <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                         <h3 className="text-white font-bold text-sm mb-1 flex items-center gap-2">
                             <span className="material-symbols-outlined text-green-400 text-xs">restaurant</span>
-                            영양 분석
+                            영양분석+맞춤조합
                         </h3>
                         <p className="text-gray-400 text-xs leading-relaxed">
                             식습관 분석을 통해 내 몸에 맞는 영양 밸런스를 맞추는 식단 관리법을 제안합니다.
