@@ -186,6 +186,91 @@ export class SelfCoachingModule {
                     system_prompt_injection: context
                 };
             }
+
+            // [NEW] 창업 컨텐츠 매칭
+            if (intent === 'ms_startup_content_match') {
+                const dayMaster = dayMasterOverride || sajuData?.dayMaster || '갑';
+                const dayMasterChar = dayMaster.replace(/[^\uAC00-\uD7A3]/g, '') || '갑';
+
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `💡 **내게 맞는 창업 아이템 분석**\n\n회원님의 일간 **'${dayMasterChar}'**를 기반으로, 창업 성공 확률이 높은 컨텐츠와 재료를 분석합니다.\n\n어떤 분야의 창업을 고민하고 계신가요?`,
+                    options: [
+                        {
+                            label: "🍽️ 외식/식음료 (F&B)",
+                            value: "STARTUP_FB",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_1",
+                            next_prompt_guide: `User wants F&B startup analysis. Based on DayMaster ${dayMasterChar}, analyze: 1) Best food/beverage type 2) Ingredient compatibility 3) Customer target 4) Location strategy.`
+                        },
+                        {
+                            label: "🛍️ 유통/커머스 (Retail)",
+                            value: "STARTUP_RETAIL",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_2",
+                            next_prompt_guide: `User wants Retail startup analysis. Based on DayMaster ${dayMasterChar}, analyze: 1) Product category 2) Sales channel (online/offline) 3) Brand positioning.`
+                        },
+                        {
+                            label: "💻 IT/테크 (Tech)",
+                            value: "STARTUP_TECH",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_3",
+                            next_prompt_guide: `User wants Tech startup analysis. Based on DayMaster ${dayMasterChar}, analyze: 1) Service type (SaaS/Platform/Content) 2) Technical stack 3) Market timing.`
+                        },
+                        {
+                            label: "🎨 크리에이티브 (Creative)",
+                            value: "STARTUP_CREATIVE",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_3",
+                            next_prompt_guide: `User wants Creative startup analysis. Based on DayMaster ${dayMasterChar}, analyze: 1) Content type 2) Monetization strategy 3) Collaboration potential.`
+                        }
+                    ],
+                    system_prompt_injection: `[Startup Content Match Protocol] DayMaster: ${dayMasterChar}. Provide specific, actionable startup recommendations based on Saju elements.`
+                };
+            }
+
+            // [NEW] 창업가 뉴럴코드 자각
+            if (intent === 'ms_startup_neural_awakening') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `🧠 **창업가 다크코드 → 뉴럴코드 전환**\n\n스타트업 성공을 가로막는 **'다크코드(무의식적 방해 패턴)'**를 **'뉴럴코드(성장 동력)'**로 전환하는 자각 프로토콜입니다.\n\n지금 창업 과정에서 가장 큰 걸림돌은 무엇인가요?`,
+                    options: [
+                        {
+                            label: "😰 완벽주의 (Perfectionism)",
+                            value: "DARK_PERFECTIONISM",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_1",
+                            next_prompt_guide: `[Dark Code: Perfectionism] User is stuck in perfectionism. Coach: "Done is better than perfect. Your dark code is analysis paralysis. Neural code: Ship fast, iterate faster. What is the MVP you can launch this week?"`
+                        },
+                        {
+                            label: "🤔 자기 의심 (Imposter Syndrome)",
+                            value: "DARK_IMPOSTER",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_2",
+                            next_prompt_guide: `[Dark Code: Imposter] User doubts their capability. Coach: "Every founder feels this. Your dark code is self-sabotage. Neural code: Fake it till you make it. What is one bold move you can make today?"`
+                        },
+                        {
+                            label: "💰 돈에 대한 두려움 (Money Fear)",
+                            value: "DARK_MONEY_FEAR",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_2",
+                            next_prompt_guide: `[Dark Code: Money Fear] User fears financial risk. Coach: "Fear is False Evidence. Your dark code is scarcity mindset. Neural code: Money follows value. What value can you create today?"`
+                        },
+                        {
+                            label: "🏃 번아웃 (Burnout)",
+                            value: "DARK_BURNOUT",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_1",
+                            next_prompt_guide: `[Dark Code: Burnout] User is exhausted. Coach: "Rest is productive. Your dark code is hustle culture addiction. Neural code: Strategic rest. Schedule 1 hour of complete rest today."`
+                        },
+                        {
+                            label: "👥 팀 갈등 (Team Conflict)",
+                            value: "DARK_TEAM",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_2",
+                            next_prompt_guide: `[Dark Code: Team Conflict] User struggles with team dynamics. Coach: "Conflict is data. Your dark code is control freak. Neural code: Delegate and trust. What can you let go today?"`
+                        },
+                        {
+                            label: "⏰ 타이밍 불안 (Timing Anxiety)",
+                            value: "DARK_TIMING",
+                            trigger_mode: "CONSCIOUSNESS_LEVEL_3",
+                            next_prompt_guide: `[Dark Code: Timing] User worries about market timing. Coach: "The best time was yesterday. The second best is now. Your dark code is waiting for perfect moment. Neural code: Start messy. What can you test today?"`
+                        }
+                    ],
+                    system_prompt_injection: `[Startup Neural Awakening Protocol] Help user transform their dark code into neural code. Provide specific, actionable coaching based on their choice.`
+                };
+            }
         }
 
         // [PHASE 3-c] Quantum Relationship Modes (Priority High)

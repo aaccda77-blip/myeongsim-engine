@@ -148,6 +148,16 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                     { id: "sl_29", label: "29. 방위 나침반 (기문둔갑)", desc: "지금 행운을 잡으러 가는 방향", intent: "ms_lucky_direction" },
                     { id: "sl_32", label: "32. 리얼타임 싱크", desc: "날씨, 뉴스 등 외부 환경 연동 조언", intent: "smart_context_card" }
                 ]
+            },
+            {
+                id: "strat_2_4",
+                label: "2-4. 무실패 스타트업 (Startup)",
+                desc: "창업 성공을 위한 사주 기반 전략",
+                intent: "NAV_STRAT_STARTUP",
+                children: [
+                    { id: "su_1", label: "💡 내게 맞는 창업 아이템", desc: "사주 기반 컨텐츠 추천 및 재료 분석", intent: "ms_startup_content_match" },
+                    { id: "su_2", label: "🧠 창업가 다크코드 자각", desc: "스타트업 성공을 위한 뉴럴코드 셀프 진단", intent: "ms_startup_neural_awakening" }
+                ]
             }
         ]
     },
