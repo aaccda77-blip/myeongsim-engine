@@ -17,8 +17,26 @@ export default function FacilitationPage() {
     const router = useRouter();
     const { reportData } = useReportStore(); // [Store]
     const [messages, setMessages] = useState<Message[]>([]);
+    const [userInput, setUserInput] = useState('');
+    const [isSessionActive, setIsSessionActive] = useState(false);
+    const [canInterrupt, setCanInterrupt] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // [Restored] Loading State
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // ... (existing state) ...
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, isLoading]);
+
+    const startSession = async () => {
+        setIsSessionActive(true);
+        setCanInterrupt(true);
+        // [Auto-Trigger] Start with AI Analysis immediately
+        await generateOpeningRemarks();
+    };
 
     const generateOpeningRemarks = async () => {
         setIsLoading(true);
