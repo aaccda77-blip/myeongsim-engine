@@ -9,7 +9,7 @@ export default function StartupDashboard() {
     const [activeMenu, setActiveMenu] = useState('dashboard');
 
     const handleConsultation = (intent: string) => {
-        router.push(`/?intent=${intent}`);
+        router.push(`/report?intent=${intent}`);
     };
 
     const menuItems = [
@@ -46,8 +46,8 @@ export default function StartupDashboard() {
                                 if (item.intent) handleConsultation(item.intent);
                             }}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg group transition-all cursor-pointer ${activeMenu === item.id
-                                    ? 'bg-[#3211d4]/10 text-[#3211d4] border-r-2 border-[#3211d4]'
-                                    : 'text-[#a19db9] hover:bg-white/5'
+                                ? 'bg-[#3211d4]/10 text-[#3211d4] border-r-2 border-[#3211d4]'
+                                : 'text-[#a19db9] hover:bg-white/5'
                                 }`}
                         >
                             <span className="material-symbols-outlined">{item.icon}</span>
@@ -67,7 +67,7 @@ export default function StartupDashboard() {
                             3자 토론 코칭
                         </a>
                         <a
-                            onClick={() => router.push('/')}
+                            onClick={() => router.push('/report')}
                             className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer"
                         >
                             <span className="material-symbols-outlined text-[20px]">chat</span>
