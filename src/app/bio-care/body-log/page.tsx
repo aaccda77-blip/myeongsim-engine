@@ -1,18 +1,21 @@
 /**
  * /bio-care/body-log/page.tsx
- * 신체 알아차림 로그 - 이상 반응 기록
+ * 신체 알아차림 로그 - 이상 반응 기록 + AI 패턴 분석
  */
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SYMPTOM_CHECKLIST } from '@/data/BioCareData';
+import SymptomInsightModal from '@/components/bio-care/SymptomInsightModal';
 
 interface LogEntry {
     date: string;
     symptoms: Record<string, string>;
     note: string;
+    mealTime?: string;
+    medicationTaken?: boolean;
 }
 
 export default function BodyLogPage() {
@@ -20,17 +23,84 @@ export default function BodyLogPage() {
     const [symptoms, setSymptoms] = useState<Record<string, string>>({});
     const [note, setNote] = useState('');
     const [logs, setLogs] = useState<LogEntry[]>([]);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [showInsightModal, setShowInsightModal] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState<any>(null);
+
+    // 로컬 스토리지에서 로그 불러오기
+    useEffect(() => {
+        const savedLogs = localStorage.getItem('bodyLogs');
+        if (savedLogs) {
+            setLogs(JSON.parse(savedLogs));
+        }
+    }, []);
 
     const handleSave = () => {
         const newLog: LogEntry = {
-            date: new Date().toLocaleDateString('ko-KR'),
+            date: new Date().toISOString(),
             symptoms: { ...symptoms },
-            note: note
+            note: note,
+            medicationTaken: true // 추후 사용자 입력으로 변경 가능
         };
-        setLogs([newLog, ...logs]);
+        const updatedLogs = [newLog, ...logs];
+        setLogs(updatedLogs);
+        localStorage.setItem('bodyLogs', JSON.stringify(updatedLogs));
         setSymptoms({});
         setNote('');
         alert('✅ 기록이 저장되었습니다.');
+    };
+
+    const handleAnalyze = async () => {
+        if (logs.length < 3) {
+            alert('최소 3일 이상의 기록이 필요합니다.');
+            return;
+        }
+
+        setIsAnalyzing(true);
+
+        try {
+            // 로그 데이터 변환
+            const formattedLogs = logs.slice(0, 14).map(log => ({
+                date: new Date(log.date).toLocaleDateString('ko-KR'),
+                symptoms: {
+                    nausea: log.symptoms.nausea || 'none',
+                    vomit: log.symptoms.vomit || 'none',
+                    dizziness: log.symptoms.dizziness || 'none',
+                    fatigue: log.symptoms.fatigue || 'none',
+                    irritability: log.symptoms.irritability || 'none',
+                    abdominal_pain: log.symptoms.abdominal_pain || 'none'
+                },
+                notes: log.note,
+                mealTime: log.mealTime,
+                medicationTaken: log.medicationTaken
+            }));
+
+            const response = await fetch('/api/bio-care/analyze-symptoms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    logs: formattedLogs,
+                    medication: 'saxenda', // 추후 사용자 약물 정보로 변경
+                    analysisType: logs.length >= 14 ? 'monthly' : 'weekly'
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setAnalysisResult(data);
+                setShowInsightModal(true);
+            } else {
+                alert('분석 중 오류가 발생했습니다: ' + data.error);
+            }
+        } catch (error) {
+            console.error('AI 분석 오류:', error);
+            alert('분석 중 오류가 발생했습니다.');
+        } finally {
+            setIsAnalyzing(false);
+        }
     };
 
     return (
@@ -62,6 +132,35 @@ export default function BodyLogPage() {
             </div>
 
             <main className="flex-1 p-6 space-y-6 pb-8 overflow-y-auto">
+                {/* AI 분석 버튼 (3일 이상 기록 시 활성화) */}
+                {logs.length >= 3 && (
+                    <button
+                        onClick={handleAnalyze}
+                        disabled={isAnalyzing}
+                        className="w-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl p-5 hover:from-purple-500/30 hover:to-blue-500/30 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="text-left flex-1">
+                                <h4 className="text-white font-bold mb-1 flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-purple-400">psychology</span>
+                                    {isAnalyzing ? 'AI 분석 중...' : 'AI 패턴 분석'}
+                                </h4>
+                                <p className="text-gray-400 text-sm">
+                                    {logs.length}일 기록에서 패턴 찾기
+                                </p>
+                            </div>
+                            {!isAnalyzing && (
+                                <span className="material-symbols-outlined text-purple-400">arrow_forward</span>
+                            )}
+                            {isAnalyzing && (
+                                <div className="animate-spin">
+                                    <span className="material-symbols-outlined text-purple-400">progress_activity</span>
+                                </div>
+                            )}
+                        </div>
+                    </button>
+                )}
+
                 {/* 증상 체크리스트 */}
                 <div className="space-y-3">
                     <h4 className="text-white font-bold mb-3">증상 체크</h4>
@@ -74,8 +173,8 @@ export default function BodyLogPage() {
                                         key={level}
                                         onClick={() => setSymptoms({ ...symptoms, [symptom.id]: level })}
                                         className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${symptoms[symptom.id] === level
-                                                ? 'bg-[#658c42] text-white'
-                                                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                            ? 'bg-[#658c42] text-white'
+                                            : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                             }`}
                                     >
                                         {level}
@@ -111,7 +210,9 @@ export default function BodyLogPage() {
                         <h4 className="text-white font-bold">최근 기록</h4>
                         {logs.slice(0, 5).map((log, idx) => (
                             <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-4">
-                                <p className="text-gray-400 text-xs mb-2">{log.date}</p>
+                                <p className="text-gray-400 text-xs mb-2">
+                                    {new Date(log.date).toLocaleDateString('ko-KR')}
+                                </p>
                                 <div className="space-y-1">
                                     {Object.entries(log.symptoms).map(([key, value]) => {
                                         const symptom = SYMPTOM_CHECKLIST.find(s => s.id === key);
@@ -140,6 +241,14 @@ export default function BodyLogPage() {
                     </p>
                 </div>
             </main>
+
+            {/* AI 인사이트 모달 */}
+            <SymptomInsightModal
+                isOpen={showInsightModal}
+                onClose={() => setShowInsightModal(false)}
+                analysis={analysisResult?.analysis}
+                metadata={analysisResult?.metadata}
+            />
         </div>
     );
 }
