@@ -11,6 +11,7 @@ import { SYMPTOM_CHECKLIST } from '@/data/BioCareData';
 import SymptomInsightModal from '@/components/bio-care/SymptomInsightModal';
 import HangryCheck from '@/components/bio-care/HangryCheck';
 import MedicationReminder from '@/components/bio-care/MedicationReminder';
+import SleepRitual from '@/components/bio-care/SleepRitual';
 
 interface LogEntry {
     date: string;
@@ -168,6 +169,9 @@ export default function BodyLogPage() {
 
                 {/* 복약 알림 시스템 */}
                 <MedicationReminder />
+
+                {/* 수면 리추얼 */}
+                <SleepRitual />
 
                 {/* 증상 체크리스트 */}
                 <div className="space-y-3">
