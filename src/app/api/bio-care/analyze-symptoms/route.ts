@@ -145,7 +145,6 @@ ${symptomSummary}
             model: google('gemini-2.0-flash-exp'),
             prompt: prompt,
             temperature: 0.7,
-            maxTokens: 2000,
         });
 
         // JSON 파싱
