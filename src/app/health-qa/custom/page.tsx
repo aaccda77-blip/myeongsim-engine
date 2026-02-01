@@ -1,6 +1,6 @@
 /**
  * /health-qa/custom/page.tsx
- * 맞춤 질문하기 페이지
+ * 맞춤 질문하기 페이지 (DB 검색 방식)
  */
 
 'use client';
@@ -8,47 +8,26 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import HealthQAView from '@/components/health-qa/HealthQAView';
-import { type HealthQATemplate } from '@/data/HealthKnowledgeDB';
-import { useHealthLevel } from '@/hooks/useHealthLevel';
-import { motion } from 'framer-motion';
+import { searchHealthQA, type HealthQATemplate } from '@/data/HealthKnowledgeDB';
 
 export default function CustomHealthQAPage() {
     const router = useRouter();
-    const { level } = useHealthLevel();
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState<HealthQATemplate | null>(null);
-    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim()) return;
 
         setIsLoading(true);
-        setError(null);
 
-        try {
-            const response = await fetch('/api/health-qa/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    question: input,
-                    level: level
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('답변 생성에 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setResult(data);
-        } catch (err) {
-            console.error('API 호출 오류:', err);
-            setError('답변을 생성하는 중 오류가 발생했습니다. 다시 시도해주세요.');
-        } finally {
+        // DB에서 관련 Q&A 검색 (로딩 연출)
+        setTimeout(() => {
+            const answer = searchHealthQA(input);
+            setResult(answer);
             setIsLoading(false);
-        }
+        }, 1500);
     };
 
     const reset = () => {
@@ -109,16 +88,10 @@ export default function CustomHealthQAPage() {
                     </div>
 
                     <div className="mt-auto pb-8">
-                        {error && (
-                            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
-                                {error}
-                            </div>
-                        )}
-
                         {isLoading ? (
                             <div className="w-full h-14 bg-[#658c42]/20 text-[#658c42] rounded-2xl flex items-center justify-center font-bold gap-2 cursor-wait border border-[#658c42]/30">
                                 <span className="animate-spin material-symbols-outlined">sync</span>
-                                AI가 답변을 생성하는 중...
+                                분석 중입니다...
                             </div>
                         ) : (
                             <button
