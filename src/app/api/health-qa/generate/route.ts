@@ -130,7 +130,7 @@ ${levelInstructions[level as keyof typeof levelInstructions]}
         return NextResponse.json(qaTemplate);
 
     } catch (error) {
-        console.error('Gemini API 오류:', error);
+        console.error('Gemini API 처리 중 오류 발생:', error);
 
         // API 키 만료 등의 오류 발생 시 폴백(Fallback) 답변 제공
         // 사용자에게 에러를 보여주는 대신, 정해진 답변을 제공하여 경험 유지
