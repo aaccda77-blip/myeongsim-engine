@@ -122,8 +122,8 @@ export default function StartupDashboard() {
                             <a onClick={() => router.push('/startup/facilitation')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
                                 <span className="material-symbols-outlined text-[20px]">groups</span> 3자 토론 코칭
                             </a>
-                            <a onClick={() => router.push('/report')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">chat</span> 메인 챗봇
+                            <a onClick={() => router.push('/startup/mastermind')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
+                                <span className="material-symbols-outlined text-[20px]">diversity_3</span> 최고 전문가 집단 상담
                             </a>
                         </div>
                     </nav>
@@ -225,12 +225,11 @@ export default function StartupDashboard() {
                             <span className="material-symbols-outlined text-[20px]">groups</span>
                             3자 토론 코칭
                         </a>
-                        <a
-                            onClick={() => router.push('/report')}
-                            className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer"
-                        >
-                            <span className="material-symbols-outlined text-[20px]">chat</span>
-                            메인 챗봇
+                        <a onClick={() => router.push('/report')} className="hidden flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
+                            <span className="material-symbols-outlined text-[20px]">chat</span> 메인 챗봇 (Legacy)
+                        </a>
+                        <a onClick={() => router.push('/startup/mastermind')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
+                            <span className="material-symbols-outlined text-[20px]">diversity_3</span> 최고 전문가 집단 상담
                         </a>
                     </div>
                 </nav>
