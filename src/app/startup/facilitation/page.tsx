@@ -67,6 +67,8 @@ export default function FacilitationPage() {
                 (Welcome & Reflective Opening)
                 :::COACH:::
                 (Energy Resource Analysis & Strategic Choice)
+                
+                * Do NOT output JSON or ':::DATA_SEPARATOR:::'. Only Dialogue.
             `;
 
             // [Data Prep]
@@ -113,9 +115,12 @@ export default function FacilitationPage() {
                 }
             }
 
-            // Parsing Logic (Reuse or Refactor to shared function ideally, but keeping inline for safety)
-            const facilitatorMatch = fullContent.split(':::FACILITATOR:::')[1]?.split(':::COACH:::')[0]?.trim();
-            const coachMatch = fullContent.split(':::COACH:::')[1]?.trim();
+            // Parsing Logic (Safe Filter for Data Separators)
+            // Remove any potential backend-injected JSON data
+            const cleanContent = fullContent.split(':::DATA_SEPARATOR:::')[0];
+
+            const facilitatorMatch = cleanContent.split(':::FACILITATOR:::')[1]?.split(':::COACH:::')[0]?.trim();
+            const coachMatch = cleanContent.split(':::COACH:::')[1]?.trim();
 
             if (facilitatorMatch) {
                 setMessages(prev => [...prev, {
@@ -197,6 +202,7 @@ export default function FacilitationPage() {
                 - [FACILITATOR] starts. Acknowledge the user's input but challenge the *depth* of the question.
                 - [COACH] follows. Connect the user's Saju (Bazi) to the problem. Offer a strategy that requires the user's active choice.
                 - Keep the dialogue dynamic.
+                - CRITICAL: DO NOT output any JSON data, ":::DATA_SEPARATOR:::", or metadata. ONLY pure dialogue.
             `;
 
             // Prepare context
@@ -255,8 +261,11 @@ export default function FacilitationPage() {
             // 2. :::COACH::: ... (Direct answer)
             // 3. Just text (Fallback to Facilitator)
 
-            const facilitatorMatch = fullContent.split(':::FACILITATOR:::')[1]?.split(':::COACH:::')[0]?.trim();
-            const coachMatch = fullContent.split(':::COACH:::')[1]?.trim();
+            // Remove any potential backend-injected JSON data
+            const cleanContent = fullContent.split(':::DATA_SEPARATOR:::')[0];
+
+            const facilitatorMatch = cleanContent.split(':::FACILITATOR:::')[1]?.split(':::COACH:::')[0]?.trim();
+            const coachMatch = cleanContent.split(':::COACH:::')[1]?.trim();
 
             // Fallback Logic if AI ignores format
             let facilitatorText = facilitatorMatch;
