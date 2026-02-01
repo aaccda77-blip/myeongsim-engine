@@ -11,29 +11,14 @@ interface Message {
     timestamp: Date;
 }
 
+import { useReportStore } from '@/store/useReportStore'; // [Import]
+
 export default function FacilitationPage() {
     const router = useRouter();
+    const { reportData } = useReportStore(); // [Store]
     const [messages, setMessages] = useState<Message[]>([]);
-    const [userInput, setUserInput] = useState('');
-    const [isSessionActive, setIsSessionActive] = useState(false);
-    const [canInterrupt, setCanInterrupt] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // [New] Loading State
-    const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages, isLoading]);
-
-    const startSession = async () => {
-        setIsSessionActive(true);
-        setCanInterrupt(true);
-        // [Auto-Trigger] Start with AI Analysis immediately
-        await generateOpeningRemarks();
-    };
+    // ... (existing state) ...
 
     const generateOpeningRemarks = async () => {
         setIsLoading(true);
@@ -47,8 +32,8 @@ export default function FacilitationPage() {
 
                 [Goal]
                 The User has just started the session. 
-                [FACILITATOR] must welcome the user and immediately ask [COACH] to analyze the user's "Startup Luck" based on their Bazi (Simulate Bazi if no data: assume 'Wood/Fire' energy for creativity).
-                [COACH] must then give a detailed, preemptive analysis of their current startup luck and suggest a strategic direction.
+                [FACILITATOR] must welcome the user and immediately ask [COACH] to analyze the user's "Startup Luck" based on their Bazi.
+                [COACH] must then give a detailed, preemptive analysis of their current startup luck and suggest a strategic direction using the provided Saju data.
 
                 [Format]
                 :::FACILITATOR:::
@@ -57,18 +42,35 @@ export default function FacilitationPage() {
                 (Preemptive Saju Analysis & Strategy)
             `;
 
+            // [Data Prep]
+            const userName = reportData?.userName || '대표님';
+            const userSaju = reportData?.saju || null;
+
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    userId: 'facility-guest',
-                    userName: '대표님',
+                    userId: reportData?.userName ? `facility-${reportData.userName}` : 'facility-guest',
+                    userName: userName,
                     message: `[SYSTEM_TRIGGER]: Start the session. Analyze my Saju for startup success.`,
                     messages: [{ role: 'system', content: systemPrompt }], // Context
                     stage: 1,
-                    clientTimestamp: new Date().toISOString()
+                    clientTimestamp: new Date().toISOString(),
+                    // [Real Data Injection]
+                    birthDate: reportData?.birthDate,
+                    birthTime: reportData?.birthTime,
+                    gender: reportData?.gender,
+                    userSaju: {
+                        birthDate: reportData?.birthDate,
+                        birthTime: reportData?.birthTime,
+                        gender: reportData?.gender
+                    },
+                    sajuData: userSaju
                 })
             });
+
+            // ... (rest of function) ...
+
 
             if (!response.ok) throw new Error('API Error');
 
@@ -169,16 +171,30 @@ export default function FacilitationPage() {
                 content: `${m.speaker === 'facilitator' ? '[FACILITATOR]: ' : m.speaker === 'coach' ? '[COACH]: ' : ''}${m.content}`
             }));
 
+            // [Data Prep]
+            const userName = reportData?.userName || '대표님';
+            const userSaju = reportData?.saju || null;
+
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    userId: 'facility-guest', // Temporary guest ID
-                    userName: '대표님',
+                    userId: reportData?.userName ? `facility-${reportData.userName}` : 'facility-guest',
+                    userName: userName,
                     message: `[SYSTEM_INSTRUCTION]: ${systemPrompt}\n\n[USER_INPUT]: ${userMsgContent}`,
                     messages: previousMessages,
-                    stage: 1, // Default stage
-                    clientTimestamp: new Date().toISOString()
+                    stage: 1,
+                    clientTimestamp: new Date().toISOString(),
+                    // [Real Data Injection]
+                    birthDate: reportData?.birthDate,
+                    birthTime: reportData?.birthTime,
+                    gender: reportData?.gender,
+                    userSaju: {
+                        birthDate: reportData?.birthDate,
+                        birthTime: reportData?.birthTime,
+                        gender: reportData?.gender
+                    },
+                    sajuData: userSaju
                 })
             });
 
