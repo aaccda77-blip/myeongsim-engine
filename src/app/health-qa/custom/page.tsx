@@ -115,7 +115,7 @@ export default function CustomHealthQAPage() {
                         {isLoading ? (
                             <div className="w-full h-14 bg-[#658c42]/20 text-[#658c42] rounded-2xl flex items-center justify-center font-bold gap-2 cursor-wait border border-[#658c42]/30">
                                 <span className="animate-spin material-symbols-outlined">sync</span>
-                                Gemini AI가 답변 생성 중...
+                                명심 AI 코치가 답변 준비 중입니다.
                             </div>
                         ) : (
                             <button

@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         };
 
         const prompt = `
-당신은 30년 경력의 건강운동관리사이자 명심 AI 코치입니다.
+당신은 명심 AI 코치입니다.
 친절하고 따뜻하면서도 전문적인 답변을 제공합니다.
 
 **사용자 레벨**: ${level}
