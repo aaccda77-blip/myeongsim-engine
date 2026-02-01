@@ -11,12 +11,23 @@ import ChatInterface from '../chat/ChatInterface';
 // [New Imports]
 import { supabase } from '@/lib/supabaseClient';
 
+import { useSearchParams } from 'next/navigation';
+
 export default function BookLayout({ children }: { children: React.ReactNode }) {
     const { currentStep, totalSteps, nextStep, prevStep } = useReportStore();
+    const searchParams = useSearchParams();
 
     // UI State
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isMapOpen, setIsMapOpen] = useState(false);
+
+    // [New] Auto-open chat if intent exists
+    useEffect(() => {
+        const intent = searchParams.get('intent');
+        if (intent) {
+            setIsChatOpen(true);
+        }
+    }, [searchParams]);
 
     // [Removed] Legacy Auth & Payment State - Replaced by Premium System
     const [user, setUser] = useState<any>(null);
@@ -107,6 +118,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                     useReportStore.getState().setStep(1); // Return to CoverView
                                 }}
                                 currentStage={demoStage}
+                                initialIntent={searchParams.get('intent')} // [New] Pass Intent
                             />
                         </div>
                     )}

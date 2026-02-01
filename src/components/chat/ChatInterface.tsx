@@ -74,9 +74,10 @@ interface Message {
 interface ChatInterfaceProps {
     onClose: () => void;
     currentStage?: number;
+    initialIntent?: string | null; // [New] Auto-start Intent
 }
 
-export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfaceProps) {
+export default function ChatInterface({ onClose, currentStage = 1, initialIntent }: ChatInterfaceProps) {
     const { reportData } = useReportStore();
     // [Wearable] Bio Data Hook
     const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName, simulateRecovery } = useBioData();
@@ -107,6 +108,20 @@ export default function ChatInterface({ onClose, currentStage = 1 }: ChatInterfa
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    // [New] Auto-Start Intent Logic
+    const hasStartedRef = useRef(false);
+    useEffect(() => {
+        if (initialIntent && !hasStartedRef.current && !isLoading) {
+            hasStartedRef.current = true;
+            console.log("🚀 [Auto-Start] Intent detected:", initialIntent);
+
+            // 약간의 딜레이 후 실행 (초기화 안정성)
+            setTimeout(() => {
+                handleSend(initialIntent, true); // true = hidden (system trigger)
+            }, 800);
+        }
+    }, [initialIntent]);
 
     // [Feature] TTS Text Cleaner (Markdown Stripper)
     const cleanTextForTTS = (text: string) => {
