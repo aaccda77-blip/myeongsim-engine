@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SYMPTOM_CHECKLIST } from '@/data/BioCareData';
 import SymptomInsightModal from '@/components/bio-care/SymptomInsightModal';
+import HangryCheck from '@/components/bio-care/HangryCheck';
 
 interface LogEntry {
     date: string;
@@ -160,6 +161,9 @@ export default function BodyLogPage() {
                         </div>
                     </button>
                 )}
+
+                {/* Hangry Check (배고픔성 예민함 탐지) */}
+                <HangryCheck />
 
                 {/* 증상 체크리스트 */}
                 <div className="space-y-3">
