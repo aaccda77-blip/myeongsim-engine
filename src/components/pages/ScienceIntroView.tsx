@@ -101,6 +101,13 @@ export default function ScienceIntroView() {
                     </div>
 
                     <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <h3 className="text-white font-bold text-sm mb-1">DBT (변증법적 행동치료)</h3>
+                        <p className="text-gray-400 text-xs leading-relaxed">
+                            감정 조절과 대인관계 기술을 향상시켜 삶의 균형을 찾도록 돕습니다.
+                        </p>
+                    </div>
+
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                         <h3 className="text-white font-bold text-sm mb-1">MBCT & MBSR 프로그램</h3>
                         <p className="text-gray-400 text-xs leading-relaxed">
                             마음챙김 기반 스트레스 완화 기법으로 마음의 회복탄력성을 높입니다.
@@ -144,10 +151,20 @@ export default function ScienceIntroView() {
                     <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                         <h3 className="text-white font-bold text-sm mb-1 flex items-center gap-2">
                             <span className="material-symbols-outlined text-green-400 text-xs">fitness_center</span>
-                            건강운동관리사
+                            건강운동관리
                         </h3>
                         <p className="text-gray-400 text-xs leading-relaxed">
                             개인의 체력과 신체 상태를 고려한 맞춤형 운동 루틴과 활동 가이드를 설계합니다.
+                        </p>
+                    </div>
+
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <h3 className="text-white font-bold text-sm mb-1 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-green-400 text-xs">restaurant</span>
+                            영양 분석
+                        </h3>
+                        <p className="text-gray-400 text-xs leading-relaxed">
+                            식습관 분석을 통해 내 몸에 맞는 영양 밸런스를 맞추는 식단 관리법을 제안합니다.
                         </p>
                     </div>
                 </div>
