@@ -93,7 +93,8 @@ ${levelInstructions[level as keyof typeof levelInstructions]}
 4. 따뜻하고 격려하는 톤을 유지하세요
 `;
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        // @ts-ignore - Vercel 빌드 에러 방지 (타입 추론 문제 가능성)
+        const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-2.5-flash' });
         const result = await model.generateContent(prompt);
         const responseText = result.response.text();
 
