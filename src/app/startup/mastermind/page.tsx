@@ -40,6 +40,7 @@ export default function MastermindPage() {
     const generateOpeningRemarks = async () => {
         setIsLoading(true);
         try {
+            // [Data Prep]
             const userName = reportData?.userName || '대표님';
             const userSaju = reportData?.saju || null;
 
@@ -140,6 +141,10 @@ export default function MastermindPage() {
         setIsLoading(true);
 
         try {
+            // [Data Prep]
+            const userName = reportData?.userName || '대표님';
+            const userSaju = reportData?.saju || null;
+
             const systemPrompt = `
                 [Role Definition]
                 Simulating "Mastermind Group Consultation".
@@ -167,9 +172,6 @@ export default function MastermindPage() {
                 role: m.speaker === 'user' ? 'user' : 'assistant',
                 content: `${m.speaker === 'user' ? '' : `[${m.speaker.toUpperCase()}]: `}${m.content}`
             }));
-
-            const userName = reportData?.userName || '대표님';
-            const userSaju = reportData?.saju || null;
 
             const response = await fetch('/api/chat', {
                 method: 'POST',

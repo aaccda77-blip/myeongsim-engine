@@ -41,6 +41,10 @@ export default function FacilitationPage() {
     const generateOpeningRemarks = async () => {
         setIsLoading(true);
         try {
+            // [Data Prep]
+            const userName = reportData?.userName || '대표님';
+            const userSaju = reportData?.saju || null;
+
             const systemPrompt = `
                 [Role Definition]
                 You are simulating a "3-Way Facilitation Session" for a startup founder (${userName}).
@@ -70,10 +74,6 @@ export default function FacilitationPage() {
                 
                 * Do NOT output JSON or ':::DATA_SEPARATOR:::'. Only Dialogue.
             `;
-
-            // [Data Prep]
-            const userName = reportData?.userName || '대표님';
-            const userSaju = reportData?.saju || null;
 
             const response = await fetch('/api/chat', {
                 method: 'POST',
