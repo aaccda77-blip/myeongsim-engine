@@ -92,10 +92,43 @@ export const HEALTH_KNOWLEDGE_DB: HealthQATemplate[] = [
     },
 
     // ============================================
-    // 2. 당뇨 (Diabetes)
+    // 2. 당뇨 (Diabetes) - 3단계 난이도
     // ============================================
+
+    // [BEGINNER] 당뇨 - 밤 운동
     {
-        id: 'qa_2',
+        id: 'diabetes_night_beginner',
+        category: 'diabetes',
+        question: '당뇨가 있는데 밤늦게 운동해도 괜찮을까요?',
+        answer: {
+            greeting: '회원님, 늦은 시간까지 건강을 위해 노력하시는 모습이 정말 존경스럽습니다.',
+            core_message: '당뇨가 있으시다면 운동 시간이 정말 중요해요. 밤늦게 운동하면 자는 동안 혈당이 너무 떨어져서 위험할 수 있거든요.',
+            advice_cards: [
+                {
+                    icon: 'restaurant',
+                    title: '저녁 식사 후 1시간 뒤',
+                    content: '밥 먹고 1시간 정도 지나서 운동하면 혈당 관리에 가장 좋아요.'
+                },
+                {
+                    icon: 'bedtime',
+                    title: '자기 3시간 전에 끝내기',
+                    content: '늦어도 밤 9시 전에는 운동을 마쳐주세요. 자는 동안 혈당이 떨어질 수 있어요.'
+                },
+                {
+                    icon: 'cookie',
+                    title: '사탕 챙기기',
+                    content: '운동할 때 사탕이나 주스를 꼭 챙기세요. 어지러우면 바로 드세요.'
+                }
+            ],
+            closing: '💡 Tip: 자기 전에 우유 한 잔 마시면 밤에 혈당이 떨어지는 걸 막을 수 있어요!'
+        },
+        tags: ['당뇨', '운동타이밍', '저혈당예방'],
+        difficulty: 'beginner'
+    },
+
+    // [INTERMEDIATE] 당뇨 - 밤 운동
+    {
+        id: 'diabetes_night_intermediate',
         category: 'diabetes',
         question: '당뇨가 있는데 밤늦게 운동해도 괜찮을까요?',
         answer: {
@@ -120,9 +153,41 @@ export const HEALTH_KNOWLEDGE_DB: HealthQATemplate[] = [
             ],
             closing: '💡 Tip: 만약 어쩔 수 없이 늦게 운동하셨다면, 자기 전에 우유 반 잔이나 요거트를 드시고 주무시는 게 안전합니다.'
         },
-        tags: ['당뇨', '운동타이밍', '저혈당예방'],
+        tags: ['당뇨', '운동타이밍', '저혈당예방', '인슐린감수성'],
         difficulty: 'intermediate'
     },
+
+    // [ADVANCED] 당뇨 - 밤 운동
+    {
+        id: 'diabetes_night_advanced',
+        category: 'diabetes',
+        question: '당뇨가 있는데 밤늦게 운동해도 괜찮을까요?',
+        answer: {
+            greeting: '야간 운동 시 혈당 관리에 대한 전문적인 질문 감사합니다. 건강운동관리사 관점에서 상세히 답변드리겠습니다.',
+            core_message: '야간 저혈당(nocturnal hypoglycemia)은 제2형 당뇨 환자의 약 50%가 경험하는 심각한 합병증입니다. 운동 후 근육의 GLUT4 수용체 활성화는 최대 48시간 지속되며, 이로 인해 수면 중 인슐린 비의존적 포도당 흡수가 과도하게 일어나 혈당이 60mg/dL 이하로 떨어질 위험이 있습니다.',
+            advice_cards: [
+                {
+                    icon: 'restaurant',
+                    title: '식후 혈당 Peak 타이밍 (60~90분)',
+                    content: 'CGM 데이터 기준, 식후 60~90분에 혈당이 최고치(180~200mg/dL)에 도달합니다. 이 시점에 중강도 유산소(RPE 12~14, 50~70% HRmax)를 20~30분 실시하면 식후 혈당 스파이크를 평균 40mg/dL 낮출 수 있습니다.'
+                },
+                {
+                    icon: 'bedtime',
+                    title: 'EPOC와 야간 저혈당 위험',
+                    content: '운동 후 과잉 산소 소비(EPOC)로 인해 근육은 최대 12시간 동안 글리코겐 재합성을 위해 포도당을 흡수합니다. 취침 3시간 전 운동 종료 시 야간 저혈당 발생률이 73% 감소합니다(ACSM 가이드라인).'
+                },
+                {
+                    icon: 'cookie',
+                    title: '저혈당 응급 프로토콜 (15-15 Rule)',
+                    content: '혈당 70mg/dL 이하 시 즉시 15g 속효성 탄수화물(사탕 3~4개, 주스 120mL) 섭취 후 15분 대기. 재측정 후 여전히 낮으면 반복. 인슐린 주사 후 1시간 이내 운동은 금기입니다.'
+                }
+            ],
+            closing: '💡 Evidence-Based Tip: 야간 운동 불가피 시, 취침 전 복합 탄수화물 15g + 단백질 7g(우유 200mL) 섭취가 야간 저혈당 예방에 효과적입니다(ADA 권고사항).'
+        },
+        tags: ['당뇨', '야간저혈당', 'GLUT4', 'EPOC', 'CGM', 'ACSM가이드라인'],
+        difficulty: 'advanced'
+    },
+
     {
         id: 'diabetes_002',
         category: 'diabetes',
