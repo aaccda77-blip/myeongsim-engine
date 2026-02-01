@@ -7,6 +7,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { google } from '@ai-sdk/google';
 import { generateText } from 'ai';
 
+// 환경 변수 호환성: GEMINI_API_KEY 또는 GOOGLE_GENERATIVE_AI_API_KEY 둘 다 지원
+if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY && process.env.GEMINI_API_KEY) {
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY = process.env.GEMINI_API_KEY;
+}
+
 export async function POST(request: NextRequest) {
     try {
         const { question, level } = await request.json();
