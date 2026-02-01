@@ -522,18 +522,18 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 14. 108 자각 (AWARENESS_108 - Quantum Upgrade)
+    // 14. 뉴럴 인사이트 (NEURAL_INSIGHTS - Brain Science Based)
     AWARENESS_108: {
         id: 'AWARENESS_108',
-        label: "108 자각 (Quantum)",
-        icon: "🧘",
-        neuro_trigger: "당신의 운명을 해킹하는 108가지 코드",
+        label: "뉴럴 인사이트",
+        icon: "🧠",
+        neuro_trigger: "신경과학 기반 자기인식 프로토콜",
         style: 'premium_purple',
         sub_menus: [
             {
                 id: "phase_1",
-                label: "Phase 1: 소울 해킹 (1~18)",
-                desc: "영혼의 설계도 해독",
+                label: "Phase 1: 뉴럴 프로파일링 (1~18)",
+                desc: "뇌 회로 패턴 분석",
                 intent: "NAV_PHASE_1",
                 children: [
                     { id: "qk_1", label: "01. 📜 내 영혼의 설계도", desc: "태어난 순간의 운명 지도", intent: "ms_soul_blueprint" },
