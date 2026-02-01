@@ -20,11 +20,12 @@ export default function HealthQAPage() {
 
     // 레벨에 맞는 Q&A 가져오기
     useEffect(() => {
-        if (!isLoading && hasCompletedAssessment) {
+        if (!isLoading) {
+            // 레벨 진단 완료 여부와 관계없이 Q&A 표시
             const allQA = getRandomHealthQA();
             setQaData(allQA);
         }
-    }, [level, isLoading, hasCompletedAssessment]);
+    }, [level, isLoading]);
 
     // 최초 방문 시 레벨 진단 모달 표시
     useEffect(() => {
@@ -37,6 +38,9 @@ export default function HealthQAPage() {
         setLevel(assessedLevel);
         markAssessmentCompleted();
         setShowAssessment(false);
+        // 레벨 변경 후 새로운 Q&A 로드
+        const newQA = getRandomHealthQA();
+        setQaData(newQA);
     };
 
     if (isLoading) {
