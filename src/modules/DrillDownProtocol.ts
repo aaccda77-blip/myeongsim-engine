@@ -487,6 +487,41 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
+    // 15. ⚖️ 바이오 밸런서 (BIO_CARE - NEW)
+    BIO_CARE: {
+        id: 'BIO_CARE',
+        label: "바이오 밸런서",
+        icon: "⚖️",
+        neuro_trigger: "약물·영양·신체의 균형 관리",
+        style: 'healing_green',
+        sub_menus: [
+            {
+                id: "bc_med_literacy",
+                label: "💊 약물 리터러시",
+                desc: "내 약을 제대로 이해하기",
+                intent: "bio_care_med_literacy"
+            },
+            {
+                id: "bc_nutri_synergy",
+                label: "🥗 시너지 영양학",
+                desc: "보충제와 약물의 조화",
+                intent: "bio_care_nutri_synergy"
+            },
+            {
+                id: "bc_body_log",
+                label: "📊 신체 알아차림 로그",
+                desc: "증상 기록 및 패턴 파악",
+                intent: "bio_care_body_log"
+            },
+            {
+                id: "bc_educator_note",
+                label: "📚 전문가의 한마디",
+                desc: "보건교육사 칼럼",
+                intent: "bio_care_educator_note"
+            }
+        ]
+    },
+
     // 14. 108 자각 (AWARENESS_108 - Quantum Upgrade)
     AWARENESS_108: {
         id: 'AWARENESS_108',
@@ -677,7 +712,8 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
         'DAILY_MISSION': 11,
         'SAJU_ANALYSIS': 12,
         'STRESS_RELIEF': 13,
-        'HEALTH_QA': 14 // [NEW] 오늘의 건강상식
+        'HEALTH_QA': 14, // [NEW] 오늘의 건강상식
+        'BIO_CARE': 15 // [NEW] 바이오 밸런서
     };
 
     // 3. 정렬 로직

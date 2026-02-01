@@ -657,6 +657,31 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] 바이오 밸런서 - 4개 서브 메뉴
+        if (subItem.intent === 'bio_care_med_literacy') {
+            setSelectedIcon(null);
+            window.location.href = '/bio-care/med-literacy';
+            return;
+        }
+
+        if (subItem.intent === 'bio_care_nutri_synergy') {
+            setSelectedIcon(null);
+            window.location.href = '/bio-care/nutri-synergy';
+            return;
+        }
+
+        if (subItem.intent === 'bio_care_body_log') {
+            setSelectedIcon(null);
+            window.location.href = '/bio-care/body-log';
+            return;
+        }
+
+        if (subItem.intent === 'bio_care_educator_note') {
+            setSelectedIcon(null);
+            window.location.href = '/bio-care/educator-note';
+            return;
+        }
+
         // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
         // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
         // [UPDATE] User requested to run this in Main Chatbot instead of Modal
