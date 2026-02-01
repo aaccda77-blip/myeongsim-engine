@@ -74,7 +74,7 @@ export default function HealthQAPage() {
         <>
             <HealthQAView
                 qaData={qaData}
-                onClose={() => router.back()}
+                onClose={() => router.push('/')}
             />
 
             {showAssessment && (
