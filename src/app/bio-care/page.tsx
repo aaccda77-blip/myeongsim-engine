@@ -33,13 +33,13 @@ const MENU_CARDS: MenuCard[] = [
     },
     {
         id: 'nutri-synergy',
-        title: '시너지 영양학',
-        subtitle: 'Nutri-Synergy',
-        description: '보충제와 음식, 약물 간의 조화로운 조합',
-        icon: 'nutrition',
+        title: '영양제 타이밍 스케줄러',
+        subtitle: 'Nutri-Timing',
+        description: '흡수율 최적화를 위한 섭취 시간표',
+        icon: 'schedule',
         gradient: 'from-emerald-900/40 to-slate-900',
         glowColor: 'bg-emerald-500/10',
-        route: '/bio-care/nutri-synergy'
+        route: '/bio-care/nutri-scheduler'
     },
     {
         id: 'body-log',
