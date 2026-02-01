@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { SYMPTOM_CHECKLIST } from '@/data/BioCareData';
 import SymptomInsightModal from '@/components/bio-care/SymptomInsightModal';
 import HangryCheck from '@/components/bio-care/HangryCheck';
+import MedicationReminder from '@/components/bio-care/MedicationReminder';
 
 interface LogEntry {
     date: string;
@@ -164,6 +165,9 @@ export default function BodyLogPage() {
 
                 {/* Hangry Check (배고픔성 예민함 탐지) */}
                 <HangryCheck />
+
+                {/* 복약 알림 시스템 */}
+                <MedicationReminder />
 
                 {/* 증상 체크리스트 */}
                 <div className="space-y-3">
