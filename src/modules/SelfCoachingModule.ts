@@ -127,6 +127,58 @@ export class SelfCoachingModule {
             }
         }
 
+        // [NEW] Quantum Awakening Modes (108 Protocol, Emotion Alchemy, Shadow Work)
+        if (intent === 'saju_108_awakening' || intent === 'ms_emotion_alchemy' || intent === 'ms_shadow_work') {
+
+            // 1. 108 Awakening Protocol
+            if (intent === 'saju_108_awakening') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `🌌 **108 자각 프로토콜**\n\n무의식을 깨우는 108가지 질문 여정을 시작합니다.\n\n이 프로토콜은 당신의 무의식 깊은 곳에 숨겨진 진실을 발견하는 과정입니다. 각 질문은 당신의 내면을 비추는 거울입니다.\n\n어떤 차원부터 탐험하시겠습니까?`,
+                    options: [
+                        { label: "🪄 차원 1: 마음의 엑스레이", value: "dim_1_xray", trigger_mode: "immediate", next_prompt_guide: "Guide user through Soul X-Ray dimension. Analyze their emotional backbone using Saju Day Master and Month Branch. Identify dark codes causing pain." },
+                        { label: "🧬 차원 2: 잠든 재능 깨우기", value: "dim_2_unlock", trigger_mode: "immediate", next_prompt_guide: "Guide user through Genetic Code Unlock. Identify hidden talents using Useful God and Hidden Stems. Activate neural codes." },
+                        { label: "⚗️ 차원 3: 약점을 무기로", value: "dim_3_alchemy", trigger_mode: "immediate", next_prompt_guide: "Guide user through Alchemy Lab. Reframe Void and weakest element as creative space. Transform victim to creator." },
+                        { label: "💞 차원 4: 주파수 맞추기", value: "dim_4_frequency", trigger_mode: "immediate", next_prompt_guide: "Guide user through Frequency Tuning. Analyze relationship dynamics using Ten Gods. Balance self and others." },
+                        { label: "🌍 차원 5: 우주 건설", value: "dim_5_world", trigger_mode: "immediate", next_prompt_guide: "Guide user through World Building. Expand to life mission using Year Pillar. Define legacy." }
+                    ],
+                    system_prompt_injection: `[108 Awakening Protocol] Multi-dimensional consciousness exploration. DayMaster: ${dayMasterChar}.`
+                };
+            }
+
+            // 2. Emotion Alchemy
+            if (intent === 'ms_emotion_alchemy') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `⚗️ **감정 연금술 (Emotion Alchemy)**\n\n감정을 에너지로 변환하는 기술을 배웁니다.\n\n부정적 감정은 '나쁜 것'이 아니라 **'변환되지 않은 에너지'**입니다. 연금술사처럼 이 원석을 황금으로 바꾸는 법을 익힙니다.\n\n지금 가장 다루기 힘든 감정은 무엇입니까?`,
+                    options: [
+                        { label: "😰 불안/두려움", value: "ALCHEMY_FEAR", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "Transform fear into awareness. Fear signals what matters. Ask: What is this fear protecting? Convert to vigilance energy." },
+                        { label: "😡 분노/짜증", value: "ALCHEMY_ANGER", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "Transform anger into boundaries. Anger signals violated values. Ask: What boundary was crossed? Convert to assertive energy." },
+                        { label: "😢 슬픔/우울", value: "ALCHEMY_SADNESS", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "Transform sadness into depth. Sadness signals loss or longing. Ask: What needs to be grieved? Convert to compassion energy." },
+                        { label: "😫 무기력/권태", value: "ALCHEMY_APATHY", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: "Transform apathy into redirection. Apathy signals misalignment. Ask: What needs to change? Convert to transformation energy." },
+                        { label: "😖 수치심/죄책감", value: "ALCHEMY_SHAME", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: "Transform shame into growth. Shame signals gap between values and actions. Ask: What can I learn? Convert to integrity energy." }
+                    ],
+                    system_prompt_injection: `[Emotion Alchemy Protocol] Transform negative emotions into fuel. DayMaster: ${dayMasterChar}. Use Saju elements to guide emotional processing.`
+                };
+            }
+
+            // 3. Shadow Work
+            if (intent === 'ms_shadow_work') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `🌑 **그림자 작업 (Shadow Work)**\n\n내면의 어둠과 대화하기\n\n당신이 숨기고 싶어 하는 부분, 인정하기 싫은 면모가 바로 **'그림자(Shadow)'**입니다. 이것을 억압하면 무의식에서 당신을 조종합니다. 하지만 직면하고 통합하면 가장 강력한 힘이 됩니다.\n\n어떤 그림자와 대화하시겠습니까?`,
+                    options: [
+                        { label: "🎭 가면 속 진짜 나", value: "SHADOW_PERSONA", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: "Explore the gap between social mask and true self. Ask: Who are you when nobody's watching? Integrate authentic self." },
+                        { label: "👿 인정하기 싫은 욕망", value: "SHADOW_DESIRE", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: "Explore repressed desires. Ask: What do you secretly want but judge yourself for wanting? Integrate shadow desires." },
+                        { label: "💢 투사된 분노", value: "SHADOW_PROJECTION", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: "Explore what you hate in others (projection). Ask: What trait in others triggers you most? That's your shadow. Own it." },
+                        { label: "🕳️ 내면의 공허함", value: "SHADOW_VOID", trigger_mode: "CONSCIOUSNESS_LEVEL_3", next_prompt_guide: "Explore existential void. Ask: What are you avoiding by staying busy? Face the emptiness. Find meaning in it." },
+                        { label: "⚡ 억압된 힘", value: "SHADOW_POWER", trigger_mode: "CONSCIOUSNESS_LEVEL_3", next_prompt_guide: "Explore disowned power. Ask: What strength did you hide to fit in? Reclaim your power. Use it wisely." }
+                    ],
+                    system_prompt_injection: `[Shadow Work Protocol] Integrate disowned parts of self. DayMaster: ${dayMasterChar}. Use Saju Hidden Stems to reveal shadow patterns.`
+                };
+            }
+        }
+
         // [PHASE 3-i] 108 Awakening Quantum Modes (Top Priority)
         if (intent.startsWith('ms_soul_') || intent.startsWith('ms_void_') || intent.startsWith('ms_gap_') || intent.startsWith('ms_brain_') || intent.startsWith('ms_sky_') || intent.startsWith('ms_master_') || intent.startsWith('ms_shadow_')) {
             const context = getAwakeningContext(intent, sajuData);
