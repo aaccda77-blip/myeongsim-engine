@@ -48,6 +48,28 @@ export default function IntroPage() {
                         <p className="text-[#658c42] text-xl font-bold">
                             데이터 기반 토탈 헬스케어,<br />명심코칭
                         </p>
+                        {/* New Motto - Sophisticated Design */}
+                        <div className="mt-8 px-4 flex justify-center">
+                            <div className="relative p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl max-w-sm">
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#658c42] rounded-full text-[10px] font-bold text-white uppercase tracking-tighter shadow-lg whitespace-nowrap">
+                                    Our Core Philosophy
+                                </div>
+                                <p className="text-gray-300 text-[14px] leading-[1.8] break-keep font-medium">
+                                    "명심코칭은 <span className="text-cyan-400 font-bold underline underline-offset-4 decoration-cyan-400/30">고정된 Z축(DNA)</span> 위에서,
+                                    <br />
+                                    <span className="text-purple-400 font-bold underline underline-offset-4 decoration-purple-400/30">X축(후성유전적 노력)</span>을 통해,
+                                    <br />
+                                    매 순간 <span className="text-amber-400 font-bold underline underline-offset-4 decoration-amber-400/30">Y축(뇌신경망)</span>을
+                                    <br />
+                                    최상의 상태로 유지하는
+                                    <br />
+                                    <span className="text-white font-black text-lg bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                                        '운명 최적화 기술'
+                                    </span>
+                                    입니다."
+                                </p>
+                            </div>
+                        </div>
                     </motion.div>
                 </div>
 

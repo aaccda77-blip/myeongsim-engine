@@ -80,7 +80,7 @@ export default function PreviewSummaryView() {
                     {/* Box 3 */}
                     <div className="p-5">
                         <h4 className="text-primary-olive text-xs font-bold mb-2 flex items-center gap-1 font-sans">
-                            <span className="w-4 h-4 rounded border border-current flex items-center justify-center text-[10px]">A</span> 행동 처방
+                            <span className="w-4 h-4 rounded border border-current flex items-center justify-center text-[10px]">A</span> 행동 코칭해결방안
                         </h4>
                         <div className="text-lg font-bold text-white mb-2 font-serif">&quot;어떻게?&quot;</div>
                         <ul className="text-xs text-gray-300 space-y-2 font-sans list-disc pl-3">

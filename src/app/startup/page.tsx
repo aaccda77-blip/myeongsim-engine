@@ -8,6 +8,7 @@ export default function StartupDashboard() {
     const router = useRouter();
     const [activeMenu, setActiveMenu] = useState('dashboard');
     const [selectedService, setSelectedService] = useState<any>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleConsultation = (prompt: string) => {
         // [Fix] Intent 대신 실제 질문(Prompt)을 전달하여 챗봇이 바로 대답하게 함
@@ -177,17 +178,54 @@ export default function StartupDashboard() {
 
     // [Default View] 대시보드 메인
     return (
-        <div className="flex h-screen overflow-hidden bg-[#0f0d1a]">
+        <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-[#0f0d1a]">
+            {/* Mobile Header (Only visible on small screens) */}
+            <div className="md:hidden p-4 bg-[#131022] border-b border-[#2b2839] flex items-center justify-between z-[60]">
+                <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                        <div className="size-8 rounded-lg bg-[#3211d4] flex items-center justify-center text-white">
+                            <span className="material-symbols-outlined text-xl">auto_awesome</span>
+                        </div>
+                        <span className="text-sm font-black text-white">Startup Fortune</span>
+                    </div>
+                    {/* [NEW] Quick Status Badge for mobile visibility */}
+                    <div className="mt-1 flex items-center gap-2">
+                        <div className="size-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
+                        <span className="text-[10px] text-indigo-400 font-bold">현재 기운: 점진적 성장기</span>
+                    </div>
+                </div>
+                <button
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="material-symbols-outlined text-slate-400"
+                >
+                    {isSidebarOpen ? 'close' : 'menu'}
+                </button>
+            </div>
+
             {/* Sidebar */}
-            <aside className="w-72 bg-[#131022] border-r border-[#2b2839] flex flex-col h-full z-50">
-                <div className="p-6 flex items-center gap-3">
-                    <div className="flex items-center justify-center size-10 rounded-xl bg-[#3211d4] shadow-lg shadow-[#3211d4]/20 text-white">
-                        <span className="material-symbols-outlined text-2xl">auto_awesome</span>
+            <aside className={`
+                ${isSidebarOpen ? 'flex' : 'hidden md:flex'} 
+                fixed md:relative inset-0 md:inset-auto 
+                w-full md:w-72 bg-[#131022] border-r border-[#2b2839] flex-col h-full z-50
+            `}>
+                <div className="p-6 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center size-10 rounded-xl bg-[#3211d4] shadow-lg shadow-[#3211d4]/20 text-white">
+                            <span className="material-symbols-outlined text-2xl">auto_awesome</span>
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">Startup Fortune</h1>
+                            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Enterprise Solution</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">Startup Fortune</h1>
-                        <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Enterprise Solution</p>
-                    </div>
+                    {/* [NEW] Close button - navigates to main app */}
+                    <button 
+                        onClick={() => router.push('/report')} 
+                        className="material-symbols-outlined text-slate-400 hover:text-white transition-colors"
+                        title="명심코칭AI 메인으로"
+                    >
+                        close
+                    </button>
                 </div>
 
                 <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
@@ -225,12 +263,41 @@ export default function StartupDashboard() {
                             <span className="material-symbols-outlined text-[20px]">groups</span>
                             3자 토론 코칭
                         </a>
-                        <a onClick={() => router.push('/report')} className="hidden flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                            <span className="material-symbols-outlined text-[20px]">chat</span> 메인 챗봇 (Legacy)
-                        </a>
                         <a onClick={() => router.push('/startup/mastermind')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
                             <span className="material-symbols-outlined text-[20px]">diversity_3</span> 최고 전문가 집단 상담
                         </a>
+                    </div>
+
+                    {/* [NEW] Status Section moved from main header for mobile visibility */}
+                    <div className="pt-8 px-4 mt-4 border-t border-[#2b2839]/50">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">기업 컨설팅 대시보드</p>
+                        <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+                            <div className="flex items-start gap-3 text-indigo-400 mb-1">
+                                <span className="material-symbols-outlined text-lg">dark_mode</span>
+                                <span className="text-xs font-bold">현재 기운</span>
+                            </div>
+                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                                점진적 성장기 • 수성 순행 중
+                            </p>
+                            <div className="mt-3 text-[9px] text-slate-500 font-bold uppercase tracking-tight">
+                                진단: 2일 전
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="pt-8 px-4 pb-10">
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">전문 진단 서비스</p>
+                        <div className="space-y-2">
+                            <a className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
+                                <span className="material-symbols-outlined text-[20px]">analytics</span> 데이터 기반 전략 진단
+                            </a>
+                            <a className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
+                                <span className="material-symbols-outlined text-[20px]">balance</span> 법률/행정 리스크 점검
+                            </a>
+                            <a className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
+                                <span className="material-symbols-outlined text-[20px]">hub</span> 조직 구조 및 시스템 설계
+                            </a>
+                        </div>
                     </div>
                 </nav>
 
@@ -250,20 +317,9 @@ export default function StartupDashboard() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto bg-[#0f0d1a]">
-                <div className="max-w-6xl mx-auto px-8 py-10">
-                    <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-black tracking-tight text-white">기업 컨설팅 대시보드</h2>
-                            <div className="flex items-center gap-3 text-[#a19db9]">
-                                <span className="material-symbols-outlined text-xl">dark_mode</span>
-                                <span className="text-sm font-medium">현재 기운: 점진적 성장기 • 수성 순행 중</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500 bg-white/5 px-4 py-2 rounded-full">
-                            마지막 진단: 2일 전
-                        </div>
-                    </header>
+            <main className="flex-1 overflow-y-auto bg-[#0f0d1a] custom-scrollbar">
+                <div className="max-w-6xl mx-auto px-6 md:px-8 py-8 md:py-10">
+                    {/* Header removed and moved to sidebar for mobile visibility */}
 
                     <section className="mb-12">
                         <p className="text-xs font-bold text-[#3211d4] uppercase tracking-[0.2em] mb-4">오늘의 추천 분석</p>

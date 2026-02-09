@@ -1,18 +1,12 @@
 // src/app/api/user/status/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { requireAuth } from '@/lib/auth';
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, auth) => {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-
-        if (!token) {
-            return NextResponse.json({ isValid: false }, { status: 401 });
-        }
-
-        // Token is actually the user ID in our system
-        const userId = token;
+        // Use authenticated user ID from middleware
+        const userId = auth.userId;
 
         // Fetch user data from Supabase using Admin Client
         const { data: user, error } = await supabaseAdmin
@@ -50,4 +44,4 @@ export async function GET(request: NextRequest) {
         console.error('Status check error:', error);
         return NextResponse.json({ isValid: false }, { status: 500 });
     }
-}
+});

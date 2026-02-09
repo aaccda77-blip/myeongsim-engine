@@ -4,7 +4,10 @@
  * Handles interaction with Supertone TTS API
  */
 export class SupertoneService {
-    private static API_KEY = process.env.SUPERTONE_API_KEY || 'd57803311c9bb41c345af6d7aed8ad55';
+    private static API_KEY = process.env.SUPERTONE_API_KEY || (() => {
+        console.error('[SECURITY] SUPERTONE_API_KEY not found in environment variables');
+        throw new Error('SUPERTONE_API_KEY is required');
+    })();
     // Official Endpoint Structure: https://supertoneapi.com/v1/text-to-speech/{voice_id}/stream
     private static BASE_URL = 'https://supertoneapi.com/v1/text-to-speech';
 

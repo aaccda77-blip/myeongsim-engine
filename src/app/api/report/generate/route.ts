@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth';
 
 export const runtime = 'edge';
 export const maxDuration = 60; // Allow up to 60 seconds for long report generation
@@ -72,24 +73,18 @@ const PREMIUM_REPORT_PROMPT = `
 - 마지막에 **"이 리포트는 명심코칭 AI가 작성한 참고용 자료입니다."** 문구를 추가하세요.
 `;
 
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, auth) => {
     try {
         const body: ReportGenerateRequest = await req.json();
         const { profile, tier } = body;
 
         if (!profile || !profile.birthDate) {
-            return new Response(JSON.stringify({ error: '사주 정보가 필요합니다.' }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json' },
-            });
+            return NextResponse.json({ error: '사주 정보가 필요합니다.' }, { status: 400 });
         }
 
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
-            return new Response(JSON.stringify({ error: 'API 키가 설정되지 않았습니다.' }), {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            });
+            return NextResponse.json({ error: 'API 키가 설정되지 않았습니다.' }, { status: 500 });
         }
 
         // Build the prompt with user data
@@ -117,23 +112,17 @@ export async function POST(req: NextRequest) {
 
         console.log(`✅ [Report Generation] Completed. Length: ${generatedText.length} chars`);
 
-        return new Response(JSON.stringify({
+        return NextResponse.json({
             success: true,
             content: generatedText,
             tier: tier,
             generatedAt: new Date().toISOString(),
-        }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
         });
 
     } catch (error: any) {
         console.error('❌ [Report Generation] Error:', error);
-        return new Response(JSON.stringify({
+        return NextResponse.json({
             error: error.message || '리포트 생성 중 오류가 발생했습니다.',
-        }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-        });
+        }, { status: 500 });
     }
-}
+});

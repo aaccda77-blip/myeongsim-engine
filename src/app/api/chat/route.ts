@@ -35,12 +35,12 @@ import { QuantumLabModule } from '@/modules/QuantumLabModule'; // [NEW] // [NEW]
 import { getCombinedSystemPrompt } from '@/modules/SystemPersona'; // [NEW] Ultimate System Persona
 // import { ScenarioEngine } from '@/services/ScenarioEngine'; // [Disabled] File missing
 
-// export const runtime = 'nodejs'; // [Revert] Node.js Hobby limit is 10s
-export const runtime = 'edge'; // Best for streaming on Vercel Hobby
+export const runtime = 'nodejs'; // [Fix] Switch to Node.js to allow larger payloads (>1MB)
+// export const runtime = 'edge'; // Edge has loose limits but strict payload limits
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const revalidate = 0;
-// export const maxDuration = 60; // Edge doesn't use this config usually
+export const maxDuration = 60; // Allow 60s execution (Hobby Plan Limit)
 
 /**
  * [Expiration Middleware] Check if user's membership is expired
@@ -371,6 +371,11 @@ export async function POST(req: Request) {
         }
         */
 
+
+        // [Fix] Check for Client-Side System Prompt
+        const clientSystemPrompt = (messages && Array.isArray(messages) && messages[0]?.role === 'system')
+            ? messages[0].content
+            : null;
 
         // [Logic] Prepare RAG Context
         let ragContext = "";
@@ -972,15 +977,60 @@ c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
             finalSystemPrompt += `\n\n${deepSajuContext}`;
         }
 
+        // [CRITICAL FIX] Use Client System Prompt for Facilitation/Mastermind/Radio Mode
+        // If the client provides a system prompt, prioritize it to avoid default persona conflicts
+        if (clientSystemPrompt) {
+            // Check if this is a Mastermind or Facilitation session (usually via userId or specific prompt markers)
+            const isSpecialSession = userId?.startsWith('facility') || clientSystemPrompt.includes('MASTERMIND') || clientSystemPrompt.includes('DISCUSSION');
+
+            if (isSpecialSession) {
+                // For Special Sessions, replace the entire prompt to avoid :::BREAK::: and persona conflict
+                finalSystemPrompt = clientSystemPrompt;
+            } else {
+                finalSystemPrompt += `\n\n[Client Specific Instruction]:\n${clientSystemPrompt}`;
+            }
+        }
+
         // 5. Call Gemini AI (Context-Aware Chat)
         const genAI = new GoogleGenerativeAI(apiKey);
+
+        // [FIX] For Mastermind sessions, enforce JSON schema to guarantee role tags
+        const isMastermindSession = userId?.includes('mastermind') || clientSystemPrompt?.includes('MASTERMIND');
+
+        const generationConfig: any = {
+            maxOutputTokens: maxTokens,
+            temperature: 0.7,
+        };
+
+        // Force JSON output for Mastermind to ensure role tags are used
+        if (isMastermindSession) {
+            generationConfig.responseMimeType = "application/json";
+            generationConfig.responseSchema = {
+                type: "object",
+                properties: {
+                    dialogue: {
+                        type: "array",
+                        items: {
+                            type: "object",
+                            properties: {
+                                role: {
+                                    type: "string",
+                                    enum: ["FACILITATOR", "STRATEGIST", "PSYCHOLOGIST", "ORBITER", "FORTUNE_TELLER", "INNOVATOR", "BRAIN", "MIND", "UX", "BUILDER", "MARKETER", "PEOPLE", "LIFE", "ADMIN", "CREATOR"]
+                                },
+                                content: { type: "string" }
+                            },
+                            required: ["role", "content"]
+                        }
+                    }
+                },
+                required: ["dialogue"]
+            };
+        }
+
         const model = genAI.getGenerativeModel({
             model: 'gemini-2.5-flash',
             systemInstruction: finalSystemPrompt,
-            generationConfig: {
-                maxOutputTokens: maxTokens,
-                temperature: 0.7,
-            },
+            generationConfig,
             safetySettings: [
                 { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
                 { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
@@ -1006,31 +1056,63 @@ c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
                     for await (const chunk of response) {
                         const text = chunk.text();
                         fullResponse += text;
-                        controller.enqueue(new TextEncoder().encode(text));
+
+                        // [FIX] For Mastermind, don't stream chunks - wait for full response to convert JSON
+                        if (!isMastermindSession) {
+                            controller.enqueue(new TextEncoder().encode(text));
+                        }
                     }
-                    // [Growth Map] Inject Stage Metadata at the end of stream
-                    const stageMeta = `\n:::GROWTH_STAGE:${currentGrowthStage}:::`;
-                    controller.enqueue(new TextEncoder().encode(stageMeta));
-                    fullResponse += stageMeta;
 
-                    // [AUTO UI DATA] Always append gauge and suggestions for consistent UX
-                    const autoUIData = {
-                        analysis_data: {
-                            innate_level: 300,
-                            current_level: Math.floor(Math.random() * 200) + 300, // 300-500 range
-                            framework: "NEURAL_CODE",
-                            comment: "재물 기회 탐구에 대한 주체적 행동 발휘"
-                        },
-                        suggestions: [
-                            "질문의 뿌리를 더 깊이 탐구하고 싶어요",
-                            "현재 부족함을 보상할 실천 방법을 빨리 알려주세요",
-                            "3일 실천 계획을 만들어 줄 수 있나요?"
-                        ]
-                    };
+                    // [MASTERMIND JSON CONVERTER] Convert JSON dialogue to :::ROLE::: format
+                    if (isMastermindSession) {
+                        try {
+                            const jsonResponse = JSON.parse(fullResponse);
+                            let formattedDialogue = "";
 
-                    const autoDataStr = `\n:::DATA_SEPARATOR:::\n${JSON.stringify(autoUIData)}`;
-                    controller.enqueue(new TextEncoder().encode(autoDataStr));
-                    fullResponse += autoDataStr;
+                            if (jsonResponse.dialogue && Array.isArray(jsonResponse.dialogue)) {
+                                for (const turn of jsonResponse.dialogue) {
+                                    formattedDialogue += `:::${turn.role}:::\n${turn.content}\n\n`;
+                                }
+                            } else {
+                                // Fallback if JSON parsing fails
+                                formattedDialogue = fullResponse;
+                            }
+
+                            controller.enqueue(new TextEncoder().encode(formattedDialogue));
+                            fullResponse = formattedDialogue;
+                        } catch (jsonError) {
+                            console.error('[Mastermind] JSON parse error:', jsonError);
+                            // Fallback to raw response if JSON parsing fails
+                            controller.enqueue(new TextEncoder().encode(fullResponse));
+                        }
+                    }
+                    // [Growth Map] Inject Stage Metadata at the end of stream (Skip for Facilitation/Mastermind)
+                    const isSpecialSession = userId?.startsWith('facility') || finalSystemPrompt.includes('MASTERMIND') || finalSystemPrompt.includes('DISCUSSION');
+
+                    if (!isSpecialSession) {
+                        const stageMeta = `\n:::GROWTH_STAGE:${currentGrowthStage}:::`;
+                        controller.enqueue(new TextEncoder().encode(stageMeta));
+                        fullResponse += stageMeta;
+
+                        // [AUTO UI DATA] Always append gauge and suggestions for consistent UX
+                        const autoUIData = {
+                            analysis_data: {
+                                innate_level: 300,
+                                current_level: Math.floor(Math.random() * 200) + 300, // 300-500 range
+                                framework: "NEURAL_CODE",
+                                comment: "재물 기회 탐구에 대한 주체적 행동 발휘"
+                            },
+                            suggestions: [
+                                "질문의 뿌리를 더 깊이 탐구하고 싶어요",
+                                "현재 부족함을 보상할 실천 방법을 빨리 알려주세요",
+                                "3일 실천 계획을 만들어 줄 수 있나요?"
+                            ]
+                        };
+
+                        const autoDataStr = `\n:::DATA_SEPARATOR:::\n${JSON.stringify(autoUIData)}`;
+                        controller.enqueue(new TextEncoder().encode(autoDataStr));
+                        fullResponse += autoDataStr;
+                    }
 
                 } catch (e) {
                     controller.error(e);

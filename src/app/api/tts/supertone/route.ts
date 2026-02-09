@@ -54,23 +54,73 @@ export async function POST(req: NextRequest) {
         let speakingRate = 1.0;
 
         if (voice_settings) {
-            if (voice_settings.pitch > 1) {
-                // [Host Mode] Narrator (Natural Reading) - "진행자 낭독 톤"
+            // Manual Overrides
+            pitch = voice_settings.pitch || 0;
+            speakingRate = voice_settings.rate || 1.0;
+        }
+
+        // [Mastermind Personas Mapping]
+        // Explicit ID mapping overrides defaults
+        switch (voiceId) {
+            case 'coach': // [Facilitation Mode] Coach (Deep, Authoritative)
                 voiceName = 'ko-KR-Neural2-C'; // Male
+                pitch = -1.5; // Deep
+                speakingRate = 0.92; // Deliberate
                 ssmlGender = 'MALE';
-                speakingRate = 0.92; // Natural reading speed (neither too fast nor slow)
-                pitch = -0.0; // Minimal shift for maximum naturalness
-            } else {
-                // [Coach Mode] Myeongsim (Deep Resonance) - "명심 코치"
+                break;
+            case 'facilitator': // Mirror (Calm, Neutral)
+                voiceName = 'ko-KR-Neural2-B'; // Female (Host) - Changed from Male for contrast
+                pitch = 0.0;
+                speakingRate = 1.0;
+                ssmlGender = 'FEMALE';
+                break;
+            case 'neuro': // Brain (Sharp, Fast)
+                voiceName = 'ko-KR-Neural2-A'; // Female
+                pitch = 0.0;
+                speakingRate = 1.15; // Fast
+                ssmlGender = 'FEMALE';
+                break;
+            case 'psycho': // Mind (Deep, Soft)
+                voiceName = 'ko-KR-Neural2-B'; // Female
+                pitch = -1.5; // Deep
+                speakingRate = 0.9; // Slow
+                ssmlGender = 'FEMALE';
+                break;
+            case 'ux': // Creative (Energetic)
+                voiceName = 'ko-KR-Neural2-B'; // Female
+                pitch = 3.0; // High
+                speakingRate = 1.1;
+                ssmlGender = 'FEMALE';
+                break;
+            case 'tech': // Logic (Flat, Low)
                 voiceName = 'ko-KR-Neural2-C'; // Male
+                pitch = -2.0; // Low
+                speakingRate = 0.95;
                 ssmlGender = 'MALE';
-                speakingRate = 0.85; // Deliberate, thoughtful pace
-                pitch = -1.5; // Deep but within natural range to avoid robotic artifacts
-            }
-        } else if (voiceId === 'onyx' || voiceId === 'expert') {
-            // Explicit Expert
-            speakingRate = 0.92;
-            pitch = -1.5;
+                break;
+            case 'marketer': // Expansion (Punchy)
+                voiceName = 'ko-KR-Neural2-C'; // Male
+                pitch = 1.5; // High
+                speakingRate = 1.2; // Very Fast
+                ssmlGender = 'MALE';
+                break;
+
+            // [Legacy Mappings]
+            case 'shimmer':
+            case 'nova':
+                voiceName = 'ko-KR-Neural2-B';
+                ssmlGender = 'FEMALE';
+                break;
+            case 'alloy':
+            case 'echo':
+                voiceName = 'ko-KR-Neural2-B'; // Remapped per previous logic
+                ssmlGender = 'FEMALE';
+                break;
+            case 'onyx':
+            case 'expert':
+                speakingRate = 0.92;
+                pitch = -1.5;
+                break;
         }
 
         // 3. Construct Request

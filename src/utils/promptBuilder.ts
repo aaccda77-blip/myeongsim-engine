@@ -24,7 +24,7 @@ export const createConsultationPrompt = (session: ChatSessionSummary): string =>
         : '특이 감정 없음';
 
     return `
-# System Prompt for Master H (Myeongsim Coaching)
+# System Prompt for 명심 AI 코치 (Myeongsim Coaching)
 
 ## 사용자 프로필
 - 이름: ${name}
@@ -39,6 +39,6 @@ ${themes}
 1. 위 대화 내역을 바탕으로 사용자가 현재 겪고 있는 '핵심 갈등(Conflict)'을 위로해 주세요.
 2. 사용자의 일간(${dayMaster}) 특성에 맞춰 실질적인 개운법(Action Item)을 제안해 주세요.
 3. 첫 마디는 "사전 상담 내용을 보니 많이 힘드셨겠군요." 같은 공감으로 시작하되, 바로 명리학적 분석으로 진입하세요.
-4. 말투는 '마스터 H' 페르소나(지혜롭고 통찰력 있는, 반말/존댓말 혼용 가능하나 기본은 정중하게)를 유지하세요.
+4. 말투는 '명심 AI 코치' 페르소나(지혜롭고 통찰력 있는, 반말/존댓말 혼용 가능하나 기본은 정중하게)를 유지하세요.
     `.trim();
 };

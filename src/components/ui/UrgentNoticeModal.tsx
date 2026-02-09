@@ -58,7 +58,7 @@ export const UrgentNoticeModal = ({ expiryDate, onExtend }: UrgentNoticeModalPro
                         연결 종료 <span className="text-red-400">5분 전</span>
                     </h2>
                     <p className="text-slate-300 text-sm leading-relaxed">
-                        마스터 H와의 심층 분석 세션이 곧 종료됩니다.<br />
+                        명심 AI 코치와의 심층 분석 세션이 곧 종료됩니다.<br />
                         중요한 조언이 끊기지 않도록 시간을 확보하세요.
                     </p>
                 </div>

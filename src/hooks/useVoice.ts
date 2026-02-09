@@ -18,6 +18,8 @@ export function useVoice() {
     const audioQueueRef = useRef<AudioBuffer[]>([]);
     const isPlayingRef = useRef(false);
     const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
+    const speakChainRef = useRef<Promise<any>>(Promise.resolve());
+    const playResolveRef = useRef<(() => void) | null>(null);
 
     // [Feature] Text Splitter with Advanced Cleaner
     const splitTextIntoChunks = (text: string, maxLength: number = 200): string[] => {
@@ -33,7 +35,13 @@ export function useVoice() {
         // 3. Remove content in parentheses e.g. "신금(신금)" -> "신금" (Existing Logic)
         cleanText = cleanText.replace(/\([^)]*\)/g, '');
 
-        // 4. Normalize Whitespace (remove multi-spaces/newlines usually left after removals)
+        // 4. Remove System Tokens (e.g., :::BREAK:::, [User])
+        cleanText = cleanText.replace(/:::.*?:::/g, '');
+
+        // 5. Remove Data Payload (:::DATA_SEPARATOR::: and everything after)
+        cleanText = cleanText.split(':::DATA_SEPARATOR:::')[0];
+
+        // 6. Normalize Whitespace (remove multi-spaces/newlines usually left after removals)
         cleanText = cleanText.replace(/\s+/g, ' ').trim();
 
         const sentences = cleanText.match(/[^.!?\n]+[.!?\n]*/g) || [cleanText];
@@ -56,6 +64,10 @@ export function useVoice() {
         if (audioQueueRef.current.length === 0) {
             isPlayingRef.current = false;
             setState(prev => ({ ...prev, isPlaying: false }));
+            if (playResolveRef.current) {
+                playResolveRef.current();
+                playResolveRef.current = null;
+            }
             return;
         }
 
@@ -83,6 +95,10 @@ export function useVoice() {
         }
         audioQueueRef.current = [];
         isPlayingRef.current = false;
+        if (playResolveRef.current) {
+            playResolveRef.current();
+            playResolveRef.current = null;
+        }
         setState(prev => ({ ...prev, isPlaying: false, isLoading: false }));
     }, []);
 
@@ -115,89 +131,80 @@ export function useVoice() {
         });
     }, []);
 
-    const speak = useCallback(async (text: string, voiceId?: string) => {
+    const speak = useCallback(async (text: string, voiceId?: string, options?: { interrupt?: boolean }) => {
         if (!text) return;
+        const shouldInterrupt = options?.interrupt ?? true;
 
-        // [Chunking] split long text
-        if (text.length > 200) {
-            const chunks = splitTextIntoChunks(text);
-            // Clear existing queue logic for simplicity here, or handle properly
-            // For now, let's just create a new queue if we want.
-            // But existing logic is: split -> push to queue -> processQueue.
-            audioQueueRef.current = []; // Clear
-            for (const c of chunks) {
-                // Manually add decoded buffer? No, existing logic fetch & decode.
-                // We need to re-implement the queue feeder or just use existing logic.
-                // Let's stick to the existing "Fetch First Chunk & Play" logic below but updated.
-            }
-        }
-
-        try {
-            // 1. Init Audio Context
-            if (!audioContextRef.current) {
-                const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-                audioContextRef.current = new AudioContextClass();
-            }
-            const ctx = audioContextRef.current;
-            if (ctx.state === 'suspended') await ctx.resume();
-
-            // 2. Clear previous
+        // If interrupt, clear everything including the chain
+        if (shouldInterrupt) {
             stop();
             window.speechSynthesis.cancel();
             audioQueueRef.current = [];
-            setState(prev => ({ ...prev, isLoading: true, error: null }));
+            speakChainRef.current = Promise.resolve();
+        }
 
-            // 3. Chunking
-            const chunks = splitTextIntoChunks(text);
-            console.log(`[TTS] Split into ${chunks.length} chunks`);
+        // Chain the speak request to ensure sequential processing
+        speakChainRef.current = speakChainRef.current.then(async () => {
+            try {
+                // 1. Init Audio Context
+                if (!audioContextRef.current) {
+                    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+                    audioContextRef.current = new AudioContextClass();
+                }
+                const ctx = audioContextRef.current;
+                if (ctx.state === 'suspended') await ctx.resume();
 
-            // 4. Processing
-            let isFirst = true;
+                setState(prev => ({ ...prev, isLoading: true, error: null }));
 
-            for (const chunk of chunks) {
-                if (!isPlayingRef.current && !isFirst && state.isPlaying) break; // Check state: if user stopped.
+                // 2. Chunking
+                const chunks = splitTextIntoChunks(text);
+                console.log(`[TTS] Sequential Push: "${text.slice(0, 15)}..."`);
 
-                try {
-                    // Call Updated Route (Google TTS)
-                    const response = await fetch('/api/tts/supertone', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text: chunk, voiceId })
-                    });
+                // 3. Processing each chunk
+                for (const chunk of chunks) {
+                    try {
+                        const response = await fetch('/api/tts/supertone', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ text: chunk, voiceId })
+                        });
 
-                    if (!response.ok) {
-                        const errData = await response.json();
-                        throw new Error(errData.error || errData.details || 'Google TTS API Error');
+                        if (!response.ok) throw new Error('TTS API Error');
+
+                        const arrayBuffer = await response.arrayBuffer();
+                        const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+
+                        audioQueueRef.current.push(audioBuffer);
+                    } catch (chunkError) {
+                        console.warn("[TTS] Chunk failed, skipping to next.");
                     }
+                }
 
-                    const arrayBuffer = await response.arrayBuffer();
-                    const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-
-                    audioQueueRef.current.push(audioBuffer);
-
-                    if (isFirst) {
+                // 4. Return a promise that resolves only when the playback is fully finished
+                return new Promise<void>((resolve) => {
+                    playResolveRef.current = resolve;
+                    if (!isPlayingRef.current && audioQueueRef.current.length > 0) {
                         setState(prev => ({ ...prev, isLoading: false, isPlaying: true }));
                         processQueue(ctx);
-                        isFirst = false;
-                    } else if (!isPlayingRef.current && audioQueueRef.current.length === 1) {
-                        // If playback accidentally stopped or buffer drained, restart
-                        processQueue(ctx);
+                    } else if (audioQueueRef.current.length === 0) {
+                        // Nothing to play (e.g. empty or failed chunks)
+                        setState(prev => ({ ...prev, isLoading: false }));
+                        resolve();
+                    } else {
+                        // Already playing from previous call? This shouldn't happen with speakChain,
+                        // but ensure isLoading is false.
+                        setState(prev => ({ ...prev, isLoading: false }));
                     }
+                });
 
-                } catch (apiError: any) {
-                    console.warn(`[TTS] Google Cloud Failed (${apiError.message}). Fallback to Native.`);
-                    // Fallback to Web Speech APi for this chunk
-                    await speakNative(chunk, { pitch: 1.0, rate: 1.0 });
-                }
+            } catch (error: any) {
+                console.error("TTS Chain Error:", error);
+                setState(prev => ({ ...prev, isLoading: false, error: error.message }));
             }
+        });
 
-        } catch (error: any) {
-            console.error("TTS Critical Error:", error);
-            setState(prev => ({ ...prev, isLoading: false, error: error.message }));
-            // Final safety net fallback
-            speakNative(text, { pitch: 1.0, rate: 1.0 });
-        }
-    }, [processQueue, stop, speakNative, state.isPlaying]);
+        return speakChainRef.current;
+    }, [processQueue, stop, speakNative]);
 
     // [New] Dialogue Script Player
     const speakScript = useCallback(async (script: { speaker: 'host' | 'expert', text: string }[]) => {

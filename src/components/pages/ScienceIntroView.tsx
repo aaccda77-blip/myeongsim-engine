@@ -24,6 +24,22 @@ export default function ScienceIntroView() {
                     <p className="text-[#658c42] text-lg font-bold">
                         데이터 기반 토탈 헬스케어,<br />명심코칭
                     </p>
+                    {/* New Motto - Sophisticated Design */}
+                    <div className="mt-6 px-2 flex justify-center">
+                        <div className="relative p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl w-full">
+                            <p className="text-gray-300 text-[12px] leading-[1.7] break-keep">
+                                "명심코칭은 <span className="text-cyan-400 font-bold underline underline-offset-4 decoration-cyan-400/20">고정된 Z축(DNA)</span> 위에서,
+                                <span className="text-purple-400 font-bold underline underline-offset-4 decoration-purple-400/20">X축(후성유전적 노력)</span>을 통해,
+                                <br />
+                                매 순간 <span className="text-amber-400 font-bold underline underline-offset-4 decoration-amber-400/20">Y축(뇌신경망)</span>을 최상의 상태로 유지하는
+                                <br />
+                                <span className="text-white font-bold text-sm bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                                    '운명 최적화 기술'
+                                </span>
+                                입니다."
+                            </p>
+                        </div>
+                    </div>
                 </motion.div>
             </div>
 

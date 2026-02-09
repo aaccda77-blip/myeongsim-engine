@@ -8,7 +8,7 @@
  * - name: 한자 명칭 (비견, 겁재 등)
  * - alias: 심리 별명 (자아존중, 승부사 등)
  * - shadowTrigger: 그림자 질문 (부정적 패턴 자각)
- * - neuralMission: 뉴럴 코드 미션 (긍정적 행동 처방)
+ * - neuralMission: 뉴럴 코드 미션 (긍정적 행동 코칭해결방안)
  */
 
 export interface TenGodContent {

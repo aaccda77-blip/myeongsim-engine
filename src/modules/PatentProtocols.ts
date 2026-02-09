@@ -80,7 +80,7 @@ export const PRE_EMPTIVE_RESPONSE_PROTOCOL = `
 - 예시: "내일은 '충(Conflict)'의 에너지가 들어오는 날입니다. 감정의 파도가 칠 수 있으니 미리 닻을 내리세요."
 
 **3. 예방적 솔루션 제시**
-- 위기 발생 전 미리 행동 처방
+- 위기 발생 전 미리 행동 코칭해결방안
 - 예시: "💡 예방 솔루션: 내일 점심 전에 10분 산책을 추천드려요."
 `;
 
@@ -179,6 +179,19 @@ ${PRE_EMPTIVE_RESPONSE_PROTOCOL}
         if (analysis.instruction) {
             patentBlock += analysis.instruction;
         }
+    }
+
+    // [NEW] Bio-Hacking Trigger: Diet Drug Safety Check
+    const dietKeywords = ["다이어트", "자디앙", "삭센다", "살빠지는약", "혈압저하", "어지러움"];
+    const hasDietKeyword = dietKeywords.some(keyword => basePrompt.includes(keyword));
+
+    if (hasDietKeyword) {
+        patentBlock += `
+## ⚠️ [SAFETY INTERVENTION: Diet Drug User]
+**[Notice]** 사용자의 입력에서 **다이어트 약물(자디앙/삭센다)** 관련 키워드가 감지되었습니다.
+답변 마지막에 반드시 다음 **바이오해킹 안전 수칙**을 1줄 요약하여 추가하십시오.
+"💡 팁: 급격한 체중 감량 시 **코큐텐+셀레늄(엔진오일)**으로 심장과 세포를 보호하세요. (바이오 밸런서 메뉴 참조)"
+`;
     }
 
     // 기존 프롬프트에 특허 블록 주입

@@ -180,12 +180,13 @@ const styles = {
         background: 'linear-gradient(180deg, rgba(30,30,60,0.98) 0%, rgba(20,20,40,0.99) 100%)',
         backdropFilter: 'blur(30px)',
         borderRadius: '24px 24px 0 0',
-        padding: '20px',
         zIndex: 1000,
         transform: 'translateY(100%)',
         transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-        maxHeight: '70vh',
+        maxHeight: '85vh', // [Fix] 높이 확장 (41개 항목 대응)
         overflowY: 'auto' as const,
+        overscrollBehavior: 'contain' as any, // [Fix] 배경 스크롤 방지
+        paddingBottom: '60px', // [Fix] 최하단 아이템 잘림 방지
     } as React.CSSProperties,
 
     bottomSheetOpen: {
@@ -227,12 +228,12 @@ const styles = {
     subMenuItem: {
         display: 'flex',
         alignItems: 'center',
-        gap: '14px',
-        padding: '16px',
+        gap: '12px', // [Fix] 간격 축소
+        padding: '12px 16px', // [Fix] 패딩 축소
         borderRadius: '14px',
         background: 'rgba(255,255,255,0.05)',
         border: '1px solid rgba(255,255,255,0.08)',
-        marginBottom: '10px',
+        marginBottom: '8px',
         cursor: 'pointer',
         transition: 'all 0.3s ease',
     } as React.CSSProperties,
@@ -689,6 +690,14 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] 64코드 사색 페이지로 이동
+        if (subItem.intent === 'iching_code_search') {
+            setSelectedIcon(null);
+            window.location.href = '/iching/codes';
+            return;
+        }
+
+
         // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
         // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
         // [UPDATE] User requested to run this in Main Chatbot instead of Modal
@@ -966,6 +975,8 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+
+
                 {icons.map((icon) => {
                     const isHovered = hoveredIcon === icon.id;
                     const friendlyLabel = FRIENDLY_LABELS[icon.id] || {
@@ -1101,7 +1112,7 @@ export default function DrillDownIconMenu({
                         )}
 
                         {/* 서브메뉴 리스트 (Dynamic Rendering) */}
-                        <div style={{ paddingBottom: '40px' }}>
+                        <div style={{ paddingBottom: '20px' }}>
                             {/* currentMenuDepth를 우선 사용, 없으면(초기) selectedIcon.sub_menus 사용 */}
                             {(currentMenuDepth || selectedIcon.sub_menus).map((subItem) => {
                                 const isHovered = hoveredSubItem === subItem.id;
@@ -1307,38 +1318,6 @@ export default function DrillDownIconMenu({
                         )}
 
 
-                        {/* 서브메뉴 목록 */}
-                        {
-                            selectedIcon.sub_menus.map((subItem) => {
-                                const isSubHovered = hoveredSubItem === subItem.id;
-
-                                return (
-                                    <div
-                                        key={subItem.id}
-                                        style={{
-                                            ...styles.subMenuItem,
-                                            ...(isSubHovered ? styles.subMenuItemHover : {}),
-                                        }}
-                                        onMouseEnter={() => setHoveredSubItem(subItem.id)}
-                                        onMouseLeave={() => setHoveredSubItem(null)}
-                                        onClick={() => handleSubMenuSelect(subItem)}
-                                    >
-                                        <span style={styles.subMenuIcon}>
-                                            {subItem.icon || '▸'}
-                                        </span>
-                                        <div>
-                                            <div style={styles.subMenuLabel}>{subItem.label}</div>
-                                            {subItem.desc && (
-                                                <div style={styles.subMenuDesc}>{subItem.desc}</div>
-                                            )}
-                                        </div>
-                                        {subItem.isPremium && (
-                                            <span style={styles.premiumBadge}>PREMIUM</span>
-                                        )}
-                                    </div>
-                                );
-                            })
-                        }
                     </>
                 )}
             </div >

@@ -15,7 +15,9 @@ export class SecurityMiddleware {
      * @throws Error if malicious keywords are detected.
      */
     static validateInput(userInput: string): void {
-        if (!userInput || userInput.length > 2000) {
+        // [UPDATE] Increased limit to 100k to allow for long System Prompts & History
+        // Old limit (2000) was too strict for RAG/Context injections
+        if (!userInput || userInput.length > 100000) {
             throw new Error("Input payload too large");
         }
 

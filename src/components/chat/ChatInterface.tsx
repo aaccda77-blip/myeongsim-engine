@@ -49,8 +49,7 @@ import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule'; // [NEW] 
 import TalentReportCard from './TalentReportCard'; // [NEW] Talent Card UI
 import { searchPexelsImage, optimizePexelsQuery } from '@/utils/pexelsClient'; // [NEW] Pexels API (replaces Pollinations)
 import { PexelsImage } from './PexelsImage'; // [NEW] Pexels Image Component
-// import MicPermissionGuideModal from '../modals/MicPermissionGuideModal'; // [NEW] Mic Guide (Removed)
-
+import BioEnergyBlueprintModal from '../modals/BioEnergyBlueprintModal'; // [NEW] Bio-Energy Blueprint Modal
 
 // [Helper] Saju Keywords for Restoration
 const getKeywords = (dm: string) => {
@@ -98,6 +97,9 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [crisisPhase, setCrisisPhase] = useState<'breathing' | 'hope' | 'action'>('breathing'); // [Safety] Recovery Phase
     const [showSmartContext, setShowSmartContext] = useState(false); // [Smart Context] Energy Analysis Card
     const [showBreathingGuideFromChat, setShowBreathingGuideFromChat] = useState(false); // [NEW] SOS from chat crisis keywords
+    const [showBlueprintModal, setShowBlueprintModal] = useState(false); // [NEW] Bio Blueprint Modal
+    const [blueprintType, setBlueprintType] = useState<'HEAT' | 'COOL'>('HEAT'); // [NEW] Dynamic Type
+
 
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -175,7 +177,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
         if (typeof window === 'undefined') return;
 
         const audioMap: Record<string, string> = {
-            'levelup': '/sounds/voice_levelup.wav',
+            'levelup': '/sounds/Take1-14_레벨업_2026-01-09.wav',
             'welcome': '/sounds/voice_welcome.wav',
             'high_bpm': '/sounds/voice_high_bpm.wav',
             'mission': '/sounds/voice_mission_start.wav'
@@ -1065,6 +1067,22 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
             // [Gamification] Start Neural Sync
             awardXP(10, "Sync Initialized");
 
+            // [Optimization] Payload Reduction Strategy
+            // 1. Truncate History: Send only last 10 messages to keep request small
+            const fullHistory = [...messages, userMsg];
+            const optimizedHistory = fullHistory.slice(-10).map(m => ({
+                role: m.role,
+                content: m.content
+                // Omit metadata, options, id to save space
+            }));
+
+            // 2. Minimal Saju Data: Send only inputs required for server-side recalc
+            // The server already recalculates based on birth info
+            const minimalSajuData = effectiveReportData?.saju ? {
+                dayMaster: effectiveReportData.saju.dayMaster,
+                // Only include if indispensable. Server logic uses birthDate primarily.
+            } : {};
+
             // [API] Call Next.js API Route (Corrected from Edge Function)
             const response = await fetch('/api/chat', {
                 method: 'POST',
@@ -1074,17 +1092,13 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     userName: effectiveReportData?.userName || "회원",
                     // [FIX] Use effectiveHiddenPayload if provided (for Intents/Intervention), otherwise use visible msg
                     message: effectiveHiddenPayload || hiddenPayload || msgToSend,
-                    messages: [...messages, userMsg],
+                    messages: optimizedHistory, // [Fix] Send optimized history
                     stage,
                     birthDate: effectiveReportData?.birthDate,
                     birthTime: effectiveReportData?.birthTime,
                     gender: effectiveReportData?.gender,
-                    userSaju: {
-                        birthDate: effectiveReportData?.birthDate,
-                        birthTime: effectiveReportData?.birthTime,
-                        gender: effectiveReportData?.gender
-                    },
-                    sajuData: effectiveReportData?.saju,
+                    // [Optimization] Redundant Saju Object Removed/Minimized
+                    sajuData: minimalSajuData,
                     gapData: {
                         acquiredVector: acquiredVector,
                         gapLevel: gapMetrics.gapLevel,
@@ -2703,6 +2717,17 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     return;
                                 }
 
+                                // [New] Bio-Energy Blueprint Modal Trigger
+                                if (intent === 'deep_health_weakness' || intent === 'bio_energy_scan') {
+                                    // Determine type based on Saju (Simple Logic for Demo)
+                                    // If Fire/Wood is strong -> Heat, If Water/Metal is strong -> Cool
+                                    const dm = reportData?.saju?.dayMaster || '';
+                                    const isCool = dm.includes('임') || dm.includes('계') || dm.includes('경') || dm.includes('신');
+                                    setBlueprintType(isCool ? 'COOL' : 'HEAT');
+                                    setShowBlueprintModal(true);
+                                    return;
+                                }
+
                                 // [FIX] Self-Coaching & Awakening Logic Integration
                                 // Intents starting with 'p_' (108 items) or specific keys utilize the Hidden Intent mechanism
                                 if (intent.startsWith('p_') || intent === 'hour_pillar_desire' || intent === 'year_pillar_roots' || intent.startsWith('saju_') || intent.startsWith('assess_') || intent.startsWith('deep_') || intent === 'gongmang_deep_analysis' || intent === 'ohaeng_balance_report') {
@@ -2712,15 +2737,37 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     return;
                                 }
 
-                                setInput(prompt);
-                                // Auto-send after selection
-                                setTimeout(() => handleSend(prompt), 100);
+                                // Default Handler for DrillDown Intents (Mindflow System etc.)
+                                // Sending prompt as HIDDEN payload to keep chat clean
+                                const friendlyMessages: Record<string, string> = {
+                                    'wealth_reading': '💰 저의 재물운 흐름을 분석해주세요.',
+                                    'love_tarot': '❤️ 저의 연애운 흐름을 분석해주세요.',
+                                    'career_path': '💼 저의 직업운 흐름을 분석해주세요.',
+                                    'saju_basic_analysis': '📜 상세 사주 원국을 분석해주세요.',
+                                    'today_fortune': '🌞 오늘의 운세를 알려주세요.',
+                                    'iching_code_search': '📖 64코드 사색을 실행합니다.', // [Added]
+                                    // Add more mappings as needed, default fallback below
+                                };
+
+                                const userVisibleMessage = friendlyMessages[intent] || `🔮 ${prompt.substring(0, 20)}... (상세 분석 요청)`;
+
+                                // Send: (Visible Message, Hidden System Prompt)
+                                handleSend(userVisibleMessage, prompt);
                             }}
+                        />
+
+                        {/* [NEW] Bio-Energy Blueprint Modal (Medical Engineering UI) */}
+                        <BioEnergyBlueprintModal
+                            isOpen={showBlueprintModal}
+                            onClose={() => setShowBlueprintModal(false)}
+                            dayMaster={reportData?.saju?.dayMaster || '갑목'}
+                            energyType={blueprintType}
                         />
 
                         {/* [NEW] Bio-Sync Modal (Wearable Connection Interface) */}
                         {showBioSync && (
                             <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in" style={{ zIndex: 2000 }}>
+
                                 <div className="bg-[#1A1F2B] w-full max-w-sm rounded-3xl p-6 border border-white/10 shadow-2xl relative">
                                     <button
                                         onClick={() => setShowBioSync(false)}
@@ -2815,8 +2862,9 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 </button>
                             </div>
                         </form>
-                        <p className="text-center text-gray-500 text-xs mt-3 animate-pulse">
-                            당신의 순서입니다. 자유롭게 이야기해주세요.
+                        <p className="text-center text-gray-500 text-[10px] mt-3 leading-tight opacity-70">
+                            본 서비스는 의학적 진단이 아니며, 건강 증진을 위한 가이드입니다. <br />
+                            정확한 진단과 치료는 반드시 전문의와 상담하십시오.
                         </p>
                     </div>
                 )

@@ -10,6 +10,7 @@
  */
 
 import { generateAwakeningPrompt } from './AwakeningPromptEngine';
+import { MindflowIChingEngine } from './MindflowIChingEngine';
 
 // ============== 타입 정의 ==============
 
@@ -98,7 +99,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "사주로 보는 건강과 스타일",
                 intent: "NAV_CORE_BODY",
                 children: [
-                    { id: "mc_27", label: "27. 사주 의학 검진", desc: "오행으로 보는 취약 장기 예보", intent: "deep_health_weakness" },
+                    { id: "mc_27", label: "27. 바이오 에너지 설계도", desc: "오행으로 보는 신체 에너지 스펙", intent: "deep_health_weakness" },
                     { id: "mc_47", label: "47. 보이스 건강 스캔", desc: "목소리(Hz)로 진단하는 오장육부", intent: "ms_voice_scan" },
                     { id: "mc_44", label: "44. DNA 크로스 체크", desc: "유전자 검사와 사주의 교차 검증", intent: "ms_dna_check" },
                     { id: "mc_28", label: "28. 형상과 스타일", desc: "내 외모 특징과 맞춤 스타일링", intent: "ms_style_guide" }
@@ -193,6 +194,26 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                     { id: "lh_37", label: "37. 꿈 해몽 분석", desc: "무의식의 메시지를 오행으로 해석", intent: "ms_dream_analysis" },
                     { id: "lh_42", label: "42. 스마트 풍수 (IoT)", desc: "집안 조명/온도 자동 제어", intent: "ms_smart_fengshui" },
                     { id: "lh_24", label: "24. 개운 인테리어", desc: "나를 살리는 잠자리 방향과 배치", intent: "ms_interior_lucky" }
+                ]
+            },
+            {
+                id: "life_3_4",
+                label: "3-4. 의식 OS 업그레이드 (Consciousness)",
+                desc: "마음의 운영체제를 3단계로 진화시키기",
+                intent: "NAV_CONSCIOUSNESS_OS",
+                children: [
+                    // 3D 좌표 진단
+                    { id: "cos_42", label: "42. 현재 좌표 스캔", desc: "X/Y/Z 축 실시간 측정 (Dark/Neural/Meta)", intent: "ms_coordinate_scan" },
+                    { id: "cos_43", label: "43. 의식 레벨 체크", desc: "내 마음의 OS 버전 확인", intent: "ms_consciousness_level" },
+                    { id: "cos_44", label: "44. 에너지 벡터 분석", desc: "In(수렴)/Out(발산) 성향 파악", intent: "ms_energy_vector" },
+                    // 3S 처방 시스템
+                    { id: "cos_45", label: "45. SCAN 처방", desc: "Y축 주파수 제어 (MBCT/MBSR)", intent: "ms_scan_prescription" },
+                    { id: "cos_46", label: "46. SYNC 처방", desc: "Z축 에너지 수용 (ACT/DBT)", intent: "ms_sync_prescription" },
+                    { id: "cos_47", label: "47. SHIFT 처방", desc: "X축 의식 상승 (CBT)", intent: "ms_shift_prescription" },
+                    // AI 주역 연동
+                    { id: "cos_48", label: "48. 좌표 → 괘 매칭", desc: "3D 좌표로 64괘 자동 선택", intent: "ms_coordinate_iching" },
+                    { id: "cos_49", label: "49. 진화 추적", desc: "X축 상승 기록 및 시각화", intent: "ms_evolution_tracker" },
+                    { id: "cos_50", label: "50. 맞춤형 주역 해석", desc: "현재 좌표 기반 괘사 해석", intent: "ms_custom_iching" }
                 ]
             }
         ]
@@ -400,6 +421,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         sub_menus: [
             { id: "b_1", label: "⚡ Bio-Sync 대시보드", desc: "웨어러블 연결 및 데이터 확인", intent: "bio_sync_dashboard_view" },
             { id: "b_checkin", label: "🩺 통합 체크인", desc: "Saju + 4분면 정밀 분석", intent: "integral_checkin_view" },
+            { id: "b_energy_protocol", label: "🕒 에너지 동기화 (Bio-Sync)", desc: "시간별 영양 섭취 타이밍", intent: "bio_sync_energy_protocol" },
             { id: "b_2", label: "🧘 생체 리듬 명상", desc: "심박수에 맞춘 호흡 가이드", intent: "bio_rhythm_meditation" },
             { id: "b_patent_1", label: "🚨 [특허] 위기 개입", desc: "급성 스트레스 차단 (S-C-A-R)", intent: "demo_patent_features", isPremium: true },
             { id: "b_patent_2", label: "🛡️ [특허] 선제적 예방", desc: "스트레스 패턴 예측 및 알림", intent: "demo_preventive_care", isPremium: true },
@@ -550,9 +572,15 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             },
             {
                 id: "bc_nutri_synergy",
-                label: "🥗 시너지 영양학",
-                desc: "보충제와 약물의 조화",
+                label: "🥗 시너지 영양학 (Daily Bio-Hacking)",
+                desc: "매일 5개씩 바뀌는 맞춤형 건강 비법",
                 intent: "bio_care_nutri_synergy"
+            },
+            {
+                id: "bc_nutri_archive",
+                label: "📚 지난 비법 아카이브 (History)",
+                desc: "놓친 건강 팁 다시보기",
+                intent: "bio_care_nutri_archive"
             },
             {
                 id: "bc_body_log",
@@ -692,6 +720,305 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 intent: "ms_startup_timing"
             }
         ]
+    },
+
+    // [NEW] AI 주역 (The Book of Changes)
+    AI_ICHING: {
+        id: 'AI_ICHING',
+        label: "AI 주역",
+        icon: "☯️",
+        neuro_trigger: "하늘의 조언, 변화의 원리",
+        style: 'premium_purple',
+        sub_menus: [
+            {
+                id: 'iching_daily',
+                label: "1. 🌄 오늘의 괘 (Daily Scan)",
+                desc: "오늘 하루, 나의 에너지는 어디로 흐르는가?",
+                intent: "iching_daily_scan",
+                icon: "🌄"
+            },
+            {
+                id: 'iching_insight',
+                label: "2. ⚡ 즉문즉답 (Instant Insight)",
+                desc: "지금 이 순간, 명쾌한 해답이 필요할 때",
+                intent: "iching_instant_insight",
+                icon: "⚡"
+            },
+            {
+                id: 'iching_strategy',
+                label: "3. ⚔️ 전략의 서 (Strategy)",
+                desc: "나아갈 때인가, 잠시 멈춰야 할 때인가?",
+                intent: "iching_decision_strategy",
+                icon: "⚔️"
+            },
+            {
+                id: 'iching_relationship',
+                label: "4. 💞 음양의 춤 (Relationship)",
+                desc: "나와 상대방의 에너지 공명도 분석",
+                intent: "iching_relationship_harmony",
+                icon: "💞"
+            },
+            {
+                id: 'iching_meditation',
+                label: "5. 🧘 괘상 명상 (Meditation)",
+                desc: "우주의 형상(Image)을 시각화하며 호흡하기",
+                intent: "iching_oracle_meditation",
+                icon: "🧘"
+            },
+            {
+                id: 'iching_sos',
+                label: "6. 🚑 SOS 멘탈 해킹 (Crisis)",
+                desc: "흔들리는 마음을 즉시 바로잡는 강력한 질문",
+                intent: "iching_crisis_hacking",
+                icon: "🚑"
+            },
+            {
+                id: 'iching_code_search',
+                label: "7. 📖 64코드 사색 (Code Contemplation)",
+                desc: "64가지 우주 코드 중 하나를 골라 깊이 탐구하기",
+                intent: "iching_code_search",
+                icon: "📖"
+            },
+            {
+                id: 'iching_soul_mirror',
+                label: "8. 🎭 영혼의 거울 (Soul Mirror)",
+                desc: "내 고민의 본질인 '십신의 욕망'을 비춰보기",
+                intent: "iching_soul_mirror",
+                icon: "🎭"
+            },
+            {
+                id: 'iching_zoom_out',
+                label: "9. 🔭 관점 줌아웃 (Zoom Out)",
+                desc: "내 시야를 강제로 3단계 확장하는 메타인지 질문",
+                intent: "iching_zoom_out",
+                icon: "🔭"
+            },
+            {
+                id: 'iching_s_protocol',
+                label: "10. 🧬 S-프로토콜 (Quantum Hacker)",
+                desc: "다크 코드(지옥)를 메타 코드(천국)로 해킹하는 OS 업데이트 도구",
+                intent: "iching_s_protocol",
+                icon: "🧬"
+            },
+            {
+                id: 'iching_life_genre',
+                label: "11. 🎬 인생 장르 변경 (Life Genre Shift)",
+                desc: "비극(Victim)을 영웅 서사(Hero)로 다시 쓰는 시나리오 작가 모드",
+                intent: "iching_life_genre",
+                icon: "🎬"
+            },
+            {
+                id: 'iching_big5_optimization',
+                label: "12. 🧠 Big 5 스펙 최적화 (Hardware Tuning)",
+                desc: "내 기질적 특성(Big 5)을 '고성능 하드웨어'로 최적화하기",
+                intent: "iching_big5_optimization",
+                icon: "🧠"
+            },
+            {
+                id: 'iching_socratic_tutor',
+                label: "13. 🦉 소크라테스 산파술 (Socratic Maieutics)",
+                desc: "정답 대신 '질문'을 통해 스스로 깨달음을 낳게 하는 산파 모드",
+                intent: "iching_socratic_tutor",
+                icon: "🦉"
+            },
+            {
+                id: 'iching_big5_evolution',
+                label: "14. 🧬 Big 5 진화 (Trait Evolution)",
+                desc: "기질(Big 5)을 다크->뉴럴->메타 코드로 진화시키는 연금술",
+                intent: "iching_big5_evolution",
+                icon: "🧬"
+            },
+            {
+                id: 'iching_meta_awareness',
+                label: "15. 👁️ 메타 인지 각성 (Awareness of Awareness)",
+                desc: "감정과 생각을 지켜보는 '주시자(Observer)'의 의식으로 깨어나기",
+                intent: "iching_meta_awareness",
+                icon: "👁️"
+            },
+            {
+                id: 'iching_paradox_mirror',
+                label: "16. 🌗 역설의 거울 (Paradox Mirror)",
+                desc: "강점이 어떻게 흉기가 되는가? 역설(Paradox)을 통한 균형 회복",
+                intent: "iching_paradox_mirror",
+                icon: "🌗"
+            },
+            {
+                id: 'iching_paradox_mastery',
+                label: "17. 🛡️ 역설 통합 마스터리 (Paradox Mastery)",
+                desc: "모순을 깨고 양극의 지혜를 통합하는 마스터리 코칭",
+                intent: "iching_paradox_mastery",
+                icon: "🛡️"
+            },
+            {
+                id: 'iching_zero_point',
+                label: "18. 🌌 제로 포인트 (Zero Point)",
+                desc: "역설의 줄타기를 멈추고 애씀 없는(Effortless) 본래 자리로 귀환",
+                intent: "iching_zero_point",
+                icon: "🌌"
+            },
+            {
+                id: 'iching_tension_alchemy',
+                label: "19. 💎 텐션의 연금술 (Alchemy of Tension)",
+                desc: "불균형(Stress)의 에너지를 역이용하여 주시자의 자리로 진입하는 연금술",
+                intent: "iching_tension_alchemy",
+                icon: "💎"
+            },
+            {
+                id: 'iching_mmpi_shadow',
+                label: "20. 🎭 그림자 사냥 (Shadow Hunting)",
+                desc: "'아픔' 뒤에 숨은 '이득(Gain)'을 찾아내어 낡은 방어기제를 해체하기",
+                intent: "iching_mmpi_shadow",
+                icon: "🎭"
+            },
+            {
+                id: 'iching_armor_breaker',
+                label: "21. 🔓 방어기제 해제 (Defense Reset)",
+                desc: "유통기한 지난 갑옷(방어기제)을 벗고 맨살의 나(True Self)로 숨쉬기",
+                intent: "iching_armor_breaker",
+                icon: "🔓"
+            },
+            {
+                id: 'iching_persona_scanner',
+                label: "22. ⚖️ 페르소나 스캐너 (Persona Scanner)",
+                desc: "진실(True Self)과 가면(Social Mask) 사이의 정합성을 검사하는 영혼의 저울",
+                intent: "iching_persona_scanner",
+                icon: "⚖️"
+            },
+            {
+                id: 'iching_witness_scan',
+                label: "23. 🧘 증상 주시자 (Symptom Witness)",
+                desc: "증상(Symptom)과 나를 분리하여 '아프지 않은 하늘(Witness)'을 발견하기",
+                intent: "iching_witness_scan",
+                icon: "🧘"
+            },
+            {
+                id: 'iching_ego_castle',
+                label: "24. 🏰 에고의 성 (Castle of Ego)",
+                desc: "방어기제로 쌓은 성벽 위로 올라가, 성의 주인(Master)으로 등극하기",
+                intent: "iching_ego_castle",
+                icon: "🏰"
+            },
+            {
+                id: 'iching_neuro_alchemy',
+                label: "25. 🧪 증상 연금술 (Symptom Alchemy)",
+                desc: "병리(Pathology)를 X축(시간)에 태워 천재성(Gift)으로 진화시키는 연금술",
+                intent: "iching_neuro_alchemy",
+                icon: "🧪"
+            },
+            {
+                id: 'iching_shadow_asset',
+                label: "26. 🏦 그림자 자산 가치평가 (Shadow Asset Valuation)",
+                desc: "당신의 우울과 불안이 가진 '시장 가치(Market Value)'를 분석해 드립니다",
+                intent: "iching_shadow_asset",
+                icon: "🏦"
+            },
+            {
+                id: 'iching_tci_genetic',
+                label: "27. 🧬 본성 설계도 (Nature Blueprint)",
+                desc: "무의식 속에 각인된 나의 '초기 에너지 설정값'을 확인하기",
+                intent: "iching_tci_genetic",
+                icon: "🧬"
+            },
+            {
+                id: 'iching_bio_engine',
+                label: "28. ⚙️ 데이터 엔진 매뉴얼 (Data Engine Manual)",
+                desc: "바꿀 수 없는 하드웨어를 영리하게 사용하는 '명심 작동 매뉴얼'",
+                intent: "iching_bio_engine",
+                icon: "⚙️"
+            },
+            {
+                id: 'iching_tci_character',
+                label: "29. 🌱 인성 성숙도 (Maturity Code)",
+                desc: "가공되지 않은 재료를 성숙한 인격으로 완성하는 3단계 성숙의 길",
+                intent: "iching_tci_character",
+                icon: "🌱"
+            },
+            {
+                id: 'iching_tci_pilot',
+                label: "30. ✈️ 의식 조종사 면허 (Consciousness Pilot)",
+                desc: "주어진 조건을 탓하지 않고, 베스트 드라이버가 되는 의식 훈련",
+                intent: "iching_tci_pilot",
+                icon: "✈️"
+            },
+            {
+                id: 'iching_neuro_socratic',
+                label: "31. 🧠 뉴럴 산파술 (Neural Socratic)",
+                desc: "뇌의 '생화학적 환상'을 깨뜨리고, 주체적인 선택을 낳게 하는 산파술",
+                intent: "iching_neuro_socratic",
+                icon: "🧠"
+            },
+            {
+                id: 'iching_neuro_detox',
+                label: "32. 💊 뉴럴 해독제 (Neural Detox)",
+                desc: "반응적 중독과 낡은 패턴에서 벗어나기 위한 '명심 행동 코칭해결방안'",
+                intent: "iching_neuro_detox",
+                icon: "💊"
+            },
+            {
+                id: 'iching_character_socratic',
+                label: "33. 🏛️ 인격 산파술 (Character Socratic)",
+                desc: "피해자/심판관/몽상가의 가면을 벗고 '책임/자비/현존'을 낳기",
+                intent: "iching_character_socratic",
+                icon: "🏛️"
+            },
+            {
+                id: 'iching_character_gym',
+                label: "34. 🏋️ 마음 근육 헬스장 (Mind Muscle Gym)",
+                desc: "마음의 근육(인격)을 키우는 실전 훈련: 책임감 3세트, 자비심 10회",
+                intent: "iching_character_gym",
+                icon: "🏋️"
+            },
+            {
+                id: 'iching_human_design',
+                label: "35. 🧬 명심 에너지 설계도 (Myeongsim Design)",
+                desc: "나의 에너지 센터와 코드의 주파수(그림자->선물->초월) 스캔",
+                intent: "iching_human_design",
+                icon: "🧬"
+            },
+            {
+                id: 'iching_frequency_tuner',
+                label: "36. 🎛️ 주파수 조율기 (Frequency Tuner)",
+                desc: "낮은 진동(고통)을 높은 진동(창조성)으로 변환하는 에너지 튜닝",
+                intent: "iching_frequency_tuner",
+                icon: "🎛️"
+            },
+            {
+                id: 'iching_gallup_strength',
+                label: "37. 💪 강점의 미학 (Strength Alchemy)",
+                desc: "재능이 나를 찌르는 칼(미성숙)인지, 남을 살리는 요리(성숙)인지 감별",
+                intent: "iching_gallup_strength",
+                icon: "💪"
+            },
+            {
+                id: 'iching_talent_market',
+                label: "38. 📈 재능 자본화 (Talent Monetize)",
+                desc: "성숙해진 당신의 강점을 세상에 가치 있게 전달하는 전략",
+                intent: "iching_talent_market",
+                icon: "📈"
+            },
+            {
+                id: 'iching_disc_mask',
+                label: "39. 🎭 행동 가면 (Behavior Mask)",
+                desc: "과잉 행동(가면) 뒤에 숨겨진 진짜 '두려움'과 '욕구'를 직면하기",
+                intent: "iching_disc_mask",
+                icon: "🎭"
+            },
+            {
+                id: 'iching_fear_vaccine',
+                label: "40. 💉 두려움 면역 (Fear Vaccine)",
+                desc: "두려움(Fear)을 용기(Courage)로 바꾸는 행동 면역력 강화",
+                intent: "iching_fear_vaccine",
+                icon: "💉"
+            },
+            {
+                id: 'iching_z_axis_mastery',
+                label: "41. 🗝️ 존재의 마스터키 (Z-Axis Mastery)",
+                desc: "모든 껍질을 벗고 남는 '진짜 나는 누구인가?'에 대한 마지막 대답",
+                intent: "iching_z_axis_mastery",
+                icon: "🗝️"
+            }
+
+        ]
     }
 };
 
@@ -770,7 +1097,8 @@ export function getMainIconsWithRecommendations(userProfile?: any): (MainIcon & 
         'SAJU_ANALYSIS': 12,
         'STRESS_RELIEF': 13,
         'HEALTH_QA': 14, // [NEW] 오늘의 건강상식
-        'BIO_CARE': 15 // [NEW] 바이오 밸런서
+        'BIO_CARE': 15, // [NEW] 바이오 밸런서
+        'AI_ICHING': 5.5 // [NEW] AI 주역 (Priority)
     };
 
     // 3. 정렬 로직
@@ -800,6 +1128,51 @@ export function generateChatPromptFromIntent(intent: string, userProfile?: any):
     // [New] 'ms_'(Myeongsim) prefix for new features
     if (selfCoachingIntents.includes(intent) || intent.startsWith('assess_') || intent.startsWith('deep_') || intent.startsWith('ms_') || intent.startsWith('NAV_')) {
         return `[INTENT:${intent}]`;
+    }
+
+    // [New] AI I-Ching Handling (Client-side Prompt Generation)
+    if (intent.startsWith('iching_')) {
+        const sajuData = userProfile?.saju || {};
+        let triggerQ = "AI 주역 실행"; // Default trigger
+        if (intent === 'iching_relationship_harmony') triggerQ = "관계 분석 실행";
+        if (intent === 'iching_decision_strategy') triggerQ = "전략 분석 실행";
+        if (intent === 'iching_code_search') triggerQ = "64코드 사색 실행";
+        if (intent === 'iching_soul_mirror') triggerQ = "영혼의 거울 실행";
+        if (intent === 'iching_zoom_out') triggerQ = "관점 줌아웃 실행";
+        if (intent === 'iching_s_protocol') triggerQ = "S-프로토콜 실행";
+        if (intent === 'iching_socratic_tutor') triggerQ = "소크라테스 산파술 실행";
+        if (intent === 'iching_big5_evolution') triggerQ = "Big 5 진화 실행";
+        if (intent === 'iching_meta_awareness') triggerQ = "메타 인지학 실행";
+        if (intent === 'iching_paradox_mirror') triggerQ = "역설의 거울 실행";
+        if (intent === 'iching_paradox_mastery') triggerQ = "역설 마스터리 실행";
+
+        if (intent === 'iching_zero_point') triggerQ = "제로 포인트 실행";
+        if (intent === 'iching_tension_alchemy') triggerQ = "텐션 연금술 실행";
+        if (intent === 'iching_mmpi_shadow') triggerQ = "MMPI 그림자 사냥 실행";
+        if (intent === 'iching_armor_breaker') triggerQ = "방어기제 해제 실행";
+        if (intent === 'iching_persona_scanner') triggerQ = "페르소나 스캐너 실행";
+        if (intent === 'iching_witness_scan') triggerQ = "증상 주시자 실행";
+        if (intent === 'iching_ego_castle') triggerQ = "에고의 성 실행";
+        if (intent === 'iching_neuro_alchemy') triggerQ = "증상 연금술 실행";
+        if (intent === 'iching_shadow_asset') triggerQ = "그림자 자산 평가 실행";
+        if (intent === 'iching_tci_genetic') triggerQ = "본성 설계도 실행";
+        if (intent === 'iching_bio_engine') triggerQ = "명심 작동 매뉴얼 실행";
+        if (intent === 'iching_tci_character') triggerQ = "인격 성숙도 실행";
+        if (intent === 'iching_tci_pilot') triggerQ = "의식 조종사 면허 실행";
+
+        if (intent === 'iching_neuro_detox') triggerQ = "뉴럴 해독제 실행";
+        if (intent === 'iching_neuro_socratic') triggerQ = "뉴럴 산파술 실행";
+        if (intent === 'iching_character_socratic') triggerQ = "인격 산파술 실행";
+        if (intent === 'iching_character_gym') triggerQ = "마음 근육 헬스장 실행";
+        if (intent === 'iching_human_design') triggerQ = "명심 에너지 설계도 실행";
+        if (intent === 'iching_frequency_tuner') triggerQ = "주파수 조율기 실행";
+        if (intent === 'iching_gallup_strength') triggerQ = "강점의 미학 실행";
+        if (intent === 'iching_talent_market') triggerQ = "재능 자본화 실행";
+        if (intent === 'iching_disc_mask') triggerQ = "행동 가면 실행";
+        if (intent === 'iching_fear_vaccine') triggerQ = "두려움 면역 실행";
+        if (intent === 'iching_z_axis_mastery') triggerQ = "존재의 마스터키 실행";
+
+        return MindflowIChingEngine.generateModePrompt(intent, triggerQ, sajuData);
     }
 
     // 1. 108 자각 엔진 우선 시도
