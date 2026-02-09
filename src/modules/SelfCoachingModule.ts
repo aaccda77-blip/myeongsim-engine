@@ -134,15 +134,15 @@ export class SelfCoachingModule {
             if (intent === 'saju_108_awakening') {
                 return {
                     type: 'COACHING_PROMPT',
-                    message: `🌌 **108 자각 프로토콜**\n\n무의식을 깨우는 108가지 질문 여정을 시작합니다.\n\n이 프로토콜은 당신의 무의식 깊은 곳에 숨겨진 진실을 발견하는 과정입니다. 각 질문은 당신의 내면을 비추는 거울입니다.\n\n어떤 차원부터 탐험하시겠습니까?`,
+                    message: `🌌 **108 자각 프로토콜**\n\n무의식을 깨우는 108가지 질문 여정을 시작합니다.\n\n이 프로토콜은 당신의 무의식 깊은 곳에 숨겨진 진실을 발견하는 과정입니다. 각 질문은 당신의 내면을 비추는 거울입니다.\n\n어떤 카테고리부터 탐험하시겠습니까?`,
                     options: [
-                        { label: "🪄 차원 1: 마음의 엑스레이", value: "dim_1_xray", trigger_mode: "immediate", next_prompt_guide: "Guide user through Soul X-Ray dimension. Analyze their emotional backbone using Saju Day Master and Month Branch. Identify dark codes causing pain." },
-                        { label: "🧬 차원 2: 잠든 재능 깨우기", value: "dim_2_unlock", trigger_mode: "immediate", next_prompt_guide: "Guide user through Genetic Code Unlock. Identify hidden talents using Useful God and Hidden Stems. Activate neural codes." },
-                        { label: "⚗️ 차원 3: 약점을 무기로", value: "dim_3_alchemy", trigger_mode: "immediate", next_prompt_guide: "Guide user through Alchemy Lab. Reframe Void and weakest element as creative space. Transform victim to creator." },
-                        { label: "💞 차원 4: 주파수 맞추기", value: "dim_4_frequency", trigger_mode: "immediate", next_prompt_guide: "Guide user through Frequency Tuning. Analyze relationship dynamics using Ten Gods. Balance self and others." },
-                        { label: "🌍 차원 5: 우주 건설", value: "dim_5_world", trigger_mode: "immediate", next_prompt_guide: "Guide user through World Building. Expand to life mission using Year Pillar. Define legacy." }
+                        { label: "🪞 자아 인식 (1-25번)", value: "awk_category_self", trigger_mode: "immediate", next_prompt_guide: "Show protocols 1-25 for self-awareness. Each protocol guides user through dark code → neural code → meta code transformation." },
+                        { label: "🌑 그림자 통합 (26-45번)", value: "awk_category_shadow", trigger_mode: "immediate", next_prompt_guide: "Show protocols 26-45 for shadow integration. Help user face and integrate disowned parts." },
+                        { label: "💞 관계 역학 (46-65번)", value: "awk_category_relationship", trigger_mode: "immediate", next_prompt_guide: "Show protocols 46-65 for relationship dynamics. Guide user to healthier connections." },
+                        { label: "🎯 삶의 목적 (66-88번)", value: "awk_category_purpose", trigger_mode: "immediate", next_prompt_guide: "Show protocols 66-88 for life purpose. Help user discover and live their calling." },
+                        { label: "✨ 초월 (89-108번)", value: "awk_category_transcendence", trigger_mode: "immediate", next_prompt_guide: "Show protocols 89-108 for transcendence. Guide user to spiritual awakening and unity consciousness." }
                     ],
-                    system_prompt_injection: `[108 Awakening Protocol] Multi-dimensional consciousness exploration. DayMaster: ${dayMasterChar}.`
+                    system_prompt_injection: `[108 Awakening Protocol] Multi-dimensional consciousness exploration. DayMaster: ${dayMasterChar}. Use Awakening108DB for protocol content.`
                 };
             }
 
