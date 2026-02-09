@@ -39,6 +39,94 @@ export class SelfCoachingModule {
         // KO Char Extraction (Safety)
         const dayMasterChar = dayMaster.replace(/[^\uAC00-\uD7A3]/g, '') || '갑';
 
+        // [NEW] 3D Neural Engineering Modes (Priority: Highest)
+        if (intent.startsWith('ms_3d_') || intent === 'ms_64_neural_code' || intent === 'ms_3s_protocol_start') {
+
+            // 1. Full 3D Scan
+            if (intent === 'ms_3d_full_scan') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `🧬 **3D 정밀 진단: 전체 좌표 스캔**\n\n당신의 내면 에너지를 3차원 좌표계로 분석합니다:\n\n- **X축 (의식 코드)**: Dark → Neural → Meta 현재 위치\n- **Y축 (주파수)**: 생산적 vs 파괴적 행동 패턴\n- **Z축 (벡터)**: 에너지 폭발(Out) vs 함몰(In) 위험도\n\n전체 스캔을 시작하시겠습니까?`,
+                    options: [
+                        { label: "🚀 전체 스캔 시작", value: "start_full_scan", trigger_mode: "immediate", next_prompt_guide: "Perform comprehensive 3D analysis: X-axis (consciousness level), Y-axis (frequency/behavior), Z-axis (energy vector). Provide detailed insights for each dimension." },
+                        { label: "📊 개별 축 선택", value: "select_axis", trigger_mode: "immediate", next_prompt_guide: "Let user choose which axis to analyze first (X, Y, or Z)." }
+                    ],
+                    system_prompt_injection: `[3D Scan Protocol] Analyze user's energy in 3D coordinate system. DayMaster: ${dayMasterChar}.`
+                };
+            }
+
+            // 2. X-Axis: Consciousness Code
+            if (intent === 'ms_3d_x_axis') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `🧠 **X축 분석: 의식 코드 (Consciousness Level)**\n\n당신의 현재 의식 상태를 3단계로 진단합니다:\n\n- **Dark Code (어둠)**: 무의식적 반응, 피해자 모드\n- **Neural Code (각성)**: 자각, 관찰자 모드\n- **Meta Code (초월)**: 창조자, 의미 부여 모드\n\n최근 일주일간 당신의 의식 상태는?`,
+                    options: [
+                        { label: "🌑 Dark: 자동반응 모드", value: "DARK_MODE", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "User is in Dark Code (reactive mode). Guide them to recognize automatic patterns and start observing." },
+                        { label: "🧬 Neural: 관찰자 모드", value: "NEURAL_MODE", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: "User is in Neural Code (observer mode). Help them deepen awareness and find patterns." },
+                        { label: "✨ Meta: 창조자 모드", value: "META_MODE", trigger_mode: "CONSCIOUSNESS_LEVEL_3", next_prompt_guide: "User is in Meta Code (creator mode). Support them in manifesting intentions and creating meaning." }
+                    ],
+                    system_prompt_injection: `[X-Axis Protocol] Consciousness level analysis. DayMaster: ${dayMasterChar}.`
+                };
+            }
+
+            // 3. Y-Axis: Frequency
+            if (intent === 'ms_3d_y_axis') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `📡 **Y축 분석: 주파수 측정 (Behavior Frequency)**\n\n당신의 행동 패턴이 생산적인지 파괴적인지 측정합니다:\n\n- **고주파 (High)**: 창조, 성장, 기여\n- **중립 (Neutral)**: 유지, 반복, 안정\n- **저주파 (Low)**: 소모, 회피, 파괴\n\n최근 당신의 행동 주파수는?`,
+                    options: [
+                        { label: "📈 고주파: 창조/성장 중", value: "HIGH_FREQ", trigger_mode: "CONSCIOUSNESS_LEVEL_3", next_prompt_guide: "User is in high frequency (creative/growth mode). Amplify this energy with specific actions." },
+                        { label: "➡️ 중립: 유지/반복 중", value: "NEUTRAL_FREQ", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: "User is in neutral frequency (maintenance mode). Help them identify what needs to shift." },
+                        { label: "📉 저주파: 소모/회피 중", value: "LOW_FREQ", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "User is in low frequency (destructive mode). Identify energy drains and provide recovery protocol." }
+                    ],
+                    system_prompt_injection: `[Y-Axis Protocol] Frequency analysis. DayMaster: ${dayMasterChar}.`
+                };
+            }
+
+            // 4. Z-Axis: Energy Vector
+            if (intent === 'ms_3d_z_axis') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `⚡ **Z축 분석: 에너지 벡터 (Energy Direction)**\n\n당신의 에너지가 어느 방향으로 흐르는지 진단합니다:\n\n- **폭발 (Explosion)**: 과잉 표출, 번아웃 위험\n- **균형 (Balance)**: 적절한 흐름\n- **함몰 (Implosion)**: 억압, 우울 위험\n\n현재 당신의 에너지 방향은?`,
+                    options: [
+                        { label: "💥 폭발: 과잉 표출", value: "EXPLOSION", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "User's energy is exploding outward (burnout risk). Provide grounding and containment strategies." },
+                        { label: "⚖️ 균형: 적절한 흐름", value: "BALANCE", trigger_mode: "CONSCIOUSNESS_LEVEL_3", next_prompt_guide: "User's energy is balanced. Help them maintain this equilibrium." },
+                        { label: "🕳️ 함몰: 억압/우울", value: "IMPLOSION", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "User's energy is imploding inward (depression risk). Provide expression and release strategies." }
+                    ],
+                    system_prompt_injection: `[Z-Axis Protocol] Energy vector analysis. DayMaster: ${dayMasterChar}.`
+                };
+            }
+
+            // 5. 64 Neural Code Decoder
+            if (intent === 'ms_64_neural_code') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `🧬 **64비트 뉴럴 코드 (Gene Keys Decoder)**\n\n당신의 DNA에 각인된 64가지 원형 코드를 분석합니다.\n\n각 코드는 3단계로 구성됩니다:\n- **Dark Code**: 그림자 패턴\n- **Gift**: 재능\n- **Meta Code**: 초월적 선물\n\n어떤 코드를 먼저 해독하시겠습니까?`,
+                    options: [
+                        { label: "🌑 Dark Code 진단", value: "decode_dark", trigger_mode: "immediate", next_prompt_guide: "Analyze user's shadow patterns using their Saju data. Identify recurring dark codes." },
+                        { label: "🎁 Gift 발견", value: "decode_gift", trigger_mode: "immediate", next_prompt_guide: "Identify user's natural talents and gifts using their Saju data." },
+                        { label: "✨ Meta Code 각성", value: "decode_meta", trigger_mode: "immediate", next_prompt_guide: "Explore user's transcendent potential using their Saju data." },
+                        { label: "🔮 전체 코드 맵", value: "full_code_map", trigger_mode: "immediate", next_prompt_guide: "Provide comprehensive 64-code analysis based on user's complete Saju chart." }
+                    ],
+                    system_prompt_injection: `[64 Neural Code Protocol] Gene Keys analysis. DayMaster: ${dayMasterChar}.`
+                };
+            }
+
+            // 6. 3S Protocol (Scan-Sync-Shift)
+            if (intent === 'ms_3s_protocol_start') {
+                return {
+                    type: 'COACHING_PROMPT',
+                    message: `🚀 **3S 솔루션 프로토콜**\n\n진단 결과를 실행 가능한 행동으로 변환합니다:\n\n1. **Scan**: 현재 상태 스캔\n2. **Sync**: 목표와 동기화\n3. **Shift**: 즉각 실행\n\n어떤 영역부터 시작하시겠습니까?`,
+                    options: [
+                        { label: "🧠 의식 전환 (Mindset Shift)", value: "3S_MINDSET", trigger_mode: "immediate", next_prompt_guide: "Guide user through 3S protocol for mindset transformation: Scan current beliefs → Sync with desired state → Shift with specific action." },
+                        { label: "⚡ 에너지 최적화 (Energy Optimization)", value: "3S_ENERGY", trigger_mode: "immediate", next_prompt_guide: "Guide user through 3S protocol for energy optimization: Scan energy drains → Sync with vitality → Shift with recovery action." },
+                        { label: "🎯 행동 실행 (Action Execution)", value: "3S_ACTION", trigger_mode: "immediate", next_prompt_guide: "Guide user through 3S protocol for immediate action: Scan obstacles → Sync with goal → Shift with first step." }
+                    ],
+                    system_prompt_injection: `[3S Protocol] Scan-Sync-Shift transformation. DayMaster: ${dayMasterChar}.`
+                };
+            }
+        }
+
         // [PHASE 3-i] 108 Awakening Quantum Modes (Top Priority)
         if (intent.startsWith('ms_soul_') || intent.startsWith('ms_void_') || intent.startsWith('ms_gap_') || intent.startsWith('ms_brain_') || intent.startsWith('ms_sky_') || intent.startsWith('ms_master_') || intent.startsWith('ms_shadow_')) {
             const context = getAwakeningContext(intent, sajuData);

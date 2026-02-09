@@ -4,6 +4,7 @@ import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/ge
 import { PromptEngine } from '@/services/PromptEngine';
 import { UserSoulProfile } from '@/types/akashic_records';
 import { getSajuCharacters } from '@/lib/saju/calculator'; // [Scientific Saju]
+import { NextRequest } from 'next/server'; // [NEW] For type compatibility
 
 import { calculateSaju as calculateSajuServer, generateSajuPromptBlock } from '@/lib/saju/SajuEngine'; // [NEW] Unified Engine
 import { retrieveGenreCodes } from '@/lib/rag/retrieveGenre'; // [New] Genre RAG
@@ -33,6 +34,7 @@ import {
 import { SelfCoachingModule } from '@/modules/SelfCoachingModule';
 import { QuantumLabModule } from '@/modules/QuantumLabModule'; // [NEW] // [NEW] Self-Coaching Engine
 import { getCombinedSystemPrompt } from '@/modules/SystemPersona'; // [NEW] Ultimate System Persona
+import { requireAuth } from '@/lib/auth'; // [NEW] Authentication Middleware
 // import { ScenarioEngine } from '@/services/ScenarioEngine'; // [Disabled] File missing
 
 export const runtime = 'nodejs'; // [Fix] Switch to Node.js to allow larger payloads (>1MB)
@@ -151,7 +153,7 @@ function inferCurrentStage(messages: any[], currentMessage: string): number {
     return 1; // Default: Diagnosis stage
 }
 
-export async function POST(req: Request) {
+export const POST = requireAuth(async (req: NextRequest, auth) => {
     try {
         const reqBody = await req.json();
         const { userId, message, messages, stage, sajuData, birthDate, birthTime, gender, userName, isPremium, lastBotMessage, chatHistory, userSaju, sessionId, clientDate: reqClientDate } = reqBody;
@@ -1161,4 +1163,4 @@ c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
         console.error('Chat API Error:', error);
         return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
-}
+});

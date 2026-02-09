@@ -53,9 +53,9 @@ export async function verifyAuth(request: NextRequest): Promise<{
  * Usage: export const POST = requireAuth(async (req, auth) => { ... });
  */
 export function requireAuth(
-    handler: (request: NextRequest, auth: { userId: string; userEmail?: string }) => Promise<NextResponse>
+    handler: (request: NextRequest, auth: { userId: string; userEmail?: string }) => Promise<NextResponse | Response>
 ) {
-    return async (request: NextRequest): Promise<NextResponse> => {
+    return async (request: NextRequest): Promise<NextResponse | Response> => {
         const authResult = await verifyAuth(request);
 
         if (!authResult.authenticated) {

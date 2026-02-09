@@ -1,17 +1,16 @@
 import { coachingService } from '@/services/coachingService';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, auth) => {
     try {
         const { searchParams } = new URL(req.url);
-        const userId = searchParams.get('userId');
         const sessionId = searchParams.get('sessionId'); // [New]
 
-        if (!userId) {
-            return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
-        }
+        // Use authenticated user ID instead of query param
+        const userId = auth.userId;
 
         // Fetch history from DB
         const logs = await coachingService.getChatHistory(userId, 50, sessionId || undefined);
@@ -30,4 +29,4 @@ export async function GET(req: NextRequest) {
     } catch (e: any) {
         return NextResponse.json({ error: e.message }, { status: 500 });
     }
-}
+});

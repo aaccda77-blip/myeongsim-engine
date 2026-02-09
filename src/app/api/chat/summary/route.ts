@@ -1,19 +1,19 @@
 import { coachingService } from '@/services/coachingService';
 import { supabase } from '@/lib/supabaseClient';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { requireAuth } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const revalidate = 0;
 
-export async function POST(req: Request) {
+export const POST = requireAuth(async (req: Request, auth) => {
     try {
-        const { userId, stage } = await req.json();
+        const { stage } = await req.json();
 
-        if (!userId) {
-            return new Response('Missing userId', { status: 400 });
-        }
+        // Use authenticated user ID
+        const userId = auth.userId;
 
         // 1. Fetch Chat Logs for this stage
         const { data: logs, error } = await supabase
@@ -67,4 +67,4 @@ ${conversationText}
         console.error('Summary API Error:', error);
         return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
-}
+});
