@@ -71,17 +71,51 @@ function checkRateLimit(request: NextRequest): NextResponse | null {
     return null;
 }
 
-export function middleware(request: NextRequest) {
-    // Check rate limit
+import { createServerClient } from '@supabase/ssr';
+
+export async function middleware(request: NextRequest) {
+    let response = NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
+    });
+
+    // 1. Supabase Session Refresh
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return request.cookies.getAll();
+                },
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value, options }) => {
+                        request.cookies.set(name, value);
+                    });
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    });
+                    cookiesToSet.forEach(({ name, value, options }) => {
+                        response.cookies.set(name, value, options);
+                    });
+                },
+            },
+        }
+    );
+
+    // Refresh session if expired - required for Server Components
+    await supabase.auth.getUser();
+
+    // 2. Rate Limiting check
     const rateLimitResponse = checkRateLimit(request);
     if (rateLimitResponse) {
         return rateLimitResponse;
     }
 
-    // Add security headers
-    const response = NextResponse.next();
-
-    // Security Headers
+    // 3. Security Headers
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-XSS-Protection', '1; mode=block');
