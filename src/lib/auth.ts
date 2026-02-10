@@ -109,9 +109,6 @@ export async function optionalAuth(request: NextRequest): Promise<{
 /**
  * Check if user has premium access
  */
-/**
- * Check if user has premium access
- */
 export async function checkPremiumAccess(userId: string): Promise<boolean> {
     try {
         const cookieStore = await cookies();
