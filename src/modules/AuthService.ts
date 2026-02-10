@@ -147,7 +147,10 @@ export class AuthService {
      */
     static async loginWithGoogle() {
         try {
-            const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
+            const isDevelopment = process.env.NODE_ENV === 'development';
+            const redirectUrl = isDevelopment
+                ? 'http://localhost:3000/auth/callback'
+                : 'https://myeongsim-report.vercel.app/auth/callback';
 
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
