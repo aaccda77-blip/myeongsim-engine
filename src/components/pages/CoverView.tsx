@@ -120,7 +120,20 @@ export default function CoverView() {
                             <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                         </svg>
                     </button>
-                    <div className="relative">
+                    <div className="relative flex gap-2">
+                        <button
+                            onClick={async () => {
+                                if (confirm('로그아웃 하시겠습니까?')) {
+                                    await AuthService.logout();
+                                    window.location.href = '/login';
+                                }
+                            }}
+                            aria-label="Logout"
+                            className="text-gray-400 hover:text-white flex items-center gap-1 text-xs"
+                        >
+                            <LogIn className="w-4 h-4 rotate-180" />
+                            <span>로그아웃</span>
+                        </button>
                         <button aria-label="Notifications" className="text-gray-400 hover:text-white">
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
