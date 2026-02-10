@@ -1,12 +1,23 @@
 import { redirect } from 'next/navigation';
+import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
-export default function Home({
+export default async function Home({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
+  // Check authentication
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+
+  // If not logged in, redirect to login page
+  if (!session) {
+    redirect('/login');
+  }
+
+  // If logged in, redirect to report with query params
   const params = new URLSearchParams();
 
   if (searchParams) {

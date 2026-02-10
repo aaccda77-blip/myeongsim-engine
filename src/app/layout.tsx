@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import AuthGuard from "@/components/auth/AuthGuard";
 import SafetyDisclaimerModal from "@/components/modals/SafetyDisclaimerModal";
 import GoogleAuthSync from "@/components/auth/GoogleAuthSync";
 
@@ -45,9 +44,7 @@ export default function RootLayout({
                 <SafetyDisclaimerModal />
                 {/* <PushTestButton /> - Debug Only */}
                 <GoogleAuthSync />
-                <AuthGuard>
-                    {children}
-                </AuthGuard>
+                {children}
             </body>
         </html>
     );

@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'; // [Deep Tech] Lazy Loading의 핵심
 import { useReportStore } from '@/store/useReportStore';
 import BookLayout from '@/components/layout/BookLayout';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
+import { Loader2 } from 'lucide-react';
 
 // [Optimization] 무거운 컴포넌트는 필요할 때만 로드합니다 (Code Splitting)
 // ssr: false로 설정하여 클라이언트 전용 라이브러리(Recharts, Framer Motion) 충돌 방지
@@ -71,21 +73,42 @@ function ReportContent() {
 }
 
 export default function ReportPage() {
+    const router = useRouter();
     // [Fix Hydration] 클라이언트 마운트 여부 체크
     // Next.js에서 Persist Store를 쓸 때 필수적인 패턴입니다.
     const [isMounted, setIsMounted] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
     useEffect(() => {
         setIsMounted(true);
-    }, []);
+
+        // Check authentication
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.push('/login');
+            } else {
+                setIsAuthenticated(true);
+            }
+            setIsCheckingAuth(false);
+        };
+
+        checkAuth();
+    }, [router]);
 
     // 서버 사이드 렌더링 중이거나 아직 마운트 안 됐으면 껍데기만 보여줌 (에러 방지)
-    if (!isMounted) {
+    if (!isMounted || isCheckingAuth) {
         return (
-            <div className="min-h-[100dvh] w-full bg-[#050505] flex justify-center items-center">
-                <div className="w-full max-w-md h-[100dvh] bg-deep-slate animate-pulse" />
+            <div className="min-h-[100dvh] w-full bg-[#1e262f] flex justify-center items-center">
+                <Loader2 className="w-8 h-8 text-[#10b748] animate-spin" />
             </div>
         );
+    }
+
+    // If not authenticated, don't render (redirect will happen)
+    if (!isAuthenticated) {
+        return null;
     }
 
     return (

@@ -1,237 +1,145 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { AuthService } from '@/modules/AuthService';
-import { Sparkles, Lock, Phone, ArrowRight, Clock, CreditCard } from 'lucide-react';
-import { PrivacyPolicyModal } from '@/components/modals/PrivacyPolicyModal';
+import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const isExtendMode = searchParams?.get('action') === 'extend'; // [NEW] 연장 모드 감지
-
-    const [phoneNumber, setPhoneNumber] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
-    const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-    const [selectedTier, setSelectedTier] = useState<'TRIAL' | 'PASS' | 'VIP'>('PASS'); // [NEW] 선택된 이용권
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-
-        if (!agreedToPrivacy) {
-            setError('개인정보 처리방침에 동의해주세요.');
-            return;
-        }
-
-        if (!phoneNumber || phoneNumber.length < 10) {
-            setError('올바른 휴대폰 번호를 입력해주세요.');
-            return;
-        }
-
-        setIsLoading(true);
-
-        try {
-            // Phone authentication
-            const user = await AuthService.loginWithPhone(phoneNumber, 'TRIAL');
-
-            if (user) {
-                // Success message based on ticket status
-                let message = '로그인되었습니다.';
-                if (user.membership_tier && user.membership_tier !== 'FREE') {
-                    message = `환영합니다! ${user.membership_tier} 이용권이 확인되었습니다. ✨`;
-                }
-
-                alert(message);
-
-                // Save to localStorage for persistence
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('myeongsim_user_id', user.id);
-                    localStorage.setItem('myeongsim_login_at', new Date().toISOString());
-                }
-
-                // Redirect to main page
-                router.push('/');
+    // Check if user is already logged in
+    useEffect(() => {
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                router.push('/report');
             } else {
-                setError('로그인에 실패했습니다. 번호를 확인해주세요.');
+                setIsCheckingAuth(false);
             }
-        } catch (err) {
-            console.error('Login error:', err);
-            setError('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
-        } finally {
+        };
+        checkAuth();
+    }, [router]);
+
+    const handleGoogleLogin = async () => {
+        try {
+            setIsLoading(true);
+            await AuthService.loginWithGoogle();
+        } catch (error) {
+            console.error(error);
+            alert('로그인 중 오류가 발생했습니다.');
             setIsLoading(false);
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-            {/* Background Effects */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+    if (isCheckingAuth) {
+        return (
+            <div className="min-h-screen bg-[#1e262f] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-[#10b748] animate-spin" />
             </div>
+        );
+    }
 
-            {/* Login Card */}
-            <div className="relative w-full max-w-md">
-                {/* Logo/Title */}
-                <div className="text-center mb-8">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 shadow-lg ${isExtendMode
-                            ? 'bg-gradient-to-br from-red-500 to-orange-500'
-                            : 'bg-gradient-to-br from-primary-gold to-orange-500'
-                        }`}>
-                        {isExtendMode ? <Clock className="w-8 h-8 text-white" /> : <Sparkles className="w-8 h-8 text-white" />}
-                    </div>
-                    <h1 className="text-3xl font-bold text-white mb-2">
-                        {isExtendMode ? '이용권 연장' : '명심코칭'}
-                    </h1>
-                    <p className="text-slate-400">
-                        {isExtendMode ? '대화를 계속하려면 이용권을 갱신하세요' : '이용권 로그인'}
+    return (
+        <div className="min-h-screen bg-[#1e262f] flex items-center justify-center p-6 relative overflow-hidden">
+            {/* Background Decoration */}
+            <div className="absolute top-[-20%] right-[-20%] w-[600px] h-[600px] bg-[#10b748]/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] left-[-20%] w-[500px] h-[500px] bg-[#10b748]/5 rounded-full blur-[100px] pointer-events-none" />
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="w-full max-w-md z-10"
+            >
+                {/* Logo & Title */}
+                <div className="text-center mb-12">
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                        className="mb-6"
+                    >
+                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#10b748] to-[#0d8f3a] rounded-2xl flex items-center justify-center shadow-lg shadow-[#10b748]/30">
+                            <span className="text-4xl">🔮</span>
+                        </div>
+                    </motion.div>
+
+                    <motion.h1
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="text-4xl font-bold text-[#e2e8f0] mb-3 tracking-tight"
+                    >
+                        명심코칭
+                    </motion.h1>
+
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="text-gray-400 text-sm leading-relaxed"
+                    >
+                        당신의 운명을 읽고<br />마음을 치유합니다
+                    </motion.p>
+                </div>
+
+                {/* Login Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="bg-[#161d24] border border-[#2c3641] rounded-2xl p-8 shadow-2xl"
+                >
+                    <h2 className="text-xl font-bold text-white mb-2 text-center">시작하기</h2>
+                    <p className="text-gray-400 text-sm text-center mb-8">
+                        구글 계정으로 간편하게 로그인하세요
                     </p>
 
-                    {/* [NEW] 연장 모드 이용권 선택 */}
-                    {isExtendMode && (
-                        <div className="mt-6 grid grid-cols-3 gap-2">
-                            {[
-                                { tier: 'TRIAL' as const, label: '💎 30분', price: '3,900원' },
-                                { tier: 'PASS' as const, label: '⭐ 24시간', price: '29,000원' },
-                                { tier: 'VIP' as const, label: '👑 7일', price: '49,000원' }
-                            ].map((opt) => (
-                                <button
-                                    key={opt.tier}
-                                    type="button"
-                                    onClick={() => setSelectedTier(opt.tier)}
-                                    className={`p-3 rounded-xl border-2 transition-all ${selectedTier === opt.tier
-                                            ? 'border-primary-gold bg-primary-gold/20 text-white'
-                                            : 'border-slate-600 bg-slate-800/50 text-slate-400 hover:border-slate-500'
-                                        }`}
-                                >
-                                    <div className="text-lg">{opt.label}</div>
-                                    <div className="text-xs mt-1">{opt.price}</div>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Login Form */}
-                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        {/* Phone Number Input */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                휴대폰 번호
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Phone className="w-5 h-5 text-slate-400" />
-                                </div>
-                                <input
-                                    type="tel"
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9]/g, ''))}
-                                    placeholder="01012345678"
-                                    className="w-full pl-12 pr-4 py-3 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-primary-gold focus:ring-2 focus:ring-primary-gold/20 transition-all"
-                                    maxLength={11}
-                                    disabled={isLoading}
-                                />
-                            </div>
-                            <p className="mt-2 text-xs text-slate-400">
-                                💡 하이픈(-) 없이 숫자만 입력해주세요
-                            </p>
-                        </div>
-
-                        {/* Privacy Agreement */}
-                        <div className="flex items-start space-x-3">
-                            <input
-                                type="checkbox"
-                                id="privacy"
-                                checked={agreedToPrivacy}
-                                onChange={(e) => setAgreedToPrivacy(e.target.checked)}
-                                className="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-900/50 text-primary-gold focus:ring-primary-gold focus:ring-offset-0"
-                                disabled={isLoading}
-                            />
-                            <label htmlFor="privacy" className="text-sm text-slate-300">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPrivacyModal(true)}
-                                    className="text-primary-gold hover:underline font-medium"
-                                >
-                                    개인정보 처리방침
-                                </button>
-                                에 동의합니다. (필수)
-                                <br />
-                                <span className="text-xs text-slate-500">
-                                    휴대폰 번호는 SHA-256 암호화되어 안전하게 저장됩니다.
-                                </span>
-                            </label>
-                        </div>
-
-                        {/* Error Message */}
-                        {error && (
-                            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-                                {error}
-                            </div>
+                    {/* Google Login Button */}
+                    <button
+                        onClick={handleGoogleLogin}
+                        disabled={isLoading}
+                        className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-semibold py-4 px-4 rounded-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isLoading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <>
+                                <svg height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" fill="#fbc02d"></path>
+                                    <path d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" fill="#e53935"></path>
+                                    <path d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" fill="#4caf50"></path>
+                                    <path d="M43.611,20.083L43.611,20.083L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" fill="#1565c0"></path>
+                                </svg>
+                                <span>Google로 계속하기</span>
+                            </>
                         )}
+                    </button>
 
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            disabled={isLoading || !phoneNumber || !agreedToPrivacy}
-                            className="w-full py-3 bg-gradient-to-r from-primary-gold to-orange-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary-gold/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    <span>로그인 중...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Lock className="w-5 h-5" />
-                                    <span>이용권 확인 및 로그인</span>
-                                    <ArrowRight className="w-5 h-5" />
-                                </>
-                            )}
-                        </button>
-                    </form>
+                    {/* Privacy Notice */}
+                    <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
+                        로그인하시면 <span className="text-[#10b748]">개인정보 처리방침</span> 및<br />
+                        <span className="text-[#10b748]">서비스 이용약관</span>에 동의하는 것으로 간주됩니다.
+                    </p>
+                </motion.div>
 
-                    {/* Info Box */}
-                    <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                        <p className="text-sm text-blue-300 mb-2">
-                            💙 <strong>이용권 보유자 전용</strong>
-                        </p>
-                        <ul className="text-xs text-blue-200/80 space-y-1">
-                            <li>• TRIAL, PASS, VIP 이용권 자동 확인</li>
-                            <li>• 구매하신 휴대폰 번호로 로그인하세요</li>
-                            <li>• 로그인 후 바로 코칭 시작 가능</li>
-                        </ul>
-                    </div>
-
-                    {/* Footer Links */}
-                    <div className="mt-6 text-center space-y-2">
-                        <p className="text-sm text-slate-400">
-                            이용권이 없으신가요?{' '}
-                            <button
-                                onClick={() => router.push('/')}
-                                className="text-primary-gold hover:underline"
-                            >
-                                무료 체험하기
-                            </button>
-                        </p>
-                        <p className="text-xs text-slate-500">
-                            문의: support@myeongsim.com
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Privacy Policy Modal */}
-            <PrivacyPolicyModal
-                isOpen={showPrivacyModal}
-                onClose={() => setShowPrivacyModal(false)}
-            />
+                {/* Footer */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.7 }}
+                    className="text-center mt-8"
+                >
+                    <p className="text-xs text-gray-600">
+                        © 2026 명심코칭. All rights reserved.
+                    </p>
+                </motion.div>
+            </motion.div>
         </div>
     );
 }
