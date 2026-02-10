@@ -1,8 +1,9 @@
 import { useReportStore } from '@/store/useReportStore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Calendar, Clock, ChevronRight, Loader2, Check } from 'lucide-react';
+import { User, Calendar, Clock, ChevronRight, Loader2, Check, LogIn } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { calculateSaju } from '@/utils/SajuCalculator';
+import { AuthService } from '@/modules/AuthService';
 
 import { ZODIAC_TIME_OPTIONS } from '@/constants/saju';
 
@@ -31,9 +32,6 @@ export default function CoverView() {
             const pillars = calculateSaju(birthDate, timeVal, calendarType, gender);
             setPreviewPillars(pillars);
 
-            // [Fix] data synchronization
-            // Update store immediately so Chat Interface can access the name
-            // even before the user clicks "Go to Result"
             updateUserData({
                 userName: name,
                 birthDate,
@@ -55,7 +53,6 @@ export default function CoverView() {
         if (birthTime !== 'unknown') pillarsList.push(previewPillars.time);
 
         pillarsList.forEach(p => {
-            // Simple counting logic (copied from ProfileModal)
             const mapLabel = (l: string) => {
                 if (l === '목') counts.wood++;
                 if (l === '화') counts.fire++;
@@ -110,26 +107,44 @@ export default function CoverView() {
     );
 
     return (
-        <section className="min-h-full w-full flex flex-col items-center justify-center p-6 relative">
-            {/* Background Decoration */}
+        <main className="w-full max-w-md h-full flex flex-col p-0 overflow-hidden relative mx-auto bg-[#1e262f]">
+            {/* Background Decoration (Optional, kept from original but subtle) */}
             <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-primary-olive/5 rounded-full blur-[100px] pointer-events-none" />
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-sm z-10"
-            >
-                <div className="text-center mb-8">
-                    <h1 className="text-2xl font-serif font-bold text-white mb-2">
+            {/* Scrollable Content Area */}
+            <div className="flex-grow overflow-y-auto p-6 pb-24 z-10">
+                {/* BEGIN: TopNavigation */}
+                <nav className="flex justify-between items-center mb-10" data-purpose="navigation-bar">
+                    <button aria-label="Menu" className="text-gray-400 hover:text-white">
+                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                        </svg>
+                    </button>
+                    <div className="relative">
+                        <button aria-label="Notifications" className="text-gray-400 hover:text-white">
+                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                            </svg>
+                            <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-[#1e262f]"></span>
+                        </button>
+                    </div>
+                </nav>
+                {/* END: TopNavigation */}
+
+                {/* BEGIN: HeaderSection */}
+                <section className="text-center mb-12" data-purpose="header-text">
+                    <h1 className="text-3xl font-bold mb-3 tracking-tight text-[#e2e8f0]">
                         {viewMode === 'form' ? '명심코칭 시작하기' : '나의 사주 원국'}
                     </h1>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-gray-400 text-sm">
                         {viewMode === 'form'
                             ? '정확한 분석을 위해 태어난 정보를 입력해주세요.'
                             : '입력하신 정보가 맞는지 확인해주세요.'}
                     </p>
-                </div>
+                </section>
+                {/* END: HeaderSection */}
 
+                {/* BEGIN: FormSection */}
                 <AnimatePresence mode="wait">
                     {viewMode === 'form' ? (
                         <motion.form
@@ -137,36 +152,44 @@ export default function CoverView() {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
+                            className="space-y-6 flex-grow"
                             onSubmit={handleCheck}
-                            className="space-y-5"
                         >
                             {/* Name Input */}
-                            <div className="space-y-1">
-                                <label className="text-xs text-gray-500 ml-1">이름</label>
+                            <div className="space-y-2">
+                                <label className="text-xs font-medium text-gray-500 ml-1">이름</label>
                                 <div className="relative">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                        </svg>
+                                    </span>
                                     <input
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        placeholder="홍길동"
-                                        className="w-full bg-gray-900/50 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:border-primary-olive focus:ring-1 focus:ring-primary-olive transition-all outline-none"
+                                        placeholder="이름을 입력하세요"
+                                        className="w-full bg-[#161d24] border border-[#2c3641] text-white rounded-lg pl-11 py-4 focus:ring-[#10b748] focus:border-[#10b748] transition-all outline-none"
                                         required
                                     />
                                 </div>
                             </div>
 
-                            {/* Birth Date & Type */}
-                            <div className="space-y-1">
-                                <div className="flex justify-between items-center px-1">
-                                    <label className="text-xs text-gray-500">생년월일</label>
-                                    <div className="flex gap-1 bg-white/5 p-0.5 rounded-lg">
+                            {/* Birth Date with Toggle */}
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-end">
+                                    <label className="text-xs font-medium text-gray-500 ml-1">생년월일</label>
+                                    <div className="flex bg-[#161d24] rounded-md p-0.5 border border-[#2c3641]">
+                                        {/* Solar/Lunar Toggle */}
                                         {['solar', 'lunar'].map((type) => (
                                             <button
                                                 key={type}
                                                 type="button"
                                                 onClick={() => setCalendarType(type as any)}
-                                                className={`text-[10px] px-2 py-0.5 rounded-md transition-colors ${calendarType === type ? 'bg-primary-olive text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                                                className={`px-3 py-1 text-[10px] rounded-md font-medium transition-colors ${calendarType === type
+                                                        ? 'bg-[#10b748] text-white'
+                                                        : 'text-gray-500 hover:text-gray-300'
+                                                    }`}
                                             >
                                                 {type === 'solar' ? '양력' : '음력'}
                                             </button>
@@ -174,54 +197,70 @@ export default function CoverView() {
                                     </div>
                                 </div>
                                 <div className="relative">
-                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                        </svg>
+                                    </span>
+                                    {/* Date Input with custom style override for dark mode calendar icon */}
+                                    <style jsx>{`
+                                        input[type="date"]::-webkit-calendar-picker-indicator {
+                                            filter: invert(1);
+                                            opacity: 0.5;
+                                            cursor: pointer;
+                                        }
+                                    `}</style>
                                     <input
                                         type="date"
                                         value={birthDate}
                                         onChange={(e) => setBirthDate(e.target.value)}
-                                        className="w-full bg-gray-900/50 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:border-primary-olive outline-none appearance-none"
+                                        className="w-full bg-[#161d24] border border-[#2c3641] text-white rounded-lg pl-11 pr-4 py-4 focus:ring-[#10b748] focus:border-[#10b748] transition-all outline-none"
                                         required
                                     />
                                 </div>
                             </div>
 
-                            {/* Time Select (Zodiac) */}
-                            <div className="space-y-1">
-                                <label className="text-xs text-gray-500 ml-1">태어난 시간</label>
+                            {/* Birth Time Selection */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-medium text-gray-500 ml-1">태어난 시간</label>
                                 <div className="relative">
-                                    <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-olive" />
+                                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                        </svg>
+                                    </span>
                                     <select
                                         value={birthTime}
                                         onChange={(e) => setBirthTime(e.target.value)}
-                                        className="w-full bg-gray-900/50 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:border-primary-olive outline-none appearance-none cursor-pointer"
+                                        className="w-full bg-[#161d24] border border-[#2c3641] text-white rounded-lg pl-11 py-4 appearance-none focus:ring-[#10b748] focus:border-[#10b748] transition-all outline-none"
                                     >
                                         {ZODIAC_TIME_OPTIONS.map((opt) => (
-                                            <option key={opt.value} value={opt.value} className="bg-gray-900 text-white">
+                                            <option key={opt.value} value={opt.value} className="bg-[#1e262f] text-white">
                                                 {opt.label}
                                             </option>
                                         ))}
                                     </select>
-                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                        <ChevronRight className="w-4 h-4 text-gray-600 rotate-90" />
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                                     </div>
                                 </div>
                                 {birthTime !== 'unknown' && (
-                                    <p className="text-[10px] text-primary-olive/80 text-right px-2">
+                                    <p className="text-right text-[10px] text-gray-500">
                                         * {ZODIAC_TIME_OPTIONS.find(o => o.value === birthTime)?.hint}
                                     </p>
                                 )}
                             </div>
 
-                            {/* Gender */}
-                            <div className="flex gap-2 pt-2">
+                            {/* Gender Selection */}
+                            <div className="grid grid-cols-2 gap-4 pt-2">
                                 {['male', 'female'].map((g) => (
                                     <button
                                         key={g}
                                         type="button"
                                         onClick={() => setGender(g as any)}
-                                        className={`flex-1 py-3 rounded-xl border transition-all text-sm font-medium ${gender === g
-                                            ? 'bg-white text-black border-white'
-                                            : 'bg-transparent border-white/10 text-gray-500 hover:border-white/30'
+                                        className={`py-4 rounded-lg font-bold text-sm transition-all ${gender === g
+                                                ? 'bg-white text-[#1e262f] shadow-sm'
+                                                : 'bg-[#161d24] border border-[#2c3641] text-gray-400'
                                             }`}
                                     >
                                         {g === 'male' ? '남성' : '여성'}
@@ -229,24 +268,25 @@ export default function CoverView() {
                                 ))}
                             </div>
 
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full bg-primary-olive text-white font-bold text-lg py-4 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(101,140,66,0.3)] mt-6 flex items-center justify-center gap-2"
-                            >
-                                {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : '만세력 분석하기'}
-                            </button>
+                            {/* Main Action Button */}
+                            <div className="pt-4">
+                                <button
+                                    className="w-full bg-[#10b748] hover:bg-green-600 text-white font-bold py-5 rounded-lg text-lg transition-colors shadow-[0_4px_14px_0_rgba(16,183,72,0.39)] flex justify-center items-center gap-2"
+                                    type="submit"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : '만세력 분석하기'}
+                                </button>
+                            </div>
                         </motion.form>
-
                     ) : (
-                        // Result View
                         <motion.div
                             key="result"
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="bg-gray-800/50 border border-white/10 rounded-3xl p-6 backdrop-blur-sm"
+                            className="bg-[#161d24] border border-[#2c3641] rounded-2xl p-6"
                         >
-                            <div className="flex items-center justify-center gap-2 mb-6 text-primary-gold">
+                            <div className="flex items-center justify-center gap-2 mb-6 text-[#10b748]">
                                 <Check className="w-5 h-5" />
                                 <span className="text-sm font-bold">원국 분석 완료</span>
                             </div>
@@ -278,7 +318,7 @@ export default function CoverView() {
                                 </button>
                                 <button
                                     onClick={handleConfirm}
-                                    className="flex-[2] bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors shadow-lg"
+                                    className="flex-[2] bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors shadow-lg"
                                 >
                                     결과 확인하러 가기
                                 </button>
@@ -286,7 +326,67 @@ export default function CoverView() {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </motion.div>
-        </section>
+                {/* END: FormSection */}
+
+                {/* BEGIN: SocialLoginSection */}
+                {viewMode === 'form' && (
+                    <section className="mt-8 pb-4" data-purpose="social-login">
+                        {/* Divider */}
+                        <div className="relative mb-8">
+                            <div aria-hidden="true" className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-[#2c3641]"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-4 bg-[#1e262f] text-gray-500">또는</span>
+                            </div>
+                        </div>
+                        {/* Google Button - CLICK HANDLER ATTACHED HERE */}
+                        <button
+                            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-semibold py-4 px-4 rounded-lg transition-all"
+                            type="button"
+                            onClick={async () => {
+                                try {
+                                    setIsLoading(true);
+                                    await AuthService.loginWithGoogle();
+                                } catch (error) {
+                                    console.error(error);
+                                    alert('로그인 중 오류가 발생했습니다.');
+                                    setIsLoading(false);
+                                }
+                            }}
+                        >
+                            <svg height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" fill="#fbc02d"></path>
+                                <path d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" fill="#e53935"></path>
+                                <path d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" fill="#4caf50"></path>
+                                <path d="M43.611,20.083L43.611,20.083L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" fill="#1565c0"></path>
+                            </svg>
+                            <span>Google로 계속하기</span>
+                        </button>
+                    </section>
+                )}
+                {/* END: SocialLoginSection */}
+
+            </div>
+
+            {/* Bottom Navigation Bar */}
+            <nav className="absolute bottom-0 left-0 right-0 bg-[#1e262f]/90 backdrop-blur-md border-t border-[#2c3641] py-3 px-8 flex justify-between items-center z-20">
+                <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors">
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 19l-7-7m0 0l7-7m-7 7h18" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                    </svg>
+                    <span className="text-[10px] font-medium">Back</span>
+                </button>
+                <button
+                    className="flex flex-col items-center gap-1 text-[#10b748] hover:text-green-400 transition-colors"
+                    onClick={() => window.location.reload()}
+                >
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                    </svg>
+                    <span className="text-[10px] font-medium">Home</span>
+                </button>
+            </nav>
+        </main>
     );
 }
