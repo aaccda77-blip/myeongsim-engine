@@ -4,16 +4,11 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key';
 
-// Create Supabase client for server-side auth verification
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-export interface AuthenticatedRequest extends NextRequest {
-    userId?: string;
-    userEmail?: string;
-}
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 /**
- * Verify JWT token from Authorization header
+ * Verify Session from Cookies (SSR Compatible)
  */
 export async function verifyAuth(request: NextRequest): Promise<{
     authenticated: boolean;
@@ -22,25 +17,42 @@ export async function verifyAuth(request: NextRequest): Promise<{
     error?: string;
 }> {
     try {
-        // Get token from Authorization header
-        const authHeader = request.headers.get('authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return { authenticated: false, error: 'Missing or invalid authorization header' };
-        }
+        const cookieStore = await cookies();
 
-        const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    getAll() {
+                        return cookieStore.getAll();
+                    },
+                    setAll(cookiesToSet) {
+                        try {
+                            cookiesToSet.forEach(({ name, value, options }) => {
+                                cookieStore.set(name, value, options);
+                            });
+                        } catch {
+                            // The `set` method was called from a Server Component.
+                            // This can be ignored if you have middleware refreshing
+                            // user sessions.
+                        }
+                    },
+                },
+            }
+        );
 
-        // Verify token with Supabase
-        const { data, error } = await supabase.auth.getUser(token);
+        const { data: { user }, error } = await supabase.auth.getUser();
 
-        if (error || !data.user) {
-            return { authenticated: false, error: error?.message || 'Invalid token' };
+        if (error || !user) {
+            console.error('Auth verification failed:', error);
+            return { authenticated: false, error: 'Session expired or invalid' };
         }
 
         return {
             authenticated: true,
-            userId: data.user.id,
-            userEmail: data.user.email,
+            userId: user.id,
+            userEmail: user.email,
         };
     } catch (error: any) {
         console.error('Auth verification error:', error);
