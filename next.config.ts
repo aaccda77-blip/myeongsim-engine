@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    output: "standalone", // Required for Vercel deployment
+    // output: "standalone", // [DISABLED] Trying default build to fix Vercel error
     // swcMinify: true, // Deprecated in Next.js 15+ (Enabled by default)
     productionBrowserSourceMaps: false, // [Security] Disable Source Maps in Prod
     images: {
