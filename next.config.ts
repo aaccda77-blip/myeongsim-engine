@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    output: "standalone",
+    // output: "standalone", // [Temporarily disabled] Causing EBUSY error on Windows
     // swcMinify: true, // Deprecated in Next.js 15+ (Enabled by default)
     productionBrowserSourceMaps: false, // [Security] Disable Source Maps in Prod
     images: {

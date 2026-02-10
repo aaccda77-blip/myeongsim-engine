@@ -108,6 +108,18 @@ export function optimizePexelsQuery(originalPrompt: string): string {
         '강|river|stream': 'river flowing nature peaceful',
         '별|star|night': 'starry night peaceful',
         '해|sun|sunrise|sunset': 'golden hour sunset sunrise',
+
+        // 구체적 식물/자연 요소
+        '덩쿨|vine|ivy': 'green vines climbing plants nature',
+        '이끼|moss': 'moss covered stones forest peaceful',
+        '뿌리|root': 'tree roots nature grounding',
+        '나뭇잎|leaf|leaves': 'green leaves nature fresh',
+        '풀|grass': 'grass field meadow peaceful',
+        '나무|wood': 'wooden texture nature organic',
+        '돌|stone|rock': 'stones rocks nature zen',
+        '물결|wave|ripple': 'water ripples peaceful reflection',
+        '안개|fog|mist': 'misty forest peaceful morning',
+        '이슬|dew': 'morning dew drops nature fresh',
     };
 
     // 키워드 매칭

@@ -1115,6 +1115,13 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 throw new Error(`Server Error: ${errText}`);
             }
 
+            // [Safety] Check for crisis detection header
+            const crisisDetected = response.headers.get('X-Crisis-Detected') === 'true';
+            if (crisisDetected) {
+                console.log('🚨 [Crisis] Detected from API - Showing breathing guide');
+                setShowBreathingGuideFromChat(true);
+            }
+
             if (!response.body) throw new Error('No response stream');
 
             // [Stream Handling]
@@ -2902,6 +2909,16 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* [Safety] SOS Breathing Guide Modal */}
+            <BreathingGuideModal
+                isOpen={showBreathingGuideFromChat}
+                onClose={() => setShowBreathingGuideFromChat(false)}
+                onComplete={() => {
+                    console.log('🧘 [Breathing] User completed breathing exercise');
+                    // Continue conversation after breathing
+                }}
+            />
 
             {/* [Removed] Mic Permission Guide */}
         </div >

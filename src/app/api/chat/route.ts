@@ -1156,7 +1156,10 @@ c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
         });
 
         return new Response(readableStream, {
-            headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+            headers: {
+                'Content-Type': 'text/plain; charset=utf-8',
+                'X-Crisis-Detected': safetyResult.isCrisis ? 'true' : 'false'
+            },
         });
 
     } catch (error: any) {
