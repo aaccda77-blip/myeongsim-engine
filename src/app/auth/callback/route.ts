@@ -24,6 +24,10 @@ export async function GET(request: Request) {
             }
         } else {
             console.error('Auth Exchange Error:', error);
+            console.error('Error Code:', error.code);
+            console.error('Error Message:', error.message);
+            // Redirect to error page with params
+            return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(error.message)}`);
         }
     }
 
