@@ -142,6 +142,33 @@ export class AuthService {
     }
 
     /**
+     * Login with Google OAuth
+     * @returns Redirects to Google Login
+     */
+    static async loginWithGoogle() {
+        try {
+            const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
+
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: redirectUrl,
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'consent',
+                    },
+                },
+            });
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Google Login Error:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Marks the deep scan as completed for a user.
      */
     static async completeDeepScan(userId: string) {
