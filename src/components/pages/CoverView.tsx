@@ -187,8 +187,8 @@ export default function CoverView() {
                                                 type="button"
                                                 onClick={() => setCalendarType(type as any)}
                                                 className={`px-3 py-1 text-[10px] rounded-md font-medium transition-colors ${calendarType === type
-                                                        ? 'bg-[#10b748] text-white'
-                                                        : 'text-gray-500 hover:text-gray-300'
+                                                    ? 'bg-[#10b748] text-white'
+                                                    : 'text-gray-500 hover:text-gray-300'
                                                     }`}
                                             >
                                                 {type === 'solar' ? '양력' : '음력'}
@@ -259,8 +259,8 @@ export default function CoverView() {
                                         type="button"
                                         onClick={() => setGender(g as any)}
                                         className={`py-4 rounded-lg font-bold text-sm transition-all ${gender === g
-                                                ? 'bg-white text-[#1e262f] shadow-sm'
-                                                : 'bg-[#161d24] border border-[#2c3641] text-gray-400'
+                                            ? 'bg-white text-[#1e262f] shadow-sm'
+                                            : 'bg-[#161d24] border border-[#2c3641] text-gray-400'
                                             }`}
                                     >
                                         {g === 'male' ? '남성' : '여성'}
@@ -328,44 +328,8 @@ export default function CoverView() {
                 </AnimatePresence>
                 {/* END: FormSection */}
 
-                {/* BEGIN: SocialLoginSection */}
-                {viewMode === 'form' && (
-                    <section className="mt-8 pb-4" data-purpose="social-login">
-                        {/* Divider */}
-                        <div className="relative mb-8">
-                            <div aria-hidden="true" className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-[#2c3641]"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-4 bg-[#1e262f] text-gray-500">또는</span>
-                            </div>
-                        </div>
-                        {/* Google Button - CLICK HANDLER ATTACHED HERE */}
-                        <button
-                            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-semibold py-4 px-4 rounded-lg transition-all"
-                            type="button"
-                            onClick={async () => {
-                                try {
-                                    setIsLoading(true);
-                                    await AuthService.loginWithGoogle();
-                                } catch (error) {
-                                    console.error(error);
-                                    alert('로그인 중 오류가 발생했습니다.');
-                                    setIsLoading(false);
-                                }
-                            }}
-                        >
-                            <svg height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" fill="#fbc02d"></path>
-                                <path d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" fill="#e53935"></path>
-                                <path d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" fill="#4caf50"></path>
-                                <path d="M43.611,20.083L43.611,20.083L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" fill="#1565c0"></path>
-                            </svg>
-                            <span>Google로 계속하기</span>
-                        </button>
-                    </section>
-                )}
-                {/* END: SocialLoginSection */}
+                {/* END: FormSection */}
+
 
             </div>
 
