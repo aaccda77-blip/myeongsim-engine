@@ -7,11 +7,11 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export class MemoryService {
 
-    private static supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    private static supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    private static supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+    private static supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
     private static supabase = createClient(this.supabaseUrl, this.supabaseKey);
 
-    private static genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+    private static genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder-key');
     private static embeddingModel = this.genAI.getGenerativeModel({ model: "text-embedding-004" });
 
     /**
