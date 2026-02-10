@@ -100,10 +100,6 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [showBlueprintModal, setShowBlueprintModal] = useState(false); // [NEW] Bio Blueprint Modal
     const [blueprintType, setBlueprintType] = useState<'HEAT' | 'COOL'>('HEAT'); // [NEW] Dynamic Type
 
-    // [Auth] Login Modal State
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-    const [selectedPaymentTier, setSelectedPaymentTier] = useState<'TRIAL' | 'PASS' | 'VIP'>('TRIAL');
-
 
     const [messages, setMessages] = useState<Message[]>([
         {
