@@ -179,4 +179,15 @@ export class AuthService {
 
         if (error) console.error("Update DeepScan Status Error:", error);
     }
+
+    /**
+     * Logs out the current user.
+     */
+    static async logout() {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Logout Error:', error);
+            throw error;
+        }
+    }
 }
