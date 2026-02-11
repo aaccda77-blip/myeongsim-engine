@@ -450,7 +450,6 @@ export default function DrillDownIconMenu({
     // [NEW] 108 자각 Modals State
     const [showSajuSummary, setShowSajuSummary] = useState(false);
     const [showDiscoveryChat, setShowDiscoveryChat] = useState(false);
-    const [showDiscoveryChat, setShowDiscoveryChat] = useState(false);
     const [discoveryChatIntent, setDiscoveryChatIntent] = useState<string>('');
     const [showAwakeningChat, setShowAwakeningChat] = useState(false); // [Fix] Missing State
 
