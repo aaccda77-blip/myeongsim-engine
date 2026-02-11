@@ -25,6 +25,12 @@ interface PexelsResponse {
  * @param apiKey - Pexels API key from environment
  * @returns Image URL or fallback
  */
+/**
+ * Search for photos on Pexels
+ * @param query - Search keyword (Korean supported)
+ * @param apiKey - Pexels API key from environment
+ * @returns Image URL or fallback
+ */
 export async function searchPexelsImage(
     query: string,
     apiKey?: string
@@ -36,8 +42,10 @@ export async function searchPexelsImage(
     }
 
     try {
+        // [FIX] Randomize page to get different images for same query
+        const randomPage = Math.floor(Math.random() * 20) + 1; // 1 ~ 20 pages
         const response = await fetch(
-            `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=15&orientation=landscape`,
+            `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=15&page=${randomPage}&orientation=landscape`,
             {
                 headers: {
                     Authorization: apiKey,
@@ -46,6 +54,19 @@ export async function searchPexelsImage(
         );
 
         if (!response.ok) {
+            // If random page is empty (search result < page), try page 1
+            if (response.status === 400 || response.status === 404) {
+                const retryResponse = await fetch(
+                    `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=15&page=1&orientation=landscape`,
+                    { headers: { Authorization: apiKey } }
+                );
+                if (!retryResponse.ok) throw new Error(`Pexels API error: ${retryResponse.status}`);
+                const retryData: PexelsResponse = await retryResponse.json();
+                if (retryData.photos && retryData.photos.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * Math.min(retryData.photos.length, 10));
+                    return retryData.photos[randomIndex].src.large;
+                }
+            }
             throw new Error(`Pexels API error: ${response.status}`);
         }
 
@@ -53,7 +74,7 @@ export async function searchPexelsImage(
 
         if (data.photos && data.photos.length > 0) {
             // Pick a random photo from results for variety
-            const randomIndex = Math.floor(Math.random() * Math.min(data.photos.length, 10));
+            const randomIndex = Math.floor(Math.random() * data.photos.length);
             return data.photos[randomIndex].src.large;
         }
 
