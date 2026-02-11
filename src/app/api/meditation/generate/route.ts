@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { requireAuth } from '@/lib/auth';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY || '');
 
 export const POST = requireAuth(async (req: NextRequest, auth) => {
     try {
@@ -12,8 +12,9 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
             return NextResponse.json({ error: 'Code data required' }, { status: 400 });
         }
 
-        if (!process.env.GOOGLE_AI_API_KEY) {
-            console.error("Missing GOOGLE_AI_API_KEY");
+        const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
+        if (!apiKey) {
+            console.error("Missing GEMINI_API_KEY or GOOGLE_AI_API_KEY");
             return NextResponse.json({ error: 'Server Config Error: Missing Gemini Key' }, { status: 500 });
         }
 

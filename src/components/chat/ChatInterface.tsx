@@ -50,6 +50,7 @@ import TalentReportCard from './TalentReportCard'; // [NEW] Talent Card UI
 import { searchPexelsImage, optimizePexelsQuery } from '@/utils/pexelsClient'; // [NEW] Pexels API (replaces Pollinations)
 import { PexelsImage } from './PexelsImage'; // [NEW] Pexels Image Component
 import BioEnergyBlueprintModal from '../modals/BioEnergyBlueprintModal'; // [NEW] Bio-Energy Blueprint Modal
+import { ICON_DRILL_DOWN_MAP } from '@/modules/DrillDownProtocol'; // [NEW] Dynamic Label Lookup
 
 // [Helper] Saju Keywords for Restoration
 const getKeywords = (dm: string) => {
@@ -105,7 +106,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
         {
             id: 'welcome',
             role: 'assistant',
-            content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다.\n\n🔒 *당신의 이야기는 안전하게 보호되며, 더 깊은 대화를 위해 기억됩니다.*"
+            content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다.\n\n💾 *당신의 이야기는 운명의 패턴으로 기록되어, 다음 대화에서 더 깊은 통찰을 드릴 것입니다.*"
         }
     ]);
     const [input, setInput] = useState('');
@@ -251,6 +252,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [userId, setUserId] = useState<string>(''); // Dynamic ID
     const [isPremiumMember, setIsPremiumMember] = useState(false); // Premium status
     const [userExpiryDate, setUserExpiryDate] = useState<string | null>(null); // Ticket expiry
+    const [userTier, setUserTier] = useState<string>(''); // [New] Store Tier for UI
 
     // [Security] Calculate if membership is expired
     const isExpired = userExpiryDate ? new Date(userExpiryDate) < new Date() : false;
@@ -269,37 +271,56 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     // [Init] UUID for Guest, but replaceable by Auth + Free Trial Counter
     // [Init] UUID for Guest, Persistence, and Auth Listener
     useEffect(() => {
-        // 1. Guest mode init
-        if (!userId) {
-            setUserId(generateUUID());
-        }
+        // 1. Initialize User ID (Priority: Auth Session > LocalStorage > Guest UUID)
+        const initSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
 
-        // 2. Load free trial turns & Restore Session
-        if (typeof window !== 'undefined') {
-            const savedTurns = sessionStorage.getItem('freeTurns');
-            if (savedTurns) {
-                setFreeTurns(parseInt(savedTurns, 10));
-            }
+            if (session?.user) {
+                console.log("🔐 [Init] Found Active Session:", session.user.id);
+                setUserId(session.user.id);
+                // Sync to LocalStorage for other components
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('myeongsim_user_id', session.user.id);
+                }
+            } else {
+                // If no session, check LocalStorage or fallback to Guest
+                if (typeof window !== 'undefined') {
+                    const savedUserId = localStorage.getItem('myeongsim_user_id');
+                    if (savedUserId && savedUserId !== 'undefined') {
+                        setUserId(savedUserId);
+                    } else {
+                        const guestId = generateUUID();
+                        setUserId(guestId);
+                        // localStorage.setItem('myeongsim_user_id', guestId); // Optional: Persist guest?
+                    }
 
-            // [Persistence] Restore User Session
-            const savedUserId = localStorage.getItem('myeongsim_user_id');
-            const savedScanStatus = localStorage.getItem('myeongsim_deep_scan_completed');
+                    // Load free trial turns
+                    const savedTurns = sessionStorage.getItem('freeTurns');
+                    if (savedTurns) setFreeTurns(parseInt(savedTurns, 10));
 
-            if (savedUserId && savedUserId !== 'undefined') {
-                console.log("♻️ [Session] Restoring persistent session:", savedUserId);
-                setUserId(savedUserId);
-
-                // [Optimization] Immediate Skip if cached
-                if (savedScanStatus === 'true') {
-                    setIsSurveyCompleted(true);
+                    // [Persistence] Restore Scan Status
+                    const savedScanStatus = localStorage.getItem('myeongsim_deep_scan_completed');
+                    if (savedScanStatus === 'true') setIsSurveyCompleted(true);
                 }
             }
-        }
+        };
 
-        // 3. Auth Listener (Required for cleanup)
+        initSession();
+
+        // 2. Auth Listener (Handle Login/Logout updates)
         const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-            // Optional: Log auth changes
-            if (event === 'SIGNED_IN') console.log("🔐 Auth State: Signed In");
+            if (event === 'SIGNED_IN' && session?.user) {
+                console.log("🔐 [Auth] User Signed In:", session.user.id);
+                setUserId(session.user.id);
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('myeongsim_user_id', session.user.id);
+                }
+            } else if (event === 'SIGNED_OUT') {
+                console.log("👋 [Auth] User Signed Out");
+                // Optional: Clear ID or switch to Guest?
+                // For now, reload window or handle gracefully could be better
+                setUserId(generateUUID());
+            }
         });
 
         // Cleanup subscription on unmount
@@ -417,6 +438,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 const isActive = data.expires_at && new Date(data.expires_at) > new Date();
                 const hasPremium = data.membership_tier && data.membership_tier !== 'FREE' && isActive;
                 setIsPremiumMember(hasPremium);
+                setUserTier(data.membership_tier || ''); // [New] Set Tier
 
                 // [TimeCapsule] Set expiry date for timer display
                 if (data.expires_at) {
@@ -463,6 +485,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                         const hasPremium = newData.membership_tier && newData.membership_tier !== 'FREE' && isActive;
 
                         setIsPremiumMember(hasPremium);
+                        setUserTier(newData.membership_tier || ''); // [New] Update Tier on Realtime
 
                         if (newData.expires_at) {
                             setUserExpiryDate(newData.expires_at);
@@ -727,12 +750,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     if (formattedMsgs.length > 0) {
                         setMessages(formattedMsgs);
                     } else {
-                        // Inherit Welcome Logic
-                        setMessages([{
-                            id: 'welcome',
-                            role: 'assistant',
-                            content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다."
-                        }]);
+                        content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다.\n\n💾 *당신의 이야기는 운명의 패턴으로 기록되어, 다음 대화에서 더 깊은 통찰을 드릴 것입니다.*"
                     }
                 } else {
                     // Start fresh if no history
@@ -1321,6 +1339,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 <div className="absolute top-16 left-4 z-40">
                     <TimeCapsule
                         expiryDate={userExpiryDate}
+                        tier={userTier} // [New] Pass Tier
                         onExpire={() => {
                             console.log("⏰ Timer Expired!");
                             setIsPremiumMember(false);
@@ -2210,7 +2229,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                                 const selectedStyle = healingStyles[idx % healingStyles.length];
 
                                                 // Create stable prompt for Pexels
-                                                const imagePrompt = `beautiful healing nature, ${selectedStyle}, ${cleanText}, soft colors, peaceful atmosphere`;
+                                                const imagePrompt = `beautiful healing nature, ${selectedStyle}, ${imageTheme}, ${cleanText}, soft colors, peaceful atmosphere`;
 
                                                 // [FIX] Add key prop to prevent re-render on typing
                                                 return <PexelsImage key={`pexels-${idx}`} prompt={imagePrompt} />;
@@ -2737,7 +2756,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
 
                                 // [FIX] Self-Coaching & Awakening Logic Integration
                                 // Intents starting with 'p_' (108 items) or specific keys utilize the Hidden Intent mechanism
-                                if (intent.startsWith('p_') || intent === 'hour_pillar_desire' || intent === 'year_pillar_roots' || intent.startsWith('saju_') || intent.startsWith('assess_') || intent.startsWith('deep_') || intent === 'gongmang_deep_analysis' || intent === 'ohaeng_balance_report') {
+                                if (intent.startsWith('p_') || intent === 'hour_pillar_desire' || intent === 'year_pillar_roots' || intent.startsWith('assess_') || intent.startsWith('deep_') || intent === 'gongmang_deep_analysis' || intent === 'ohaeng_balance_report') {
                                     setInput(prompt);
                                     // Send Visible Prompt + Hidden Intent ID
                                     setTimeout(() => handleSend(prompt, `[INTENT:${intent}]`), 100);
@@ -2752,11 +2771,33 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     'career_path': '💼 저의 직업운 흐름을 분석해주세요.',
                                     'saju_basic_analysis': '📜 상세 사주 원국을 분석해주세요.',
                                     'today_fortune': '🌞 오늘의 운세를 알려주세요.',
-                                    'iching_code_search': '📖 64코드 사색을 실행합니다.', // [Added]
-                                    // Add more mappings as needed, default fallback below
+                                    'iching_code_search': '📖 64코드 사색을 실행합니다.',
+                                    'ms_destiny_weather': '🌦️ 인생의 날씨 예보를 분석해주세요.',
+                                    'ms_life_wave': '🌊 10년 대운의 흐름을 알려주세요.',
+                                    'saju_career_detail': '💼 직업과 사업운의 타이밍을 분석해주세요.',
+                                    'saju_marriage_timing': '❤️ 결혼과 연애의 시기를 알려주세요.',
+                                    'saju_108_awakening': '🌌 108 자각 프로토콜을 시작합니다.',
+                                    'ms_emotion_alchemy': '⚗️ 감정 연금술 (Emotion Alchemy) 분석을 요청합니다.',
+                                    'ms_shadow_work': '🌑 그림자 작업 (Shadow Work)을 시작합니다.',
                                 };
 
-                                const userVisibleMessage = friendlyMessages[intent] || `🔮 ${prompt.substring(0, 20)}... (상세 분석 요청)`;
+                                // [Dynamic] Lookup label from Protocol Definition if not in manual map
+                                const findLabel = (target: string) => {
+                                    for (const key in ICON_DRILL_DOWN_MAP) {
+                                        const main = ICON_DRILL_DOWN_MAP[key];
+                                        for (const sub of main.sub_menus) {
+                                            if (sub.intent === target) return sub.label;
+                                            if (sub.children) {
+                                                for (const child of sub.children) {
+                                                    if (child.intent === target) return child.label;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    return null;
+                                };
+
+                                const userVisibleMessage = friendlyMessages[intent] || findLabel(intent) || `🔮 ${prompt.substring(0, 20)}... (상세 분석 요청)`;
 
                                 // Send: (Visible Message, Hidden System Prompt)
                                 handleSend(userVisibleMessage, prompt);

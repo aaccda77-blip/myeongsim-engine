@@ -3,15 +3,28 @@
 
 import React from 'react';
 import { usePassTimer } from '@/hooks/usePassTimer';
-import { Sparkles, Clock, AlertTriangle } from 'lucide-react';
+import { Sparkles, Clock, AlertTriangle, Crown, Zap } from 'lucide-react';
 
 interface TimeCapsuleProps {
     expiryDate: string; // 예: "2025-12-31T23:59:59"
+    tier?: string; // [New] Tier Info
     onExpire?: () => void;
 }
 
-export const TimeCapsule = ({ expiryDate, onExpire }: TimeCapsuleProps) => {
-    const { timeLeft, percent, isUrgent, isExpired } = usePassTimer(expiryDate, onExpire);
+export const TimeCapsule = ({ expiryDate, tier, onExpire }: TimeCapsuleProps) => {
+    // [Fix] totalDuration logic handling moved to hook or simplified here?
+    // For now, hook calculates relative to "now".
+    // We just want to fix the LABEL first.
+
+    // [Feature] Dynamic Label based on Tier
+    const getPassLabel = () => {
+        if (tier === 'VIP' || tier === 'VIP_7D') return { text: 'VIP PASS', icon: <Crown size={8} className="text-yellow-400" /> };
+        if (tier === 'TRIAL' || tier === 'TRIAL_30M') return { text: 'TRIAL PASS', icon: <Clock size={8} className="text-blue-400" /> };
+        return { text: 'DAY PASS', icon: <Sparkles size={8} className="text-yellow-400" /> };
+    };
+
+    const passInfo = getPassLabel();
+    const { timeLeft, percent, isUrgent, isExpired } = usePassTimer(expiryDate, tier, onExpire); // [Fix] Pass tier
 
     // 디자인 분기 처리
     const baseColor = isUrgent ? 'bg-red-500/10 border-red-500 text-red-400' : 'bg-emerald-500/10 border-emerald-500 text-emerald-400';
@@ -47,11 +60,11 @@ export const TimeCapsule = ({ expiryDate, onExpire }: TimeCapsuleProps) => {
                 {timeLeft}
             </div>
 
-            {/* 4. 데이패스 뱃지 */}
+            {/* 4. 데이패스 뱃지 (Dynamic) */}
             {!isUrgent && (
                 <div className="ml-1 flex items-center gap-1 text-[10px] text-white/50 bg-white/10 px-1.5 py-0.5 rounded">
-                    <Sparkles size={8} className="text-yellow-400" />
-                    <span>DAY PASS</span>
+                    {passInfo.icon}
+                    <span>{passInfo.text}</span>
                 </div>
             )}
         </div>

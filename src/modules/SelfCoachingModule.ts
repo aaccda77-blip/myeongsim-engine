@@ -283,7 +283,7 @@ export class SelfCoachingModule {
         }
 
         // [PHASE 3-f] Quantum Career Modes (Priority High)
-        if (intent.startsWith('ms_career_')) {
+        if (intent.startsWith('ms_career_') || intent === 'career_timing_analysis') {
             const context = getCareerContext(intent, sajuData);
             const modeInfo = CAREER_MODES[intent];
 

@@ -124,8 +124,12 @@ export default function PaymentCard({ onCopy, onDetailedReport }: PaymentCardPro
                         className="mt-1 w-4 h-4 accent-indigo-500"
                     />
                     <span className="text-xs text-gray-400 leading-relaxed">
-                        [필수] 개인정보 수집·이용 동의<br />
-                        (전화번호 암호화 저장, 대화 기록 저장)
+                        <span className="font-bold text-gray-300 block mb-1">[필수] 개인정보 수집 및 이용 동의</span>
+                        <div className="pl-1 space-y-0.5 opacity-80">
+                            <div>• 수집 항목: 휴대전화번호, 입금자명</div>
+                            <div>• 수집 목적: 서비스 이용권 제공 및 본인 확인</div>
+                            <div>• 보유 기간: 회원 탈퇴 시까지 (법령 별도 보관)</div>
+                        </div>
                     </span>
                 </label>
 

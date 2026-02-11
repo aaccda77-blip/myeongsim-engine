@@ -698,27 +698,12 @@ export default function DrillDownIconMenu({
         }
 
 
-        // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
-        // [NEW] 108 자각 - 모든 서브 아이템 처리 (p_1 ~ p_18)
-        // [UPDATE] User requested to run this in Main Chatbot instead of Modal
-        // We allow this to fall through to default 'onSelectIntent'
-        /*
-        if (subItem.id.startsWith('p_')) {
+        // [NEW] 108 자각 프로토콜 (Awakening Chat)
+        if (subItem.intent === 'saju_108_awakening') {
             setSelectedIcon(null);
-
-            // p_1 (사주 핵심 요약)은 전용 시각화 모달 사용
-            if (subItem.intent === 'saju_core_summary') {
-                setShowSajuSummary(true);
-                return;
-            }
-
-            // 나머지는 모두 Discovery Chat 실행
-            console.log('Starting Discovery Chat for:', subItem.intent);
-            setDiscoveryChatIntent(subItem.intent);
-            setShowDiscoveryChat(true);
+            setShowAwakeningChat(true);
             return;
         }
-        */
 
 
         // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동
@@ -1354,6 +1339,17 @@ export default function DrillDownIconMenu({
                     onClose={() => setShowBreathingGuide(false)}
                 />
             )}
+
+            {/* [NEW] 108 Awakening Chat Modal */}
+            <AnimatePresence>
+                {showAwakeningChat && (
+                    <AwakeningChat
+                        isOpen={showAwakeningChat}
+                        onClose={() => setShowAwakeningChat(false)}
+                        userProfile={userProfile}
+                    />
+                )}
+            </AnimatePresence>
         </>
     );
 }

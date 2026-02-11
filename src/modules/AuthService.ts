@@ -142,6 +142,43 @@ export class AuthService {
     }
 
     /**
+     * Updates an existing user's phone number and tier request.
+     * Used when a user is already logged in (e.g. Google) but needs to register phone for payment/approval.
+     */
+    static async updateUserPhoneAndTier(userId: string, phone: string, deviceFingerprint: string, tier: 'TRIAL' | 'PASS' | 'VIP'): Promise<boolean> {
+        try {
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            if (!/^[0-9]{10,11}$/.test(cleanPhone)) return false;
+
+            const phoneHash = await this.hashPhoneNumber(cleanPhone);
+
+            // Update or Create the user record
+            const { error } = await supabase
+                .from('users')
+                .upsert({
+                    id: userId, // Ensure we link to the Auth ID
+                    phone_hash: phoneHash,
+                    membership_tier: tier,
+                    // We do NOT set expires_at here, as it waits for admin approval
+                })
+                .select();
+
+            if (error) {
+                console.error('Update Phone Error:', error);
+                return false;
+            }
+
+            // [NEW] Register Session
+            await SessionManager.createSession(userId, deviceFingerprint, 1);
+
+            return true;
+        } catch (error) {
+            console.error('Update Phone Exception:', error);
+            return false;
+        }
+    }
+
+    /**
      * Login with Google OAuth
      * @returns Redirects to Google Login
      */

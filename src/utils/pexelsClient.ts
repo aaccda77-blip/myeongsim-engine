@@ -74,6 +74,12 @@ export async function searchPexelsImage(
 export function optimizePexelsQuery(originalPrompt: string): string {
     const text = originalPrompt.toLowerCase();
 
+    // [FIX] If the prompt is already a fully constructed visual prompt (from ChatInterface), use it as is.
+    // This allows dynamic styles (e.g. 'zen garden', 'soft sunlight') to pass through.
+    if (text.startsWith('beautiful healing nature')) {
+        return originalPrompt;
+    }
+
     // 감정/상태 키워드 매핑 (한국어 + 영어)
     const emotionKeywords: Record<string, string> = {
         // 긍정적 감정

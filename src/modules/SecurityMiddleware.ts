@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { PromptFirewall } from '@/modules/Security/PromptFirewall';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'; // Use Service Role Key if strict backend needed, but Anon is okay for reading public history if policies valid
@@ -21,7 +22,17 @@ export class SecurityMiddleware {
             throw new Error("Input payload too large");
         }
 
-        // 1. Advanced Pattern Blocking (SQLi, XSS, Cmd Injection)
+        // 1. [Security Upgrade] Advanced Prompt Firewall Check
+        // Replaces simple Regex with dedicated module logic
+
+
+        const firewallResult = PromptFirewall.inspect(userInput);
+        if (!firewallResult.isSafe) {
+            console.warn(`🚨 [Security] Firewall Blocked: ${firewallResult.reason} (Risk: ${firewallResult.riskLevel})`);
+            throw new Error(`Security Alert: ${firewallResult.reason}`);
+        }
+
+        // 2. Legacy Fallback (SQLi, XSS, Cmd Injection - Redundant but Safe)
         const MALICIOUS_PATTERNS = [
             // SQL Injection
             /(\b(select|insert|update|delete|drop|union|exec)\b.*\b(from|into|table|database)\b)/i,
@@ -29,14 +40,9 @@ export class SecurityMiddleware {
             // XSS / Scripting
             /<script\b[^>]*>([\s\S]*?)<\/script>/i,
             /javascript:/i,
-            /onload\s*=/i,
-            /eval\s*\(/i,
             // System Cmd
             /rm\s+-rf/i,
-            /\/etc\/passwd/i,
-            // Prompt Injection
-            /Ignore previous instructions/i,
-            /System Override/i
+            /\/etc\/passwd/i
         ];
 
         MALICIOUS_PATTERNS.forEach(pattern => {

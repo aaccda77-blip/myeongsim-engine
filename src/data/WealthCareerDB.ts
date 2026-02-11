@@ -51,6 +51,12 @@ export const CAREER_MODES: Record<string, QuantumMode> = {
         subtitle: "무엇이 나를 다시 뛰게 하는가?",
         core_concept: "지치지 않는 열정은 의지력이 아니라 **'에너지 충전소(용신)'**에서 나옵니다. 당신의 영혼을 충전시키는 활동과 환경을 처방해드립니다.",
         saju_analysis_guide: "Identify 'Jo-hu' (Temperature) and 'Yongsin' element. If Fire needed -> Passion/Action/Daytime. If Water needed -> Wisdom/Rest/Night."
+    },
+    'career_timing_analysis': {
+        title: "📊 커리어 타이밍 (Career Timing)",
+        subtitle: "이직/승진 최적 시기",
+        core_concept: "인생에도 계절이 있습니다. 지금이 **'뿌릴 때(파종)'**인지, **'거둘 때(수확)'**인지 명확히 알려드립니다. 무리하게 움직이면 다치고, 가만히 있으면 기회를 놓칩니다.",
+        saju_analysis_guide: "Analyze 'Daewoon' (10-year cycle) and 'Seun' (1-year cycle) for Career Star (Gwan-Seong) strength. Check 'Wunsung' stage (e.g., Rok, Wang for best timing)."
     }
 };
 

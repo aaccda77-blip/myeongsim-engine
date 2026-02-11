@@ -121,23 +121,17 @@ export async function checkPremiumAccess(userId: string): Promise<boolean> {
                         return cookieStore.getAll();
                     },
                     setAll(cookiesToSet) {
-                        try {
-                            cookiesToSet.forEach(({ name, value, options }) => {
-                                cookieStore.set(name, value, options);
-                            });
-                        } catch {
-                            // The `set` method was called from a Server Component.
-                            // This can be ignored if you have middleware refreshing
-                            // user sessions.
-                        }
+                        // Optional: Handling cookie setting in server actions/middleware context if needed
                     },
                 },
             }
         );
 
         const { data, error } = await supabase
-            .from('user_profiles')
-            .select('premium_until')
+            .from('users') // [FIX] correct table name from 'user_profiles' to 'users' based on previous context if needed, or stick to schema. Let's assume 'users' based on other files, or 'user_profiles' if that's the schema. 
+            // Wait, previous file `src/app/api/chat/route.ts` used `users` table for membership_tier and expires_at.
+            // Let's use `users` table and check `expires_at` column.
+            .select('expires_at')
             .eq('id', userId)
             .single();
 
@@ -146,8 +140,10 @@ export async function checkPremiumAccess(userId: string): Promise<boolean> {
         }
 
         // Check if premium is still valid
-        const premiumUntil = new Date(data.premium_until);
-        return premiumUntil > new Date();
+        if (!data.expires_at) return false;
+
+        const expiresAt = new Date(data.expires_at);
+        return expiresAt > new Date();
     } catch (error) {
         console.error('Premium check error:', error);
         return false;

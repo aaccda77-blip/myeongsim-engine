@@ -299,7 +299,8 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
         }
 
         // [SECURITY STEP 2] Time Pass Verification (Simplified for Readability)
-        const accessCode = reqBody.accessKey || (typeof userId === 'string' && userId.length > 10 ? userId : null);
+        // [Fix] Removed userId fallback to prevent auto-activation of passes
+        const accessCode = reqBody.accessKey;
         if (accessCode && accessCode.length > 3) {
             try {
                 // 1. Query User/Ticket

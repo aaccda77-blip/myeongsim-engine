@@ -47,57 +47,69 @@ export default function AdminPage() {
 
     const fetchUsers = async () => {
         setLoading(true);
-        const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (data) setUsers(data);
-        if (error) console.error('User Fetch Error:', error);
+        try {
+            const response = await fetch('/api/admin/users');
+            if (response.ok) {
+                const data = await response.json();
+                setUsers(data);
+                setIsAuthenticated(true); // [UX] Auto-login successful
+            } else {
+                if (response.status === 401) {
+                    setIsAuthenticated(false);
+                }
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+        }
         setLoading(false);
     };
 
+    // [UX] Check session on mount
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
     const approveUser = async (userId: string, tier: string) => {
-        const now = new Date();
-        let expiresAt: Date | null = null;
-        let paymentAmount = 0;
+        try {
+            const response = await fetch('/api/admin/users/approve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, tier })
+            });
 
-        // Calculate expiration based on tier
-        switch (tier) {
-            case 'TRIAL_30M':
-                expiresAt = new Date(now.getTime() + 30 * 60 * 1000); // 30 minutes
-                paymentAmount = 3900;
-                break;
-            case 'PASS_24H':
-                expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
-                paymentAmount = 9900;
-                break;
-            case 'VIP_7D':
-                expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
-                paymentAmount = 49000;
-                break;
-            default:
-                alert('올바른 이용권을 선택해주세요.');
-                return;
+            const data = await response.json();
+
+            if (data.success) {
+                alert(`승인 완료! (${tier})`);
+                fetchUsers();
+            } else {
+                alert('승인 실패: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('승인 중 오류가 발생했습니다.');
         }
+    };
 
-        const { error } = await supabase
-            .from('users')
-            .update({
-                membership_tier: tier,
-                is_active: true,
-                expires_at: expiresAt.toISOString(),
-                payment_amount: paymentAmount,
-                approved_at: now.toISOString(),
-                approved_by: 'admin' // Could be dynamic in future
-            })
-            .eq('id', userId);
+    const deleteUser = async (userId: string) => {
+        if (!confirm('정말로 이 사용자를 삭제하시겠습니까? (복구 불가)')) return;
 
-        if (!error) {
-            alert(`승인 완료! (${tier}, 만료: ${expiresAt.toLocaleString('ko-KR')})`);
-            fetchUsers();
-        } else {
-            alert('승인 실패: ' + error.message);
+        try {
+            const response = await fetch('/api/admin/users/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('사용자가 삭제되었습니다.');
+                fetchUsers();
+            } else {
+                alert('삭제 실패: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('삭제 중 오류가 발생했습니다.');
         }
     };
 
@@ -150,13 +162,19 @@ export default function AdminPage() {
                     <div className="text-center text-white py-12">로딩 중...</div>
                 ) : (
                     <div className="grid gap-4">
-                        {users.map((user) => {
-                            // [Security Fix] Strict Expiration Check
-                            const isActive = user.expires_at && new Date(user.expires_at) > new Date();
-                            const isExpired = user.expires_at && new Date(user.expires_at) < new Date(); // [Fix] Re-added for UI
-                            const hasPremium = user.membership_tier && user.membership_tier !== 'FREE' && isActive;
+                        {users.sort((a, b) => {
+                            const isPendingA = a.membership_tier && a.membership_tier !== 'FREE' && (!a.expires_at || new Date(a.expires_at) < new Date());
+                            const isPendingB = b.membership_tier && b.membership_tier !== 'FREE' && (!b.expires_at || new Date(b.expires_at) < new Date());
 
-                            // [Admin Dashboard Auto-Select] Map User Request to Admin Code
+                            if (isPendingA && !isPendingB) return -1;
+                            if (!isPendingA && isPendingB) return 1;
+
+                            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                        }).map((user) => {
+                            const isActive = user.expires_at && new Date(user.expires_at) > new Date();
+                            const isExpired = user.expires_at && new Date(user.expires_at) < new Date();
+                            const isPending = user.membership_tier && user.membership_tier !== 'FREE' && !isActive;
+
                             const requestedTier = (() => {
                                 const t = user.membership_tier;
                                 if (t === 'TRIAL') return 'TRIAL_30M';
@@ -171,14 +189,15 @@ export default function AdminPage() {
                             return (
                                 <div
                                     key={user.id}
-                                    className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-5 hover:bg-white/15 transition-colors"
+                                    className={`bg-white/10 backdrop-blur-lg border rounded-xl p-5 transition-all ${isPending ? 'border-yellow-400/50 bg-yellow-400/5 shadow-[0_0_15px_rgba(250,204,21,0.1)]' : 'border-white/20 hover:bg-white/15'}`}
                                 >
                                     <div className="flex items-start justify-between gap-4 mb-4">
                                         <div className="flex items-center gap-3">
-                                            <User className="w-5 h-5 text-gray-400" />
+                                            <User className={`w-5 h-5 ${isPending ? 'text-yellow-400' : 'text-gray-400'}`} />
                                             <div>
-                                                <div className="text-white font-mono text-sm">
-                                                    {user.phone_hash.substring(0, 12)}...
+                                                <div className="text-white font-mono text-sm flex items-center gap-2">
+                                                    {user.phone_hash ? `${user.phone_hash.substring(0, 12)}...` : '(전화번호 없음)'}
+                                                    {isPending && <span className="text-[10px] bg-yellow-500/20 text-yellow-300 px-2 py-0.5 rounded-full animate-pulse">승인 대기중</span>}
                                                 </div>
                                                 <div className="text-gray-400 text-xs mt-1">
                                                     가입: {new Date(user.created_at).toLocaleDateString('ko-KR')}
@@ -190,7 +209,9 @@ export default function AdminPage() {
                                             ? 'bg-gray-500/20 text-gray-300'
                                             : isExpired
                                                 ? 'bg-red-500/20 text-red-300'
-                                                : 'bg-green-500/20 text-green-300'
+                                                : isActive
+                                                    ? 'bg-green-500/20 text-green-300'
+                                                    : 'bg-yellow-500/20 text-yellow-300'
                                             }`}>
                                             {user.membership_tier || 'FREE'}
                                         </div>
@@ -205,14 +226,21 @@ export default function AdminPage() {
                                         </div>
                                     )}
 
-                                    {user.membership_tier === 'FREE' || !user.membership_tier || isExpired ? (
+                                    <div className="flex flex-col gap-2">
+                                        {!(user.membership_tier === 'FREE' || !user.membership_tier || isExpired) && isActive && (
+                                            <div className="text-green-400 text-sm flex items-center gap-1 mb-1">
+                                                <CheckCircle className="w-4 h-4" />
+                                                승인됨 ({user.payment_amount?.toLocaleString()}원) - {user.membership_tier}
+                                            </div>
+                                        )}
+
                                         <div className="flex gap-2">
                                             <select
                                                 value={selectedTier}
                                                 onChange={(e) => setSelectedTiers(prev => ({ ...prev, [user.id]: e.target.value }))}
-                                                className="flex-1 bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+                                                className={`flex-1 bg-black/50 border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 ${isPending ? 'border-yellow-500/50 ring-1 ring-yellow-500/20' : 'border-white/20'}`}
                                             >
-                                                <option value="">이용권 선택</option>
+                                                <option value="">이용권 선택 (변경/연장)</option>
                                                 <option value="TRIAL_30M">💎 맛보기 (30분) - 3,900원</option>
                                                 <option value="PASS_24H">⚡ 데이 패스 (24시간) - 9,900원</option>
                                                 <option value="VIP_7D">👑 VIP (7일) - 49,000원</option>
@@ -223,15 +251,19 @@ export default function AdminPage() {
                                                 className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
                                             >
                                                 <CheckCircle className="w-4 h-4" />
-                                                승인
+                                                {isActive ? '변경/연장' : '승인'}
+                                            </button>
+
+                                            {/* Delete Button */}
+                                            <button
+                                                onClick={() => deleteUser(user.id)}
+                                                className="bg-red-500/20 hover:bg-red-500/40 text-red-400 px-3 py-2 rounded-lg transition-colors border border-red-500/30"
+                                                title="사용자 삭제 (중복 계정 정리용)"
+                                            >
+                                                X
                                             </button>
                                         </div>
-                                    ) : (
-                                        <div className="text-green-400 text-sm flex items-center gap-1">
-                                            <CheckCircle className="w-4 h-4" />
-                                            승인됨 ({user.payment_amount?.toLocaleString()}원)
-                                        </div>
-                                    )}
+                                    </div>
                                 </div>
                             );
                         })}

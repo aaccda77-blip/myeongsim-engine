@@ -642,7 +642,19 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                     { id: "qk_21", label: "21. 👾 내 안의 버그 탐지", desc: "반복되는 시스템 오류 수정", intent: "ms_dark_bug" },
                     { id: "qk_22", label: "22. 🩸 에너지 뱀파이어 식별", desc: "내 기를 뺏는 존재 차단", intent: "ms_energy_vampire" },
                     { id: "qk_23", label: "23. 🔋 활력 충전소", desc: "나만의 고속 충전 방식", intent: "assess_energy_source" },
-                    { id: "qk_24", label: "24. 🧱 변화 저항값 측정", desc: "변화를 거부하는 에고 확인", intent: "assess_change_resistance" }
+                    { id: "qk_24", label: "24. 🧱 변화 저항값 측정", desc: "변화를 거부하는 에고 확인", intent: "assess_change_resistance" },
+                    { id: "qk_25", label: "25. 📉 에너지 고갈 패턴", desc: "나도 모르게 기운 빠지는 습관", intent: "ms_energy_leak_pattern" },
+                    { id: "qk_26", label: "26. 🧠 인지 오류 필터", desc: "세상을 왜곡해서 보는 색안경", intent: "ms_cognitive_bias" },
+                    { id: "qk_27", label: "27. 💓 하트 리듬 동기화", desc: "심장과 뇌의 주파수 일치도", intent: "ms_heart_brain_sync" },
+                    { id: "qk_28", label: "28. 🛌 수면 무의식 스캔", desc: "꿈이 말해주는 현재 상태", intent: "ms_sleep_unconscious" },
+                    { id: "qk_29", label: "29. 🧬 신체 감각 자각", desc: "몸이 보내는 긴급 신호 해석", intent: "ms_body_sensation" },
+                    { id: "qk_30", label: "30. 🕰️ 시간 왜곡(Time)", desc: "시간이 부족하다고 느끼는 착각", intent: "ms_time_distortion" },
+                    { id: "qk_31", label: "31. 🗣️ 언어 습관 분석", desc: "내 운명을 망치는 말버릇", intent: "ms_speech_pattern" },
+                    { id: "qk_32", label: "32. 👥 관계 거울 효과", desc: "타인을 통해 보는 나의 상태", intent: "ms_relationship_mirror" },
+                    { id: "qk_33", label: "33. 🦠 감정 전염도", desc: "주변 분위기에 휘둘리는 정도", intent: "ms_emotion_contagion" },
+                    { id: "qk_34", label: "34. 🎮 도파민 중독 레벨", desc: "즉각적 보상에 대한 의존도", intent: "ms_dopamine_level" },
+                    { id: "qk_35", label: "35. 🛡️ 방어기제 활성도", desc: "지금 작동 중인 마음의 방패", intent: "ms_defense_active" },
+                    { id: "qk_36", label: "36. 🧘 현존(Presence) 지수", desc: "지금 이 순간에 머무는 힘", intent: "ms_presence_index" }
                 ]
             },
             {
@@ -656,7 +668,19 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                     { id: "qk_39", label: "39. 🌑 쉐도우 댄스", desc: "그림자와 친구가 되는 법", intent: "ms_shadow_dance" },
                     { id: "qk_40", label: "40. 🌊 무위(Wu-Wei) 흐름", desc: "가장 쉬운 성공 경로 찾기", intent: "ms_wu_wei" },
                     { id: "qk_41", label: "41. 🖼️ 운명 리프레이밍", desc: "불행을 서사로 바꾸는 기술", intent: "assess_perspective_quiz" },
-                    { id: "qk_42", label: "42. ❤️ 사랑의 거울 (Mirror)", desc: "관계에서 나를 보기", intent: "ms_rel_mirror" }
+                    { id: "qk_42", label: "42. ❤️ 사랑의 거울 (Mirror)", desc: "관계에서 나를 보기", intent: "ms_rel_mirror" },
+                    { id: "qk_43", label: "43. 🧹 감정 찌꺼기 청소", desc: "묵은 감정을 씻어내는 의식", intent: "ms_emotion_cleanse" },
+                    { id: "qk_44", label: "44. 🔗 카르마 매듭 풀기", desc: "반복되는 악연의 고리 끊기", intent: "ms_karma_knot" },
+                    { id: "qk_45", label: "45. 👶 내면 아이 구출", desc: "상처받은 어린 시절 치유", intent: "ms_inner_child_rescue" },
+                    { id: "qk_46", label: "46. 🕯️ 두려움의 촛불", desc: "공포를 직면하고 소멸시키기", intent: "ms_fear_candle" },
+                    { id: "qk_47", label: "47. 🔥 분노의 에너지 변환", desc: "화(火)를 창조적 열정으로", intent: "ms_anger_transform" },
+                    { id: "qk_48", label: "48. 🌧️ 슬픔의 정화", desc: "눈물을 통한 영혼의 세탁", intent: "ms_grief_purify" },
+                    { id: "qk_49", label: "49. 🌵 고독의 정원 가꾸기", desc: "외로움을 고독력으로 승화", intent: "ms_solitude_garden" },
+                    { id: "qk_50", label: "50. 🎁 결핍의 선물화", desc: "부족함이 사실은 재능이었다", intent: "ms_lack_to_gift" },
+                    { id: "qk_51", label: "51. 🙏 절대적 감사 모드", desc: "주파수를 가장 빨리 높이는 법", intent: "ms_absolute_gratitude" },
+                    { id: "qk_52", label: "52. 🤝 자기 화해 (Self)", desc: "못난 나를 용서하고 받아들임", intent: "ms_self_reconciliation" },
+                    { id: "qk_53", label: "53. 🗝️ 신념 체계 업그레이드", desc: "낡은 믿음을 새로운 OS로", intent: "ms_belief_upgrade" },
+                    { id: "qk_54", label: "54. 🚀 용기의 도약 (Leap)", desc: "안전지대를 벗어나는 결단", intent: "ms_courage_leap" }
                 ]
             },
             {
@@ -669,7 +693,38 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                     { id: "qk_56", label: "56. 🎧 내면의 악플러 음소거", desc: "비판적 자아 끄기", intent: "ms_mute_hater" },
                     { id: "qk_57", label: "57. 🌌 우주적 자아 접속", desc: "Big Mind와의 동기화", intent: "ms_cosmos_login" },
                     { id: "qk_58", label: "58. 🧬 DNA 카르마 정화", desc: "물려받은 운명 끊기", intent: "year_pillar_roots" },
-                    { id: "qk_59", label: "59. 👁️ 제3의 눈 (직관)", desc: "논리를 넘어선 통찰", intent: "ms_iching_oracle" }
+                    { id: "qk_59", label: "59. 👁️ 제3의 눈 (직관)", desc: "논리를 넘어선 통찰", intent: "ms_iching_oracle" },
+                    { id: "qk_60", label: "60. 🕰️ 시간의 초월", desc: "과거, 현재, 미래를 동시에 보기", intent: "ms_time_transcend" },
+                    { id: "qk_61", label: "61. 🌌 공간의 확장", desc: "나를 가둔 공간 감각 깨기", intent: "ms_space_expand" },
+                    { id: "qk_62", label: "62. 🎭 역할 연기의 달인", desc: "인생이라는 무대 위 배우 되기", intent: "ms_role_play_master" },
+                    { id: "qk_63", label: "63. ⚖️ 인과율의 비밀", desc: "원인과 결과의 연결고리 파악", intent: "ms_causality_secret" },
+                    { id: "qk_64", label: "64. ☯️ 음양의 통합", desc: "이원성을 넘어선 전체성 회복", intent: "ms_yin_yang_union" },
+                    { id: "qk_65", label: "65. 🌊 공(空)의 체험", desc: "비어있음이 꽉 차있음을 이해", intent: "ms_void_experience" },
+                    { id: "qk_66", label: "66. 🔥 창조적 파괴", desc: "새로운 것을 위해 옛것 부수기", intent: "ms_creative_destruction" },
+                    { id: "qk_67", label: "67. 🌈 스펙트럼 의식", desc: "흑백논리를 넘어선 다채로움", intent: "ms_spectrum_mind" },
+                    { id: "qk_68", label: "68. 🧩 전체 그림 보기", desc: "퍼즐 조각이 아닌 완성본", intent: "ms_big_picture" },
+                    { id: "qk_69", label: "69. 🌀 나선형 진화", desc: "반복되는 듯하지만 상승하는 삶", intent: "ms_spiral_evolution" },
+                    { id: "qk_70", label: "70. 📡 집단 의식 접속", desc: "인류 전체의 지혜 도서관", intent: "ms_collective_mind" },
+                    { id: "qk_71", label: "71. 🏞️ 자연과의 공명", desc: "지구의 주파수와 튜닝하기", intent: "ms_nature_resonance" },
+                    { id: "qk_72", label: "72. 🛰️ 위성 시점 (Satellite)", desc: "지구 밖에서 내 인생 내려다보기", intent: "ms_satellite_view" },
+                    { id: "qk_73", label: "73. 🎬 감독 모드 (Director)", desc: "내 인생 영화의 연출가 되기", intent: "ms_director_mode" },
+                    { id: "qk_74", label: "74. 📜 각본 수정 권한", desc: "정해진 운명을 다시 쓰는 힘", intent: "ms_script_edit" },
+                    { id: "qk_75", label: "75. 🚦 신호등 해석법", desc: "우주가 보내는 멈춤/진행 신호", intent: "ms_traffic_light" },
+                    { id: "qk_76", label: "76. 🕸️ 인드라망 (Interbeing)", desc: "모든 존재의 연결성 자각", intent: "ms_indra_net" },
+                    { id: "qk_77", label: "77. 🦋 나비 효과 감지", desc: "작은 날개짓이 폭풍을 만든다", intent: "ms_chaos_butterfly" },
+                    { id: "qk_78", label: "78. 🌊 프랙탈 구조 이해", desc: "부분 속에 전체가 있다", intent: "ms_fractal_mind" },
+                    { id: "qk_79", label: "79. ⚖️ 중용의 미학", desc: "치우치지 않는 중심 잡기", intent: "ms_middle_way" },
+                    { id: "qk_80", label: "80. 🕉️ 침묵의 소리", desc: "말 없는 가르침 듣기", intent: "ms_sound_of_silence" },
+                    { id: "qk_81", label: "81. 🎇 순간의 영원성", desc: "찰나에 깃든 영원을 포착", intent: "ms_eternal_now" },
+                    { id: "qk_82", label: "82. 🎭 역설 수용 능력", desc: "모순을 견디는 지적 능력", intent: "ms_paradox_capacity" },
+                    { id: "qk_83", label: "83. 🌬️ 바람의 행방", desc: "보이지 않는 흐름 읽기", intent: "ms_wind_reading" },
+                    { id: "qk_84", label: "84. 🌊 물의 지혜", desc: "가장 낮은 곳으로 흐르는 힘", intent: "ms_water_wisdom" },
+                    { id: "qk_85", label: "85. 🔥 불의 연금술", desc: "어떤 것도 태워 없애는 정화", intent: "ms_fire_alchemy" },
+                    { id: "qk_86", label: "86. ⛰️ 산의 부동심", desc: "어떤 폭풍에도 흔들리지 않음", intent: "ms_mountain_calm" },
+                    { id: "qk_87", label: "87. ☁️ 구름의 자유", desc: "머물지 않고 흘러가기", intent: "ms_cloud_freedom" },
+                    { id: "qk_88", label: "88. ⚡ 번개의 통찰", desc: "순식간에 어둠을 가르는 빛", intent: "ms_lightning_insight" },
+                    { id: "qk_89", label: "89. 🌎 대지의 포용력", desc: "모든 것을 품어 기르는 어머니", intent: "ms_earth_embrace" },
+                    { id: "qk_90", label: "90. 🌌 공허의 충만", desc: "텅 빈 충만감 (Full Void)", intent: "ms_void_fullness" }
                 ]
             },
             {
@@ -681,6 +736,20 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                     { id: "qk_91", label: "91. 🔑 마스터 키 획득", desc: "내 운명의 핵심 코드", intent: "ms_master_key" },
                     { id: "qk_92", label: "92. 🛡️ 쉐도우 헌터 자격", desc: "어둠을 다스리는 자", intent: "ms_shadow_hunter" },
                     { id: "qk_93", label: "93. 🎨 내 운명 작곡하기", desc: "새로운 삶의 악보 쓰기", intent: "ms_compose_destiny" },
+                    { id: "qk_94", label: "94. 🏗️ 현실 건축가", desc: "상상을 물질로 만드는 설계", intent: "ms_reality_architect" },
+                    { id: "qk_95", label: "95. 💰 부의 흐름 제어", desc: "에너지를 물질적 풍요로 치환", intent: "ms_wealth_flow_control" },
+                    { id: "qk_96", label: "96. 👑 자기 왕국 건설", desc: "나만의 규칙으로 세상 만들기", intent: "ms_build_kingdom" },
+                    { id: "qk_97", label: "97. 🌟 영향력의 원", desc: "타인의 빛을 밝히는 리더십", intent: "ms_circle_of_influence" },
+                    { id: "qk_98", label: "98. 🎁 유산 남기기 (Legacy)", desc: "세상에 무엇을 남길 것인가", intent: "ms_leave_legacy" },
+                    { id: "qk_99", label: "99. 🗝️ 마스터의 침묵", desc: "말하지 않아도 전해지는 힘", intent: "ms_master_silence" },
+                    { id: "qk_100", label: "100. 💯 완성의 숫자", desc: "백점짜리 인생의 정의", intent: "ms_completion_100" },
+                    { id: "qk_101", label: "101. 🚀 초월적 도약", desc: "100을 넘어선 새로운 차원", intent: "ms_transcend_leap" },
+                    { id: "qk_102", label: "102. ♾️ 무한의 루프", desc: "끝이 곧 시작임을 깨닫기", intent: "ms_infinite_loop" },
+                    { id: "qk_103", label: "103. 🧘 보살의 서원", desc: "타인의 해방을 돕는 삶", intent: "ms_bodhisattva_vow" },
+                    { id: "qk_104", label: "104. 🌌 우주적 유희 (Play)", desc: "심각함을 버리고 즐기기", intent: "ms_cosmic_play" },
+                    { id: "qk_105", label: "105. 🧬 귀환 (Return)", desc: "본래 면목으로 돌아오기", intent: "ms_return_to_source" },
+                    { id: "qk_106", label: "106. 🕯️ 마지막 관문", desc: "죽음과 삶의 경계 넘기", intent: "ms_final_gate" },
+                    { id: "qk_107", label: "107. ✨ 축복의 춤", desc: "존재 그 자체에 대한 찬양", intent: "ms_blessing_dance" },
                     { id: "qk_108", label: "108. 🏁 여정의 완성", desc: "새로운 시작을 위한 축배", intent: "ms_journey_end" }
                 ]
             }
@@ -1126,7 +1195,7 @@ export function generateChatPromptFromIntent(intent: string, userProfile?: any):
     ];
 
     // [New] 'ms_'(Myeongsim) prefix for new features
-    if (selfCoachingIntents.includes(intent) || intent.startsWith('assess_') || intent.startsWith('deep_') || intent.startsWith('ms_') || intent.startsWith('NAV_')) {
+    if (selfCoachingIntents.includes(intent) || intent.startsWith('assess_') || intent.startsWith('deep_') || intent.startsWith('ms_') || intent.startsWith('NAV_') || intent.startsWith('saju_')) {
         return `[INTENT:${intent}]`;
     }
 

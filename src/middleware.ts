@@ -10,6 +10,10 @@ const RATE_LIMITS = {
     '/api/tts/supertone': { maxRequests: 20, windowMs: 60000 }, // 20 requests per minute
     '/api/chat': { maxRequests: 30, windowMs: 60000 }, // 30 requests per minute
     '/api/report/generate': { maxRequests: 5, windowMs: 60000 }, // 5 requests per minute
+
+    // [SECURITY] Admin Brute-Force Protection
+    // Very strict limit: 5 attempts per 10 minutes.
+    '/api/admin': { maxRequests: 5, windowMs: 10 * 60 * 1000 },
 };
 
 function getRateLimitKey(ip: string, path: string): string {

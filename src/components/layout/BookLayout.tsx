@@ -10,6 +10,8 @@ import ChatInterface from '../chat/ChatInterface';
 
 // [New Imports]
 import { supabase } from '@/lib/supabaseClient';
+import PaymentLockOverlay from '@/components/auth/PaymentLockOverlay';
+import { getTargetStepForStage } from '@/utils/StageMapping';
 
 import { useSearchParams } from 'next/navigation';
 
@@ -42,23 +44,75 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
     // [Removed] Legacy Access Key System - Replaced by Premium Membership
 
 
-    // Existing User Check (Supabase) - Keep as secondary
-    useEffect(() => {
-        const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-            if (user) {
-                const { data: profile } = await supabase.from('profiles').select('points').eq('id', user.id).single();
-                if (profile) setPoints(profile.points);
+    // [Strict Payment Lock]
+    const [isLocked, setIsLocked] = useState(false);
+    const [isLoadingLock, setIsLoadingLock] = useState(true);
+
+    const checkUserStatus = async (): Promise<boolean> => {
+        setIsLoadingLock(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+
+        let shouldLock = false;
+
+        if (user) {
+            // 1. Fetch User Profile for Points
+            const { data: profile } = await supabase.from('profiles').select('points').eq('id', user.id).single();
+            if (profile) setPoints(profile.points);
+
+            // 2. Fetch User Subscription Status (Detailed)
+            const { data: subscription } = await supabase
+                .from('users')
+                .select('expires_at, membership_tier')
+                .eq('id', user.id)
+                .single();
+
+            if (subscription) {
+                const now = new Date();
+                const expiresAt = subscription.expires_at ? new Date(subscription.expires_at) : null;
+
+                // Lock if:
+                // a) No expiration date (Never paid/approved)
+                // b) Expiration date is in the past
+                // UNLESS tier is 'ADMIN' (Just in case)
+                const isExpired = !expiresAt || expiresAt < now;
+                const isAdmin = subscription.membership_tier === 'ADMIN';
+
+                if (isExpired && !isAdmin) {
+                    shouldLock = true;
+                    console.log("🔒 Access Locked: User is expired or has no pass.");
+                } else {
+                    shouldLock = false;
+                    console.log("🔓 Access Granted.");
+                }
+            } else {
+                // No record found? Lock it to be safe (or handle new user creation)
+                // Assuming 'users' row is created on signup trigger
+                shouldLock = true;
             }
-        };
-        checkUser();
+        } else {
+            // Not logged in? Handled by page.tsx redirect usually, 
+            // but if we are here without user, maybe we shouldn't lock? 
+            // BookLayout wraps content that usually requires auth.
+            // Let's assume AuthGuard handles non-login. 
+            // We only lock LOGGED IN but UNPAID users here.
+            shouldLock = false;
+        }
+
+        setIsLocked(shouldLock);
+        setIsLoadingLock(false);
+        return shouldLock;
+    };
+
+    useEffect(() => {
+        checkUserStatus();
     }, []);
 
     return (
         // [Fix 1] PC 배경과 앱 컨테이너 분리
         // 바깥쪽 div: PC 화면용 배경 (우주적 느낌)
         <div className="min-h-[100dvh] w-full bg-[#050505] flex justify-center items-center overflow-hidden">
+
 
             {/* PC용 배경 장식 (앱 뒤에 은은하게 깔리는 오로라) */}
             <div className="fixed inset-0 z-0 pointer-events-none hidden md:block">
@@ -106,7 +160,17 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                 <AnimatePresence>
                     {isMapOpen && (
                         <div className="absolute inset-0 z-[60]">
-                            <StageMap currentStage={demoStage} onSelectStage={setDemoStage} onClose={() => setIsMapOpen(false)} />
+                            <StageMap
+                                currentStage={demoStage}
+                                onSelectStage={(stage) => {
+                                    setDemoStage(stage);
+
+                                    // [Sync Logic] Update Report Step
+                                    const targetStep = getTargetStepForStage(stage);
+                                    useReportStore.getState().setStep(targetStep);
+                                }}
+                                onClose={() => setIsMapOpen(false)}
+                            />
                         </div>
                     )}
                     {isChatOpen && (
@@ -142,6 +206,13 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         </motion.div>
                     </AnimatePresence>
                 </main>
+
+                {/* [Strict Payment Guardian] */}
+                <AnimatePresence>
+                    {isLocked && (
+                        <PaymentLockOverlay onRefresh={checkUserStatus} userId={user?.id} />
+                    )}
+                </AnimatePresence>
 
                 {/* 3. Footer - Progress Bar Only */}
                 <footer className="absolute bottom-0 left-0 right-0 bg-deep-slate/90 backdrop-blur-lg border-t border-white/5 z-50 pb-[env(safe-area-inset-bottom)]">
