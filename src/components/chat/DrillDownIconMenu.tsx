@@ -450,7 +450,9 @@ export default function DrillDownIconMenu({
     // [NEW] 108 자각 Modals State
     const [showSajuSummary, setShowSajuSummary] = useState(false);
     const [showDiscoveryChat, setShowDiscoveryChat] = useState(false);
+    const [showDiscoveryChat, setShowDiscoveryChat] = useState(false);
     const [discoveryChatIntent, setDiscoveryChatIntent] = useState<string>('');
+    const [showAwakeningChat, setShowAwakeningChat] = useState(false); // [Fix] Missing State
 
     const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
     const { reportData } = useReportStore();
@@ -1344,9 +1346,11 @@ export default function DrillDownIconMenu({
             <AnimatePresence>
                 {showAwakeningChat && (
                     <AwakeningChat
-                        isOpen={showAwakeningChat}
                         onClose={() => setShowAwakeningChat(false)}
-                        userProfile={userProfile}
+                        onComplete={(prompt) => {
+                            setShowAwakeningChat(false);
+                            onSelectIntent('saju_108_awakening_complete', prompt);
+                        }}
                     />
                 )}
             </AnimatePresence>
