@@ -84,15 +84,17 @@ export default function RadarChartView() {
     }
 
     const { saju } = reportData;
-    const { elements, keywords } = saju;
+    // [Fix] Default empty object if elements is missing
+    const elements = saju?.elements || {};
+    const keywords = saju?.keywords || [];
 
     // [Fix 2] useMemo를 통한 데이터 캐싱 (불필요한 연산 방지)
     const chartData = useMemo(() => [
-        { subject: '목(Wood)', A: elements.wood || 0, fullMark: 100 },
-        { subject: '화(Fire)', A: elements.fire || 0, fullMark: 100 },
-        { subject: '토(Earth)', A: elements.earth || 0, fullMark: 100 },
-        { subject: '금(Metal)', A: elements.metal || 0, fullMark: 100 },
-        { subject: '수(Water)', A: elements.water || 0, fullMark: 100 },
+        { subject: '목(Wood)', A: elements?.wood || 0, fullMark: 100 },
+        { subject: '화(Fire)', A: elements?.fire || 0, fullMark: 100 },
+        { subject: '토(Earth)', A: elements?.earth || 0, fullMark: 100 },
+        { subject: '금(Metal)', A: elements?.metal || 0, fullMark: 100 },
+        { subject: '수(Water)', A: elements?.water || 0, fullMark: 100 },
     ], [elements]);
 
     return (

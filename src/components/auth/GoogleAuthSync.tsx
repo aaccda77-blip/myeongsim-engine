@@ -11,6 +11,9 @@ export default function GoogleAuthSync() {
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session?.user) {
+                // [Memory] Save User ID for Chat History Persistence
+                localStorage.setItem('myeongsim_user_id', session.user.id);
+
                 // Check if we already have a Myeongsim session token
                 const localToken = SessionManager.getLocalSessionToken();
 

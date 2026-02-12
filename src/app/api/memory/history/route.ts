@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MemoryServiceModule } from '@/modules/MemoryService';
+import { MemoryService } from '@/services/MemoryService';
 import { requireAuth } from '@/lib/auth';
 
 export const GET = requireAuth(async (req: NextRequest, auth) => {
     try {
         // Use authenticated user ID instead of query param
-        const history = await MemoryServiceModule.fetchRecentChatLogs(auth.userId);
+        const history = await MemoryService.fetchRecentChatLogs(auth.userId);
         return NextResponse.json({ history });
 
     } catch (error: any) {
@@ -23,7 +23,7 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
         }
 
         // Use authenticated user ID
-        await MemoryServiceModule.saveChatLog(auth.userId, role, message, stage || 1);
+        await MemoryService.saveChatLog(auth.userId, role, message, stage || 1);
 
         // Also save to Vector DB for Long-Term Memory (RAG) context if it's a completed interaction
         // For now, we mainly focus on chat_logs persistence.

@@ -10,9 +10,12 @@ import { createConsultationPrompt } from '@/utils/promptBuilder';
 import { Send, ArrowRight, User } from 'lucide-react';
 import { SOCIAL_ROLES } from '@/data/socialRoleData';
 
+import { AWAKENING_108 } from '@/data/Awakening108DB';
+
 interface AwakeningChatProps {
     onComplete: (prompt: string) => void;
     onClose: () => void;
+    mode?: 'diagnosis' | '108'; // [NEW] Mode selection
 }
 
 interface Message {
@@ -22,7 +25,7 @@ interface Message {
     type?: 'question' | 'answer';
 }
 
-export default function AwakeningChat({ onComplete, onClose }: AwakeningChatProps) {
+export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' }: AwakeningChatProps) {
     const { reportData } = useReportStore();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
@@ -40,30 +43,49 @@ export default function AwakeningChat({ onComplete, onClose }: AwakeningChatProp
     // 1. Initialize Questions on Mount
     useEffect(() => {
         if (reportData) {
-            // Generate dynamic questions or fallback to Social Role
-            // For this demo, let's FORCE the Social Role question first as per User Request
-            // Generate Steps 1, 2, 3 (Strict)
-            const generated = generateQuestions(reportData);
+            if (mode === '108') {
+                // [Mode: 108 Protocol] Randomly select one question for daily contemplation
+                // Logic: Use Day of Year or Random? Let's use Random for variety in demo.
+                const randomIndex = Math.floor(Math.random() * AWAKENING_108.length);
+                const protocol = AWAKENING_108[randomIndex];
 
-            // Generate Step 4 (Destiny Choice)
-            // Generate Step 4 (Destiny Choice)
-            const roleAlias = generated[0]?.text.includes("'") ? generated[0].text.split("'")[1] : '나';
-            setRoleAlias(roleAlias);
+                const question: CoachingQuestion = {
+                    id: protocol.id,
+                    type: 'hidden', // Treat as deep hidden work
+                    text: `[108 자각 프로토콜 #${protocol.number}: ${protocol.category}]\n\n**${protocol.title}**\n"${protocol.subtitle}"\n\n${protocol.core_question}`,
+                    options: protocol.reflection_prompts
+                };
 
-            // Use reportData (which serves as userProfile) for destiny choice
-            const finalChoice = getDestinyChoice(reportData);
-            const fullCourse = [...generated, finalChoice];
+                setQuestions([question]);
+                addBotMessage(`오늘 당신을 위해 준비된 자각의 질문입니다.\n준비가 되셨나요?`);
+                setTimeout(() => addBotMessage(question.text), 1500);
 
-            setQuestions(fullCourse);
+            } else {
+                // [Mode: Diagnosis] Standard Flow
+                // Generate dynamic questions or fallback to Social Role
+                // For this demo, let's FORCE the Social Role question first as per User Request
+                // Generate Steps 1, 2, 3 (Strict)
+                const generated = generateQuestions(reportData);
 
-            // Start first question
-            if (fullCourse.length > 0) {
-                addBotMessage(fullCourse[0].text);
+                // Generate Step 4 (Destiny Choice)
+                const roleAlias = generated[0]?.text.includes("'") ? generated[0].text.split("'")[1] : '나';
+                setRoleAlias(roleAlias);
+
+                // Use reportData (which serves as userProfile) for destiny choice
+                const finalChoice = getDestinyChoice(reportData);
+                const fullCourse = [...generated, finalChoice];
+
+                setQuestions(fullCourse);
+
+                // Start first question
+                if (fullCourse.length > 0) {
+                    addBotMessage(fullCourse[0].text);
+                }
             }
         } else {
             addBotMessage("사용자 데이터를 불러오는 중 오류가 발생했습니다.");
         }
-    }, [reportData]);
+    }, [reportData, mode]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

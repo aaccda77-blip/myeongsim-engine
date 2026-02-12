@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Music, X } from 'lucide-react';
+import { Music, X, Globe } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule';
 import TalentReportCard from '@/components/chat/TalentReportCard';
@@ -21,6 +21,7 @@ import HealingMusicPlayerModal from '@/components/chat/HealingMusicPlayerModal';
 import { assembleFullReport } from '@/services/ReportAssembler';
 import { useReportStore } from '@/store/useReportStore'; // [New] Import for navigation
 import { useSubscription } from '@/hooks/useSubscription'; // [NEW] 이용권 상태 확인
+import { useLanguage } from '@/contexts/LanguageContext'; // [Multi-Language]
 import {
     ICON_DRILL_DOWN_MAP,
     getMainIconsWithRecommendations,
@@ -365,15 +366,24 @@ const resolveDynamicText = (text: string | undefined, userProfile: any): string 
     // Helper to get stem/branch char
     const getChar = (obj: any, part: 'stem' | 'branch') => {
         if (!obj) return '';
-        // If obj has stem/branch props (legacy)
-        if (part === 'stem' && obj.stem) return obj.stem;
-        if (part === 'branch' && obj.branch) return obj.branch;
 
-        // If obj is SajuPillar { gan: { char... }, ji: { char... } } (new)
-        if (part === 'stem') return obj.gan?.char || obj.gan || '?';
-        if (part === 'branch') return obj.ji?.char || obj.ji || '?';
+        // [Safety Fix] Ensure we extract a string, never return an object
+        // 1. Try Legacy format (obj.stem / obj.branch might be strings)
+        if (part === 'stem' && typeof obj.stem === 'string') return obj.stem;
+        if (part === 'branch' && typeof obj.branch === 'string') return obj.branch;
 
-        return '';
+        // 2. Try Object format (SajuPillar)
+        // If obj.gan is an object { char, color, label }, take .char
+        if (part === 'stem') {
+            if (obj.gan && typeof obj.gan === 'object' && obj.gan.char) return obj.gan.char;
+            if (typeof obj.gan === 'string') return obj.gan;
+        }
+        if (part === 'branch') {
+            if (obj.ji && typeof obj.ji === 'object' && obj.ji.char) return obj.ji.char;
+            if (typeof obj.ji === 'string') return obj.ji;
+        }
+
+        return '?';
     };
 
     const Ganji = {
@@ -391,10 +401,10 @@ const resolveDynamicText = (text: string | undefined, userProfile: any): string 
     resolved = resolved.replace('{{HOUR_PILLAR}}', Ganji.hour || '시주');
 
     // 2. Logic Placeholders (Simplified for now)
-    resolved = resolved.replace('{{WEAK_ELEMENT}}', '부족한 기운'); // TODO: Implement logic
-    resolved = resolved.replace('{{GONGMANG}}', '공망');             // TODO: Implement logic
-    resolved = resolved.replace('{{CURRENT_DAEWOON}}', '현재 대운'); // TODO: Implement logic
-    resolved = resolved.replace('{{CURRENT_YEAR_GANJI}}', '을사(乙巳)'); // 2025 Fixed
+    resolved = resolved.replace('{{WEAK_ELEMENT}}', t('common.weak_element') || '부족한 기운');
+    resolved = resolved.replace('{{GONGMANG}}', t('common.gongmang') || '공망');
+    resolved = resolved.replace('{{CURRENT_DAEWOON}}', t('common.current_daewoon') || '현재 대운');
+    resolved = resolved.replace('{{CURRENT_YEAR_GANJI}}', t('common.current_year_ganji') || '을사(乙巳)'); // 2025 Fixed
 
     return resolved;
 };
@@ -412,6 +422,7 @@ export default function DrillDownIconMenu({
     onSelectIntent,
     hideTodayEnergy = false
 }: DrillDownIconMenuProps) {
+    const { language, setLanguage, t } = useLanguage();
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [selectedIcon, setSelectedIcon] = useState<MainIcon | null>(null);
     const [hoveredSubItem, setHoveredSubItem] = useState<string | null>(null);
@@ -455,6 +466,7 @@ export default function DrillDownIconMenu({
 
     const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
     const { reportData } = useReportStore();
+
 
 
     // [NEW] 이용권 상태 확인
@@ -554,7 +566,7 @@ export default function DrillDownIconMenu({
     const handleIconClick = (icon: MainIcon) => {
         // [NEW] 이용권 만료 시 클릭 차단
         if (isExpired) {
-            alert('이용권이 만료되었습니다. 이용권을 갱신해주세요.');
+            alert(t('chat.trial_ended').replace('🎁 ', '')); // Simple alert fallback
             return;
         }
 
@@ -700,7 +712,7 @@ export default function DrillDownIconMenu({
 
 
         // [NEW] 108 자각 프로토콜 (Awakening Chat)
-        if (subItem.intent === 'saju_108_awakening') {
+        if (subItem.intent === 'ms_quantum_108' || subItem.intent === 'saju_108_awakening') {
             setSelectedIcon(null);
             setShowAwakeningChat(true);
             return;
@@ -708,7 +720,7 @@ export default function DrillDownIconMenu({
 
 
         // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동
-        if (subItem.id === 'FULL_REPORT' || subItem.label.includes('종합 리포트')) {
+        if (subItem.id === 'FULL_REPORT' || subItem.intent === 'FULL_REPORT_ARCHIVE') {
             setSelectedIcon(null);
             window.location.href = '/report/soul-archive';
             return;
@@ -938,6 +950,26 @@ export default function DrillDownIconMenu({
 
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>
+                {/* [Language] Toggle Button */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const langs = ['kr', 'en', 'jp', 'cn'] as const;
+                        const idx = langs.indexOf(language as any);
+                        const next = langs[(idx + 1) % langs.length];
+                        setLanguage(next);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                    }}>
+                        <Globe size={20} color="#fff" />
+                    </div>
+                    <span style={styles.iconLabel}>{language.toUpperCase()}</span>
+                </button>
+
                 {/* [NEW] My Report Icon (Fixed First Position) */}
                 <button
                     style={styles.iconButton}
@@ -956,8 +988,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>📋</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#FCD34D' }}>내 리포트</div>
-                        <div style={styles.neuroTrigger}>진단요약</div>
+                        <div style={{ ...styles.iconLabel, color: '#FCD34D' }}>{t('menu.my_report')}</div>
+                        <div style={styles.neuroTrigger}>{t('menu.diagnosis_summary')}</div>
                     </div>
                 </button>
 
@@ -965,9 +997,10 @@ export default function DrillDownIconMenu({
 
                 {icons.map((icon) => {
                     const isHovered = hoveredIcon === icon.id;
-                    const friendlyLabel = FRIENDLY_LABELS[icon.id] || {
-                        main: icon.label,
-                        sub: icon.neuro_trigger
+                    const translatedLabel = t(`menu.${icon.id.toLowerCase()}`) || icon.label;
+                    const friendlyLabel = {
+                        main: translatedLabel,
+                        sub: icon.neuro_trigger // Or translate trigger if needed
                     };
 
                     return (
@@ -1103,9 +1136,12 @@ export default function DrillDownIconMenu({
                             {(currentMenuDepth || selectedIcon.sub_menus).map((subItem) => {
                                 const isHovered = hoveredSubItem === subItem.id;
 
-                                // [Dynamic] 텍스트 치환 (사용자 사주 정보 반영)
-                                const resolvedLabel = resolveDynamicText(subItem.label, userProfile);
-                                const resolvedDesc = resolveDynamicText(subItem.desc, userProfile);
+                                // [Dynamic] 텍스트 치환 (사용자 사주 정보 반영) -> [Multi-Language] First translate, then resolve
+                                const baseLabel = t(`menu.${subItem.intent}`) || subItem.label;
+                                const baseDesc = subItem.desc ? (t(`menu.${subItem.intent}_desc`) || subItem.desc) : '';
+
+                                const resolvedLabel = resolveDynamicText(baseLabel, userProfile);
+                                const resolvedDesc = resolveDynamicText(baseDesc, userProfile);
 
                                 return (
                                     <div
@@ -1123,10 +1159,8 @@ export default function DrillDownIconMenu({
                                             {subItem.children ? '📂' : (subItem.icon || selectedIcon.icon)}
                                         </span>
                                         <div style={{ flex: 1 }}>
-                                            <div style={styles.subMenuLabel}>{resolvedLabel}</div>
-                                            {resolvedDesc && (
-                                                <div style={styles.subMenuDesc}>{resolvedDesc}</div>
-                                            )}
+                                            <div style={styles.subMenuLabel}>{t(`menu.${subItem.id}`)}</div>
+                                            <div style={styles.subMenuDesc}>{t(`menu.${subItem.id}_desc`)}</div>
                                         </div>
 
                                         {/* 네비게이션 화살표 or 프리미엄 배지 */}
@@ -1345,6 +1379,7 @@ export default function DrillDownIconMenu({
             <AnimatePresence>
                 {showAwakeningChat && (
                     <AwakeningChat
+                        mode="108" // [NEW] 108 Protocol Mode
                         onClose={() => setShowAwakeningChat(false)}
                         onComplete={(prompt) => {
                             setShowAwakeningChat(false);

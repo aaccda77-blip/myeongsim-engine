@@ -103,6 +103,18 @@ export const ARCHETYPE_MAPPING = "";
 export const SOLUTION_PROTOCOL = "";
 export const EXECUTION_FLOW = "";
 
-export const getCombinedSystemPrompt = () => {
-    return SYSTEM_PERSONA_CORE;
+export const getCombinedSystemPrompt = (language: string = 'kr') => {
+    let prompt = SYSTEM_PERSONA_CORE;
+
+    // [Multi-Language Support] Append language instruction
+    if (language === 'en') {
+        prompt += `\n\n# [IMPORTANT] LANGUAGE INSTRUCTION\nUser has selected **ENGLISH** mode.\n1. Translate all findings into natural **English**.\n2. Explain Saju terms conceptually (e.g. use 'Yang Wood' for 'Gap', 'Day Master' for 'Ilgan').\n3. Maintain the 'System Engineer' persona but speak in English.`;
+    } else if (language === 'jp') {
+        prompt += `\n\n# [IMPORTANT] LANGUAGE INSTRUCTION\nUser has selected **JAPANESE** mode.\n1. Translate all findings into natural **Japanese** (日本語).\n2. Use appropriate Saju terms (e.g. 甲 -> 木の兄/大木, 日干 -> 日主).\n3. Maintain the 'System Engineer' persona but speak in Japanese.`;
+    } else if (language === 'cn') {
+        prompt += `\n\n# [IMPORTANT] LANGUAGE INSTRUCTION\nUser has selected **CHINESE** mode.\n1. Translate all findings into natural **Simplified Chinese** (简体中文).\n2. Use traditional Saju terms (e.g. 甲木, 日主).\n3. Maintain the 'System Engineer' persona but speak in Chinese.`;
+    }
+    // Default 'kr' does not need extra instruction (Core is already KR)
+
+    return prompt;
 };

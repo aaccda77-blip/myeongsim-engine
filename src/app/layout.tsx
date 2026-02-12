@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SafetyDisclaimerModal from "@/components/modals/SafetyDisclaimerModal";
 import GoogleAuthSync from "@/components/auth/GoogleAuthSync";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 // 1. 폰트 변수 선언
 const geistSans = Geist({
@@ -41,10 +42,12 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased notranslate`}
             >
-                <SafetyDisclaimerModal />
-                {/* <PushTestButton /> - Debug Only */}
-                <GoogleAuthSync />
-                {children}
+                <LanguageProvider>
+                    <SafetyDisclaimerModal />
+                    {/* <PushTestButton /> - Debug Only */}
+                    <GoogleAuthSync />
+                    {children}
+                </LanguageProvider>
             </body>
         </html>
     );

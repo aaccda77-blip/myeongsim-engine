@@ -106,7 +106,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
         {
             id: 'welcome',
             role: 'assistant',
-            content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다.\n\n💾 *당신의 이야기는 운명의 패턴으로 기록되어, 다음 대화에서 더 깊은 통찰을 드릴 것입니다.*"
+            content: t('chat.welcome')
         }
     ]);
     const [input, setInput] = useState('');
@@ -2344,18 +2344,18 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             </button>
 
                             {[
-                                "오늘 운세 어때? 🌞",
-                                "내 재물운 알려줘 💰",
-                                "심리 치유가 필요해 🧠",
-                                "나의 타고난 강점은? ✨",
-                                "올해 연애운 궁금해 ❤️"
+                                { key: 'fortune', icon: '🌞' },
+                                { key: 'wealth', icon: '💰' },
+                                { key: 'healing', icon: '🧠' },
+                                { key: 'strength', icon: '✨' },
+                                { key: 'love', icon: '❤️' }
                             ].map((q, i) => (
                                 <button
                                     key={i}
-                                    onClick={() => handleSend(q)}
+                                    onClick={() => handleSend(t(`quick_chips.${q.key}`))}
                                     className="bg-gray-800/80 hover:bg-gray-700 border border-white/10 rounded-full px-4 py-1.5 text-xs text-gray-300 whitespace-nowrap transition-colors flex-shrink-0 backdrop-blur-sm"
                                 >
-                                    {q}
+                                    {t(`quick_chips.${q.key}`)} {q.icon}
                                 </button>
                             ))}
                         </div>
@@ -2410,22 +2410,20 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 // [New] Golden Time Analysis - 골든타임 알림
                                 if (intent === 'golden_time_analysis') {
                                     const hour = new Date().getHours();
-                                    let goldenMsg = '';
+                                    let goldenKey = 'intents.golden_time.night';
                                     if (hour >= 9 && hour < 12) {
-                                        goldenMsg = '🌅 **[골든타임 분석]**\n\n지금은 **오전 집중 구간**입니다!\n\n당신의 사주와 현재 바이오리듬을 분석한 결과:\n- 🧠 창의적 작업에 최적\n- 💡 중요한 아이디어 정리\n- ❌ 단순 반복 업무는 피하세요\n\n**지금 가장 집중해야 할 한 가지는 뭔가요?**';
+                                        goldenKey = 'intents.golden_time.morning';
                                     } else if (hour >= 14 && hour < 17) {
-                                        goldenMsg = '☀️ **[골든타임 분석]**\n\n지금은 **오후 결정 구간**입니다!\n\n당신의 사주와 현재 바이오리듬을 분석한 결과:\n- ⚖️ 중요한 결정 내리기에 최적\n- 🤝 미팅/협상에 유리\n- ❌ 새로운 학습은 비효율적\n\n**미루고 있던 결정이 있다면 지금이 타이밍이에요!**';
-                                    } else {
-                                        goldenMsg = '🌙 **[골든타임 분석]**\n\n지금은 **휴식 & 정리 구간**입니다.\n\n당신의 사주와 현재 바이오리듬을 분석한 결과:\n- 📝 하루 정리/회고에 최적\n- 🧘 명상/산책 추천\n- ❌ 중요한 결정은 내일로\n\n**오늘 하루 중 가장 잘한 일은 뭐였나요?**';
+                                        goldenKey = 'intents.golden_time.afternoon';
                                     }
-                                    handleSend(goldenMsg);
+                                    handleSend(t(goldenKey));
                                     return;
                                 }
 
                                 // [New] Neural Profile Analysis Breakdown
                                 if (intent === 'neural_profile_analysis') {
                                     // Explicitly request the detailed fusion analysis
-                                    handleSend("나의 **Gene Keys(황금 경로)**와 **사주(Self)**를 융합하여, **Life's Work 부터 Purpose 까지** 상세하게 분석해줘. 각 Gate의 그림자(Shadow), 선물(Gift), 시디(Siddhi)에 대한 설명도 포함해줘.");
+                                    handleSend(t('intents.neural_profile'));
                                     return;
                                 }
 
@@ -2435,74 +2433,19 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
 
                                 // [ACT] 금연 알아차림 - 수용전념치료
                                 if (intent === 'quit_smoking_act') {
-                                    const actMsg = `🚭 **[금연 알아차림 - ACT 기반]**
-
-**지금 이 순간, 흡연 욕구를 느끼고 계신가요?**
-
-✨ **알아차림의 알아차림:**
-> "욕구가 있다"는 것을 알아차린 당신은
-> 이미 욕구에 지배당하지 않는 상태입니다.
-
-🌊 **파도 타기 기법 (Urge Surfing):**
-욕구는 파도처럼 밀려왔다가 반드시 사라집니다.
-지금부터 3분만 함께 파도를 타볼까요?
-
-1. 👃 깊게 숨을 들이쉬세요 (4초)
-2. 🫁 천천히 내쉬세요 (6초)
-3. 🧠 "이 욕구도 지나갈 것이다"라고 관찰하세요
-
-**지금 무엇이 당신을 담배로 이끌고 있나요?**`;
-                                    handleSend(actMsg);
+                                    handleSend(t('intents.quit_smoking'));
                                     return;
                                 }
 
                                 // [CBT] 금주 알아차림 - 인지행동치료
                                 if (intent === 'quit_drinking_cbt') {
-                                    const cbtMsg = `🍺 **[금주 알아차림 - CBT 기반]**
-
-**음주 충동이 느껴지시나요?**
-
-🧠 **인지 재구성 질문:**
-> "술을 마시면 정말 기분이 나아질까요?"
-> "내일 아침의 나는 어떤 기분일까요?"
-
-📝 **생각-감정-행동 연결:**
-| 상황 | 자동적 생각 | 감정 | 대안적 생각 |
-|---|---|---|---|
-| 스트레스 | "한 잔만..." | 충동 | "이건 착각이다" |
-
-⚡ **즉각 대처 행동:**
-1. 🚶 장소를 바꾸세요 (5분만)
-2. 📞 지인에게 전화하세요
-3. 💧 물을 크게 한 잔 마시세요
-
-**지금 술을 마시고 싶게 만드는 상황이 뭔가요?**`;
-                                    handleSend(cbtMsg);
+                                    handleSend(t('intents.quit_drinking'));
                                     return;
                                 }
 
                                 // [DBT] 중독 탈출 - 변증법적행동치료
                                 if (intent === 'addiction_escape_dbt') {
-                                    const dbtMsg = `🎮 **[중독 탈출 - DBT 기반]**
-
-**디지털/도박/쇼핑... 멈출 수 없는 느낌인가요?**
-
-🔥 **고통 감내 기술 (Distress Tolerance):**
-
-**TIPP 기법으로 즉시 진정:**
-- **T**emperature: 찬물로 세수하기 🧊
-- **I**ntense Exercise: 10초 제자리 뛰기 🏃
-- **P**aced Breathing: 4-7-8 호흡 🫁
-- **P**aired Relaxation: 근육 이완 💆
-
-🛡️ **STOP 기술:**
-- **S**top: 멈춰!
-- **T**ake a step back: 한 발 물러나
-- **O**bserve: 관찰해
-- **P**roceed mindfully: 현명하게 행동해
-
-**지금 가장 하고 싶은 충동적 행동은 뭔가요?**`;
-                                    handleSend(dbtMsg);
+                                    handleSend(t('intents.addiction_escape'));
                                     return;
                                 }
 
@@ -2528,7 +2471,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         const interventionMsg: Message = {
                                             id: Date.now().toString(),
                                             role: 'assistant',
-                                            content: "🚨 **[긴급 생체 반응 감지]**\n\n고객님, 현재 심박수가 급격히 상승하여 '불안/스트레스' 패턴(Red Zone)에 진입했습니다.\n\n이는 단순한 감정 변화가 아닌, 신경계의 과부하 신호일 수 있습니다.\n\n**특허 기반 능동 처방:**\n즉시 하던 일을 멈추고 심호흡을 3회 실시하세요. 제가 진정 주파수(432Hz)를 재생하겠습니다. (특허 제 10-2025-0166877 구현 예시)"
+                                            content: t('intents.demo.intervention')
                                         };
                                         setMessages((prev) => [...prev, interventionMsg]);
                                         playGameSound('levelup'); // 알림음 대용
@@ -2549,7 +2492,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         const preventiveMsg: Message = {
                                             id: Date.now().toString(),
                                             role: 'assistant',
-                                            content: "🛡️ **[선제적 스트레스 예방 알림]**\n\n고객님, 현재 심박수는 정상이지만 '심박 변이도(HRV)'가 급격히 낮아지고 있습니다.\n\n이는 통계적으로 30분 내에 스트레스성 긴장이 올 확률이 85%임을 시사합니다.\n\n**AI 추천 예방책:**\n지금 하시는 업무를 잠시 멈추고 5분간 창밖을 보거나 따뜻한 차를 마시는 것이 효율을 20% 높여줄 것입니다."
+                                            content: t('intents.demo.preventive')
                                         };
                                         setMessages((prev) => [...prev, preventiveMsg]);
                                         playGameSound('normal');
@@ -2571,7 +2514,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString() + "_1",
                                             role: 'assistant',
-                                            content: "1️⃣ **[알아차림]**: 지금 심장이 조금 빠르게 뛰는 것을 느끼시나요? 그것을 '나쁜 것'으로 판단하지 말고, 단지 '몸의 감각'으로만 바라봐주세요. (메타인지 활성화)"
+                                            content: t('intents.demo.therapy_1')
                                         }]);
                                     }, 4000);
 
@@ -2580,7 +2523,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString() + "_2",
                                             role: 'assistant',
-                                            content: "2️⃣ **[수용]**: 불안해도 괜찮습니다. 이 감정은 지나가는 파도와 같습니다. 억지로 없애려 하지 말고 파도 타듯이 맡겨보세요. (감정 조절)"
+                                            content: t('intents.demo.therapy_2')
                                         }]);
                                     }, 8000);
 
@@ -2589,7 +2532,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString() + "_3",
                                             role: 'assistant',
-                                            content: "3️⃣ **[인지 재구성]**: 지금 드는 걱정이 '팩트'인가요, 아니면 두려움이 만들어낸 '상상'인가요? 최악의 상황이 실제로 일어날 확률은 얼마나 될까요? (현실 검증)"
+                                            content: t('intents.demo.therapy_3')
                                         }]);
                                     }, 12000);
 
@@ -2598,7 +2541,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString() + "_4",
                                             role: 'assistant',
-                                            content: "4️⃣ **[가치 전념 행동]**: 지금 당장, 내가 추구하는 가치를 위해 할 수 있는 가장 작은 행동 하나는 무엇인가요? 그것을 지금 실행합시다. (실행력 회복)"
+                                            content: t('intents.demo.therapy_4')
                                         }]);
                                         playGameSound('cheer');
                                     }, 16000);
@@ -2618,7 +2561,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString(),
                                             role: 'assistant',
-                                            content: "🌬️ **[호흡 동기화 가이드]**\n\n현재 심박수: **118 BPM** (과각성)\n\n제 신호에 맞춰주세요:\n1. 들이마시고... (4초)\n2. 멈추고... (4초)\n3. 내쉬세요... (4초)\n\n(이 과정을 반복하면 심박수가 안정됩니다)"
+                                            content: t('intents.demo.recovery_guide')
                                         }]);
                                     }, 1000);
 
@@ -2626,7 +2569,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString() + "_complete",
                                             role: 'assistant',
-                                            content: "✅ **[안정화 완료]**\n\n심박수가 정상 범위(**72 BPM**)로 돌아왔습니다. 미주신경 활성화가 확인되었습니다."
+                                            content: t('intents.demo.recovery_complete')
                                         }]);
                                         playGameSound('levelup');
                                     }, 22000);
@@ -2640,12 +2583,11 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     simulateRecovery();
 
                                     handleSend("👁️ [EMDR Protocol] 안구 운동 정보처리 모드 활성화. 트라우마 네트워크 재처리 시작.");
-
                                     setTimeout(() => {
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString(),
                                             role: 'assistant',
-                                            content: "🧠 **[EMDR 가이드]**\n\n1. 고개를 고정한 채, **눈동자만** 움직여 화면의 불빛을 따라가세요.\n2. 지금 느끼는 불안한 감정을 떠올리세요.\n3. 불빛을 따라 좌우로 눈을 움직이며 그 감정이 어떻게 변하는지 관찰하세요."
+                                            content: t('intents.demo.emdr_guide')
                                         }]);
                                     }, 1500);
 
@@ -2653,7 +2595,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString() + "_emdr_end",
                                             role: 'assistant',
-                                            content: "✅ **[세션 완료]**\n\n뇌의 정보 처리 시스템이 활성화되어 부정적 감정의 강도가 감소했습니다. (BPM 118 -> 72 안정화)"
+                                            content: t('intents.demo.emdr_complete')
                                         }]);
                                         setEmdrActive(false); // Stop Animation
                                     }, 25000);

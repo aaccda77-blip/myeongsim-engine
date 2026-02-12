@@ -50,9 +50,31 @@ export default function SajuPaljaView() {
     const PillarCard = ({ title, subTitle, data, index }: { title: string, subTitle: string, data: any, index: number }) => {
         // [Safety Guard] data 자체가 없거나 gan이 없을 때 처리
         const safeData = data || { gan: '?', ji: '?', ganColor: '', jiColor: '' };
-        const isUnknown = !safeData.gan || safeData.gan === '?';
-        const ganKey = isUnknown ? 'Unknown' : getElementKeyFromColor(safeData.ganColor);
-        const jiKey = isUnknown ? 'Unknown' : getElementKeyFromColor(safeData.jiColor);
+
+        // [Fix] Robust extraction for Gan/Ji (Handle Object case)
+        const getChar = (val: any) => {
+            if (typeof val === 'string') return val;
+            if (val && typeof val === 'object' && val.char) return val.char;
+            return '?';
+        };
+
+        const getColor = (val: any, colorProp: string) => {
+            // 1. Try direct prop (e.g. ganColor)
+            if (colorProp && typeof colorProp === 'string' && colorProp.length > 0) return colorProp;
+            // 2. Try nested object color (val.color)
+            if (val && typeof val === 'object' && val.color) return val.color;
+            return '';
+        };
+
+        const ganChar = getChar(safeData.gan);
+        const jiChar = getChar(safeData.ji);
+        const ganColorVal = getColor(safeData.gan, safeData.ganColor);
+        const jiColorVal = getColor(safeData.ji, safeData.jiColor);
+
+        const isUnknown = ganChar === '?' || ganChar === undefined;
+
+        const ganKey = isUnknown ? 'Unknown' : getElementKeyFromColor(ganColorVal);
+        const jiKey = isUnknown ? 'Unknown' : getElementKeyFromColor(jiColorVal);
 
         const ganConf = ELEMENT_CONFIG[ganKey] || ELEMENT_CONFIG['Unknown'];
         const jiConf = ELEMENT_CONFIG[jiKey] || ELEMENT_CONFIG['Unknown'];
@@ -91,7 +113,7 @@ export default function SajuPaljaView() {
                                 className={`font-serif font-black ${isUnknown ? 'text-3xl text-gray-600' : 'text-4xl md:text-6xl'}`}
                                 style={!isUnknown ? { color: ganConf.color, textShadow: `0 0 20px ${ganConf.bgGlow}` } : {}}
                             >
-                                {isUnknown ? '?' : safeData.gan}
+                                {ganChar}
                             </motion.span>
                             {!isUnknown && <span className="text-[9px] text-white/40 mt-1">{ganConf.label}</span>}
                         </div>
@@ -104,7 +126,7 @@ export default function SajuPaljaView() {
                                 className={`font-serif font-black ${isUnknown ? 'text-3xl text-gray-600' : 'text-4xl md:text-6xl'}`}
                                 style={!isUnknown ? { color: jiConf.color, textShadow: `0 0 20px ${jiConf.bgGlow}` } : {}}
                             >
-                                {isUnknown ? '?' : safeData.ji}
+                                {jiChar}
                             </motion.span>
                             {!isUnknown && <span className="text-[9px] text-white/40 mt-1">{jiConf.label}</span>}
                         </div>

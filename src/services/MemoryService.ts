@@ -1,10 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createHash } from 'crypto';
 
-// Initialize Supabase Client (Service Role for secure writes, or Anon if RLS allows)
-// Note: In API routes, use Service Role to bypass RLS if strictly needed, but better to stick to RLS context.
-// Here we assume this is called from API Routes where we can pass the user context or use Service Role.
-
+// Initialize Supabase Client
 export class MemoryService {
 
     private static supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
@@ -15,6 +13,14 @@ export class MemoryService {
     private static embeddingModel = this.genAI.getGenerativeModel({ model: "text-embedding-004" });
 
     /**
+     * Generates a unique Persona ID
+     */
+    public static generatePersonaId(userId: string, targetName: string, birthDate: string): string {
+        const rawString = `${userId}:${targetName}:${birthDate}`;
+        return createHash('sha256').update(rawString).digest('hex');
+    }
+
+    /**
      * Embeds text using Gemini
      */
     private static async getEmbedding(text: string): Promise<number[]> {
@@ -23,59 +29,62 @@ export class MemoryService {
     }
 
     /**
-     * Stores a new memory (Conversation Summary or Insight)
+     * Stores a new memory to long_term_memory
      */
-    static async storeMemory(userId: string, content: string, metadata: any = {}) {
+    static async storeMemory(userId: string, personaId: string, content: string, metadata: any = {}) {
         try {
             if (!content || content.length < 5) return;
 
             const embedding = await this.getEmbedding(content);
 
             const { error } = await this.supabase
-                .from('user_memories')
+                .from('long_term_memory')
                 .insert({
                     user_id: userId,
+                    persona_id: personaId,
                     content: content,
                     embedding: embedding,
                     metadata: metadata
                 });
 
             if (error) throw error;
-            console.log(`🧠 [Memory] Stored for User ${userId}: "${content.substring(0, 30)}..."`);
+            console.log(`🧠 [Memory] Stored for Persona ${personaId.substring(0, 8)}: "${content.substring(0, 30)}..."`);
         } catch (e) {
             console.error("Memory Store Error:", e);
         }
     }
 
     /**
-     * Recalls relevant memories based on the current context (User Message)
+     * Recalls relevant memories based on Persona Context
      */
-    static async recallMemories(userId: string, query: string, limit: number = 3): Promise<string> {
+    static async recallMemories(userId: string, personaId: string, query: string, limit: number = 3): Promise<string> {
         try {
             const embedding = await this.getEmbedding(query);
 
             const { data, error } = await this.supabase.rpc('match_memories', {
                 query_embedding: embedding,
-                match_threshold: 0.5, // Relevance threshold
+                match_threshold: 0.5,
                 match_count: limit,
-                filter_user_id: userId
+                p_user_id: userId,
+                p_persona_id: personaId
             });
 
             if (error) {
                 console.error("Memory Search Error:", error);
+                // Return empty string on error to prevent crash
                 return "";
             }
 
             if (!data || data.length === 0) return "";
 
-            // Format memories for Prompt Injection
             let memoryContext = "## [Episodic Memory (Past Conversations)]\n";
-            data.forEach((mem: any, index: number) => {
-                const date = new Date(mem.created_at).toLocaleDateString();
-                memoryContext += `- (${date}) ${mem.content}\n`;
+            data.forEach((mem: any) => {
+                // If created_at is available in view
+                // const date = mem.created_at ? new Date(mem.created_at).toLocaleDateString() : 'Past';
+                memoryContext += `- ${mem.content}\n`;
             });
 
-            console.log(`🧠 [Memory] Recalled ${data.length} items for User ${userId}`);
+            console.log(`🧠 [Memory] Recalled ${data.length} items for Persona ${personaId.substring(0, 8)}`);
             return memoryContext;
 
         } catch (e) {
@@ -85,14 +94,12 @@ export class MemoryService {
     }
 
     /**
-     * Summarizes a conversation session to a concise memory (using Gemini)
-     * This should be called at the end of a session or periodically.
+     * Auto-summarize and store
      */
-    static async summarizeAndStore(userId: string, messages: any[]) {
-        if (messages.length < 4) return; // Too short to remember
+    static async summarizeAndStore(userId: string, personaId: string, messages: any[]) {
+        if (messages.length < 4) return;
 
         try {
-            // Create a summary prompt
             const conversationText = messages.map(m => `${m.role}: ${m.content}`).join('\n');
             const summaryModel = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -109,7 +116,7 @@ export class MemoryService {
             const result = await summaryModel.generateContent(prompt);
             const summary = result.response.text();
 
-            await this.storeMemory(userId, summary, { type: 'auto-summary' });
+            await this.storeMemory(userId, personaId, summary, { type: 'auto-summary' });
 
         } catch (e) {
             console.error("Auto-Summary Failed:", e);
@@ -117,52 +124,36 @@ export class MemoryService {
     }
 
     /**
-     * Extracts specific entities (Diet, Mood, Worry) for "Soul Partner" memory.
-     * Stores them as structured entity memories.
+     * Fetches recent chat history for a user (Standard DB)
      */
-    static async extractAndStoreEntities(userId: string, messages: any[]) {
-        if (messages.length < 4) return;
+    static async fetchRecentChatLogs(userId: string, limit: number = 50) {
+        const { data, error } = await this.supabase
+            .from('chat_history')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: true })
+            .limit(limit);
 
-        try {
-            const conversationText = messages.map(m => `${m.role}: ${m.content}`).join('\n');
-            const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-            const prompt = `
-            Analyze the following conversation and extract specific user preferences or patterns.
-            Output ONLY a JSON object with these keys (if found):
-            {
-                "diet_preferences": ["spicy food", "coffee addict", ...],
-                "mood_patterns": ["anxious at night", "energetic morning", ...],
-                "core_worries": ["money", "health", ...]
-            }
-            If nothing relevant is found, return empty arrays.
-            Language: Korean.
-
-            Conversation:
-            ${conversationText}
-            `;
-
-            const result = await model.generateContent(prompt);
-            const text = result.response.text();
-            // Clean markdown json blocks if any
-            const jsonText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-            const entities = JSON.parse(jsonText);
-
-            // Store each non-empty category
-            const categories = ['diet_preferences', 'mood_patterns', 'core_worries'];
-
-            for (const category of categories) {
-                const items = entities[category];
-                if (items && Array.isArray(items) && items.length > 0) {
-                    const content = `[Entity: ${category}] ${items.join(', ')}`;
-
-                    // Check duplication (lightweight) - optional, skipping for now to ensure capture
-                    await this.storeMemory(userId, content, { type: 'entity', category });
-                }
-            }
-
-        } catch (e) {
-            console.error("Entity Extraction Failed:", e);
+        if (error) {
+            console.error("Fetch History Error:", error);
+            return [];
         }
+        return data || [];
+    }
+
+    /**
+     * Saves a chat message (Standard DB)
+     */
+    static async saveChatLog(userId: string, role: string, message: string, stage: number = 1) {
+        const { error } = await this.supabase
+            .from('chat_history')
+            .insert({
+                user_id: userId,
+                role: role,
+                message: message,
+                metadata: { stage }
+            });
+
+        if (error) console.error("Save Chat Log Error:", error);
     }
 }

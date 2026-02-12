@@ -46,12 +46,17 @@ const ELEMENT_THEMES: Record<string, { icon: any; gradient: string; shadow: stri
 };
 
 // 헬퍼: 일간 텍스트에서 오행 추출 ('갑(Wood)' -> 'Wood')
-const getElementFromDayMaster = (dayMaster: string = '') => {
-    if (dayMaster.includes('Wood') || dayMaster.includes('목') || dayMaster.includes('갑') || dayMaster.includes('을')) return 'Wood';
-    if (dayMaster.includes('Fire') || dayMaster.includes('화') || dayMaster.includes('병') || dayMaster.includes('정')) return 'Fire';
-    if (dayMaster.includes('Earth') || dayMaster.includes('토') || dayMaster.includes('무') || dayMaster.includes('기')) return 'Earth';
-    if (dayMaster.includes('Metal') || dayMaster.includes('금') || dayMaster.includes('경') || dayMaster.includes('신')) return 'Metal';
-    if (dayMaster.includes('Water') || dayMaster.includes('수') || dayMaster.includes('임') || dayMaster.includes('계')) return 'Water';
+const getElementFromDayMaster = (dayMaster: any = '') => {
+    // [Fix] Handle Object case
+    const dmString = (typeof dayMaster === 'string')
+        ? dayMaster
+        : (dayMaster?.label || dayMaster?.char || '');
+
+    if (dmString.includes('Wood') || dmString.includes('목') || dmString.includes('갑') || dmString.includes('을')) return 'Wood';
+    if (dmString.includes('Fire') || dmString.includes('화') || dmString.includes('병') || dmString.includes('정')) return 'Fire';
+    if (dmString.includes('Earth') || dmString.includes('토') || dmString.includes('무') || dmString.includes('기')) return 'Earth';
+    if (dmString.includes('Metal') || dmString.includes('금') || dmString.includes('경') || dmString.includes('신')) return 'Metal';
+    if (dmString.includes('Water') || dmString.includes('수') || dmString.includes('임') || dmString.includes('계')) return 'Water';
     return 'Unknown';
 };
 
@@ -59,7 +64,14 @@ export default function IdentityView() {
     const { reportData } = useReportStore();
 
     // Data Guard
-    if (!reportData || !reportData.saju) return null;
+    // Data Guard
+    if (!reportData || !reportData.saju) {
+        return (
+            <div className="h-full flex items-center justify-center text-gray-500">
+                <p>데이터가 부족합니다. (Data Missing)</p>
+            </div>
+        );
+    }
 
     const { dayMaster, dayMasterTrait, keywords } = reportData.saju;
 
@@ -68,6 +80,11 @@ export default function IdentityView() {
         const element = getElementFromDayMaster(dayMaster);
         return ELEMENT_THEMES[element] || ELEMENT_THEMES.Unknown;
     }, [dayMaster]);
+
+    // [Fix 2] Safe Display Label
+    const displayDayMaster = (typeof dayMaster === 'string')
+        ? dayMaster
+        : ((dayMaster as any)?.label || (dayMaster as any)?.char || '?');
 
     return (
         <div className="h-full flex flex-col pt-6 pb-8 px-4 overflow-y-auto scrollbar-hide">
@@ -125,7 +142,7 @@ export default function IdentityView() {
                     </motion.h3>
 
                     <div className={`inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 ${elementTheme.color} font-bold text-sm mb-6`}>
-                        {dayMaster}
+                        {displayDayMaster}
                     </div>
                 </div>
 

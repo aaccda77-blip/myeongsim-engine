@@ -52,11 +52,11 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         label: "0. 퀀텀 자각",
         icon: "🌌",
         neuro_trigger: "무의식의 별을 연결하는 히든 룸",
-        style: 'premium_purple',
+        style: 'premium_purple', // [FIX] Type compatibility
         sub_menus: [
-            { id: "qa_1", label: "0-1. 108 자각 프로토콜", desc: "무의식을 깨우는 108가지 질문", intent: "saju_108_awakening" },
-            { id: "qa_2", label: "0-2. 감정 연금술 (Emotion Alchemy)", desc: "감정을 에너지로 변환하는 기술", intent: "ms_emotion_alchemy" },
-            { id: "qa_3", label: "0-3. 그림자 작업 (Shadow Work)", desc: "내면의 어둠과 대화하기", intent: "ms_shadow_work" }
+            { id: "qa_108", label: "0-1. 108 자각 프로토콜", desc: "무의식을 깨우는 108가지 질문", intent: "ms_quantum_108", icon: "🧘" },
+            { id: "qa_alchemy", label: "0-2. 감정 연금술", desc: "감정을 에너지로 변환하는 기술", intent: "ms_quantum_alchemy", icon: "⚗️" },
+            { id: "qa_shadow", label: "0-3. 그림자 작업", desc: "내면의 어둠과 대화하기", intent: "ms_quantum_shadow", icon: "🌑" }
         ]
     },
 
@@ -410,6 +410,8 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             { id: "w_4", label: "🧪 재물운 강화 코칭", desc: "AI 맞춤 실천 과제", intent: "coaching_wealth_action", isPremium: true }
         ]
     },
+
+
 
     // 7. ⌚ 바이오싱크 (BIO_SYNC)
     BIO_SYNC: {

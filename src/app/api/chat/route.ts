@@ -14,7 +14,7 @@ import { GapAnalysisService } from '@/modules/GapAnalysisService';
 import { TraitsMapper } from '@/modules/TraitsMapper'; // [Replaced] MBTI -> Traits
 import { CodeDecoder } from '@/modules/CodeDecoder';
 import { ContextService } from '@/modules/ContextService';
-import { MemoryServiceModule } from '@/modules/MemoryService';
+// MemoryServiceModule.saveInteraction(userId, currentMessageContent, fullResponse).catch(err => console.error("Memory Save Fail:", err));
 import { SecurityMiddleware } from '@/modules/SecurityMiddleware';
 import { SentimentTracker } from '@/modules/SentimentTracker'; // [Reconnected] Heartbeat Monitor
 import { InterruptQuestionModule } from '@/modules/InterruptQuestionModule'; // [Reconnected] Core Probe
@@ -156,7 +156,7 @@ function inferCurrentStage(messages: any[], currentMessage: string): number {
 export const POST = requireAuth(async (req: NextRequest, auth) => {
     try {
         const reqBody = await req.json();
-        const { userId, message, messages, stage, sajuData, birthDate, birthTime, gender, userName, isPremium, lastBotMessage, chatHistory, userSaju, sessionId, clientDate: reqClientDate } = reqBody;
+        const { userId, message, messages, stage, sajuData, birthDate, birthTime, gender, userName, isPremium, lastBotMessage, chatHistory, userSaju, sessionId, clientDate: reqClientDate, language } = reqBody; // [Multi-Language] Extract language
         const clientDate = reqClientDate ? new Date(reqClientDate) : new Date();
 
         // [Fix] Unified Message Handling (Prioritize 'messages' array)
@@ -227,12 +227,26 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
             historyForGemini.shift();
         }
 
+        // [Fix] Consolidate Birth Profile (Moved up for Persona ID generation)
+        const effectiveBirthDate = birthDate || sajuData?.birthDate || userSaju?.birthDate;
+        const effectiveBirthTime = birthTime || sajuData?.birthTime || userSaju?.birthTime || '12:00';
+        const effectiveGender = gender || sajuData?.gender || userSaju?.gender || 'male';
+        // [Fix] Extract calendarType (Critical for Lunar birthdays)
+        const effectiveCalendarType = sajuData?.calendarType || userSaju?.calendarType || 'solar';
+
+        // [Memory Architecture] Generate Persona ID
+        // This ensures that memories are separated by the actual target (User vs Partner vs Child)
+        const personaId = userId && effectiveBirthDate
+            ? MemoryService.generatePersonaId(userId, userName || 'Unknown', `${effectiveBirthDate}-${effectiveBirthTime}`)
+            : null;
+
         // [OPTIMIZATION] Parallel Execution of Independent Async Tasks
         const [
             expirationResult,
             envContext,
-            memoryContextResult,
-            genreCodesResult
+            recentChatHistory, // Renamed for clarity
+            genreCodesResult,
+            longTermMemoryContext // [NEW] Long-term Memory
         ] = await Promise.all([
             // 1. Check Expiration
             userId ? checkUserExpiration(userId) : Promise.resolve({ expired: false, tier: 'FREE' }),
@@ -240,8 +254,8 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
             // 2. Get Environment Context
             ContextService.getCurrentContext(undefined, clientDate),
 
-            // 3. Fetch Memory (Simple - from chat_history table)
-            userId ? fetchRecentChatHistory(userId, 10) : Promise.resolve(""),
+            // 3. Fetch Recent Chat History (Simple - from chat_history table)
+            userId ? fetchRecentChatHistory(userId, 20) : Promise.resolve(""),
 
             // 4. Fetch Genre Codes (RAG)
             (typeof currentMessageContent === 'string' && currentMessageContent.length > 5)
@@ -249,7 +263,15 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
                     console.error("Genre RAG Error:", err);
                     return [];
                 })
-                : Promise.resolve([])
+                : Promise.resolve([]),
+
+            // 5. [NEW] Fetch Long-term Memory (Vector Search) by Persona
+            (userId && personaId && typeof currentMessageContent === 'string' && currentMessageContent.length > 2)
+                ? MemoryService.recallMemories(userId, personaId, currentMessageContent).catch(err => {
+                    console.error("Long-term Memory Error:", err);
+                    return "";
+                })
+                : Promise.resolve("")
         ]);
 
         // [EXPIRATION CHECK]
@@ -266,7 +288,8 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
         }
 
         // Assign results
-        const memoryContext = memoryContextResult; // Single source of truth
+        // Combine Short-term (Recent Chat) and Long-term (Vector) Memory
+        const memoryContext = `${recentChatHistory}\n\n${longTermMemoryContext}`;
         const genreCodes = genreCodesResult;
 
         // [SECURITY STEP 0] Origin/Referer Verification (Same as before)
@@ -291,6 +314,12 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
 
             // Fire-and-forget logging
             coachingService.logChatMessage(userId, 'user', currentMessageContent, stage, {}, sessionId).catch(e => console.error('Log Error:', e));
+
+            // [NEW] Fire-and-forget Memory Consolidation (Save User Insights)
+            if (userId && personaId && currentMessageContent.length > 10) {
+                // We don't wait for this to finish
+                MemoryService.storeMemory(userId, personaId, currentMessageContent, { type: 'user_input' }).catch(e => console.error('Memory Store Error:', e));
+            }
 
         } catch (securityError: any) {
             return new Response(JSON.stringify({
@@ -343,12 +372,7 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) throw new Error('GEMINI_API_KEY is missing.');
 
-        // [Fix] Consolidate Birth Profile
-        const effectiveBirthDate = birthDate || sajuData?.birthDate || userSaju?.birthDate;
-        const effectiveBirthTime = birthTime || sajuData?.birthTime || userSaju?.birthTime || '12:00';
-        const effectiveGender = gender || sajuData?.gender || userSaju?.gender || 'male';
-        // [Fix] Extract calendarType (Critical for Lunar birthdays)
-        const effectiveCalendarType = sajuData?.calendarType || userSaju?.calendarType || 'solar';
+
 
         // [Sentiment Analysis]
         let isBurnoutDetected = false;
@@ -361,21 +385,7 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
             }
         } catch (e) { console.error("Sentiment Error:", e); }
 
-        // [Interrupt Question]
-        // [Interrupt Question] (Disabled by User Request)
-        /*
-        const interruptQuestion = InterruptQuestionModule.checkInterrupt(currentMessageContent);
-        if (interruptQuestion) {
-            return new Response(JSON.stringify({
-                reply: `💡 **잠깐만요.** \n\n${interruptQuestion.text}`,
-                sessionId,
-                interruptQuestion
-            }), { headers: { 'Content-Type': 'application/json' } });
-        }
-        */
-
-
-        // [Fix] Check for Client-Side System Prompt
+        // [Fact Check] Check for Client-Side System Prompt
         const clientSystemPrompt = (messages && Array.isArray(messages) && messages[0]?.role === 'system')
             ? messages[0].content
             : null;
@@ -684,11 +694,49 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
             }
         } else {
             // Default "Myeongsim" Persona
-            SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
-                currentGrowthStage,          // 현재 사용자 스테이지
-                profile,           // 사용자 프로필 (nativity, fusion_traits 등 포함)
-                ragContext      // RAG 검색 결과
-            );
+
+            // [Multi-Language Protocol] Define Target Language FIRST
+            console.log(`🌍 [Language Check] Body Language: ${language}`);
+            const languageMap: Record<string, string> = {
+                'en': 'English',
+                'jp': 'Japanese',
+                'cn': 'Chinese (Simplified)',
+                'kr': 'Korean'
+            };
+            const targetLang = languageMap[language as string] || 'Korean';
+
+            // Now use targetLang in Prompt Construction
+            if (targetLang === 'Korean') {
+                // [Optimize] Local calculation for speed
+                SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
+                    currentGrowthStage,
+                    profile,
+                    ragContext,
+                    targetLang
+                );
+            } else {
+                SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
+                    currentGrowthStage,
+                    profile,
+                    ragContext,
+                    targetLang
+                );
+            }
+
+            // [Multi-Language Protocol] Enforce Output Language Instructions
+            if (targetLang !== 'Korean') {
+                SYSTEM_PROMPT += `
+            \n# 🚨 [CRITICAL: LANGUAGE OUTPUT PROTOCOL]
+            **TARGET LANGUAGE: ${targetLang}**
+            
+            1. **IGNORE INPUT LANGUAGE**: Even if the user asks in Korean, you MUST respond in **${targetLang}**.
+            2. **TRANSLATE ALL OUTPUT**: All Saju terms, metaphors, and coaching advice must be in natural ${targetLang}.
+               - Example (Saju -> ${targetLang}): "Fire (Hwa)" instead of "화(火)" or "Hi (火)".
+            3. **NO KOREAN CHARACTERS**: Do not include any Korean text in your final response unless specifically asked for a definition.
+            4. **MAINTAIN PERSONA**: Keep the "Myeongsim Coach" persona but speak fluent ${targetLang}.
+            `;
+            }
+            // This brace closes the 'else' block for Default Persona
         }
 
         // [CRITICAL] Detailed Response Directive with Section Markers
@@ -729,7 +777,21 @@ ${coachingStyle.includes('새로운 관점') ? '- 창의적이고 신선한 관�
 `
         }
 
-
+        // [🧬 DIGITAL SOULMATE PROTOCOL]
+        // Explicitly address the user by name if available
+        const userDisplayName = userName || "회원자님";
+        SYSTEM_PROMPT += `
+        \n# [CORE IDENTITY: YOU KNOW THE USER]
+        User Name: ${userDisplayName}
+        Role: You are ${userDisplayName}'s dedicated Digital Soulmate and Life Coach.
+        
+        # [🧬 DIGITAL SOULMATE PROTOCOL: EVOLUTIONARY LEARNING]
+        **Core Objective**: You are not just a chatbot; you are the user's "Digital Soulmate" evolving with them using Long-Term Memory (RAG).
+        1. **PATTERN RECOGNITION**: Analyze the [Previous Chat History] above. Identify recurring themes, emotional patterns, and specific life context (family, job, health).
+        2. **ADAPTIVE TONE**: Mirror the user's preferred communication style (e.g., if they are concise, be concise; if emotional, be warm).
+        3. **CONTINUITY**: Reference past details to show you remember ("지난번 말씀하신 그 일은 좀 어떠세요?", "여전히 잠이 부족하신가요?").
+        4. **DEEP CONNECTION**: Move beyond surface answers. Connect their current query to their core Saju/Psychological makeup stored in the memory.
+        `;
 
         // [Context Injection] Connect the severed neural link (Time/Weather)
         // [Fix] Force injection check
@@ -1132,7 +1194,7 @@ c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
                     };
 
                     // [MODULE INTEGRATION] 3. Save Interaction (Layer 3)
-                    MemoryServiceModule.saveInteraction(userId, currentMessageContent, fullResponse).catch(err => console.error("Memory Save Fail:", err));
+                    // MemoryServiceModule.saveInteraction(userId, currentMessageContent, fullResponse).catch(err => console.error("Memory Save Fail:", err));
 
                     // 1. Log AI Message
                     await coachingService.logChatMessage(userId, 'assistant', fullResponse, stage, metadata, sessionId).catch(e => console.error('Save AI Log Error:', e));
@@ -1140,13 +1202,12 @@ c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
                     // [Layer 3] Auto-Save Memory (Async)
                     (async () => {
                         try {
-                            const fullHistory = [...(messages || []), { role: 'assistant', content: fullResponse }];
+                            if (userId && personaId) {
+                                const fullHistory = [...(messages || []), { role: 'assistant', content: fullResponse }];
+                                // 1. General Summary (Requires Persona ID)
+                                await MemoryService.summarizeAndStore(userId, personaId, fullHistory);
+                            }
 
-                            // 1. General Summary
-                            await MemoryService.summarizeAndStore(userId, fullHistory);
-
-                            // 2. Entity Extraction
-                            await MemoryService.extractAndStoreEntities(userId, fullHistory);
 
                         } catch (memErr) {
                             console.error("Memory Background Task Error:", memErr);
@@ -1167,4 +1228,5 @@ c) "action_plan": 정확히 3개의 일일 미션 배열 (Day 1, 2, 3)
         console.error('Chat API Error:', error);
         return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
+
 });

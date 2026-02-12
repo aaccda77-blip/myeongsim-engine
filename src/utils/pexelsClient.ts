@@ -31,19 +31,44 @@ interface PexelsResponse {
  * @param apiKey - Pexels API key from environment
  * @returns Image URL or fallback
  */
+// [FIX] Fallback Images Collection (Unsplash Source) to prevent repetition
+const FALLBACK_IMAGES = [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&fit=crop', // Mountains
+    'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&fit=crop', // Foggy Forest
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&fit=crop', // Sunlight Forest
+    'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&fit=crop', // Sunset Valley
+    'https://images.unsplash.com/photo-1501854140884-074bf86ee911?w=800&fit=crop', // Pink Sky Ocean
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&fit=crop', // Tropical Beach
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&fit=crop', // Starry Night
+    'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&fit=crop', // Misty Hills
+    'https://images.unsplash.com/photo-1497436072909-60f360e1d4b0?w=800&fit=crop', // Green Hills
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&fit=crop', // Nature Path
+    'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=800&fit=crop', // Bridge Nature
+    'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&fit=crop'  // Field Sunset
+];
+
+/**
+ * Helper to get a random fallback image
+ */
+function getRandomFallbackImage(): string {
+    const randomIndex = Math.floor(Math.random() * FALLBACK_IMAGES.length);
+    return FALLBACK_IMAGES[randomIndex];
+}
+
 export async function searchPexelsImage(
     query: string,
     apiKey?: string
 ): Promise<string> {
-    // Fallback to placeholder if no API key
+    // Fallback if no API key
     if (!apiKey) {
-        console.warn('Pexels API key not found, using placeholder');
-        return `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop`;
+        console.warn('Pexels API key not found, using random placeholder');
+        return getRandomFallbackImage();
     }
 
     try {
         // [FIX] Randomize page to get different images for same query
-        const randomPage = Math.floor(Math.random() * 20) + 1; // 1 ~ 20 pages
+        // Tried to randomize page 1-20
+        const randomPage = Math.floor(Math.random() * 20) + 1;
         const response = await fetch(
             `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=15&page=${randomPage}&orientation=landscape`,
             {
@@ -54,20 +79,9 @@ export async function searchPexelsImage(
         );
 
         if (!response.ok) {
-            // If random page is empty (search result < page), try page 1
-            if (response.status === 400 || response.status === 404) {
-                const retryResponse = await fetch(
-                    `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=15&page=1&orientation=landscape`,
-                    { headers: { Authorization: apiKey } }
-                );
-                if (!retryResponse.ok) throw new Error(`Pexels API error: ${retryResponse.status}`);
-                const retryData: PexelsResponse = await retryResponse.json();
-                if (retryData.photos && retryData.photos.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * Math.min(retryData.photos.length, 10));
-                    return retryData.photos[randomIndex].src.large;
-                }
-            }
-            throw new Error(`Pexels API error: ${response.status}`);
+            // Check specific error codes if needed, or just fallback
+            console.warn(`Pexels API error: ${response.status} - Falling back to Unsplash`);
+            return getRandomFallbackImage();
         }
 
         const data: PexelsResponse = await response.json();
@@ -79,11 +93,11 @@ export async function searchPexelsImage(
         }
 
         // Fallback if no results
-        return `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop`;
+        return getRandomFallbackImage();
     } catch (error) {
         console.error('Pexels API error:', error);
         // Fallback to Unsplash placeholder
-        return `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop`;
+        return getRandomFallbackImage();
     }
 }
 

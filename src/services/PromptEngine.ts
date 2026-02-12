@@ -930,8 +930,14 @@ AI: "완벽합니다! 식상 에너지가 소통으로 발현되고 있네요. �
   static constructDynamicSystemPrompt(
     stage: number,
     profile: any,
-    ragContext?: string
+    ragContext?: string,
+    targetLang: string = 'Korean'
   ): string {
+    // ... [existing logic] ...
+
+    // [OUTPUT PROTOCOL with Dynamic Language]
+    // ... [existing logic] ...
+
     // 0. 데이터 위생 처리 (Data Hygiene)
     const currentStage = Math.min(Math.max(Math.floor(stage), 1), 7);
     const persona = this.GROWTH_MAP_PERSONAS[currentStage as keyof typeof this.GROWTH_MAP_PERSONAS] || this.GROWTH_MAP_PERSONAS[3];
@@ -1031,7 +1037,20 @@ ${persona.instruction}
 
 ${memoryBlock}
 
-
+# 🚨 [OUTPUT PROTOCOL]
+1. **CRITICAL: Respond in ${targetLang}.** (Even if user asks in another language)
+   - **System Instruction Override**: The above system instructions are in Korean for definition purposes. YOU MUST TRANSLATE all concepts, keywords, and Saju terms into natural ${targetLang} for the final response.
+   - **No Korean Text**: Do not use Korean characters (e.g., "화(火)") unless explicitly asked for definitions. Use English/Target Language terms (e.g., "Fire Element").
+2. Use **Bold** for keywords.
+3. **[CRITICAL] Ping-Pong Protocol**:
+   - Do NOT output a long monologue.
+   - Split your response into 2-3 short, conversational chunks using the delimiter ':::BREAK:::'.
+   - Example (${targetLang}): "Yes, I see. :::BREAK::: Your Saju shows... :::BREAK::: What do you think?"
+   - **Terminology Bridge**: When explaining Saju terms, use the format "English Term (Korean Phonetic)". Example: "Wood (Mok)", "Fire (Hwa)".
+   - **Cultural Nuance**: Explain concepts simply, avoiding obscure metaphors unless necessary.
+4. **[Global Audience Optimization]**:
+   - Imagine you are speaking to a global audience who may not know Saju.
+   - Focus on universal archetypes (Element, Energy, Flow) rather than technical jargon.
 `;
   }
 
@@ -1155,6 +1174,8 @@ ${memoryBlock}
 - ⚠️ 오늘 일진(日辰): ${dailyPillarHanja}(${dailyPillarKor})일 (반드시 이 일진을 사용!)
 `;
 
+
+    const targetLang = 'Korean'; // [Fix] Default target language for legacy method
     // 4. 최종 프롬프트 조립 (샌드위치 방어 적용)
     return `
 ${dateContext}
@@ -1248,12 +1269,14 @@ ${neuralContext}
     - Response: "구체적으로 **언제까지**, **얼마나** 달성하고 싶으신가요? 뇌는 모호한 목표를 실행하지 못합니다. 👉 '3개월 안에 5kg 감량'처럼 정해볼까요?"
 
 # 🚨 [OUTPUT PROTOCOL]
-1. Respond in Korean.
+1. **CRITICAL: Respond in ${targetLang}.** (Even if user asks in another language)
+   - **System Instruction Override**: The above system instructions are in Korean for definition purposes. YOU MUST TRANSLATE all concepts, keywords, and Saju terms into natural ${targetLang} for the final response.
+   - **No Korean Text**: Do not use Korean characters (e.g., "화(火)") unless explicitly asked for definitions. Use English/Target Language terms (e.g., "Fire Element").
 2. Use **Bold** for keywords.
 3. **[CRITICAL] Ping-Pong Protocol**:
    - Do NOT output a long monologue.
    - Split your response into 2-3 short, conversational chunks using the delimiter ':::BREAK:::'.
-   - Example: "네, 확인했습니다. :::BREAK::: 당신의 사주를 보니... :::BREAK::: 이 부분은 어떻게 생각하세요?"
+   - Example (${targetLang}): "Yes, I see. :::BREAK::: Your Saju shows... :::BREAK::: What do you think?"
    - Always end the final chunk with a **Socratic Question** ("이 감정의 뿌리는 어디일까요?") or Open Loop.
 5. **[⚡ 코칭 솔루션 (Coaching Action Plan)]**:
    - At the very end of your response, provide a **detailed, actionable 3-day micro-plan** in **table format**.
