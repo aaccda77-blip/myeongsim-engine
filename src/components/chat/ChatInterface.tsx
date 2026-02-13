@@ -48,6 +48,7 @@ import { ETHICAL_GUIDELINES } from '@/constants/CodeOfEthics'; // [NEW] Safety P
 import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule'; // [NEW] Talent Analysis
 import TalentReportCard from './TalentReportCard'; // [NEW] Talent Card UI
 import { searchPexelsImage, optimizePexelsQuery } from '@/utils/pexelsClient'; // [NEW] Pexels API (replaces Pollinations)
+import { useLanguage } from '@/contexts/LanguageContext'; // [NEW] Localization
 import { PexelsImage } from './PexelsImage'; // [NEW] Pexels Image Component
 import BioEnergyBlueprintModal from '../modals/BioEnergyBlueprintModal'; // [NEW] Bio-Energy Blueprint Modal
 import { ICON_DRILL_DOWN_MAP } from '@/modules/DrillDownProtocol'; // [NEW] Dynamic Label Lookup
@@ -79,6 +80,7 @@ interface ChatInterfaceProps {
 
 export default function ChatInterface({ onClose, currentStage = 1, initialIntent }: ChatInterfaceProps) {
     const { reportData } = useReportStore();
+    const { t, language } = useLanguage(); // [NEW] Localization hook
     // [Wearable] Bio Data Hook
     const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName, simulateRecovery } = useBioData();
     const { speak, speakScript, isPlaying: isVoicePlaying, stop: stopVoice } = useVoice(); // [Feature] Voice

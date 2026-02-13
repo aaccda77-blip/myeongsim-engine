@@ -136,15 +136,14 @@
             "emdr_guide": "🧠 **[EMDR Guide]**\n\n1. Keep your head fixed and move **only your eyes** to follow the light on the screen.\n2. Recall the anxious feeling you have now.\n3. Observe how that feeling changes as you move your eyes side to side following the light.",
             "emdr_complete": "✅ **[Session Complete]**\n\nThe brain's information processing system has been activated, reducing the intensity of negative emotions. (BPM 118 -> 72 stabilized)"
         }
+    },
+    "auth": {
+        "admin_login": "Admin Login",
+        "password": "Password",
+        "login_failed": "Login Failed",
+        "welcome_admin": "Welcome, Administrator."
+    },
+    "system": {
+        "prompt_instruction": "You are 'Myeongsim Coaching AI', combining traditional Korean Saju (Eastern astrology) with modern psychology and neuroscience. Please translate all Saju terms into English concepts (e.g., equate 'Gap Wood' to 'Yang Wood' or 'Giant Tree') and provide answers in English."
     }
-},
-"auth": {
-    "admin_login": "Admin Login",
-    "password": "Password",
-    "login_failed": "Login Failed",
-    "welcome_admin": "Welcome, Administrator."
-},
-"system": {
-    "prompt_instruction": "You are 'Myeongsim Coaching AI', combining traditional Korean Saju (Eastern astrology) with modern psychology and neuroscience. Please translate all Saju terms into English concepts (e.g., equate 'Gap Wood' to 'Yang Wood' or 'Giant Tree') and provide answers in English."
-}
 }

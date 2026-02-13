@@ -334,7 +334,7 @@ const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
 };
 
 // ============== Helper: Dynamic Text Resolution ==============
-const resolveDynamicText = (text: string | undefined, userProfile: any): string => {
+const resolveDynamicText = (text: string | undefined, userProfile: any, t: any): string => {
     if (!text) return '';
     if (!userProfile?.saju) return text.replace(/\{\{.*?\}\}/g, '...'); // Fallback if no data
 
@@ -566,7 +566,8 @@ export default function DrillDownIconMenu({
     const handleIconClick = (icon: MainIcon) => {
         // [NEW] 이용권 만료 시 클릭 차단
         if (isExpired) {
-            alert(t('chat.trial_ended').replace('🎁 ', '')); // Simple alert fallback
+            const expiredMsg = t('chat.trial_ended') || '무료 체험이 종료되었습니다.';
+            alert(expiredMsg.replace('🎁 ', ''));
             return;
         }
 
@@ -590,7 +591,11 @@ export default function DrillDownIconMenu({
 
         // [Navigation] 하위 메뉴가 있는 경우 (Depth 진입)
         if (subItem.children && subItem.children.length > 0) {
-            setMenuBreadcrumb(prev => [...prev, { id: subItem.id, label: subItem.label }]);
+            // [Fix] Store translated label in breadcrumb to prevent "weird" UI
+            const translatedLabel = t(`menu.${subItem.intent}`) || t(`menu.${subItem.id}`) || subItem.label;
+            const resolvedLabel = resolveDynamicText(translatedLabel, userProfile, t);
+
+            setMenuBreadcrumb(prev => [...prev, { id: subItem.id, label: resolvedLabel }]);
             setCurrentMenuDepth(subItem.children);
             if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(5);
             return;
@@ -1095,7 +1100,7 @@ export default function DrillDownIconMenu({
                                     {/* Breadcrumb가 있으면 마지막 항목 이름을 타이틀로, 아니면 메인 타이틀 */}
                                     {menuBreadcrumb.length > 0
                                         ? menuBreadcrumb[menuBreadcrumb.length - 1].label
-                                        : (FRIENDLY_LABELS[selectedIcon.id]?.main || selectedIcon.label)}
+                                        : (t(`menu.${selectedIcon.id.toLowerCase()}`) || FRIENDLY_LABELS[selectedIcon.id]?.main || selectedIcon.label)}
                                 </div>
                                 <div style={styles.sheetSubtitle}>
                                     {menuBreadcrumb.length > 0
@@ -1137,11 +1142,14 @@ export default function DrillDownIconMenu({
                                 const isHovered = hoveredSubItem === subItem.id;
 
                                 // [Dynamic] 텍스트 치환 (사용자 사주 정보 반영) -> [Multi-Language] First translate, then resolve
-                                const baseLabel = t(`menu.${subItem.intent}`) || subItem.label;
-                                const baseDesc = subItem.desc ? (t(`menu.${subItem.intent}_desc`) || subItem.desc) : '';
+                                // [Robust Fix] Try Intent first, then ID, then Hardcoded Label
+                                const baseLabel = t(`menu.${subItem.intent}`) || t(`menu.${subItem.id}`) || subItem.label;
+                                const baseDesc = subItem.desc
+                                    ? (t(`menu.${subItem.intent}_desc`) || t(`menu.${subItem.id}_desc`) || subItem.desc)
+                                    : '';
 
-                                const resolvedLabel = resolveDynamicText(baseLabel, userProfile);
-                                const resolvedDesc = resolveDynamicText(baseDesc, userProfile);
+                                const resolvedLabel = resolveDynamicText(baseLabel, userProfile, t);
+                                const resolvedDesc = resolveDynamicText(baseDesc, userProfile, t);
 
                                 return (
                                     <div
@@ -1159,8 +1167,8 @@ export default function DrillDownIconMenu({
                                             {subItem.children ? '📂' : (subItem.icon || selectedIcon.icon)}
                                         </span>
                                         <div style={{ flex: 1 }}>
-                                            <div style={styles.subMenuLabel}>{t(`menu.${subItem.id}`)}</div>
-                                            <div style={styles.subMenuDesc}>{t(`menu.${subItem.id}_desc`)}</div>
+                                            <div style={styles.subMenuLabel}>{resolvedLabel}</div>
+                                            <div style={styles.subMenuDesc}>{resolvedDesc}</div>
                                         </div>
 
                                         {/* 네비게이션 화살표 or 프리미엄 배지 */}
