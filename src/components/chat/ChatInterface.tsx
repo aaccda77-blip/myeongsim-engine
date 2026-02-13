@@ -2722,6 +2722,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     'saju_career_detail': '💼 직업과 사업운의 타이밍을 분석해주세요.',
                                     'saju_marriage_timing': '❤️ 결혼과 연애의 시기를 알려주세요.',
                                     'saju_108_awakening': '🌌 108 자각 프로토콜을 시작합니다.',
+                                    'saju_108_awakening_complete': '✅ 자각 상담 내용을 토대로 심층 코칭을 시작합니다.',
                                     'ms_emotion_alchemy': '⚗️ 감정 연금술 (Emotion Alchemy) 분석을 요청합니다.',
                                     'ms_shadow_work': '🌑 그림자 작업 (Shadow Work)을 시작합니다.',
                                 };

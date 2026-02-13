@@ -483,105 +483,103 @@ export const SELF_AWARENESS: AwakeningProtocol[] = [
 ];
 
 // ============================================
-// CATEGORY 2: 그림자 통합 (Shadow Integration) - 20개
+// CATEGORY 3: 관계 역학 (Relationship Dynamics) - 20개
 // ============================================
-export const SHADOW_INTEGRATION: AwakeningProtocol[] = [
+export const RELATIONSHIP_DYNAMICS: AwakeningProtocol[] = [
     {
-        id: 'awk_026',
-        number: 26,
-        category: '그림자',
-        title: '투사의 거울',
-        subtitle: '타인에게서 나를 보기',
-        icon: '🪞',
-        core_question: '당신이 타인에게서 가장 싫어하는 특성은 무엇입니까?',
+        id: 'awk_046',
+        number: 46,
+        category: '관계',
+        title: '애착의 패턴',
+        subtitle: '관계의 시작점 이해하기',
+        icon: '🔗',
+        core_question: '당신은 관계에서 주로 어떤 패턴을 반복합니까?',
         reflection_prompts: [
-            '그 특성이 당신 안에도 있나요?',
-            '그것을 인정하기 싫은 이유는?',
-            '그 특성의 긍정적 측면은 무엇일까요?'
+            '상대방이 멀어질 때 어떤 기분이 드나요?',
+            '누군가와 지나치게 가까워지는 것이 두려운가요?',
+            '당신의 부모님은 어떤 방식으로 사랑을 주셨나요?'
         ],
-        saju_guide: 'Projection often shows disowned Day Master qualities. What you hate, you are.',
-        dark_code: { name: '투사', desc: '내 그림자를 타인에게 투사함' },
-        neural_code: { name: '자기 인식', desc: '타인을 거울로 나를 봄' },
-        meta_code: { name: '통합', desc: '모든 면을 나의 일부로 받아들임' }
+        saju_guide: 'Analyze relationship stars (관성 for women, 재성 for men). Check for harmony or conflict in House of Spouse (일지).',
+        dark_code: { name: '불안정 애착', desc: '불안이나 회피로 관계를 망침' },
+        neural_code: { name: '패턴 자각', desc: '나의 반응 방식을 객관화함' },
+        meta_code: { name: '안정적 연결', desc: '신뢰를 바탕으로 관계를 맺음' }
     },
     {
-        id: 'awk_027',
-        number: 27,
-        category: '그림자',
-        title: '억압된 욕망',
-        subtitle: '금지된 갈망 직면하기',
-        icon: '🔥',
-        core_question: '당신이 원하지만 인정하기 싫은 욕망은 무엇입니까?',
+        id: 'awk_047',
+        number: 47,
+        category: '관계',
+        title: '건강한 경계',
+        subtitle: '나를 지키는 울타리',
+        icon: '🚧',
+        core_question: '당신이 타인의 요청에 "No"라고 말하기 가장 힘든 상대는 누구입니까?',
         reflection_prompts: [
-            '그 욕망을 왜 부끄러워하나요?',
-            '그것을 허락하면 어떤 일이 일어날까요?',
-            '건강하게 표현할 방법은?'
+            '거절하면 그 사람과의 관계가 끝날까 봐 두렵나요?',
+            '당신의 에너지가 어디서 누수되고 있나요?',
+            '자신을 보호하는 것이 이기적인 일이라고 생각하시나요?'
         ],
-        saju_guide: 'Repressed desires often in Hour Pillar (시주). Analyze hidden 지장간.',
-        dark_code: { name: '욕망 부정', desc: '욕망을 억누르다 왜곡됨' },
-        neural_code: { name: '욕망 수용', desc: '욕망을 인정하고 건강하게 표현' },
-        meta_code: { name: '욕망의 연금술', desc: '욕망을 창조의 에너지로 승화' }
-    },
+        saju_guide: 'Boundary issues often linked to weak Self element (비겁). Strengthen inner core to set firmer boundaries.',
+        dark_code: { name: '경계 붕괴', desc: '타인을 위해 나를 희생함' },
+        neural_code: { name: '경계 설정', desc: '정중하고 명확하게 거절함' },
+        meta_code: { name: '자기 주권', desc: '나의 에너지와 시간을 스스로 결정' }
+    }
+];
+
+// ============================================
+// CATEGORY 4: 삶의 목적 (Life Purpose) - 23개
+// ============================================
+export const LIFE_PURPOSE: AwakeningProtocol[] = [
     {
-        id: 'awk_028',
-        number: 28,
-        category: '그림자',
-        title: '질투의 뿌리',
-        subtitle: '부러움을 나침반으로',
-        icon: '💚',
-        core_question: '당신이 질투하는 대상은 누구이며 무엇 때문입니까?',
+        id: 'awk_066',
+        number: 66,
+        category: '목적',
+        title: '소명의 목소리',
+        subtitle: '가슴 뛰는 부름',
+        icon: '📞',
+        core_question: '세상이 당신에게 요구하는 것이 아닌, 당신의 영혼이 원하는 일은 무엇입니까?',
         reflection_prompts: [
-            '그 질투가 가리키는 당신의 진짜 욕망은?',
-            '그것을 얻기 위해 무엇을 할 수 있나요?',
-            '질투를 동기로 바꿀 수 있나요?'
+            '시간이 가는 줄 모르고 몰입하는 순간은 언제인가요?',
+            '당신이 가진 고유한 달란트는 무엇인가요?',
+            '아무런 보상이 없어도 계속하고 싶은 일이 있나요?'
         ],
-        saju_guide: 'Jealousy shows unfulfilled potential. Compare with 용신 (what you need).',
-        dark_code: { name: '질투 중독', desc: '타인의 성공에 괴로워함' },
-        neural_code: { name: '욕망의 지도', desc: '질투를 내 욕망의 신호로 씀' },
-        meta_code: { name: '풍요 의식', desc: '모두를 위한 충분함이 있음을 앎' }
-    },
+        saju_guide: 'Life purpose often encoded in Month Pillar (social mission) and Hour Pillar (true desire). Align with Useful God (용신).',
+        dark_code: { name: '방황', desc: '타인의 목적을 나의 것으로 착각함' },
+        neural_code: { name: '소명 발견', desc: '내면의 북소리를 듣기 시작함' },
+        meta_code: { name: '사명 완수', desc: '존재 이유를 삶으로 증명함' }
+    }
+];
+
+// ============================================
+// CATEGORY 5: 초월과 합일 (Transcendence) - 20개
+// ============================================
+export const TRANSCENDENCE: AwakeningProtocol[] = [
     {
-        id: 'awk_029',
-        number: 29,
-        category: '그림자',
-        title: '피해자 의식',
-        subtitle: '희생자에서 창조자로',
-        icon: '😢',
-        core_question: '당신이 "나는 피해자다"라고 느끼는 영역은 어디입니까?',
+        id: 'awk_089',
+        number: 89,
+        category: '초월',
+        title: '영원한 현재',
+        subtitle: '지금 여기의 경이로움',
+        icon: '🌅',
+        core_question: '과거에 대한 후회와 미래에 대한 불안을 걷어내면, 지금 이 순간 무엇이 남습니까?',
         reflection_prompts: [
-            '그 상황에서 당신의 책임은 무엇인가요?',
-            '피해자 역할이 주는 이득은?',
-            '창조자로서 무엇을 할 수 있나요?'
+            '지금 당신의 호흡에 집중할 수 있나요?',
+            '당신의 오감이 느끼는 생생한 풍경은 무엇인가요?',
+            '생각 너머의 고요함을 경험해 보셨나요?'
         ],
-        saju_guide: 'Victim mindset often from weak Day Master. Empower through 비겁 strengthening.',
-        dark_code: { name: '피해자 정체성', desc: '무력감 속에 갇힘' },
-        neural_code: { name: '책임 수용', desc: '내 몫의 책임을 인정함' },
-        meta_code: { name: '창조자', desc: '삶의 주인공이 됨' }
-    },
-    {
-        id: 'awk_030',
-        number: 30,
-        category: '그림자',
-        title: '권력의 그림자',
-        subtitle: '억압된 힘 되찾기',
-        icon: '👑',
-        core_question: '당신이 숨기고 있는 힘은 무엇입니까?',
-        reflection_prompts: [
-            '왜 그 힘을 드러내지 않나요?',
-            '힘을 쓰면 어떤 일이 일어날까 두렵나요?',
-            '책임감 있게 힘을 쓸 수 있나요?'
-        ],
-        saju_guide: 'Disowned power often in 관성. Analyze if user fears authority.',
-        dark_code: { name: '힘의 부정', desc: '힘을 숨기다 무력해짐' },
-        neural_code: { name: '힘의 회복', desc: '내 안의 힘을 인정하고 씀' },
-        meta_code: { name: '책임 있는 힘', desc: '힘을 선을 위해 씀' }
+        saju_guide: 'Transcendence relates to the void (공망) or spiritual stars (화개살). Use the void as a portal to higher consciousness.',
+        dark_code: { name: '시간의 포로', desc: '과거와 미래에 갇혀 현재를 잃음' },
+        neural_code: { name: '현재 자각', desc: '지금 이 순간의 현존을 연습함' },
+        meta_code: { name: '영원한 지금', desc: '시간을 초월한 존재의 기쁨' }
     }
 ];
 
 // Export combined array with all 108 protocols
+// [Update] Complete integration of all categories
 export const AWAKENING_108: AwakeningProtocol[] = [
     ...SELF_AWARENESS,
-    ...SHADOW_INTEGRATION
+    ...SHADOW_INTEGRATION,
+    ...RELATIONSHIP_DYNAMICS,
+    ...LIFE_PURPOSE,
+    ...TRANSCENDENCE
 ];
 
 // Helper functions
@@ -594,16 +592,14 @@ export function getProtocolsByCategory(category: string): AwakeningProtocol[] {
 }
 
 // Dynamic protocol generator for remaining items (31-108)
-// This allows for modular expansion without bloating the file
 export function generateProtocol(num: number): AwakeningProtocol | null {
-    // Return existing if already defined
-    const existing = getProtocolByNumber(num);
+    // Return existing if already defined in the main list
+    const existing = AWAKENING_108.find(p => p.number === num);
     if (existing) return existing;
 
-    // Generate dynamically for 31-108
-    if (num >= 31 && num <= 108) {
-        const templates = getProtocolTemplate(num);
-        return templates;
+    // Generate dynamically for cases not explicitly listed above to ensure 108 coverage
+    if (num >= 1 && num <= 108) {
+        return getProtocolTemplate(num);
     }
 
     return null;

@@ -11,6 +11,7 @@ import { Send, ArrowRight, User } from 'lucide-react';
 import { SOCIAL_ROLES } from '@/data/socialRoleData';
 
 import { AWAKENING_108 } from '@/data/Awakening108DB';
+import { useLanguage } from '@/contexts/LanguageContext'; // [Multi-Language]
 
 interface AwakeningChatProps {
     onComplete: (prompt: string) => void;
@@ -27,6 +28,7 @@ interface Message {
 
 export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' }: AwakeningChatProps) {
     const { reportData } = useReportStore();
+    const { t, language } = useLanguage(); // [Multi-Language]
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -57,7 +59,7 @@ export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' 
                 };
 
                 setQuestions([question]);
-                addBotMessage(`오늘 당신을 위해 준비된 자각의 질문입니다.\n준비가 되셨나요?`);
+                addBotMessage(language === 'kr' ? `오늘 당신을 위해 준비된 자각의 질문입니다.\n준비가 되셨나요?` : t('awakening.intro'));
                 setTimeout(() => addBotMessage(question.text), 1500);
 
             } else {
@@ -83,9 +85,9 @@ export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' 
                 }
             }
         } else {
-            addBotMessage("사용자 데이터를 불러오는 중 오류가 발생했습니다.");
+            addBotMessage(t('errors.user_data_load_failed') || "사용자 데이터를 불러오는 중 오류가 발생했습니다.");
         }
-    }, [reportData, mode]);
+    }, [reportData, mode, language]); // Added language to dependency
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -139,7 +141,7 @@ export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' 
             } else {
                 // End of Stage 1
                 setIsCompleted(true);
-                addBotMessage(`${reaction}이제 당신의 마음을 충분히 알겠습니다. 더 깊은 해결책을 드리기 위해 마스터에게 이 내용을 전달할까요?`);
+                addBotMessage(`${reaction}${t('awakening.handoff_confirm') || '이제 당신의 마음을 충분히 알겠습니다. 더 깊은 해결책을 드리기 위해 마스터에게 이 내용을 전달할까요?'}`);
             }
         }, 800);
     };
@@ -179,7 +181,7 @@ export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' 
             } else {
                 // End of Stage 1
                 setIsCompleted(true);
-                addBotMessage(`${reaction}이제 당신의 마음을 충분히 알겠습니다. 더 깊은 해결책을 드리기 위해 명심 AI 코치에게 이 내용을 전달할까요?`);
+                addBotMessage(`${reaction}${t('awakening.handoff_confirm') || '이제 당신의 마음을 충분히 알겠습니다. 더 깊은 해결책을 드리기 위해 명심 AI 코치에게 이 내용을 전달할까요?'}`);
             }
         }, 800);
     };
@@ -279,7 +281,7 @@ export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' 
                         onClick={handleHandoff}
                         className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
                     >
-                        <span>명심 AI 코치와 심층 상담 시작하기</span>
+                        <span>{t('awakening.start_coaching') || '명심 AI 코치와 심층 상담 시작하기'}</span>
                         <ArrowRight size={18} />
                     </button>
                 )}
