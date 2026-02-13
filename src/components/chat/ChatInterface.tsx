@@ -1126,7 +1126,8 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     },
                     sessionId: sessionIdRef.current,
                     lastBotMessage: messages.length > 0 && messages[messages.length - 1].role === 'assistant' ? messages[messages.length - 1].content : null,
-                    clientTimestamp: new Date().toISOString() // [Context] Real Client Time
+                    clientTimestamp: new Date().toISOString(), // [Context] Real Client Time
+                    language: language // [Multi-Language] Send current language to server
                 })
             });
 

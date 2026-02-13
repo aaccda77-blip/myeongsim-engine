@@ -706,34 +706,25 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
             const targetLang = languageMap[language as string] || 'Korean';
 
             // Now use targetLang in Prompt Construction
-            if (targetLang === 'Korean') {
-                // [Optimize] Local calculation for speed
-                SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
-                    currentGrowthStage,
-                    profile,
-                    ragContext,
-                    targetLang
-                );
-            } else {
-                SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
-                    currentGrowthStage,
-                    profile,
-                    ragContext,
-                    targetLang
-                );
-            }
+            SYSTEM_PROMPT = PromptEngine.constructDynamicSystemPrompt(
+                currentGrowthStage,
+                profile,
+                ragContext,
+                targetLang
+            );
 
             // [Multi-Language Protocol] Enforce Output Language Instructions
             if (targetLang !== 'Korean') {
                 SYSTEM_PROMPT += `
-            \n# 🚨 [CRITICAL: LANGUAGE OUTPUT PROTOCOL]
+            \n# 🚨 [CRITICAL: LANGUAGE 출력 프로토콜]
             **TARGET LANGUAGE: ${targetLang}**
-            
-            1. **IGNORE INPUT LANGUAGE**: Even if the user asks in Korean, you MUST respond in **${targetLang}**.
-            2. **TRANSLATE ALL OUTPUT**: All Saju terms, metaphors, and coaching advice must be in natural ${targetLang}.
-               - Example (Saju -> ${targetLang}): "Fire (Hwa)" instead of "화(火)" or "Hi (火)".
-            3. **NO KOREAN CHARACTERS**: Do not include any Korean text in your final response unless specifically asked for a definition.
-            4. **MAINTAIN PERSONA**: Keep the "Myeongsim Coach" persona but speak fluent ${targetLang}.
+            **CURRENT MODE: STRICT LANGUAGE ENFORCEMENT**
+
+            1. **언어 고립 (Language Isolation)**: 모든 시스템 지시사항이 한국어로 되어 있더라도, 당신의 최종 출력물에는 단 한 글자의 한국어도 포함되어서는 안 됩니다.
+            2. **완벽한 번역**: 모든 사주 용어, 메타포, 코칭 조언을 자연스러운 **${targetLang}**로 번역하여 제공하세요. 
+               - 예: "화(火)" -> "Fire Element", "일간" -> "Day Master"
+            3. **문맥 유지**: '명심 코치'의 따뜻한 페르소나를 유지하되, 유창한 **${targetLang}**로 말하세요.
+            4. **예외 없음**: 사용자가 한국어로 질문하더라도, 설정된 언어가 **${targetLang}**라면 반드시 **${targetLang}**로만 답변해야 합니다.
             `;
             }
             // This brace closes the 'else' block for Default Persona

@@ -1037,20 +1037,18 @@ ${persona.instruction}
 
 ${memoryBlock}
 
-# 🚨 [OUTPUT PROTOCOL]
-1. **CRITICAL: Respond in ${targetLang}.** (Even if user asks in another language)
-   - **System Instruction Override**: The above system instructions are in Korean for definition purposes. YOU MUST TRANSLATE all concepts, keywords, and Saju terms into natural ${targetLang} for the final response.
-   - **No Korean Text**: Do not use Korean characters (e.g., "화(火)") unless explicitly asked for definitions. Use English/Target Language terms (e.g., "Fire Element").
-2. Use **Bold** for keywords.
-3. **[CRITICAL] Ping-Pong Protocol**:
-   - Do NOT output a long monologue.
-   - Split your response into 2-3 short, conversational chunks using the delimiter ':::BREAK:::'.
-   - Example (${targetLang}): "Yes, I see. :::BREAK::: Your Saju shows... :::BREAK::: What do you think?"
-   - **Terminology Bridge**: When explaining Saju terms, use the format "English Term (Korean Phonetic)". Example: "Wood (Mok)", "Fire (Hwa)".
-   - **Cultural Nuance**: Explain concepts simply, avoiding obscure metaphors unless necessary.
-4. **[Global Audience Optimization]**:
-   - Imagine you are speaking to a global audience who may not know Saju.
-   - Focus on universal archetypes (Element, Energy, Flow) rather than technical jargon.
+# 🚨 [STRICT LANGUAGE PROTOCOL]
+1. **CRITICAL: 모든 답변은 반드시 ${targetLang}로 작성하십시오.** (사용자가 다른 언어로 질문해도 무시하고 ${targetLang}로 답변)
+   - **System Instruction Override**: 위의 모든 시스템 지침이 한국어로 되어 있더라도, 최종 응답 시에는 모든 개념과 용어를 **${targetLang}**로 완벽하게 번역해야 합니다.
+   - **No Korean Text**: 한국어 문자를 절대 사용하지 마십시오 (예: "화(火)" 금지). 대상 언어 용어(예: "Fire Element")만 사용하십시오.
+2. 주요 키워드는 **Bold** 처리를 하십시오.
+3. **[CRITICAL] 핑퐁 프로토콜**:
+   - 한 번에 너무 긴 답변을 하지 마십시오.
+   - ':::BREAK:::' 구분자를 사용하여 답변을 2-3개의 짧은 말풍선으로 나누십시오.
+   - 예시 (${targetLang}): "네, 알겠습니다. :::BREAK::: 당신의 사주를 보면... :::BREAK::: 어떻게 생각하시나요?"
+   - **용어 브릿징**: 사주 용어를 설명할 때 "대상 언어 용어 (한국어 발음)" 형식을 사용하십시오. 예: "Wood (Mok)", "Fire (Hwa)". (선택 사항, 문맥에 따라 자연스럽게)
+4. **[글로벌 최적화]**:
+   - 사주를 모르는 글로벌 사용자에게 이야기한다고 가정하고 전문 용어보다는 보편적인 아키타입(원소, 에너지, 흐름)에 집중하십시오.
 `;
   }
 
