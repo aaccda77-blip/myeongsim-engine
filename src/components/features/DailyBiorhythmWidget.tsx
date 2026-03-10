@@ -102,7 +102,7 @@ export const DailyBiorhythmWidget = ({ dayMaster }: { dayMaster: string }) => {
                     }}>
                         {data.mode === 'Attack' ? '⚔️ ATTACK' : data.mode === 'Defense' ? '🛡️ DEFENSE' : '🌿 RECHARGE'}
                     </div>
-                    <div className="text-gray-400 text-xs">{data.ganji}일 (오늘의 운)</div>
+                    <div className="text-gray-400 text-xs">오늘의 에너지 코드</div>
                 </div>
             </div>
 

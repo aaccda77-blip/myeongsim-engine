@@ -96,6 +96,13 @@ export default function ProfileModal({ onClose }: ProfileModalProps) {
             birthDate: birthDate,
             birthTime: birthTime,
             gender: gender,
+            meta: {
+                ...reportData?.meta,
+                calendarType: calendarType, // [Fix] Persist Lunar/Solar type
+                gender: gender,
+                isTimeUnknown: birthTime === 'unknown',
+                isLeapMonth: reportData?.meta?.isLeapMonth || false // [Fix] Required field
+            },
             saju: {
                 ...reportData?.saju,
                 elements: newElements,
@@ -298,7 +305,7 @@ export default function ProfileModal({ onClose }: ProfileModalProps) {
                                     disabled={isLoading}
                                     className="w-full bg-white text-gray-900 font-bold py-3 rounded-xl hover:bg-gray-200 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                                 >
-                                    {isLoading ? '분석 중...' : '만세력 확인하기'}
+                                    {isLoading ? '분석 중...' : '기질 데이터 확인하기'}
                                 </button>
                             </div>
                         </form>
@@ -310,18 +317,18 @@ export default function ProfileModal({ onClose }: ProfileModalProps) {
                         className="relative z-10"
                     >
                         <div className="flex flex-col items-center mb-6">
-                            <span className="text-xs text-primary-olive uppercase tracking-widest mb-1">Identity Verification</span>
-                            <h2 className="text-xl font-serif font-bold text-white">나의 사주 원국</h2>
+                            <span className="text-xs text-primary-olive uppercase tracking-widest mb-1">Mind Blueprint</span>
+                            <h2 className="text-xl font-serif font-bold text-white">나의 기질 설계도</h2>
                             <p className="text-xs text-gray-500 mt-2">
                                 {name || '사용자'}님의 {calendarType === 'solar' ? '양력' : '음력'} {birthDate} {birthTime}
                             </p>
                         </div>
 
                         <div className="grid grid-cols-4 gap-2 mb-8">
-                            <ResultCard label="시주 (Time)" gan={birthTime === 'unknown' ? { char: '?', color: '#555' } : previewPillars.time.gan} ji={birthTime === 'unknown' ? { char: '?', color: '#555' } : previewPillars.time.ji} />
-                            <ResultCard label="일주 (Day)" gan={previewPillars.day.gan} ji={previewPillars.day.ji} />
-                            <ResultCard label="월주 (Month)" gan={previewPillars.month.gan} ji={previewPillars.month.ji} />
-                            <ResultCard label="년주 (Year)" gan={previewPillars.year.gan} ji={previewPillars.year.ji} />
+                            <ResultCard label="🚀 지향점" gan={birthTime === 'unknown' ? { char: '?', color: '#555' } : previewPillars.time.gan} ji={birthTime === 'unknown' ? { char: '?', color: '#555' } : previewPillars.time.ji} />
+                            <ResultCard label="👤 핵심 자아" gan={previewPillars.day.gan} ji={previewPillars.day.ji} />
+                            <ResultCard label="💼 사회적 환경" gan={previewPillars.month.gan} ji={previewPillars.month.ji} />
+                            <ResultCard label="🌳 배경 에너지" gan={previewPillars.year.gan} ji={previewPillars.year.ji} />
                         </div>
 
                         <div className="flex gap-3">
@@ -335,7 +342,7 @@ export default function ProfileModal({ onClose }: ProfileModalProps) {
                                 onClick={handleConfirm}
                                 className="flex-[2] py-3 rounded-xl bg-primary-olive text-white font-bold hover:brightness-110 shadow-[0_0_15px_rgba(101,140,66,0.4)] transition-all flex items-center justify-center gap-2"
                             >
-                                <span>이 정보로 시작하기</span>
+                                <span>🚀 명심코칭 리포트 열기</span>
                             </button>
                         </div>
 

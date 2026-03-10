@@ -1,13 +1,18 @@
 import { useReportStore } from '@/store/useReportStore';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Calendar, Clock, ChevronRight, Loader2, Check, LogIn } from 'lucide-react';
+import { Camera, Check, ChevronRight, Loader2, Sparkles, Map, Info } from 'lucide-react';
+import { NeuralBlueprintMapper } from '@/modules/NeuralBlueprintMapper';
 import { useEffect, useState } from 'react';
 import { calculateSaju } from '@/utils/SajuCalculator';
 import { AuthService } from '@/modules/AuthService';
+import MultiDimensionalBlueprint, { type CodeData } from '@/components/chat/MultiDimensionalBlueprint';
+import { PillarMetaCodeMap } from '@/modules/PillarMetaCodeMap';
 
 import { ZODIAC_TIME_OPTIONS } from '@/constants/saju';
 
 export default function CoverView() {
+    const router = useRouter();
     const { nextStep, updateUserData, reportData } = useReportStore();
 
     // Form State
@@ -36,7 +41,14 @@ export default function CoverView() {
                 userName: name,
                 birthDate,
                 birthTime,
-                gender: gender
+                gender: gender,
+                meta: {
+                    ...reportData?.meta,
+                    calendarType, // [Fix] Persist
+                    gender,
+                    isTimeUnknown: birthTime === 'unknown',
+                    isLeapMonth: reportData?.meta?.isLeapMonth || false
+                }
             });
 
             setViewMode('result');
@@ -80,6 +92,13 @@ export default function CoverView() {
             birthDate,
             birthTime,
             gender,
+            meta: {
+                ...reportData?.meta,
+                calendarType, // [Fix] Persist Lunar/Solar selection to Global Store
+                gender,
+                isTimeUnknown: birthTime === 'unknown',
+                isLeapMonth: reportData?.meta?.isLeapMonth || false // [Fix] Required field
+            },
             saju: {
                 ...reportData?.saju,
                 elements: newElements,
@@ -97,17 +116,17 @@ export default function CoverView() {
     };
 
     const ResultPillar = ({ label, gan, ji }: { label: string, gan: any, ji: any }) => (
-        <div className="flex flex-col items-center gap-1 bg-white/5 rounded-xl p-3 border border-white/10">
-            <span className="text-[10px] text-gray-500 uppercase tracking-widest">{label}</span>
-            <div className="flex flex-col items-center gap-1 font-serif font-bold text-xl">
-                <span style={{ color: gan.color }}>{gan.char}</span>
-                <span style={{ color: ji.color }}>{ji.char}</span>
+        <div className="flex flex-col items-center gap-1.5 bg-white/5 rounded-xl p-3 border border-white/10 backdrop-blur-md">
+            <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">{label}</span>
+            <div className="flex flex-col items-center gap-1 font-black text-2xl">
+                <span style={{ color: gan.color, textShadow: `0 0 10px ${gan.color} 40` }}>{gan.char}</span>
+                <span style={{ color: ji.color, textShadow: `0 0 10px ${ji.color} 40` }}>{ji.char}</span>
             </div>
         </div>
     );
 
     return (
-        <main className="w-full max-w-md h-full flex flex-col p-0 overflow-hidden relative mx-auto bg-[#1e262f]">
+        <main className="w-full max-w-md h-full flex flex-col p-0 overflow-hidden relative mx-auto bg-deep-slate">
             {/* Background Decoration (Optional, kept from original but subtle) */}
             <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-primary-olive/5 rounded-full blur-[100px] pointer-events-none" />
 
@@ -131,14 +150,14 @@ export default function CoverView() {
                             aria-label="Logout"
                             className="text-gray-400 hover:text-white flex items-center gap-1 text-xs"
                         >
-                            <LogIn className="w-4 h-4 rotate-180" />
+                            <Camera className="w-4 h-4 rotate-180" />
                             <span>로그아웃</span>
                         </button>
                         <button aria-label="Notifications" className="text-gray-400 hover:text-white">
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                             </svg>
-                            <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-[#1e262f]"></span>
+                            <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-primary-olive ring-2 ring-deep-slate"></span>
                         </button>
                     </div>
                 </nav>
@@ -147,12 +166,12 @@ export default function CoverView() {
                 {/* BEGIN: HeaderSection */}
                 <section className="text-center mb-12" data-purpose="header-text">
                     <h1 className="text-3xl font-bold mb-3 tracking-tight text-[#e2e8f0]">
-                        {viewMode === 'form' ? '명심코칭 시작하기' : '나의 사주 원국'}
+                        {viewMode === 'form' ? '명심코칭 시작하기' : '나의 기질 설계도'}
                     </h1>
                     <p className="text-gray-400 text-sm">
                         {viewMode === 'form'
                             ? '정확한 분석을 위해 태어난 정보를 입력해주세요.'
-                            : '입력하신 정보가 맞는지 확인해주세요.'}
+                            : '이 분석 대상이 본인이 맞으신가요?'}
                     </p>
                 </section>
                 {/* END: HeaderSection */}
@@ -182,7 +201,7 @@ export default function CoverView() {
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         placeholder="이름을 입력하세요"
-                                        className="w-full bg-[#161d24] border border-[#2c3641] text-white rounded-lg pl-11 py-4 focus:ring-[#10b748] focus:border-[#10b748] transition-all outline-none"
+                                        className="w-full bg-secondary-slate/50 border border-white/10 text-white rounded-lg pl-11 py-4 focus:ring-1 focus:ring-primary-olive focus:border-primary-olive transition-all outline-none backdrop-blur-sm"
                                         required
                                     />
                                 </div>
@@ -193,16 +212,15 @@ export default function CoverView() {
                                 <div className="flex justify-between items-end">
                                     <label className="text-xs font-medium text-gray-500 ml-1">생년월일</label>
                                     <div className="flex bg-[#161d24] rounded-md p-0.5 border border-[#2c3641]">
-                                        {/* Solar/Lunar Toggle */}
                                         {['solar', 'lunar'].map((type) => (
                                             <button
                                                 key={type}
                                                 type="button"
                                                 onClick={() => setCalendarType(type as any)}
-                                                className={`px-3 py-1 text-[10px] rounded-md font-medium transition-colors ${calendarType === type
-                                                    ? 'bg-[#10b748] text-white'
+                                                className={`px - 3 py - 1 text - [10px] rounded - md font - medium transition - colors ${calendarType === type
+                                                    ? 'bg-primary-olive text-white'
                                                     : 'text-gray-500 hover:text-gray-300'
-                                                    }`}
+                                                    } `}
                                             >
                                                 {type === 'solar' ? '양력' : '음력'}
                                             </button>
@@ -215,19 +233,11 @@ export default function CoverView() {
                                             <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                                         </svg>
                                     </span>
-                                    {/* Date Input with custom style override for dark mode calendar icon */}
-                                    <style jsx>{`
-                                        input[type="date"]::-webkit-calendar-picker-indicator {
-                                            filter: invert(1);
-                                            opacity: 0.5;
-                                            cursor: pointer;
-                                        }
-                                    `}</style>
                                     <input
                                         type="date"
                                         value={birthDate}
                                         onChange={(e) => setBirthDate(e.target.value)}
-                                        className="w-full bg-[#161d24] border border-[#2c3641] text-white rounded-lg pl-11 pr-4 py-4 focus:ring-[#10b748] focus:border-[#10b748] transition-all outline-none"
+                                        className="w-full bg-secondary-slate/50 border border-white/10 text-white rounded-lg pl-11 pr-4 py-4 focus:ring-1 focus:ring-primary-olive focus:border-primary-olive transition-all outline-none backdrop-blur-sm"
                                         required
                                     />
                                 </div>
@@ -245,7 +255,7 @@ export default function CoverView() {
                                     <select
                                         value={birthTime}
                                         onChange={(e) => setBirthTime(e.target.value)}
-                                        className="w-full bg-[#161d24] border border-[#2c3641] text-white rounded-lg pl-11 py-4 appearance-none focus:ring-[#10b748] focus:border-[#10b748] transition-all outline-none"
+                                        className="w-full bg-secondary-slate/50 border border-white/10 text-white rounded-lg pl-11 py-4 appearance-none focus:ring-1 focus:ring-primary-olive focus:border-primary-olive transition-all outline-none backdrop-blur-sm"
                                     >
                                         {ZODIAC_TIME_OPTIONS.map((opt) => (
                                             <option key={opt.value} value={opt.value} className="bg-[#1e262f] text-white">
@@ -271,10 +281,10 @@ export default function CoverView() {
                                         key={g}
                                         type="button"
                                         onClick={() => setGender(g as any)}
-                                        className={`py-4 rounded-lg font-bold text-sm transition-all ${gender === g
-                                            ? 'bg-white text-[#1e262f] shadow-sm'
-                                            : 'bg-[#161d24] border border-[#2c3641] text-gray-400'
-                                            }`}
+                                        className={`py - 4 rounded - lg font - bold text - sm transition - all ${gender === g
+                                            ? 'bg-white text-deep-slate shadow-sm'
+                                            : 'bg-secondary-slate/50 border border-white/10 text-gray-400'
+                                            } `}
                                     >
                                         {g === 'male' ? '남성' : '여성'}
                                     </button>
@@ -284,11 +294,11 @@ export default function CoverView() {
                             {/* Main Action Button */}
                             <div className="pt-4">
                                 <button
-                                    className="w-full bg-[#10b748] hover:bg-green-600 text-white font-bold py-5 rounded-lg text-lg transition-colors shadow-[0_4px_14px_0_rgba(16,183,72,0.39)] flex justify-center items-center gap-2"
+                                    className="w-full bg-primary-olive hover:bg-[#557a35] text-white font-bold py-5 rounded-lg text-lg transition-colors shadow-lg shadow-primary-olive/20 flex justify-center items-center gap-2"
                                     type="submit"
                                     disabled={isLoading}
                                 >
-                                    {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : '만세력 분석하기'}
+                                    {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : '기질 데이터 추출하기'}
                                 </button>
                             </div>
                         </motion.form>
@@ -297,43 +307,98 @@ export default function CoverView() {
                             key="result"
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="bg-[#161d24] border border-[#2c3641] rounded-2xl p-6"
+                            className="space-y-6"
                         >
-                            <div className="flex items-center justify-center gap-2 mb-6 text-[#10b748]">
-                                <Check className="w-5 h-5" />
-                                <span className="text-sm font-bold">원국 분석 완료</span>
+                            {/* 사용자 확인 헤더 (hidden per user request) */}
+                            <div className="hidden items-center justify-center gap-2 text-primary-olive">
+                                <Check className="w-5 h-5 shadow-glow" />
+                                <span className="text-sm font-bold uppercase tracking-wider">기질 데이터 추출 완료</span>
                             </div>
-
-                            <div className="grid grid-cols-4 gap-2 mb-8">
-                                <ResultPillar
-                                    label="시주"
-                                    gan={birthTime === 'unknown' ? { char: '?', color: '#555' } : previewPillars.time.gan}
-                                    ji={birthTime === 'unknown' ? { char: '?', color: '#555' } : previewPillars.time.ji}
-                                />
-                                <ResultPillar label="일주" gan={previewPillars.day.gan} ji={previewPillars.day.ji} />
-                                <ResultPillar label="월주" gan={previewPillars.month.gan} ji={previewPillars.month.ji} />
-                                <ResultPillar label="년주" gan={previewPillars.year.gan} ji={previewPillars.year.ji} />
-                            </div>
-
-                            <div className="text-center text-xs text-gray-400 mb-6 leading-relaxed">
-                                <p>입력하신 정보가 정확한가요?</p>
-                                <p className="mt-1 text-white font-medium">
+                            <div className="hidden text-center text-xs text-gray-400 leading-relaxed">
+                                <p className="text-white font-medium text-sm">
                                     {name}님 ({calendarType === 'solar' ? '양력' : '음력'} {birthDate} {birthTime === 'unknown' ? '시간모름' : ZODIAC_TIME_OPTIONS.find(o => o.value === birthTime)?.label.split(' ')[0]})
                                 </p>
                             </div>
 
-                            <div className="flex gap-3">
+                            {/* ✨ 새로운 다차원 기질 설계도 (Multi-Dimensional Blueprint) */}
+                            <MultiDimensionalBlueprint
+                                data={(() => {
+                                    // previewPillars에서 간지(干支) 추출하여 NeuralBlueprintMapper + PillarMetaCodeMap으로 변환
+                                    const getPillarCode = (pillar: any, pillarType: 'year' | 'month' | 'day' | 'time', isUnknown: boolean = false): CodeData => {
+                                        if (isUnknown) {
+                                            return {
+                                                id: 'unknown',
+                                                title: '🚀 지향점 (Future Vision)',
+                                                subtitle: '데이터 부족 (시간 정보 필요)',
+                                                darkCode: { name: '[미확인]', desc: '태어난 시간을 입력하시면 분석이 가능합니다.' },
+                                                neuralCode: { name: '[미확인]', desc: '태어난 시간을 입력하시면 분석이 가능합니다.' },
+                                                metaCode: { name: '[미확인]', desc: '태어난 시간을 입력하시면 분석이 가능합니다.' },
+                                            };
+                                        }
+                                        const ganji = pillar.gan.char + pillar.ji.char;
+                                        const info = NeuralBlueprintMapper.getBlueprint(ganji);
+                                        // 기둥별 전용 메타/뉴럴 코드 조회 (없으면 범용 폴백)
+                                        const pillarMeta = PillarMetaCodeMap.getMetaCode(ganji, pillarType);
+                                        const pillarNeural = PillarMetaCodeMap.getNeuralCode(ganji, pillarType);
+                                        return {
+                                            id: ganji,
+                                            title: '',
+                                            subtitle: pillarNeural ? pillarNeural.desc : (info.description || '기질 분석 중...'),
+                                            darkCode: { name: info.darkCode || '[Shadow]', desc: info.darkDesc || '이 기질의 그림자 상태입니다.' },
+                                            neuralCode: pillarNeural
+                                                ? { name: pillarNeural.name, desc: pillarNeural.desc }
+                                                : { name: info.summary || '[Neural]', desc: info.description || '이 기질의 활성화 상태입니다.' },
+                                            metaCode: pillarMeta
+                                                ? { name: pillarMeta.name, desc: pillarMeta.desc }
+                                                : { name: info.metaCode || '[Meta]', desc: info.metaDesc || '이 기질의 최종 진화 상태입니다.' },
+                                        };
+                                    };
+
+                                    const timePillar = getPillarCode(
+                                        birthTime === 'unknown' ? null : previewPillars.time,
+                                        'time',
+                                        birthTime === 'unknown'
+                                    );
+                                    timePillar.title = `🚀 지향점 (Future Vision)`;
+
+                                    const dayPillar = getPillarCode(previewPillars.day, 'day');
+                                    dayPillar.title = `👤 핵심 자아 (Core Identity)`;
+
+                                    const monthPillar = getPillarCode(previewPillars.month, 'month');
+                                    monthPillar.title = `💼 사회적 환경 (Social Interface)`;
+
+                                    const yearPillar = getPillarCode(previewPillars.year, 'year');
+                                    yearPillar.title = `🌳 배경 에너지 (Base Energy)`;
+
+                                    return [timePillar, dayPillar, monthPillar, yearPillar];
+                                })()}
+                            />
+
+                            {/* 확인 & 코칭 시작 버튼 */}
+                            <button
+                                onClick={handleConfirm}
+                                className="w-full bg-white hover:bg-gray-100 text-deep-slate font-bold py-5 rounded-xl text-lg transition-all shadow-xl flex justify-center items-center gap-2 group ring-4 ring-white/5 active:scale-95 mb-3"
+                            >
+                                🚀 나의 강점 활용법 코칭받기
+                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </button>
+
+                            {/* 새로운 맞춤형 명심코칭 시작 버튼 (독립 모듈 연결) */}
+                            <button
+                                onClick={() => router.push('/onboarding')}
+                                className="w-full bg-primary-olive hover:bg-[#6e944b] text-white font-bold py-5 rounded-xl text-lg transition-all shadow-[0_0_20px_rgba(101,140,66,0.2)] hover:shadow-[0_0_30px_rgba(101,140,66,0.4)] flex justify-center items-center gap-2 group active:scale-95"
+                            >
+                                <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                                나만의 맞춤형 명심코칭 시작하기
+                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </button>
+
+                            <div className="mt-4 text-center">
                                 <button
                                     onClick={() => setViewMode('form')}
-                                    className="flex-1 py-3 text-xs text-gray-400 font-bold hover:text-white transition-colors"
+                                    className="text-xs text-gray-500 hover:text-white transition-colors border-b border-transparent hover:border-gray-500 pb-0.5"
                                 >
-                                    수정하기
-                                </button>
-                                <button
-                                    onClick={handleConfirm}
-                                    className="flex-[2] bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors shadow-lg"
-                                >
-                                    결과 확인하러 가기
+                                    정보 수정이 필요하신가요?
                                 </button>
                             </div>
                         </motion.div>
@@ -341,24 +406,35 @@ export default function CoverView() {
                 </AnimatePresence>
                 {/* END: FormSection */}
 
-                {/* END: FormSection */}
-
 
             </div>
 
             {/* Bottom Navigation Bar */}
-            <nav className="absolute bottom-0 left-0 right-0 bg-[#1e262f]/90 backdrop-blur-md border-t border-[#2c3641] py-3 px-8 flex justify-between items-center z-20">
-                <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors">
-                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <nav className="absolute bottom-0 left-0 right-0 bg-deep-slate/90 backdrop-blur-md border-t border-white/5 py-3 px-8 flex justify-between items-center z-20">
+                <button
+                    onClick={() => {
+                        if (viewMode === 'result') {
+                            setViewMode('form');
+                        } else {
+                            if (window.history.length > 2) {
+                                router.back();
+                            } else {
+                                router.push('/login');
+                            }
+                        }
+                    }}
+                    className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
+                >
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M10 19l-7-7m0 0l7-7m-7 7h18" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                     </svg>
                     <span className="text-[10px] font-medium">Back</span>
                 </button>
                 <button
-                    className="flex flex-col items-center gap-1 text-[#10b748] hover:text-green-400 transition-colors"
+                    className="flex flex-col items-center gap-1 text-primary-olive hover:text-[#88b560] transition-colors"
                     onClick={() => window.location.reload()}
                 >
-                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                     </svg>
                     <span className="text-[10px] font-medium">Home</span>
@@ -367,3 +443,39 @@ export default function CoverView() {
         </main>
     );
 }
+
+// === Helper Components for Profile Style ===
+
+function PillarSummaryRow({ icon, label, ganji, isUnknown }: { icon: string, label: string, ganji: string, isUnknown?: boolean }) {
+    if (isUnknown) {
+        return (
+            <div className="flex items-start gap-3 opacity-40">
+                <span className="text-base mt-0.5">{icon}</span>
+                <div className="flex-1">
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-[11px] font-bold text-gray-500">{label}:</span>
+                        <span className="text-[11px] text-gray-600 italic">데이터 부족 (시간 정보 필요)</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const info = NeuralBlueprintMapper.getBlueprint(ganji);
+
+    return (
+        <div className="flex items-start gap-4 group">
+            <span className="text-lg mt-0.5 group-hover:scale-125 transition-transform duration-300">{icon}</span>
+            <div className="flex-1">
+                <div className="flex items-baseline gap-2 mb-0.5">
+                    <span className="text-[11px] font-bold text-gray-400">{label}:</span>
+                    <span className="text-sm font-bold text-white group-hover:text-primary-olive transition-colors">{info.summary}</span>
+                </div>
+                <p className="text-[11px] text-gray-500 leading-relaxed font-light">
+                    (설명: {info.description})
+                </p>
+            </div>
+        </div>
+    );
+}
+

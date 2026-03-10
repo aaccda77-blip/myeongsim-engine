@@ -1,6 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createHash } from 'crypto';
+import { SajuSyncModule } from '../modules/MemoryModules/SajuSyncModule';
+import { ShadowTrackerModule } from '../modules/MemoryModules/ShadowTrackerModule';
+import { MindGraphModule } from '../modules/MemoryModules/MindGraphModule';
+import { DreamStreamModule } from '../modules/MemoryModules/DreamStreamModule';
+import { NarrativeArcModule } from '../modules/MemoryModules/NarrativeArcModule';
+import { KarmicLoopModule } from '../modules/MemoryModules/KarmicLoopModule';
+import { ZenDormancyModule } from '../modules/MemoryModules/ZenDormancyModule';
+import { AkashicRecorderModule } from '../modules/MemoryModules/AkashicRecorderModule';
+import { MirrorNeuronModule } from '../modules/MemoryModules/MirrorNeuronModule';
 
 // Initialize Supabase Client
 export class MemoryService {
@@ -9,8 +18,21 @@ export class MemoryService {
     private static supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
     private static supabase = createClient(this.supabaseUrl, this.supabaseKey);
 
-    private static genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder-key');
-    private static embeddingModel = this.genAI.getGenerativeModel({ model: "text-embedding-004" });
+    static {
+        const isServiceKey = this.supabaseKey.startsWith('ey') && this.supabaseKey === process.env.SUPABASE_SERVICE_ROLE_KEY;
+        console.log(`🧠 [MemoryService] Initialized. Using Service Role Key: ${isServiceKey ? 'YES ✅' : 'NO ❌ (Using Anon Key)'}`);
+        console.log(`🔌 [MemoryService] Feature Flag: ${process.env.ENABLE_LONG_TERM_MEMORY === 'false' ? 'DISABLED ❌' : 'ENABLED ✅'}`);
+    }
+
+    // [Safety Valve] Feature Flag
+    private static get isEnabled(): boolean {
+        // Default to TRUE unless explicitly disabled
+        return process.env.ENABLE_LONG_TERM_MEMORY !== 'false';
+    }
+
+    private static genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || 'placeholder-key');
+    private static embeddingModel = this.genAI.getGenerativeModel({ model: "gemini-embedding-001" });
+
 
     /**
      * Generates a unique Persona ID
@@ -24,7 +46,10 @@ export class MemoryService {
      * Embeds text using Gemini
      */
     private static async getEmbedding(text: string): Promise<number[]> {
-        const result = await this.embeddingModel.embedContent(text);
+        const result = await this.embeddingModel.embedContent({
+            content: { parts: [{ text }] },
+            outputDimensionality: 768
+        } as any);
         return result.embedding.values;
     }
 
@@ -33,6 +58,7 @@ export class MemoryService {
      */
     static async storeMemory(userId: string, personaId: string, content: string, metadata: any = {}) {
         try {
+            if (!this.isEnabled) return;
             if (!content || content.length < 5) return;
 
             const embedding = await this.getEmbedding(content);
@@ -59,6 +85,8 @@ export class MemoryService {
      */
     static async recallMemories(userId: string, personaId: string, query: string, limit: number = 3): Promise<string> {
         try {
+            if (!this.isEnabled) return "";
+
             const embedding = await this.getEmbedding(query);
 
             const { data, error } = await this.supabase.rpc('match_memories', {
@@ -78,11 +106,42 @@ export class MemoryService {
             if (!data || data.length === 0) return "";
 
             let memoryContext = "## [Episodic Memory (Past Conversations)]\n";
+            // We'll aggregate shadow and graph data over matched memories
+            let shadowData: any[] = [];
+            let graphData: any[] = [];
+
             data.forEach((mem: any) => {
-                // If created_at is available in view
-                // const date = mem.created_at ? new Date(mem.created_at).toLocaleDateString() : 'Past';
-                memoryContext += `- ${mem.content}\n`;
+                const dayPillarInfo = mem.metadata?.saju_sync ? `[기억 태그: ${mem.metadata.saju_sync.day_pillar}일 - ${mem.metadata.saju_sync.dominant_element} 기운]` : '';
+                memoryContext += `- ${mem.content} ${dayPillarInfo}\n`;
+
+                if (mem.metadata?.shadow_trigger) shadowData.push(mem.metadata.shadow_trigger);
+                if (mem.metadata?.mind_graph) graphData.push(...mem.metadata.mind_graph);
             });
+
+            // Append Advanced Modules Context
+            memoryContext += `\n${ShadowTrackerModule.buildShadowPrompt(shadowData)}\n`;
+            memoryContext += `\n${MindGraphModule.buildGraphPrompt(graphData)}\n`;
+
+            // [NEW] Ultra-Premium Modules (Dream Stream, Narrative Arc, Karmic Loop)
+
+            // Generate Dream Stream by checking the latest memory timestamp
+            const { data: latestMem } = await this.supabase
+                .from('long_term_memory')
+                .select('created_at')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+            const lastTime = latestMem?.created_at || null;
+
+            memoryContext += `\n${DreamStreamModule.buildDreamPrompt(lastTime)}\n`;
+            memoryContext += `\n${NarrativeArcModule.buildNarrativePrompt()}\n`;
+            memoryContext += `\n${KarmicLoopModule.buildKarmicLoopPrompt()}\n`;
+
+            // [FINAL BOSS] Ultra-Premium Modules (Zen Dormancy, Akashic Recorder, Mirror Neuron)
+            memoryContext += `\n${ZenDormancyModule.buildZenPrompt(lastTime)}\n`;
+            memoryContext += `\n${AkashicRecorderModule.buildAkashicPrompt()}\n`;
+            memoryContext += `\n${MirrorNeuronModule.buildMirrorPrompt()}\n`;
 
             console.log(`🧠 [Memory] Recalled ${data.length} items for Persona ${personaId.substring(0, 8)}`);
             return memoryContext;
@@ -116,7 +175,26 @@ export class MemoryService {
             const result = await summaryModel.generateContent(prompt);
             const summary = result.response.text();
 
-            await this.storeMemory(userId, personaId, summary, { type: 'auto-summary' });
+            // Setup Base Metadata
+            let metadata: any = { type: 'auto-summary' };
+
+            // 1. Saju-Bio Sync Module
+            metadata = SajuSyncModule.injectSajuSync(metadata);
+
+            // 2. Shadow Tracker Module
+            const latestUserMessage = messages.filter(m => m.role === 'user').slice(-1)[0]?.content || '';
+            const shadowTrigger = ShadowTrackerModule.extractShadow(conversationText); // Using full chat for broader scan
+            if (shadowTrigger) {
+                metadata.shadow_trigger = shadowTrigger;
+            }
+
+            // 3. Mind-Graph Module
+            const graphEdges = MindGraphModule.extractEdges(conversationText);
+            if (graphEdges.length > 0) {
+                metadata.mind_graph = graphEdges;
+            }
+
+            await this.storeMemory(userId, personaId, summary, metadata);
 
         } catch (e) {
             console.error("Auto-Summary Failed:", e);

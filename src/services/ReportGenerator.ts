@@ -70,22 +70,22 @@ export function generatePremiumReport(userProfile: UserReportProfile): ReportStr
             // 표지 (1페이지)
             cover: buildCoverSection(userProfile),
 
-            // 사주 원국 (2-4페이지)
+            // 기질 설계도 (2-4페이지)
             saju_chart: buildSajuChartSection(userProfile),
 
-            // 일주 분석 (5-12페이지)
+            // 핵심 기질 분석 (5-12페이지)
             ilju_analysis: buildIljuSection(iljuData),
 
-            // 십성 분석 (13-22페이지)
+            // 심리 기제 분석 (13-22페이지)
             ten_gods_analysis: buildTenGodsSection(topTenGods),
 
-            // 오행 분석 (23-28페이지)
+            // 에너지 밸런스 분석 (23-28페이지)
             five_elements: buildFiveElementsSection(userProfile.saju.five_elements),
 
-            // 대운 흐름 (29-38페이지)
+            // 인생 챕터 흐름 (29-38페이지)
             daewoon_flow: buildDaewoonSection(userProfile.saju.daewoon),
 
-            // 세운 분석 (39-44페이지)
+            // 연간 리듬 분석 (39-44페이지)
             yearly_fortune: buildYearlyFortuneSection(userProfile),
 
             // 명심코드 분석 (45-58페이지)
@@ -134,7 +134,7 @@ function buildCoverSection(profile: UserReportProfile): ReportSection {
 function buildSajuChartSection(profile: UserReportProfile): ReportSection {
     return {
         id: 'saju_chart',
-        title: '사주 원국',
+        title: '기질 설계도(Blueprint)',
         page_start: 2,
         content: {
             four_pillars: {
@@ -154,7 +154,7 @@ function buildSajuChartSection(profile: UserReportProfile): ReportSection {
 function buildIljuSection(ilju: IljuData): ReportSection {
     return {
         id: 'ilju_analysis',
-        title: '일주 분석 - 나의 핵심 기질',
+        title: '핵심 기질 분석 - 나의 본질',
         page_start: 5,
         content: {
             title: ilju.title,
@@ -176,7 +176,7 @@ function buildIljuSection(ilju: IljuData): ReportSection {
 function buildTenGodsSection(tenGods: TenGodData[]): ReportSection {
     return {
         id: 'ten_gods_analysis',
-        title: '십성 분석 - 나의 성격과 운명 패턴',
+        title: '심리 기제 분석 - 나의 행동 패턴',
         page_start: 13,
         content: {
             primary_ten_god: tenGods[0] ? {
@@ -239,7 +239,7 @@ function buildFiveElementsSection(elements: Record<string, number>): ReportSecti
 function buildDaewoonSection(daewoon: UserReportProfile['saju']['daewoon']): ReportSection {
     return {
         id: 'daewoon_flow',
-        title: '대운 흐름 - 인생의 계절',
+        title: '인생 챕터 - 10년 주기 리듬',
         page_start: 29,
         content: {
             periods: daewoon.map(period => ({
@@ -261,7 +261,7 @@ function buildYearlyFortuneSection(profile: UserReportProfile): ReportSection {
 
     return {
         id: 'yearly_fortune',
-        title: `${currentYear}년 세운 분석`,
+        title: `${currentYear}년 연간 리듬 분석`,
         page_start: 39,
         content: {
             year: currentYear,

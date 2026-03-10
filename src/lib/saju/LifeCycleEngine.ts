@@ -80,16 +80,23 @@ export class LifeCycleEngine {
         // For MVP Speed, let's mock the 'Calculation' but return realistic structure
         // utilizing the Day Master to vary it.
 
-        let currentAge = 3; // Approx start age
+        const genderNum = gender === 'male' ? 1 : 0;
+        const yun = (baZhi as any).getYun(genderNum);
+        const yunList = yun.getDaYun();
+
         const daewoons: DaewoonData[] = [];
 
-        // 10 cycles
-        for (let i = 0; i < 10; i++) {
-            const startAge = (i * 10) + 3;
-            const endAge = startAge + 9;
-            const mockGanji = ['갑자', '을축', '병인', '정묘', '무진', '기사', '경오', '신미', '임신', '계유'][i]; // Placeholder sequence
-            const gan = mockGanji[0];
-            const zhi = mockGanji[1];
+        // 10 cycles (skip the 0th element if it has no GanZhi)
+        let count = 0;
+        for (let i = 0; i < yunList.length && count < 10; i++) {
+            const dy = yunList[i];
+            const ganji = dy.getGanZhi();
+            if (!ganji || ganji.trim() === '') continue; // Skip empty placeholder
+
+            const startAge = dy.getStartAge();
+            const endAge = dy.getEndAge();
+            const gan = ganji.charAt(0);
+            const zhi = ganji.charAt(1);
 
             const score = calculateScore(gan, zhi, dayMaster);
             let keyword = "평온";
@@ -100,12 +107,13 @@ export class LifeCycleEngine {
             daewoons.push({
                 startAge,
                 endAge,
-                ganji: mockGanji,
+                ganji,
                 gan,
                 zhi,
                 score,
                 keyword
             });
+            count++;
         }
 
         // Interpolate for smoother chart (every 5 years)

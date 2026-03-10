@@ -115,7 +115,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                             <h2 className="text-xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#F4E2D8] via-[#BA9F8F] to-[#F4E2D8]"
                                 style={{ textShadow: '0 2px 10px rgba(186,159,143,0.3)' }}
                             >
-                                사주 분석 리포트
+                                인지행동 프로필 리포트
                             </h2>
                             <p className="text-[10px] text-gray-400 tracking-widest uppercase mt-1">Core Dynamics Analysis</p>
                         </div>
@@ -128,7 +128,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                     <div className="relative z-10 p-6 space-y-6">
 
                         {/* Section 1: My 5 Elements & Characters */}
-                        <ReportSection title="나의 오행과 글자" icon={<UserIcon />}>
+                        <ReportSection title="나의 에너지 프로필" icon={<UserIcon />}>
                             {analysis ? (
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-700/30 to-amber-900/30 border border-amber-500/30 flex items-center justify-center text-2xl relative group">

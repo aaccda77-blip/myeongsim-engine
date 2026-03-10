@@ -12,11 +12,11 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA") 
     let report = "";
 
     // --- PROLOGUE ---
-    report += `# [MIND TOTEM] 소울 아카이브 종합 리포트\n\n`;
+    report += `# [MIND CODE] 기질 설계도 종합 리포트\n\n`;
     report += `**수신인:** ${userName} 님\n`;
     report += `**발행일:** ${today}\n`;
-    report += `**문서 코드:** ${iljuData.id.toUpperCase()}-HYPER-80P\n`;
-    report += `\n> "이 문서는 당신의 영혼이 지닌 고유한 설계도를 64비트 정밀 코드로 분석한 80페이지 분량의 심층 기록입니다."\n\n`;
+    report += `**문서 코드:** ${iljuData.id.toUpperCase()}-BLUEPRINT-80P\n`;
+    report += `\n> "이 문서는 당신의 무의식에 각인된 기질 설계도를 64비트 정밀 코드로 분석한 80페이지 분량의 심층 기록입니다."\n\n`;
     report += `---\n\n`;
 
     // --- PART 1: THE CORE (20 Pages) ---
@@ -91,8 +91,8 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA") 
 
     report += `### 💼 Career & Wealth\n`;
     report += `- **적성 직무:** ${iljuData.career_fit?.join(", ") || '다양한 적성'}\n`;
-    report += `- **성공 전략:** 당신은 리더형이므로, 남의 밑에 있기보다 주도적으로 프로젝트를 맡아야 합니다.\n`;
-    report += `- **부의 그릇:** 당신의 재물은 ${iljuData.lucky_elements?.number}와 관련이 깊습니다.\n\n`;
+    report += `- **성공 전략:** 당신은 주도적 성향이 강하므로, 환경을 제어하고 프로젝트를 리드할 때 최고의 성과를 냅니다.\n`;
+    report += `- **부의 에너지:** 당신의 자원 관리 알고리즘은 ${iljuData.lucky_elements?.number}번 코드와 관련이 깊습니다.\n\n`;
 
     report += `### ❤️ Relationship & Love\n`;
     report += `- **연애 스타일:** ${iljuData.relationship_style}\n`;

@@ -9,13 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.20",
+    "@ai-sdk/google": "^3.0.43",
+    "@ai-sdk/react": "^3.0.118",
     "@google-cloud/text-to-speech": "^6.4.0",
     "@google/generative-ai": "^0.24.1",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.87.3",
     "@types/canvas-confetti": "^1.9.0",
-    "ai": "^6.0.3",
+    "ai": "^3.4.33",
     "astronomy-engine": "^2.1.19",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
@@ -41,7 +42,7 @@
     "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.4.0",
-    "zod": "^4.3.6",
+    "zod": "^3.22.4",
     "zustand": "^5.0.9"
   },
   "devDependencies": {

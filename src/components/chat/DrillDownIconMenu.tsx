@@ -322,13 +322,13 @@ const getIconStyleClass = (style?: MainIcon['style']): string => {
 
 // ============== 친숙한 라벨 매핑 ==============
 const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
-    WEALTH: { main: '재물운', sub: '왜 벌어도 안 모일까?' },
-    RELATIONSHIP: { main: '연애운', sub: '반복되는 상처 끊기' },
-    CAREER: { main: '직업운', sub: '나는 이 일 하러 태어났다' },
+    WEALTH: { main: '번영코드', sub: '부의 에너지 흐름 진단' },
+    RELATIONSHIP: { main: '관계에너지', sub: '관계 패턴 분석 및 코칭' },
+    CAREER: { main: '커리어코드', sub: '나의 적성과 재능 리포트' },
     PERSONALITY_ANALYSIS: { main: '성격분석', sub: '강점/재능(인적자원)리포트' },
-    DAILY_MISSION: { main: '오늘운세', sub: '지금 뭘 해야 운이 트일까?' },
-    SAJU_ANALYSIS: { main: '사주분석', sub: '운명의 설계도 확인' },
-    BIO_SYNC: { main: '생체연동', sub: '실시간 운명 동기화' },
+    DAILY_MISSION: { main: '오늘컨디션', sub: '오늘의 마인드 에너지 체크' },
+    SAJU_ANALYSIS: { main: '기질분석', sub: '기질 설계도 확인' },
+    BIO_SYNC: { main: '생체연동', sub: '실시간 기질 동기화' },
     STRESS_RELIEF: { main: '명심힐링', sub: '지친 마음 쉬어가기' },
     PATH_108: { main: '108자각', sub: '내면의 빛을 찾는 여정' }, // [New] Added label
 };
@@ -403,7 +403,7 @@ const resolveDynamicText = (text: string | undefined, userProfile: any, t: any):
     // 2. Logic Placeholders (Simplified for now)
     resolved = resolved.replace('{{WEAK_ELEMENT}}', t('common.weak_element') || '부족한 기운');
     resolved = resolved.replace('{{GONGMANG}}', t('common.gongmang') || '공망');
-    resolved = resolved.replace('{{CURRENT_DAEWOON}}', t('common.current_daewoon') || '현재 대운');
+    resolved = resolved.replace('{{CURRENT_DAEWOON}}', t('common.current_daewoon') || '현재 라이프 웨이브');
     resolved = resolved.replace('{{CURRENT_YEAR_GANJI}}', t('common.current_year_ganji') || '을사(乙巳)'); // 2025 Fixed
 
     return resolved;
@@ -928,7 +928,7 @@ export default function DrillDownIconMenu({
                             <TalentReportCard data={talentReportData} />
 
                             <p className="text-xs text-gray-500 mt-4 text-center">
-                                사주 OS 기반 핵심 재능 분석
+                                메타코드 기반 핵심 재능 분석
                             </p>
                         </motion.div>
                     </motion.div>
@@ -1386,14 +1386,23 @@ export default function DrillDownIconMenu({
             {/* [NEW] 108 Awakening Chat Modal */}
             <AnimatePresence>
                 {showAwakeningChat && (
-                    <AwakeningChat
-                        mode="108" // [NEW] 108 Protocol Mode
-                        onClose={() => setShowAwakeningChat(false)}
-                        onComplete={(prompt) => {
-                            setShowAwakeningChat(false);
-                            onSelectIntent('saju_108_awakening_complete', prompt);
-                        }}
-                    />
+                    <div className="fixed inset-0 z-[1050] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-lg h-[80vh] min-h-[500px] max-h-[800px] shadow-2xl relative"
+                        >
+                            <AwakeningChat
+                                mode="108" // [NEW] 108 Protocol Mode
+                                onClose={() => setShowAwakeningChat(false)}
+                                onComplete={(prompt) => {
+                                    setShowAwakeningChat(false);
+                                    onSelectIntent('saju_108_awakening_complete', prompt);
+                                }}
+                            />
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
         </>

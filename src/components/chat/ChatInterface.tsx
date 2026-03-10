@@ -53,6 +53,15 @@ import { PexelsImage } from './PexelsImage'; // [NEW] Pexels Image Component
 import BioEnergyBlueprintModal from '../modals/BioEnergyBlueprintModal'; // [NEW] Bio-Energy Blueprint Modal
 import { ICON_DRILL_DOWN_MAP } from '@/modules/DrillDownProtocol'; // [NEW] Dynamic Label Lookup
 
+// [NEW] Myeongsim Secret Room Modular Injection
+import MyeongsimSecretRoom from '../coaching/MyeongsimSecretRoom';
+import QuestCard from '../coaching/QuestCard';
+
+// [NEW] 3S Scenario Tag selector and Data
+import EmotionTagSelector from '../coaching/EmotionTagSelector';
+import Saju3SScenarioModal from '../coaching/Saju3SScenarioModal';
+import { SAJU_3S_SCENARIOS, getAllScenarioTags, getScenarioByTag, Saju3SScenario } from '@/data/Saju3SScenarios';
+
 // [Helper] Saju Keywords for Restoration
 const getKeywords = (dm: string) => {
     if (dm.includes('갑') || dm.includes('을')) return ["성장", "창의성", "유연함"];
@@ -98,10 +107,35 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [emdrActive, setEmdrActive] = useState(false); // [New] EMDR Mode State
     const [showCrisisMode, setShowCrisisMode] = useState(false); // [Safety] Crisis Intervention Screen
     const [crisisPhase, setCrisisPhase] = useState<'breathing' | 'hope' | 'action'>('breathing'); // [Safety] Recovery Phase
+    const [isCrisisMode, setIsCrisisMode] = useState(false); // [Safety] Global Crisis Flag for Backend
     const [showSmartContext, setShowSmartContext] = useState(false); // [Smart Context] Energy Analysis Card
     const [showBreathingGuideFromChat, setShowBreathingGuideFromChat] = useState(false); // [NEW] SOS from chat crisis keywords
     const [showBlueprintModal, setShowBlueprintModal] = useState(false); // [NEW] Bio Blueprint Modal
     const [blueprintType, setBlueprintType] = useState<'HEAT' | 'COOL'>('HEAT'); // [NEW] Dynamic Type
+
+    // [NEW] Myeongsim Secret Room State (Modular)
+    const [isSecretRoomOpen, setIsSecretRoomOpen] = useState(false);
+    const [secretRoomQuest, setSecretRoomQuest] = useState<{ text: string; logId?: string } | null>(null);
+
+    const handleSecretRoomSurface = (questResponse: any) => {
+        setIsSecretRoomOpen(false);
+        setTimeout(() => {
+            setSecretRoomQuest({ text: questResponse.text, logId: questResponse.logId });
+        }, 600); // Wait for Unmount (Surface) animation
+    };
+
+    // [NEW] 3S Scenario Interactive Modal State
+    const [selected3SScenario, setSelected3SScenario] = useState<Saju3SScenario | null>(null);
+
+    const handleEmotionTagSelect = (tag: string) => {
+        const scenario = getScenarioByTag(tag);
+        if (scenario) {
+            setSelected3SScenario(scenario);
+        }
+    };
+
+    // Prepare tags to display based on Saju (simplified logic for demo: show all available combined tags or just match current)
+    const availableTags = getAllScenarioTags();
 
 
     const [messages, setMessages] = useState<Message[]>([
@@ -290,10 +324,12 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     const savedUserId = localStorage.getItem('myeongsim_user_id');
                     if (savedUserId && savedUserId !== 'undefined') {
                         setUserId(savedUserId);
+                        console.log("👤 [Guest] Restored ID:", savedUserId);
                     } else {
                         const guestId = generateUUID();
                         setUserId(guestId);
-                        // localStorage.setItem('myeongsim_user_id', guestId); // Optional: Persist guest?
+                        localStorage.setItem('myeongsim_user_id', guestId); // [Fix] Persist Guest ID
+                        console.log("👤 [Guest] Generated & Saved ID:", guestId);
                     }
 
                     // Load free trial turns
@@ -752,7 +788,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     if (formattedMsgs.length > 0) {
                         setMessages(formattedMsgs);
                     } else {
-                        content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다.\n\n💾 *당신의 이야기는 운명의 패턴으로 기록되어, 다음 대화에서 더 깊은 통찰을 드릴 것입니다.*"
+                        content: "반갑습니다. **당신의 인지행동 패턴을 분석하는 명심 코칭 AI**입니다. 🧠✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다.\n\n💾 *당신의 이야기는 성장의 데이터로 기록되어, 다음 대화에서 더 깊은 통찰을 드릴 것입니다.*"
                     }
                 } else {
                     // Start fresh if no history
@@ -760,7 +796,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                         {
                             id: 'welcome',
                             role: 'assistant',
-                            content: "반갑습니다. **당신의 생체 리듬과 운명을 연결하는 명심 AI**입니다. ⌚✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다."
+                            content: "반갑습니다. **당신의 인지행동 패턴을 분석하는 명심 코칭 AI**입니다. 🧠✨\n\n지금 당신의 심장 박동에서 **변화의 신호**가 감지되고 있네요.\n겉으로 드러난 고민 뒤에 숨겨진 **진짜 마음의 소리**를 들려주세요. 제가 그 길을 밝혀드리겠습니다."
                         }
                     ]);
                 }
@@ -872,7 +908,12 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
 
         // Expanded Crisis Keywords
         if (ETHICAL_GUIDELINES.CRISIS_KEYWORDS.some(k => lowerMsg.includes(k))) {
-            setShowBreathingGuideFromChat(true);
+            console.warn("🚨 [CRISIS] Extreme distress keyword detected. Initiating Safety Protocol.");
+            setShowBreathingGuideFromChat(true); // Show SOS Modal
+            setIsCrisisMode(true); // Flag session as Crisis Intervention Mode
+
+            // Allow message to be inserted into history so UI shows user typed it
+            setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', content: msgToSend }]);
             setInput('');
             return;
         }
@@ -1117,6 +1158,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     birthDate: effectiveReportData?.birthDate,
                     birthTime: effectiveReportData?.birthTime,
                     gender: effectiveReportData?.gender,
+                    calendarType: effectiveReportData?.meta?.calendarType || 'solar', // [Fix] Send calendarType to server
                     // [Optimization] Redundant Saju Object Removed/Minimized
                     sajuData: minimalSajuData,
                     gapData: {
@@ -1127,7 +1169,8 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     sessionId: sessionIdRef.current,
                     lastBotMessage: messages.length > 0 && messages[messages.length - 1].role === 'assistant' ? messages[messages.length - 1].content : null,
                     clientTimestamp: new Date().toISOString(), // [Context] Real Client Time
-                    language: language // [Multi-Language] Send current language to server
+                    language: language, // [Multi-Language] Send current language to server
+                    isCrisisMode: isCrisisMode // [Safety] Tell backend to use CrisisInterventionModule
                 })
             });
 
@@ -1311,7 +1354,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     };
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-gray-900 border-l border-gray-800 relative z-50">
+        <div className="flex flex-col h-[100dvh] bg-deep-slate border-l border-white/5 relative z-50">
             {/* [Module] Phone Auth Modal */}
             <PhoneAuthModal
                 isOpen={isAuthModalOpen}
@@ -1804,6 +1847,14 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     )}
                 </AnimatePresence>
 
+                {/* [NEW] Emotion Tag Selector for 3S Scenario Trigger */}
+                {reportData && !showBridgeFeedback && !interruptQuestion && (
+                    <EmotionTagSelector
+                        tags={availableTags}
+                        onTagSelect={handleEmotionTagSelect}
+                    />
+                )}
+
                 {messages.map((msg, idx) => {
                     const isUser = msg.role === 'user';
                     const isPayment = msg.type === 'payment';
@@ -1907,8 +1958,8 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                             ${isPayment
                                                 ? 'bg-transparent p-0 shadow-none border-none'
                                                 : msg.role === 'user'
-                                                    ? 'bg-primary-gold/10 border-primary-gold/30 rounded-2xl rounded-tr-sm text-gray-100 ml-auto'
-                                                    : 'bg-white/5 border-white/10 rounded-2xl rounded-tl-sm text-gray-200'
+                                                    ? 'bg-primary-olive text-white border-transparent shadow-md rounded-2xl rounded-tr-sm ml-auto'
+                                                    : 'bg-white/5 border-white/10 rounded-2xl rounded-tl-sm text-gray-200 backdrop-blur-md'
                                             }
                                             w-fit max-w-full md:max-w-[85%] px-5 py-4 min-w-[200px] ${!isUser ? 'pr-12' : ''}
                                         `}>
@@ -2194,7 +2245,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                                     '돈|재물|재정|투자|부자|재산': 'golden prosperity wealth coins treasure abundance light',
                                                     '건강|몸|스트레스|불안|피곤|잠': 'peaceful healing calm nature zen meditation water',
                                                     '가족|부모|자녀|아이|형제|집안': 'warm family home tree roots nurturing embrace',
-                                                    '미래|운세|앞으로|목표|꿈': 'mystical cosmic future stars universe destiny path',
+                                                    '미래|목표|앞으로|비전|꿈': 'mystical cosmic future stars universe destiny path',
                                                     '힘들|고통|슬픔|우울|외로': 'hope healing light emerging from darkness comfort warmth'
                                                 };
 
@@ -2621,7 +2672,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         setMessages(prev => [...prev, {
                                             id: Date.now().toString(),
                                             role: 'assistant',
-                                            content: "📈 **[공명 현상 감지]**\n\n'불(Fire)'의 기운을 마주하자 심박수가 15% 급상승(98 BPM ↗ 115 BPM)했습니다.\n\n이는 귀하의 세포가 과거의 '화(火)'와 관련된 트라우마를 기억하고 있다는 생물학적 증거입니다. 이 운명을 피하지 않고 다룰 수 있도록 뇌신경 훈련을 제안합니다."
+                                            content: "📈 **[공명 현상 감지]**\n\n'불(Fire)'의 기운을 마주하자 심박수가 15% 급상승(98 BPM ↗ 115 BPM)했습니다.\n\n이는 귀하의 세포가 과거의 에너지 패턴과 관련된 기억을 활성화하고 있다는 생물학적 증거입니다. 이 패턴을 피하지 않고 다룰 수 있도록 뇌신경 코칭을 제안합니다."
                                         }]);
                                         playGameSound('levelup');
                                     }, 6000);
@@ -2711,21 +2762,27 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 // Default Handler for DrillDown Intents (Mindflow System etc.)
                                 // Sending prompt as HIDDEN payload to keep chat clean
                                 const friendlyMessages: Record<string, string> = {
-                                    'wealth_reading': '💰 저의 재물운 흐름을 분석해주세요.',
-                                    'love_tarot': '❤️ 저의 연애운 흐름을 분석해주세요.',
-                                    'career_path': '💼 저의 직업운 흐름을 분석해주세요.',
-                                    'saju_basic_analysis': '📜 상세 사주 원국을 분석해주세요.',
-                                    'today_fortune': '🌞 오늘의 운세를 알려주세요.',
+                                    'wealth_reading': '💰 저의 번영 코드 흐름을 분석해주세요.',
+                                    'love_tarot': '❤️ 저의 관계 에너지 흐름을 분석해주세요.',
+                                    'career_path': '💼 저의 커리어 코드 흐름을 분석해주세요.',
+                                    'saju_basic_analysis': '📜 상세 기질 프로필을 분석해주세요.',
+                                    'today_fortune': '🌞 오늘의 마인드 컨디션을 알려주세요.',
                                     'iching_code_search': '📖 64코드 사색을 실행합니다.',
-                                    'ms_destiny_weather': '🌦️ 인생의 날씨 예보를 분석해주세요.',
-                                    'ms_life_wave': '🌊 10년 대운의 흐름을 알려주세요.',
-                                    'saju_career_detail': '💼 직업과 사업운의 타이밍을 분석해주세요.',
-                                    'saju_marriage_timing': '❤️ 결혼과 연애의 시기를 알려주세요.',
+                                    'ms_destiny_weather': '🌦️ 인생의 에너지 예보를 분석해주세요.',
+                                    'ms_life_wave': '🌊 10년 라이프 웨이브의 흐름을 알려주세요.',
+                                    'saju_career_detail': '💼 커리어와 번영의 타이밍을 분석해주세요.',
+                                    'saju_marriage_timing': '❤️ 관계와 파트너십의 시기를 알려주세요.',
                                     'saju_108_awakening': '🌌 108 자각 프로토콜을 시작합니다.',
                                     'saju_108_awakening_complete': '✅ 자각 상담 내용을 토대로 심층 코칭을 시작합니다.',
                                     'ms_emotion_alchemy': '⚗️ 감정 연금술 (Emotion Alchemy) 분석을 요청합니다.',
                                     'ms_shadow_work': '🌑 그림자 작업 (Shadow Work)을 시작합니다.',
                                 };
+
+                                // [NEW] Trigger Myeongsim Secret Room (Modular)
+                                if (intent === 'ms_shadow_work' || intent === 'ms_emotion_alchemy') {
+                                    setIsSecretRoomOpen(true);
+                                    return; // Intercept and block sending to normal chat
+                                }
 
                                 // [Dynamic] Lookup label from Protocol Definition if not in manual map
                                 const findLabel = (target: string) => {
@@ -2837,7 +2894,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder={isExpired ? "🔒 이용권이 만료되었습니다. 충전 후 이용해주세요." : "이곳을 터치해서 대화를 시작하세요..."}
-                                className={`w-full bg-[#1A1F2B] backdrop-blur-xl border rounded-2xl pl-6 pr-14 py-5 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-lg shadow-inner ${isExpired ? 'border-red-500/50 cursor-not-allowed opacity-60' : 'border-white/20 focus:border-primary-gold focus:ring-1 focus:ring-primary-gold/50'}`}
+                                className={`w-full bg-deep-slate/50 backdrop-blur-xl border rounded-2xl pl-6 pr-14 py-5 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-lg shadow-inner ${isExpired ? 'border-red-500/50 cursor-not-allowed opacity-60' : 'border-white/10 focus:border-primary-olive/50 focus:ring-1 focus:ring-primary-olive/30'}`}
                                 autoFocus
                                 disabled={isExpired}
                             />
@@ -2849,7 +2906,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     disabled={!input.trim()}
                                     className={`p-2 rounded-xl transition-all flex items-center justify-center
                                         ${input.trim()
-                                            ? 'bg-primary-gold text-black shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:scale-105 active:scale-95'
+                                            ? 'bg-primary-olive text-white shadow-[0_0_15px_rgba(101,140,66,0.4)] hover:scale-105 active:scale-95'
                                             : 'bg-white/5 text-gray-500 cursor-not-allowed'}`}
                                 >
                                     <Send className={`w-5 h-5 ${input.trim() ? 'fill-current' : ''}`} />
@@ -2863,6 +2920,21 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     </div>
                 )
             }
+
+            {/* [NEW] Modular Quest Card Display after surfacing */}
+            <AnimatePresence>
+                {secretRoomQuest && (
+                    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 pointer-events-none">
+                        <div className="pointer-events-auto">
+                            <QuestCard
+                                text={secretRoomQuest.text}
+                                logId={secretRoomQuest.logId}
+                                onComplete={() => setSecretRoomQuest(null)}
+                            />
+                        </div>
+                    </div>
+                )}
+            </AnimatePresence>
 
 
 
@@ -2897,13 +2969,46 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 )}
             </AnimatePresence>
 
+            {/* [NEW] Modular Myeongsim Secret Room Overlay */}
+            <AnimatePresence>
+                {isSecretRoomOpen && (
+                    <MyeongsimSecretRoom
+                        initialData={{
+                            sajuCode: reportData?.saju?.dayMaster || "Unknown",
+                            darkCode: "미확인 상태",
+                            firstQuestion: "어떤 감정이 당신을 이 깊은 심연으로 이끌었나요?"
+                        }}
+                        onComplete={handleSecretRoomSurface}
+                        onClose={() => setIsSecretRoomOpen(false)}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* [NEW] Modular 3S Scenario Interactive Modal */}
+            <AnimatePresence>
+                {selected3SScenario && (
+                    <Saju3SScenarioModal
+                        scenario={selected3SScenario}
+                        onClose={() => setSelected3SScenario(null)}
+                        onComplete={(quest, logId) => {
+                            setSelected3SScenario(null);
+                            // Surface the quest using the same QuestCard concept 
+                            setTimeout(() => {
+                                setSecretRoomQuest({ text: quest, logId });
+                            }, 600);
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+
             {/* [Safety] SOS Breathing Guide Modal */}
             <BreathingGuideModal
                 isOpen={showBreathingGuideFromChat}
                 onClose={() => setShowBreathingGuideFromChat(false)}
                 onComplete={() => {
                     console.log('🧘 [Breathing] User completed breathing exercise');
-                    // Continue conversation after breathing
+                    // Continue conversation after breathing - Proactively trigger AI
+                    handleSend("명심 코치님, 호흡 가이드를 마치고 다시 돌아왔습니다. 저를 좀 도와주세요.", "SYSTEM_TRIGGER");
                 }}
             />
 

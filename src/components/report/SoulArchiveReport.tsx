@@ -40,7 +40,7 @@ const PARTS = [
     { id: 'core', title: 'PART 1', subtitle: '당신의 본질', icon: '🧬', color: SECTION_COLORS.core },
     { id: 'goldenpath', title: 'PART 2', subtitle: '황금 경로', icon: '🌟', color: SECTION_COLORS.neural },
     { id: 'neural', title: 'PART 3', subtitle: '라이프 코드', icon: '✨', color: SECTION_COLORS.neural },
-    { id: 'codes', title: 'PART 4', subtitle: '운명 코드', icon: '🔢', color: SECTION_COLORS.codes },
+    { id: 'codes', title: 'PART 4', subtitle: '라이프 코드', icon: '🔢', color: SECTION_COLORS.codes },
     { id: 'tengods', title: 'PART 5', subtitle: '십성 분석', icon: '⚡', color: SECTION_COLORS.tengods },
     { id: 'stars', title: 'PART 6', subtitle: '12운성', icon: '⭐', color: SECTION_COLORS.stars },
     { id: 'void', title: 'PART 7', subtitle: '공망 이론', icon: '🕳️', color: SECTION_COLORS.void },
@@ -143,7 +143,7 @@ export default function SoulArchiveReport() {
             growthTriggerGate: myeongsimProfile.profile?.fusion?.growthTriggerGate || '라이프코드 2.1',
             bioEngineGate: myeongsimProfile.profile?.fusion?.bioEngineGate || '라이프코드 3.1',
             rootPurposeGate: myeongsimProfile.profile?.fusion?.rootPurposeGate || '라이프코드 4.1',
-            summary: `${ELEMENT_MAP[reportData.saju.dayMaster] || ''} 에너지를 가진 ${reportData.saju.dayMaster}일간으로, ${reportData.saju.dayMasterTrait || '특별한 재능'}을 가진 프로필입니다.`
+            summary: `${ELEMENT_MAP[reportData.saju.dayMaster] || ''} 에너지를 가진 ${reportData.saju.dayMaster} 코어 타입으로, ${reportData.saju.dayMasterTrait || '특별한 재능'}을 가진 프로필입니다.`
         },
         saju: reportData.saju,
         astro: myeongsimProfile.profile?.astro, // Gene Keys 전체 데이터
@@ -159,7 +159,7 @@ export default function SoulArchiveReport() {
             growthTriggerGate: myeongsimProfile.profile?.fusion?.growthTriggerGate || '라이프코드 2.5',
             bioEngineGate: myeongsimProfile.profile?.fusion?.bioEngineGate || '라이프코드 43.2',
             rootPurposeGate: myeongsimProfile.profile?.fusion?.rootPurposeGate || '라이프코드 41.1',
-            summary: '성장과 확장의 에너지를 가진 갑일간으로, 라이프코드 1번을 탑재한 프로필입니다.'
+            summary: '성장과 확장의 에너지를 가진 코어 타입으로, 라이프코드 1번을 탑재한 프로필입니다.'
         },
         astro: myeongsimProfile.profile?.astro,
         error: null
@@ -395,7 +395,7 @@ function CoreSection({ profile, fullReport, iljuData }: { profile: any; fullRepo
         >
             <SectionHeader
                 title="당신의 본질 (The Core)"
-                subtitle="타고난 기질과 운명 코드"
+                subtitle="타고난 기질과 라이프 코드"
                 gradient={SECTION_COLORS.core}
             />
 
@@ -421,11 +421,11 @@ function CoreSection({ profile, fullReport, iljuData }: { profile: any; fullRepo
                 </h3>
                 <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="p-4 bg-black/30 rounded-xl">
-                        <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">일간 (Day Master)</p>
+                        <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">코어 타입 (Core Type)</p>
                         <p className="text-2xl font-bold text-purple-400">{fusion?.dayMaster || '분석 중...'}</p>
                     </div>
                     <div className="p-4 bg-black/30 rounded-xl">
-                        <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">오행 (Element)</p>
+                        <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">에너지 타입 (Energy Type)</p>
                         <p className="text-2xl font-bold text-purple-400">{fusion?.dayMasterElement || '분석 중...'}</p>
                     </div>
                 </div>
@@ -556,7 +556,7 @@ function ChronosSection({ iljuKey }: { iljuKey: string }) {
         return 50 + getHashIndex(iljuKey + month.toString(), 50, 200 + month);
     };
 
-    // 대운 유형 (성장/수양/변화/안정)
+    // 10-year wave type (성장/수양/변화/안정)
     const decadePatterns = ['성장', '수양', '변화', '안정'];
     const getDecadeType = (yearOffset: number) => {
         const idx = getHashIndex(iljuKey + yearOffset.toString(), decadePatterns.length, 300 + yearOffset);
@@ -572,13 +572,13 @@ function ChronosSection({ iljuKey }: { iljuKey: string }) {
         >
             <SectionHeader
                 title="운의 흐름 (Chronos)"
-                subtitle="10년 대운과 월별 리듬"
+                subtitle="10년 라이프 웨이브와 월별 리듬"
                 gradient={SECTION_COLORS.chronos}
             />
 
-            {/* 10년 대운 */}
-            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                <h3 className="text-lg font-bold text-white mb-4">📅 10년 대운 (Decade Flow)</h3>
+            {/* 10년 라이프 웨이브 */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur-sm print:break-inside-avoid print:bg-white print:border-gray-200">
+                <h3 className="text-lg font-bold text-white mb-4">📅 10년 라이프 웨이브 (Decade Flow)</h3>
                 <div className="grid grid-cols-5 gap-2">
                     {Array.from({ length: 10 }, (_, i) => {
                         const energy = getYearlyEnergy(currentYear + i);
@@ -869,7 +869,7 @@ function EnergyCycleSection({ iljuKey }: { iljuKey: string }) {
         >
             <SectionHeader
                 title="에너지 사이클 (Energy Cycle)"
-                subtitle="오행의 상생상극 흐름"
+                subtitle="에너지 순환 패턴"
                 gradient={SECTION_COLORS.energy}
             />
 

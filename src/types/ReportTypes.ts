@@ -13,7 +13,7 @@ export interface IljuData {
     title: string;             // 예: "✨ 용광로 속에서 빛나는 보석"
     keywords?: string[];        // 예: ["#완벽주의", "#예리한_직관"] (legacy)
     element?: string;           // 오행 예: "금" (legacy)
-    yin_yang?: '음' | '양';    // (legacy)
+    yin_yang?: '음' | '양' | 'Active' | 'Deep' | string;    // (legacy & rebranded terms)
     image_metaphor?: string;    // 물상 이미지 예: "용광로 위에서 제련되고 있는 보석" (legacy)
     main_text?: string;         // 본문 (500자 이상) (legacy)
     strengths?: string[];       // 강점 리스트 (legacy)

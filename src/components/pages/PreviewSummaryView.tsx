@@ -20,7 +20,7 @@ export default function PreviewSummaryView() {
                     PDF 리포트 미리보기
                 </h1>
                 <p className="text-sm text-gray-400 font-sans mt-3">
-                    단순한 운세풀이가 아닙니다.<br />
+                    단순한 성격 테스트가 아닙니다.<br />
                     나를 이해하고 성장시키는 구체적인 가이드입니다.
                 </p>
             </motion.div>
@@ -52,7 +52,7 @@ export default function PreviewSummaryView() {
                     {/* Box 1 */}
                     <div className="p-5 border-b border-white/5">
                         <h4 className="text-primary-olive text-xs font-bold mb-2 flex items-center gap-1 font-sans">
-                            <span className="w-4 h-4 rounded border border-current flex items-center justify-center text-[10px]">S</span> 사주 진단
+                            <span className="w-4 h-4 rounded border border-current flex items-center justify-center text-[10px]">S</span> 에너지 구조 진단
                         </h4>
                         <div className="text-lg font-bold text-white mb-2 font-serif">&quot;왜 그럴까?&quot;</div>
                         <p className="text-xs text-gray-300 leading-relaxed font-sans">
@@ -113,7 +113,7 @@ export default function PreviewSummaryView() {
                     whileTap={{ scale: 0.95 }}
                     className="bg-primary-olive text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg hover:bg-[#557539] transition-colors flex items-center gap-2 mx-auto"
                 >
-                    내 사주 속 &apos;심리적 허들&apos; 확인하기
+                    내 에너지 속 &apos;심리적 허들&apos; 확인하기
                     <ArrowRight className="w-4 h-4" />
                 </motion.button>
                 <p className="text-[10px] text-gray-600 mt-3 font-sans">* 무료 샘플 리포트는 준비 중입니다.</p>

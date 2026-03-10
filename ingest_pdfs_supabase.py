@@ -6,7 +6,7 @@ src/knowledge/docs/ 폴더의 PDF들을 Supabase knowledge_base에 저장합니�
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
-import google.generativeai as genai
+import google.generativeai as genai  # noqa: F811
 from PyPDF2 import PdfReader
 
 load_dotenv()
@@ -42,6 +42,12 @@ def ingest_pdfs():
     
     # PDF 파일 목록
     pdf_files = [f for f in os.listdir(PDF_PATH) if f.endswith('.pdf')]
+    
+    # 특정 파일만 학습하려면 아래 필터 사용
+    TARGET_FILE = os.getenv("TARGET_PDF", "")
+    if TARGET_FILE:
+        pdf_files = [f for f in pdf_files if TARGET_FILE in f]
+    
     print(f"📚 발견된 PDF: {len(pdf_files)}개")
     
     total_chunks = 0
@@ -74,12 +80,14 @@ def ingest_pdfs():
                     continue
                     
                 try:
-                    # 임베딩 생성
+                    # 임베딩 생성 (gemini-embedding-001 → 768차원으로 truncate)
                     result = genai.embed_content(
-                        model="models/text-embedding-004",
+                        model="models/gemini-embedding-001",
                         content=chunk[:8000]
                     )
-                    embedding = result['embedding']
+                    full_embedding = result['embedding']
+                    # Supabase 테이블이 768차원이므로 truncate (Matryoshka 방식)
+                    embedding = full_embedding[:768]
                     
                     # Supabase에 저장
                     record = {

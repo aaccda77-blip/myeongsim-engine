@@ -38,6 +38,7 @@ export interface SajuResult {
     dayMasterChar: string;      // 일간 한자
     currentDaewoon?: string;    // 현재 대운
     currentSeun?: string;       // 현재 세운
+    daewoonList?: { startYear: number, endYear: number, ganZhi: string }[]; // 대운 리스트
     inputInfo: {
         birthDate: string;
         birthTime: string;
@@ -203,6 +204,7 @@ export function calculateSaju(
         // 6. 대운/세운 (선택적)
         let currentDaewoon: string | undefined;
         let currentSeun: string | undefined;
+        let extractedDaewoonList: { startYear: number, endYear: number, ganZhi: string }[] = [];
 
         try {
             const genderNum = gender === 'male' ? 1 : 0;
@@ -211,8 +213,17 @@ export function calculateSaju(
             const currentYear = new Date().getFullYear();
 
             for (const dy of daewoonList) {
-                if (dy.getStartYear() <= currentYear) {
+                if (dy.getStartYear() <= currentYear && dy.getEndYear() >= currentYear) {
                     currentDaewoon = `${dy.getGanZhi()} 대운`;
+                }
+
+                // Add first 10 daewoons (limit bounds for safety)
+                if (extractedDaewoonList.length < 10) {
+                    extractedDaewoonList.push({
+                        startYear: dy.getStartYear(),
+                        endYear: dy.getEndYear(),
+                        ganZhi: dy.getGanZhi()
+                    });
                 }
             }
 
@@ -232,6 +243,7 @@ export function calculateSaju(
             dayMasterChar: dayGan,
             currentDaewoon,
             currentSeun,
+            daewoonList: extractedDaewoonList,
             inputInfo: { birthDate, birthTime, calendarType, gender },
         };
 
@@ -243,6 +255,7 @@ export function calculateSaju(
             fourPillars: createEmptyPillars(),
             dayMaster: '오류',
             dayMasterChar: '?',
+            daewoonList: [],
             inputInfo: { birthDate, birthTime, calendarType, gender },
         };
     }
@@ -304,8 +317,12 @@ export function generateSajuPromptBlock(result: SajuResult): string {
 
 ## 핵심 정보
 - **일간 (Day Master)**: ${result.dayMaster} (${result.dayMasterChar})
+- 현재 세운 (올해): ${result.currentSeun || '정보 없음'}
 - 현재 대운: ${result.currentDaewoon || '정보 없음'}
-- 현재 세운: ${result.currentSeun || '정보 없음'}
+
+## 사용자의 전체 대운 흐름 (장기 심리 발달 단계)
+> **AI 지시사항**: 대운(10년 주기)의 연도(시작~종료 년도)를 말할 때는 **아래 대운 리스트의 연도를 그대로 사용하세요.** 절대 스스로 년도를 계산하거나 임의로 지어내지 마세요.
+${result.daewoonList && result.daewoonList.length > 0 ? result.daewoonList.map((dw, i) => `- ${i + 1}대운: ${dw.startYear}년 ~ ${dw.endYear}년 (${dw.ganZhi})`).join('\n') : '- 대운 정보 없음'}
 
 > ⚠️ **주의**: 년주(${p.year.ganKor}${p.year.jiKor})와 일주(${p.day.ganKor}${p.day.jiKor})를 혼동하지 마세요!
 :::END_SAJU_DATA:::

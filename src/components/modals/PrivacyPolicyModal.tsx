@@ -33,7 +33,7 @@ export const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps)
                         <p>명심코칭(이하 "회사")은 다음의 목적을 위하여 개인정보를 처리합니다:</p>
                         <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                             <li>회원 가입 및 관리 (본인 확인, 중복 가입 방지)</li>
-                            <li>서비스 제공 (사주 분석, AI 코칭, 맞춤형 콘텐츠 제공)</li>
+                            <li>서비스 제공 (기질 및 에너지 분석, AI 코칭, 맞춤형 콘텐츠 제공)</li>
                             <li>이용권 관리 및 결제 처리</li>
                             <li>고객 문의 응대 및 민원 처리</li>
                             <li>서비스 개선 및 통계 분석 (익명화 처리)</li>
@@ -46,7 +46,7 @@ export const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps)
                             <p><strong className="text-primary-gold">필수 항목:</strong></p>
                             <ul className="list-disc list-inside ml-4">
                                 <li>휴대폰 번호 (암호화 저장)</li>
-                                <li>생년월일, 출생 시간 (사주 분석용)</li>
+                                <li>생년월일, 출생 시간 (기질 및 에너지 분석용)</li>
                                 <li>서비스 이용 기록 (접속 로그, IP 주소)</li>
                             </ul>
                             <p className="mt-3"><strong className="text-primary-gold">선택 항목:</strong></p>

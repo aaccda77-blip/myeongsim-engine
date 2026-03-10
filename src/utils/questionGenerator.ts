@@ -1,4 +1,4 @@
-import { analyzeDivineSoul, DivineSoulAnalysisResult } from './sajuLogic';
+import { analyzeAdvancedBlueprint, AdvancedBlueprintResult } from './sajuLogic';
 import { CoachingQuestion, ReportData } from '../types/report';
 
 // --- Saju Element & Polarity Database ---
@@ -82,11 +82,11 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
     const dayBranch = String(report.saju.fourPillars?.day?.ji || '자');
 
     // Run Divine Analysis
-    const soul: DivineSoulAnalysisResult = analyzeDivineSoul(dayMaster, monthBranch, dayBranch);
+    const soul: AdvancedBlueprintResult = analyzeAdvancedBlueprint(dayMaster, monthBranch, dayBranch);
 
-    // --- Step 1: Social Persona (Ten God + Micro/Gyeokguk) ---
+    // --- Step 1: Social Persona (Modal Profile + Regulation/Creation) ---
     // Use "Cross Analysis" message if available, else Ten God
-    let step1Text = `[1단계: 가면 자각]\n당신은 사회에서 '${soul.tenGod.name}'의 역할을 맡고 있군요.`;
+    let step1Text = `[1단계: 가면 자각]\n당신은 사회에서 '${soul.modalProfile.name}'의 역할을 맡고 있군요.`;
     if (soul.micro.cross) {
         step1Text += `\n특히 ${soul.micro.cross.message}`;
     } else {
@@ -105,14 +105,14 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
         ]
     });
 
-    // --- Step 2: Inner Shadow (Hidden Mind / Jijanggan / Complex) ---
-    // Use "Psychological Complex" if active, else Hidden Stem
+    // --- Step 2: Inner Shadow (Latent Energy Code) ---
+    // Use "Psychological Complex" if active, else Latent Code
     let step2Text = "";
     if (soul.micro.complex.length > 0) {
         const complex = soul.micro.complex[0];
         step2Text = `[2단계: 무의식 자각]\n가끔 설명할 수 없는 감정이 올라오지 않나요? 당신에겐 '${complex.name}(${complex.keyword})'이 있어, ${complex.psychology}`;
     } else {
-        step2Text = `[2단계: 무의식 자각]\n겉모습과 달리, 속마음엔 '${soul.hiddenStem?.interpretation}'이 숨어있네요. 남들은 모르는 당신만의 반전 매력이자 욕망입니다.`;
+        step2Text = `[2단계: 무의식 자각]\n겉모습과 달리, 속마음엔 '${soul.latentEnergyCode?.interpretation}'이 숨어있네요. 남들은 모르는 당신만의 반전 매력이자 욕망입니다.`;
     }
 
     questions.push({
@@ -127,14 +127,14 @@ export const generateQuestions = (report: ReportData): CoachingQuestion[] => {
         ]
     });
 
-    // --- Step 3: Lifecycle Void (Gongmang / Climate / Constitution) ---
+    // --- Step 3: Lifecycle Void (Expansion Void / Climate / Energy Level) ---
     // Prioritize Void > Climate > Energy Weakness
     let step3Text = "";
-    if (soul.gongmang.isVoid) {
-        step3Text = `[3단계: 결핍 자각]\n${soul.gongmang.message}`;
+    if (soul.expansionVoid.isVoid) {
+        step3Text = `[3단계: 결핍 자각]\n${soul.expansionVoid.message}`;
     } else if (soul.climate.message.includes('난로') || soul.climate.message.includes('용광로')) {
         step3Text = `[3단계: 에너지 자각]\n${soul.climate.message}`;
-    } else if (soul.wunsung?.energyLevel === 'weak') {
+    } else if (soul.energyLifecycle?.energyLevel === 'weak') {
         step3Text = `[3단계: 에너지 자각]\n당신의 에너지는 무리하면 쉽게 방전되는 '섬세한(Weak)' 상태입니다. 육체적 노동보다는 전략을 써야 합니다.`;
     } else {
         step3Text = `[3단계: 에너지 자각]\n지금 당신은 에너지가 채워져 있지만, 가끔 이유 없이 방전되지는 않나요? 스스로를 충전하는 법을 알고 계신가요?`;

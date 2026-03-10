@@ -91,16 +91,16 @@ export const SajuMatrixCard: React.FC<SajuMatrixProps> = ({ pillars }) => {
         <div className="w-full bg-black/60 backdrop-blur-md rounded-2xl border border-white/5 p-4 mb-4 shadow-2xl">
             <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
                 <h3 className="text-sm font-bold text-gray-300 flex items-center gap-2">
-                    🔮 사주 원국 (Four Pillars)
+                    🧠 기질 설계도 (Mind Code)
                 </h3>
                 <span className="text-[10px] text-gray-600 bg-gray-900/50 px-2 py-1 rounded">Visual Matrix</span>
             </div>
 
             <div className="flex justify-between items-start gap-1">
-                <PillarColumn label="시주 (Hour)" data={pillars.hour} />
-                <PillarColumn label="일주 (Day)" data={pillars.day} />
-                <PillarColumn label="월주 (Month)" data={pillars.month} />
-                <PillarColumn label="연주 (Year)" data={pillars.year} />
+                <PillarColumn label="🚀 지향점" data={pillars.hour} />
+                <PillarColumn label="👤 핵심 자아" data={pillars.day} />
+                <PillarColumn label="💼 사회적 환경" data={pillars.month} />
+                <PillarColumn label="🌳 배경 에너지" data={pillars.year} />
             </div>
 
             <div className="mt-4 flex justify-center gap-3 text-[10px] text-gray-500">

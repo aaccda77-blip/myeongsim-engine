@@ -19,7 +19,7 @@ const loadingView = () => (
 const CoverView = dynamic(() => import('@/components/pages/CoverView'), { loading: loadingView });
 const ScienceIntroView = dynamic(() => import('@/components/pages/ScienceIntroView'), { loading: loadingView });
 const IdentityView = dynamic(() => import('@/components/pages/IdentityView'), { loading: loadingView });
-const SajuPaljaView = dynamic(() => import('@/components/pages/SajuPaljaView'), { loading: loadingView });
+const SajuPaljaView = dynamic(() => import('@/components/pages/SajuPaljaView'), { loading: loadingView, ssr: false }); // [Fix] Forced SSR disable for new component
 const RadarChartView = dynamic(() => import('@/components/pages/RadarChartView'), { loading: loadingView });
 const TalentStatsView = dynamic(() => import('@/components/pages/TalentStatsView'), { loading: loadingView });
 const FlipCardView = dynamic(() => import('@/components/pages/FlipCardView'), { loading: loadingView });

@@ -18,10 +18,10 @@ const ELEMENT_STYLES: Record<string, { bg: string; gradient: string; glow: strin
 };
 
 const KOREAN_LABELS: Record<string, string> = {
-    'Hour': '시주',
-    'Day': '일주',
-    'Month': '월주',
-    'Year': '연주'
+    'Hour': '🚀 지향점',
+    'Day': '👤 핵심 자아',
+    'Month': '💼 사회적 환경',
+    'Year': '🌳 배경 에너지',
 };
 
 interface PillarData {
@@ -173,7 +173,7 @@ export default function SajuVisualGrid({ userProfile, onEditBirthdate }: SajuVis
                 <div className="flex justify-between items-center mb-4">
                     <div>
                         <h3 className="text-white font-bold text-base flex items-center gap-2">
-                            🏛️ 사주 원국
+                            🧠 기질 설계도
                         </h3>
                         <p className="text-gray-500 text-xs">터치하여 상세 정보 확인</p>
                     </div>
@@ -187,7 +187,7 @@ export default function SajuVisualGrid({ userProfile, onEditBirthdate }: SajuVis
                             </button>
                         )}
                         <div className="bg-purple-500/20 px-2 py-1 rounded-full text-[10px] text-purple-300 border border-purple-500/30">
-                            팔자 분석
+                            기질 프로필 분석
                         </div>
                     </div>
                 </div>
@@ -253,7 +253,7 @@ export default function SajuVisualGrid({ userProfile, onEditBirthdate }: SajuVis
                 {/* 오행 분석 Bar - Dynamic */}
                 <div className="mt-4 p-3 bg-white/5 rounded-xl border border-white/10">
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-white text-xs font-bold">오행 분석</span>
+                        <span className="text-white text-xs font-bold">에너지 모달리티 분석</span>
                         <div className="flex gap-2 text-[10px]">
                             {Object.entries(ohaengCounts).map(([el, count]) => (
                                 <span key={el} className="flex items-center gap-1">

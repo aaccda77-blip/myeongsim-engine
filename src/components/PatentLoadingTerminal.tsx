@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, ShieldCheck, Activity, Brain } from 'lucide-react';
 
 const LOADING_STEPS = [
-    { text: "System Access...", icon: Terminal, color: "text-green-500" },
-    { text: "Bio-Data Scan...", icon: Activity, color: "text-blue-500" },
-    { text: "Gap Analysis...", icon: ShieldCheck, color: "text-yellow-500" },
-    { text: "Neural Mapping...", icon: Brain, color: "text-purple-500" },
+    { text: "보안 시스템 접속 중...", icon: Terminal, color: "text-green-500" },
+    { text: "생체 리듬 데이터 스캔...", icon: Activity, color: "text-blue-500" },
+    { text: "심리-현실 격차 분석 중...", icon: ShieldCheck, color: "text-yellow-500" },
+    { text: "뉴럴 패턴 매핑 동기화...", icon: Brain, color: "text-purple-500" },
 ];
 
 export default function PatentLoadingTerminal() {
@@ -71,7 +71,7 @@ export default function PatentLoadingTerminal() {
             </div>
 
             <p className="text-[10px] text-gray-500 mt-2">
-                Patent 10-2025-0166877 Activated
+                특허출원번호 10-2025-0166877 발명의 명칭: 심리 및 생체 데이터기반 스트레스 관리 솔루션 제공장치 및 이를 이용한 스트레스 관리 솔루션 제공방법
             </p>
         </div>
     );

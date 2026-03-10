@@ -32,7 +32,7 @@ export default function SajuRadarChart({ data, keywords }: SajuRadarProps) {
                 className="text-center w-full max-w-4xl"
             >
                 <h2 className="text-3xl font-bold text-white mb-2">Part 1. 나의 에너지 (Energy)</h2>
-                <p className="text-gray-400 mb-12">당신의 오행(Five Elements) 밸런스를 분석합니다.</p>
+                <p className="text-gray-400 mb-12">당신의 에너지 모달리티(Energy Modality) 밸런스를 분석합니다.</p>
 
                 {/* Radar Chart Container */}
                 <div className="h-[400px] w-full flex justify-center mb-8 relative">

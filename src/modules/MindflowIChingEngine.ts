@@ -787,7 +787,7 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
             case 'iching_life_genre':
                 specificInstruction = `
 ## [Mode: 🎬 인생 장르 변경 (Life Genre Shift)]
-**목표:** 현재 사용자가 겪고 있는 고통스러운 서사(Narrative)를 재해석하여, **'피해자 비극'에서 '영웅의 모험' 또는 '시트콤'**으로 장르를 변경합니다.
+**목표:** 현재 사용자가 겪고 있는 고통스러운 인생각본(Life Script)을 재해석하여, **'피해자 비극'에서 '영웅의 모험' 또는 '시트콤'**으로 장르를 변경합니다.
 
 **[시나리오 재작성 프로토콜]**
 1. **현재 장르 분석 (As-Is):**

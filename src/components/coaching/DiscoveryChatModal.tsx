@@ -100,7 +100,7 @@ export default function DiscoveryChatModal({
                 setMessages([{
                     id: 'error_dm',
                     role: 'bot',
-                    text: '⚠️ 사주 데이터에서 일간(Day Master)을 추출할 수 없습니다. 데이터를 다시 확인해주세요.'
+                    text: '⚠️ 코어 에너지(Core Energy) 데이터를 확인할 수 없습니다. 데이터를 다시 확인해주세요.'
                 }]);
                 return;
             }
@@ -118,7 +118,7 @@ export default function DiscoveryChatModal({
             simulateBotResponse(`반갑습니다. 당신은 **${scenario.keyword}**의 기운을 가지고 태어나셨군요.\n\n${scenario.step1_text}`,
                 ['네, 맞습니다', '잘 모르겠어요']);
         } else {
-            simulateBotResponse(`반갑습니다. 당신의 일간(본질)은 '${dm}' 입니다.\n\n하지만 심층 프로필을 불러오는 데 실패했습니다.`, ['종료']);
+            simulateBotResponse(`반갑습니다. 당신의 코어 에너지(본질)는 '${dm}' 입니다.\n\n하지만 심층 프로필을 불러오는 데 실패했습니다.`, ['종료']);
         }
     };
 
@@ -204,8 +204,8 @@ export default function DiscoveryChatModal({
                     {messages.map((msg) => (
                         <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                             <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
-                                    ? 'bg-purple-600 text-white rounded-br-none'
-                                    : 'bg-gray-800 text-gray-200 rounded-tl-none border border-white/5'
+                                ? 'bg-purple-600 text-white rounded-br-none'
+                                : 'bg-gray-800 text-gray-200 rounded-tl-none border border-white/5'
                                 }`}>
                                 {msg.text}
                             </div>

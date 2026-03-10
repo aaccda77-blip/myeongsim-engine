@@ -11,11 +11,14 @@
 export interface AwakeningProtocol {
     id: string;
     number: number;
-    category: '자아' | '그림자' | '관계' | '목적' | '초월';
+    category: '자아' | '그림자' | '관계' | '목적' | '초월' | '연애' | '재회' | '금전' | '직업' | '명예' | '상실';
     title: string;
     subtitle: string;
     icon: string;
-    core_question: string;
+    core_question: string;         // Legacy / Fallback
+    stage1_q?: string;             // [NEW] 1단계: 산파술 (현상 직면)
+    stage2_q?: string;             // [NEW] 2단계: 재귀적 (원인 파고들기)
+    stage3_q?: string;             // [NEW] 3단계: 메타 인지 (객관화)
     reflection_prompts: string[];
     saju_guide: string;
     dark_code: { name: string; desc: string };
@@ -27,6 +30,27 @@ export interface AwakeningProtocol {
 // CATEGORY 1: 자아 인식 (Self-Awareness) - 25개
 // ============================================
 export const SELF_AWARENESS: AwakeningProtocol[] = [
+    {
+        id: 'awk_000',
+        number: 0,
+        category: '자아',
+        title: '자아는 운영체제다',
+        subtitle: '존재(하드웨어)와 방어기제(OS)의 분리',
+        icon: '💻',
+        core_question: '지금 당신을 괴롭히는 감정은 진짜 당신입니까, 생존을 위해 깔린 OS 방어기제입니까?',
+        stage1_q: '지금 당신을 괴롭히는 그 감정은 "당신 진짜 모습"입니까, 아니면 과거 상처로 인해 깔려진 "자아 OS"가 자동으로 띄운 에러 팝업창입니까?',
+        stage2_q: '컴퓨터에서 에러 팝업창이 뜬다고 해서 하드웨어를 부수진 않듯이, 그 감정을 억지로 끄지 않고 그저 지켜만 본다면 어떤 일이 일어날까요?',
+        stage3_q: '자아를 내가 아닌 그저 "편리한 도구(인터페이스)"로 여긴다면, 지금의 이 문제를 시스템 관리자의 시선에서 어떻게 다루시겠습니까?',
+        reflection_prompts: [
+            '그 감정은 그저 지나가는 팝업창일 뿐입니다.',
+            '불안은 백그라운드의 불필요한 연산일 뿐입니다.',
+            'OS를 멈추고 하드웨어(호흡)에 집중하겠습니다.'
+        ],
+        saju_guide: 'Day Master represents the pure hardware. The other pillars and stars form the conditional OS. Do not confuse the software for the machine.',
+        dark_code: { name: 'OS와 자아의 동일시', desc: '자동 생성된 생각과 감정이 곧 자신이라 착각함' },
+        neural_code: { name: '시스템 관찰자', desc: '생각과 감정을 한 발짝 떨어져서 모니터링함' },
+        meta_code: { name: '의식의 마스터', desc: '자아 OS를 자유자재로 켜고 끄며 세계를 향유함' }
+    },
     {
         id: 'awk_001',
         number: 1,
@@ -482,6 +506,46 @@ export const SELF_AWARENESS: AwakeningProtocol[] = [
     }
 ];
 
+
+
+// ============================================
+// CATEGORY 2: 그림자 통합 (Shadow Integration) - 15개
+// ============================================
+export const SHADOW_INTEGRATION: AwakeningProtocol[] = [
+    { title: '완벽한 이미지', subtitle: '가면 뒤의 진실', icon: '🎭', question: '당신이 세상에 보여주는 완벽한 이미지는 무엇입니까?' },
+    { title: '억압된 분노', subtitle: '화를 건강하게 표현하기', icon: '😤', question: '당신이 표현하지 못하고 삼킨 분노는 무엇입니까?' },
+    { title: '거부된 재능', subtitle: '숨겨진 천재성', icon: '💎', question: '당신이 "별로 대단하지 않다"고 무시한 재능은 무엇입니까?' },
+    { title: '두려운 성공', subtitle: '빛나는 것의 공포', icon: '✨', question: '성공하면 어떤 일이 일어날까 두렵습니까?' },
+    { title: '내면의 비겁함', subtitle: '용기를 가로막는 것', icon: '🐢', question: '당신이 도망치고 싶은 책임은 무엇입니까?' },
+    { title: '숨겨진 우월감', subtitle: '교만의 그림자', icon: '👑', question: '당신이 은밀히 우월하다고 느끼는 영역은?' },
+    { title: '의존의 그림자', subtitle: '혼자 서기의 두려움', icon: '🤝', question: '당신은 누구에게 의존하고 있나요?' },
+    { title: '통제 욕구', subtitle: '놓아주지 못하는 것', icon: '🎮', question: '당신이 통제하려는 사람이나 상황은?' },
+    { title: '완벽주의의 뿌리', subtitle: '실수의 공포', icon: '🎯', question: '실수하면 어떤 일이 일어날까 두렵습니까?' },
+    { title: '거부의 상처', subtitle: '버림받음의 기억', icon: '💔', question: '과거에 거부당한 경험이 지금도 영향을 미칩니까?' },
+    { title: '성적 그림자', subtitle: '금기된 욕망', icon: '🔥', question: '당신의 성적 욕망 중 인정하기 어려운 것은?' },
+    { title: '돈의 그림자', subtitle: '탐욕과 결핍', icon: '💰', question: '돈에 대한 당신의 숨겨진 믿음은 무엇입니까?' },
+    { title: '권력의 유혹', subtitle: '지배하고 싶은 욕구', icon: '⚡', question: '당신이 권력을 원하는 진짜 이유는?' },
+    { title: '게으름의 진실', subtitle: '휴식 vs 회피', icon: '🛋️', question: '당신의 게으름은 휴식입니까, 회피입니까?' },
+    { title: '죽음의 공포', subtitle: '소멸에 대한 두려움', icon: '💀', question: '죽음에 대해 생각할 때 무엇이 가장 두렵습니까?' }
+].map((topic, idx) => ({
+    id: `awk_${String(31 + idx).padStart(3, '0')}`,
+    number: 31 + idx,
+    category: '그림자',
+    title: topic.title,
+    subtitle: topic.subtitle,
+    icon: topic.icon,
+    core_question: topic.question,
+    reflection_prompts: [
+        '이것을 인정하기 어려운 이유는 무엇인가요?',
+        '이 그림자가 당신에게 주는 선물은 무엇일까요?',
+        '이것을 통합하면 어떤 자유가 올까요?'
+    ],
+    saju_guide: 'Analyze shadow patterns using hidden stems and suppressed elements.',
+    dark_code: { name: '그림자 부정', desc: '어두운 면을 억압함' },
+    neural_code: { name: '그림자 인식', desc: '어두운 면을 자각함' },
+    meta_code: { name: '그림자 통합', desc: '어두운 면을 힘으로 전환' }
+}));
+
 // ============================================
 // CATEGORY 3: 관계 역학 (Relationship Dynamics) - 20개
 // ============================================
@@ -572,14 +636,123 @@ export const TRANSCENDENCE: AwakeningProtocol[] = [
     }
 ];
 
+// ============================================
+// CATEGORY 6: 현실적 문제 (Practical Matters) - New Modular Addition
+// ============================================
+export const PRACTICAL_MATTERS: AwakeningProtocol[] = [
+    {
+        id: 'awk_109',
+        number: 109,
+        category: '연애',
+        title: '관계의 투사',
+        subtitle: '내 안의 이성을 상대에게서 찾다',
+        icon: '💖',
+        core_question: '당신이 연인에게 가장 바라는 점은, 사실 스스로 채워야 할 결핍 아닙니까?',
+        stage1_q: '지금 연애에서 가장 채워지지 않아 답답한 부분은 무엇인가요?',
+        stage2_q: '그 답답함의 이면을 보면, 과거 나의 어떤 상처나 결핍과 닿아 있을까요?',
+        stage3_q: '그 결핍을 상대가 아닌 내 스스로 채울 수 있다면, 이 관계는 어떻게 달라질까요?',
+        reflection_prompts: ['사랑받고 싶어서 불안합니다.', '상대에게 너무 의존하고 있어요.', '나 자신부터 먼저 아껴야겠습니다.'],
+        saju_guide: 'Focus on spouse pillar or elemental balance for romantic relationship.',
+        dark_code: { name: '투사된 기대', desc: '내 결핍을 상대에게 요구함' },
+        neural_code: { name: '독립적 인지', desc: '사랑의 주체가 나 자신임을 깨달음' },
+        meta_code: { name: '온전한 결합', desc: '두 완전한 존재의 조화로운 만남' }
+    },
+    {
+        id: 'awk_110',
+        number: 110,
+        category: '재회',
+        title: '미련의 그림자',
+        subtitle: '과거를 놓지 못하는 진짜 이유',
+        icon: '⏳',
+        core_question: '당신이 정말 그리워하는 것은 그 사람입니까, 아니면 사랑받던 ‘그 시절의 나’입니까?',
+        stage1_q: '이별 후에도 그 사람을 계속해서 떠올리게 만드는 가장 큰 미련은 무엇인가요?',
+        stage2_q: '그 사람을 다시 만나면, 정말 지금의 모든 불안이 사라질 것이라 확신하나요?',
+        stage3_q: '지나간 인연을 아름답게 떠나보내는 관찰자가 되어, 지금의 나에게 어떤 위로를 건네시겠습니까?',
+        reflection_prompts: ['이별을 인정하기가 억울합니다.', '그때의 행복했던 내가 그립습니다.', '이제는 나를 위해 놓아주어야겠습니다.'],
+        saju_guide: 'Analyze the clash or empty branch in the relationship timeframe.',
+        dark_code: { name: '집착의 사슬', desc: '끝난 인연을 강박적으로 붙잡음' },
+        neural_code: { name: '애도와 승복', desc: '상실을 인정하고 슬픔을 통과함' },
+        meta_code: { name: '새로운 공간', desc: '과거를 비우고 새 인연을 맞이함' }
+    },
+    {
+        id: 'awk_111',
+        number: 111,
+        category: '금전',
+        title: '풍요의 저항',
+        subtitle: '돈을 대하는 나의 무의식',
+        icon: '💰',
+        core_question: '당신은 부자가 되기를 원하면서도, 사실 돈을 두려워하거나 부정하게 여기지는 않습니까?',
+        stage1_q: '금전적인 문제가 당신의 삶에서 가장 숨막히게 다가올 때는 언제인가요?',
+        stage2_q: '돈에 대해 당신이 어릴 적부터 주입받은 가장 부정적인 믿음은 무엇입니까?',
+        stage3_q: '돈을 나를 해치는 짐이 아니라, 나를 돕는 자유의 도구로 바라본다면 내일의 선택은 어떻게 바뀔까요?',
+        reflection_prompts: ['돈이 없어서 늘 불안합니다.', '돈은 나쁜 것이라는 은연중의 믿음이 있습니다.', '나는 풍요를 누릴 자격이 있습니다.'],
+        saju_guide: 'Examine Wealth star (재성) dynamics.',
+        dark_code: { name: '결핍의 두려움', desc: '돈을 잃거나 부족할까 늘 불안해함' },
+        neural_code: { name: '풍요의 연결', desc: '돈은 에너지의 흐름임을 인지함' },
+        meta_code: { name: '담대한 흐름', desc: '필요한 만큼의 부를 자연스럽게 창출함' }
+    },
+    {
+        id: 'awk_112',
+        number: 112,
+        category: '직업',
+        title: '소명의 발견',
+        subtitle: '생계와 이상 사이',
+        icon: '🎯',
+        core_question: '지금 당신이 하는 일은 세상의 요구입니까, 당신 영혼의 요구입니까?',
+        stage1_q: '지금 일(직장/직업)에서 당신을 가장 무기력하게 만드는 요소는 무엇인가요?',
+        stage2_q: '그 무기력함의 밑바닥에는 인정받고 싶은 욕구와 실패에 대한 두려움 중 어느 것이 더 큽니까?',
+        stage3_q: '타인의 시선을 완전히 끄고 당신의 재능만 바라볼 때, 이 직업적 위기를 어떻게 넘어서시겠습니까?',
+        reflection_prompts: ['남들 보기에 그럴듯한 일을 찾습니다.', '내가 진짜 좋아하는 걸 모르겠습니다.', '작더라도 의미 있는 일을 시작하겠습니다.'],
+        saju_guide: 'Look at Official/Career star (관성) and Output star (식상).',
+        dark_code: { name: '타인의 잣대', desc: '사회적 기준에 억지로 맞추며 방황함' },
+        neural_code: { name: '내적 가치', desc: '내 영혼이 기뻐하는 가치를 찾음' },
+        meta_code: { name: '천직의 수용', desc: '나의 일이 곧 세상에 기여하는 길' }
+    },
+    {
+        id: 'awk_113',
+        number: 113,
+        category: '명예',
+        title: '에고의 감옥',
+        subtitle: '인정 욕구의 민낯',
+        icon: '👑',
+        core_question: '타인에게 잘 보이기 위해 버린 진짜 당신의 모습은 몇 개나 됩니까?',
+        stage1_q: '누군가에게 무시당하거나 인정받지 못했을 때 솟구치는 감정의 정체는 무엇인가요?',
+        stage2_q: '그 분노나 수치심은 결국 \'나는 가치 있는 사람\'이라는 확인을 밖에서 구하기 때문 아닐까요?',
+        stage3_q: '타인의 박수 없이도 완벽하게 빛나는 나 자신을 마주한다면, 어떤 칭찬을 건네겠습니까?',
+        reflection_prompts: ['무시당하는 것이 가장 두렵습니다.', '나를 부풀려 포장하곤 합니다.', '타인의 평가는 바람일 뿐입니다.'],
+        saju_guide: 'Check overactive output or extreme need for validation.',
+        dark_code: { name: '허세와 위축', desc: '외부 시선에 따라 자존감이 요동침' },
+        neural_code: { name: '내적 인정', desc: '존재 자체의 가치를 스스로 승인함' },
+        meta_code: { name: '진정한 위엄', desc: '누가 보지 않아도 흐트러짐 없는 당당함' }
+    },
+    {
+        id: 'awk_114',
+        number: 114,
+        category: '상실',
+        title: '상실의 애도',
+        subtitle: '사별과 이별의 수용',
+        icon: '🍂',
+        core_question: '떠난 이가 진정 바라는 것은 당신의 영원한 슬픔입니까, 아니면 남은 삶의 빛나는 회복입니까?',
+        stage1_q: '소중한 속성을 잃고 난 뒤, 당신의 일상에서 가장 텅 비어버린 시간은 언제인가요?',
+        stage2_q: '그 빈자리를 채울 수 없다는 절망감 속에, 스스로를 벌주고 있는 자책감은 없습니까?',
+        stage3_q: '이제 그 슬픔을 아름다운 기억의 보석으로 바꾸어, 오늘을 살아가는 당신에게 어떤 용기를 주시겠습니까?',
+        reflection_prompts: ['나만 살아남아(남겨져서) 미안합니다.', '그리움에 일상이 멈춰버렸습니다.', '그의 몫까지 더 온전히 살아가겠습니다.'],
+        saju_guide: 'Acknowledge the deep void. Healing process requires immense energetic shift.',
+        dark_code: { name: '지독한 그리움', desc: '상실의 고통에 스스로를 가둠' },
+        neural_code: { name: '수용과 감사', desc: '함께했던 시간에 깊이 감사함' },
+        meta_code: { name: '생명의 순환', desc: '죽음과 상실도 삶의 장엄한 일부로 받아들임' }
+    }
+];
+
 // Export combined array with all 108 protocols
-// [Update] Complete integration of all categories
+// [Update] Complete integration of all categories including practical matters
 export const AWAKENING_108: AwakeningProtocol[] = [
     ...SELF_AWARENESS,
     ...SHADOW_INTEGRATION,
     ...RELATIONSHIP_DYNAMICS,
     ...LIFE_PURPOSE,
-    ...TRANSCENDENCE
+    ...TRANSCENDENCE,
+    ...PRACTICAL_MATTERS
 ];
 
 // Helper functions

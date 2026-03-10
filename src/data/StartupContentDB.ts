@@ -311,20 +311,20 @@ export const STARTUP_MODES: Record<string, StartupMode> = {
     'ms_startup_dna': {
         title: "🧠 CEO DNA (리더십 코드)",
         subtitle: "나는 어떤 유형의 창업가인가?",
-        core_concept: "모든 창업가가 스티브 잡스일 필요는 없습니다. 당신이 **'천재형(식상)'**인지, **'관리형(관성)'**인지, 아니면 **'협상가형(재성)'**인지 아는 것이 무실패의 첫걸음입니다.",
-        saju_analysis_guide: "Analyze the 'Ten Gods' (Sipsung) of the Day Master and Month Branch. If 'Sik-Sang' is strong -> Creative Founder. If 'Gwan-Seong' is strong -> Managing CEO. If 'Jae-Seong' is strong -> Commercial Dealer. If 'In-Seong' is strong -> Intellectual/Brand Founder."
+        core_concept: "모든 창업가가 스티브 잡스일 필요는 없습니다. 당신이 **'창조형(Creative)'**인지, **'시스템형(Regulation)'**인지, 아니면 **'자산가형(Asset)'**인지 아는 것이 무실패의 첫걸음입니다.",
+        saju_analysis_guide: "Analyze the Modal Profiles of the Day Master and Social Interface. If 'Creative Profile' is strong -> Creative Founder. If 'Regulation Profile' is strong -> Managing CEO. If 'Asset Profile' is strong -> Commercial Dealer. If 'Intellectual Profile' is strong -> Brand/Strategy Founder."
     },
     'ms_startup_wealth': {
         title: "🔥 머니 마그넷 (부의 필살기)",
-        subtitle: "내 사주는 어떻게 돈을 버는가?",
-        core_concept: "돈을 버는 방식은 사주마다 다릅니다. 누군가는 **'몸(비겁)'**으로 벌고, 누군가는 **'시스템(재성)'**으로, 누군가는 **'문서(인성)'**로 봅니다. 당신의 **'부의 무기'**를 확인하세요.",
-        saju_analysis_guide: "Analyze the 'Yongsin' (Useful God) and 'Wunsung' of Wealth element. If Wealth is weak but Resource (In-Seong) is strong -> Sell IP/Content (Not physical goods). If Self (Bi-Geop) is strong -> Community/Fandom business."
+        subtitle: "내 설계도는 어떻게 돈을 버는가?",
+        core_concept: "돈을 버는 방식은 설계도마다 다릅니다. 누군가는 **'확장(Expansion)'**으로 벌고, 누군가는 **'창조(Creation)'**로, 누군가는 **'시스템(Regulation)'**으로 봅니다. 당신의 **'부의 무기'**를 확인하세요.",
+        saju_analysis_guide: "Analyze the 'Optimization Key' and 'Energy Lifecycle' of Wealth element. If Asset Profile is weak but Intellectual Profile is strong -> Sell IP/Content. If Expansion Profile is strong -> Community/Fandom business."
     },
     'ms_startup_timing': {
         title: "🚀 퀀텀 스케일 (확장 타이밍)",
         subtitle: "언제 엑셀을 밟아야 하는가?",
-        core_concept: "사업은 속도가 아니라 **'타이밍'**입니다. 지금이 **'뿌리 내릴 때(지살)'**인지, **'꽃 피울 때(장성살)'**인지, **'판을 바꿀 때(역마살)'**인지 정확한 시기를 알려드립니다.",
-        saju_analysis_guide: "Analyze '12 Sinsal' (Divine Stars) of the current Year vs. Day Branch. Jisal = Start/Plan. Jangseong = Expand/Max Scale. Yeokma = Pivot/Move market."
+        core_concept: "사업은 속도가 아니라 **'타이밍'**입니다. 지금이 **'시스템 빌딩기'**인지, **'최고 확장기'**인지, **'시장 개척기'**인지 정확한 시기를 알려드립니다.",
+        saju_analysis_guide: "Analyze 'Neural Codes' of the current Year vs. Core Identity. Initiation = Start/Plan. Peak = Expand/Max Scale. Movement = Pivot/Move market."
     }
 };
 

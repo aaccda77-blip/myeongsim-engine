@@ -1,0 +1,36 @@
+### 🚀 안티그래비티용 프롬프트 V5 (제미나이 기반 독립 챗봇 UI)
+
+```text
+[역할]
+당신은 Next.js(App Router), Tailwind CSS, 그리고 Vercel AI SDK(`useChat`)를 활용하여 매끄러운 대화형 인터페이스를 설계하는 프론트엔드 수석 개발자입니다.
+
+[목표]
+'명심코칭'의 새로운 백엔드 API(`/api/myeongsim-chat`)와 통신하는 독립된 챗봇 프론트엔드 페이지(`/myeongsim-chat` 라우트)와 채팅 UI 컴포넌트를 개발해 주세요. 기존 로직과 얽히지 않는 완전히 새로운 모듈식 구현을 원합니다.
+
+[화면 구성 및 요구사항]
+1. 라우트 및 기본 구조: 
+   - `app/myeongsim-chat/page.tsx` 라우트 컴포넌트를 생성하고, 이 안에서 `MyeongsimChatUI` 컴포넌트를 렌더링합니다.
+   
+2. Vercel AI SDK 연동 (`useChat` Hook):
+   - `@ai-sdk/react` (또는 `ai/react`) 패키지의 `useChat` 훅을 사용하세요.
+   - `api` 속성을 앞서 만든 `'/api/myeongsim-chat'`으로 연결하세요.
+   - (중요) `body` 파라미터에 현재 로그인한 사용자의 `userId`를 포함하여 전송하세요(예: 사용자 ID가 없을 경우 임의의 'guest-id'를 우선 전송하도록 Fallback 구성).
+   
+3. 채팅 UI 디자인 (명심코칭 스타일):
+   - 전체 배경: 다크 테마 배경(`bg-[#0d131a]`)
+   - 헤더: "명심코칭 AI" 타이틀과 가이드 텍스트("나만의 기질과 현재 상태를 반영한 맞춤 코칭을 시작합니다.")
+   - 메시지 영역:
+     * 사용자 말풍선: 우측 정렬, Primary Olive 색상(`bg-primary-olive text-white`)
+     * AI 말풍선: 좌측 정렬, 반투명 어두운 배경(`bg-white/10 text-gray-200`), 마크다운(Markdown) 렌더링 지원 시 텍스트 스타일링.
+   - 입력 폼 영역:
+     * 화면 하단 고정(Fixed/Sticky)
+     * 메시지 입력용 `textarea` (엔터 시 전송, Shift+엔터 시 줄바꿈 처리)
+     * 전송 버튼: 로딩 중일 때(isLoading) 스피너 또는 비활성화 처리.
+
+4. 자동 스크롤(Auto-scroll):
+   - 새 메시지가 오거나 스트리밍(스트리밍 중)될 때마다 채팅창이 항상 최하단으로 부드럽게 스크롤되도록 `useRef`를 활용해 주세요.
+
+[출력물]
+- 복사해서 바로 사용할 수 있는 완전한 `app/myeongsim-chat/page.tsx` 및 `components/chat/MyeongsimChatUI.tsx` 코드. (하나의 파일로 통합해도 좋고 분리해도 좋습니다.)
+- 에러 없이 바로 `npm run dev`에서 구동되어야 합니다.
+```

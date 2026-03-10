@@ -208,7 +208,7 @@ const BioEnergyBlueprintModal: React.FC<BioEnergyBlueprintModalProps> = ({ isOpe
                                             "이것은 '치료약'이 아니라 '운영체제 업그레이드'입니다."
                                         </p>
                                         <p className="text-[12px] leading-relaxed text-gray-600 text-justify">
-                                            본 가이드는 귀하의 타고난 에너지 성향(사주)을 분석하여, 부족한 기운을 생활 습관(영양, 타이밍)으로 보완하기 위한 <strong>건강 증진(Health Promotion) 프로그램</strong>입니다.
+                                            본 가이드는 귀하의 타고난 에너지 성향을 분석하여, 부족한 기운을 생활 습관(영양, 타이밍)으로 보완하기 위한 <strong>건강 증진(Health Promotion) 프로그램</strong>입니다.
                                         </p>
                                         <ul className="mt-3 text-[11px] text-gray-500 list-disc pl-4 space-y-1">
                                             <li>추천 영양 성분은 의약품이 아니며, 질병의 예방 및 치료를 위한 의학적 효능을 담보하지 않습니다.</li>

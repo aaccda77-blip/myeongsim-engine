@@ -11,7 +11,7 @@ interface StageMapProps {
 }
 
 const STAGES = [
-    { id: 1, title: '발견 (Discovery)', desc: '사주와 심리(CBT)로 나를 알아차리기' },
+    { id: 1, title: '발견 (Discovery)', desc: '기질 에너지와 심리(CBT)로 나를 알아차리기' },
     { id: 2, title: '융합 (Fusion)', desc: '타고난 기질과 성격의 통합' },
     { id: 3, title: '치유 (Healing)', desc: '감정 파도 타기 (DBT/마음챙김)' },
     { id: 4, title: '행동 (Action)', desc: '가치 있는 삶을 위한 약속 (ACT)' },

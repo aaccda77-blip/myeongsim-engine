@@ -135,7 +135,7 @@ export default function SajuSummaryModal({ isOpen, onClose, userProfile, onStart
                 {/* Header */}
                 <div className="flex justify-between items-center p-4 border-b border-white/10 bg-white/5">
                     <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                        📊 나의 사주 핵심 요약
+                        📊 나의 코어 에너지 요약
                     </h2>
                     <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-gray-400">
                         <X size={20} />
@@ -186,9 +186,9 @@ export default function SajuSummaryModal({ isOpen, onClose, userProfile, onStart
                     <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
                         <h3 className="text-sm font-bold text-purple-300 mb-2">💎 당신의 타고난 기질 (Blueprint)</h3>
                         <p className="text-sm text-gray-300 leading-relaxed">
-                            당신은 <span className="text-white font-bold">'{ganji.day.stem}'</span> 일간으로 태어났습니다.
+                            당신은 <span className="text-white font-bold">'{ganji.day.stem}'</span> 코어 타입으로 분석되었습니다.
                             {dayMasterDesc}입니다.
-                            {ganji.month.branch && ` 월지(${ganji.month.branch})의 영향으로 사회적 환경과의 조화도 중요하게 작용합니다.`}
+                            {ganji.month.branch && ` 환경 코드(${ganji.month.branch})의 영향으로 사회적 환경과의 조화도 중요하게 작용합니다.`}
                         </p>
                     </div>
 

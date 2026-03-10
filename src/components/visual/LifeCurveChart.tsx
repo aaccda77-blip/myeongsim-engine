@@ -71,9 +71,9 @@ export default function LifeCurveChart({ onSelectAge, birthDate }: Props) {
                 <div className="flex justify-between items-center mb-4">
                     <div>
                         <h3 className="text-white font-bold text-base flex items-center gap-2">
-                            📈 운명의 파동
+                            📈 라이프 웨이브
                         </h3>
-                        <p className="text-gray-500 text-xs">터치하여 시기별 운세 확인</p>
+                        <p className="text-gray-500 text-xs">터치하여 시기별 에너지 흐름 확인</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="bg-yellow-500/20 px-2 py-1 rounded-full text-[10px] text-yellow-400 border border-yellow-500/30 flex items-center gap-1">
@@ -178,7 +178,7 @@ export default function LifeCurveChart({ onSelectAge, birthDate }: Props) {
                 <div className="flex justify-center gap-4 mt-3 text-[10px] text-gray-500">
                     <span className="flex items-center gap-1">
                         <span className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded" />
-                        운세 흐름
+                        라이프 웨이브
                     </span>
                     <span className="flex items-center gap-1">
                         <span className="w-3 h-3 bg-yellow-500/30 border border-yellow-500/50 rounded" />

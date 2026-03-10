@@ -72,7 +72,7 @@ export default function VisualSajuDashboard({ onClose, onChatIntent, birthDate, 
                                 onClick={() => {
                                     onChatIntent(
                                         'DAEWOON_QUESTION',
-                                        `제 ${selectedAge.age}세 때 운세 그래프 점수가 ${Math.round(selectedAge.score)}점이던데, 이 시기에 구체적으로 어떤 일이 일어날까요? 그리고 어떻게 대비해야 할까요?`
+                                        `제 ${selectedAge.age}세 때 라이프 웨이브 그래프 점수가 ${Math.round(selectedAge.score)}점이던데, 이 시기에 구체적으로 어떤 일이 일어날까요? 그리고 어떻게 대비해야 할까요?`
                                     );
                                 }}
                                 className="w-full mt-3 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg text-white font-bold flex items-center justify-center gap-2"

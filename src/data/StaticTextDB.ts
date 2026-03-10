@@ -12,8 +12,8 @@
 
 import type { IljuData, TenGodData, MyungsimCode } from '@/types/ReportTypes';
 
-// ============== 일주(日柱) 데이터베이스 ==============
-// 60갑자 중 대표적인 일주들 (추후 확장)
+// ============== Core Identity(핵심 설계도) 데이터베이스 ==============
+// 60가지 핵심 자아 아키텍처 (추후 확장)
 
 export const SAJU_ILJU: Record<string, IljuData> = {
 
@@ -27,10 +27,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         color_code: "#2E86C1",
         image_prompt: "A giant pine tree standing firmly on a frozen lake under the moonlight",
         keywords: ["#리더십", "#창의성", "#시작의_에너지", "#큰_그림"],
-        element: "목",
-        yin_yang: "양",
+        element: "Growth Algo",
+        yin_yang: "Active",
         image_metaphor: "한겨울 밤하늘 아래 우뚝 선 큰 나무, 그 아래 영리한 쥐 한 마리가 씨앗을 품고 있습니다.",
-        main_text: `갑자(甲子)일주는 60갑자의 첫 번째로, '시작과 창조의 에너지'를 상징합니다. 
+        main_text: `갑자(甲子) 코드는 시스템 아키텍처의 첫 번째로, '시작과 창조의 에너지'를 상징합니다. 
         
 큰 나무(甲)가 생명의 근원인 물(子) 위에 뿌리를 내리고 있는 형상으로, 타고난 성장 본능과 리더십을 가지고 있습니다. 마치 씨앗이 땅을 뚫고 하늘을 향해 솟아오르듯, 어떤 환경에서도 성장하려는 강인한 의지가 있습니다.
 
@@ -57,18 +57,18 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         neural_code: {
             name: "착근 (Rooting)",
             desc: "차가운 이성이 아닌 따뜻한 감성으로 세상과 연결되어 뿌리 내리는 힘",
-            action: "혼자 모든 짐을 지려 하지 말고, 당신의 약한 모습을 믿을 수 있는 사람에게 털어놓으세요. 그리고 햇볕을 쬐며 걷는 산책을 하세요. 당신에게 필요한 건 차가운 지성이 아니라 따뜻한 온기(Fire)입니다."
+            action: "혼자 모든 짐을 지려 하지 말고, 당신의 약한 모습을 믿을 수 있는 사람에게 털어놓으세요. 그리고 햇볕을 쬐며 걷는 산책을 하세요. 당신에게 필요한 건 차가운 지성이 아니라 따뜻한 온기(Energy Output)입니다."
         },
         meta_code: {
             name: "시원 (Origin)",
-            desc: "60갑자의 첫 번째 리더로서, 새로운 역사를 시작하는 창조적 에너지. 당신은 얼음을 깨고 생명을 틔우는 봄의 전령사입니다."
+            desc: "시스템 아키텍처의 첫 번째 리더로서, 새로운 역사를 시작하는 창조적 에너지. 당신은 얼음을 깨고 생명을 틔우는 봄의 전령사입니다."
         }
     },
 
     // 을축(乙丑) 일주 - NEW BATCH_1
     EUL_CHUK: {
         id: "ilju_eulchuk",
-        title: "🌱 동토를 뚫고 나온 끈기의 새싹, 을축(乙丑)일주",
+        title: "🌱 동토를 뚫고 나온 끈기의 새싹, 을축(乙丑) 코드",
         visual_token: "🪨",
         color_code: "#5D6D7E",
         image_prompt: "Small green sprouts breaking through frozen rocky soil",
@@ -91,7 +91,7 @@ export const SAJU_ILJU: Record<string, IljuData> = {
     // 병인(丙寅) 일주 - UPDATED WITH NEW FORMAT
     BIN_YIN: {
         id: "ilju_binyin",
-        title: "☀️ 숲 위로 떠오르는 태양, 병인(丙寅)일주",
+        title: "☀️ 숲 위로 떠오르는 태양, 병인(丙寅) 코드",
         visual_token: "🌅",
         color_code: "#FF5733",
         image_prompt: "A bright sun rising over a dense green forest",
@@ -114,7 +114,7 @@ export const SAJU_ILJU: Record<string, IljuData> = {
     // 정묘(丁卯) 일주 - NEW BATCH_1
     JEONG_MYO: {
         id: "ilju_jeongmyo",
-        title: "🕯️ 밤을 밝히는 신비로운 촛불, 정묘(丁卯)일주",
+        title: "🕯️ 밤을 밝히는 신비로운 촛불, 정묘(丁卯) 코드",
         visual_token: "🏮",
         color_code: "#C0392B",
         image_prompt: "A candle lantern glowing warmly in a mysterious garden",
@@ -137,7 +137,7 @@ export const SAJU_ILJU: Record<string, IljuData> = {
     // 무진(戊辰) 일주 - NEW BATCH_1
     MU_JIN: {
         id: "ilju_mujin",
-        title: "⛰️ 거대한 태산과 숨겨진 용, 무진(戊辰)일주",
+        title: "⛰️ 거대한 태산과 숨겨진 용, 무진(戊辰) 코드",
         visual_token: "🐲",
         color_code: "#795548",
         image_prompt: "A massive mountain range with a dragon sleeping underneath",
@@ -160,7 +160,7 @@ export const SAJU_ILJU: Record<string, IljuData> = {
     // 기사(己巳) 일주 - NEW BATCH_1
     GI_SA: {
         id: "ilju_gisa",
-        title: "🌋 용암을 품은 비옥한 대지, 기사(己巳)일주",
+        title: "🌋 용암을 품은 비옥한 대지, 기사(己사) 코드",
         visual_token: "🌋",
         color_code: "#D35400",
         image_prompt: "Fertile field with cracks revealing glowing lava underneath",
@@ -183,7 +183,7 @@ export const SAJU_ILJU: Record<string, IljuData> = {
     // 경오(庚午) 일주 - NEW BATCH_1
     GYEONG_O: {
         id: "ilju_gyeongo",
-        title: "🦄 불 속에서 단련된 백마, 경오(庚午)일주",
+        title: "🦄 불 속에서 단련된 백마, 경오(庚午) 코드",
         visual_token: "⚔️",
         color_code: "#F4F6F7",
         image_prompt: "A white horse running through flames, shining like polished steel",
@@ -206,7 +206,7 @@ export const SAJU_ILJU: Record<string, IljuData> = {
     // 신미(辛未) 일주 - NEW BATCH_1
     SIN_MI: {
         id: "ilju_sinmi",
-        title: "🌵 메마른 땅에 떨어진 바늘, 신미(辛未)일주",
+        title: "🌵 메마른 땅에 떨어진 바늘, 신미(辛未) 코드",
         visual_token: "📌",
         color_code: "#E59866",
         image_prompt: "A sharp silver needle lying on dry desert sand",
@@ -229,7 +229,7 @@ export const SAJU_ILJU: Record<string, IljuData> = {
     // 임신(壬申) 일주 - NEW BATCH_1
     IM_SIN: {
         id: "ilju_imsin",
-        title: "🌊 바위에서 솟아나는 거대한 물줄기, 임신(壬申)일주",
+        title: "🌊 바위에서 솟아나는 거대한 물줄기, 임신(壬申) 코드",
         visual_token: "🌊",
         color_code: "#21618C",
         image_prompt: "A massive waterfall cascading down from a high rocky cliff",
@@ -252,7 +252,7 @@ export const SAJU_ILJU: Record<string, IljuData> = {
     // 계유(癸酉) 일주 - NEW BATCH_1
     GYE_YU: {
         id: "ilju_gyeyu",
-        title: "💎 맑은 물에 씻긴 보석, 계유(癸酉)일주",
+        title: "💎 맑은 물에 씻긴 보석, 계유(癸酉) 코드",
         visual_token: "💧",
         color_code: "#AED6F1",
         image_prompt: "Crystal clear water dripping onto a shiny gemstone",
@@ -807,10 +807,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 정유(丁酉) 일주 - NEW BATCH_4
+    // 정유(丁酉) 코드 - NEW BATCH_4
     JEONG_YU: {
         id: "ilju_jeongyu",
-        title: "💎 별빛 아래 빛나는 보석, 정유(丁酉)일주",
+        title: "💎 별빛 아래 빛나는 보석, 정유(丁酉) 코드",
         visual_token: "💍",
         color_code: "#E6B0AA",
         image_prompt: "A perfectly cut ruby glowing under the starlight",
@@ -830,10 +830,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 무술(戊戌) 일주 - NEW BATCH_4
+    // 무술(戊戌) 코드 - NEW BATCH_4
     MU_SUL: {
         id: "ilju_musul",
-        title: "⛰️ 첩첩산중의 거대한 바위산, 무술(戊戌)일주",
+        title: "⛰️ 첩첩산중의 거대한 바위산, 무술(戊戌) 코드",
         visual_token: "🏔️",
         color_code: "#5D4037",
         image_prompt: "Massive rocky mountains stretching endlessly under a gray sky",
@@ -853,10 +853,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 기해(己亥) 일주 - NEW BATCH_4
+    // 기해(己亥) 코드 - NEW BATCH_4
     GI_HAE: {
         id: "ilju_gihae",
-        title: "🌊 바다 밑의 부드러운 흙, 기해(己亥)일주",
+        title: "🌊 바다 밑의 부드러운 흙, 기해(己亥) 코드",
         visual_token: "🏖️",
         color_code: "#2E86C1",
         image_prompt: "Soft sand under clear shallow ocean water",
@@ -876,10 +876,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 경자(庚子) 일주 - NEW BATCH_4
+    // 경자(庚子) 코드 - NEW BATCH_4
     GYEONG_JA: {
         id: "ilju_gyeongja",
-        title: "🗡️ 차가운 물에 씻긴 칼, 경자(庚子)일주",
+        title: "🗡️ 차가운 물에 씻긴 칼, 경자(庚子) 코드",
         visual_token: "❄️",
         color_code: "#D6EAF8",
         image_prompt: "A sharp steel sword being washed in an icy waterfall",
@@ -899,10 +899,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 신축(辛丑) 일주 - NEW BATCH_4
+    // 신축(辛丑) 코드 - NEW BATCH_4
     SIN_CHUK: {
         id: "ilju_sinchuk",
-        title: "🌾 얼어붙은 땅속의 씨앗, 신축(辛丑)일주",
+        title: "🌾 얼어붙은 땅속의 씨앗, 신축(辛丑) 코드",
         visual_token: "🌱",
         color_code: "#85929E",
         image_prompt: "A shiny seed buried deep inside frozen soil waiting for spring",
@@ -922,10 +922,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 임인(壬寅) 일주 - NEW BATCH_4
+    // 임인(壬寅) 코드 - NEW BATCH_4
     IM_IN: {
         id: "ilju_imin",
-        title: "🐯 숲을 가로지르는 큰 강, 임인(壬寅)일주",
+        title: "🐯 숲을 가로지르는 큰 강, 임인(壬寅) 코드",
         visual_token: "🏞️",
         color_code: "#1ABC9C",
         image_prompt: "A wide blue river flowing through a vibrant green jungle",
@@ -945,10 +945,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 계묘(癸卯) 일주 - NEW BATCH_4
+    // 계묘(癸卯) 코드 - NEW BATCH_4
     GYE_MYO: {
         id: "ilju_gyemyo",
-        title: "🌿 풀잎에 맺힌 아침 이슬, 계묘(癸卯)일주",
+        title: "🌿 풀잎에 맺힌 아침 이슬, 계묘(癸卯) 코드",
         visual_token: "💧",
         color_code: "#AED6F1",
         image_prompt: "Morning dew drops sparkling on fresh green grass leaves",
@@ -970,10 +970,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
 
     // ===== MISSING ILJUS (누락 일주 보완) =====
 
-    // 을묘(乙卯) 일주 - MISSING
+    // 을묘(乙卯) 코드 - MISSING
     EUL_MYO: {
         id: "ilju_eulmyo",
-        title: "🌿 들판을 뒤덮는 푸른 넝쿨, 을묘(乙卯)일주",
+        title: "🌿 들판을 뒤덮는 푸른 넝쿨, 을묘(乙卯) 코드",
         visual_token: "🌱",
         color_code: "#2ECC71",
         image_prompt: "Green vines rapidly covering a wall with vibrant life",
@@ -993,10 +993,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 병진(丙辰) 일주 - MISSING
+    // 병진(丙辰) 코드 - MISSING
     BYEONG_JIN: {
         id: "ilju_byeongjin",
-        title: "🌥️ 구름 사이로 비치는 햇살, 병진(丙辰)일주",
+        title: "🌥️ 구름 사이로 비치는 햇살, 병진(丙辰) 코드",
         visual_token: "🌤️",
         color_code: "#F39C12",
         image_prompt: "Sunlight beaming through majestic clouds over a damp valley",
@@ -1016,10 +1016,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 정사(丁巳) 일주 - MISSING
+    // 정사(丁巳) 코드 - MISSING
     JEONG_SA: {
         id: "ilju_jeongsa",
-        title: "🔥 활활 타오르는 횃불, 정사(丁巳)일주",
+        title: "🔥 활활 타오르는 횃불, 정사(丁巳) 코드",
         visual_token: "🧨",
         color_code: "#E74C3C",
         image_prompt: "A blazing torch illuminating a dark cave with intense light",
@@ -1039,10 +1039,10 @@ export const SAJU_ILJU: Record<string, IljuData> = {
         }
     },
 
-    // 무오(戊午) 일주 - MISSING
+    // 무오(戊午) 코드 - MISSING
     MU_O: {
         id: "ilju_muo",
-        title: "🌋 마그마가 끓는 화산, 무오(戊午)일주",
+        title: "🌋 마그마가 끓는 화산, 무오(戊午) 코드",
         visual_token: "🌋",
         color_code: "#C0392B",
         image_prompt: "A dormant volcano with red lava glowing in the crater",
@@ -1470,18 +1470,18 @@ export const SAJU_ILJU: Record<string, IljuData> = {
 };
 
 
-// ============== 십성(十神) 데이터베이스 - ENHANCED VERSION ==============
+// ============== Identity Profile (내면 심리) 데이터베이스 ==============
 
 export const TEN_GODS: Record<string, TenGodData> = {
 
     BIGYEON: {
         id: "ten_gods_bigyeon",
-        name: "비견",
-        hanja: "比肩",
-        title: "🤝 나를 지키는 든든한 아군, 비견(比肩)",
+        name: "Identity Profile",
+        hanja: "Self",
+        title: "🤝 나를 지키는 든든한 아군, Identity Profile",
         keywords: ["#주체성", "#독립심", "#경쟁", "#동료"],
         code_type: "Identity Profile",
-        main_text: `당신의 사주에서 강하게 작용하는 '비견(比肩)'은 나와 같은 존재, 어깨를 나란히 하는 동료의 에너지입니다.
+        main_text: `당신의 설계도에서 강하게 작용하는 'Identity Profile'은 나와 같은 존재, 어깨를 나란히 하는 동료의 에너지입니다.
 
 비견은 강한 자존심과 독립심을 상징합니다. 남에게 지기 싫어하고, 홀로 서려는 의지가 강합니다.`,
         positive_traits: ["강한 자존심", "독립심", "경쟁력", "동료애", "끈기"],
@@ -1507,9 +1507,9 @@ export const TEN_GODS: Record<string, TenGodData> = {
 
     GEOPJAE: {
         id: "ten_gods_geopjae",
-        name: "겁재",
-        hanja: "劫財",
-        title: "🔥 승부사의 심장, 겁재(劫財)",
+        name: "Ambition Profile",
+        hanja: "Drive",
+        title: "🔥 승부사의 심장, Ambition Profile",
         keywords: ["#승부욕", "#야망", "#대담함", "#반전매력"],
         code_type: "Ambition Profile",
         main_text: `당신의 사주에서 강하게 작용하는 '겁재(劫財)'는 재물을 빼앗는다는 뜻으로, 강렬한 승부욕과 야망의 에너지입니다.
@@ -1785,7 +1785,7 @@ export const TEN_GODS: Record<string, TenGodData> = {
     }
 };
 
-// ============== 십이운성(十二運星) 데이터베이스 - MULTIDIMENSIONAL ==============
+// ============== Energy Lifecycle (에너지 주기) 데이터베이스 ==============
 
 export interface TwelveStarData {
     id: string;
@@ -2139,7 +2139,7 @@ export const TWELVE_STARS: Record<string, TwelveStarData> = {
     }
 };
 
-// ============== 명심코드(Gene Keys) 데이터베이스 ==============
+// ============== Mind Code (마음의 암호) 데이터베이스 ==============
 // 64개 코드 중 대표적인 것들 (추후 확장)
 
 export const MYUNGSIM_CODES: Record<string, MyungsimCode> = {
@@ -2147,7 +2147,7 @@ export const MYUNGSIM_CODES: Record<string, MyungsimCode> = {
     CODE_1: {
         id: "code_1",
         number: 1,
-        title: "🌅 운명 코드 1번: 창조의 시작",
+        title: "🌅 Mind Code 1번: 창조의 시작",
         keywords: ["#창조성", "#신선함", "#새로운시작"],
         dark_code: {
             name: "엔트로피",

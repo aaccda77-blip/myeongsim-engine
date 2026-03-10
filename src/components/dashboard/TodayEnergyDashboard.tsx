@@ -287,7 +287,7 @@ export default function TodayEnergyDashboard({
                             </motion.button>
                             <div className="text-right mt-1">
                                 <p className="text-sm font-bold text-gray-200">{todayGan}{todayZhi}일</p>
-                                <p className="text-[0.65rem] text-gray-500 font-medium tracking-wide mt-0.5">(오늘의 운)</p>
+                                <p className="text-[0.65rem] text-gray-500 font-medium tracking-wide mt-0.5">(오늘의 컨디션)</p>
                             </div>
                         </div>
                     </div>

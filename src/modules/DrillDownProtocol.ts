@@ -74,12 +74,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "나의 영혼과 사회적 그릇",
                 intent: "NAV_CORE_IDENTITY",
                 children: [
-                    { id: "mc_1", label: "1. 내 영혼의 씨앗 (일간/일주)", desc: "나의 본질과 기질 분석", intent: "saju_core_summary" },
-                    { id: "mc_2", label: "2. 일간 심층 분석", desc: "나의 잠재력 깊이 보기", intent: "day_master_deep" },
+                    { id: "mc_1", label: "1. 내 영혼의 설계도 (Core Identity)", desc: "나의 본질과 기질 분석", intent: "saju_core_summary" },
+                    { id: "mc_2", label: "2. 핵심 자아 심층 분석", desc: "나의 잠재력 깊이 보기", intent: "day_master_deep" },
                     { id: "hq_today", label: "💬 오늘의 Q&A", desc: "명심 AI 코치가 매일 함께하는 건강 상담", intent: "daily_health_qa" },
-                    { id: "mc_3", label: "3. 사회적 가면 (십성/격국)", desc: "나의 사회적 역할과 그릇 크기", intent: "deep_gyeokguk_weapon" },
-                    { id: "mc_6", label: "6. 숨겨진 욕망 (지장간/심리)", desc: "무의식과 내면의 심리", intent: "hour_pillar_desire" },
-                    { id: "mc_4", label: "4. 인생 배터리 (12운성)", desc: "나의 에너지 총량과 흐름", intent: "deep_12_wunsung_cycle" }
+                    { id: "mc_3", label: "3. 소셜 인터페이스 (Social Role)", desc: "나의 사회적 역할과 그릇 크기", intent: "deep_gyeokguk_weapon" },
+                    { id: "mc_6", label: "6. 무의식적 엔진 (Unconscious)", desc: "무의식과 내면의 심리", intent: "hour_pillar_desire" },
+                    { id: "mc_4", label: "4. 에너지 활성화 레벨 (Modality)", desc: "나의 에너지 총량과 흐름", intent: "deep_12_wunsung_cycle" }
                 ]
             },
             {
@@ -122,10 +122,10 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "승부수와 골든타임",
                 intent: "NAV_STRAT_TIMING",
                 children: [
-                    { id: "sl_15", label: "15. 올해의 승부수 (세운/대운)", desc: "1년 및 10년 단위 인생 판세 분석", intent: "saju_daewoon_flow" },
-                    { id: "sl_20", label: "20. 오늘의 미션 (일진/월운)", desc: "매일 아침 받는 구체적 행동 지침", intent: "daily_fortune" },
-                    { id: "sl_26", label: "26. 골든 타임 (바이오 클락)", desc: "하루 중 가장 운이 좋은 시간대", intent: "golden_time_analysis" },
-                    { id: "sl_17", label: "17. 전략 포지션 (12신살)", desc: "올해 내가 취해야 할 태도(공격/수비)", intent: "ms_12sinsal_strategy" }
+                    { id: "sl_15", label: "15. 올해의 주요 바이오 리듬 (Rhythm)", desc: "1년 및 10년 단위 인생 판세 분석", intent: "saju_daewoon_flow" },
+                    { id: "sl_20", label: "20. 오늘의 데일리 프로토콜 (Mission)", desc: "매일 아침 받는 구체적 행동 지침", intent: "daily_fortune" },
+                    { id: "sl_26", label: "26. 골든 타임 (Bio-Clock)", desc: "하루 중 가장 운이 좋은 시간대", intent: "golden_time_analysis" },
+                    { id: "sl_17", label: "17. 전략 포지션 (Action Code)", desc: "올해 내가 취해야 할 태도(공격/수비)", intent: "ms_12sinsal_strategy" }
                 ]
             },
             {
@@ -266,8 +266,8 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "우주적 관점의 운명",
                 intent: "NAV_XLAB_UNIVERSE",
                 children: [
-                    { id: "xl_46", label: "46. 천문 사주 (NASA)", desc: "태어난 날의 실제 우주 지도", intent: "ms_astronomy_saju" },
-                    { id: "xl_55", label: "55. 화성 만세력", desc: "다행성 시대를 위한 화성 운세", intent: "ms_mars_cal" },
+                    { id: "xl_46", label: "46. 코스믹 마인드 맵 (NASA)", desc: "태어난 날의 실제 우주 지도", intent: "ms_astronomy_saju" },
+                    { id: "xl_55", label: "55. 멀티플래닛 멘탈 웰니스", desc: "다행성 시대를 위한 미래 운세", intent: "ms_mars_cal" },
                     { id: "xl_45", label: "45. 멀티버스 시뮬레이션", desc: "다른 선택의 평행 우주 확인", intent: "ms_multiverse_sim" },
                     { id: "xl_57", label: "57. 아카식 레코드", desc: "영혼의 우주 로그 파일 열람", intent: "ms_akashic_record" }
                 ]
@@ -338,8 +338,8 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             },
             {
                 id: "startup_6",
-                label: "🎯 비즈니스 모델 검증",
-                desc: "사주로 보는 BM 적합성",
+                label: "🎯 비즈니스 모델 설계",
+                desc: "마인드 코드 기반 BM 적합성",
                 intent: "ms_startup_bm_validation"
             }
         ]
@@ -500,10 +500,10 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 12. 🔮 사주분석 (SAJU -> Destiny GPS)
+    // 12. 🔮 마인드 코드 분석 (IDENTITY)
     SAJU_ANALYSIS: {
         id: 'SAJU_ANALYSIS',
-        label: "사주분석 (Original)",
+        label: "마인드 코드 분석 (Original)",
         icon: "🔮",
         neuro_trigger: "운명의 설계도 확인",
         style: 'premium_purple',

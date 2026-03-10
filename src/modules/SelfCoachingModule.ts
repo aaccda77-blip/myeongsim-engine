@@ -1,6 +1,6 @@
 import { getQuantumModeContext, QUANTUM_MODES } from '../data/QuantumHackingDB';
 import { getRelationshipContext, RELATIONSHIP_MODES } from '../data/RelationshipContentDB';
-import { calculateWunsung, calculateGongmang, JIJANGGAN_MAP, WUNSUNG_STAGES } from '../utils/sajuLogic';
+import { calculateEnergyLifecycle, calculateExpansionVoid, JIJANGGAN_MAP, ENERGY_LIFECYCLE_STAGES } from '../utils/sajuLogic';
 
 /**
  * SelfCoachingModule.ts - 자각과 자유의지 발현을 위한 자기코칭 엔진
@@ -666,7 +666,7 @@ export class SelfCoachingModule {
         if (intent === 'gongmang_deep_analysis') {
             const dayGan = dayMasterChar;
             const dayBranch = sajuData?.fourPillars?.day?.ji?.char || sajuData?.dayPillar?.branch || '자';
-            const voidBranches = calculateGongmang(dayGan, dayBranch);
+            const voidBranches = calculateExpansionVoid(dayGan, dayBranch);
 
             // Safe Access & Fallbacks
             const yearBranch = sajuData?.fourPillars?.year?.ji?.char || sajuData?.yearPillar?.branch || '';

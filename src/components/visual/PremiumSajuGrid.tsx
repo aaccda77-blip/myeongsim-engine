@@ -3,6 +3,26 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculateSaju, SajuResult } from '@/lib/saju/SajuEngine';
+import dynamic from 'next/dynamic';
+import { SAJU_ILJU } from '@/data/StaticTextDB';
+
+// [MODULE] Self-Coaching Modal (lazy load - no impact on existing chatbot)
+const NeuralCodeCoachingModal = dynamic(() => import('@/components/coaching/NeuralCodeCoachingModal'), { ssr: false });
+
+// [Utility] Find IljuData by Korean pillar name (e.g. "을미")
+function findIljuByName(koreanName: string) {
+    return Object.values(SAJU_ILJU).find(entry => {
+        // 1. Check direct name field (some entries have it)
+        if (entry.name === koreanName) return true;
+        // 2. Extract Korean name from title (e.g. "✨ ..., 신사(辛巳)일주" → "신사")
+        const titleMatch = entry.title?.match(/,\s*([가-힣]{2})\(/);
+        if (titleMatch && titleMatch[1] === koreanName) return true;
+        // 3. Try title without comma format (e.g. "신사(辛巳) 코드")
+        const titleMatch2 = entry.title?.match(/([가-힣]{2})\([^\)]+\)/);
+        if (titleMatch2 && titleMatch2[1] === koreanName) return true;
+        return false;
+    });
+}
 
 // Element Color Mapping with Premium Gradients
 const ELEMENT_STYLES: Record<string, { bg: string; gradient: string; glow: string; label: string; icon: string }> = {
@@ -13,7 +33,7 @@ const ELEMENT_STYLES: Record<string, { bg: string; gradient: string; glow: strin
     '수': { bg: '#3B82F6', gradient: 'from-blue-400 via-indigo-500 to-purple-600', glow: 'shadow-blue-500/40', label: '水', icon: '💧' },
 };
 
-const PILLAR_LABELS = ['시주', '일주', '월주', '연주'];
+const PILLAR_LABELS = ['🚀 지향점', '👤 핵심 자아', '💼 사회적 환경', '🌳 배경 에너지'];
 
 interface PillarCardProps {
     label: string;
@@ -102,6 +122,9 @@ export default function PremiumSajuGrid({
     onEditBirthdate
 }: PremiumSajuGridProps) {
     const [selectedPillar, setSelectedPillar] = useState<number | null>(null);
+    // [MODULE] Neural Code Coaching Modal State
+    const [coachingModalOpen, setCoachingModalOpen] = useState(false);
+    const [coachingData, setCoachingData] = useState<any>(null);
 
     // Calculate Saju using SajuEngine
     const sajuResult: SajuResult | null = useMemo(() => {
@@ -119,9 +142,9 @@ export default function PremiumSajuGrid({
             >
                 <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 backdrop-blur-xl rounded-2xl border border-purple-500/20 p-6 text-center">
                     <div className="text-4xl mb-3">🔮</div>
-                    <h3 className="text-white font-bold text-lg mb-2">사주 원국 분석</h3>
+                    <h3 className="text-white font-bold text-lg mb-2">기질 설계도 분석</h3>
                     <p className="text-gray-400 text-sm mb-4">
-                        생년월일시를 입력하시면<br />당신만의 운명 설계도가 나타납니다
+                        생년월일시를 입력하시면<br />당신만의 기질 설계도가 나타납니다
                     </p>
                     <div className="inline-flex items-center gap-2 bg-purple-500/20 px-4 py-2 rounded-full text-purple-300 text-sm">
                         <span>✏️</span>
@@ -136,11 +159,33 @@ export default function PremiumSajuGrid({
 
     // Prepare pillar data in order: 시주, 일주, 월주, 연주
     const pillarsArray = [
-        { label: '시주', pillar: fourPillars.time },
-        { label: '일주', pillar: fourPillars.day, isCenter: true },
-        { label: '월주', pillar: fourPillars.month },
-        { label: '연주', pillar: fourPillars.year },
+        { label: '🚀 지향점', pillar: fourPillars.time },
+        { label: '👤 핵심 자아', pillar: fourPillars.day, isCenter: true },
+        { label: '💼 사회적 환경', pillar: fourPillars.month },
+        { label: '🌳 배경 에너지', pillar: fourPillars.year },
     ];
+
+    // [MODULE] Open coaching modal for a pillar
+    const handlePillarCoaching = (pillarIndex: number) => {
+        const item = pillarsArray[pillarIndex];
+        const pillarName = `${item.pillar.ganKor}${item.pillar.jiKor}`;
+        const iljuData = findIljuByName(pillarName);
+
+        if (iljuData && iljuData.neural_code && iljuData.dark_code && iljuData.meta_code) {
+            setCoachingData({
+                pillarLabel: item.label,
+                ganChar: item.pillar.ganKor,
+                jiChar: item.pillar.jiKor,
+                neuralCode: iljuData.neural_code,
+                darkCode: iljuData.dark_code,
+                metaCode: iljuData.meta_code,
+            });
+            setCoachingModalOpen(true);
+        } else {
+            // Fallback: toggle existing detail panel
+            setSelectedPillar(selectedPillar === pillarIndex ? null : pillarIndex);
+        }
+    };
 
     // Calculate 오행 counts
     const ohaengCounts: Record<string, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
@@ -163,13 +208,13 @@ export default function PremiumSajuGrid({
                 <div className="flex justify-between items-center mb-5">
                     <div>
                         <h3 className="text-white font-bold text-lg flex items-center gap-2">
-                            🏛️ 사주 원국
+                            🧠 기질 설계도
                         </h3>
                         <p className="text-gray-500 text-xs mt-1">터치하여 상세 정보 확인</p>
                     </div>
                     <div className="flex flex-col items-end gap-2">
                         <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                            {dayMaster} 일간
+                            {dayMaster} 코어 타입
                         </span>
                         {currentDaewoon && (
                             <span className="text-[9px] text-gray-500">{currentDaewoon}</span>
@@ -179,7 +224,7 @@ export default function PremiumSajuGrid({
                                 onClick={onEditBirthdate}
                                 className="bg-emerald-500/20 hover:bg-emerald-500/30 active:scale-95 transition-all px-3 py-1.5 rounded-full text-[11px] text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 cursor-pointer"
                             >
-                                ✏️ 만세력 변경
+                                ✏️ 생년월일 변경
                             </button>
                         )}
                     </div>
@@ -196,7 +241,7 @@ export default function PremiumSajuGrid({
                             ganElement={item.pillar.ganElement}
                             jiElement={item.pillar.jiElement}
                             isCenter={item.isCenter}
-                            onTap={() => setSelectedPillar(selectedPillar === i ? null : i)}
+                            onTap={() => handlePillarCoaching(i)}
                             isSelected={selectedPillar === i}
                         />
                     ))}
@@ -225,12 +270,12 @@ export default function PremiumSajuGrid({
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="bg-black/20 rounded-xl p-3">
-                                        <span className="text-gray-500 text-xs block mb-1">천간 (天干)</span>
+                                        <span className="text-gray-500 text-xs block mb-1">의식 코드 (Conscious)</span>
                                         <span className="text-white text-lg font-bold">{pillarsArray[selectedPillar].pillar.ganKor}</span>
                                         <span className="text-gray-400 text-xs ml-2">({pillarsArray[selectedPillar].pillar.ganElement})</span>
                                     </div>
                                     <div className="bg-black/20 rounded-xl p-3">
-                                        <span className="text-gray-500 text-xs block mb-1">지지 (地支)</span>
+                                        <span className="text-gray-500 text-xs block mb-1">무의식 코드 (Unconscious)</span>
                                         <span className="text-white text-lg font-bold">{pillarsArray[selectedPillar].pillar.jiKor}</span>
                                         <span className="text-gray-400 text-xs ml-2">({pillarsArray[selectedPillar].pillar.jiElement})</span>
                                     </div>
@@ -243,7 +288,7 @@ export default function PremiumSajuGrid({
                 {/* 오행 분석 Bar - Dynamic & Premium */}
                 <div className="mt-4 p-4 bg-black/20 rounded-2xl border border-white/5">
                     <div className="flex justify-between items-center mb-3">
-                        <span className="text-white text-xs font-bold">오행 분석</span>
+                        <span className="text-white text-xs font-bold">에너지 모달리티 분석</span>
                         <div className="flex gap-2 text-[10px]">
                             {Object.entries(ohaengCounts).map(([el, count]) => (
                                 <span key={el} className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-full">
@@ -276,6 +321,13 @@ export default function PremiumSajuGrid({
                         <span className="text-purple-300 text-xs font-bold">{currentSeun}년</span>
                     </div>
                 )}
+
+                {/* [MODULE] Neural Code Self-Coaching Modal */}
+                <NeuralCodeCoachingModal
+                    isOpen={coachingModalOpen}
+                    onClose={() => setCoachingModalOpen(false)}
+                    data={coachingData}
+                />
             </div>
         </motion.div>
     );

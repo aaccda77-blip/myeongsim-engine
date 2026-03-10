@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * SajuWongukCard - 프리미엄 사주 원국 카드
+ * SajuWongukCard - 프리미엄 코어 에너지 설계도 카드
  * 
  * 특징:
  * - 글래스모피즘 디자인
@@ -49,11 +49,11 @@ const ELEMENT_ICONS: Record<string, string> = {
 };
 
 const PILLAR_LABELS: Record<string, string> = {
-    'hour': '시주',
-    'time': '시주',
-    'day': '일주',
-    'month': '월주',
-    'year': '연주',
+    'hour': '🚀 지향점',
+    'time': '🚀 지향점',
+    'day': '👤 핵심 자아',
+    'month': '💼 사회적 환경',
+    'year': '🌳 배경 에너지',
 };
 
 interface PillarData {
@@ -257,7 +257,7 @@ export default function SajuWongukCard({
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 relative z-10">
                     <div>
                         <h2 className="text-xl font-serif font-bold text-white flex items-center gap-2">
-                            🏛️ 사주 원국
+                            🧠 기질 설계도
                         </h2>
                         <p className="text-xs text-gray-500 mt-1 pl-7">
                             터치하여 상세 정보 확인
@@ -278,7 +278,7 @@ export default function SajuWongukCard({
                                 onClick={onAnalyze}
                                 className="flex-1 sm:flex-none px-4 py-1.5 rounded-full bg-purple-500/20 border border-purple-500/50 text-purple-300 text-xs font-bold hover:bg-purple-500/30 transition-all shadow-[0_0_10px_rgba(139,92,246,0.2)]"
                             >
-                                팔자 분석
+                                프로필 분석
                             </button>
                         )}
                     </div>
@@ -328,7 +328,7 @@ export default function SajuWongukCard({
                     </div>
                     <div>
                         <p className="text-sm text-gray-300 leading-relaxed">
-                            본원(일간)인 <span className={`font-bold ${getElementColor(dayMasterElement)}`}>
+                            코어 에너지인 <span className={`font-bold ${getElementColor(dayMasterElement)}`}>
                                 {dayMasterChar}{getElementKorean(dayMasterElement)}
                             </span>은(는) {getElementDescription(dayMasterElement)}
                         </p>

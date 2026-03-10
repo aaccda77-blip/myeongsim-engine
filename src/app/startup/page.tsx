@@ -28,8 +28,8 @@ export default function StartupDashboard() {
             label: '스타트업 아이템 분석',
             title: '스타트업 아이템 분석',
             desc: '타고난 자산과 우주의 기운을 바탕으로 최적의 사업 아이템과 소재를 매칭해 드립니다.',
-            detail: '귀하의 사주 명식에 나타난 재성(MONEY)과 관성(CAREER)의 흐름을 분석하여, 가장 승산이 높은 사업 아이템 카테고리를 추천합니다. 또한 현재 시장의 트렌드와 결합하여 구체적인 실행 전략을 제안해 드립니다.',
-            prompt: '제 사주와 기질에 가장 잘 맞는 창업 아이템과 사업 분야를 추천해주세요.'
+            detail: '귀하의 기질 프로필에 나타난 재성(MONEY)과 관성(CAREER)의 흐름을 분석하여, 가장 승산이 높은 사업 아이템 카테고리를 추천합니다. 또한 현재 시장의 트렌드와 결합하여 구체적인 실행 전략을 제안해 드립니다.',
+            prompt: '제 기질 프로필에 가장 잘 맞는 창업 아이템과 사업 분야를 추천해주세요.'
         },
         {
             id: 'psychology',
@@ -43,20 +43,20 @@ export default function StartupDashboard() {
         {
             id: 'timing',
             icon: 'auto_graph',
-            label: '기업 운세 및 전략',
-            title: '기업 운세 및 전략',
-            desc: '기업의 연간 운세 흐름을 분석하여, 공격적인 확장이 필요한 시기와 내실을 다져야 할 시기를 알려드립니다.',
-            detail: '천문학적 사이클과 시장의 흐름을 결합하여, 올해 귀하의 기업이 맞이할 기회와 위협을 분석합니다. 언제 피벗(Pivot)을 해야 하고, 언제 자금을 집행해야 하는지 최적의 타이밍을 제안합니다.',
-            prompt: '올해 우리 회사의 사업 운세 흐름과 주요 전략적 타이밍을 분석해주세요.'
+            label: '기업 에너지 및 전략',
+            title: '기업 에너지 및 전략',
+            desc: '기업의 연간 에너지 흐름을 분석하여, 공격적인 확장이 필요한 시기와 내실을 다져야 할 시기를 알려드립니다.',
+            detail: '시장의 흐름을 결합하여, 올해 귀하의 기업이 맞이할 기회와 위협을 분석합니다. 언제 피벗(Pivot)을 해야 하고, 언제 자금을 집행해야 하는지 최적의 타이밍을 제안합니다.',
+            prompt: '올해 우리 회사의 사업 에너지 흐름과 주요 전략적 타이밍을 분석해주세요.'
         },
         {
             id: 'partner',
             icon: 'group_work',
-            label: '공동 창업자 궁합',
-            title: '공동 창업자 궁합',
+            label: '공동 창업자 시너지 분석',
+            title: '공동 창업자 시너지 분석',
             desc: '파트너 간의 에너지 시너지, 갈등 관리 스타일 및 파트너십의 지속 가능성을 평가합니다.',
-            detail: '동업은 결혼보다 어렵습니다. 파트너와의 오행(Five Elements) 상생상극 관계를 분석하여, 서로의 부족한 점을 보완해줄 수 있는지, 아니면 치명적인 갈등이 예고되어 있는지 진단합니다.',
-            prompt: '공동 창업자와의 궁합과 시너지를 분석하고 싶습니다.'
+            detail: '동업은 결혼보다 어렵습니다. 파트너와의 에너지 모달리티 시너지 관계를 분석하여, 서로의 부족한 점을 보완해줄 수 있는지, 아니면 치명적인 갈등이 예고되어 있는지 진단합니다.',
+            prompt: '공동 창업자와의 시너지와 협업 평가를 분석하고 싶습니다.'
         },
         {
             id: 'investment',
@@ -73,8 +73,8 @@ export default function StartupDashboard() {
             label: '비즈니스 모델 검증',
             title: '비즈니스 모델 검증',
             desc: '현재 BM이 시장의 거시적 흐름과 기업의 운때에 적합한지 천문학적 관점에서 검증합니다.',
-            detail: '아무리 좋은 BM이라도 시대의 흐름과 맞지 않으면 실패합니다. 귀하의 사업 모델이 현재의 우주적 주기(Cosmic Cycle)와 조화를 이루는지 분석하고, 보완해야 할 점을 컨설팅해 드립니다.',
-            prompt: '제 비즈니스 모델이 현재 시장 흐름과 제 운세에 적합한지 검증해주세요.'
+            detail: '아무리 좋은 BM이라도 시대의 흐름과 맞지 않으면 실패합니다. 귀하의 사업 모델이 현재의 시장 사이클과 조화를 이루는지 분석하고, 보완해야 할 점을 컨설팅해 드립니다.',
+            prompt: '제 비즈니스 모델이 현재 시장 흐름에 적합한지 검증해주세요.'
         }
     ];
 
@@ -89,7 +89,7 @@ export default function StartupDashboard() {
                             <span className="material-symbols-outlined text-2xl">auto_awesome</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">Startup Fortune</h1>
+                            <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">Startup Coaching</h1>
                             <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Enterprise Solution</p>
                         </div>
                     </div>
@@ -186,7 +186,7 @@ export default function StartupDashboard() {
                         <div className="size-8 rounded-lg bg-[#3211d4] flex items-center justify-center text-white">
                             <span className="material-symbols-outlined text-xl">auto_awesome</span>
                         </div>
-                        <span className="text-sm font-black text-white">Startup Fortune</span>
+                        <span className="text-sm font-black text-white">Startup Coaching</span>
                     </div>
                     {/* [NEW] Quick Status Badge for mobile visibility */}
                     <div className="mt-1 flex items-center gap-2">
@@ -214,13 +214,13 @@ export default function StartupDashboard() {
                             <span className="material-symbols-outlined text-2xl">auto_awesome</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">Startup Fortune</h1>
+                            <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">Startup Coaching</h1>
                             <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Enterprise Solution</p>
                         </div>
                     </div>
                     {/* [NEW] Close button - navigates to main app */}
-                    <button 
-                        onClick={() => router.push('/report')} 
+                    <button
+                        onClick={() => router.push('/report')}
                         className="material-symbols-outlined text-slate-400 hover:text-white transition-colors"
                         title="명심코칭AI 메인으로"
                     >
@@ -333,9 +333,9 @@ export default function StartupDashboard() {
                                             <span className="material-symbols-outlined text-4xl">auto_graph</span>
                                         </div>
                                         <div className="space-y-3">
-                                            <h3 className="text-4xl font-black tracking-tight text-white">비즈니스 연간 운세 및 전략 분석</h3>
+                                            <h3 className="text-4xl font-black tracking-tight text-white">비즈니스 연간 에너지 및 전략 분석</h3>
                                             <p className="text-lg text-[#a19db9] leading-relaxed max-w-2xl">
-                                                우주의 흐름과 시장의 사이클을 결합하여, 귀하의 스타트업이 언제 도약하고 언제 내실을 다져야 할지 정밀하게 분석합니다. 올해의 핵심 피벗 시점과 최적의 전략적 타이밍을 확인하세요.
+                                                시장의 사이클을 분석하여, 귀하의 스타트업이 언제 도약하고 언제 내실을 다져야 할지 정밀하게 분석합니다. 올해의 핵심 피벗 시점과 최적의 전략적 타이밍을 확인하세요.
                                             </p>
                                         </div>
                                         <div className="flex flex-wrap gap-4 pt-2">
@@ -405,14 +405,14 @@ export default function StartupDashboard() {
                     <div className="max-w-6xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="flex items-center gap-2 text-slate-600">
                             <span className="material-symbols-outlined text-lg">verified</span>
-                            <span className="text-xs font-bold uppercase tracking-widest">Data-Driven Corporate Astrology</span>
+                            <span className="text-xs font-bold uppercase tracking-widest">Data-Driven Corporate Coaching</span>
                         </div>
                         <div className="flex gap-8">
                             <a className="text-xs font-bold text-slate-500 hover:text-[#3211d4] uppercase tracking-widest transition-colors cursor-pointer">분석 방법론</a>
                             <a className="text-xs font-bold text-slate-500 hover:text-[#3211d4] uppercase tracking-widest transition-colors cursor-pointer">이용 약관</a>
                             <a className="text-xs font-bold text-slate-500 hover:text-[#3211d4] uppercase tracking-widest transition-colors cursor-pointer">개인정보처리방침</a>
                         </div>
-                        <p className="text-xs font-bold text-slate-600">© 2024 STARTUP FORTUNE.</p>
+                        <p className="text-xs font-bold text-slate-600">© 2024 STARTUP COACHING.</p>
                     </div>
                 </footer>
             </main>

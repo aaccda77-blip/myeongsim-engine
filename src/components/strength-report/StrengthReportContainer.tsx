@@ -271,7 +271,7 @@ export default function StrengthReportContainer() {
                     className="text-center mt-16 pb-8"
                 >
                     <p className="text-gray-500 text-sm">
-                        Powered by <span className="text-amber-400">명심코칭</span> · 사주 기반 과학적 역량 분석
+                        Powered by <span className="text-amber-400">명심코칭</span> · 기질 기반 과학적 역량 분석
                     </p>
                 </motion.div>
             </main>

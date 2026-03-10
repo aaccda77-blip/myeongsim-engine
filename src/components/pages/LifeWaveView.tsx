@@ -16,7 +16,7 @@ export default function LifeWaveView() {
                 className="mb-4"
             >
                 <span className="text-primary-olive text-xs font-bold tracking-widest uppercase">09. Life Wave</span>
-                <h2 className="text-2xl font-serif text-white mt-2">인생의 파동 (10년 대운)</h2>
+                <h2 className="text-2xl font-serif text-white mt-2">인생의 파동 (Life Wave)</h2>
                 <p className="text-sm text-gray-400 mt-2">당신의 인생 그래프는 지금 어디쯤 와 있을까요?</p>
             </motion.div>
 
@@ -33,8 +33,8 @@ export default function LifeWaveView() {
                         <Tooltip
                             contentStyle={{ backgroundColor: '#1f2937', borderColor: '#334155', borderRadius: '12px' }}
                             itemStyle={{ color: '#658c42' }}
-                            formatter={(val) => [`${val}점`, '운세 점수']}
-                            labelFormatter={(label) => `${label}세 대운`}
+                            formatter={(val) => [`${val}점`, '에너지 점수']}
+                            labelFormatter={(label) => `${label}세 웨이브`}
                         />
                         <Line
                             type="monotone"

@@ -105,7 +105,7 @@ export default function SmartContextCard({
         const conversationStarters = [
             `왜 지금이 ${dayInfo.element}의 기운인지 더 알고 싶어`,
             energyLevel === 'stress' ? '지금 긴장되는데 어떻게 하면 좋을까?' : '오늘 뭘 하면 가장 좋을까?',
-            '나의 사주로 볼 때 지금 가장 필요한 건 뭐야?',
+            '나의 기질 에너지로 볼 때 지금 가장 필요한 건 뭐야?',
             hour >= 18 ? '오늘 하루 마무리 어떻게 하면 좋을까?' : '남은 하루 어떻게 보내면 좋을까?'
         ];
 

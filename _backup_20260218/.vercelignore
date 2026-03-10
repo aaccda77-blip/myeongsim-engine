@@ -1,0 +1,21 @@
+# Large deployment artifacts
+*.tar.gz
+*.zip
+deploy.tar.gz
+deploy_package.tar.gz
+
+# Backups
+_backup*
+backup*
+myeongsim_backup*
+
+# Documentation & Temp
+*.eml
+*.log
+gene_keys_dump.txt
+SSH_KeyPair*.pem
+gabia_key*
+
+# Scripts
+deploy_to_gabia.ps1
+deploy_with_key.ps1
