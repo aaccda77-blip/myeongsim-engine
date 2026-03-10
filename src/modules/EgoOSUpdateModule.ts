@@ -34,7 +34,7 @@ export class EgoOSUpdateModule {
 출력은 반드시 한국어로 작성하고, 사용자가 이 고민이 '진짜 나'의 문제가 아니라 단지 'OS의 버그'일 뿐임을 깨닫고 미소지으며 안도할 수 있도록 쿨하고 따뜻하게 작성해주세요.`;
 
         const response = await generateText({
-            model: google('gemini-2.5-flash'),
+            model: google('gemini-2.5-flash') as any,
             system: systemPrompt,
             messages: [{ role: 'user', content: userPrompt || '최근 자꾸 불안하고 남들 시선이 신경쓰입니다.' }],
             temperature: 0.7,

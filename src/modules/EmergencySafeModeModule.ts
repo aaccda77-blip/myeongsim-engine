@@ -41,7 +41,7 @@ export class EmergencySafeModeModule {
 생각(OS)의 전원을 끄고, 지금 이 순간 생명(하드웨어) 자체의 고요함에 머무십시오."`;
 
         const response = await generateText({
-            model: google('gemini-2.5-flash'),
+            model: google('gemini-2.5-flash') as any,
             system: systemPrompt,
             messages: [{ role: 'user', content: '지금 너무 패닉상태고 불안해서 터질 것 같아. 안전모드 켜줘.' }],
             temperature: 0.3, // Low temperature for highly consistent, grounding output
