@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Info, X, ShieldCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const STRESS_FACTORS = ['커리어', '인간관계', '건강', '재정', '가족'];
 
 export default function OnboardingFlow() {
+    const router = useRouter();
     const [step, setStep] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -39,8 +41,9 @@ export default function OnboardingFlow() {
         }
         console.log("=== 완료: 온보딩 제출 데이터 (V2) ===");
         console.log(JSON.stringify(formData, null, 2));
-        alert("온보딩이 완료되었습니다! 데이터는 콘솔에서 확인 가능합니다.");
-        // 나중에 라우팅 연동: router.push('/home') 등
+
+        // 데이터 전송 완료 후 라우팅
+        router.push('/myeongsim-chat');
     };
 
     const toggleStressFactor = (factor: string) => {
@@ -182,8 +185,8 @@ export default function OnboardingFlow() {
                                                         key={factor}
                                                         onClick={() => toggleStressFactor(factor)}
                                                         className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${isSelected
-                                                                ? 'bg-primary-olive border-primary-olive text-white shadow-[0_0_10px_rgba(101,140,66,0.5)]'
-                                                                : 'bg-black/20 border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
+                                                            ? 'bg-primary-olive border-primary-olive text-white shadow-[0_0_10px_rgba(101,140,66,0.5)]'
+                                                            : 'bg-black/20 border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
                                                             }`}
                                                     >
                                                         {factor}
