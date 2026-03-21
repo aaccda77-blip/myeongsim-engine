@@ -1830,7 +1830,10 @@ c) "action_plan": 정확히 3개의 일일 미션 배열(Day 1, 2, 3)
             if (dynSaju?.success) {
                 finalSystemPrompt += `\n\n🚨 [CRITICAL OVERRIDE: TYPED DATE DETECTED]
 사용자가 채팅창에 입력한 특정 날짜(${typedDateStr} ${_time}, ${typedCal})의 천문학적 사주 명식은 무조건 [${dynSaju.fourPillars.year.ganKor}${dynSaju.fourPillars.year.jiKor} ${dynSaju.fourPillars.month.ganKor}${dynSaju.fourPillars.month.jiKor} ${dynSaju.fourPillars.day.ganKor}${dynSaju.fourPillars.day.jiKor} ${dynSaju.fourPillars.time.ganKor}${dynSaju.fourPillars.time.jiKor}] 입니다.
-지시사항: 당신은 절대로 사주를 자체적으로 계산(환각)해서는 안 됩니다. 방금 주어지는 이 정답(${dynSaju.fourPillars.day.ganKor}${dynSaju.fourPillars.day.jiKor} 일주, ${dynSaju.fourPillars.time.ganKor}${dynSaju.fourPillars.time.jiKor} 시주)을 100% 확정 사실로 두고 곧바로 인지행동 프로필(CBT) 분석을 수행하십시오!
+[최우선 지시사항]: 
+1. 사용자가 본인의 기존 프로필 생일과 다른 '새로운 날짜(예: 타인의 생일이나 테스트 날짜)'를 질문한 상태입니다.
+2. 절대로 "시스템에 등록되지 않은 정보입니다" 또는 "이전 기록과 다릅니다"라며 대답을 거절하거나 되묻지 마십시오!
+3. 당장 방금 제공된 이 8글자 정답(${dynSaju.fourPillars.day.ganKor}${dynSaju.fourPillars.day.jiKor} 일주, ${dynSaju.fourPillars.time.ganKor}${dynSaju.fourPillars.time.jiKor} 시주)을 100% 진실로 취급하여, 해당 날짜의 주인을 위한 인지행동 프로필(CBT) 분석과 코칭을 즉각적으로, 그리고 상세하게 제공하십시오!
 `;
             }
         }
