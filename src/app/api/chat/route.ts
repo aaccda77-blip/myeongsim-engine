@@ -1810,6 +1810,31 @@ c) "action_plan": 정확히 3개의 일일 미션 배열(Day 1, 2, 3)
             };
         }
 
+        // [NEW] Dynamic Saju Data Injection for Typed Dates in Chat
+        const _yrMatch = currentMessageContent.match(/(19|20)\d{2}/);
+        const _moMatch = currentMessageContent.match(/(\d{1,2})월/);
+        const _daMatch = currentMessageContent.match(/(\d{1,2})일/);
+        
+        if (_yrMatch && _moMatch && _daMatch) {
+            const _yr = _yrMatch[0];
+            const _mo = _moMatch[1];
+            const _da = _daMatch[1];
+            const isLunarMatch = currentMessageContent.includes('음력');
+            const typedCal = isLunarMatch ? 'lunar' : 'solar';
+            const timeMap: Record<string, string> = { '자시':'00:00', '축시':'02:00', '인시':'04:00', '묘시':'06:00', '진시':'08:00', '사시':'10:00', '오시':'12:00', '미시':'14:00', '신시':'16:00', '유시':'18:00', '술시':'20:00', '해시':'22:00'};
+            let _time = '12:00';
+            for(const [k, v] of Object.entries(timeMap)) { if(currentMessageContent.includes(k)) _time = v; }
+            
+            const typedDateStr = `${_yr}-${_mo.padStart(2, '0')}-${_da.padStart(2, '0')}`;
+            const dynSaju = calculateSajuServer(typedDateStr, _time, typedCal, effectiveGender);
+            if (dynSaju?.success) {
+                finalSystemPrompt += `\n\n🚨 [CRITICAL OVERRIDE: TYPED DATE DETECTED]
+사용자가 채팅창에 입력한 특정 날짜(${typedDateStr} ${_time}, ${typedCal})의 천문학적 사주 명식은 무조건 [${dynSaju.fourPillars.year.ganKor}${dynSaju.fourPillars.year.jiKor} ${dynSaju.fourPillars.month.ganKor}${dynSaju.fourPillars.month.jiKor} ${dynSaju.fourPillars.day.ganKor}${dynSaju.fourPillars.day.jiKor} ${dynSaju.fourPillars.time.ganKor}${dynSaju.fourPillars.time.jiKor}] 입니다.
+지시사항: 당신은 절대로 사주를 자체적으로 계산(환각)해서는 안 됩니다. 방금 주어지는 이 정답(${dynSaju.fourPillars.day.ganKor}${dynSaju.fourPillars.day.jiKor} 일주, ${dynSaju.fourPillars.time.ganKor}${dynSaju.fourPillars.time.jiKor} 시주)을 100% 확정 사실로 두고 곧바로 인지행동 프로필(CBT) 분석을 수행하십시오!
+`;
+            }
+        }
+
         const model = genAI.getGenerativeModel({
             model: 'gemini-2.5-flash',
             systemInstruction: finalSystemPrompt,
