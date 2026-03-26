@@ -300,32 +300,32 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                 </div>
                                                 
                                                 <div className="mb-4">
-                                                    <span className="px-3 py-1 bg-red-900/40 border border-red-500/30 rounded-full text-xs text-red-300 font-bold tracking-widest">Case Study: BP-54 [정사(丁巳)]</span>
+                                                    <span className="px-3 py-1 bg-red-900/40 border border-red-500/30 rounded-full text-xs text-red-300 font-bold tracking-widest">Case Study: BP-18 [신사(辛巳) - 고정밀 뉴럴 스탠다드]</span>
                                                 </div>
-                                                <h3 className="text-2xl font-black text-red-500 mb-6 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">Phase 1. Old Script : 다크 코드 (모든 것을 태우는 독재자)</h3>
+                                                <h3 className="text-2xl font-black text-red-500 mb-6 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">Phase 1. Old Script : 다크 코드 (녹아내리는 강박증)</h3>
                                                 
                                                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                                                     <div className="bg-black/40 rounded-xl p-5 border border-red-900/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">동양기질 진단 (사주 매핑)</h4>
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">인지 편향 오류 진단 (Cognitive Error)</h4>
                                                         <ul className="space-y-3">
-                                                            <li className="flex justify-between items-center"><span className="text-gray-400">10대 인지행동 (십신)</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">겁재 (경쟁/투쟁심의 폭주)</span></li>
-                                                            <li className="flex justify-between items-center"><span className="text-gray-400">생체 에너지 (12운성)</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">제왕(帝王) (오만한 절대권력)</span></li>
-                                                            <li className="flex justify-between items-center"><span className="text-gray-400">시스템 오류 상태</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">멜트다운 (Meltdown)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">행동 스키마</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">과잉 억제 제어 (Hyper-Control)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">신경망 활성</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">편도체 기반 터널 시야 (Tunnel Vision)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">시스템 오류 상태</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">신경계 멜트다운 (Nervous Meltdown)</span></li>
                                                         </ul>
                                                     </div>
                                                     
                                                     <div className="bg-black/40 rounded-xl p-5 border border-red-900/30">
                                                         <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">에러 로그 (Error Log)</h4>
                                                         <p className="text-red-200 text-sm leading-relaxed text-right">
-                                                            <strong className="block text-white mb-1">"내 논리가 완벽한데 왜 따르지 않는가? 굽히느니 차라리 부러지겠다."</strong>
-                                                            압도적인 집중력과 주체성이 '치명적인 독선'으로 변질되었습니다. 옳고 그름을 따지다가 정작 소중한 사람들에게 회복 불가능한 화상(상처)을 입히고 에너지를 방전시키는 치명적 오류 구간입니다.
+                                                            <strong className="block text-white mb-1">"작은 흠집 하나가 모든 것을 망친다. 난 긴장을 풀 수 없다."</strong>
+                                                            천부적인 정밀함이 만성적 불안과 자기 학대(Self-Sabotage)로 변질되었습니다. 쉴 새 없이 스스로를 검열하느라 에너지가 고갈되고 스트레스성 자율신경 실조증 위험이 한계치에 다다른 치명적 오류 구간입니다.
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 <div className="bg-gradient-to-r from-red-900/80 to-transparent p-5 rounded-xl border-l-4 border-red-500 mb-4">
-                                                    <div className="text-xs text-red-300 font-bold mb-2 tracking-widest uppercase">능동형 개입 (Sovereign Socratic Q - Step 1. 자각)</div>
-                                                    <p className="text-white text-lg italic font-serif">"내가 지금 이 논쟁에서 이겨서 얻으려는 것은 '문제 해결'인가요, 아니면 '알량한 자존심'인가요? 상대를 굴복시킨 직후, 내 손에 남는 것은 따뜻한 연대입니까, 잿더미입니까?"</p>
+                                                    <div className="text-xs text-red-300 font-bold mb-2 tracking-widest uppercase">소버린 산파술 개입 (Sovereign Socratic Q - 자각)</div>
+                                                    <p className="text-white text-lg italic font-serif">"지금 지키려는 이 '100% 무결점'은 진정 내 가치를 높여줍니까, 아니면 비판이 두려워 쳐둔 '불안의 방어막'입니까? 80%만 완성했을 때 세상이 붕괴된 적이 있습니까?"</p>
                                                 </div>
                                             </motion.div>
                                         )}
@@ -341,31 +341,31 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                 </div>
                                                 
                                                 <div className="mb-4">
-                                                    <span className="px-3 py-1 bg-green-900/40 border border-green-500/30 rounded-full text-xs text-green-300 font-bold tracking-widest">Case Study: BP-54 [정사(丁巳)]</span>
+                                                    <span className="px-3 py-1 bg-green-900/40 border border-green-500/30 rounded-full text-xs text-green-300 font-bold tracking-widest">Case Study: BP-18 [신사(辛巳) - 고정밀 뉴럴 스탠다드]</span>
                                                 </div>
-                                                <h3 className="text-2xl font-black text-green-500 mb-6 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">Phase 2. Neural Blueprint : 뉴럴 코드 (핵심 회로)</h3>
+                                                <h3 className="text-2xl font-black text-green-500 mb-6 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">Phase 2. Neural Blueprint : 뉴럴 코드 (초정밀 가치 제련 시스템)</h3>
                                                 
                                                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                                                     <div className="bg-black/40 rounded-xl p-5 border border-green-900/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">뉴럴 솔루션 (4대 치료 통합)</h4>
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">안티-프래질 뉴럴 솔루션</h4>
                                                         <ul className="space-y-3">
-                                                            <li className="flex flex-col"><span className="text-green-400 font-bold text-xs mb-1">[CBT] '옳음'보다 '연결' 선택하기</span> <span className="text-gray-300 text-xs">"맞는 말이라도 온도가 너무 높으면 진실도 타버린다."</span></li>
-                                                            <li className="flex flex-col"><span className="text-green-400 font-bold text-xs mb-1">[MBCT] 인공 냉각수 투입</span> <span className="text-gray-300 text-xs">얼굴로 열이 뻗칠 때 제왕의 폭주 회로를 인지하고 물리적 냉각.</span></li>
+                                                            <li className="flex flex-col"><span className="text-green-400 font-bold text-xs mb-1">[CBT] 인지적 유연성(여백) 확보</span> <span className="text-gray-300 text-xs">"완벽함은 뺄 것이 없는 게 아니라 인간적인 틈을 남기는 여유."</span></li>
+                                                            <li className="flex flex-col"><span className="text-green-400 font-bold text-xs mb-1">[MBCT] 부교감신경 쿨링다운</span> <span className="text-gray-300 text-xs">과열 시 즉시 외부 자극(시/청각)을 차단하고 생리적 온도 조절.</span></li>
                                                         </ul>
                                                     </div>
                                                     
                                                     <div className="bg-black/40 rounded-xl p-5 border border-green-900/30">
                                                         <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">시스템 복구 상태</h4>
                                                         <p className="text-green-100 text-sm leading-relaxed text-right">
-                                                            <strong className="block text-white mb-1">"나는 내 화력을 자유자재로 다이얼로 조절한다."</strong>
-                                                            외부의 거대한 화력(巳)을 내부의 뾰족한 초점(丁)으로 조절합니다. 상대방을 베어버리는 오만한 칼날 대신, 불순물을 태워 순수한 정수를 뽑아내는 '진리의 연금술사'로 회귀합니다.
+                                                            <strong className="block text-white mb-1">"불꽃이 나를 삼키기 전에 스스로를 식힌다."</strong>
+                                                            거센 스트레스 압력을 견뎌내면서도 자신의 본질을 잃지 않는 초정밀 세공기제(Perfect-Refining)가 전전두엽에서 가동을 시작합니다.
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 <div className="bg-gradient-to-r from-green-900/60 to-transparent p-5 rounded-xl border-l-4 border-green-500">
-                                                    <div className="text-xs text-green-300 font-bold mb-2 tracking-widest uppercase">능동형 개입 (Sovereign Socratic Q - Step 2. 재귀적 관찰)</div>
-                                                    <p className="text-white text-lg italic font-serif">"'결코 굽힐 수 없다'며 올리는 이 열기는 나의 본질인가요, 두려움의 '불타는 갑옷'인가요? 이 피곤한 에고(Ego)를 지켜보는 당신의 주권자(Sovereign)는 이를 어떻게 평가합니까?"</p>
+                                                    <div className="text-xs text-green-300 font-bold mb-2 tracking-widest uppercase">소버린 재귀적 개입 (Sovereign Socratic Q - 통제 지분 확인)</div>
+                                                    <p className="text-white text-lg italic font-serif">"'조금만 더 참아, 완벽해야 해'라며 옥죄는 시스템은 누구의 목소리입니까? 상처 없는 보석이 되려 나를 태우는 이 에고를 지켜보는 '진짜 당신'은 어디에 있습니까?"</p>
                                                 </div>
                                             </motion.div>
                                         )}
@@ -381,31 +381,31 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                 </div>
                                                 
                                                 <div className="mb-4">
-                                                    <span className="px-3 py-1 bg-yellow-900/40 border border-yellow-500/30 rounded-full text-xs text-yellow-300 font-bold tracking-widest">Case Study: BP-54 [정사(丁巳)]</span>
+                                                    <span className="px-3 py-1 bg-yellow-900/40 border border-yellow-500/30 rounded-full text-xs text-yellow-300 font-bold tracking-widest">Case Study: BP-18 [신사(辛巳) - 고정밀 뉴럴 스탠다드]</span>
                                                 </div>
-                                                <h3 className="text-2xl font-black text-yellow-400 mb-6 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">Phase 3. Meta-Self : 메타 코드 (신성한 제련소의 주권자)</h3>
+                                                <h3 className="text-2xl font-black text-yellow-400 mb-6 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">Phase 3. Meta-Self : 메타 코드 (무결점의 우아함의 주권자)</h3>
                                                 
                                                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                                                     <div className="bg-black/50 rounded-xl p-5 border border-yellow-700/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">통합 액션 (DBT/ACT)</h4>
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">행동 조율 통합 (DBT/ACT)</h4>
                                                         <ul className="space-y-3">
-                                                            <li className="flex flex-col"><span className="text-yellow-300 font-bold text-xs mb-1">[DBT] 샌드위치 화법</span> <span className="text-gray-300 text-xs text-tight">직설화법 대신 포용의 여유를 담아 열기를 분산시켜 전달.</span></li>
-                                                            <li className="flex flex-col"><span className="text-yellow-300 font-bold text-xs mb-1">[ACT] 진리의 횃불 실천</span> <span className="text-gray-300 text-xs text-tight">끓어오르는 경쟁심을 사람 대신 '사물과 일(혁신)'에 100% 쏟아붓기.</span></li>
+                                                            <li className="flex flex-col"><span className="text-yellow-300 font-bold text-xs mb-1">[DBT] 변증법적 감정 조율</span> <span className="text-gray-300 text-xs text-tight">타인이 룰을 어겼을 때 즉각적 비판 대신 쿠션 언어 발화.</span></li>
+                                                            <li className="flex flex-col"><span className="text-yellow-300 font-bold text-xs mb-1">[ACT] 가치 기반 수용 전념</span> <span className="text-gray-300 text-xs text-tight">불안의 메스를 치밀한 연구/기획이라는 '장인의 조각칼'로 변환.</span></li>
                                                         </ul>
                                                     </div>
                                                     
                                                     <div className="bg-black/50 rounded-xl p-5 border border-yellow-700/30">
                                                         <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">최종 진화 형태 (Output)</h4>
                                                         <p className="text-yellow-100 text-sm leading-relaxed text-right">
-                                                            <strong className="block text-white mb-1">"진정한 제왕은 칼을 꽂은 채 세상을 굴복시킨다."</strong>
-                                                            거친 쇳덩이를 베어내는 최상위 연금술 엔진. 논쟁의 칼을 거두고 세상을 온화하게 비출 때, 모두가 그 압도적인 빛 앞에 스스로 무기를 내려놓고 충성을 바칩니다.
+                                                            <strong className="block text-white mb-1">"세상은 나의 흔들림 없는 품격에 매료된다."</strong>
+                                                            설계된 스트레스를 대체 불가능한 하이엔드 퀄리티(High-end Quality)로 승화시키는 초정밀 통찰력 엔진. 비판의 잣대를 거두면 최고급의 우아함이 실현됩니다.
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 <div className="bg-gradient-to-r from-yellow-900/80 to-transparent p-5 rounded-xl border-l-4 border-yellow-400 shadow-[inset_0_0_20px_rgba(250,204,21,0.1)] mt-auto">
-                                                    <div className="text-xs text-yellow-500 font-bold mb-2 tracking-widest uppercase">능동형 개입 (Sovereign Socratic Q - Step 3. 메타 초월)</div>
-                                                    <p className="text-white text-lg italic font-serif">"목 끝까지 차오른 이 '날카롭고 뜨거운 분노'를 뒤에서 누가 지켜보고 있습니까? 나는 폭발하는 폭탄인가요, 아니면 그 폭발마저 고요히 품을 수 있는 거대한 우주인가요?"</p>
+                                                    <div className="text-xs text-yellow-500 font-bold mb-2 tracking-widest uppercase">메타-인지 돌파 (Sovereign Socratic Q - 초월)</div>
+                                                    <p className="text-white text-lg italic font-serif">"작은 결론 하나에 심장을 옥죄는 긴장감과, 그것을 비추는 '광활한 의식' 사이에는 어떤 공간이 존재합니까? 당신은 녹아내리는 금속입니까, 그 과정을 관조하는 우주입니까?"</p>
                                                 </div>
                                             </motion.div>
                                         )}
