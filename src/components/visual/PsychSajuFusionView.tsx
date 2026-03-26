@@ -237,13 +237,15 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                 </svg>
                                             </div>
                                             
-                                            <div className="px-3 py-1 rounded bg-gray-800 border border-gray-600 text-xs text-gray-300 blur-[0.3px]">60갑자 기반 벡터 생성</div>
+                                            <div className="px-3 py-1 rounded bg-gray-800 border border-gray-600 text-[10px] md:text-xs text-blue-300 blur-[0.3px] whitespace-nowrap overflow-hidden">
+                                                60 Archetype Neural Vector Generation
+                                            </div>
                                         </div>
 
                                         {/* EASTERN */}
                                         <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 relative overflow-hidden">
                                             <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full"></div>
-                                            <h3 className="text-lg font-semibold text-purple-300 tracking-wide">동양 명리학 (Genotype)</h3>
+                                            <h3 className="text-lg font-semibold text-purple-300 tracking-wide">동양 성격 기질 선천 유전자 (Genotype)</h3>
                                             <div className="w-48 h-48 relative">
                                                 <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">
                                                     {/* Grid */}
@@ -274,28 +276,28 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                         <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500 to-purple-500"></div>
                                         <h4 className="text-lg font-bold mb-5 flex items-center text-gray-100">
                                             <span className="w-8 h-8 rounded-full bg-blue-900/50 border border-blue-500 flex items-center justify-center mr-3 text-sm">💡</span>
-                                            인지행동 (Cognitive) × 오행 (Ohaeng) 에너지 교차 분석 도출
+                                            다차원 생체-기질 교차 분석 도출 (Biometric-Temperament Cross-Analysis)
                                         </h4>
                                         <ul className="space-y-5 text-sm py-2">
                                             <li className="flex gap-4 items-start pb-4 border-b border-gray-700/50">
                                                 <div className="shrink-0 w-10 h-10 rounded-xl bg-red-900/30 border border-red-500/50 flex items-center justify-center text-red-400 text-lg shadow-[0_0_10px_rgba(239,68,68,0.2)]">🔥</div>
                                                 <div className="pt-1">
-                                                    <strong className="text-white text-base block mb-1">외향성(E) ↔ 화(Fire) 에너지 동기화</strong> 
-                                                    <span className="text-gray-300 leading-relaxed block">외부로 향하는 목표 지향적 에너지가 높은 수치({userData.bigFive.e}%)로 측정되었습니다. 화(火) 기운의 팽창성과 결합되어, 번아웃 위험도(과각성)가 높아 스마트워치 모니터링이 필수입니다.</span>
+                                                    <strong className="text-white text-base block mb-1">도파민 보상 회로 (E) ↔ 발산형(Fire) 뉴럴 네트워크 동기화</strong> 
+                                                    <span className="text-gray-300 leading-relaxed block">외부 자극을 수용하고 폭발시키는 도파민성 보상 회로({userData.bigFive.e}%)가 화(火) 기질의 원초적 팽창 스키마와 결합된 상태입니다. 교감신경계 과각성(Hyper-arousal)에 의한 뇌 피로도 및 번아웃 임계점이 높아져, HRV 페이싱(Pacing) 등 실시간 자율신경 조율이 요구되는 패턴입니다. (심도 깊은 개입: BP-54 모델 참조)</span>
                                                 </div>
                                             </li>
                                             <li className="flex gap-4 items-start pb-4 border-b border-gray-700/50">
                                                 <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-900/30 border border-blue-500/50 flex items-center justify-center text-blue-400 text-lg shadow-[0_0_10px_rgba(59,130,246,0.2)]">💧</div>
                                                 <div className="pt-1">
-                                                    <strong className="text-white text-base block mb-1">신경성(N) ↔ 수(Water) 에너지 동기화</strong> 
-                                                    <span className="text-gray-300 leading-relaxed block">신경성(불안도) 수치는 {userData.bigFive.n}%로 안정적 범위입니다. 수(水) 에너지의 '응축 및 저장' 시스템이 전전두엽 억제 제어력과 조화롭게 작동하여 뛰어난 회복탄력성을 보입니다.</span>
+                                                    <strong className="text-white text-base block mb-1">편도체 민감도 (N) ↔ 응축형(Water) 코르티솔 제어 시스템</strong> 
+                                                    <span className="text-gray-300 leading-relaxed block">불안을 감지하는 편도체 민감도({userData.bigFive.n}%)가 매우 안정된 베이스라인을 유지하고 있습니다. 수(水) 기질의 '에너지 보존 및 응축' 메커니즘이 전전두엽(PFC)의 억제 제어력과 시너지를 내어 높은 회복탄력성(Resilience)과 스트레스 방어력을 갖추고 있습니다.</span>
                                                 </div>
                                             </li>
                                             <li className="flex gap-4 items-start">
                                                 <div className="shrink-0 w-10 h-10 rounded-xl bg-gray-700/50 border border-gray-500/50 flex items-center justify-center text-gray-300 text-lg shadow-[0_0_10px_rgba(156,163,175,0.2)]">⚙️</div>
                                                 <div className="pt-1">
-                                                    <strong className="text-white text-base block mb-1">성실성(C) ↔ 금(Metal) 에너지 동기화</strong> 
-                                                    <span className="text-gray-300 leading-relaxed block">성실성이 {userData.bigFive.c}%로 극도로 발달되어 있습니다. 이는 금(金) 특유의 단절/규정 에너지와 충돌할 경우 강박적 사고("~해야만 한다")로 왜곡될 수 있으나, 집중 시 탁월한 성취를 냅니다.</span>
+                                                    <strong className="text-white text-base block mb-1">전두엽 집행 기능 (C) ↔ 절단형(Metal) 초정밀 제어 스키마</strong> 
+                                                    <span className="text-gray-300 leading-relaxed block">인지 및 행동을 통제하는 성실성 지표가 {userData.bigFive.c}%로 극도로 고도화되어 있습니다. 금(金) 기질의 날카로운 '완벽주의 제어' 신경망과 융합되어 타협 없는 최고 등급의 퀄리티 생성이 가능하나, 압력이 임계치를 넘으면 '강박적 터널 시야(Tunnel Vision)' 오류를 발생시킬 수 있습니다. (심도 깊은 개입: BP-18 모델 참조)</span>
                                                 </div>
                                             </li>
                                         </ul>
