@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface FusionData {
     bigFive: {
@@ -29,14 +29,28 @@ const FAKE_MOCK_DATA: FusionData = {
 
 export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => void; userData?: FusionData }> = ({ isOpen, onClose, userData = FAKE_MOCK_DATA }) => {
     const [scanned, setScanned] = useState(false);
+    const [activeTab, setActiveTab] = useState<'fusion' | 'evolution'>('fusion');
+    const [simStep, setSimStep] = useState<number>(0);
 
     useEffect(() => {
         if (isOpen) {
             setScanned(false);
-            const timer = setTimeout(() => setScanned(true), 1500);
+            setActiveTab('fusion');
+            setSimStep(0);
+            const timer = setTimeout(() => setScanned(true), 1200);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
+
+    // 시뮬레이터 오토 플레이 가이드
+    useEffect(() => {
+        if (activeTab === 'evolution' && simStep < 3) {
+            const timer = setTimeout(() => {
+                setSimStep(prev => prev + 1);
+            }, 3000); // 3초마다 자동으로 다음 단계(다크->뉴럴->메타)
+            return () => clearTimeout(timer);
+        }
+    }, [activeTab, simStep]);
 
     if (!isOpen) return null;
 
@@ -54,142 +68,345 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
     const ohaengArray = [userData.ohaeng.화, userData.ohaeng.목, userData.ohaeng.토, userData.ohaeng.금, userData.ohaeng.수];
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-gray-900 border border-blue-500/30 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(59,130,246,0.2)] text-gray-100"
+                className="bg-gray-900 border border-blue-500/30 rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(59,130,246,0.2)] text-gray-100"
             >
-                <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-purple-900/20">
+                {/* Header */}
+                <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-purple-900/20 sticky top-0 z-10 backdrop-blur-md">
                     <div>
                         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
                             🧬 동서양 기질 융합 스캐너 (특허 기술)
                         </h2>
                         <p className="text-sm text-gray-400 mt-1">Western 5대 성격 지표 & 16가지 행동 기질 × Eastern Saju & Neural Code</p>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl font-light">&times;</button>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl font-light">&times;</button>
                 </div>
 
-                <div className="p-6 md:p-8 space-y-8">
+                {/* Tabs */}
+                {scanned && (
+                    <div className="flex border-b border-gray-800 bg-gray-900/50 px-6">
+                        <button 
+                            onClick={() => setActiveTab('fusion')}
+                            className={`py-4 px-6 text-sm font-bold border-b-2 transition-colors ${activeTab === 'fusion' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                        >
+                            1. 교차 분석 (Cross-Mapping)
+                        </button>
+                        <button 
+                            onClick={() => { setActiveTab('evolution'); setSimStep(1); }}
+                            className={`py-4 px-6 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'evolution' ? 'border-purple-500 text-purple-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                        >
+                            2. 다차원 인지 진화 시뮬레이터 <span className="px-2 py-0.5 rounded text-[10px] bg-red-500/20 text-red-400 border border-red-500/30">심사위원 데모</span>
+                        </button>
+                    </div>
+                )}
+
+                <div className="p-6 md:p-8 space-y-8 min-h-[500px]">
                     {!scanned ? (
-                        <div className="flex flex-col items-center justify-center py-20">
+                        <div className="flex flex-col items-center justify-center py-32">
                             <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-700 rounded-full animate-spin"></div>
                             <p className="mt-6 text-blue-400 tracking-widest font-mono text-sm uppercase">Syncing Bio-Data & Psychological Vectors...</p>
                         </div>
                     ) : (
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
-                            
-                            {/* Main Visual: Two Radars with Connection */}
-                            <div className="grid md:grid-cols-3 gap-8 items-center">
-                                {/* WESTERN */}
-                                <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50">
-                                    <h3 className="text-lg font-semibold text-blue-300">서양 심리학 (Cognitive)</h3>
-                                    <div className="w-48 h-48 relative">
-                                        <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                                            {/* Grid */}
-                                            {renderRadarPolygon([100,100,100,100,100], "#374151", 0)}
-                                            {renderRadarPolygon([80,80,80,80,80], "#374151", 0)}
-                                            {renderRadarPolygon([60,60,60,60,60], "#374151", 0)}
-                                            {renderRadarPolygon([40,40,40,40,40], "#374151", 0)}
-                                            {renderRadarPolygon([20,20,20,20,20], "#374151", 0)}
-                                            {/* Data */}
-                                            {renderRadarPolygon(bigFiveArray, "#3b82f6", 0.4)}
-                                            {/* Labels approximate positions */}
-                                            <text x="100" y="15" fill="#9ca3af" fontSize="10" textAnchor="middle">외향성(E)</text>
-                                            <text x="180" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">개방성(O)</text>
-                                            <text x="150" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">우호성(A)</text>
-                                            <text x="50" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">성실성(C)</text>
-                                            <text x="20" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">신경성(N)</text>
-                                        </svg>
-                                    </div>
-                                    <div className="text-center">
-                                        <p className="text-sm text-gray-400">16가지 행동 기질형</p>
-                                        <p className="text-3xl font-bold text-white tracking-widest">{userData.mbti}</p>
-                                    </div>
-                                </div>
+                        <AnimatePresence mode="wait">
+                            {/* TAB 1: 정적 교차 분석 */}
+                            {activeTab === 'fusion' && (
+                                <motion.div 
+                                    key="tab-fusion"
+                                    initial={{ opacity: 0, x: -20 }} 
+                                    animate={{ opacity: 1, x: 0 }} 
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="space-y-12"
+                                >
+                                    {/* Main Visual: Two Radars with Connection */}
+                                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                                        {/* WESTERN */}
+                                        <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 relative overflow-hidden">
+                                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full"></div>
+                                            <h3 className="text-lg font-semibold text-blue-300 tracking-wide">서양 심리학 (Cognitive)</h3>
+                                            <div className="w-48 h-48 relative">
+                                                <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                                                    {/* Grid */}
+                                                    {renderRadarPolygon([100,100,100,100,100], "#374151", 0)}
+                                                    {renderRadarPolygon([80,80,80,80,80], "#374151", 0)}
+                                                    {renderRadarPolygon([60,60,60,60,60], "#374151", 0)}
+                                                    {renderRadarPolygon([40,40,40,40,40], "#374151", 0)}
+                                                    {renderRadarPolygon([20,20,20,20,20], "#374151", 0)}
+                                                    {/* Data */}
+                                                    {renderRadarPolygon(bigFiveArray, "#3b82f6", 0.4)}
+                                                    {/* Labels approximate positions */}
+                                                    <text x="100" y="15" fill="#9ca3af" fontSize="10" textAnchor="middle">외향성(E)</text>
+                                                    <text x="180" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">개방성(O)</text>
+                                                    <text x="150" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">우호성(A)</text>
+                                                    <text x="50" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">성실성(C)</text>
+                                                    <text x="20" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">신경성(N)</text>
+                                                </svg>
+                                            </div>
+                                            <div className="text-center z-10">
+                                                <p className="text-xs text-gray-400 mb-1">16가지 행동 기질형</p>
+                                                <div className="inline-block px-4 py-1.5 rounded-lg bg-blue-900/40 border border-blue-500/30 text-2xl font-bold text-white tracking-widest">{userData.mbti}</div>
+                                            </div>
+                                        </div>
 
-                                {/* CONNECTOR / SYNC */}
-                                <div className="hidden md:flex flex-col items-center justify-center space-y-4">
-                                    <div className="text-center text-xs text-gray-500 font-mono tracking-widest uppercase mb-2">Cross-Mapping</div>
-                                    <svg className="w-24 h-48" viewBox="0 0 100 200">
-                                        <path d="M0,20 C50,20 50,20 100,20" stroke="#4b5563" strokeWidth="1" strokeDasharray="4 4" fill="none" />
-                                        <path d="M0,60 C50,60 50,60 100,60" stroke="#4b5563" strokeWidth="1" strokeDasharray="4 4" fill="none" />
-                                        <path d="M0,100 C50,100 50,100 100,100" stroke="#4b5563" strokeWidth="1" strokeDasharray="4 4" fill="none" />
-                                        <path d="M0,140 C50,140 50,140 100,140" stroke="#4b5563" strokeWidth="1" strokeDasharray="4 4" fill="none" />
-                                        <path d="M0,180 C50,180 50,180 100,180" stroke="#4b5563" strokeWidth="1" strokeDasharray="4 4" fill="none" />
+                                        {/* CONNECTOR / SYNC */}
+                                        <div className="hidden md:flex flex-col items-center justify-center space-y-2 relative h-full">
+                                            <div className="text-center text-[10px] text-blue-400 font-mono tracking-widest uppercase mb-4 animate-pulse">Bio-Metric Cross Sync</div>
+                                            
+                                            <div className="relative w-full h-32 flex items-center justify-center">
+                                                <svg className="absolute w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                                    <path d="M0,20 C50,20 50,20 100,50" stroke="url(#blue-purple)" strokeWidth="1.5" strokeDasharray="4 4" fill="none" className="opacity-60" />
+                                                    <path d="M0,50 C50,50 50,50 100,50" stroke="url(#blue-purple)" strokeWidth="2" strokeDasharray="4 4" fill="none" />
+                                                    <path d="M0,80 C50,80 50,80 100,50" stroke="url(#blue-purple)" strokeWidth="1.5" strokeDasharray="4 4" fill="none" className="opacity-60" />
+                                                    
+                                                    <defs>
+                                                        <linearGradient id="blue-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                            <stop offset="0%" stopColor="#3b82f6" />
+                                                            <stop offset="100%" stopColor="#a855f7" />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    
+                                                    {/* Animated Sync Particles */}
+                                                    <circle cx="50" cy="50" r="3" fill="#fff" className="animate-ping" />
+                                                </svg>
+                                            </div>
+                                            
+                                            <div className="px-3 py-1 rounded bg-gray-800 border border-gray-600 text-xs text-gray-300 blur-[0.3px]">60갑자 기반 벡터 생성</div>
+                                        </div>
+
+                                        {/* EASTERN */}
+                                        <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 relative overflow-hidden">
+                                            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full"></div>
+                                            <h3 className="text-lg font-semibold text-purple-300 tracking-wide">동양 명리학 (Genotype)</h3>
+                                            <div className="w-48 h-48 relative">
+                                                <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                                                    {/* Grid */}
+                                                    {renderRadarPolygon([100,100,100,100,100], "#374151", 0)}
+                                                    {renderRadarPolygon([80,80,80,80,80], "#374151", 0)}
+                                                    {renderRadarPolygon([60,60,60,60,60], "#374151", 0)}
+                                                    {renderRadarPolygon([40,40,40,40,40], "#374151", 0)}
+                                                    {renderRadarPolygon([20,20,20,20,20], "#374151", 0)}
+                                                    {/* Data */}
+                                                    {renderRadarPolygon(ohaengArray, "#a855f7", 0.4)}
+                                                    {/* Labels approximate positions */}
+                                                    <text x="100" y="15" fill="#9ca3af" fontSize="10" textAnchor="middle">화(火/발산)</text>
+                                                    <text x="180" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">목(木/성장)</text>
+                                                    <text x="150" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">토(土/수용)</text>
+                                                    <text x="50" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">금(金/규칙)</text>
+                                                    <text x="20" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">수(水/응축)</text>
+                                                </svg>
+                                            </div>
+                                            <div className="text-center z-10">
+                                                <p className="text-xs text-gray-400 mb-1">기질 신경망 (Neural Code)</p>
+                                                <div className="inline-block px-4 py-1.5 rounded-lg bg-purple-900/40 border border-purple-500/30 text-xl font-bold text-white tracking-widest">{userData.neuralCode}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Analysis Text */}
+                                    <div className="bg-gray-800/80 rounded-xl p-6 border border-blue-500/30 relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500 to-purple-500"></div>
+                                        <h4 className="text-lg font-bold mb-5 flex items-center text-gray-100">
+                                            <span className="w-8 h-8 rounded-full bg-blue-900/50 border border-blue-500 flex items-center justify-center mr-3 text-sm">💡</span>
+                                            인지행동 (Cognitive) × 오행 (Ohaeng) 에너지 교차 분석 도출
+                                        </h4>
+                                        <ul className="space-y-5 text-sm py-2">
+                                            <li className="flex gap-4 items-start pb-4 border-b border-gray-700/50">
+                                                <div className="shrink-0 w-10 h-10 rounded-xl bg-red-900/30 border border-red-500/50 flex items-center justify-center text-red-400 text-lg shadow-[0_0_10px_rgba(239,68,68,0.2)]">🔥</div>
+                                                <div className="pt-1">
+                                                    <strong className="text-white text-base block mb-1">외향성(E) ↔ 화(Fire) 에너지 동기화</strong> 
+                                                    <span className="text-gray-300 leading-relaxed block">외부로 향하는 목표 지향적 에너지가 높은 수치({userData.bigFive.e}%)로 측정되었습니다. 화(火) 기운의 팽창성과 결합되어, 번아웃 위험도(과각성)가 높아 스마트워치 모니터링이 필수입니다.</span>
+                                                </div>
+                                            </li>
+                                            <li className="flex gap-4 items-start pb-4 border-b border-gray-700/50">
+                                                <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-900/30 border border-blue-500/50 flex items-center justify-center text-blue-400 text-lg shadow-[0_0_10px_rgba(59,130,246,0.2)]">💧</div>
+                                                <div className="pt-1">
+                                                    <strong className="text-white text-base block mb-1">신경성(N) ↔ 수(Water) 에너지 동기화</strong> 
+                                                    <span className="text-gray-300 leading-relaxed block">신경성(불안도) 수치는 {userData.bigFive.n}%로 안정적 범위입니다. 수(水) 에너지의 '응축 및 저장' 시스템이 전전두엽 억제 제어력과 조화롭게 작동하여 뛰어난 회복탄력성을 보입니다.</span>
+                                                </div>
+                                            </li>
+                                            <li className="flex gap-4 items-start">
+                                                <div className="shrink-0 w-10 h-10 rounded-xl bg-gray-700/50 border border-gray-500/50 flex items-center justify-center text-gray-300 text-lg shadow-[0_0_10px_rgba(156,163,175,0.2)]">⚙️</div>
+                                                <div className="pt-1">
+                                                    <strong className="text-white text-base block mb-1">성실성(C) ↔ 금(Metal) 에너지 동기화</strong> 
+                                                    <span className="text-gray-300 leading-relaxed block">성실성이 {userData.bigFive.c}%로 극도로 발달되어 있습니다. 이는 금(金) 특유의 단절/규정 에너지와 충돌할 경우 강박적 사고("~해야만 한다")로 왜곡될 수 있으나, 집중 시 탁월한 성취를 냅니다.</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div className="flex justify-center text-sm text-gray-500 italic">
+                                        Tip: 상단의 "2. 다차원 인지 진화 시뮬레이터" 탭을 눌러 소버린의 3단계 코칭 시나리오를 확인하세요.
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* TAB 2: 다차원 인지 진화 동적 시뮬레이터 (심사위원 데모용) */}
+                            {activeTab === 'evolution' && (
+                                <motion.div 
+                                    key="tab-evolution"
+                                    initial={{ opacity: 0, x: 20 }} 
+                                    animate={{ opacity: 1, x: 0 }} 
+                                    exit={{ opacity: 0, x: 20 }}
+                                    className="space-y-6"
+                                >
+                                    <div className="flex justify-between items-end mb-2">
+                                        <p className="text-sm text-gray-400">
+                                            생체 신호(Y축)에 따른 <strong className="text-white">사주 기질의 발현 3단계 (Dark → Neural → Meta)</strong>와 AI 개입 로직
+                                        </p>
+                                        <button 
+                                            onClick={() => setSimStep(1)}
+                                            className="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 border border-gray-600 text-xs text-white"
+                                        >
+                                            ↻ 시뮬레이션 재시작
+                                        </button>
+                                    </div>
+
+                                    {/* 진화 단계 타임라인 버스 */}
+                                    <div className="relative flex justify-between h-2 bg-gray-800 rounded-full mb-12 mt-8 px-8">
+                                        <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-red-500 via-green-500 to-yellow-500 rounded-full transition-all duration-1000" style={{ width: simStep === 1 ? '10%' : simStep === 2 ? '50%' : '100%' }}></div>
                                         
-                                        {/* Animated Sync Particles */}
-                                        <circle cx="50" cy="100" r="3" fill="#a855f7" className="animate-ping" />
-                                    </svg>
-                                </div>
-
-                                {/* EASTERN */}
-                                <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50">
-                                    <h3 className="text-lg font-semibold text-purple-300">동양 명리학 (Genotype)</h3>
-                                    <div className="w-48 h-48 relative">
-                                        <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-                                            {/* Grid */}
-                                            {renderRadarPolygon([100,100,100,100,100], "#374151", 0)}
-                                            {renderRadarPolygon([80,80,80,80,80], "#374151", 0)}
-                                            {renderRadarPolygon([60,60,60,60,60], "#374151", 0)}
-                                            {renderRadarPolygon([40,40,40,40,40], "#374151", 0)}
-                                            {renderRadarPolygon([20,20,20,20,20], "#374151", 0)}
-                                            {/* Data */}
-                                            {renderRadarPolygon(ohaengArray, "#a855f7", 0.4)}
-                                            {/* Labels approximate positions */}
-                                            <text x="100" y="15" fill="#9ca3af" fontSize="10" textAnchor="middle">화(火)</text>
-                                            <text x="180" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">목(木)</text>
-                                            <text x="150" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">토(土)</text>
-                                            <text x="50" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">금(金)</text>
-                                            <text x="20" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">수(水)</text>
-                                        </svg>
+                                        {[
+                                            { step: 1, label: '다크 코드', color: 'bg-red-500', shadow: 'shadow-red-500/50' },
+                                            { step: 2, label: '뉴럴 코드', color: 'bg-green-500', shadow: 'shadow-green-500/50' },
+                                            { step: 3, label: '메타 코드', color: 'bg-yellow-500', shadow: 'shadow-yellow-500/50' }
+                                        ].map((node) => (
+                                            <div key={node.step} className="relative z-10 flex flex-col items-center -mt-3">
+                                                <div 
+                                                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border-2 transition-all duration-500 cursor-pointer
+                                                        ${simStep >= node.step ? `${node.color} border-white shadow-[0_0_15px] ${node.shadow} text-white` : 'bg-gray-800 border-gray-600 text-gray-500'}
+                                                    `}
+                                                    onClick={() => setSimStep(node.step)}
+                                                >
+                                                    {node.step}
+                                                </div>
+                                                <span className={`absolute top-10 whitespace-nowrap text-sm font-bold ${simStep >= node.step ? 'text-white' : 'text-gray-500'}`}>{node.label}</span>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="text-center">
-                                        <p className="text-sm text-gray-400">신경망 코드 (Neural Code)</p>
-                                        <p className="text-3xl font-bold text-white tracking-widest">{userData.neuralCode}</p>
+
+                                    {/* 단계별 상세 뷰어 */}
+                                    <div className="min-h-[400px]">
+                                        {/* STEP 1: 다크 코드 */}
+                                        {simStep === 1 && (
+                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-950/20 border border-red-900/50 rounded-2xl p-6 relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                                                        <span className="text-red-400 font-mono text-xs font-bold border border-red-800 bg-red-900/40 px-2 py-0.5 rounded">BPM 115 / HRV 급감</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <h3 className="text-2xl font-black text-red-500 mb-6 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">Phase 1. 생존 모드 (Dark Code)</h3>
+                                                
+                                                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                                                    <div className="bg-black/40 rounded-xl p-5 border border-red-900/30">
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">동양기질 진단 (사주 매핑)</h4>
+                                                        <ul className="space-y-3">
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">10대 인지행동 (십신)</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">편관/칠살 (과잉 경계/위협)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">생체 에너지 (12운성)</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">사(死) / 절(絶) (번아웃)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">충돌 패턴 (12신살)</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">원진살 (에너지 충돌/피해망상)</span></li>
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    <div className="bg-black/40 rounded-xl p-5 border border-red-900/30">
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">상태 분석 (Psychology)</h4>
+                                                        <p className="text-red-200 text-sm leading-relaxed text-right">
+                                                            <strong className="block text-white mb-1">"나는 지금 세상의 공격을 받고 있다."</strong>
+                                                            아미그달라(편도체)가 납치되어 투쟁-도피(Fight or Flight) 모드가 된 상태입니다. 칠살(위협) 에너지가 압도하여 모든 상황을 적대적으로 해석합니다.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-gradient-to-r from-red-900/80 to-transparent p-5 rounded-xl border-l-4 border-red-500">
+                                                    <div className="text-xs text-red-300 font-bold mb-2 tracking-widest uppercase">능동형 개입 (Sovereign Socratic Q - Step 1. 자각)</div>
+                                                    <p className="text-white text-xl italic font-serif">"지금 당신을 찌르고 상처 내는 것은 그 사람인가요, 아니면 당신 머릿속의 과잉 경보인가요?"</p>
+                                                </div>
+                                            </motion.div>
+                                        )}
+
+                                        {/* STEP 2: 뉴럴 코드 */}
+                                        {simStep === 2 && (
+                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-green-950/20 border border-green-900/50 rounded-2xl p-6 relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                                        <span className="text-green-400 font-mono text-xs font-bold border border-green-800 bg-green-900/40 px-2 py-0.5 rounded">BPM 75 / 생리적 평형</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <h3 className="text-2xl font-black text-green-500 mb-6 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">Phase 2. 일상 모드 (Neural Code)</h3>
+                                                
+                                                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                                                    <div className="bg-black/40 rounded-xl p-5 border border-green-900/30">
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">동양기질 진단 (사주 매핑)</h4>
+                                                        <ul className="space-y-3">
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">10대 인지행동 (십신)</span> <span className="text-green-300 font-bold bg-green-900/30 px-2 py-1 rounded">정관 (규칙과 균형 회복)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">생체 에너지 (12운성)</span> <span className="text-green-300 font-bold bg-green-900/30 px-2 py-1 rounded">건록(建祿) (안정기 발현)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">충돌 패턴 (12신살)</span> <span className="text-green-300 font-bold bg-green-900/30 px-2 py-1 rounded">장성살 (주체적 리더십)</span></li>
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    <div className="bg-black/40 rounded-xl p-5 border border-green-900/30">
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">상태 분석 (Psychology)</h4>
+                                                        <p className="text-green-100 text-sm leading-relaxed text-right">
+                                                            <strong className="block text-white mb-1">"나는 지금 중심을 잡고 현실을 처리한다."</strong>
+                                                            AI의 산파술 코칭으로 전전두엽 기능이 복구되고 항상성(Homeostasis)을 되찾았습니다. 감정을 분리하고 이성적인 대안을 탐색하는 본연의 성분이 발현됩니다.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-gradient-to-r from-green-900/60 to-transparent p-5 rounded-xl border-l-4 border-green-500">
+                                                    <div className="text-xs text-green-300 font-bold mb-2 tracking-widest uppercase">능동형 개입 (Sovereign Socratic Q - Step 2. 수용 및 대안)</div>
+                                                    <p className="text-white text-xl italic font-serif">"통제할 수 없는 외부 변수를 내려놓고, 지금 당장 당신이 쥘 수 있는 단 하나의 운전대는 무엇입니까?"</p>
+                                                </div>
+                                            </motion.div>
+                                        )}
+
+                                        {/* STEP 3: 메타 코드 */}
+                                        {simStep === 3 && (
+                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-yellow-950/30 border border-yellow-700/50 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_30px_rgba(234,179,8,0.15)]">
+                                                <div className="absolute top-0 right-0 p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,1)]"></span>
+                                                        <span className="text-yellow-400 font-mono text-xs font-bold border border-yellow-700 bg-yellow-900/40 px-2 py-0.5 rounded">FLOW STATE (명상 레벨 HRV)</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <h3 className="text-2xl font-black text-yellow-400 mb-6 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">Phase 3. 소버린 모드 (Meta Code)</h3>
+                                                
+                                                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                                                    <div className="bg-black/50 rounded-xl p-5 border border-yellow-700/30">
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">동양기질 진단 (사주 매핑)</h4>
+                                                        <ul className="space-y-3">
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">10대 인지행동 (십신)</span> <span className="text-yellow-300 font-bold bg-yellow-900/30 px-2 py-1 rounded border border-yellow-600/30">식신+편인 (창조적 직관 융합)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">생체 에너지 (12운성)</span> <span className="text-yellow-300 font-bold bg-yellow-900/30 px-2 py-1 rounded border border-yellow-600/30">제왕(帝旺) (잠재력 최고조)</span></li>
+                                                            <li className="flex justify-between items-center"><span className="text-gray-400">충돌 패턴 (12신살)</span> <span className="text-yellow-300 font-bold bg-yellow-900/30 px-2 py-1 rounded border border-yellow-600/30">화개살 (깊은 내면의 통찰)</span></li>
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    <div className="bg-black/50 rounded-xl p-5 border border-yellow-700/30">
+                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">상태 분석 (Psychology)</h4>
+                                                        <p className="text-yellow-100 text-sm leading-relaxed text-right">
+                                                            <strong className="block text-white mb-1">"나는 관찰자이자, 세계의 창조자다."</strong>
+                                                            디폴트 모드 네트워크(DMN)가 유연해지고 도파민 회로가 안정된 몰입(Flow) 상태입니다. 기질적 한계를 초월하여 자신의 스키마를 자유롭게 재설계합니다.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-gradient-to-r from-yellow-900/80 to-transparent p-5 rounded-xl border-l-4 border-yellow-400 shadow-[inset_0_0_20px_rgba(250,204,21,0.1)]">
+                                                    <div className="text-xs text-yellow-500 font-bold mb-2 tracking-widest uppercase">능동형 개입 (Sovereign Socratic Q - Step 3. 메타 초월)</div>
+                                                    <p className="text-white text-xl italic font-serif">"이 고요하고 완벽한 몰입을 바라보는 '진짜 관찰자(Sovereign)'는 지금 어디에 존재합니까?"</p>
+                                                </div>
+                                            </motion.div>
+                                        )}
                                     </div>
-                                </div>
-                            </div>
 
-                            {/* Analysis Text */}
-                            <div className="bg-gray-800/80 rounded-xl p-6 border border-blue-500/30">
-                                <h4 className="text-lg font-bold mb-4 flex items-center text-blue-200">
-                                    <span className="w-2 h-6 bg-blue-500 rounded-full mr-3"></span>
-                                    인지/행동 X 오행 에너지 교차 분석 도출
-                                </h4>
-                                <ul className="space-y-4 text-sm text-gray-300">
-                                    <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-full bg-red-900/50 flex items-center justify-center text-red-400">🔥</div>
-                                        <div>
-                                            <strong className="text-white">외향성(E) ↔ 화(Fire) 에너지 동기화:</strong> 
-                                            외부로 향하는 목표 지향적 에너지가 높은 수치({userData.bigFive.e}%)로 측정되었습니다. 화(火) 기운의 발산 작용과 완벽히 일치하며, 번아웃(과각성) 위험도가 높아 모니터링이 필요합니다.
-                                        </div>
-                                    </li>
-                                    <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-full bg-blue-900/50 flex items-center justify-center text-blue-400">💧</div>
-                                        <div>
-                                            <strong className="text-white">신경성(N) ↔ 수(Water) 에너지 동기화:</strong> 
-                                            신경성(불안도) 수직은 {userData.bigFive.n}%로 매우 안정적입니다. 명리학적 수(水) 에너지의 '응축 및 저장' 시스템이 전전두엽의 억제 기능과 조화롭게 작동하여 심리적 회복탄력성이 훌륭합니다.
-                                        </div>
-                                    </li>
-                                    <li className="flex gap-4">
-                                        <div className="shrink-0 w-8 h-8 rounded-full bg-gray-700/50 flex items-center justify-center text-gray-300">⚙️</div>
-                                        <div>
-                                            <strong className="text-white">성실성(C) ↔ 금(Metal) 에너지 동기화:</strong> 
-                                            성실성이 {userData.bigFive.c}%로 극도로 발달되어 있습니다. 이는 금(金) 특유의 단절/규칙 에너지와 결합되어, 스스로를 옭아매는 당위적 사고("~해야만 한다") 형태의 강박으로 발현될 수 있으나 업무적 성취도는 탁월합니다.
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div className="text-center pt-4">
-                                <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-full font-bold text-white shadow-lg shadow-blue-500/25 transition-all">
-                                    융합 데이터 기반 AI 코칭 시작하기
-                                </button>
-                            </div>
-
-                        </motion.div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     )}
                 </div>
             </motion.div>
