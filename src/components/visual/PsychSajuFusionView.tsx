@@ -27,10 +27,72 @@ const FAKE_MOCK_DATA: FusionData = {
     neuralCode: 'NC-28 (대과)'
 };
 
+const CASE_DATA = {
+    BP54: {
+        id: "BP-54 [정사(丁巳) - 제왕적 리더 모델]",
+        phase1: {
+            title: "Phase 1. Old Script : 다크 코드 (폭주하는 멜트다운)",
+            schema: "투쟁-도피 회로 (Fight-or-Flight)",
+            neural: "편도체 납치 및 에고 팽창 (Amygdala Hijack)",
+            status: "인지적 과부하 (Cognitive Overload)",
+            errorLog: "\"내 논리가 완벽한데 왜 따르지 않는가? 굽히느니 차라리 부러지겠다.\" 주체성과 폭발력이 치명적인 독선으로 변질되어, 타인에게 상처를 입히고 자신의 에너지를 방전시키는 치명적 오류 구간입니다.",
+            q1: "지금 이 논쟁에서 이겨서 얻는 것은 '문제 해결'입니까, '알량한 자존심'입니까? 상대를 굴복시킨 직후, 내 손에 남는 것은 따뜻한 연대입니까, 잿더미입니까?"
+        },
+        phase2: {
+            title: "Phase 2. Neural Blueprint : 뉴럴 코드 (통제권 회복)",
+            cbt: "인지적 탈융합 (Cognitive Defusion)",
+            cbtDesc: "\"맞는 말이라도 온도가 너무 높으면 진실도 타버린다.\" (의도적으로 한 번 져주기 훈련)",
+            mbct: "부교감신경 쿨링다운",
+            mbctDesc: "과열(분노)을 인지하는 즉시 물리적 격리 및 신체 감각을 통한 부교감 활성화.",
+            recovery: "\"나는 내 화력을 자유자재로 다이얼로 조절한다.\" 외부의 거대한 화력을 내부의 뾰족한 초점으로 응축시킵니다. 오만한 칼날 대신 순수한 정수를 뽑아내는 상태로 회복합니다.",
+            q2: "'결코 굽힐 수 없다'며 올리는 이 열기는 나의 본질입니까, 두려움의 '불타는 갑옷'입니까? 이 피곤한 에고(Ego)를 지켜보는 '진짜 당신'은 통제권을 쥐고 있습니까?"
+        },
+        phase3: {
+            title: "Phase 3. Meta-Self : 메타 코드 (신성한 제련소의 주권자)",
+            dbt: "변증법적 포용 조율",
+            dbtDesc: "비판 대신 쿠션 화법(\"그렇게 생각할 수도 있네요\")으로 열기를 역이용해 분산 전달.",
+            act: "가치 기반 몰입 승화",
+            actDesc: "사람을 향한 폭발력을 '전문 분야 혁신과 사물'에 대한 압도적 집중력으로 100% 전환.",
+            output: "\"진정한 제왕은 칼을 꽂은 채 세상을 굴복시킨다.\" 극강의 화력을 자유자재로 조율하는 최상위 연금술 엔진. 상대를 온화하게 비출 때 세상은 압도적인 빛 앞에 충성을 바칩니다.",
+            q3: "목 끝까지 차오른 이 '날카롭고 뜨거운 분노'를 뒤에서 누가 지켜보고 있습니까? 당신은 폭발하는 폭탄인가요, 그 폭발마저 고요히 품을 수 있는 거대한 우주인가요?"
+        }
+    },
+    BP18: {
+        id: "BP-18 [신사(辛巳) - 고정밀 뉴럴 스탠다드]",
+        phase1: {
+            title: "Phase 1. Old Script : 다크 코드 (녹아내리는 강박증)",
+            schema: "과잉 억제 제어 (Hyper-Control)",
+            neural: "편도체 기반 터널 시야 (Tunnel Vision)",
+            status: "신경계 멜트다운 (Nervous Meltdown)",
+            errorLog: "\"작은 흠집 하나가 모든 것을 망친다. 난 긴장을 풀 수 없다.\" 천부적인 정밀함이 만성적 불안과 자기 학대(Self-Sabotage)로 변질되어 스트레스성 자율신경 실조증 위험이 한계치에 다다른 치명적 오류 구간입니다.",
+            q1: "지금 지키려는 이 '100% 무결점'은 진정 내 가치를 높여줍니까, 아니면 비판이 두려워 쳐둔 '불안의 방어막'입니까? 80%만 완성했을 때 세상이 붕괴된 적이 있습니까?"
+        },
+        phase2: {
+            title: "Phase 2. Neural Blueprint : 뉴럴 코드 (초정밀 가치 제련 시스템)",
+            cbt: "인지적 유연성(여백) 확보",
+            cbtDesc: "\"완벽함은 뺄 것이 없는 게 아니라 인간적인 틈을 남기는 여유.\" (80% 완성 후 강제 전송 훈련)",
+            mbct: "부교감신경 쿨링다운",
+            mbctDesc: "과열 시 즉시 외부 자극(시/청각)을 차단하고 생리적 온도 조절.",
+            recovery: "\"불꽃이 나를 삼키기 전에 스스로를 식힌다.\" 거센 스트레스 압력을 견뎌내면서도 자신의 본질을 잃지 않는 초정밀 세공기제(Perfect-Refining)가 전전두엽에서 가동을 시작합니다.",
+            q2: "'조금만 더 참아, 완벽해야 해'라며 옥죄는 시스템은 누구의 목소리입니까? 상처 없는 보석이 되려 나를 태우는 이 에고를 지켜보는 '진짜 당신'은 어디에 있습니까?"
+        },
+        phase3: {
+            title: "Phase 3. Meta-Self : 메타 코드 (무결점의 우아함의 주권자)",
+            dbt: "변증법적 감정 조율",
+            dbtDesc: "타인이 룰을 어겼을 때 즉각적 비판 대신 쿠션 언어 발화.",
+            act: "가치 기반 수용 전념",
+            actDesc: "불안의 메스를 치밀한 연구/기획이라는 '장인의 조각칼'로 변환.",
+            output: "\"세상은 나의 흔들림 없는 품격에 매료된다.\" 설계된 스트레스를 대체 불가능한 하이엔드 퀄리티(High-end Quality)로 승화시키는 초정밀 통찰력 엔진. 비판의 잣대를 거두면 최고급의 우아함이 실현됩니다.",
+            q3: "작은 결론 하나에 심장을 옥죄는 긴장감과, 그것을 비추는 '광활한 의식' 사이에는 어떤 공간이 존재합니까? 당신은 녹아내리는 금속입니까, 그 과정을 관조하는 우주입니까?"
+        }
+    }
+};
+
 export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => void; userData?: FusionData }> = ({ isOpen, onClose, userData = FAKE_MOCK_DATA }) => {
     const [scanned, setScanned] = useState(false);
     const [activeTab, setActiveTab] = useState<'fusion' | 'evolution'>('fusion');
     const [simStep, setSimStep] = useState<number>(0);
+    const [selectedCase, setSelectedCase] = useState<'BP54' | 'BP18'>('BP54');
 
     useEffect(() => {
         if (isOpen) {
@@ -50,7 +112,7 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
             }, 3000); // 3초마다 자동으로 다음 단계(다크->뉴럴->메타)
             return () => clearTimeout(timer);
         }
-    }, [activeTab, simStep]);
+    }, [activeTab, simStep, selectedCase]); // 케이스 변경 시에도 효과 유지
 
     if (!isOpen) return null;
 
@@ -66,6 +128,8 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
 
     const bigFiveArray = [userData.bigFive.e, userData.bigFive.o, userData.bigFive.a, userData.bigFive.c, userData.bigFive.n];
     const ohaengArray = [userData.ohaeng.화, userData.ohaeng.목, userData.ohaeng.토, userData.ohaeng.금, userData.ohaeng.수];
+
+    const currentCase = CASE_DATA[selectedCase];
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
@@ -252,13 +316,29 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                     exit={{ opacity: 0, x: 20 }}
                                     className="space-y-6"
                                 >
-                                    <div className="flex justify-between items-end mb-2">
-                                        <p className="text-sm text-gray-400">
-                                            생체 신호(Y축)에 따른 <strong className="text-white">사주 기질의 발현 3단계 (Dark → Neural → Meta)</strong>와 AI 개입 로직
-                                        </p>
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-400 mb-3">
+                                                생체 신호(Y축)에 따른 <strong className="text-white">기질 발현 3단계 (Dark → Neural → Meta)</strong>와 AI 개입 로직
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                                <button 
+                                                    onClick={() => { setSelectedCase('BP54'); setSimStep(1); }}
+                                                    className={`px-3 py-1.5 rounded text-xs font-bold transition-colors shadow-lg ${selectedCase === 'BP54' ? 'bg-orange-600 text-white shadow-[0_0_15px_rgba(234,88,12,0.6)]' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                                                >
+                                                    🔥 BP-54 (정사) 제왕적 리더
+                                                </button>
+                                                <button 
+                                                    onClick={() => { setSelectedCase('BP18'); setSimStep(1); }}
+                                                    className={`px-3 py-1.5 rounded text-xs font-bold transition-colors shadow-lg ${selectedCase === 'BP18' ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.6)]' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                                                >
+                                                    💎 BP-18 (신사) 고정밀 완벽주의
+                                                </button>
+                                            </div>
+                                        </div>
                                         <button 
                                             onClick={() => setSimStep(1)}
-                                            className="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 border border-gray-600 text-xs text-white"
+                                            className="px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700 border border-gray-600 text-xs text-white whitespace-nowrap h-fit"
                                         >
                                             ↻ 시뮬레이션 재시작
                                         </button>
@@ -282,133 +362,135 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                 >
                                                     {node.step}
                                                 </div>
-                                                <span className={`absolute top-10 whitespace-nowrap text-sm font-bold ${simStep >= node.step ? 'text-white' : 'text-gray-500'}`}>{node.label}</span>
+                                                <span className={`absolute top-10 whitespace-nowrap text-sm font-bold transition-colors ${simStep >= node.step ? 'text-white' : 'text-gray-500'}`}>{node.label}</span>
                                             </div>
                                         ))}
                                     </div>
 
                                     {/* 단계별 상세 뷰어 */}
                                     <div className="min-h-[400px]">
-                                        {/* STEP 1: 다크 코드 */}
-                                        {simStep === 1 && (
-                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-950/20 border border-red-900/50 rounded-2xl p-6 relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 p-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-                                                        <span className="text-red-400 font-mono text-xs font-bold border border-red-800 bg-red-900/40 px-2 py-0.5 rounded">BPM 115 / HRV 급감</span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="mb-4">
-                                                    <span className="px-3 py-1 bg-red-900/40 border border-red-500/30 rounded-full text-xs text-red-300 font-bold tracking-widest">Case Study: BP-18 [신사(辛巳) - 고정밀 뉴럴 스탠다드]</span>
-                                                </div>
-                                                <h3 className="text-2xl font-black text-red-500 mb-6 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">Phase 1. Old Script : 다크 코드 (녹아내리는 강박증)</h3>
-                                                
-                                                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                                    <div className="bg-black/40 rounded-xl p-5 border border-red-900/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">인지 편향 오류 진단 (Cognitive Error)</h4>
-                                                        <ul className="space-y-3">
-                                                            <li className="flex justify-between items-center"><span className="text-gray-400">행동 스키마</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">과잉 억제 제어 (Hyper-Control)</span></li>
-                                                            <li className="flex justify-between items-center"><span className="text-gray-400">신경망 활성</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">편도체 기반 터널 시야 (Tunnel Vision)</span></li>
-                                                            <li className="flex justify-between items-center"><span className="text-gray-400">시스템 오류 상태</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded">신경계 멜트다운 (Nervous Meltdown)</span></li>
-                                                        </ul>
+                                        <AnimatePresence mode="wait">
+                                            {/* STEP 1: 다크 코드 */}
+                                            {simStep === 1 && (
+                                                <motion.div key={`s1-${selectedCase}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-red-950/20 border border-red-900/50 rounded-2xl p-4 md:p-6 relative overflow-hidden">
+                                                    <div className="absolute top-0 right-0 p-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                                                            <span className="text-red-400 font-mono text-[10px] md:text-xs font-bold border border-red-800 bg-red-900/40 px-2 py-0.5 rounded">BPM 115 / HRV 급감</span>
+                                                        </div>
                                                     </div>
                                                     
-                                                    <div className="bg-black/40 rounded-xl p-5 border border-red-900/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">에러 로그 (Error Log)</h4>
-                                                        <p className="text-red-200 text-sm leading-relaxed text-right">
-                                                            <strong className="block text-white mb-1">"작은 흠집 하나가 모든 것을 망친다. 난 긴장을 풀 수 없다."</strong>
-                                                            천부적인 정밀함이 만성적 불안과 자기 학대(Self-Sabotage)로 변질되었습니다. 쉴 새 없이 스스로를 검열하느라 에너지가 고갈되고 스트레스성 자율신경 실조증 위험이 한계치에 다다른 치명적 오류 구간입니다.
-                                                        </p>
+                                                    <div className="mb-4">
+                                                        <span className="px-3 py-1 bg-red-900/40 border border-red-500/30 rounded-full text-[10px] md:text-xs text-red-300 font-bold tracking-widest">Case Study: {currentCase.id}</span>
                                                     </div>
-                                                </div>
-
-                                                <div className="bg-gradient-to-r from-red-900/80 to-transparent p-5 rounded-xl border-l-4 border-red-500 mb-4">
-                                                    <div className="text-xs text-red-300 font-bold mb-2 tracking-widest uppercase">소버린 산파술 개입 (Sovereign Socratic Q - 자각)</div>
-                                                    <p className="text-white text-lg italic font-serif">"지금 지키려는 이 '100% 무결점'은 진정 내 가치를 높여줍니까, 아니면 비판이 두려워 쳐둔 '불안의 방어막'입니까? 80%만 완성했을 때 세상이 붕괴된 적이 있습니까?"</p>
-                                                </div>
-                                            </motion.div>
-                                        )}
-
-                                        {/* STEP 2: 뉴럴 코드 */}
-                                        {simStep === 2 && (
-                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-green-950/20 border border-green-900/50 rounded-2xl p-6 relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 p-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                                        <span className="text-green-400 font-mono text-xs font-bold border border-green-800 bg-green-900/40 px-2 py-0.5 rounded">BPM 75 / 생리적 평형</span>
+                                                    <h3 className="text-xl md:text-2xl font-black text-red-500 mb-6 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">{currentCase.phase1.title}</h3>
+                                                    
+                                                    <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
+                                                        <div className="bg-black/40 rounded-xl p-4 md:p-5 border border-red-900/30">
+                                                            <h4 className="text-xs md:text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">인지 편향 오류 진단 (Cognitive Error)</h4>
+                                                            <ul className="space-y-3">
+                                                                <li className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-1"><span className="text-gray-400 text-xs">행동 스키마</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded text-xs">{currentCase.phase1.schema}</span></li>
+                                                                <li className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-1"><span className="text-gray-400 text-xs">신경망 활성</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded text-xs">{currentCase.phase1.neural}</span></li>
+                                                                <li className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-1"><span className="text-gray-400 text-xs">시스템 상태</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded text-xs">{currentCase.phase1.status}</span></li>
+                                                            </ul>
+                                                        </div>
+                                                        
+                                                        <div className="bg-black/40 rounded-xl p-4 md:p-5 border border-red-900/30">
+                                                            <h4 className="text-xs md:text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 md:text-right">에러 로그 (Error Log)</h4>
+                                                            <p className="text-red-200 text-xs md:text-sm leading-relaxed md:text-right">
+                                                                <strong className="block text-white mb-1">"{currentCase.phase1.errorLog.split('"')[1]}"</strong>
+                                                                {currentCase.phase1.errorLog.split('"')[2]}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                
-                                                <div className="mb-4">
-                                                    <span className="px-3 py-1 bg-green-900/40 border border-green-500/30 rounded-full text-xs text-green-300 font-bold tracking-widest">Case Study: BP-18 [신사(辛巳) - 고정밀 뉴럴 스탠다드]</span>
-                                                </div>
-                                                <h3 className="text-2xl font-black text-green-500 mb-6 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">Phase 2. Neural Blueprint : 뉴럴 코드 (초정밀 가치 제련 시스템)</h3>
-                                                
-                                                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                                    <div className="bg-black/40 rounded-xl p-5 border border-green-900/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">안티-프래질 뉴럴 솔루션</h4>
-                                                        <ul className="space-y-3">
-                                                            <li className="flex flex-col"><span className="text-green-400 font-bold text-xs mb-1">[CBT] 인지적 유연성(여백) 확보</span> <span className="text-gray-300 text-xs">"완벽함은 뺄 것이 없는 게 아니라 인간적인 틈을 남기는 여유."</span></li>
-                                                            <li className="flex flex-col"><span className="text-green-400 font-bold text-xs mb-1">[MBCT] 부교감신경 쿨링다운</span> <span className="text-gray-300 text-xs">과열 시 즉시 외부 자극(시/청각)을 차단하고 생리적 온도 조절.</span></li>
-                                                        </ul>
+
+                                                    <div className="bg-gradient-to-r from-red-900/80 to-transparent p-4 md:p-5 rounded-xl border-l-4 border-red-500 mb-2">
+                                                        <div className="text-[10px] md:text-xs text-red-300 font-bold mb-2 tracking-widest uppercase">소버린 산파술 개입 (Sovereign Socratic Q)</div>
+                                                        <p className="text-white text-base md:text-lg italic font-serif leading-relaxed">"{currentCase.phase1.q1}"</p>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {/* STEP 2: 뉴럴 코드 */}
+                                            {simStep === 2 && (
+                                                <motion.div key={`s2-${selectedCase}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-green-950/20 border border-green-900/50 rounded-2xl p-4 md:p-6 relative overflow-hidden">
+                                                    <div className="absolute top-0 right-0 p-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                                            <span className="text-green-400 font-mono text-[10px] md:text-xs font-bold border border-green-800 bg-green-900/40 px-2 py-0.5 rounded">BPM 75 / 생리적 평형</span>
+                                                        </div>
                                                     </div>
                                                     
-                                                    <div className="bg-black/40 rounded-xl p-5 border border-green-900/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">시스템 복구 상태</h4>
-                                                        <p className="text-green-100 text-sm leading-relaxed text-right">
-                                                            <strong className="block text-white mb-1">"불꽃이 나를 삼키기 전에 스스로를 식힌다."</strong>
-                                                            거센 스트레스 압력을 견뎌내면서도 자신의 본질을 잃지 않는 초정밀 세공기제(Perfect-Refining)가 전전두엽에서 가동을 시작합니다.
-                                                        </p>
+                                                    <div className="mb-4">
+                                                        <span className="px-3 py-1 bg-green-900/40 border border-green-500/30 rounded-full text-[10px] md:text-xs text-green-300 font-bold tracking-widest">Case Study: {currentCase.id}</span>
                                                     </div>
-                                                </div>
-
-                                                <div className="bg-gradient-to-r from-green-900/60 to-transparent p-5 rounded-xl border-l-4 border-green-500">
-                                                    <div className="text-xs text-green-300 font-bold mb-2 tracking-widest uppercase">소버린 재귀적 개입 (Sovereign Socratic Q - 통제 지분 확인)</div>
-                                                    <p className="text-white text-lg italic font-serif">"'조금만 더 참아, 완벽해야 해'라며 옥죄는 시스템은 누구의 목소리입니까? 상처 없는 보석이 되려 나를 태우는 이 에고를 지켜보는 '진짜 당신'은 어디에 있습니까?"</p>
-                                                </div>
-                                            </motion.div>
-                                        )}
-
-                                        {/* STEP 3: 메타 코드 */}
-                                        {simStep === 3 && (
-                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-yellow-950/30 border border-yellow-700/50 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_30px_rgba(234,179,8,0.15)] flex flex-col h-full">
-                                                <div className="absolute top-0 right-0 p-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,1)]"></span>
-                                                        <span className="text-yellow-400 font-mono text-xs font-bold border border-yellow-700 bg-yellow-900/40 px-2 py-0.5 rounded">FLOW STATE (명상 레벨 HRV)</span>
+                                                    <h3 className="text-xl md:text-2xl font-black text-green-500 mb-6 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">{currentCase.phase2.title}</h3>
+                                                    
+                                                    <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
+                                                        <div className="bg-black/40 rounded-xl p-4 md:p-5 border border-green-900/30">
+                                                            <h4 className="text-xs md:text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">안티-프래질 뉴럴 솔루션</h4>
+                                                            <ul className="space-y-3">
+                                                                <li className="flex flex-col"><span className="text-green-400 font-bold text-xs mb-1">[CBT] {currentCase.phase2.cbt}</span> <span className="text-gray-300 text-xs">{currentCase.phase2.cbtDesc}</span></li>
+                                                                <li className="flex flex-col"><span className="text-green-400 font-bold text-xs mb-1">[MBCT] {currentCase.phase2.mbct}</span> <span className="text-gray-300 text-xs">{currentCase.phase2.mbctDesc}</span></li>
+                                                            </ul>
+                                                        </div>
+                                                        
+                                                        <div className="bg-black/40 rounded-xl p-4 md:p-5 border border-green-900/30">
+                                                            <h4 className="text-xs md:text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 md:text-right">시스템 복구 상태</h4>
+                                                            <p className="text-green-100 text-xs md:text-sm leading-relaxed md:text-right">
+                                                                <strong className="block text-white mb-1">"{currentCase.phase2.recovery.split('"')[1]}"</strong>
+                                                                {currentCase.phase2.recovery.split('"')[2]}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                
-                                                <div className="mb-4">
-                                                    <span className="px-3 py-1 bg-yellow-900/40 border border-yellow-500/30 rounded-full text-xs text-yellow-300 font-bold tracking-widest">Case Study: BP-18 [신사(辛巳) - 고정밀 뉴럴 스탠다드]</span>
-                                                </div>
-                                                <h3 className="text-2xl font-black text-yellow-400 mb-6 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">Phase 3. Meta-Self : 메타 코드 (무결점의 우아함의 주권자)</h3>
-                                                
-                                                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                                    <div className="bg-black/50 rounded-xl p-5 border border-yellow-700/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">행동 조율 통합 (DBT/ACT)</h4>
-                                                        <ul className="space-y-3">
-                                                            <li className="flex flex-col"><span className="text-yellow-300 font-bold text-xs mb-1">[DBT] 변증법적 감정 조율</span> <span className="text-gray-300 text-xs text-tight">타인이 룰을 어겼을 때 즉각적 비판 대신 쿠션 언어 발화.</span></li>
-                                                            <li className="flex flex-col"><span className="text-yellow-300 font-bold text-xs mb-1">[ACT] 가치 기반 수용 전념</span> <span className="text-gray-300 text-xs text-tight">불안의 메스를 치밀한 연구/기획이라는 '장인의 조각칼'로 변환.</span></li>
-                                                        </ul>
+
+                                                    <div className="bg-gradient-to-r from-green-900/60 to-transparent p-4 md:p-5 rounded-xl border-l-4 border-green-500 mb-2">
+                                                        <div className="text-[10px] md:text-xs text-green-300 font-bold mb-2 tracking-widest uppercase">소버린 재귀적 개입 (Sovereign Socratic Q)</div>
+                                                        <p className="text-white text-base md:text-lg italic font-serif leading-relaxed">"{currentCase.phase2.q2}"</p>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {/* STEP 3: 메타 코드 */}
+                                            {simStep === 3 && (
+                                                <motion.div key={`s3-${selectedCase}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-yellow-950/30 border border-yellow-700/50 rounded-2xl p-4 md:p-6 relative overflow-hidden shadow-[0_0_30px_rgba(234,179,8,0.15)] flex flex-col h-full border-b-[8px] border-b-yellow-500">
+                                                    <div className="absolute top-0 right-0 p-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,1)]"></span>
+                                                            <span className="text-yellow-400 font-mono text-[10px] md:text-xs font-bold border border-yellow-700 bg-yellow-900/40 px-2 py-0.5 rounded">FLOW STATE (명상 레벨 HRV)</span>
+                                                        </div>
                                                     </div>
                                                     
-                                                    <div className="bg-black/50 rounded-xl p-5 border border-yellow-700/30">
-                                                        <h4 className="text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 text-right">최종 진화 형태 (Output)</h4>
-                                                        <p className="text-yellow-100 text-sm leading-relaxed text-right">
-                                                            <strong className="block text-white mb-1">"세상은 나의 흔들림 없는 품격에 매료된다."</strong>
-                                                            설계된 스트레스를 대체 불가능한 하이엔드 퀄리티(High-end Quality)로 승화시키는 초정밀 통찰력 엔진. 비판의 잣대를 거두면 최고급의 우아함이 실현됩니다.
-                                                        </p>
+                                                    <div className="mb-4">
+                                                        <span className="px-3 py-1 bg-yellow-900/40 border border-yellow-500/30 rounded-full text-[10px] md:text-xs text-yellow-300 font-bold tracking-widest">Case Study: {currentCase.id}</span>
                                                     </div>
-                                                </div>
+                                                    <h3 className="text-xl md:text-2xl font-black text-yellow-400 mb-6 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">{currentCase.phase3.title}</h3>
+                                                    
+                                                    <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
+                                                        <div className="bg-black/50 rounded-xl p-4 md:p-5 border border-yellow-700/30">
+                                                            <h4 className="text-xs md:text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">행동 조율 통합 (DBT/ACT)</h4>
+                                                            <ul className="space-y-3">
+                                                                <li className="flex flex-col"><span className="text-yellow-300 font-bold text-xs mb-1">[DBT] {currentCase.phase3.dbt}</span> <span className="text-gray-300 text-[11px] md:text-xs">{currentCase.phase3.dbtDesc}</span></li>
+                                                                <li className="flex flex-col"><span className="text-yellow-300 font-bold text-xs mb-1">[ACT] {currentCase.phase3.act}</span> <span className="text-gray-300 text-[11px] md:text-xs">{currentCase.phase3.actDesc}</span></li>
+                                                            </ul>
+                                                        </div>
+                                                        
+                                                        <div className="bg-black/50 rounded-xl p-4 md:p-5 border border-yellow-700/30">
+                                                            <h4 className="text-xs md:text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2 md:text-right">최종 진화 형태 (Output)</h4>
+                                                            <p className="text-yellow-100 text-xs md:text-sm leading-relaxed md:text-right">
+                                                                <strong className="block text-white mb-1">"{currentCase.phase3.output.split('"')[1]}"</strong>
+                                                                {currentCase.phase3.output.split('"')[2]}
+                                                            </p>
+                                                        </div>
+                                                    </div>
 
-                                                <div className="bg-gradient-to-r from-yellow-900/80 to-transparent p-5 rounded-xl border-l-4 border-yellow-400 shadow-[inset_0_0_20px_rgba(250,204,21,0.1)] mt-auto">
-                                                    <div className="text-xs text-yellow-500 font-bold mb-2 tracking-widest uppercase">메타-인지 돌파 (Sovereign Socratic Q - 초월)</div>
-                                                    <p className="text-white text-lg italic font-serif">"작은 결론 하나에 심장을 옥죄는 긴장감과, 그것을 비추는 '광활한 의식' 사이에는 어떤 공간이 존재합니까? 당신은 녹아내리는 금속입니까, 그 과정을 관조하는 우주입니까?"</p>
-                                                </div>
-                                            </motion.div>
-                                        )}
+                                                    <div className="bg-gradient-to-r from-yellow-900/80 to-transparent p-4 md:p-5 rounded-xl border-l-4 border-yellow-400 shadow-[inset_0_0_20px_rgba(250,204,21,0.1)] mt-auto mb-2">
+                                                        <div className="text-[10px] md:text-xs text-yellow-500 font-bold mb-2 tracking-widest uppercase">메타-인지 돌파 (Sovereign Socratic Q)</div>
+                                                        <p className="text-white text-base md:text-lg italic font-serif leading-relaxed">"{currentCase.phase3.q3}"</p>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
 
                                 </motion.div>
