@@ -62,6 +62,9 @@ import EmotionTagSelector from '../coaching/EmotionTagSelector';
 import Saju3SScenarioModal from '../coaching/Saju3SScenarioModal';
 import { SAJU_3S_SCENARIOS, getAllScenarioTags, getScenarioByTag, Saju3SScenario } from '@/data/Saju3SScenarios';
 
+// [NEW] Visual Psychology Fusion Component
+import { PsychSajuFusionView } from '../visual/PsychSajuFusionView';
+
 // [Helper] Saju Keywords for Restoration
 const getKeywords = (dm: string) => {
     if (dm.includes('갑') || dm.includes('을')) return ["성장", "창의성", "유연함"];
@@ -112,6 +115,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [showBreathingGuideFromChat, setShowBreathingGuideFromChat] = useState(false); // [NEW] SOS from chat crisis keywords
     const [showBlueprintModal, setShowBlueprintModal] = useState(false); // [NEW] Bio Blueprint Modal
     const [blueprintType, setBlueprintType] = useState<'HEAT' | 'COOL'>('HEAT'); // [NEW] Dynamic Type
+    const [showFusionView, setShowFusionView] = useState(false); // [NEW] Fusion Scanner State
 
     // [NEW] Myeongsim Secret Room State (Modular)
     const [isSecretRoomOpen, setIsSecretRoomOpen] = useState(false);
@@ -1427,6 +1431,14 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
 
             {/* Close Button Overlay */}
             <div className="absolute top-4 right-4 z-50 flex gap-2">
+                {/* [NEW] Patent Fusion Scanner Button */}
+                <button
+                    onClick={() => setShowFusionView(true)}
+                    className="px-3 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-blue-600/80 to-purple-600/80 hover:from-blue-500 hover:to-purple-500 border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all animate-pulse-slow backdrop-blur-md"
+                >
+                    🧬 동서양 융합 스캔
+                </button>
+
                 {/* Focus Mode Toggle */}
                 <button
                     onClick={() => setIsFocusMode(!isFocusMode)}
@@ -1446,6 +1458,9 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     <X className="w-5 h-5" />
                 </button>
             </div>
+
+            {/* [NEW] Component Render */}
+            <PsychSajuFusionView isOpen={showFusionView} onClose={() => setShowFusionView(false)} />
 
 
 
