@@ -146,6 +146,11 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                             나의 16가지 행동 기질(성격) 테스트
                         </h2>
                         <p className="text-sm md:text-base text-gray-300 mt-2 font-medium">융의 분석심리학과 동양학적 64 신경망 코드가 만났다!</p>
+                        
+                        <div className="mt-3 flex flex-col justify-center border-t border-gray-700/50 pt-2">
+                            <span className="text-xs text-blue-400/80 font-mono tracking-wider">🧬 원천 기술: 동서양 기질 융합 스캐너 (특허 기술)</span>
+                            <span className="text-[10px] text-gray-500 font-mono mt-0.5">Western 5대 성격 지표 & 16가지 행동 기질 × Eastern Saju & Neural Code</span>
+                        </div>
                     </div>
                     <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl font-light">&times;</button>
                 </div>
