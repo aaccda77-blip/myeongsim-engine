@@ -142,10 +142,10 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                 {/* Header */}
                 <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-purple-900/20 sticky top-0 z-10 backdrop-blur-md">
                     <div>
-                        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                            🧬 동서양 기질 융합 스캐너 (특허 기술)
+                        <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight block mt-2">
+                            나의 16가지 행동 기질(성격) 테스트
                         </h2>
-                        <p className="text-sm text-gray-400 mt-1">Western 5대 성격 지표 & 16가지 행동 기질 × Eastern Saju & Neural Code</p>
+                        <p className="text-sm md:text-base text-gray-300 mt-2 font-medium">융의 분석심리학과 동양학적 64 신경망 코드가 만났다!</p>
                     </div>
                     <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl font-light">&times;</button>
                 </div>
