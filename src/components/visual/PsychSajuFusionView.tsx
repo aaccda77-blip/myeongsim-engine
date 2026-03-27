@@ -85,6 +85,35 @@ const CASE_DATA = {
             output: "\"세상은 나의 흔들림 없는 품격에 매료된다.\" 설계된 스트레스를 대체 불가능한 하이엔드 퀄리티(High-end Quality)로 승화시키는 초정밀 통찰력 엔진. 비판의 잣대를 거두면 최고급의 우아함이 실현됩니다.",
             q3: "작은 결론 하나에 심장을 옥죄는 긴장감과, 그것을 비추는 '광활한 의식' 사이에는 어떤 공간이 존재합니까? 당신은 녹아내리는 금속입니까, 그 과정을 관조하는 우주입니까?"
         }
+    },
+    DARK01: {
+        id: "Dark-01 [망신(亡身) - 진정성 자본화 모델]",
+        phase1: {
+            title: "Phase 1. Old Script : 다크 코드 (사회적 수치심 멜트다운)",
+            schema: "은폐 통제 과부하 (Concealment Overload)",
+            neural: "편도체 발화 및 사회적 방어 기제 붕괴 (Social Threat Hijack)",
+            status: "사회적 방어막 붕괴 시스템 (Social Shield Collapse)",
+            errorLog: "\"사람들이 내 진짜 모습을 알면 다 떠날 거야. 완벽한 척해야 해.\" 결점을 감추느라 뇌 에너지가 방전되며, 한 번의 실수에 모든 연결이 끊어질까 두려워 쥐구멍으로 도피하는 치명적 락다운 구간입니다.",
+            q1: "내가 필사적으로 지키고 있는 이 '알량한 페르소나'는 나를 자유롭게 합니까, 가두고 있습니까? 약점이 노출되면 세상이 끝난다는 것은 팩트입니까, 편도체의 망상입니까?"
+        },
+        phase2: {
+            title: "Phase 2. Neural Blueprint : 뉴럴 코드 (압도적 투명성 확보)",
+            cbt: "인지적 탈융합 및 선제적 노출 (Radical Transparency)",
+            cbtDesc: "\"완벽한 척하는 두꺼운 방어막을 내가 먼저 부순다.\" (결점을 유쾌하게 인정하는 훈련)",
+            mbct: "수치심의 파동 관찰 (Meta-Awareness)",
+            mbctDesc: "얼굴 화끈거림 등 생리적 반응을 비판 없이 3인칭 관찰자로 지켜보기.",
+            recovery: "\"내가 먼저 무기를 버리면 찌를 곳이 사라진다.\" 내면의 수치심을 억압하지 않고 무해하게 방출함으로써, 전전두엽이 두려움의 지배에서 벗어나 사회적 유연성을 즉각 회복합니다.",
+            q2: "'완벽하지 않으면 버림받는다'고 떨고 있는 주눅든 자아 뒤에, 그 부끄러움을 고요하게 관찰하고 있는 '진짜 당신(Sovereign)'은 어디에 있습니까?"
+        },
+        phase3: {
+            title: "Phase 3. Meta-Self : 메타 코드 (압도적 진정성의 주권자)",
+            dbt: "진정성 자본화 (Authenticity Capitalization)",
+            dbtDesc: "숨기고 싶던 흑역사를 극복의 스토리텔링으로 치환하여 신뢰 자본으로 변환.",
+            act: "가치 기반 취약성 수용 (Vulnerability Acceptance)",
+            actDesc: "약점을 인정하는 '용기' 자체를 타인과 연결되는 가장 강력한 무기로 사용.",
+            output: "\"세상은 완벽한 영웅보다 상처 입은 자의 진짜 스토리에 열광한다.\" 가면을 벗어던진 당신의 초-투명함 앞에 세상은 완전히 무장해제됩니다. 약점을 팬덤으로 바꾸는 궁극의 연금술입니다.",
+            q3: "수치심에 떨고 있는 조종석과, 그것을 텅 빈 거울처럼 비추는 광활한 우주 중 당신의 진짜 자리는 어디입니까? 이 '자발적 붕괴'마저 당신의 매력이 될 수 있나요?"
+        }
     }
 };
 
@@ -92,7 +121,7 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
     const [scanned, setScanned] = useState(false);
     const [activeTab, setActiveTab] = useState<'fusion' | 'evolution'>('fusion');
     const [simStep, setSimStep] = useState<number>(0);
-    const [selectedCase, setSelectedCase] = useState<'BP54' | 'BP18'>('BP54');
+    const [selectedCase, setSelectedCase] = useState<'BP54' | 'BP18' | 'DARK01'>('BP54');
 
     useEffect(() => {
         if (isOpen) {
@@ -340,6 +369,12 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                     className={`px-3 py-1.5 rounded text-xs font-bold transition-colors shadow-lg ${selectedCase === 'BP18' ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.6)]' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
                                                 >
                                                     💎 BP-18 (신사) 고정밀 완벽주의
+                                                </button>
+                                                <button 
+                                                    onClick={() => { setSelectedCase('DARK01'); setSimStep(1); }}
+                                                    className={`px-3 py-1.5 rounded text-xs font-bold transition-colors shadow-lg ${selectedCase === 'DARK01' ? 'bg-pink-600 text-white shadow-[0_0_15px_rgba(219,39,119,0.6)]' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                                                >
+                                                    🦠 Dark-01 (망신) 진정성 자본화
                                                 </button>
                                             </div>
                                         </div>
