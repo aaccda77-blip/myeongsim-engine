@@ -30,6 +30,7 @@ const FAKE_MOCK_DATA: FusionData = {
 const CASE_DATA = {
     BP54: {
         id: "BP-54 [정사(丁巳) - 제왕적 리더 모델]",
+        triggerCondition: "스마트워치 교감신경(SNS) 과각성 감지(BPM 110↑) × 화(火) 기운(발산/팽창) 사주 패턴 동기화 시 자동 발현",
         phase1: {
             title: "Phase 1. Old Script : 다크 코드 (폭주하는 멜트다운)",
             schema: "투쟁-도피 회로 (Fight-or-Flight)",
@@ -59,6 +60,7 @@ const CASE_DATA = {
     },
     BP18: {
         id: "BP-18 [신사(辛巳) - 고정밀 뉴럴 스탠다드]",
+        triggerCondition: "스트레스 누적으로 인한 자율신경 경직(HRV 저하) × 금(金) 기운(통제/완벽주의) 사주 패턴 동기화 시 발현",
         phase1: {
             title: "Phase 1. Old Script : 다크 코드 (녹아내리는 강박증)",
             schema: "과잉 억제 제어 (Hyper-Control)",
@@ -88,6 +90,7 @@ const CASE_DATA = {
     },
     DARK01: {
         id: "Dark-01 [망신(亡身) - 진정성 자본화 모델]",
+        triggerCondition: "회피/수치성 발화 패턴 및 스트레스 심박 감지 × 사회적 페르소나 붕괴(망신운) 타이밍 진입 시 자동 발현",
         phase1: {
             title: "Phase 1. Old Script : 다크 코드 (사회적 수치심 멜트다운)",
             schema: "은폐 통제 과부하 (Concealment Overload)",
@@ -376,6 +379,14 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                 >
                                                     🦠 Dark-01 (망신) 진정성 자본화
                                                 </button>
+                                            </div>
+                                            
+                                            <div className="mt-4 p-3 md:p-4 bg-blue-900/10 border border-blue-500/20 rounded-lg flex items-start gap-3 backdrop-blur-sm max-w-2xl">
+                                                <div className="text-xl shrink-0">📡</div>
+                                                <div>
+                                                    <div className="text-[10px] text-blue-400 font-bold mb-1 tracking-widest uppercase">발현 조건 (Trigger Condition)</div>
+                                                    <p className="text-xs md:text-sm text-gray-300 font-medium leading-relaxed">{currentCase.triggerCondition}</p>
+                                                </div>
                                             </div>
                                         </div>
                                         <button 
