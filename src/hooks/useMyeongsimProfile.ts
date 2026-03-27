@@ -24,7 +24,7 @@ export interface DualEngineProfile {
     // 엔진 A: 사주 (만세력)
     saju: SajuResult | null;
 
-    // 엔진 B: 천문 (진키/명심코칭)
+    // 엔진 B: 천문 (64 신경망 코드/명심코칭)
     astro: MyeongsimProfile | null;
 
     // 융합 데이터

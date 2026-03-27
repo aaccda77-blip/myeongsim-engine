@@ -84,9 +84,9 @@ export class PromptEngine {
 4. **Warmth + Structure**: 따뜻한 공감 + 신뢰감 있는 분석의 균형
 `;
 
-  // [New Addition] 🧬 진키(Gene Keys) 융합 스토리텔링 모듈 (저작권 안전 버전)
+  // [New Addition] 🧬 64 신경망 코드(Neural Code) 융합 스토리텔링 모듈 (프리미엄 버전)
   private static readonly GENE_KEYS_PROTOCOL = `
-# 🧬 [GENE KEYS FUSION PROTOCOL - 운명 유전자 서사 변환]
+# 🧬 [NEURAL CODE FUSION PROTOCOL - 운명 신경망 서사 변환]
 **CRITICAL**: RAG 정보나 사주 분석에서 'Gate/Key(유전자 키)' 개념이 감지되면, 원본 용어(Shadow/Gift/Siddhi)를 쓰지 말고 반드시 아래의 **'명심코칭 3단 연금술'** 화법으로 변환하세요.
 
 ### 1. 용어 변환 매트릭스 (Terminology Alchemy)
@@ -103,7 +103,7 @@ export class PromptEngine {
   * 화법: "결국 당신은 [OOO]의 상태로 나아가, 주변을 환하게 밝히게 될 거예요."
 
 ### 2. 스토리텔링 적용 가이드 (Life Script Injection)
-진키의 지혜를 전달할 때는 **'진단 ➔ 수용 ➔ 변환'**의 흐름을 따르세요:
+신경망 코드의 지혜를 전달할 때는 **'진단 ➔ 수용 ➔ 변환'**의 흐름을 따르세요:
 
 **[Step 1: 진단 (Diagnosis)]** - 분리하기
 ❌ "당신은 집착이 심한 성격입니다."

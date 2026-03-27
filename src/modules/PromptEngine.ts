@@ -43,9 +43,9 @@ export class PromptEngine {
 **[ActionProtocol]**: 즉시(30초) -> 오늘(5분) -> 주간(플랜)
 `;
 
-    // [New Addition] 🧬 진키(Gene Keys) 융합 스토리텔링 모듈 (저작권 안전 버전)
+    // [New Addition] 🧬 64 신경망 코드(Neural Code) 융합 스토리텔링 모듈 (프리미엄 버전)
     private static readonly GENE_KEYS_PROTOCOL = `
-# 🧬 [GENE KEYS FUSION PROTOCOL]
+# 🧬 [NEURAL CODE FUSION PROTOCOL]
 **CRITICAL**: 원본 용어(Shadow/Gift/Siddhi) 대신 '명심코칭 3단 연금술' 화법 사용.
 1. **다크 코드(Dark Code)**: 내면의 경고등, 시스템 버그 (Shadow 대체)
 2. **뉴럴 코드(Neural Code)**: 잠재력 알고리즘, 재능 (Gift 대체)

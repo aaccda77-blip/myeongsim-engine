@@ -80,7 +80,7 @@ export interface TenGodData {
     };
 }
 
-// ============== 명심코드(진키) 관련 타입 ==============
+// ============== 64 신경망 코드 관련 타입 ==============
 
 export interface CodeLevel {
     name: string;
