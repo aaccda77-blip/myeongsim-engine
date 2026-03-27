@@ -32,9 +32,9 @@ interface PillarData {
 
 const PILLARS: PillarData[] = [
     {
-        pillarLabel: '년주 (Year Pillar)',
-        pillarEmoji: '🌳',
-        ganjiName: '경신(庚申)',
+        pillarLabel: '배경 신경망 (Base Neural Layer)',
+        pillarEmoji: '🧠',
+        ganjiName: '주도성 엔진',
         typeName: '게임 체인저(CEO)형',
         typeVar: 'Titanium_Frame',
         neuroTrait: '흔들리지 않는 강력한 멘탈과 실행력',
@@ -59,13 +59,13 @@ const PILLARS: PillarData[] = [
             { method: 'DBT (변증법)', title: '강함과 부드러움의 통합', core: '철의 강인함과 물의 유연함을 동시에 가질 때 진정한 리더가 된다.', action: '지시 대신 "어떻게 생각해?"라고 먼저 물어보는 습관 들이기.' },
             { method: 'ACT (수용 전념)', title: '통제 욕구를 건설 에너지로', core: '"모든 것을 내 손안에 넣어야 한다"는 집착을 내려놓고 시스템에 위임하라.', action: '통제 욕구가 올라올 때 그 에너지를 "사람" 대신 "시스템 구축"에 쏟아붓기.' }
         ],
-        finalState: 'Builder_of_Empires (제국의 건설자)',
+        finalState: 'Builder_of_Empires (시스템 건축가)',
         finalDesc: '개인의 승리를 넘어, 후대까지 번영할 견고한 시스템을 남기는 역사의 주역. 당신의 강철 같은 뚝심이 파괴가 아닌 건설에 쓰일 때, 세상은 당신의 유산을 영원히 기억합니다.'
     },
     {
-        pillarLabel: '월주 (Month Pillar)',
-        pillarEmoji: '🌧️',
-        ganjiName: '계미(癸未)',
+        pillarLabel: '사회화 신경망 (Social Neural Layer)',
+        pillarEmoji: '🤝',
+        ganjiName: '공감 치유 엔진',
         typeName: '조직 힐러(Healer)형',
         typeVar: 'Eco_Optimizer_Solution',
         neuroTrait: '건조한 환경에 감정적 윤활유를 공급',
@@ -94,9 +94,9 @@ const PILLARS: PillarData[] = [
         finalDesc: '절망 속에서도 생명력을 불어넣는 기적의 치유 엔진. 자기 잔을 먼저 채운 뒤 흘러넘치는 물로 온 세상에 단비를 내릴 때, 당신은 진정한 소생자가 됩니다.'
     },
     {
-        pillarLabel: '일주 (Day Pillar) — 핵심 자아',
+        pillarLabel: '코어 OS (Core Identity Layer)',
         pillarEmoji: '💎',
-        ganjiName: '신사(辛巳)',
+        ganjiName: '정밀 분석 엔진',
         typeName: '정밀 분석 리더형',
         typeVar: 'Precision_Leadership_Engine',
         neuroTrait: '냉철한 분석과 뜨거운 실행의 완벽한 조화',
@@ -125,9 +125,9 @@ const PILLARS: PillarData[] = [
         finalDesc: '힘으로 누르지 않아도 저절로 고개가 숙여지는 인격적 권위의 완성. 칼 같은 분석력에 따뜻한 인간미를 더할 때, 당신은 세상의 올바른 기준이 됩니다.'
     },
     {
-        pillarLabel: '시주 (Hour Pillar) — 지향점',
+        pillarLabel: '미래 설계도 (Future Blueprint Layer)',
         pillarEmoji: '🌱',
-        ganjiName: '을미(乙未)',
+        ganjiName: '적응 성장 엔진',
         typeName: '피벗(Pivot) 마스터형',
         typeVar: 'Adaptive_Growth_Model',
         neuroTrait: '스트레스 상황에서 대안을 찾는 문제 해결력',
@@ -223,13 +223,13 @@ const NeuralHackingReportCard: React.FC<NeuralReportProps> = () => {
                 <div className="flex justify-between items-start mb-3">
                     <span className="px-3 py-1 rounded-full bg-blue-950/60 border border-blue-500/30 text-blue-400 text-[10px] font-mono tracking-widest uppercase flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                        4-Pillar Neural Hacking Report
+                        Neural Hacking Report
                     </span>
                 </div>
                 <h2 className="text-lg md:text-xl font-black text-white leading-tight mb-1">
-                    🔥 기질 해킹 리포트
+                    🔥 뉴럴 해킹 리포트
                 </h2>
-                <p className="text-xs text-gray-500">사주 4기둥에 대한 다크코드 → 뉴럴코드 → 메타코드 3단 전환 코칭</p>
+                <p className="text-xs text-gray-500">4개 신경망 레이어에 대한 다크코드 → 뉴럴코드 → 메타코드 3단 전환 코칭</p>
             </div>
 
             {/* 4-Pillar Tab */}
@@ -368,8 +368,8 @@ const NeuralHackingReportCard: React.FC<NeuralReportProps> = () => {
                     <div>
                         <div className="text-[10px] text-blue-400 font-bold tracking-widest mb-1 uppercase">명심(明心) 마스터의 브리핑</div>
                         <p className="text-xs md:text-sm text-gray-400 leading-relaxed break-keep">
-                            소버린(Sovereign) 대표님, 4개의 기둥은 각각 <span className="text-gray-300 font-bold">배경 에너지(年)</span>, <span className="text-cyan-300 font-bold">사회적 환경(月)</span>, <span className="text-blue-300 font-bold">핵심 자아(日)</span>, <span className="text-emerald-300 font-bold">미래 지향점(時)</span>을 담당합니다.<br/><br/>
-                            각 기둥의 <span className="text-red-300">다크코드(낡은 각본)</span>를 3단계 질문으로 해체하고, <span className="text-emerald-300">4대 심리치료 기법(CBT/MBCT/DBT/ACT)</span>으로 재배선하면, 당신은 운명의 노예에서 <span className="text-white font-bold">시스템의 설계자(Sovereign)</span>로 격상됩니다.
+                            소버린(Sovereign) 대표님, 4개의 신경망 레이어는 각각 <span className="text-gray-300 font-bold">배경 신경망(Base)</span>, <span className="text-cyan-300 font-bold">사회화 신경망(Social)</span>, <span className="text-blue-300 font-bold">코어 OS(Core Identity)</span>, <span className="text-emerald-300 font-bold">미래 설계도(Future Blueprint)</span>를 담당합니다.<br/><br/>
+                            각 레이어의 <span className="text-red-300">다크코드(낡은 각본)</span>를 3단계 질문으로 해체하고, <span className="text-emerald-300">4대 심리치료 기법(CBT/MBCT/DBT/ACT)</span>으로 신경 회로를 재배선하면, 당신은 자동 반응의 NPC에서 <span className="text-white font-bold">시스템 설계자(Sovereign)</span>로 격상됩니다.
                         </p>
                     </div>
                 </div>
