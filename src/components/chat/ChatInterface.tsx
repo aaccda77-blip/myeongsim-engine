@@ -57,13 +57,15 @@ import { ICON_DRILL_DOWN_MAP } from '@/modules/DrillDownProtocol'; // [NEW] Dyna
 import MyeongsimSecretRoom from '../coaching/MyeongsimSecretRoom';
 import QuestCard from '../coaching/QuestCard';
 
-// [NEW] 3S Scenario Tag selector and Data
+// [NEW] 3S Scenario Interactive Modal State
 import EmotionTagSelector from '../coaching/EmotionTagSelector';
 import Saju3SScenarioModal from '../coaching/Saju3SScenarioModal';
 import { SAJU_3S_SCENARIOS, getAllScenarioTags, getScenarioByTag, Saju3SScenario } from '@/data/Saju3SScenarios';
 
 // [NEW] Visual Psychology Fusion Component
 import { PsychSajuFusionView } from '../visual/PsychSajuFusionView';
+import NeuralHackingReportCard from './NeuralHackingReportCard';
+import NeuralArchitectureBlueprint from './NeuralArchitectureBlueprint';
 
 // [Helper] Saju Keywords for Restoration
 const getKeywords = (dm: string) => {
@@ -1943,7 +1945,9 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                         .replace(/:::IMAGE_GEN:([\s\S]*?):::/g, '')
                         .replace(/:::LEVEL_GAUGE:[\s\S]*?:::/g, '')
                         .replace(/:::DATA_SEPARATOR:::[\s\S]*/g, '') // Extra safety: Remove separator and everything after
-                        .replace(/:::\s*UI_COMMAND\s*:[\s\S]*?:::/g, '');
+                        .replace(/:::\s*UI_COMMAND\s*:[\s\S]*?:::/g, '')
+                        .replace(/\[NEURAL_REPORT:.*?\]/g, '')
+                        .replace(/\[NEURAL_ARCHITECTURE\]/g, '');
 
                     return (
                         <div key={msg.id} id={`msg-${msg.id}`} className={`flex ${isUser ? 'justify-end' : 'justify-start'} flex-col scroll-mt-[30vh]`}>
@@ -2315,6 +2319,20 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                             {analysisData && analysisData.talent_report && (
                                                 <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-md mt-4 mb-6 animate-fade-in-up">
                                                     <TalentReportCard data={analysisData.talent_report} />
+                                                </div>
+                                            )}
+
+                                            {/* [Neural Hacking Report Card] (PSST/Demonstration UI) */}
+                                            {msg.content.includes('[NEURAL_REPORT:BP54]') && (
+                                                <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[85%] mt-4 mb-6 animate-fade-in-up">
+                                                    <NeuralHackingReportCard archetypeId="BP-54" />
+                                                </div>
+                                            )}
+
+                                            {/* [Neural Architecture Blueprint] (PSST/Demonstration UI) */}
+                                            {msg.content.includes('[NEURAL_ARCHITECTURE]') && (
+                                                <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[85%] mt-4 mb-6 animate-fade-in-up">
+                                                    <NeuralArchitectureBlueprint />
                                                 </div>
                                             )}
 

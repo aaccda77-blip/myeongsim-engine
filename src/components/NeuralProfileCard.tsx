@@ -68,8 +68,8 @@ const NeuralProfileCard: React.FC<NeuralProfileCardProps> = ({ profile }) => {
                                 <span className={`text-xl opacity-90 transition-transform duration-300 ${selectedKey?.gate === node.gate ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'grayscale'}`}>
                                     {node.icon}
                                 </span>
-                                <span className={`text-xl font-black tracking-tighter transition-colors ${selectedKey?.gate === node.gate ? 'text-white' : 'text-gray-600 group-hover:text-gray-400'}`}>
-                                    {node.gate}
+                                <span className={`text-[10px] font-bold tracking-tight transition-colors font-mono ${selectedKey?.gate === node.gate ? 'text-blue-300' : 'text-gray-600 group-hover:text-gray-400'}`}>
+                                    {node.term}
                                 </span>
                             </div>
                             <div className="text-left">
@@ -94,8 +94,8 @@ const NeuralProfileCard: React.FC<NeuralProfileCardProps> = ({ profile }) => {
                             <div>
                                 <div className="text-[10px] text-gray-400 font-mono tracking-widest mb-1">{selectedKey.category}</div>
                                 <div className="text-lg md:text-xl text-white font-black">{selectedKey.label} 
-                                    <span className="inline-block text-blue-400 font-mono text-sm ml-2 bg-blue-950/40 px-2 rounded-md border border-blue-900/50">
-                                        Code {selectedKey.gate}
+                                    <span className="inline-block text-blue-400 font-mono text-xs ml-2 bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-900/50">
+                                        {selectedKey.term}
                                     </span>
                                 </div>
                             </div>
