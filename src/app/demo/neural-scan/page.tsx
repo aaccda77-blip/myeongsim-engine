@@ -13,7 +13,7 @@ import NeuralArchitectureBlueprint from '@/components/chat/NeuralArchitectureBlu
 import NeuralHackingReportCard from '@/components/chat/NeuralHackingReportCard';
 import BioSyncDashboard from '@/components/dashboard/BioSyncDashboard';
 
-type TabType = 'architecture' | 'hacking' | 'biosync' | 'scenario';
+type TabType = 'architecture' | 'hacking' | 'biosync' | 'scenario' | 'compare';
 
 // ─── 실전 시나리오 데이터 ─────────────────────────────
 interface ScenarioStep {
@@ -255,6 +255,7 @@ export default function NeuralScanDemoPage() {
                             { key: 'hacking' as TabType, icon: '🔥', label: '뉴럴해킹', activeColor: 'bg-red-950/40 border-red-500/50 text-red-300' },
                             { key: 'biosync' as TabType, icon: '⌚', label: '바이오싱크', activeColor: 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300' },
                             { key: 'scenario' as TabType, icon: '🎬', label: '실전시나리오', activeColor: 'bg-amber-950/40 border-amber-500/50 text-amber-300' },
+                            { key: 'compare' as TabType, icon: '🔀', label: '경쟁비교', activeColor: 'bg-pink-950/40 border-pink-500/50 text-pink-300' },
                         ]).map(tab => (
                             <button
                                 key={tab.key}
@@ -540,6 +541,237 @@ export default function NeuralScanDemoPage() {
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* ── Tab 5: 경쟁 비교 ── */}
+                        {activeTab === 'compare' && (
+                            <motion.div key="compare" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+                                {/* Intro */}
+                                <div className="text-center mb-6 px-4">
+                                    <p className="text-xs text-gray-400 break-keep leading-relaxed max-w-md mx-auto">
+                                        기존 <strong className="text-pink-300">헬스케어 앱</strong>과 <strong className="text-orange-300">사주/운세 앱</strong>은 각각 어떤 한계가 있고,
+                                        <br/><strong className="text-blue-300">명심코칭</strong>은 이를 어떻게 통합·초월하는지 한눈에 비교합니다.
+                                    </p>
+                                </div>
+
+                                {/* ── 3-Way Comparison Cards ── */}
+                                <div className="mx-4 md:mx-6 space-y-4">
+
+                                    {/* Card 1: 일반 헬스케어 앱 */}
+                                    <div className="bg-[#0B0F19] rounded-2xl border border-gray-700/50 overflow-hidden">
+                                        <div className="px-4 py-3 bg-gray-800/30 border-b border-gray-700/30 flex items-center gap-2">
+                                            <span className="text-lg">💚</span>
+                                            <div>
+                                                <div className="text-sm text-gray-200 font-bold">일반 헬스케어 앱</div>
+                                                <div className="text-[10px] text-gray-500">Apple Health · 삼성헬스 · Calm · Headspace</div>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 space-y-3">
+                                            <div className="text-[10px] text-pink-400 font-bold mb-1">💭 같은 상황에서의 대응</div>
+                                            <div className="bg-gray-900/60 rounded-xl p-3 border border-gray-800">
+                                                <div className="text-[10px] text-gray-500 mb-2">회의 중 스트레스 스파이크 감지 시:</div>
+                                                <div className="space-y-2">
+                                                    <div className="flex items-start gap-2">
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 shrink-0 mt-0.5">알림</span>
+                                                        <span className="text-[11px] text-gray-300">"스트레스가 높습니다. 심호흡을 해보세요."</span>
+                                                    </div>
+                                                    <div className="flex items-start gap-2">
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 shrink-0 mt-0.5">가이드</span>
+                                                        <span className="text-[11px] text-gray-300">범용 명상 타이머 (4-7-8 호흡) 제공</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] text-red-400 font-bold">❌ 한계점</div>
+                                                {['왜 스트레스가 발생했는지 원인 분석 불가', '사용자의 성격·기질 특성 고려 없음', '모든 사용자에게 동일한 범용 가이드 제공', '"심호흡하세요" 이후 구체적 행동 지침 없음', '감정 패턴과 성격 구조의 관계 파악 불가'].map(t => (
+                                                    <div key={t} className="text-[11px] text-gray-400 flex items-start gap-1.5">
+                                                        <span className="text-red-500 shrink-0">✕</span><span className="break-keep">{t}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Card 2: 일반 사주/운세 앱 */}
+                                    <div className="bg-[#0B0F19] rounded-2xl border border-gray-700/50 overflow-hidden">
+                                        <div className="px-4 py-3 bg-gray-800/30 border-b border-gray-700/30 flex items-center gap-2">
+                                            <span className="text-lg">🔮</span>
+                                            <div>
+                                                <div className="text-sm text-gray-200 font-bold">일반 사주/운세 앱</div>
+                                                <div className="text-[10px] text-gray-500">만세력 · 사주천궁 · 운세보는 앱 · 점신</div>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 space-y-3">
+                                            <div className="text-[10px] text-pink-400 font-bold mb-1">💭 같은 상황에서의 대응</div>
+                                            <div className="bg-gray-900/60 rounded-xl p-3 border border-gray-800">
+                                                <div className="text-[10px] text-gray-500 mb-2">사용자의 기질 분석 결과:</div>
+                                                <div className="space-y-2">
+                                                    <div className="flex items-start gap-2">
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 shrink-0 mt-0.5">분석</span>
+                                                        <span className="text-[11px] text-gray-300">"경금(庚金) 일간으로 고집이 세고 추진력이 있습니다."</span>
+                                                    </div>
+                                                    <div className="flex items-start gap-2">
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 shrink-0 mt-0.5">조언</span>
+                                                        <span className="text-[11px] text-gray-300">"올해 갈등이 예상되니 조심하세요."</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] text-red-400 font-bold">❌ 한계점</div>
+                                                {['실시간 상태 파악 불가 (과거 데이터로만 해석)', '"조심하세요" 수준의 모호한 조언', '과학적 검증 근거 전무', '구체적인 행동 가이드 없음', '저작권 문제 (60갑자 표기 직접 노출)'].map(t => (
+                                                    <div key={t} className="text-[11px] text-gray-400 flex items-start gap-1.5">
+                                                        <span className="text-red-500 shrink-0">✕</span><span className="break-keep">{t}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Card 3: 명심코칭 (우리) */}
+                                    <div className="bg-[#0B0F19] rounded-2xl border-2 border-blue-500/50 overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.1)]">
+                                        <div className="px-4 py-3 bg-blue-950/30 border-b border-blue-500/30 flex items-center gap-2">
+                                            <span className="text-lg">🧠</span>
+                                            <div className="flex-1">
+                                                <div className="text-sm text-blue-200 font-bold">명심(明心) 코칭</div>
+                                                <div className="text-[10px] text-blue-400">동서양 융합 AI 뉴럴 코칭 플랫폼</div>
+                                            </div>
+                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold">OUR TECH</span>
+                                        </div>
+                                        <div className="p-4 space-y-3">
+                                            <div className="text-[10px] text-emerald-400 font-bold mb-1">💭 같은 상황에서의 대응</div>
+                                            <div className="bg-blue-950/20 rounded-xl p-3 border border-blue-900/30">
+                                                <div className="text-[10px] text-blue-400 mb-2">회의 중 스트레스 스파이크 감지 시:</div>
+                                                <div className="space-y-2.5">
+                                                    <div className="flex items-start gap-2">
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-900/40 text-blue-300 shrink-0 mt-0.5">1단계</span>
+                                                        <span className="text-[11px] text-gray-200 break-keep">"심박수가 44% 높아졌네요. 지금 무슨 상황인가요?" → <strong className="text-blue-300">먼저 상황을 질문</strong></span>
+                                                    </div>
+                                                    <div className="flex items-start gap-2">
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-900/40 text-purple-300 shrink-0 mt-0.5">2단계</span>
+                                                        <span className="text-[11px] text-gray-200 break-keep">상황(의견충돌) + 기질(주도성엔진) + 생체(HRV 28ms) → <strong className="text-purple-300">3축 교차 분석</strong></span>
+                                                    </div>
+                                                    <div className="flex items-start gap-2">
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-900/40 text-emerald-300 shrink-0 mt-0.5">3단계</span>
+                                                        <span className="text-[11px] text-gray-200 break-keep">10초 냉각 호흡 + 산파술 질문 + 실전 대응 스크립트 → <strong className="text-emerald-300">구체적 행동 가이드 3종</strong></span>
+                                                    </div>
+                                                    <div className="flex items-start gap-2">
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-900/40 text-amber-300 shrink-0 mt-0.5">4단계</span>
+                                                        <span className="text-[11px] text-gray-200 break-keep">코칭 후 BPM 98→74, HRV 28→45 → <strong className="text-amber-300">과학적 효과 검증</strong></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] text-emerald-400 font-bold">✅ 차별화 포인트</div>
+                                                {['실시간 생체 데이터 + 기질 + 상황의 3축 통합 분석', 'AI가 먼저 상황을 질문한 후 맞춤 코칭 제공', '구체적 행동 가이드 (호흡법 + 관점전환 + 대화 스크립트)', '코칭 효과를 수치로 과학적 검증 (특허 기술)', '저작권 안전 — 전통 코드 미노출 (뉴럴코드 변환)'].map(t => (
+                                                    <div key={t} className="text-[11px] text-gray-300 flex items-start gap-1.5">
+                                                        <span className="text-emerald-400 shrink-0">✓</span><span className="break-keep">{t}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* ── Feature Checklist Table ── */}
+                                <div className="mx-4 md:mx-6 mt-6 bg-[#0B0F19] rounded-2xl border border-gray-800/50 overflow-hidden">
+                                    <div className="px-4 py-3 bg-gray-800/20 border-b border-gray-700/30">
+                                        <div className="text-xs text-white font-bold">📋 기능 비교 체크리스트</div>
+                                    </div>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-[11px]">
+                                            <thead>
+                                                <tr className="border-b border-gray-800">
+                                                    <th className="text-left text-gray-500 font-normal py-2.5 px-3 w-[40%]">기능</th>
+                                                    <th className="text-center text-gray-500 font-normal py-2.5 px-2">💚 헬스케어</th>
+                                                    <th className="text-center text-gray-500 font-normal py-2.5 px-2">🔮 사주앱</th>
+                                                    <th className="text-center text-blue-400 font-bold py-2.5 px-2">🧠 명심</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {[
+                                                    { feat: '실시간 생체 데이터 수집', h: true, s: false, m: true },
+                                                    { feat: '개인 기질/성격 반영', h: false, s: true, m: true },
+                                                    { feat: '상황 맥락 대화형 파악', h: false, s: false, m: true },
+                                                    { feat: '3축 교차 분석 (생체+기질+상황)', h: false, s: false, m: true },
+                                                    { feat: '구체적 행동 가이드 (스크립트)', h: false, s: false, m: true },
+                                                    { feat: '코칭 효과 과학적 검증 (수치)', h: false, s: false, m: true },
+                                                    { feat: 'AI 자가 학습 피드백 루프', h: false, s: false, m: true },
+                                                    { feat: '저작권 안전', h: true, s: false, m: true },
+                                                    { feat: '특허 기술 보유', h: false, s: false, m: true },
+                                                ].map((row, i) => (
+                                                    <tr key={i} className="border-b border-gray-800/50">
+                                                        <td className="text-gray-300 py-2.5 px-3 break-keep">{row.feat}</td>
+                                                        <td className="text-center py-2.5 px-2">{row.h ? <span className="text-emerald-400">●</span> : <span className="text-gray-700">—</span>}</td>
+                                                        <td className="text-center py-2.5 px-2">{row.s ? <span className="text-emerald-400">●</span> : <span className="text-gray-700">—</span>}</td>
+                                                        <td className="text-center py-2.5 px-2"><span className={row.m ? 'text-blue-400 font-bold' : 'text-gray-700'}>●</span></td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {/* ── Scenario Side-by-Side ── */}
+                                <div className="mx-4 md:mx-6 mt-6 bg-[#0B0F19] rounded-2xl border border-gray-800/50 p-4">
+                                    <div className="text-xs text-white font-bold mb-4">🎯 같은 사용자, 같은 스트레스 — 결과 비교</div>
+                                    <div className="space-y-3">
+                                        {/* Healthcare result */}
+                                        <div className="bg-gray-900/50 rounded-xl p-3 border border-gray-700/30">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span>💚</span>
+                                                <span className="text-[11px] text-gray-300 font-bold">헬스케어 앱 결과</span>
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-2 mb-2">
+                                                <div className="bg-black/30 rounded-lg p-2 text-center"><div className="text-sm font-bold text-red-400">92</div><div className="text-[9px] text-gray-500">BPM (여전히 높음)</div></div>
+                                                <div className="bg-black/30 rounded-lg p-2 text-center"><div className="text-sm font-bold text-red-400">32ms</div><div className="text-[9px] text-gray-500">HRV (미회복)</div></div>
+                                                <div className="bg-black/30 rounded-lg p-2 text-center"><div className="text-sm font-bold text-red-400">HIGH</div><div className="text-[9px] text-gray-500">스트레스</div></div>
+                                            </div>
+                                            <p className="text-[10px] text-gray-500 break-keep">→ "심호흡하세요" 통보 후 효과 미미. 원인 분석 없이 일반적 조언만 제공.</p>
+                                        </div>
+
+                                        {/* Saju result */}
+                                        <div className="bg-gray-900/50 rounded-xl p-3 border border-gray-700/30">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span>🔮</span>
+                                                <span className="text-[11px] text-gray-300 font-bold">사주 앱 결과</span>
+                                            </div>
+                                            <div className="bg-black/30 rounded-lg p-2.5 mb-2">
+                                                <p className="text-[11px] text-gray-300 break-keep italic">"올해 관살(官殺)이 충(沖)하니 윗사람과 충돌이 예상됩니다. 물가를 피하고 조심하세요."</p>
+                                            </div>
+                                            <p className="text-[10px] text-gray-500 break-keep">→ 연초에 확인한 일반 운세. 지금 이 순간 무엇을 해야 하는지 알 수 없음.</p>
+                                        </div>
+
+                                        {/* Myeongsim result */}
+                                        <div className="bg-blue-950/20 rounded-xl p-3 border-2 border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.08)]">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span>🧠</span>
+                                                <span className="text-[11px] text-blue-200 font-bold">명심코칭 결과</span>
+                                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold ml-auto">7분 후</span>
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-2 mb-2">
+                                                <div className="bg-black/30 rounded-lg p-2 text-center"><div className="text-sm font-bold text-emerald-400">74</div><div className="text-[9px] text-emerald-500">BPM (▼24.5%)</div></div>
+                                                <div className="bg-black/30 rounded-lg p-2 text-center"><div className="text-sm font-bold text-emerald-400">45ms</div><div className="text-[9px] text-emerald-500">HRV (▲60.7%)</div></div>
+                                                <div className="bg-black/30 rounded-lg p-2 text-center"><div className="text-sm font-bold text-yellow-400">MOD</div><div className="text-[9px] text-emerald-500">스트레스 하향</div></div>
+                                            </div>
+                                            <p className="text-[10px] text-blue-300 break-keep">→ 상황 질문 → 기질 교차 분석 → 맞춤 호흡+질문+스크립트 → <strong>수치 검증까지 7분.</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Conclusion */}
+                                <div className="mx-4 md:mx-6 mt-6 p-5 bg-gradient-to-br from-blue-950/30 to-purple-950/20 rounded-2xl border border-blue-500/20 text-center">
+                                    <div className="text-lg mb-2">🏆</div>
+                                    <div className="text-sm text-white font-bold mb-2">명심코칭 = 헬스케어 + 기질분석 + AI대화 코칭의 완전한 통합</div>
+                                    <p className="text-[11px] text-gray-400 break-keep leading-relaxed max-w-sm mx-auto">
+                                        단순 수치 알림(헬스케어)도, 모호한 운세 조언(사주)도 아닌,
+                                        <br/><strong className="text-blue-300">"지금 이 순간, 당신의 상황과 기질에 맞는 구체적 행동"</strong>을
+                                        <br/>실시간으로 제시하고 과학적으로 검증하는 유일한 플랫폼.
+                                    </p>
+                                    <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-purple-900/20 border border-purple-500/20 rounded-full">
+                                        <span className="text-[9px] text-purple-300 font-mono">🔒 특허 출원번호: 10-2025-0166877</span>
+                                    </div>
                                 </div>
                             </motion.div>
                         )}
