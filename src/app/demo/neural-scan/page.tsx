@@ -13,7 +13,7 @@ import NeuralArchitectureBlueprint from '@/components/chat/NeuralArchitectureBlu
 import NeuralHackingReportCard from '@/components/chat/NeuralHackingReportCard';
 import BioSyncDashboard from '@/components/dashboard/BioSyncDashboard';
 
-type TabType = 'architecture' | 'hacking' | 'biosync' | 'scenario' | 'compare';
+type TabType = 'architecture' | 'hacking' | 'biosync' | 'scenario' | 'compare' | 'whyus';
 
 // ─── 실전 시나리오 데이터 ─────────────────────────────
 interface ScenarioStep {
@@ -256,6 +256,7 @@ export default function NeuralScanDemoPage() {
                             { key: 'biosync' as TabType, icon: '⌚', label: '바이오싱크', activeColor: 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300' },
                             { key: 'scenario' as TabType, icon: '🎬', label: '실전시나리오', activeColor: 'bg-amber-950/40 border-amber-500/50 text-amber-300' },
                             { key: 'compare' as TabType, icon: '🔀', label: '경쟁비교', activeColor: 'bg-pink-950/40 border-pink-500/50 text-pink-300' },
+                            { key: 'whyus' as TabType, icon: '👑', label: 'Why Us', activeColor: 'bg-yellow-950/40 border-yellow-500/50 text-yellow-300' },
                         ]).map(tab => (
                             <button
                                 key={tab.key}
@@ -771,6 +772,180 @@ export default function NeuralScanDemoPage() {
                                     </p>
                                     <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-purple-900/20 border border-purple-500/20 rounded-full">
                                         <span className="text-[9px] text-purple-300 font-mono">🔒 특허 출원번호: 10-2025-0166877</span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* ── Tab 6: Why Us ── */}
+                        {activeTab === 'whyus' && (
+                            <motion.div key="whyus" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+                                {/* Intro */}
+                                <div className="text-center mb-6 px-4">
+                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-950/30 border border-yellow-500/30 mb-4">
+                                        <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                                        <span className="text-yellow-400 text-[10px] font-mono tracking-widest uppercase">Selection Statement</span>
+                                    </div>
+                                    <h3 className="text-white text-lg md:text-xl font-black mb-2 break-keep">👑 명심코칭이 반드시<br/>선정되어야 하는 3가지 이유</h3>
+                                    <p className="text-xs text-gray-400 break-keep leading-relaxed max-w-md mx-auto">
+                                        <strong className="text-yellow-300">심리학 × 동양학 × IT</strong>를 관통하는 세계 최초의 융합 모델이<br/>왜 지금, 이 시대에 반드시 필요한지 증명합니다.
+                                    </p>
+                                </div>
+
+                                <div className="mx-4 md:mx-6 space-y-5">
+
+                                    {/* Reason 1 */}
+                                    <div className="relative bg-gradient-to-br from-[#0B0F19] to-[#0F1320] rounded-2xl border border-blue-500/30 overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-3xl"></div>
+                                        <div className="p-5 relative">
+                                            <div className="flex items-start gap-3 mb-3">
+                                                <div className="w-10 h-10 rounded-xl bg-blue-900/50 border border-blue-500/30 flex items-center justify-center text-lg shrink-0">🧬</div>
+                                                <div>
+                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold">REASON 01</span>
+                                                    <h4 className="text-sm text-white font-bold mt-1 break-keep">대체 불가능한 초격차 창업자</h4>
+                                                    <p className="text-[10px] text-blue-400 mt-0.5">서양 심리학 × 동양학 × IT 시스템의 세계 최초 융합</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-[11px] text-gray-300 leading-relaxed break-keep mb-3">
+                                                시중의 웰니스 앱들은 <span className="text-red-300">코딩만 하는 개발자</span>이거나 <span className="text-red-300">IT를 모르는 심리 전문가</span>가 만든 반쪽짜리 서비스입니다.
+                                                명심코칭은 서양의 <strong className="text-blue-300">인지행동치료(CBT)</strong>, 동양의 <strong className="text-purple-300">기질 데이터(명리학)</strong>, 
+                                                그리고 이를 <strong className="text-emerald-300">64가지 신경망 코드로 구현하는 IT 엔지니어링</strong>까지 
+                                                이 3가지 언어를 완벽하게 관통하는 <strong className="text-yellow-300">국가공인 보건교육사</strong>가 직접 설계한 세계 최초의 융합 모델입니다.
+                                            </p>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {[
+                                                    { icon: '🧠', label: '서양 심리학', sub: 'CBT/MBCT/DBT/ACT', color: 'blue' },
+                                                    { icon: '☯️', label: '동양 기질학', sub: '60 Neural Codes', color: 'purple' },
+                                                    { icon: '💻', label: 'IT 시스템', sub: 'RAG AI + Bio-Sync', color: 'emerald' },
+                                                ].map(item => (
+                                                    <div key={item.label} className={`bg-${item.color}-950/30 border border-${item.color}-900/30 rounded-xl p-2.5 text-center`}>
+                                                        <div className="text-lg mb-1">{item.icon}</div>
+                                                        <div className="text-[10px] text-gray-200 font-bold">{item.label}</div>
+                                                        <div className="text-[9px] text-gray-500 mt-0.5">{item.sub}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="mt-3 p-2.5 bg-blue-950/30 rounded-xl border border-blue-500/20">
+                                                <p className="text-[10px] text-blue-200 break-keep text-center font-bold">
+                                                    💎 대표의 존재 자체가 경쟁사가 결코 따라올 수 없는 독보적 진입장벽
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Reason 2 */}
+                                    <div className="relative bg-gradient-to-br from-[#0B0F19] to-[#130F1A] rounded-2xl border border-purple-500/30 overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-24 h-24 bg-purple-500/5 rounded-full blur-3xl"></div>
+                                        <div className="p-5 relative">
+                                            <div className="flex items-start gap-3 mb-3">
+                                                <div className="w-10 h-10 rounded-xl bg-purple-900/50 border border-purple-500/30 flex items-center justify-center text-lg shrink-0">🔄</div>
+                                                <div>
+                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold">REASON 02</span>
+                                                    <h4 className="text-sm text-white font-bold mt-1 break-keep">패러다임의 전환</h4>
+                                                    <p className="text-[10px] text-purple-400 mt-0.5">소모적 물질 복지 → 스스로 일어서는 의식 전환</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-[11px] text-gray-300 leading-relaxed break-keep mb-3">
+                                                현재 국가 복지의 가장 큰 맹점은 회색지대 인구에게 일회성 <span className="text-red-300">물질 지원</span>이나 사후 <span className="text-red-300">치료</span>에만 예산을 소비한다는 것입니다.
+                                                명심코칭은 밑 빠진 독에 물 붓기를 멈추고, AI 선제 개입을 통해 국민 스스로 고통을 자각하고 수용하며
+                                                나아가는 <strong className="text-purple-300">셀프 자각 코칭</strong>과 <strong className="text-purple-300">의식의 전환(Shift)</strong>을 이끌어냅니다.
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="bg-red-950/20 border border-red-900/30 rounded-xl p-3">
+                                                    <div className="text-[10px] text-red-400 font-bold mb-1.5">❌ 기존 방식</div>
+                                                    <div className="space-y-1">
+                                                        {['일회성 물질 지원', '사후 치료 중심', '수혜자 의존성 증가', '예산 소모 반복'].map(t => (
+                                                            <div key={t} className="text-[10px] text-gray-400 flex items-center gap-1"><span className="text-red-500">·</span>{t}</div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="bg-emerald-950/20 border border-emerald-900/30 rounded-xl p-3">
+                                                    <div className="text-[10px] text-emerald-400 font-bold mb-1.5">✅ 명심코칭</div>
+                                                    <div className="space-y-1">
+                                                        {['AI 선제 예방 개입', '셀프 자각 + 의식 전환', '국민 자립 역량 강화', '국가 예산 절감'].map(t => (
+                                                            <div key={t} className="text-[10px] text-gray-300 flex items-center gap-1"><span className="text-emerald-400">·</span>{t}</div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 p-2.5 bg-purple-950/30 rounded-xl border border-purple-500/20">
+                                                <p className="text-[10px] text-purple-200 break-keep text-center font-bold">
+                                                    🛡️ 진정한 예방적 멘탈 복지 = 국가 예산 절감 + 사회적 기여
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Reason 3 */}
+                                    <div className="relative bg-gradient-to-br from-[#0B0F19] to-[#0F1517] rounded-2xl border border-emerald-500/30 overflow-hidden">
+                                        <div className="absolute bottom-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-3xl"></div>
+                                        <div className="p-5 relative">
+                                            <div className="flex items-start gap-3 mb-3">
+                                                <div className="w-10 h-10 rounded-xl bg-emerald-900/50 border border-emerald-500/30 flex items-center justify-center text-lg shrink-0">🌍</div>
+                                                <div>
+                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">REASON 03</span>
+                                                    <h4 className="text-sm text-white font-bold mt-1 break-keep">글로벌 K-웰니스의 신대륙 개척</h4>
+                                                    <p className="text-[10px] text-emerald-400 mt-0.5">메타 안경 시대를 대비한 K-컨텐츠의 완성</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-[11px] text-gray-300 leading-relaxed break-keep mb-3">
+                                                서양의 수동적 명상 앱(Calm, Headspace)이 해결하지 못한 <span className="text-red-300">골든타임 방치</span> 문제를,
+                                                동양학적 통찰과 <strong className="text-emerald-300">K-딥테크(RAG AI + 생체신호)</strong>로 돌파합니다.
+                                                특히 <strong className="text-blue-300">Zero-UI(음성 대화) 방식</strong>은 스마트폰을 넘어
+                                                <strong className="text-amber-300">메타 안경(스마트 글래스) · 공간 컴퓨팅 시대</strong>에 가장 완벽하게 들어맞는 킬러 컨텐츠입니다.
+                                            </p>
+                                            <div className="space-y-2 mb-3">
+                                                {[
+                                                    { icon: '📱', era: '현재: 스마트폰', desc: '챗봇 기반 AI 코칭 + 웨어러블 바이오싱크', color: 'blue' },
+                                                    { icon: '👓', era: '미래: 스마트 글래스', desc: 'Zero-UI 음성 코칭 + 실시간 생체 AR 오버레이', color: 'amber' },
+                                                    { icon: '🌐', era: '글로벌: K-웰니스 수출', desc: '60 Neural Codes → 글로벌 표준 기질 데이터', color: 'emerald' },
+                                                ].map(item => (
+                                                    <div key={item.era} className={`flex items-start gap-3 bg-${item.color}-950/20 border border-${item.color}-900/30 rounded-xl p-3`}>
+                                                        <span className="text-lg shrink-0">{item.icon}</span>
+                                                        <div>
+                                                            <div className={`text-[10px] text-${item.color}-300 font-bold`}>{item.era}</div>
+                                                            <div className="text-[11px] text-gray-300 break-keep">{item.desc}</div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="p-2.5 bg-emerald-950/30 rounded-xl border border-emerald-500/20">
+                                                <p className="text-[10px] text-emerald-200 break-keep text-center font-bold">
+                                                    🚀 가장 한국적인 기질 데이터로 글로벌 멘탈 웰니스 시장을 선점
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Final Conclusion */}
+                                <div className="mx-4 md:mx-6 mt-6 p-6 bg-gradient-to-br from-yellow-950/20 via-blue-950/20 to-purple-950/20 rounded-2xl border border-yellow-500/30 text-center">
+                                    <div className="text-3xl mb-3">👑</div>
+                                    <h3 className="text-base text-white font-black mb-3 break-keep leading-snug">
+                                        명심코칭은 현시대 멘탈데믹의<br/><span className="text-yellow-300">진정한 대안</span>입니다.
+                                    </h3>
+                                    <div className="space-y-2 max-w-sm mx-auto mb-4">
+                                        {[
+                                            '세계 최초 심리학 × 동양학 × IT 3축 융합',
+                                            '물질 지원이 아닌, 의식 전환의 패러다임 전환',
+                                            '메타 안경 시대를 선점하는 K-컨텐츠',
+                                        ].map((t, i) => (
+                                            <div key={i} className="flex items-center gap-2 bg-white/5 rounded-xl px-4 py-2.5">
+                                                <span className="text-yellow-400 text-sm font-black">{i + 1}.</span>
+                                                <span className="text-[11px] text-gray-200 font-bold break-keep">{t}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="flex flex-wrap justify-center gap-2">
+                                        {[
+                                            { icon: '🔒', text: '특허 출원 완료' },
+                                            { icon: '🎓', text: '보건교육사 자격' },
+                                            { icon: '🧬', text: '64 Neural Codes' },
+                                        ].map(badge => (
+                                            <span key={badge.text} className="text-[9px] px-2.5 py-1 rounded-full bg-yellow-900/20 border border-yellow-500/20 text-yellow-300 font-mono">
+                                                {badge.icon} {badge.text}
+                                            </span>
+                                        ))}
                                     </div>
                                 </div>
                             </motion.div>
