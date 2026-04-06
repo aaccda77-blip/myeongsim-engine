@@ -95,7 +95,7 @@ export default function SocialValueDiscovery() {
                                     나의 사회적 가치 발견하기
                                 </h2>
                                 <p className="text-sm text-gray-400 leading-relaxed break-keep max-w-sm mx-auto">
-                                    당신의 용신(用神) 뉴럴 코드를 선택하면, 명심 마스터가 그 기운을 
+                                    당신의 코어 드라이브(Core Drive)를 선택하면, 명심 마스터가 그 에너지를 
                                     <strong className="text-teal-300"> &apos;세상에 줄 수 있는 선물&apos;</strong>로 재정의해 드립니다.
                                 </p>
                             </div>
@@ -130,7 +130,7 @@ export default function SocialValueDiscovery() {
 
                             {/* Footnote */}
                             <div className="mt-10 text-center text-[10px] text-gray-600 font-mono">
-                                ※ 데모 버전: 용신 뉴럴 코드를 직접 선택합니다. 정식 버전에서는 사주 분석을 통해 자동 판별됩니다.
+                                ※ 데모 버전: 코어 드라이브를 직접 선택합니다. 정식 버전에서는 명식 분석을 통해 자동 판별됩니다.
                             </div>
                         </motion.div>
                     )}
