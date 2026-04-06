@@ -6,14 +6,14 @@ import { VALUE_DATABASE, ValueProfile } from '@/modules/SocialValueModule';
 
 type Phase = 'SELECT' | 'REVEAL';
 
-export default function SocialValueDiscovery() {
+export default function SovereignCodeMapping() {
     const [phase, setPhase] = useState<Phase>('SELECT');
     const [selectedProfile, setSelectedProfile] = useState<ValueProfile | null>(null);
-    const [activeTab, setActiveTab] = useState<'value' | 'mission' | 'action'>('value');
+    const [activeTab, setActiveTab] = useState<'decode' | 'mission' | 'execute'>('decode');
 
     const handleSelect = (profile: ValueProfile) => {
         setSelectedProfile(profile);
-        setActiveTab('value');
+        setActiveTab('decode');
         setPhase('REVEAL');
     };
 
@@ -24,20 +24,20 @@ export default function SocialValueDiscovery() {
 
     // Element selector button styles
     const elementButtonStyles: Record<string, string> = {
-        wood: 'border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/30 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)]',
-        fire: 'border-orange-500/40 hover:border-orange-400 hover:bg-orange-950/30 hover:shadow-[0_0_20px_rgba(249,115,22,0.15)]',
-        earth: 'border-amber-500/40 hover:border-amber-400 hover:bg-amber-950/30 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]',
-        metal: 'border-slate-400/40 hover:border-slate-300 hover:bg-slate-900/30 hover:shadow-[0_0_20px_rgba(148,163,184,0.15)]',
-        water: 'border-cyan-500/40 hover:border-cyan-400 hover:bg-cyan-950/30 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]',
+        growth: 'border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/30 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)]',
+        ignition: 'border-orange-500/40 hover:border-orange-400 hover:bg-orange-950/30 hover:shadow-[0_0_20px_rgba(249,115,22,0.15)]',
+        secure: 'border-amber-500/40 hover:border-amber-400 hover:bg-amber-950/30 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]',
+        decision: 'border-slate-400/40 hover:border-slate-300 hover:bg-slate-900/30 hover:shadow-[0_0_20px_rgba(148,163,184,0.15)]',
+        deep: 'border-cyan-500/40 hover:border-cyan-400 hover:bg-cyan-950/30 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]',
     };
 
     // Accent colors for revealed state
-    const accentColors: Record<string, { text: string; border: string; bg: string; glow: string; tab: string; tabActive: string }> = {
-        wood: { text: 'text-emerald-300', border: 'border-emerald-500/30', bg: 'bg-emerald-950/20', glow: 'shadow-[0_0_30px_rgba(16,185,129,0.1)]', tab: 'text-emerald-500/60 hover:text-emerald-300', tabActive: 'text-emerald-300 border-emerald-400' },
-        fire: { text: 'text-orange-300', border: 'border-orange-500/30', bg: 'bg-orange-950/20', glow: 'shadow-[0_0_30px_rgba(249,115,22,0.1)]', tab: 'text-orange-500/60 hover:text-orange-300', tabActive: 'text-orange-300 border-orange-400' },
-        earth: { text: 'text-amber-300', border: 'border-amber-500/30', bg: 'bg-amber-950/20', glow: 'shadow-[0_0_30px_rgba(245,158,11,0.1)]', tab: 'text-amber-500/60 hover:text-amber-300', tabActive: 'text-amber-300 border-amber-400' },
-        metal: { text: 'text-slate-300', border: 'border-slate-400/30', bg: 'bg-slate-900/20', glow: 'shadow-[0_0_30px_rgba(148,163,184,0.1)]', tab: 'text-slate-400/60 hover:text-slate-300', tabActive: 'text-slate-300 border-slate-400' },
-        water: { text: 'text-cyan-300', border: 'border-cyan-500/30', bg: 'bg-cyan-950/20', glow: 'shadow-[0_0_30px_rgba(6,182,212,0.1)]', tab: 'text-cyan-500/60 hover:text-cyan-300', tabActive: 'text-cyan-300 border-cyan-400' },
+    const accentColors: Record<string, { text: string; border: string; bg: string; glow: string }> = {
+        growth: { text: 'text-emerald-300', border: 'border-emerald-500/30', bg: 'bg-emerald-950/20', glow: 'shadow-[0_0_30px_rgba(16,185,129,0.1)]' },
+        ignition: { text: 'text-orange-300', border: 'border-orange-500/30', bg: 'bg-orange-950/20', glow: 'shadow-[0_0_30px_rgba(249,115,22,0.1)]' },
+        secure: { text: 'text-amber-300', border: 'border-amber-500/30', bg: 'bg-amber-950/20', glow: 'shadow-[0_0_30px_rgba(245,158,11,0.1)]' },
+        decision: { text: 'text-slate-300', border: 'border-slate-400/30', bg: 'bg-slate-900/20', glow: 'shadow-[0_0_30px_rgba(148,163,184,0.1)]' },
+        deep: { text: 'text-cyan-300', border: 'border-cyan-500/30', bg: 'bg-cyan-950/20', glow: 'shadow-[0_0_30px_rgba(6,182,212,0.1)]' },
     };
 
     return (
@@ -59,12 +59,13 @@ export default function SocialValueDiscovery() {
                         )}
                         <span className="text-xl">🌏</span>
                         <div>
-                            <h1 className="text-sm font-bold text-teal-200">사회적 가치 발견</h1>
-                            <p className="text-[10px] text-teal-500/70 font-mono">SOCIAL_VALUE_DISCOVERY v1.0</p>
+                            <h1 className="text-sm font-bold text-teal-200">소버린 코드 매핑</h1>
+                            <p className="text-[10px] text-teal-500/70 font-mono">SOVEREIGN_CODE_MAPPING v1.0</p>
                         </div>
                     </div>
-                    <div className="px-3 py-1.5 rounded-full border border-teal-600/30 text-[10px] font-mono tracking-widest text-teal-500 bg-teal-950/20">
-                        DEMO
+                    <div className="px-3 py-1.5 rounded-full border border-teal-600/30 text-[10px] font-mono tracking-widest text-teal-500 bg-teal-950/20 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                        명심 OS
                     </div>
                 </div>
             </header>
@@ -92,12 +93,26 @@ export default function SocialValueDiscovery() {
                                     🌏
                                 </motion.div>
                                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-200 via-white to-amber-200 mb-3">
-                                    나의 사회적 가치 발견하기
+                                    소버린 원형 코드 발견
                                 </h2>
                                 <p className="text-sm text-gray-400 leading-relaxed break-keep max-w-sm mx-auto">
-                                    당신의 용신(用神) 오행을 선택하면, 명심 마스터가 그 기운을 
-                                    <strong className="text-teal-300"> '세상에 줄 수 있는 선물'</strong>로 재정의해 드립니다.
+                                    당신의 용신(用神) 오행을 선택하면, 명심 OS가 그 기운을 
+                                    <strong className="text-teal-300"> 소버린(주권자)의 고유한 미션 코드</strong>로 변환합니다.
                                 </p>
+                            </div>
+
+                            {/* Myeongsim Info Box */}
+                            <div className="relative p-4 mb-8 bg-[#0B0F19] border border-teal-500/15 rounded-2xl overflow-hidden">
+                                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-teal-400 to-amber-500"></div>
+                                <div className="pl-3">
+                                    <div className="text-[10px] font-mono text-teal-500/70 mb-2 tracking-wider">MYEONGSIM_OS_BRIEFING</div>
+                                    <p className="text-[11px] text-gray-400 leading-relaxed break-keep">
+                                        용신(用神)은 당신의 명식에서 가장 절실하게 필요한 기운입니다. 
+                                        명심 OS는 이 기운을 단순한 &apos;결핍&apos;으로 해석하지 않습니다. 
+                                        <span className="text-teal-300"> 당신이 이 세상에 존재하는 이유, 곧 소버린의 원형 코드(Archetype Code)</span>로 
+                                        재설계합니다.
+                                    </p>
+                                </div>
                             </div>
 
                             {/* Element Selector Cards */}
@@ -130,7 +145,7 @@ export default function SocialValueDiscovery() {
 
                             {/* Footnote */}
                             <div className="mt-10 text-center text-[10px] text-gray-600 font-mono">
-                                ※ 데모 버전: 용신 오행을 직접 선택합니다. 정식 버전에서는 사주 분석을 통해 자동 판별됩니다.
+                                ※ 데모 모드: 용신 오행을 직접 선택합니다. 정식 버전에서는 명식 분석을 통해 자동 판별됩니다.
                             </div>
                         </motion.div>
                     )}
@@ -163,7 +178,7 @@ export default function SocialValueDiscovery() {
                                     >
                                         {selectedProfile.emoji}
                                     </motion.div>
-                                    <div className="text-[10px] font-mono text-gray-500 mb-2 tracking-widest">YOUR SOCIAL VALUE ARCHETYPE</div>
+                                    <div className="text-[10px] font-mono text-gray-500 mb-2 tracking-widest">SOVEREIGN ARCHETYPE CODE</div>
                                     <h2 className={`text-xl font-black ${accentColors[selectedProfile.elementKey].text} mb-1`}>
                                         {selectedProfile.archetype}
                                     </h2>
@@ -173,8 +188,8 @@ export default function SocialValueDiscovery() {
 
                             {/* Tab Navigation */}
                             <div className="flex gap-1 mb-6 bg-black/30 rounded-xl p-1 border border-gray-800/50">
-                                {(['value', 'mission', 'action'] as const).map((tab) => {
-                                    const labels = { value: '💎 가치 수용', mission: '🚀 사회적 미션', action: '⚡ 오늘의 실천' };
+                                {(['decode', 'mission', 'execute'] as const).map((tab) => {
+                                    const labels = { decode: '🔓 다크코드 해제', mission: '🏴 소버린 미션', execute: '⚡ 미션 실행' };
                                     const isActive = activeTab === tab;
                                     return (
                                         <button
@@ -194,25 +209,25 @@ export default function SocialValueDiscovery() {
 
                             {/* Tab Content */}
                             <AnimatePresence mode="wait">
-                                {activeTab === 'value' && (
+                                {activeTab === 'decode' && (
                                     <motion.div
-                                        key="tab-value"
+                                        key="tab-decode"
                                         initial={{ opacity: 0, x: 10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -10 }}
                                         className="space-y-5"
                                     >
-                                        {/* Reframing Message */}
+                                        {/* Reframing / Dark Code Decode */}
                                         <div className={`p-5 rounded-2xl border ${accentColors[selectedProfile.elementKey].border} bg-black/30`}>
-                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">관점 전환 (REFRAMING)</div>
+                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">🔓 명심 OS 관점 전환 · 다크코드 해제</div>
                                             <p className="text-[13px] text-gray-200 leading-relaxed break-keep">
                                                 {selectedProfile.reframingMessage}
                                             </p>
                                         </div>
 
-                                        {/* Psychology Insight */}
+                                        {/* Neural Mapping (East × West Fusion) */}
                                         <div className="p-5 rounded-2xl border border-gray-800/50 bg-black/20">
-                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">🧠 심리학적 통찰</div>
+                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">🧬 명심 뉴럴 매핑 (동양 원형 × 서양 과학)</div>
                                             <p className="text-[13px] text-gray-300 leading-relaxed break-keep italic">
                                                 {selectedProfile.psychInsight}
                                             </p>
@@ -228,68 +243,71 @@ export default function SocialValueDiscovery() {
                                         exit={{ opacity: 0, x: -10 }}
                                         className="space-y-5"
                                     >
-                                        {/* Mission Declaration */}
+                                        {/* Sovereign Mission Declaration */}
                                         <div className={`p-6 rounded-2xl border ${accentColors[selectedProfile.elementKey].border} ${accentColors[selectedProfile.elementKey].bg} relative overflow-hidden`}>
                                             <div className={`absolute top-0 left-0 w-1 h-full bg-gradient-to-b ${selectedProfile.gradientFrom} ${selectedProfile.gradientTo}`}></div>
-                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">🏴 나의 사회적 미션 선언문</div>
+                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">🏴 소버린 미션 선언문</div>
                                             <p className={`text-[15px] font-bold ${accentColors[selectedProfile.elementKey].text} leading-relaxed break-keep`}>
                                                 &ldquo;{selectedProfile.socialMission}&rdquo;
                                             </p>
                                         </div>
 
-                                        {/* Master Quote */}
+                                        {/* Master Final Declaration */}
                                         <div className="p-5 rounded-2xl border border-gray-800/50 bg-[#0B0F19]/60">
-                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">💬 명심 마스터의 한 마디</div>
+                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">👑 소버린 마스터의 최종 선언</div>
                                             <p className="text-[13px] text-gray-300 leading-relaxed break-keep">
                                                 {selectedProfile.masterQuote}
                                             </p>
-                                            <div className="mt-3 text-right text-[10px] text-gray-600 font-mono">— SOVEREIGN MASTER</div>
+                                            <div className="mt-3 text-right text-[10px] text-gray-600 font-mono">— SOVEREIGN MASTER · 明心</div>
                                         </div>
                                     </motion.div>
                                 )}
 
-                                {activeTab === 'action' && (
+                                {activeTab === 'execute' && (
                                     <motion.div
-                                        key="tab-action"
+                                        key="tab-execute"
                                         initial={{ opacity: 0, x: 10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -10 }}
                                         className="space-y-5"
                                     >
-                                        {/* Daily Action */}
+                                        {/* Mission Execution */}
                                         <div className={`p-6 rounded-2xl border ${accentColors[selectedProfile.elementKey].border} ${accentColors[selectedProfile.elementKey].bg}`}>
-                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">⚡ 오늘의 가치 실천 과제</div>
+                                            <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">⚡ 오늘의 명심 미션 실행 코드</div>
                                             <p className="text-[14px] text-gray-200 leading-relaxed break-keep font-medium">
                                                 {selectedProfile.dailyAction}
                                             </p>
                                         </div>
 
-                                        {/* CBT-style Thought Record */}
+                                        {/* Dark Code → Sovereign Code Transformation */}
                                         <div className="p-5 rounded-2xl border border-gray-800/50 bg-black/20">
-                                            <div className="text-[10px] font-mono text-gray-500 mb-4 tracking-wider">📝 인지 전환 기록 (CBT Thought Record)</div>
+                                            <div className="text-[10px] font-mono text-gray-500 mb-4 tracking-wider">🔄 다크코드 → 소버린 코드 변환</div>
                                             <div className="space-y-3">
                                                 <div className="flex gap-3 items-start">
-                                                    <span className="shrink-0 w-6 h-6 rounded-full bg-red-950/50 border border-red-500/30 flex items-center justify-center text-[10px]">❌</span>
+                                                    <span className="shrink-0 w-6 h-6 rounded-full bg-red-950/50 border border-red-500/30 flex items-center justify-center text-[10px]">🔴</span>
                                                     <div>
-                                                        <div className="text-[10px] text-red-400/70 mb-1">부정적 자동사고 (Before)</div>
-                                                        <div className="text-xs text-gray-400">&ldquo;나는 이 세상에 쓸모없는 존재야. 내가 뭘 해도 안 돼.&rdquo;</div>
+                                                        <div className="text-[10px] text-red-400/70 mb-1">다크코드 (에고의 자동응답)</div>
+                                                        <div className="text-xs text-gray-400">&ldquo;나는 이 세상에 쓸모없는 존재다. 내가 뭘 해도 안 된다.&rdquo;</div>
                                                     </div>
                                                 </div>
-                                                <div className="w-px h-4 bg-gray-800 ml-3"></div>
+                                                <div className="flex items-center gap-2 pl-3">
+                                                    <div className="w-px h-3 bg-gray-700"></div>
+                                                    <span className="text-[9px] font-mono text-gray-600">명심 OS 리프레이밍 실행 ↓</span>
+                                                </div>
                                                 <div className="flex gap-3 items-start">
                                                     <span className={`shrink-0 w-6 h-6 rounded-full ${accentColors[selectedProfile.elementKey].bg} ${accentColors[selectedProfile.elementKey].border} border flex items-center justify-center text-[10px]`}>✨</span>
                                                     <div>
-                                                        <div className={`text-[10px] mb-1 ${accentColors[selectedProfile.elementKey].text} opacity-70`}>가치 기반 재구성 (After)</div>
+                                                        <div className={`text-[10px] mb-1 ${accentColors[selectedProfile.elementKey].text} opacity-70`}>소버린 코드 (각성된 명심)</div>
                                                         <div className={`text-xs ${accentColors[selectedProfile.elementKey].text}`}>
-                                                            &ldquo;나는 {selectedProfile.elementName}의 에너지를 가진 <strong>{selectedProfile.archetype}</strong>이다. 
-                                                            나의 존재는 {selectedProfile.coreValue}로서 세상에 기여한다.&rdquo;
+                                                            &ldquo;나는 {selectedProfile.elementName}의 용신 에너지를 장착한 <strong>{selectedProfile.archetype}</strong>이다. 
+                                                            나의 존재는 {selectedProfile.coreValue}로서 세상에 기여하도록 설계되었다.&rdquo;
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Encouragement */}
+                                        {/* Sovereign Seal */}
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
@@ -298,7 +316,7 @@ export default function SocialValueDiscovery() {
                                         >
                                             <p className="text-xs text-gray-500 break-keep">
                                                 당신의 {selectedProfile.elementName} 에너지는 결핍이 아닙니다.<br />
-                                                <span className={`font-bold ${accentColors[selectedProfile.elementKey].text}`}>세상이 당신에게 부여한 고유한 선물</span>입니다.
+                                                <span className={`font-bold ${accentColors[selectedProfile.elementKey].text}`}>명심(明心)이 당신에게 부여한 소버린의 원형 코드</span>입니다.
                                             </p>
                                         </motion.div>
                                     </motion.div>
@@ -312,7 +330,7 @@ export default function SocialValueDiscovery() {
             {/* Footer */}
             <footer className="relative z-10 p-4 border-t border-gray-800/50 bg-[#070A12]/90 backdrop-blur-md">
                 <div className="max-w-2xl mx-auto text-center text-[10px] text-gray-600 font-mono tracking-widest">
-                    MYEONGSIM_SOCIAL_VALUE // DEMO v1.0
+                    MYEONGSIM_SOVEREIGN_CODE_MAPPING // 明心 OS v1.0
                 </div>
             </footer>
         </div>
