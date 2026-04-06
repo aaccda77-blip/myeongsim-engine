@@ -97,6 +97,38 @@ export default function MasterCoreLandingPage() {
                         </motion.button>
                     </div>
 
+                    {/* Social Value Button - Full Width */}
+                    <div className="w-full max-w-md mx-auto mt-4">
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => router.push('/master-core/value')}
+                            className="relative group w-full overflow-hidden rounded-2xl p-[1px]"
+                        >
+                            <span className="absolute inset-0 bg-gradient-to-r from-teal-500 via-emerald-500 to-amber-500 rounded-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-300"></span>
+                            <div className="relative bg-[#070A12] px-4 py-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 group-hover:bg-opacity-0">
+                                <span className="text-white font-bold text-sm tracking-wide mb-1">🌏 사회적 가치 발견</span>
+                                <span className="text-[10px] text-teal-300/70 font-mono">SOCIAL_VALUE_DISCOVERY</span>
+                            </div>
+                        </motion.button>
+                    </div>
+
+                    {/* 4D Mind Hacking Matrix Button */}
+                    <div className="w-full max-w-md mx-auto mt-3">
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => router.push('/master-core/matrix')}
+                            className="relative group w-full overflow-hidden rounded-2xl p-[1px]"
+                        >
+                            <span className="absolute inset-0 bg-gradient-to-r from-red-500 via-violet-500 via-sky-500 to-amber-500 rounded-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-300"></span>
+                            <div className="relative bg-[#070A12] px-4 py-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 group-hover:bg-opacity-0">
+                                <span className="text-white font-bold text-sm tracking-wide mb-1">⚔️ 4D 마인드 해킹 매트릭스</span>
+                                <span className="text-[10px] text-red-300/70 font-mono">SOVEREIGN_4D_MATRIX · PATENT</span>
+                            </div>
+                        </motion.button>
+                    </div>
+
                     {/* Footer Code */}
                     <div className="mt-16 text-[10px] text-gray-600 font-mono tracking-widest text-center">
                         BP-53 // MYEONGSIM_COACHING_SYSTEM v2.0

@@ -268,30 +268,30 @@ export function injectMyeongsimPlugin(userInput: string, userGapjaId: string): s
 
   const state = detectUserState(userInput);
   
-  let dynamicPrompt = \`\${MYEONGSIM_BASE_DIRECTIVE}\n\n\`;
-  dynamicPrompt += \`[Target Protocol] 당신의 코칭 대상은 [\${module.name} - \${module.title}] 에너지를 폭발시킬 수 있는 자입니다.\n\n\`;
+  let dynamicPrompt = `${MYEONGSIM_BASE_DIRECTIVE}\n\n`;
+  dynamicPrompt += `[Target Protocol] 당신의 코칭 대상은 [${module.name} - ${module.title}] 에너지를 폭발시킬 수 있는 자입니다.\n\n`;
 
   switch (state) {
     case "DARK":
-      dynamicPrompt += \`[Mode: 다크 코드 해킹 모드]
-- 대상은 현재 낡은 각본에 빠져있습니다. (그들의 변명: "\${module.phase2.errorLog}")
-- 현재 오류 현황은 "\${module.phase2.errorStatus}" 입니다.
+      dynamicPrompt += `[Mode: 다크 코드 해킹 모드]
+- 대상은 현재 낡은 각본에 빠져있습니다. (그들의 변명: "${module.phase2.errorLog}")
+- 현재 오류 현황은 "${module.phase2.errorStatus}" 입니다.
 - 절대로 위로하지 마십시오! 그 고집이 대상자를 어떻게 깎아내리고 있는지 짚어내고, 아래 두 질문 중 하나만 던져 대상이 단박에 깨닫도록 하십시오.
-  * 소파술 질문: "\${module.phase3.socraticQuestion}"
-  * 재귀적 질문: "\${module.phase3.recursiveQuestion}"\`;
+  * 소파술 질문: "${module.phase3.socraticQuestion}"
+  * 재귀적 질문: "${module.phase3.recursiveQuestion}"`;
       break;
     case "NEURAL":
-      dynamicPrompt += \`[Mode: 뉴럴 코드 설계도 브리핑]
+      dynamicPrompt += `[Mode: 뉴럴 코드 설계도 브리핑]
 - 대상은 설계도를 읽을 준비가 되었습니다.
-- 대상의 오리지널 시스템(\${module.phase1.systemTrait})과 그것을 구동하는 핵심적인 공식(\${module.phase1.computationMethod})을 차갑지만 웅장하게 브리핑하십시오.
-- \${module.masterBriefing}\`;
+- 대상의 오리지널 시스템(${module.phase1.systemTrait})과 그것을 구동하는 핵심적인 공식(${module.phase1.computationMethod})을 차갑지만 웅장하게 브리핑하십시오.
+- ${module.masterBriefing}`;
       break;
     case "META":
-      dynamicPrompt += \`[Mode: 메타 코드 각성 및 솔루션 하달]
+      dynamicPrompt += `[Mode: 메타 코드 각성 및 솔루션 하달]
 - 대상이 한계를 깨고 각성 상태(META)를 보였습니다.
-- 대상을 엄청나게 칭찬하고, 그가 도달한 궁극의 상태가 [\${module.phase5.executionState}] 임을 선언하십시오.
+- 대상을 엄청나게 칭찬하고, 그가 도달한 궁극의 상태가 [${module.phase5.executionState}] 임을 선언하십시오.
 - 감정에만 머물지 않도록 즉각적인 안티-프래질 액션 플랜을 하달하십시오:
-  * 미션: \${module.phase4.solution1.reprogramming} -> 오늘 반드시 실천할 것: \${module.phase4.solution1.actionItem}\`;
+  * 미션: ${module.phase4.solution1.reprogramming} -> 오늘 반드시 실천할 것: ${module.phase4.solution1.actionItem}`;
       break;
   }
   return dynamicPrompt;
