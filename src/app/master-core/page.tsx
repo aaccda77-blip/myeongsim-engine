@@ -129,6 +129,22 @@ export default function MasterCoreLandingPage() {
                         </motion.button>
                     </div>
 
+                    {/* CAFE Algorithm Pipeline Button */}
+                    <div className="w-full max-w-md mx-auto mt-3">
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => router.push('/master-core/cafe')}
+                            className="relative group w-full overflow-hidden rounded-2xl p-[1px]"
+                        >
+                            <span className="absolute inset-0 bg-gradient-to-r from-violet-500 via-cyan-500 to-blue-500 rounded-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-300"></span>
+                            <div className="relative bg-[#070A12] px-4 py-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 group-hover:bg-opacity-0">
+                                <span className="text-white font-bold text-sm tracking-wide mb-1">🔬 CAFE 알고리즘 파이프라인</span>
+                                <span className="text-[10px] text-violet-300/70 font-mono">CROSS-WEIGHTED_ANALYSIS · TECH DEMO</span>
+                            </div>
+                        </motion.button>
+                    </div>
+
                     {/* Footer Code */}
                     <div className="mt-16 text-[10px] text-gray-600 font-mono tracking-widest text-center">
                         BP-53 // MYEONGSIM_COACHING_SYSTEM v2.0
