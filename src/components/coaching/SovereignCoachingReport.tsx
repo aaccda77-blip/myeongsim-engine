@@ -12,6 +12,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, ChevronDown, ChevronUp, Diamond, Gem } from 'lucide-react';
+import { useReportStore } from '@/store/useReportStore';
 
 // ─────────────────────────────────────────────
 // 타입 정의
@@ -25,72 +26,74 @@ interface SovereignCoachingReportProps {
 // ─────────────────────────────────────────────
 // 헬퍼: 사주 데이터 추출 유틸
 // ─────────────────────────────────────────────
-function extractSajuInfo(userProfile: any) {
-    const saju = userProfile?.saju || {};
+// ─────────────────────────────────────────────
+// 단일 글자 추출 헬퍼
+// ─────────────────────────────────────────────
+function getPillarChar(pillar: any, part: 'stem' | 'branch'): string {
+    if (!pillar) return '?';
+    if (part === 'stem') {
+        if (pillar.gan?.char) return pillar.gan.char;
+        if (typeof pillar.gan === 'string') return pillar.gan;
+        if (typeof pillar.stem === 'string') return pillar.stem;
+    }
+    if (part === 'branch') {
+        if (pillar.ji?.char) return pillar.ji.char;
+        if (typeof pillar.ji === 'string') return pillar.ji;
+        if (typeof pillar.branch === 'string') return pillar.branch;
+    }
+    return '?';
+}
 
-    // 사주 기둥 추출 (legacy flat / nested 모두 지원)
-    const getPillarChar = (pillar: any, part: 'stem' | 'branch'): string => {
-        if (!pillar) return '?';
-        if (part === 'stem') {
-            if (typeof pillar.stem === 'string') return pillar.stem;
-            if (pillar.gan?.char) return pillar.gan.char;
-            if (typeof pillar.gan === 'string') return pillar.gan;
-        }
-        if (part === 'branch') {
-            if (typeof pillar.branch === 'string') return pillar.branch;
-            if (pillar.ji?.char) return pillar.ji.char;
-            if (typeof pillar.ji === 'string') return pillar.ji;
-        }
-        return '?';
-    };
+const STEM_MAP: Record<string, string> = {
+    '갑': '甲', '을': '乙', '병': '丙', '정': '丁', '무': '戊',
+    '기': '己', '경': '庚', '신': '辛', '임': '壬', '계': '癸'
+};
+const BRANCH_MAP: Record<string, string> = {
+    '자': '子', '축': '丑', '인': '寅', '묘': '卯', '진': '辰', '사': '巳',
+    '오': '午', '미': '未', '신': '申', '유': '酉', '술': '戌', '해': '亥'
+};
 
-    const day = saju.dayPillar || saju.fourPillars?.day || {};
+function normStem(s: string)   { return STEM_MAP[s]   ?? s; }
+function normBranch(b: string) { return BRANCH_MAP[b] ?? b; }
+
+function extractSajuInfo(userProfile: any, fallbackReportData?: any) {
+    // [핵심 수정] prop이 없으면 스토어 reportData 를 폴백으로 사용
+    const effectiveProfile = userProfile ?? fallbackReportData;
+    const saju = effectiveProfile?.saju || {};
+
+    const day   = saju.dayPillar   || saju.fourPillars?.day   || {};
     const month = saju.monthPillar || saju.fourPillars?.month || {};
-    const year = saju.yearPillar || saju.fourPillars?.year || {};
-    const time = saju.timePillar || saju.hourPillar || saju.fourPillars?.time || saju.fourPillars?.hour || {};
+    const year  = saju.yearPillar  || saju.fourPillars?.year  || {};
+    const time  = saju.timePillar  || saju.hourPillar || saju.fourPillars?.time || saju.fourPillars?.hour || {};
 
-    let dayStem = getPillarChar(day, 'stem');
-    let dayBranch = getPillarChar(day, 'branch');
-    let monthStem = getPillarChar(month, 'stem');
-    let monthBranch = getPillarChar(month, 'branch');
-    let yearStem = getPillarChar(year, 'stem');
-    let yearBranch = getPillarChar(year, 'branch');
-    let timeStem = getPillarChar(time, 'stem');
-    let timeBranch = getPillarChar(time, 'branch');
+    const dayStem    = normStem(getPillarChar(day,   'stem'));
+    const dayBranch  = normBranch(getPillarChar(day,   'branch'));
+    const monthStem  = normStem(getPillarChar(month, 'stem'));
+    const monthBranch= normBranch(getPillarChar(month, 'branch'));
+    const yearStem   = normStem(getPillarChar(year,  'stem'));
+    const yearBranch = normBranch(getPillarChar(year,  'branch'));
+    const timeStem   = normStem(getPillarChar(time,  'stem'));
+    const timeBranch = normBranch(getPillarChar(time,  'branch'));
 
-    // 한글로 들어올 경우 한자로 변환 매핑
-    const stemMap: Record<string, string> = {
-        '갑': '甲', '을': '乙', '병': '丙', '정': '丁', '무': '戊',
-        '기': '己', '경': '庚', '신': '辛', '임': '壬', '계': '癸'
-    };
-    const branchMap: Record<string, string> = {
-        '자': '子', '축': '丑', '인': '寅', '묘': '卯', '진': '辰', '사': '巳',
-        '오': '午', '미': '未', '신': '申', '유': '酉', '술': '戌', '해': '亥'
-    };
+    // dayMaster 직접 필드도 지원 ("甲", "甲木" 형식)
+    const dayMasterRaw = saju.dayMaster || '';
+    const dayMasterChar = dayMasterRaw.trim().charAt(0);
+    const resolvedDayStem = (dayMasterChar && dayMasterChar !== '?') ? (normStem(dayMasterChar) || dayStem) : dayStem;
 
-    if (stemMap[dayStem]) dayStem = stemMap[dayStem];
-    if (stemMap[monthStem]) monthStem = stemMap[monthStem];
-    if (stemMap[yearStem]) yearStem = stemMap[yearStem];
-    if (stemMap[timeStem]) timeStem = stemMap[timeStem];
-
-    if (branchMap[dayBranch]) dayBranch = branchMap[dayBranch];
-    if (branchMap[monthBranch]) monthBranch = branchMap[monthBranch];
-    if (branchMap[yearBranch]) yearBranch = branchMap[yearBranch];
-    if (branchMap[timeBranch]) timeBranch = branchMap[timeBranch];
-
-    const ilgan = `${dayStem}${dayBranch}`;
+    const ilgan = `${resolvedDayStem}${dayBranch}`;
     const fullSaju = `${yearStem}${yearBranch} ${monthStem}${monthBranch} ${ilgan} ${timeStem}${timeBranch}`;
 
-    // 오행 분포
-    const ohaeng = saju.ohaeng || { metal: 30, earth: 20, fire: 15, water: 15, wood: 10 };
+    // 오행 분포 (스토어의 elements 필드도 지원)
+    const rawOhaeng = saju.ohaeng || saju.elements;
+    const ohaeng = rawOhaeng || { metal: 30, earth: 20, fire: 15, water: 15, wood: 10 };
 
-    const name = userProfile?.name || userProfile?.displayName || '소버린';
-    const birthDate = userProfile?.birthDate ? new Date(userProfile.birthDate).getFullYear() : '';
+    const name = effectiveProfile?.name || effectiveProfile?.userName || effectiveProfile?.displayName || '소버린';
+    const birthDate = effectiveProfile?.birthDate ? new Date(effectiveProfile.birthDate).getFullYear() : '';
 
     return {
         name,
         birthDate,
-        dayStem,
+        dayStem: resolvedDayStem,
         dayBranch,
         ilgan,
         fullSaju,
@@ -641,8 +644,14 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const scrollRef = useRef<HTMLDivElement>(null);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
-    // 사주 데이터 추출
-    const sajuInfo = useMemo(() => extractSajuInfo(userProfile), [userProfile]);
+    // [핵심 수정] 스토어에서 직접 사용자 데이터를 가져옴 (prop 없어도 동작)
+    const reportData = useReportStore((s) => s.reportData);
+
+    // 사주 데이터 추출 (prop → 스토어 순으로 우선순위)
+    const sajuInfo = useMemo(
+        () => extractSajuInfo(userProfile, reportData),
+        [userProfile, reportData]
+    );
 
     // 일간별 코칭 데이터 선택
     const coaching: IlganCoaching = useMemo(() => {
