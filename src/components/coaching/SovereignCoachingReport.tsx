@@ -139,6 +139,25 @@ function extractSajuInfo(userProfile: any, fallbackReportData?: any) {
         }
     }
 
+    // [공망(Quantum Void) 계산기]
+    const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    
+    let gongmangLabels: string[] = [];
+    if (resolvedDayStem && finalDayBranch && resolvedDayStem !== '?' && finalDayBranch !== '?') {
+        const sIdx = STEMS.indexOf(resolvedDayStem);
+        const bIdx = BRANCHES.indexOf(finalDayBranch);
+        if (sIdx !== -1 && bIdx !== -1) {
+            const diff = (bIdx - sIdx + 12) % 12;
+            gongmangLabels = [BRANCHES[(diff + 10) % 12], BRANCHES[(diff + 11) % 12]];
+        }
+    }
+
+    // 공망 위치 확인 (월지, 시지, 년지)
+    const hasYearGongmang = gongmangLabels.some(g => finalYearPillar.includes(g));
+    const hasMonthGongmang = gongmangLabels.some(g => finalMonthPillar.includes(g));
+    const hasTimeGongmang = gongmangLabels.some(g => finalTimePillar.includes(g));
+
     return {
         name,
         birthDate,
@@ -152,7 +171,14 @@ function extractSajuInfo(userProfile: any, fallbackReportData?: any) {
         timePillar: finalTimePillar,
         ohaeng: finalOhaeng,
         rawBirthDate: effectiveProfile?.birthDate || effectiveProfile?.birth_date,
-        rawBirthTime: effectiveProfile?.birthTime || effectiveProfile?.birth_time
+        rawBirthTime: effectiveProfile?.birthTime || effectiveProfile?.birth_time,
+        gongmang: {
+            labels: gongmangLabels,
+            hasYear: hasYearGongmang,
+            hasMonth: hasMonthGongmang,
+            hasTime: hasTimeGongmang,
+            isActive: hasYearGongmang || hasMonthGongmang || hasTimeGongmang
+        }
     };
 }
 
@@ -932,10 +958,10 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     <SectionHeader phase="Phase 1" title="4D Full Neural Blueprint" />
                                     <div className="grid grid-cols-1 gap-3 mb-4">
                                         {[
-                                            { icon: '🎯', label: '본질', val: sajuInfo.dayPillar, desc: coaching.phase1.inner, color: 'rgba(242,202,80,0.08)' },
-                                            { icon: '🌍', label: '환경', val: sajuInfo.yearPillar, desc: coaching.phase1.env, color: 'rgba(99,102,241,0.08)' },
-                                            { icon: '👥', label: '사회', val: sajuInfo.monthPillar, desc: coaching.phase1.social, color: 'rgba(34,197,94,0.08)' },
-                                            { icon: '🔮', label: '미래', val: sajuInfo.timePillar, desc: coaching.phase1.future, color: 'rgba(239,68,68,0.08)' },
+                                            { icon: '🎯', label: '본질', val: sajuInfo.dayPillar, desc: coaching.phase1.inner, color: 'rgba(242,202,80,0.08)', isGongmang: false },
+                                            { icon: '🌍', label: '환경', val: sajuInfo.yearPillar, desc: coaching.phase1.env, color: 'rgba(99,102,241,0.08)', isGongmang: sajuInfo.gongmang?.hasYear, gText: "과거의 환경적 룰을 셧다운시키고, 자신만의 독창적인 무대(System)를 스스로 디자인할 특권이 주어졌습니다." },
+                                            { icon: '👥', label: '사회', val: sajuInfo.monthPillar, desc: coaching.phase1.social, color: 'rgba(34,197,94,0.08)', isGongmang: sajuInfo.gongmang?.hasMonth, gText: "사회적 프레임에 얽매이지 않고, 백지(Zero-Point) 상태에서 완전히 새로운 비즈니스를 창조할 수 있는 무한한 보이드(Void)가 개방되었습니다." },
+                                            { icon: '🔮', label: '미래', val: sajuInfo.timePillar, desc: coaching.phase1.future, color: 'rgba(239,68,68,0.08)', isGongmang: sajuInfo.gongmang?.hasTime, gText: "세상의 흔한 결과물 대신, 상상을 초월하는 영속적 가치(Legacy)를 잉태할 수 있는 양자 역학적 잠재력이 활성화되었습니다." },
                                         ].map(item => (
                                             <div key={item.label} className="p-4 rounded-xl border border-white/10" style={{ background: item.color }}>
                                                 <div className="flex items-center gap-2 mb-2">
@@ -945,6 +971,18 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                     </div>
                                                 </div>
                                                 <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
+                                                
+                                                {/* 퀀텀 보이드(Gongmang) 하이라이트 UI */}
+                                                {item.isGongmang && (
+                                                    <div className="mt-3 p-3 rounded-lg border border-purple-500/30" style={{ background: 'rgba(168,85,247,0.05)' }}>
+                                                        <p className="text-[10px] font-bold text-purple-400 flex items-center gap-1.5 mb-1.5 tracking-wider">
+                                                            <span className="text-sm">🌌</span> QUANTUM VOID ACTIVATED
+                                                        </p>
+                                                        <p className="text-xs text-purple-300/90 leading-relaxed italic">
+                                                            {item.gText}
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
