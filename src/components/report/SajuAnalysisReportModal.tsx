@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ClipboardList, Activity, Zap, TrendingUp, AlertCircle } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
+import { calculateSaju, calculateSajuStats, SajuResult } from '@/lib/saju/SajuEngine';
 
 interface SajuAnalysisReportModalProps {
     isOpen: boolean;
@@ -24,9 +25,31 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
 
     // 1. Data Calculation (Real-time)
     const analysis = useMemo(() => {
-        if (!reportData?.saju) return null;
+        let sajuData = reportData?.saju || reportData?.sajuData || reportData?.saju_data;
+        
+        // [슈퍼 폴백] Saju 데이터가 없을 경우 userProfile의 생일 정보로 동적 연산
+        if (!sajuData && userProfile) {
+            const rawDate = userProfile.birthDate || userProfile.birth_date;
+            const rawTime = userProfile.birthTime || userProfile.birth_time || '12:00';
+            if (rawDate) {
+                try {
+                    const sajuResult = calculateSaju(rawDate, rawTime, 'solar', userProfile.gender || 'male');
+                    if (sajuResult.success) {
+                        const stats = calculateSajuStats(sajuResult.fourPillars, sajuResult.dayMasterChar);
+                        sajuData = {
+                            dayMaster: sajuResult.dayMasterChar, // '庚' 등 한자 우선
+                            elements: stats.ohaeng
+                        };
+                    }
+                } catch (e) {
+                    console.error("SajuAnalysisReportModal fallback error", e);
+                }
+            }
+        }
 
-        const { dayMaster, elements } = reportData.saju;
+        if (!sajuData) return null;
+
+        const { dayMaster, elements } = sajuData;
 
         // Identity (Day Master)
         // Handle object vs string dayMaster
