@@ -1,15 +1,73 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { VALUE_DATABASE, ValueProfile } from '@/modules/SocialValueModule';
+import { useReportStore } from '@/store/useReportStore';
+
+// ─────────────────────────────────────────────
+// 일간(天干) → 오행(五行) → elementKey 매핑
+// ─────────────────────────────────────────────
+const DAYMASTER_TO_ELEMENT: Record<string, string> = {
+    // 목(木) → growth
+    '갑': 'growth', '甲': 'growth',
+    '을': 'growth', '乙': 'growth',
+    // 화(火) → ignition
+    '병': 'ignition', '丙': 'ignition',
+    '정': 'ignition', '丁': 'ignition',
+    // 토(土) → secure
+    '무': 'secure', '戊': 'secure',
+    '기': 'secure', '己': 'secure',
+    // 금(金) → decision
+    '경': 'decision', '庚': 'decision',
+    '신': 'decision', '辛': 'decision',
+    // 수(水) → deep
+    '임': 'deep', '壬': 'deep',
+    '계': 'deep', '癸': 'deep',
+};
 
 type Phase = 'SELECT' | 'REVEAL';
 
 export default function SocialValueDiscovery() {
+    const reportData = useReportStore((s) => s.reportData);
     const [phase, setPhase] = useState<Phase>('SELECT');
     const [selectedProfile, setSelectedProfile] = useState<ValueProfile | null>(null);
     const [activeTab, setActiveTab] = useState<'value' | 'mission' | 'action'>('value');
+
+    // ── 사주 데이터에서 일간 자동 추출 ──
+    const autoElementKey = useMemo(() => {
+        if (!reportData?.saju) return null;
+        // dayMaster 필드 우선, 없으면 fourPillars.day.gan에서 추출
+        const dayMaster =
+            reportData.saju.dayMaster ||
+            reportData.saju.fourPillars?.day?.gan ||
+            '';
+        // 한자 한 글자만 추출 (예: "甲木" → "甲")
+        const firstChar = dayMaster.trim().charAt(0);
+        return DAYMASTER_TO_ELEMENT[firstChar] || null;
+    }, [reportData]);
+
+    // ── 사주 데이터가 있으면 자동으로 REVEAL 단계로 ──
+    useEffect(() => {
+        if (autoElementKey && phase === 'SELECT') {
+            const profile = VALUE_DATABASE.find((v) => v.elementKey === autoElementKey);
+            if (profile) {
+                setSelectedProfile(profile);
+                setActiveTab('value');
+                setPhase('REVEAL');
+            }
+        }
+    }, [autoElementKey, phase]);
+
+    // 사용자 이름 (표시용)
+    const userName = reportData?.userName || '소버린';
+
+    // 사주 일간 표시용 한자 (예: 甲, 乙...)
+    const dayMasterChar = useMemo(() => {
+        if (!reportData?.saju) return '';
+        const dm = reportData.saju.dayMaster || reportData.saju.fourPillars?.day?.gan || '';
+        return dm.trim().charAt(0);
+    }, [reportData]);
 
     const handleSelect = (profile: ValueProfile) => {
         setSelectedProfile(profile);
@@ -52,7 +110,7 @@ export default function SocialValueDiscovery() {
             <header className="relative z-10 p-4 border-b border-teal-900/40 bg-black/40 backdrop-blur-md">
                 <div className="max-w-2xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        {phase === 'REVEAL' && (
+                        {phase === 'REVEAL' && !autoElementKey && (
                             <button onClick={handleBack} className="mr-2 text-gray-500 hover:text-white transition-colors">
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                             </button>
@@ -63,9 +121,16 @@ export default function SocialValueDiscovery() {
                             <p className="text-[10px] text-teal-500/70 font-mono">SOCIAL_VALUE_DISCOVERY v1.0</p>
                         </div>
                     </div>
-                    <div className="px-3 py-1.5 rounded-full border border-teal-600/30 text-[10px] font-mono tracking-widest text-teal-500 bg-teal-950/20">
-                        DEMO
-                    </div>
+                    {autoElementKey ? (
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-600/40 text-[10px] font-mono tracking-widest text-emerald-400 bg-emerald-950/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            {dayMasterChar}일간 자동연동
+                        </div>
+                    ) : (
+                        <div className="px-3 py-1.5 rounded-full border border-gray-700/40 text-[10px] font-mono tracking-widest text-gray-500 bg-gray-950/20">
+                            수동 선택
+                        </div>
+                    )}
                 </div>
             </header>
 
@@ -94,8 +159,12 @@ export default function SocialValueDiscovery() {
                                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-200 via-white to-amber-200 mb-3">
                                     나의 사회적 가치 발견하기
                                 </h2>
+                                <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-900/20 border border-yellow-500/30">
+                                    <span className="text-yellow-400 text-xs">⚠️</span>
+                                    <span className="text-yellow-300/80 text-xs">만세력 사주 정보가 없습니다.<br />코어 드라이브를 직접 선택해 주세요.</span>
+                                </div>
                                 <p className="text-sm text-gray-400 leading-relaxed break-keep max-w-sm mx-auto">
-                                    당신의 코어 드라이브(Core Drive)를 선택하면, 명심 마스터가 그 에너지를 
+                                    코어 드라이브(Core Drive)를 선택하면, 명심 마스터가 그 에너지를
                                     <strong className="text-teal-300"> &apos;세상에 줄 수 있는 선물&apos;</strong>로 재정의해 드립니다.
                                 </p>
                             </div>
@@ -130,7 +199,7 @@ export default function SocialValueDiscovery() {
 
                             {/* Footnote */}
                             <div className="mt-10 text-center text-[10px] text-gray-600 font-mono">
-                                ※ 데모 버전: 코어 드라이브를 직접 선택합니다. 정식 버전에서는 명식 분석을 통해 자동 판별됩니다.
+                                ※ 사주 데이터가 없어 수동 선택 모드입니다. 만세력에서 생년월일시를 입력하면 자동 판별됩니다.
                             </div>
                         </motion.div>
                     )}
@@ -155,6 +224,18 @@ export default function SocialValueDiscovery() {
                                 <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${selectedProfile.gradientFrom} ${selectedProfile.gradientTo}`}></div>
                                 
                                 <div className="text-center">
+                                    {/* 사주 자동 연동 배지 */}
+                                    {autoElementKey && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -8 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.1 }}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-[10px] font-mono text-emerald-400 mb-3"
+                                        >
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            {userName} 님 · {dayMasterChar}일간 · 사주 자동 판별
+                                        </motion.div>
+                                    )}
                                     <motion.div
                                         initial={{ scale: 0, rotate: -180 }}
                                         animate={{ scale: 1, rotate: 0 }}

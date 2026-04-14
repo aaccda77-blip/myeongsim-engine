@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useReportStore } from '@/store/useReportStore';
 import {
   SAMPLE_SAJU,
   runFullPipeline,
@@ -12,11 +13,41 @@ import {
   runCafeAlgorithm,
   generateFinalOutput,
   type SajuData,
+  type SajuChar,
   type EngineResult,
   type ElementScores,
   type CafeOutput,
   type FiveElement,
 } from '@/modules/CafeAlgorithmModule';
+
+// ─── 천간/지지 → SajuChar 변환 테이블 ───
+const GAN_MAP: Record<string, SajuChar> = {
+  '甲': { char: '甲', element: '목', yinYang: '양', label: '갑목(甲木)' },
+  '乙': { char: '乙', element: '목', yinYang: '음', label: '을목(乙木)' },
+  '丙': { char: '丙', element: '화', yinYang: '양', label: '병화(丙火)' },
+  '丁': { char: '丁', element: '화', yinYang: '음', label: '정화(丁火)' },
+  '戊': { char: '戊', element: '토', yinYang: '양', label: '무토(戊土)' },
+  '己': { char: '己', element: '토', yinYang: '음', label: '기토(己土)' },
+  '庚': { char: '庚', element: '금', yinYang: '양', label: '경금(庚金)' },
+  '辛': { char: '辛', element: '금', yinYang: '음', label: '신금(辛金)' },
+  '壬': { char: '壬', element: '수', yinYang: '양', label: '임수(壬水)' },
+  '癸': { char: '癸', element: '수', yinYang: '음', label: '계수(癸水)' },
+};
+
+const JI_MAP: Record<string, SajuChar> = {
+  '子': { char: '子', element: '수', yinYang: '양', label: '자수(子水)' },
+  '丑': { char: '丑', element: '토', yinYang: '음', label: '축토(丑土)' },
+  '寅': { char: '寅', element: '목', yinYang: '양', label: '인목(寅木)' },
+  '卯': { char: '卯', element: '목', yinYang: '음', label: '묘목(卯木)' },
+  '辰': { char: '辰', element: '토', yinYang: '양', label: '진토(辰土)' },
+  '巳': { char: '巳', element: '화', yinYang: '음', label: '사화(巳火)' },
+  '午': { char: '午', element: '화', yinYang: '양', label: '오화(午火)' },
+  '未': { char: '未', element: '토', yinYang: '음', label: '미토(未土)' },
+  '申': { char: '申', element: '금', yinYang: '양', label: '신금(申金)' },
+  '酉': { char: '酉', element: '금', yinYang: '음', label: '유금(酉金)' },
+  '戌': { char: '戌', element: '토', yinYang: '양', label: '술토(戌土)' },
+  '亥': { char: '亥', element: '수', yinYang: '음', label: '해수(亥水)' },
+};
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
@@ -45,6 +76,7 @@ const ELEMENT_BG: Record<string, string> = {
 };
 
 export default function CafePipelineDemo() {
+  const { reportData } = useReportStore();
   const [step, setStep] = useState<Step>(0);
   const [sajuJson, setSajuJson] = useState<string>('');
   const [engines, setEngines] = useState<EngineResult[]>([]);
@@ -52,36 +84,70 @@ export default function CafePipelineDemo() {
   const [finalOutput, setFinalOutput] = useState<CafeOutput | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // ─── 스토어 사주 데이터 → SajuData 변환 ───
+  const userSaju = useMemo((): SajuData => {
+    const fp = reportData?.saju?.fourPillars;
+    if (!fp) return SAMPLE_SAJU;
+
+    const getGan = (char: string): SajuChar => GAN_MAP[char] ?? SAMPLE_SAJU.dayStem;
+    const getJi  = (char: string): SajuChar => JI_MAP[char]  ?? SAMPLE_SAJU.dayBranch;
+
+    const yearGanChar  = (fp.year as any)?.gan?.char  ?? (fp.year as any)?.gan  ?? '';
+    const yearJiChar   = (fp.year as any)?.ji?.char   ?? (fp.year as any)?.ji   ?? '';
+    const monthGanChar = (fp.month as any)?.gan?.char ?? (fp.month as any)?.gan ?? '';
+    const monthJiChar  = (fp.month as any)?.ji?.char  ?? (fp.month as any)?.ji  ?? '';
+    const dayGanChar   = (fp.day as any)?.gan?.char   ?? (fp.day as any)?.gan   ?? '';
+    const dayJiChar    = (fp.day as any)?.ji?.char    ?? (fp.day as any)?.ji    ?? '';
+    const timeGanChar  = (fp.time as any)?.gan?.char  ?? (fp.time as any)?.gan  ?? '';
+    const timeJiChar   = (fp.time as any)?.ji?.char   ?? (fp.time as any)?.ji   ?? '';
+
+    // 변환 실패 시 SAMPLE_SAJU 폴백
+    if (!GAN_MAP[dayGanChar]) return SAMPLE_SAJU;
+
+    return {
+      yearStem:    getGan(yearGanChar),
+      yearBranch:  getJi(yearJiChar),
+      monthStem:   getGan(monthGanChar),
+      monthBranch: getJi(monthJiChar),
+      dayStem:     getGan(dayGanChar),
+      dayBranch:   getJi(dayJiChar),
+      hourStem:    timeGanChar && GAN_MAP[timeGanChar] ? getGan(timeGanChar) : SAMPLE_SAJU.hourStem,
+      hourBranch:  timeJiChar  && JI_MAP[timeJiChar]  ? getJi(timeJiChar)  : SAMPLE_SAJU.hourBranch,
+    };
+  }, [reportData]);
+
+  const isUsingUserData = userSaju !== SAMPLE_SAJU;
+
   const advanceStep = useCallback(() => {
     setIsProcessing(true);
     setTimeout(() => {
       const nextStep = Math.min(step + 1, 4) as Step;
       
       if (nextStep === 1) {
-        setSajuJson(sajuToJson(SAMPLE_SAJU));
+        setSajuJson(sajuToJson(userSaju));
       }
       if (nextStep === 2) {
-        const e1 = runGungtongEngine(SAMPLE_SAJU);
-        const e2 = runJeokcheonsuEngine(SAMPLE_SAJU);
-        const e3 = runJapyeongEngine(SAMPLE_SAJU);
+        const e1 = runGungtongEngine(userSaju);
+        const e2 = runJeokcheonsuEngine(userSaju);
+        const e3 = runJapyeongEngine(userSaju);
         setEngines([e1, e2, e3]);
       }
       if (nextStep === 3) {
-        const e1 = runGungtongEngine(SAMPLE_SAJU);
-        const e2 = runJeokcheonsuEngine(SAMPLE_SAJU);
-        const e3 = runJapyeongEngine(SAMPLE_SAJU);
+        const e1 = runGungtongEngine(userSaju);
+        const e2 = runJeokcheonsuEngine(userSaju);
+        const e3 = runJapyeongEngine(userSaju);
         const scores = runCafeAlgorithm([e1, e2, e3]);
         setCafeScores(scores);
       }
       if (nextStep === 4) {
-        const result = runFullPipeline(SAMPLE_SAJU);
+        const result = runFullPipeline(userSaju);
         setFinalOutput(result.finalOutput);
       }
 
       setStep(nextStep);
       setIsProcessing(false);
     }, 600);
-  }, [step]);
+  }, [step, userSaju]);
 
   const resetPipeline = () => {
     setStep(0);
@@ -108,9 +174,16 @@ export default function CafePipelineDemo() {
               <p className="text-[10px] text-violet-500/70 font-mono">CROSS-WEIGHTED ANALYSIS FOR FIVE ELEMENTS</p>
             </div>
           </div>
-          <div className="px-3 py-1.5 rounded-full border border-violet-600/30 text-[10px] font-mono tracking-widest text-violet-500 bg-violet-950/20">
-            TECH DEMO
-          </div>
+          {isUsingUserData ? (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/40 text-[10px] font-mono tracking-widest text-emerald-400 bg-emerald-950/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              {userSaju.dayStem.label} 연동됨
+            </div>
+          ) : (
+            <div className="px-3 py-1.5 rounded-full border border-violet-600/30 text-[10px] font-mono tracking-widest text-violet-500 bg-violet-950/20">
+              DEMO MODE
+            </div>
+          )}
         </div>
       </header>
 
