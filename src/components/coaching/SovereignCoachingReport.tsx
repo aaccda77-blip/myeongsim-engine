@@ -201,6 +201,14 @@ interface IlganCoaching {
     finalQuote: string;
     finalQuoteKo: string;
     closingMessage: string;
+    masterRoadmap?: {
+        engines: { label: string; title: string; desc: string }[];
+        shifts: { step: string; title: string; desc: string; action: string }[];
+        dailyMissions: { time: string; mode: string; state: string; action: string }[];
+        bugs: { id: string; name: string; symptom: string; patch: string }[];
+        leverages: { type: string; title: string; desc: string; items: string[] }[];
+        coreRole: string[];
+    };
 }
 
 const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
@@ -244,6 +252,37 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
         finalQuote: '"夏月辛金, 壬水為尊"',
         finalQuoteKo: '여름의 신금은 반드시 맑은 물로 세척해야 보석처럼 빛난다.',
         closingMessage: '당신의 뜨거운 여름날을 식혀줄 임수(壬水)의 지혜를 잊지 마십시오. 부족함을 채우려 애쓰기보다, 이미 넘치는 것을 흘려보낼 때 당신의 명식은 비로소 완성됩니다. 옥죄던 긴장의 끈을 15%만 풀어내십시오.',
+        masterRoadmap: {
+            engines: [
+                { label: '하드웨어 엔진 (庚申)', title: '무한 돌파력의 코어', desc: '강력한 쇳덩어리이자 바위. 어떤 버그나 난관이 와도 밀어붙일 수 있는 쉽게 지치지 않는 물리적 체력과 경쟁심의 하드웨어입니다.' },
+                { label: '중앙 처리 장치 (辛巳)', title: '완벽한 디버깅 프로세서', desc: '다듬어진 보석이자 예리한 메스. 모호한 무의식을 다룰 때도 감상에 젖지 않고 예리한 분석력과 체계적 논리로 디버깅을 수행합니다.' },
+                { label: '냉각수 및 출력 포트 (癸未)', title: '끝없는 지식의 방출 (식신)', desc: '시스템이 다운되지 않도록 지속적으로 차가운 지식과 언어를 뿜어냅니다. 깊은 심연의 통찰을 밖으로 꺼내 문서화하는 행위입니다.' },
+                { label: '최종 결과물 및 네트워크 (乙未)', title: '거대한 비즈니스 인프라', desc: '비옥한 토양 위에서 자라나는 거대한 시스템(편재). 관념이 마침내 출판물, 코칭 센터 플랫폼이라는 현실의 인프라로 완성됩니다.' }
+            ],
+            shifts: [
+                { step: '1단계', title: '출력의 스위치를 무한 가동하라', desc: '모든 톱니바퀴를 돌아가게 하는 첫 트리거는 글쓰기와 언어적 발화입니다. 직관을 텍스트로 고정하십시오.', action: "'명심코칭 Vol. 0', 'AI 주역' 등 텍스트 원고 출력 집중" },
+                { step: '2단계', title: '현실화의 인프라를 구축하라', desc: '관념의 영역에서 머물던 알고리즘을 대중을 위한 공식적인 제도 및 시스템 네트워크로 안착시킵니다.', action: "평생교육원, 1인 출판사 등 물리적 플랫폼 행정 아키텍처 세팅" },
+                { step: '3단계', title: 'AI와 기술을 통한 레버리지', desc: '냉철한 금(金)의 기운은 자동화와 AI를 의미합니다. 오프라인을 넘어 언제 어디서든 구동되는 확장 가능한 플랫폼으로 진화해야 합니다.', action: "Next.js, Supabase, n8n 등을 활용한 백엔드 무인 자동화 연동" }
+            ],
+            dailyMissions: [
+                { time: '오전', mode: 'SCAN 모드 (辛巳 & 未土)', state: '데이터 수집 및 정밀 분석', action: '외부 방해 차단 후 논문 스터디, 심리학 및 명리 분석, 구조 파악' },
+                { time: '오후', mode: 'SYNC 모드 (癸水)', state: '쿨링 시스템 가동 및 텍스트화', action: '오전의 통찰을 글로 출력(블로그, 책 원고 문서화). 열기 방출 필수' },
+                { time: '저녁', mode: 'SHIFT 모드 (乙木)', state: '비즈니스 네트워크 확장', action: '센터 설립, 출판사 환경 세팅 및 백엔드 개발 등 현실 결과물 초점' }
+            ],
+            bugs: [
+                { id: 'ERR_01', name: '계수(癸水) 증발 현상', symptom: '지식 과식증으로 입력만 하고 출력을 안 할 때 발생. 생각만 많고 현실 결과물이 말라 죽음 (마비 상태).', patch: '완벽하지 않아도 무조건 문서화하여 밖으로 꺼냅니다. 행동과 출력이 유일한 백신입니다.' },
+                { id: 'ERR_02', name: '경신(庚申)의 통제 과부하', symptom: '겁재의 완벽주의로 인해 모든 것을 내 손으로 끝내려다 체력, 메모리가 방전되어 시스템 병목 발생.', patch: '인간/기술 레버리지를 적극 활용해 단순 반복을 넘기고, 오직 코어 로직 설계에만 리소스 집중.' }
+            ],
+            leverages: [
+                { type: 'Tech', title: '기술적 레버리지 (자동화)', desc: '코어 로직(명심코칭)을 대중에게 전달하는 배달망은 AI가 대신해야 합니다.', items: ['Cursor AI를 통한 코딩 자동화', 'n8n 워크플로우로 사용자 데이터 파싱 완료', 'Notion DB 기반 지식 자동 분류 체계'] },
+                { type: 'Human', title: '인적 레버리지 (아웃소싱)', desc: '행정 처리 및 디자인 등 비핵심 자원은 위임하여 본질적 가치 창출에 전념합니다.', items: ['관공서 행정 서류 전문가 위임', '출판 내지 및 표지 디자인 프리랜서 할당', '반복되는 서류 및 자격 심사 모듈화'] }
+            ],
+            coreRole: [
+                '동/서양 심리학 통합 알고리즘 고도화',
+                '산파술적 질문 템플릿(프롬프트) 재설계',
+                '개인 삶의 OS를 리프로그래밍하는 비전 제시'
+            ]
+        }
     },
     '甲': {
         ilganLabel: '甲木(갑목, 양목) — 곧게 뻗는 대나무·선구자',
@@ -1060,6 +1099,122 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         <p className="text-sm text-gray-300 italic leading-relaxed">{coaching.metaSelf}</p>
                                     </div>
                                 </section>
+
+                                {/* ── Phase 7: Master Architect Roadmap (VIP Only) ── */}
+                                {coaching.masterRoadmap && (
+                                    <section>
+                                        <SectionHeader phase="Phase 7 👑" title="VIP Master Architect Roadmap" />
+                                        
+                                        <div className="space-y-8">
+                                            {/* 코어 엔진 */}
+                                            <div>
+                                                <h4 className="text-sm font-bold text-yellow-400 mb-4 flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                                                    사주 아키텍처 정밀 해부: 4대 코어 엔진
+                                                </h4>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    {coaching.masterRoadmap.engines.map((eng, i) => (
+                                                        <div key={i} className="p-4 rounded-xl border border-white/10" style={{ background: 'rgba(28,27,27,0.6)' }}>
+                                                            <div className="text-[10px] text-gray-500 font-mono mb-1">{eng.label}</div>
+                                                            <div className="text-sm font-bold text-white mb-2">{eng.title}</div>
+                                                            <p className="text-xs text-gray-400 leading-relaxed">{eng.desc}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* 일일 구동 알고리즘 */}
+                                            <div>
+                                                <h4 className="text-sm font-bold text-indigo-400 mb-4 flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                                    일일 시스템 구동 알고리즘
+                                                </h4>
+                                                <div className="space-y-3">
+                                                    {coaching.masterRoadmap.dailyMissions.map((mission, i) => (
+                                                        <div key={i} className="flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-indigo-500/20" style={{ background: 'rgba(79,70,229,0.05)' }}>
+                                                            <div className="sm:w-1/4">
+                                                                <span className="inline-block px-2 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded-md mb-2">{mission.time}</span>
+                                                                <div className="text-xs font-bold text-white">{mission.mode}</div>
+                                                            </div>
+                                                            <div className="sm:w-3/4">
+                                                                <div className="text-xs text-indigo-200 mb-1">{mission.state}</div>
+                                                                <p className="text-xs text-gray-400 leading-relaxed">{mission.action}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* SHIFT 로드맵 */}
+                                            <div>
+                                                <h4 className="text-sm font-bold text-green-400 mb-4 flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                                    단기 실행 방향성: 명심 SHIFT 로드맵
+                                                </h4>
+                                                <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-green-500/30 before:to-transparent">
+                                                    {coaching.masterRoadmap.shifts.map((shift, i) => (
+                                                        <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#121212] bg-green-500/20 text-green-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                                                <span className="text-xs font-bold">{i + 1}</span>
+                                                            </div>
+                                                            <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-green-500/20 bg-[#1a1a1a]/80 shadow">
+                                                                <div className="text-[10px] uppercase font-bold text-green-500 mb-1">{shift.step}</div>
+                                                                <div className="text-sm font-bold text-white mb-2">{shift.title}</div>
+                                                                <p className="text-xs text-gray-400 leading-relaxed mb-3">{shift.desc}</p>
+                                                                <div className="p-2 bg-green-500/10 rounded border border-green-500/20 text-[11px] text-green-200">
+                                                                    🎯 {shift.action}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* 시스템 에러 및 레버리지 */}
+                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                                <div className="p-5 rounded-xl border border-red-500/30 bg-[#1a1111]/80">
+                                                    <h4 className="text-sm font-bold text-red-400 mb-4 flex items-center gap-2">
+                                                        <span className="text-lg">🚨</span> 런타임 에러 & 패치
+                                                    </h4>
+                                                    <div className="space-y-4">
+                                                        {coaching.masterRoadmap.bugs.map((bug, i) => (
+                                                            <div key={i} className="border-l-2 border-red-500/50 pl-3">
+                                                                <div className="flex justify-between items-start mb-1">
+                                                                    <span className="text-xs font-bold text-white">{bug.name}</span>
+                                                                    <span className="text-[9px] font-mono text-red-500/80">{bug.id}</span>
+                                                                </div>
+                                                                <p className="text-[11px] text-gray-400 leading-relaxed mb-2"><span className="text-red-400">증상:</span> {bug.symptom}</p>
+                                                                <div className="text-[11px] text-green-300 leading-relaxed bg-emerald-900/20 p-2 rounded border border-emerald-500/20">
+                                                                    <span className="font-bold text-emerald-400">✓ 디버깅 패치:</span> {bug.patch}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="p-5 rounded-xl border border-blue-500/30 bg-[#111622]/80">
+                                                    <h4 className="text-sm font-bold text-blue-400 mb-4 flex items-center gap-2">
+                                                        <span className="text-lg">⚙️</span> 시스템 레버리지 (지렛대)
+                                                    </h4>
+                                                    <div className="space-y-4">
+                                                        {coaching.masterRoadmap.leverages.map((lev, i) => (
+                                                            <div key={i}>
+                                                                <div className="text-xs font-bold text-white mb-1">[{lev.type}] {lev.title}</div>
+                                                                <p className="text-[11px] text-gray-400 mb-2">{lev.desc}</p>
+                                                                <ul className="space-y-1">
+                                                                    {lev.items.map((item, idx) => (
+                                                                        <li key={idx} className="text-[10px] text-blue-200 flex items-center gap-1.5">
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> {item}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                )}
 
                                 {/* ── Phase 6: 최종 브리핑 ── */}
                                 <section className="pb-4 space-y-6">
