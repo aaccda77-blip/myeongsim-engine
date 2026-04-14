@@ -87,7 +87,7 @@ function extractSajuInfo(userProfile: any, fallbackReportData?: any) {
     // dayMaster 직접 필드도 지원 ("甲", "甲木" 형식)
     const dayMasterRaw = saju.dayMaster || '';
     const dayMasterChar = dayMasterRaw.trim().charAt(0);
-    const resolvedDayStem = (dayMasterChar && dayMasterChar !== '?') ? (normStem(dayMasterChar) || dayStem) : dayStem;
+    let resolvedDayStem = (dayMasterChar && dayMasterChar !== '?') ? (normStem(dayMasterChar) || dayStem) : dayStem;
 
     const ilgan = `${resolvedDayStem}${dayBranch}`;
     const fullSaju = `${yearStem}${yearBranch} ${monthStem}${monthBranch} ${ilgan} ${timeStem}${timeBranch}`;
