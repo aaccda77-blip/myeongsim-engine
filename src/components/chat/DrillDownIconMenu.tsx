@@ -46,6 +46,8 @@ const VisualSajuDashboard = dynamic(() => import('@/components/visual/VisualSaju
 const SajuSummaryModal = dynamic(() => import('@/components/coaching/SajuSummaryModal'), { ssr: false });
 const AwakeningChat = dynamic(() => import('@/components/coaching/AwakeningChat'), { ssr: false });
 const SajuAnalysisReportModal = dynamic(() => import('@/components/report/SajuAnalysisReportModal'), { ssr: false });
+// [NEW] 사회적기여 — 명심 프리미엄 통합 코칭 리포트
+const SovereignCoachingReport = dynamic(() => import('@/components/coaching/SovereignCoachingReport'), { ssr: false });
 
 
 
@@ -465,6 +467,7 @@ export default function DrillDownIconMenu({
     const [showAwakeningChat, setShowAwakeningChat] = useState(false); // [Fix] Missing State
 
     const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
+    const [showSovereignReport, setShowSovereignReport] = useState(false); // [NEW] 사회적기여 리포트
     const { reportData } = useReportStore();
 
 
@@ -998,7 +1001,26 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-
+                {/* [NEW] 사회적기여 메뉴 — 명심 프리미엄 통합 코칭 리포트 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowSovereignReport(true)}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2))',
+                        border: '1px solid rgba(139,92,246,0.4)',
+                        boxShadow: '0 4px 15px rgba(139,92,246,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🔬</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>사회적기여</div>
+                        <div style={styles.neuroTrigger}>통합 코칭 리포트</div>
+                    </div>
+                </button>
 
                 {icons.map((icon) => {
                     const isHovered = hoveredIcon === icon.id;
@@ -1374,6 +1396,13 @@ export default function DrillDownIconMenu({
                     />
                 )}
             </AnimatePresence>
+
+            {/* [NEW] 사회적기여 — 명심 프리미엄 통합 코칭 리포트 모달 */}
+            <SovereignCoachingReport
+                isOpen={showSovereignReport}
+                onClose={() => setShowSovereignReport(false)}
+                userProfile={userProfile}
+            />
 
             {/* SOS Breathing Guide Modal */}
             {showBreathingGuide && (
