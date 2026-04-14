@@ -57,9 +57,17 @@ function normStem(s: string)   { return STEM_MAP[s]   ?? s; }
 function normBranch(b: string) { return BRANCH_MAP[b] ?? b; }
 
 function extractSajuInfo(userProfile: any, fallbackReportData?: any) {
-    // [핵심 수정] prop이 없으면 스토어 reportData 를 폴백으로 사용
-    const effectiveProfile = userProfile ?? fallbackReportData;
-    const saju = effectiveProfile?.saju || {};
+    // [핵심 보완] 유저 데이터가 중첩되지 않고 최상위에 있을 경우 대비
+    const hasSajuInProp = userProfile && (
+        (userProfile.saju && Object.keys(userProfile.saju).length > 0) || 
+        (userProfile.sajuData && Object.keys(userProfile.sajuData).length > 0) || 
+        userProfile.fourPillars || 
+        userProfile.dayMaster
+    );
+    const effectiveProfile = hasSajuInProp ? userProfile : fallbackReportData;
+    
+    // saju 객체가 없더라도 파편화된 데이터들을 긁어모읍니다
+    const saju = effectiveProfile?.saju || effectiveProfile?.sajuData || effectiveProfile || fallbackReportData?.saju || fallbackReportData?.sajuData || fallbackReportData || {};
 
     const day   = saju.dayPillar   || saju.fourPillars?.day   || {};
     const month = saju.monthPillar || saju.fourPillars?.month || {};
@@ -83,8 +91,11 @@ function extractSajuInfo(userProfile: any, fallbackReportData?: any) {
     const ilgan = `${resolvedDayStem}${dayBranch}`;
     const fullSaju = `${yearStem}${yearBranch} ${monthStem}${monthBranch} ${ilgan} ${timeStem}${timeBranch}`;
 
-    // 오행 분포 (스토어의 elements 필드도 지원)
-    const rawOhaeng = saju.ohaeng || saju.elements;
+    // 오행 분포 (스토어의 elements 필드나 최상위 속성도 지원)
+    let rawOhaeng = saju.ohaeng || saju.elements;
+    if (!rawOhaeng && typeof saju.wood === 'number') {
+        rawOhaeng = { wood: saju.wood, fire: saju.fire, earth: saju.earth, metal: saju.metal, water: saju.water };
+    }
     const ohaeng = rawOhaeng || { metal: 30, earth: 20, fire: 15, water: 15, wood: 10 };
 
     const name = effectiveProfile?.name || effectiveProfile?.userName || effectiveProfile?.displayName || '소버린';
@@ -781,7 +792,13 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             <Gem size={40} className="text-yellow-400" />
                                         </div>
                                         <p className="text-yellow-400 text-xs font-bold mb-2 flex items-center gap-2">
-                                            ✅ Ilgan: {sajuInfo.dayStem}금
+                                            ✅ Ilgan: {sajuInfo.dayStem}{
+                                                ['甲','乙'].includes(sajuInfo.dayStem) ? '목' :
+                                                ['丙','丁'].includes(sajuInfo.dayStem) ? '화' :
+                                                ['戊','己'].includes(sajuInfo.dayStem) ? '토' :
+                                                ['庚','辛'].includes(sajuInfo.dayStem) ? '금' :
+                                                ['壬','癸'].includes(sajuInfo.dayStem) ? '수' : ''
+                                            }
                                         </p>
                                         <p className="text-sm text-gray-200 leading-relaxed">{coaching.identity}</p>
                                     </div>
