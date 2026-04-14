@@ -1112,6 +1112,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     const sajuResult = calculateSaju(dateStr, timeStr, 'solar', 'male'); // Default
                     
                     if (sajuResult.success) {
+                        const storeData = useReportStore.getState().reportData;
                         const { updateUserData } = useReportStore.getState();
                         const stats = calculateSajuStats(sajuResult.fourPillars, sajuResult.dayMasterChar);
                         
@@ -1119,11 +1120,14 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             birthDate: dateStr,
                             birthTime: timeStr,
                             saju: {
+                                ...storeData?.saju,
                                 fourPillars: sajuResult.fourPillars,
                                 dayMaster: sajuResult.dayMaster,
                                 dayMasterTrait: stats.tenGods?.day || '알수없음',
                                 elements: stats.ohaeng,
-                                tenGods: stats.tenGods
+                                ohaeng: stats.ohaeng,
+                                tenGods: stats.tenGods,
+                                keywords: []
                             }
                         });
                         console.log("✅ [Saju Engine] Guest Saju successfully synced to Zustand Store!");
