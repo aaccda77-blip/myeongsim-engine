@@ -13,6 +13,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, ChevronDown, ChevronUp, Diamond, Gem } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
+import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 
 // ─────────────────────────────────────────────
 // 타입 정의
@@ -98,21 +99,60 @@ function extractSajuInfo(userProfile: any, fallbackReportData?: any) {
     }
     const ohaeng = rawOhaeng || { metal: 30, earth: 20, fire: 15, water: 15, wood: 10 };
 
-    const name = effectiveProfile?.name || effectiveProfile?.userName || effectiveProfile?.displayName || '소버린';
-    const birthDate = effectiveProfile?.birthDate ? new Date(effectiveProfile.birthDate).getFullYear() : '';
+    const name = effectiveProfile?.name || effectiveProfile?.userName || effectiveProfile?.user_name || effectiveProfile?.displayName || '소버린';
+    let birthDate = effectiveProfile?.birthDate || effectiveProfile?.birth_date || '';
+    if (birthDate) birthDate = new Date(birthDate).getFullYear().toString();
+
+    // [최후의 보루] 만약 여전히 dayStem이 '?'이고 유저 생일 데이터가 있다면, 이곳에서 즉석 파싱 시도
+    // (chat 컴포넌트를 거치지 않고 다이렉트로 들어온 로그인 유저 대응)
+    let finalDayStem = resolvedDayStem;
+    let finalDayBranch = dayBranch;
+    let finalOhaeng = ohaeng;
+    let finalYearPillar = `${yearStem}${yearBranch}`;
+    let finalMonthPillar = `${monthStem}${monthBranch}`;
+    let finalTimePillar = `${timeStem}${timeBranch}`;
+
+    if (finalDayStem === '?' && effectiveProfile) {
+        const rawDate = effectiveProfile.birthDate || effectiveProfile.birth_date;
+        const rawTime = effectiveProfile.birthTime || effectiveProfile.birth_time || '12:00';
+        if (rawDate) {
+            try {
+                // [슈퍼 폴백] ChatInterface를 거치지 않고 바로 모달을 열었을 경우 동적으로 사주 연산 수행
+                const sajuResult = calculateSaju(rawDate, rawTime, 'solar', effectiveProfile.gender || 'male');
+                if (sajuResult && sajuResult.success) {
+                    const stats = calculateSajuStats(sajuResult.fourPillars, sajuResult.dayMasterChar);
+                    
+                    const fp = sajuResult.fourPillars;
+                    finalYearPillar = `${fp.year.ganKor}${fp.year.jiKor}`;
+                    finalMonthPillar = `${fp.month.ganKor}${fp.month.jiKor}`;
+                    finalDayStem = fp.day.gan; // 한자 천간 (예: 庚)
+                    finalDayBranch = fp.day.ji; // 한자 지지
+                    resolvedDayStem = normStem(fp.day.gan); 
+                    finalTimePillar = `${fp.time.ganKor}${fp.time.jiKor}`;
+                    finalOhaeng = stats.ohaeng;
+                    
+                    console.log("🛠️ [최후 폴백 가동] SovereignCoachingReport 자체에서 SajuEngine 연산 완료!", { finalDayStem, fp });
+                }
+            } catch (e) {
+                console.error("SovereignCoachingReport SajuEngine Fallback Error", e);
+            }
+        }
+    }
 
     return {
         name,
         birthDate,
         dayStem: resolvedDayStem,
-        dayBranch,
-        ilgan,
+        dayBranch: finalDayBranch,
+        ilgan: `${resolvedDayStem}${finalDayBranch}`,
         fullSaju,
-        yearPillar: `${yearStem}${yearBranch}`,
-        monthPillar: `${monthStem}${monthBranch}`,
-        dayPillar: ilgan,
-        timePillar: `${timeStem}${timeBranch}`,
-        ohaeng,
+        yearPillar: finalYearPillar,
+        monthPillar: finalMonthPillar,
+        dayPillar: `${resolvedDayStem}${finalDayBranch}`,
+        timePillar: finalTimePillar,
+        ohaeng: finalOhaeng,
+        rawBirthDate: effectiveProfile?.birthDate || effectiveProfile?.birth_date,
+        rawBirthTime: effectiveProfile?.birthTime || effectiveProfile?.birth_time
     };
 }
 
@@ -300,11 +340,6 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
             { label: 'STEP 02: 조명 조절 훈련 (ACT)', desc: '"나는 항상 빛나야 한다"는 생각에서 분리하십시오. 당신의 가치는 존재 자체에 있지, 성과의 화려함에 있지 않습니다.' },
             { label: 'STEP 03: 감정 온도계 (DBT)', desc: '분노나 흥분이 8/10 이상일 때는 즉각적 반응을 하지 마십시오. 15분을 기다리면 火의 온도가 내려가고 智慧가 올라옵니다.' },
             { label: 'STEP 04: 고요 속 충전 (MBCT)', desc: '하루 10분, 완전한 어둠 속에서 호흡하십시오. 태양은 밤에 에너지를 모읍니다. 당신의 쉼이 곧 다음 날의 빛입니다.' },
-        ],
-        metaSelf: '세상을 태울 듯한 불꽃에서 세상을 따뜻하게 감싸는 햇살로 진화했습니다. 이제 당신의 빛은 눈부시지 않고, 포근하게 스며듭니다.',
-        finalQuote: '"日中則昃, 月盈則食"',
-            { label: 'STEP 03: 그림자 수용 (DBT)', desc: '긍정적이어야 한다는 강박을 버리십시오. 슬픔과 우울함(수 에너지)을 편안하게 느끼는 시간을 허락하십시오.' },
-            { label: 'STEP 04: 내면의 일몰 (MBCT)', desc: '매일 저녁 30분, 모든 전자기기와 불빛을 끄고 완벽한 어둠 속에 머무는 명상을 하십시오.' },
         ],
         metaSelf: '뜨겁게 세상을 태우던 태양에서 스스로 궤도를 돌며 온기를 나누는 만물의 군주로 진화했습니다. 당신의 빛은 눈부시지 않고 따뜻합니다.',
         finalQuote: '"丙火猛烈, 欺霜侮雪"',
