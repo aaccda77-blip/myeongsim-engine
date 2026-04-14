@@ -49,14 +49,34 @@ function extractSajuInfo(userProfile: any) {
     const year = saju.yearPillar || saju.fourPillars?.year || {};
     const time = saju.timePillar || saju.hourPillar || saju.fourPillars?.time || saju.fourPillars?.hour || {};
 
-    const dayStem = getPillarChar(day, 'stem');
-    const dayBranch = getPillarChar(day, 'branch');
-    const monthStem = getPillarChar(month, 'stem');
-    const monthBranch = getPillarChar(month, 'branch');
-    const yearStem = getPillarChar(year, 'stem');
-    const yearBranch = getPillarChar(year, 'branch');
-    const timeStem = getPillarChar(time, 'stem');
-    const timeBranch = getPillarChar(time, 'branch');
+    let dayStem = getPillarChar(day, 'stem');
+    let dayBranch = getPillarChar(day, 'branch');
+    let monthStem = getPillarChar(month, 'stem');
+    let monthBranch = getPillarChar(month, 'branch');
+    let yearStem = getPillarChar(year, 'stem');
+    let yearBranch = getPillarChar(year, 'branch');
+    let timeStem = getPillarChar(time, 'stem');
+    let timeBranch = getPillarChar(time, 'branch');
+
+    // 한글로 들어올 경우 한자로 변환 매핑
+    const stemMap: Record<string, string> = {
+        '갑': '甲', '을': '乙', '병': '丙', '정': '丁', '무': '戊',
+        '기': '己', '경': '庚', '신': '辛', '임': '壬', '계': '癸'
+    };
+    const branchMap: Record<string, string> = {
+        '자': '子', '축': '丑', '인': '寅', '묘': '卯', '진': '辰', '사': '巳',
+        '오': '午', '미': '未', '신': '申', '유': '酉', '술': '戌', '해': '亥'
+    };
+
+    if (stemMap[dayStem]) dayStem = stemMap[dayStem];
+    if (stemMap[monthStem]) monthStem = stemMap[monthStem];
+    if (stemMap[yearStem]) yearStem = stemMap[yearStem];
+    if (stemMap[timeStem]) timeStem = stemMap[timeStem];
+
+    if (branchMap[dayBranch]) dayBranch = branchMap[dayBranch];
+    if (branchMap[monthBranch]) monthBranch = branchMap[monthBranch];
+    if (branchMap[yearBranch]) yearBranch = branchMap[yearBranch];
+    if (branchMap[timeBranch]) timeBranch = branchMap[timeBranch];
 
     const ilgan = `${dayStem}${dayBranch}`;
     const fullSaju = `${yearStem}${yearBranch} ${monthStem}${monthBranch} ${ilgan} ${timeStem}${timeBranch}`;
