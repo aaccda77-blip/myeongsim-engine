@@ -1103,6 +1103,35 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                         content: `🧬 **Neural Code Detected.**\n\n[System] ${year}년 ${month}월 ${day}일${timeStr} 생년월일을 기반으로 고유 설계를 분석했습니다.\n${uiCommand}`
                     }]);
                 }, 100); // 100ms slight delay for natural feel
+
+                // [CRITICAL FIX] 🔥 사주 데이터(만세력)를 실시간으로 계산해서 전역 스토어(Zustand)에 동기화!!
+                // 이거 안 하면 ChatInterface 하위 메뉴(모달 등)에서 "첨부된이미지처럼 هنوز도 사용자 데이터가 전혀 연동이 안돼는데 언제 되는거야?"가 발생함.
+                try {
+                    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const timeStr = dateMatch[4] ? `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}` : '12:00';
+                    const sajuResult = calculateSaju(dateStr, timeStr, 'solar', 'male'); // Default
+                    
+                    if (sajuResult.success) {
+                        const { updateUserData } = useReportStore.getState();
+                        const stats = calculateSajuStats(sajuResult.fourPillars, sajuResult.dayMasterChar);
+                        
+                        updateUserData({
+                            birthDate: dateStr,
+                            birthTime: timeStr,
+                            saju: {
+                                fourPillars: sajuResult.fourPillars,
+                                dayMaster: sajuResult.dayMaster,
+                                dayMasterTrait: stats.tenGods?.day || '알수없음',
+                                elements: stats.ohaeng,
+                                tenGods: stats.tenGods
+                            }
+                        });
+                        console.log("✅ [Saju Engine] Guest Saju successfully synced to Zustand Store!");
+                    }
+                } catch (sajuErr) {
+                    console.error("❌ [Saju Engine] Sync Error:", sajuErr);
+                }
+
             } catch (e) {
                 console.error("Neural Calc Error:", e);
             }
