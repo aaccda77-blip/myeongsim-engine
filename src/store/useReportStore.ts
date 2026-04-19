@@ -67,9 +67,8 @@ export const useReportStore = create<ReportStore>()(
         }),
         {
             name: 'myeongsim-report-storage', // LocalStorage Key Name
-            storage: createJSONStorage(() => sessionStorage), // [Security] 개인정보이므로 SessionStorage 권장 (탭 닫으면 삭제)
-            version: 2, // [Fix] Version Bump to invalidate old 'Gyeong-sin' mock data
-            // 만약 브라우저를 껐다 켜도 유지하고 싶다면 localStorage를 쓰되, 민감 정보 처리에 주의해야 합니다.
+            storage: createJSONStorage(() => localStorage), // [Fix] localStorage로 변경 → 탭 간 데이터 공유 + 페이지 이동 후에도 유지
+            version: 3, // [Fix] Version Bump → 기존 sessionStorage 캐시 무효화
             partialize: (state) => ({
                 // 저장하고 싶은 상태만 선택 (로딩 상태 같은 건 저장 안 함)
                 currentStep: state.currentStep,

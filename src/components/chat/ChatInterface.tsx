@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Send, User, Bot, X, Loader2, Lock, FileText, Check, Trash2, ArrowUp, Zap, Volume2, CircleStop } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GateKeeperModule } from '@/modules/GateKeeperModule';
@@ -60,12 +60,16 @@ import QuestCard from '../coaching/QuestCard';
 // [NEW] 3S Scenario Interactive Modal State
 import EmotionTagSelector from '../coaching/EmotionTagSelector';
 import Saju3SScenarioModal from '../coaching/Saju3SScenarioModal';
-import { SAJU_3S_SCENARIOS, getAllScenarioTags, getScenarioByTag, Saju3SScenario } from '@/data/Saju3SScenarios';
+import { SAJU_3S_SCENARIOS, getScenarioByTag, getTagsBySaju, Saju3SScenario } from '@/data/Saju3SScenarios';
 
 // [NEW] Visual Psychology Fusion Component
 import { PsychSajuFusionView } from '../visual/PsychSajuFusionView';
 import NeuralHackingReportCard from './NeuralHackingReportCard';
 import NeuralArchitectureBlueprint from './NeuralArchitectureBlueprint';
+
+// [NEW] 데일리 바이오-사주 동기화 패널 (독립 모듈 - 기존 시스템 영향 0%)
+import dynamic from 'next/dynamic';
+const DailyBioSyncPanel = dynamic(() => import('../coaching/DailyBioSyncPanel'), { ssr: false });
 
 // [Helper] Saju Keywords for Restoration
 const getKeywords = (dm: string) => {
@@ -132,16 +136,74 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
 
     // [NEW] 3S Scenario Interactive Modal State
     const [selected3SScenario, setSelected3SScenario] = useState<Saju3SScenario | null>(null);
+    const [selectedTag, setSelectedTag] = useState<string>('');
 
     const handleEmotionTagSelect = (tag: string) => {
         const scenario = getScenarioByTag(tag);
         if (scenario) {
+            setSelectedTag(tag);
             setSelected3SScenario(scenario);
         }
     };
 
-    // Prepare tags to display based on Saju (simplified logic for demo: show all available combined tags or just match current)
-    const availableTags = getAllScenarioTags();
+    // [SYNC FIX - HYPER ROBUST VERSION]
+    // 사용자가 만세력에서 정보를 바꾸는 즉시, 전역 스토어의 변화를 감지하여 해시태그를 100% 동기화합니다.
+    const availableTags = useMemo(() => {
+        // 1. 데이터가 아예 없는 경우 (초기 진입 시)
+        if (!reportData) {
+            console.log("⏳ [Sync] Waiting for reportData...");
+            return []; 
+        }
+
+        // 2. 일간(Day Master) 정보 추출 (우선순위 기반 다차원 탐색)
+        let dayMasterRaw = '';
+        
+        // 경로 A: 가장 표준적인 경로
+        if (reportData.saju?.dayMaster) dayMasterRaw = reportData.saju.dayMaster;
+        // 경로 B: 온보딩에서 직접 주입하는 경로
+        else if ((reportData as any).dayMaster) dayMasterRaw = (reportData as any).dayMaster;
+        // 경로 C: 4주 데이터 구조 내부 탐색 (타입 에너 회피를 위해 any 캐스팅 활용)
+        else if ((reportData as any).saju?.fourPillars?.day?.gan) 
+            dayMasterRaw = (reportData as any).saju.fourPillars.day.gan;
+        else if ((reportData as any).saju?.fourPillars?.day?.ganKor) 
+            dayMasterRaw = (reportData as any).saju.fourPillars.day.ganKor;
+        // 경로 D: 레거시 코드 호환성
+        else if ((reportData as any).sajuCode) 
+            dayMasterRaw = (reportData as any).sajuCode;
+        // 경로 E: 생년월일 기반 백업 계산
+        else if ((reportData as any).birthDate) {
+            const calculated = calculateSaju((reportData as any).birthDate, (reportData as any).birthTime || '00:00');
+            dayMasterRaw = calculated.dayMaster;
+        }
+
+        console.log("🔍 [Sync Debug] Target DayMaster Raw String:", dayMasterRaw);
+
+        // 3. 문자열에서 핵심 한자/한글만 정제해서 추출
+        const STEM_KOR_TO_HANJA: Record<string, string> = {
+            '갑': '甲', '을': '乙', '병': '丙', '정': '丁', '무': '戊',
+            '기': '己', '경': '庚', '신': '辛', '임': '壬', '계': '癸'
+        };
+
+        let finalHanja = '';
+        const hanjaMatch = dayMasterRaw.toString().match(/[甲乙丙丁戊己庚辛壬癸]/);
+        if (hanjaMatch) {
+            finalHanja = hanjaMatch[0];
+        } else {
+            const korMatch = dayMasterRaw.toString().match(/[갑을병정무기경신임계]/);
+            if (korMatch) finalHanja = STEM_KOR_TO_HANJA[korMatch[0]];
+        }
+
+        // 4. 결과 도출
+        if (!finalHanja) {
+            // [BUG FIX] 이전 코드: 여기서 甲 태그를 반환하여 누가 무엇을 입력해도 동일한 태그 표시
+            // 수정: 데이터 구조를 로그로 출력하고, 빈 배열 반환 (사용자에게 데이터 없음 안내)
+            console.warn("⚠️ [Sync Fail] Could not detect Ilgan. ReportData structure:", JSON.stringify(reportData).substring(0, 300));
+            return [];
+        }
+
+        console.log("🎯 [Sync Realtime] Success! Displaying tags for:", finalHanja);
+        return getTagsBySaju(finalHanja);
+    }, [reportData]);
 
 
     const [messages, setMessages] = useState<Message[]>([
@@ -1897,6 +1959,11 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     )}
                 </AnimatePresence>
 
+                {/* [NEW] 데일리 바이오-사주 동기화 패널 (일진 에너지 + 바이오리듬 + 3S 패치) */}
+                {reportData && !showBridgeFeedback && !interruptQuestion && (
+                    <DailyBioSyncPanel />
+                )}
+
                 {/* [NEW] Emotion Tag Selector for 3S Scenario Trigger */}
                 {reportData && !showBridgeFeedback && !interruptQuestion && (
                     <EmotionTagSelector
@@ -3055,6 +3122,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 {selected3SScenario && (
                     <Saju3SScenarioModal
                         scenario={selected3SScenario}
+                        selectedTag={selectedTag}
                         onClose={() => setSelected3SScenario(null)}
                         onComplete={(quest, logId) => {
                             setSelected3SScenario(null);

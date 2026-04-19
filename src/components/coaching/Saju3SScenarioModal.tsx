@@ -7,13 +7,23 @@ type Step = 'TRIGGER' | 'SCAN' | 'SYNC' | 'SHIFT';
 
 interface Props {
     scenario: Saju3SScenario;
+    selectedTag?: string;
     onClose: () => void;
     onComplete: (quest: string, logId?: string) => void;
 }
 
-export default function Saju3SScenarioModal({ scenario, onClose, onComplete }: Props) {
+export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, onComplete }: Props) {
     const [step, setStep] = useState<Step>('TRIGGER');
     const [isSaving, setIsSaving] = useState(false);
+
+    // [SYNC-CUSTOM] 태그별 맞춤 문구 추출 로직
+    const tagDetail = selectedTag ? scenario.tagDetails?.[selectedTag] : undefined;
+    
+    const displayData = {
+        scan: tagDetail?.scan || scenario.scan.description,
+        sync: tagDetail?.sync || scenario.sync.description,
+        shift: tagDetail?.shift || scenario.shift.description
+    };
 
     // Auto-advance Trigger to Scan after a simulated delay
     useEffect(() => {
@@ -86,7 +96,7 @@ export default function Saju3SScenarioModal({ scenario, onClose, onComplete }: P
                 <div className="flex justify-between items-center p-4 border-b border-white/5 bg-slate-800/50">
                     <div className="flex items-center gap-2">
                         <span className="text-primary-gold font-bold">명심코칭 3S 시나리오</span>
-                        <span className="text-xs text-gray-400 bg-black/30 px-2 py-1 rounded-full">{scenario.sajuCode}</span>
+                        <span className="text-xs text-gray-400 bg-black/30 px-2 py-1 rounded-full">{scenario.stem}</span>
                     </div>
                     <button onClick={onClose} className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors">
                         <X className="w-5 h-5" />
@@ -136,7 +146,7 @@ export default function Saju3SScenarioModal({ scenario, onClose, onComplete }: P
                                 </div>
                                 <div className="bg-cyan-900/20 border border-cyan-500/30 p-4 rounded-2xl">
                                     <p className="text-cyan-200 font-medium mb-4">{scenario.scan.uiMessage}</p>
-                                    <p className="text-gray-300 leading-relaxed text-sm">{scenario.scan.description}</p>
+                                    <p className="text-gray-300 leading-relaxed text-sm">{displayData.scan}</p>
                                 </div>
                             </motion.div>
                         )}
@@ -156,7 +166,7 @@ export default function Saju3SScenarioModal({ scenario, onClose, onComplete }: P
                                 </div>
                                 <div className="bg-purple-900/20 border border-purple-500/30 p-4 rounded-2xl">
                                     <p className="text-purple-200 font-medium mb-4">{scenario.sync.uiMessage}</p>
-                                    <p className="text-gray-300 leading-relaxed text-sm">{scenario.sync.description}</p>
+                                    <p className="text-gray-300 leading-relaxed text-sm">{displayData.sync}</p>
                                 </div>
                             </motion.div>
                         )}
@@ -176,7 +186,7 @@ export default function Saju3SScenarioModal({ scenario, onClose, onComplete }: P
                                 </div>
                                 <div className="bg-primary-gold/10 border border-primary-gold/30 p-4 rounded-2xl">
                                     <p className="text-primary-gold font-medium mb-4">{scenario.shift.uiMessage}</p>
-                                    <p className="text-gray-300 leading-relaxed text-sm mb-6">{scenario.shift.description}</p>
+                                    <p className="text-gray-300 leading-relaxed text-sm mb-6">{displayData.shift}</p>
 
                                     <div className="bg-black/40 p-4 rounded-xl border border-white/5">
                                         <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">오늘의 Shift 퀘스트</p>

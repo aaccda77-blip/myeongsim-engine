@@ -26,13 +26,66 @@ const DAYMASTER_TO_ELEMENT: Record<string, string> = {
     '계': 'deep', '癸': 'deep',
 };
 
+// ── 사주 데이터 공망 추출 헬퍼 ──
+function checkGongmangActive(reportData: any): boolean {
+    if (!reportData) return false;
+    const saju = reportData.saju?.fourPillars || reportData.saju || reportData.fourPillars || reportData;
+    
+    // 일간, 일지
+    let dayStem = saju.day?.gan || saju.dayPillar?.charAt(0) || '';
+    let dayBranch = saju.day?.ji || saju.dayPillar?.charAt(1) || '';
+    
+    // dayMaster 문자열 fallback ("甲" 등만 있을 경우 일지 없음)
+    if (!dayStem && typeof saju.dayMaster === 'string') dayStem = saju.dayMaster.charAt(0);
+    
+    if (!dayStem || !dayBranch) return false;
+    
+    const STEMS = ['갑','을','병','정','무','기','경','신','임','계', '甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const BRANCHES = ['자','축','인','묘','진','사','오','미','신','유','술','해', '子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    
+    let sIdx = STEMS.indexOf(dayStem);
+    if(sIdx >= 10) sIdx -= 10; // 한글 매핑용
+    
+    let bIdx = BRANCHES.indexOf(dayBranch);
+    if(bIdx >= 12) bIdx -= 12; // 한글 매핑용
+    
+    if (sIdx === -1 || bIdx === -1) return false;
+    
+    const diff = (bIdx - sIdx + 12) % 12;
+    const g1 = BRANCHES[(diff + 10) % 12];
+    const g2 = BRANCHES[(diff + 11) % 12];
+    const g1H = BRANCHES[((diff + 10) % 12) + 12]; // 한자
+    const g2H = BRANCHES[((diff + 11) % 12) + 12]; // 한자
+    
+    const yearB = saju.year?.ji || saju.yearPillar?.charAt(1) || '';
+    const monthB = saju.month?.ji || saju.monthPillar?.charAt(1) || '';
+    const timeB = saju.time?.ji || saju.hour?.ji || saju.timePillar?.charAt(1) || saju.hourPillar?.charAt(1) || '';
+    
+    const grounds = [yearB, monthB, timeB];
+    return grounds.includes(g1) || grounds.includes(g2) || grounds.includes(g1H) || grounds.includes(g2H);
+}
+
 type Phase = 'SELECT' | 'REVEAL';
 
 export default function SocialValueDiscovery() {
     const reportData = useReportStore((s) => s.reportData);
     const [phase, setPhase] = useState<Phase>('SELECT');
     const [selectedProfile, setSelectedProfile] = useState<ValueProfile | null>(null);
-    const [activeTab, setActiveTab] = useState<'value' | 'mission' | 'action'>('value');
+    const [activeTab, setActiveTab] = useState<'value' | 'mission' | 'action' | 'ai'>('value');
+
+    // ── AI 코칭 리포트 관련 상태 ──
+    type AiReport = {
+        career_analysis: string;
+        meta_awareness: string;
+        socratic_questions: string[];
+        coaching_strategy: string;
+        action_plan: string;
+        gongmang_insight?: string;
+    };
+    const [userConcern, setUserConcern] = useState('');
+    const [aiReport, setAiReport] = useState<AiReport | null>(null);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiError, setAiError] = useState('');
 
     // ── 사주 데이터에서 일간 자동 추출 ──
     const autoElementKey = useMemo(() => {
@@ -69,10 +122,42 @@ export default function SocialValueDiscovery() {
         return dm.trim().charAt(0);
     }, [reportData]);
 
+    const isGongmang = useMemo(() => checkGongmangActive(reportData), [reportData]);
+
     const handleSelect = (profile: ValueProfile) => {
         setSelectedProfile(profile);
         setActiveTab('value');
         setPhase('REVEAL');
+        // AI 리포트 초기화
+        setAiReport(null);
+        setAiError('');
+        setUserConcern('');
+    };
+
+    // ── AI 코칭 리포트 생성 핸들러 ──
+    const handleGenerateAiReport = async () => {
+        if (aiLoading) return;
+        setAiLoading(true);
+        setAiError('');
+        setAiReport(null);
+        try {
+            const res = await fetch('/api/social-coaching', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sajuData: reportData?.saju || reportData,
+                    userConcern: userConcern.trim(),
+                    isGongmang,
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.report) throw new Error(data.error || 'AI 응답 오류');
+            setAiReport(data.report);
+        } catch (e: any) {
+            setAiError(e.message || 'AI 코칭 리포트 생성에 실패했습니다.');
+        } finally {
+            setAiLoading(false);
+        }
     };
 
     const handleBack = () => {
@@ -254,8 +339,8 @@ export default function SocialValueDiscovery() {
 
                             {/* Tab Navigation */}
                             <div className="flex gap-1 mb-6 bg-black/30 rounded-xl p-1 border border-gray-800/50">
-                                {(['value', 'mission', 'action'] as const).map((tab) => {
-                                    const labels = { value: '💎 가치 수용', mission: '🚀 사회적 미션', action: '⚡ 오늘의 실천' };
+                                {(['value', 'mission', 'action', 'ai'] as const).map((tab) => {
+                                    const labels = { value: '💎 가치 수용', mission: '🚀 사회적 미션', action: '⚡ 오늘의 실천', ai: '🤖 AI 코칭' };
                                     const isActive = activeTab === tab;
                                     return (
                                         <button
@@ -283,6 +368,18 @@ export default function SocialValueDiscovery() {
                                         exit={{ opacity: 0, x: -10 }}
                                         className="space-y-5"
                                     >
+                                        {/* 공망(Quantum Void) 활성화 시 추가 브리핑 */}
+                                        {isGongmang && selectedProfile.gongmangMessage && (
+                                            <div className="p-5 rounded-2xl border border-purple-500/30" style={{ background: 'rgba(168,85,247,0.05)' }}>
+                                                <p className="text-[10px] font-bold text-purple-400 flex items-center gap-1.5 mb-2 tracking-wider">
+                                                    <span className="text-sm">🌌</span> QUANTUM VOID ACTIVATED
+                                                </p>
+                                                <p className="text-[12px] text-purple-300/90 leading-relaxed italic break-keep">
+                                                    {selectedProfile.gongmangMessage}
+                                                </p>
+                                            </div>
+                                        )}
+
                                         {/* Reframing Message */}
                                         <div className={`p-5 rounded-2xl border ${accentColors[selectedProfile.elementKey].border} bg-black/30`}>
                                             <div className="text-[10px] font-mono text-gray-500 mb-3 tracking-wider">관점 전환 (REFRAMING)</div>
@@ -382,6 +479,137 @@ export default function SocialValueDiscovery() {
                                                 <span className={`font-bold ${accentColors[selectedProfile.elementKey].text}`}>세상이 당신에게 부여한 고유한 선물</span>입니다.
                                             </p>
                                         </motion.div>
+                                    </motion.div>
+                                )}
+
+                                {/* ── AI 코칭 리포트 탭 ── */}
+                                {activeTab === 'ai' && (
+                                    <motion.div
+                                        key="tab-ai"
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -10 }}
+                                        className="space-y-5"
+                                    >
+                                        {/* 고민/직업 입력 */}
+                                        <div className="p-5 rounded-2xl border border-indigo-500/20 bg-indigo-950/10">
+                                            <div className="text-[10px] font-mono text-indigo-400 mb-2 tracking-wider">🔬 명심 AI 코칭엔진 — 맞춤형 분석 시작</div>
+                                            <p className="text-xs text-gray-400 mb-3 leading-relaxed break-keep">
+                                                현재 관심 있는 직업, 커리어 고민, 또는 사회 기여 방향을 입력해 주세요.
+                                                <span className="text-gray-600"> (비워두면 사주 기질만으로 분석합니다)</span>
+                                            </p>
+                                            <textarea
+                                                value={userConcern}
+                                                onChange={(e) => setUserConcern(e.target.value)}
+                                                placeholder="예: 코칭 전문가로 활동하고 싶은데, 완벽하지 않으면 시작이 두렵습니다..."
+                                                maxLength={300}
+                                                rows={3}
+                                                className="w-full bg-black/40 border border-indigo-500/20 rounded-xl p-3 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-indigo-400/50 resize-none"
+                                            />
+                                            <div className="flex justify-between items-center mt-3">
+                                                <span className="text-[10px] text-gray-600">{userConcern.length}/300</span>
+                                                <button
+                                                    onClick={handleGenerateAiReport}
+                                                    disabled={aiLoading}
+                                                    className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 disabled:opacity-50"
+                                                    style={{ background: aiLoading ? '#1e1b4b' : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', color: '#fff' }}
+                                                >
+                                                    {aiLoading ? (
+                                                        <span className="flex items-center gap-2">
+                                                            <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                            AI 분석 중...
+                                                        </span>
+                                                    ) : '🤖 AI 코칭 리포트 생성'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* 에러 */}
+                                        {aiError && (
+                                            <div className="p-4 rounded-xl border border-red-500/30 bg-red-950/10 text-xs text-red-400">
+                                                ⚠️ {aiError}
+                                            </div>
+                                        )}
+
+                                        {/* AI 리포트 결과 */}
+                                        {aiReport && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.5 }}
+                                                className="space-y-4"
+                                            >
+                                                {/* 공망 인사이트 (조건부) */}
+                                                {aiReport.gongmang_insight && (
+                                                    <div className="p-5 rounded-2xl border border-purple-500/30" style={{ background: 'rgba(168,85,247,0.05)' }}>
+                                                        <p className="text-[10px] font-bold text-purple-400 mb-2 flex items-center gap-1.5 tracking-wider">
+                                                            <span>🌌</span> QUANTUM VOID INSIGHT
+                                                        </p>
+                                                        <p className="text-xs text-purple-300/90 leading-relaxed italic break-keep">{aiReport.gongmang_insight}</p>
+                                                    </div>
+                                                )}
+
+                                                {/* 1. 사회적 기여 & 직업 분석 */}
+                                                <div className="p-5 rounded-2xl border border-teal-500/20 bg-teal-950/5">
+                                                    <div className="text-[10px] font-mono text-teal-400 mb-2 tracking-wider">01 / 사회적 기여 & 직업 분석</div>
+                                                    <p className="text-[13px] text-gray-200 leading-relaxed break-keep">{aiReport.career_analysis}</p>
+                                                </div>
+
+                                                {/* 2. 알아차림 (인지 탈융합) */}
+                                                <div className="p-5 rounded-2xl border border-amber-500/20 bg-amber-950/5">
+                                                    <div className="text-[10px] font-mono text-amber-400 mb-2 tracking-wider">02 / 알아차림 — 인지 탈융합</div>
+                                                    <p className="text-[13px] text-gray-200 leading-relaxed break-keep italic">&ldquo;{aiReport.meta_awareness}&rdquo;</p>
+                                                </div>
+
+                                                {/* 3. 산파술 질문 */}
+                                                <div className="p-5 rounded-2xl border border-rose-500/20 bg-rose-950/5">
+                                                    <div className="text-[10px] font-mono text-rose-400 mb-3 tracking-wider">03 / 산파술적 질문 (Socratic)</div>
+                                                    <div className="space-y-3">
+                                                        {aiReport.socratic_questions.map((q, i) => (
+                                                            <div key={i} className="flex gap-3 items-start">
+                                                                <span className="shrink-0 w-6 h-6 rounded-full bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-[10px] font-bold text-rose-400">{i + 1}</span>
+                                                                <p className="text-sm text-gray-200 leading-relaxed break-keep">{q}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* 4. 코칭 전략 */}
+                                                <div className="p-5 rounded-2xl border border-blue-500/20 bg-blue-950/5">
+                                                    <div className="text-[10px] font-mono text-blue-400 mb-2 tracking-wider">04 / 맞춤형 코칭 전략</div>
+                                                    <p className="text-[13px] text-gray-200 leading-relaxed break-keep">{aiReport.coaching_strategy}</p>
+                                                </div>
+
+                                                {/* 5. 액션 플랜 */}
+                                                <div className="p-5 rounded-2xl border border-emerald-500/20 bg-emerald-950/5">
+                                                    <div className="text-[10px] font-mono text-emerald-400 mb-2 tracking-wider">05 / 오늘의 액션 플랜</div>
+                                                    <p className="text-[13px] text-gray-200 leading-relaxed break-keep">{aiReport.action_plan}</p>
+                                                </div>
+
+                                                {/* 다시 생성 버튼 */}
+                                                <button
+                                                    onClick={handleGenerateAiReport}
+                                                    disabled={aiLoading}
+                                                    className="w-full py-3 rounded-xl text-[11px] font-bold text-indigo-400 border border-indigo-500/20 hover:border-indigo-400/40 hover:bg-indigo-950/20 transition-all"
+                                                >
+                                                    🔄 리포트 다시 생성하기
+                                                </button>
+                                            </motion.div>
+                                        )}
+
+                                        {/* 초기 안내 (리포트 없을 때) */}
+                                        {!aiReport && !aiLoading && !aiError && (
+                                            <div className="text-center py-8 space-y-3">
+                                                <div className="text-4xl">🤖</div>
+                                                <p className="text-sm text-gray-500 break-keep">
+                                                    위 입력창에 고민을 작성하고<br />
+                                                    <span className="text-indigo-400 font-bold">AI 코칭 리포트 생성</span> 버튼을 누르세요.
+                                                </p>
+                                                <p className="text-[10px] text-gray-600 font-mono">
+                                                    사주 기질 + 명심 AI = 5단계 맞춤형 코칭 리포트
+                                                </p>
+                                            </div>
+                                        )}
                                     </motion.div>
                                 )}
                             </AnimatePresence>

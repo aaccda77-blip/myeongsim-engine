@@ -4,11 +4,14 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Info, X, ShieldCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useReportStore } from '@/store/useReportStore';
+import { calculateSaju } from '@/utils/SajuCalculator';
 
 const STRESS_FACTORS = ['커리어', '인간관계', '건강', '재정', '가족'];
 
 export default function OnboardingFlow() {
     const router = useRouter();
+    const { updateUserData } = useReportStore();
     const [step, setStep] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -39,10 +42,73 @@ export default function OnboardingFlow() {
             alert('명심코칭 시작을 위해 약관 및 면책 조항에 동의해주세요.');
             return;
         }
-        console.log("=== 완료: 온보딩 제출 데이터 (V2) ===");
-        console.log(JSON.stringify(formData, null, 2));
 
-        // 데이터 전송 완료 후 라우팅
+        // ── [핵심 수정] 만세력 입력값을 useReportStore에 저장 ──
+        if (formData.birthDate) {
+            try {
+                const timeVal = formData.isTimeUnknown ? '12:00' : formData.birthTime;
+                const genderVal = formData.gender === '여성' ? 'female' : 'male';
+                const pillars = calculateSaju(formData.birthDate, timeVal, 'solar', genderVal);
+
+                // 오행 분포 계산
+                const counts = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+                const pillarsList = [pillars.year, pillars.month, pillars.day];
+                if (!formData.isTimeUnknown) pillarsList.push(pillars.time);
+                pillarsList.forEach(p => {
+                    const m = (l: string) => {
+                        if (l === '목') counts.wood++;
+                        if (l === '화') counts.fire++;
+                        if (l === '토') counts.earth++;
+                        if (l === '금') counts.metal++;
+                        if (l === '수') counts.water++;
+                    };
+                    if (p?.gan?.label) m(p.gan.label);
+                    if (p?.ji?.label) m(p.ji.label);
+                });
+                const total = pillarsList.length * 2 || 1;
+                const newElements = {
+                    wood:  (counts.wood  / total) * 100,
+                    fire:  (counts.fire  / total) * 100,
+                    earth: (counts.earth / total) * 100,
+                    metal: (counts.metal / total) * 100,
+                    water: (counts.water / total) * 100,
+                };
+
+                const dayMaster = pillars.dayMaster ||
+                    `${pillars.day?.gan?.char || '?'} (${pillars.day?.gan?.color || '#fff'})`;
+
+                updateUserData({
+                    userName: '',
+                    birthDate: formData.birthDate,
+                    birthTime: formData.isTimeUnknown ? 'unknown' : formData.birthTime,
+                    gender: genderVal,
+                    meta: {
+                        calendarType: 'solar',
+                        gender: genderVal,
+                        isTimeUnknown: formData.isTimeUnknown,
+                        isLeapMonth: false,
+                    } as any,
+                    saju: {
+                        elements: newElements,
+                        dayMaster,
+                        fourPillars: {
+                            year:  pillars.year,
+                            month: pillars.month,
+                            day:   pillars.day,
+                            time:  formData.isTimeUnknown
+                                ? { gan: { char: '?', label: '?', color: '#666' }, ji: { char: '?', label: '?', color: '#666' } }
+                                : pillars.time,
+                        },
+                    } as any,
+                });
+
+                console.log('✅ [OnboardingFlow] 만세력 데이터 스토어 저장 완료:', { dayMaster, birthDate: formData.birthDate });
+            } catch (e) {
+                console.error('[OnboardingFlow] 사주 계산 오류:', e);
+            }
+        }
+
+        // 데이터 저장 완료 후 라우팅
         router.push('/myeongsim-chat');
     };
 
@@ -111,7 +177,38 @@ export default function OnboardingFlow() {
                                         <input
                                             type="date"
                                             value={formData.birthDate}
-                                            onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
+                                            onChange={e => {
+                                                const newDate = e.target.value;
+                                                setFormData({ ...formData, birthDate: newDate });
+                                                
+                                                // [SYNC-REALTIME] 날짜 변경 즉시 사주 계산 및 스토어 반영
+                                                if (newDate) {
+                                                    try {
+                                                        const timeVal = formData.isTimeUnknown ? '12:00' : formData.birthTime;
+                                                        const genderVal = formData.gender === '여성' ? 'female' : 'male';
+                                                        const pillars = calculateSaju(newDate, timeVal, 'solar', genderVal);
+                                                        
+                                                        const dayMaster = pillars.dayMaster || `${pillars.day?.gan?.char || '?'} (${pillars.day?.gan?.color || '#fff'})`;
+                                                        
+                                                        // 즉시 스토어 업데이트 (미리보기 및 태그 동기화용)
+                                                        updateUserData({
+                                                            birthDate: newDate,
+                                                            saju: {
+                                                                dayMaster,
+                                                                fourPillars: {
+                                                                    year: pillars.year,
+                                                                    month: pillars.month,
+                                                                    day: pillars.day,
+                                                                    time: formData.isTimeUnknown ? { gan: { char: '?', label: '?', color: '#666' }, ji: { char: '?', label: '?', color: '#666' } } : pillars.time
+                                                                }
+                                                            } as any
+                                                        });
+                                                        console.log('⚡ [Realtime Sync] DayMaster updated:', dayMaster);
+                                                    } catch (err) {
+                                                        console.error('Failed to sync saju real-time:', err);
+                                                    }
+                                                }
+                                            }}
                                             className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary-olive transition-all"
                                         />
                                     </div>
