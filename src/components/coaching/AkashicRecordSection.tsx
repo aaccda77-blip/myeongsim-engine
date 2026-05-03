@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, ServerCrash, Wrench, ChevronRight, Activity, Terminal, Calendar as CalendarIcon, Shield, Zap, Info, ChevronDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Solar } from 'lunar-javascript';
 
 // ==========================================
 // 1. 10천간(일간) 기반 동적 Post-Mortem 딕셔너리 (초고도화)
@@ -278,68 +279,74 @@ const PREMIUM_COACHING: Record<string, any> = {
   }
 };
 
-// 2026년 4월 1일 ~ 30일의 실제 일진(日辰) 간지 데이터 (4월 22일 丙寅일 기준 역산)
-const APRIL_2026_GANZHI = [
-  { date: 1, gan: '乙', zhi: '巳' }, { date: 2, gan: '丙', zhi: '午' }, { date: 3, gan: '丁', zhi: '未' },
-  { date: 4, gan: '戊', zhi: '申' }, { date: 5, gan: '己', zhi: '酉' }, { date: 6, gan: '庚', zhi: '戌' },
-  { date: 7, gan: '辛', zhi: '亥' }, { date: 8, gan: '壬', zhi: '子' }, { date: 9, gan: '癸', zhi: '丑' },
-  { date: 10, gan: '甲', zhi: '寅' }, { date: 11, gan: '乙', zhi: '卯' }, { date: 12, gan: '丙', zhi: '辰' },
-  { date: 13, gan: '丁', zhi: '巳' }, { date: 14, gan: '戊', zhi: '午' }, { date: 15, gan: '己', zhi: '未' },
-  { date: 16, gan: '庚', zhi: '申' }, { date: 17, gan: '辛', zhi: '酉' }, { date: 18, gan: '壬', zhi: '戌' },
-  { date: 19, gan: '癸', zhi: '亥' }, { date: 20, gan: '甲', zhi: '子' }, { date: 21, gan: '乙', zhi: '丑' },
-  { date: 22, gan: '丙', zhi: '寅' }, { date: 23, gan: '丁', zhi: '卯' }, { date: 24, gan: '戊', zhi: '辰' },
-  { date: 25, gan: '己', zhi: '巳' }, { date: 26, gan: '庚', zhi: '午' }, { date: 27, gan: '辛', zhi: '未' },
-  { date: 28, gan: '壬', zhi: '申' }, { date: 29, gan: '癸', zhi: '酉' }, { date: 30, gan: '甲', zhi: '戌' }
-];
-
-const generateForecastDays = (dayMaster: string) => {
+// 동적 월별 캘린더 생성기
+const generateCurrentMonthForecast = (dayMaster: string) => {
   const rules = PREMIUM_COACHING[dayMaster] || PREMIUM_COACHING['甲'];
+  
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const currentDay = now.getDate();
+  
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const firstDayOfWeek = new Date(year, month - 1, 1).getDay(); // 0: 일, 1: 월 ...
 
-  return APRIL_2026_GANZHI.map(day => {
+  const calendarDays = [];
+
+  for (let date = 1; date <= daysInMonth; date++) {
+    const solar = Solar.fromYmdHms(year, month, date, 12, 0, 0);
+    const bazi = solar.getLunar().getEightChar();
+    const gan = bazi.getDayGan();
+    const zhi = bazi.getDayZhi();
+
     let status = 'safe';
     let detailData: any = null;
 
-    if (day.gan === rules.danger.targetGan) {
+    if (gan === rules.danger.targetGan) {
       status = 'danger';
       detailData = rules.danger;
-    } else if (day.gan === rules.warning.targetGan) {
+    } else if (gan === rules.warning.targetGan) {
       status = 'warning';
       detailData = rules.warning;
-    } else if (day.gan === rules.green.targetGan) {
+    } else if (gan === rules.green.targetGan) {
       status = 'green';
       detailData = rules.green;
     }
 
-    // 신(辛)금 유저를 위한 특별한 복합 충돌 처리 로직 (원국 巳, 申 고려)
+    // 신(辛)금 유저를 위한 특별한 복합 충돌 처리 로직
     if (dayMaster === '辛') {
-      if (day.zhi === '寅' && day.gan === '丙') {
+      if (zhi === '寅' && gan === '丙') {
         status = 'danger';
         detailData = {
           title: '🚨 병신합(丙) + 인사신 삼형(寅) 동시 발생',
           cause: '시스템 합(合)으로 외부 트래픽이 몰려든 상태에서 코어 하드웨어 연쇄 충돌(형살)이 발생했습니다.',
           action: '최악의 시스템 충돌일입니다. 즉시 방화벽을 올리고 외부와의 접촉을 차단한 채 로컬 환경으로 대피하십시오.'
         };
-      } else if (day.zhi === '寅') {
+      } else if (zhi === '寅') {
         status = 'danger';
         detailData = { title: '인사신 삼형(寅巳申 三刑)', cause: '하드웨어 연쇄 충돌 발생', action: '심각한 런타임 에러 주의. 오프라인 모드로 전환하세요.' };
-      } else if (day.zhi === '亥') {
+      } else if (zhi === '亥') {
         status = 'danger';
         detailData = { title: '사해충(巳亥沖)', cause: '코어 커널 타격', action: '감정 기복 극대화. 감정적 결정을 절대 미루세요.' };
-      } else if (day.zhi === '卯') {
+      } else if (zhi === '卯') {
         status = 'warning';
         detailData = { title: '묘신 귀문(卯申 鬼門)', cause: '극심한 예민함과 오버띵킹', action: '메모리 누수 발생 중. 복잡한 생각을 리셋하세요.' };
-      } else if (day.zhi === '酉') {
+      } else if (zhi === '酉') {
         status = 'green';
         detailData = { title: '사유합(巳酉合)', cause: '하드웨어 냉각 완료', action: '예리한 이성이 돋보이는 날. 중요한 기획을 시작하세요.' };
       }
     }
 
-    return {
-      date: day.date,
-      status: status,
-      detailData: detailData
-    };
-  });
+    calendarDays.push({
+      date,
+      gan,
+      zhi,
+      status,
+      detailData
+    });
+  }
+
+  return { year, month, currentDay, firstDayOfWeek, calendarDays };
 };
 
 const STATUS_INFO: Record<string, { color: string, label: string, desc: string }> = {
@@ -361,11 +368,17 @@ export default function AkashicRecordSection({
 }) {
   const [viewMode, setViewMode] = useState<'post-mortem' | 'forecast'>('post-mortem');
   const [expandedAction, setExpandedAction] = useState<number | null>(null);
-  const [selectedDay, setSelectedDay] = useState<number>(22); // Default selected to 22 (오늘)
-
+  const [selectedDay, setSelectedDay] = useState<number>(1);
   const masterKey = dayMasterHanja && POST_MORTEM_DICT[dayMasterHanja] ? dayMasterHanja : '辛';
   const data = POST_MORTEM_DICT[masterKey];
-  const calendarDays = generateForecastDays(masterKey);
+  
+  // 현재 월의 달력 데이터를 동적으로 렌더링마다 가져옵니다 (useMemo를 써도 좋지만 비용이 크지 않음)
+  const { year, month, currentDay, firstDayOfWeek, calendarDays } = React.useMemo(() => generateCurrentMonthForecast(masterKey), [masterKey]);
+
+  // 최초 렌더링 시 선택된 날짜를 오늘 날짜로 세팅
+  useEffect(() => {
+    setSelectedDay(currentDay);
+  }, [currentDay]);
 
   // Markdown 렌더러
   const renderers = {
@@ -512,7 +525,7 @@ export default function AkashicRecordSection({
                   </div>
                   <div>
                     <h2 className="text-[14px] font-black text-cyan-400 tracking-wide">보안 트래픽 예측 레이더</h2>
-                    <p className="text-[11px] text-slate-400">2026년 4월 ({masterKey}일간 동기화됨)</p>
+                    <p className="text-[11px] text-slate-400">{year}년 {month}월 ({masterKey}일간 동기화됨)</p>
                   </div>
                 </div>
               </div>
@@ -522,10 +535,11 @@ export default function AkashicRecordSection({
                 {['일','월','화','수','목','금','토'].map(day => (
                   <div key={day} className="text-center text-[10px] font-bold text-slate-500 pb-2">{day}</div>
                 ))}
-                {/* 4월 1일 수요일 시작 오프셋 (일~화 빈칸) */}
-                <div className="aspect-square"></div>
-                <div className="aspect-square"></div>
-                <div className="aspect-square"></div>
+                
+                {/* 월 시작 오프셋 빈칸 생성 */}
+                {Array.from({ length: firstDayOfWeek }).map((_, idx) => (
+                  <div key={`empty-${idx}`} className="aspect-square"></div>
+                ))}
                 
                 {calendarDays.map((day) => {
                   const isSelected = selectedDay === day.date;
@@ -571,7 +585,7 @@ export default function AkashicRecordSection({
                       </div>
                       <div>
                         <h4 className="text-[13px] font-bold text-white mb-1">
-                          4월 {selectedDay}일 
+                          {month}월 {selectedDay}일 
                           <span className="ml-2 text-[11px] px-2 py-0.5 rounded-sm bg-white/10 font-mono">
                             {STATUS_INFO[calendarDays.find(d => d.date === selectedDay)?.status || 'safe'].label}
                           </span>
