@@ -19,7 +19,6 @@ import {
 } from '@/modules/DailyJincheonEngine';
 import { Zap, Activity, Calendar, ChevronDown, Clock, CheckCircle2, Star, MessageCircle, TrendingUp, Shield, Loader2, Lightbulb } from 'lucide-react';
 import DeepScanSection from './DeepScanSection';
-import AkashicRecordSection from './AkashicRecordSection';
 
 
 // ─────────────────────────────────────────────
@@ -275,31 +274,7 @@ function EnergyHarmonySection({ harmony }: { harmony: DailyHarmonyResult }) {
       keywordExplanations: {
         '선택과 집중': '수많은 선택지가 뇌를 마비시킵니다. "선택적 주의력"을 가동하여 가장 핵심적인 1가지 문제에 모든 시냅스를 몰빵하세요.',
         '과감한 타겟팅': '무엇을 사냥할지 목표(Target)를 아주 구체적으로 설정하세요. 과녁이 명확해지는 순간 도파민성 추동력이 정확하게 꽂힙니다.',
-        '보상 획득': '승리의 감각을 뇌에 각인시키세요. 아주 작은 목표라도 달성했다면 반드시 스스로에게 보상을 주어 도파민 루프를 완성하세요.',
-        '불필요함 제거': '목표를 방해하는 불필요한 태스크들을 과감히 삭제하세요.'
-      }
-    }
-  };
-
-  const data = RELATION_DETAIL[harmony.relation] || RELATION_DETAIL['SYNC'];
-  
-  return (
-    <div className="space-y-4">
-      <div className="p-4 rounded-xl border border-white/10 bg-slate-900/50">
-        <h3 className="text-sm font-bold text-white mb-2">{data.headline}</h3>
-        <p className="text-xs text-slate-300 leading-relaxed mb-3">{data.detail}</p>
-        <div className="p-3 bg-white/5 rounded-lg mb-3">
-          <p className="text-xs text-slate-300 leading-relaxed">{data.examples}</p>
-        </div>
-        <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
-          <p className="text-xs text-indigo-300 leading-relaxed font-medium">{data.actionTip}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TimeSlotGuide({ harmony }: { harmony: DailyHarmonyResult }) {
+        '보상 �function TimeSlotGuide({ harmony }: { harmony: DailyHarmonyResult }) {
   const currentHour = new Date().getHours();
   // 5시~익일5시 논리 연산
   const logicalHour = currentHour < 5 ? currentHour + 24 : currentHour;
@@ -425,26 +400,12 @@ function DailyPatchSection({ steps, isLoading, onComplete }: { steps: any[], isL
                             if (Object.keys(newOpts).length === steps.length) {
                                onComplete(steps.map((s, i) => ({ q: s.title, a: s.choices[newOpts[i]] })));
                             }
-                            if (idx < steps.length - 1) setTimeout(() => setExpandedIdx(idx + 1), 300);
+                            if (idx < steps.length - 1) setExpandedIdx(idx + 1);
                           }}
-                          className={`w-full text-left p-3 rounded-xl border text-[11px] leading-[1.5] transition-all duration-200 break-keep font-medium flex gap-3 items-center group
-                            ${selectedOptions[idx] === optIdx 
-                              ? 'bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]' 
-                              : 'bg-transparent border-white/10 hover:bg-white/5 hover:border-white/20 text-slate-300'
-                            }
-                          `}
+                          className={`w-full text-left p-2.5 rounded-lg border text-[11px] transition-all ${selectedOptions[idx] === optIdx ? 'bg-white/10' : 'border-white/5 hover:bg-white/5'}`}
                           style={{ borderColor: selectedOptions[idx] === optIdx ? step.color : undefined }}
                         >
-                          <div 
-                            className="w-4 h-4 rounded-full flex shrink-0 items-center justify-center border transition-colors"
-                            style={{ 
-                              backgroundColor: selectedOptions[idx] === optIdx ? step.color : 'transparent',
-                              borderColor: selectedOptions[idx] === optIdx ? step.color : 'rgba(255,255,255,0.2)' 
-                            }}
-                          >
-                            {selectedOptions[idx] === optIdx && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
-                          </div>
-                          <span className={selectedOptions[idx] === optIdx ? 'text-white' : 'group-hover:text-slate-100'}>{opt}</span>
+                          {opt}
                         </button>
                       ))}
                     </div>
@@ -460,9 +421,243 @@ function DailyPatchSection({ steps, isLoading, onComplete }: { steps: any[], isL
 }
 
 // ─────────────────────────────────────────────
+, a: '타인의 신경계와 내 신경계가 뒤섞여 혼선(Crosstalk)된 상태입니다. 癸水는 주변 공기의 온도를 이슬처럼 머금기에 피해망상에 가까운 초과민(Hyper-vigilance) 상태로 돌입하기 쉽습니다.' },
+        { q: '[자기 희생 인지] 불쾌함을 숨기고 계속 "네 맞아요"라며 억지 미소를 유지하고 있는가?', a: '분위기를 깨뜨릴까 두려워 내 감정의 한계선을 무너뜨리는 자기 파괴적 적응 패턴. 내 감정이 서서히 말라 증발되고 있음을 알아차리세요.' }
+      ],
+      SYNC: [
+        { q: '[단열/차단] 이건 저 사람의 짜증인가, 아니면 내 안의 죄책감(또는 불안)인가?', a: '구름과 호수를 분리하세요. 상사가 짜증난 것은 상사의 변연계 이슈이지 내 탓이 아닙니다. 내가 통제할 수 없는 기상 이변을 향해 우산도 안 쓰고 맞서는 무분별한 공감을 당장 차단하세요.' },
+        { q: '[암묵적 기대 해체] 내가 말하지 않고 참았으면서, 상대가 내 희생을 알아봐주길 기대하고 있나?', a: '"말 안 해도 내 마음을 알아주겠지"는 가장 어리석고 파괴적인 인지적 오류입니다. 텔레파시를 포기하고 명확한 텍스트 기반 소통법으로 뇌를 전환하세요.' }
+      ],
+      SHIFT: [
+        { q: '[마이크로 방수막] 5분간 누구도 나를 찾을 수 없는 공간(화장실 등)에서 외부 자극 0 모드 가동', a: '눈, 귀, 입을 전부 닫으세요. 쏟아지는 타인의 감각 정보를 강제로 셧다운(Input 차단)하여 고갈된 나의 감정 RAM을 방어하는 절대적 생존 룰입니다.' },
+        { q: '[나-전달법(I-message)] 오늘 나를 불편하게 한 순간에 대해 "나는 이렇게 느꼈다"고 일기 혹은 당사자에게 말하기', a: '"너가 이렇게 해서 짜증나"가 아니라 "내 속도가 이래서 지금 조급해진다"고 빙빙 돌리지 말고 감정을 사실대로 직시하세요. 비폭력 대화의 가장 강력한 시작점입니다.' }
+      ]
+    }
+  };
+
+  // 프리미엄 5단계 메타인지 자문 체크리스트 상태 관리
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(0);
+  const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
+
+  const dayMasterMatch = harmony.userDayMaster.match(/[甲乙丙丁戊己庚辛壬癸]/);
+  const currentIlgan = dayMasterMatch ? dayMasterMatch[0] : '辛';
+  const CHECKLIST = ILGAN_3S_COACHING_DB[currentIlgan] || ILGAN_3S_COACHING_DB['辛'];
+
+  const metaSteps = [
+    {
+      depth: 1, title: 'Somatic Grounding', subtitle: '신체 자각 (SCAN)', color: '#3b82f6', icon: '🔍',
+      q: CHECKLIST.SCAN[0]?.q || '[독단 경보] 지금 내 목이나 어깨가 뻣뻣하게 굳어 있지 않은가?',
+      a: CHECKLIST.SCAN[0]?.a || '신체의 긴장을 감지하세요.',
+      opts: ['네, 방금 몸에 힘이 들어간 것을 알아차렸습니다.', '아니요, 현재 평온하게 이완되어 있습니다.']
+    },
+    {
+      depth: 2, title: 'Cognitive Defusion', subtitle: '표면 인지 자각 (SCAN)', color: '#6366f1', icon: '🧠',
+      q: CHECKLIST.SCAN[1]?.q || '[강박 인지] "반드시 이렇게 해야 해"라는 생각이 머리를 맴도는가?',
+      a: CHECKLIST.SCAN[1]?.a || '인지 왜곡을 감지하세요.',
+      opts: ['네, 쫓기듯 강박적인 생각 패턴이 돌아가고 있습니다.', '아닙니다, 내가 주도적으로 선택한 몰입 상태입니다.']
+    },
+    {
+      depth: 3, title: 'Socratic Inquiry', subtitle: '자아 객관화 분리 (SYNC)', color: '#8b5cf6', icon: '🔗',
+      q: CHECKLIST.SYNC[0]?.q || '[인지 분리] 이 감정이나 압박감은 나의 결단인가, 내 기질의 자동 반사인가?',
+      a: CHECKLIST.SYNC[0]?.a || '감정과 나를 분리하세요.',
+      opts: ['내 뇌의 코어 OS가 만들어낸 일시적 에러코드임을 자각합니다.', '아직 강렬한 감정과 나를 완벽하게 분리해내기 어렵습니다.']
+    },
+    {
+      depth: 4, title: 'Radical Acceptance', subtitle: '모순 직면 (RECURSIVE)', color: '#ec4899', icon: '⚖️',
+      q: '[모순 직면] 이 상황을 내 마음대로 통제하려는 시도가, 역설적으로 내 속을 태우며 자유를 빼앗고 있지 않은가?',
+      a: '우리가 통제할 수 있다고 믿는 것은 뇌의 환상입니다. 통제를 쥐려는 손아귀의 힘을 푸는 순간, 거대한 강물이 보이기 시작합니다.',
+      opts: ['맞습니다. 통제권을 고집하지 않고 자연스러운 흐름에 맡기겠습니다.', '당장은 불안해서 통제권을 완전히 내려놓기 힘듭니다.']
+    },
+    {
+      depth: 5, title: 'Meta-Awareness', subtitle: '순수 의식 각성 (AWAKE)', color: '#f59e0b', icon: '👁️',
+      q: '[순수 의식] 방금 전까지 무언가와 싸우고 갈등하던 나를, 지금 거리를 두고 고요하게 바라보는 "이 존재"는 누구인가?',
+      a: '분노하고 좌절하는 에고(Ego)를 조용히 바라보는 투명한 관찰자, 그것이 진짜 당신입니다. 이제 돌아왔으니 안전합니다.',
+      opts: ['고요하게 모든 것을 지켜보는 침묵의 \'관찰자\'를 느꼈습니다.', '생각이 복잡합니다. 억지로 이해하려 하지 않고 천천히 깊은 호흡만 3번 하겠습니다.']
+    }
+  ];
+
+  return (
+    <div className="space-y-3 mt-2 pb-6">
+      {/* 3S 데일리 처방 요약 블록 */}
+      <div className="bg-slate-900/40 rounded-xl border border-white/5 p-4 shadow-inner mb-4">
+        <h4 className="text-[10px] font-bold text-slate-400 mb-3 font-mono tracking-widest flex items-center gap-1.5 uppercase">
+          <Zap className="w-3.5 h-3.5 text-amber-400" /> 오늘의 코어 에너지 처방
+        </h4>
+        <div className="space-y-2.5">
+          <p className="text-[11.5px] leading-relaxed text-slate-300 break-keep">
+            <span className="text-blue-400 font-bold mb-0.5 inline-block text-[10px] uppercase font-mono tracking-widest bg-blue-500/10 px-1.5 py-0.5 rounded mr-1.5">Scan</span> {harmony.scanMessage}
+          </p>
+          <div className="w-full h-px bg-white/5" />
+          <p className="text-[11.5px] leading-relaxed text-slate-300 break-keep">
+            <span className="text-purple-400 font-bold mb-0.5 inline-block text-[10px] uppercase font-mono tracking-widest bg-purple-500/10 px-1.5 py-0.5 rounded mr-1.5">Sync</span> {harmony.syncMessage}
+          </p>
+          <div className="w-full h-px bg-white/5" />
+          <p className="text-[11.5px] leading-relaxed text-amber-300 break-keep font-medium">
+            <span className="text-amber-500 font-bold mb-0.5 inline-block text-[10px] uppercase font-mono tracking-widest bg-amber-500/10 px-1.5 py-0.5 rounded mr-1.5">Shift</span> {harmony.shiftMission}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 mb-2 px-1">
+        <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+        <span className="text-[11px] font-bold text-slate-200 tracking-wide">풀 스펙트럼 인지 자각 훈련</span>
+        <span className="text-[9px] text-slate-500 ml-auto font-mono tracking-widest bg-white/5 px-2 py-0.5 rounded-full">5 STEPS</span>
+      </div>
+
+      {metaSteps.map((step, idx) => {
+        const isExpanded = expandedIdx === idx;
+        const isCompleted = selectedOptions[idx] !== undefined;
+
+        return (
+          <motion.div
+            key={step.title}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className={`rounded-xl border cursor-pointer overflow-hidden transition-all duration-300 ${
+              isExpanded 
+                ? 'bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.5)] border-white/20' 
+                : 'bg-slate-900/50 border-white/5 hover:bg-slate-900/80 hover:border-white/10'
+            }`}
+            style={{
+              borderColor: isExpanded ? `${step.color}50` : undefined,
+              boxShadow: isExpanded ? `0 0 20px ${step.color}10 inset` : undefined
+            }}
+            onClick={() => {
+              if (!isExpanded) setExpandedIdx(idx);
+            }}
+          >
+            {/* 탭 헤더 */}
+            <div className={`p-3.5 flex items-center justify-between transition-colors ${isExpanded ? '' : 'opacity-80 hover:opacity-100'}`}>
+              <div className="flex items-center gap-3">
+                <div 
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-300 ${isExpanded ? 'scale-110 shadow-lg' : ''}`}
+                  style={{ backgroundColor: isCompleted ? `${step.color}30` : 'rgba(255,255,255,0.05)', color: isCompleted ? step.color : '#fff', border: `1px solid ${isCompleted ? step.color : 'transparent'}` }}
+                >
+                  {isCompleted ? '✓' : step.icon}
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] font-mono tracking-widest uppercase opacity-70" style={{ color: step.color }}>Depth {step.depth}. {step.subtitle}</span>
+                  </div>
+                  <h4 className={`text-xs font-bold mt-0.5 transition-colors ${isExpanded || isCompleted ? 'text-white' : 'text-slate-400'}`}>
+                    {step.title}
+                  </h4>
+                </div>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+            </div>
+
+            {/* 확장 본문 영역 */}
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="px-4 pb-4 border-t border-white/5 bg-black/20 pt-4 space-y-4">
+                    {/* 질문 렌더링 */}
+                    <div className="flex gap-2.5 items-start">
+                      <div className="text-xl shrink-0 mt-1 opacity-80" style={{ textShadow: `0 0 10px ${step.color}50` }}>Q.</div>
+                      <p className="text-[13px] text-white font-medium leading-[1.65] break-keep tracking-tight">
+                        {step.q}
+                      </p>
+                    </div>
+
+                    {/* 백그라운드 해설 가이드 */}
+                    <div className="px-3 py-2.5 rounded-lg border border-white/5 bg-white/5 text-[11px] text-slate-400 leading-[1.6] break-keep font-medium flex gap-2">
+                      <span className="shrink-0 text-slate-500">💡</span>
+                      <p>{step.a}</p>
+                    </div>
+
+                    {/* 선택지 (Gamified 넛지 버튼) */}
+                    <div className="space-y-2 pt-2">
+                      <p className="text-[9px] text-slate-500 font-mono tracking-widest uppercase pl-1 opacity-70 mb-1">Select your state:</p>
+                      {step.opts.map((opt, optIdx) => {
+                        const isSelected = selectedOptions[idx] === optIdx;
+                        return (
+                          <button
+                            key={optIdx}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedOptions(prev => {
+                                const newOpts = { ...prev, [idx]: optIdx };
+                                
+                                // 전역 스토어(Data Context)에 푸시하여 AI 챗봇 연결
+                                if (Object.keys(newOpts).length === 5) {
+                                  const ans = metaSteps.map((s, i) => ({ 
+                                    q: `[Depth ${s.depth}] ${s.title}`, 
+                                    a: s.opts[newOpts[i]] 
+                                  }));
+                                  setDailyChecklistAnswers(ans);
+                                }
+                                
+                                return newOpts;
+                              });
+                              
+                              // 0.4초 뒤 다음 스텝으로 자동 이동
+                              setTimeout(() => {
+                                if (idx < metaSteps.length - 1) setExpandedIdx(idx + 1);
+                                else setExpandedIdx(null); // 마지막이면 닫기
+                              }, 400);
+                            }}
+                            className={`w-full text-left p-3 rounded-xl border text-[11px] leading-[1.5] transition-all duration-200 break-keep font-medium flex gap-3 items-center group
+                              ${isSelected 
+                                ? 'bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]' 
+                                : 'bg-transparent border-white/10 hover:bg-white/5 hover:border-white/20 text-slate-300'
+                              }
+                            `}
+                            style={{ borderColor: isSelected ? step.color : undefined }}
+                          >
+                            <div 
+                              className="w-4 h-4 rounded-full flex shrink-0 items-center justify-center border transition-colors"
+                              style={{ 
+                                backgroundColor: isSelected ? step.color : 'transparent',
+                                borderColor: isSelected ? step.color : 'rgba(255,255,255,0.2)' 
+                              }}
+                            >
+                              {isSelected && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+                            </div>
+                            <span className={isSelected ? 'text-white' : 'group-hover:text-slate-100'}>{opt}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        );
+      })}
+
+      {/* 완료 보상 축하 메시지 */}
+      <AnimatePresence>
+        {Object.keys(selectedOptions).length === 5 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="p-4 mt-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-center shadow-[0_0_30px_rgba(16,185,129,0.15)] flex flex-col items-center gap-2"
+          >
+            <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center text-xl mb-1">🌿</div>
+            <h3 className="text-sm font-bold text-emerald-400 font-mono tracking-widest">AWARENESS COMPLETE</h3>
+            <p className="text-[11px] text-slate-300 break-keep leading-relaxed pt-1">
+              에고(Ego)의 족쇄에서 벗어나 메타 인지의 바다로 나온 것을 축하합니다. 
+              오늘 하루, 당신은 외부 환경에 끌려다니지 않는 당신만의 세상의 주관자입니다.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
 // 메인 패널 컴포넌트 — 프리미엄 리디자인
 // ─────────────────────────────────────────────
-type TabType = 'harmony' | 'bio' | 'akashic' | 'patch' | 'deepscan';
+type TabType = 'harmony' | 'bio' | 'patch' | 'deepscan';
 
 
 export default function DailyBioSyncPanel() {
@@ -509,46 +704,9 @@ export default function DailyBioSyncPanel() {
         const data = await res.json();
         if (data.success && data.questions?.steps) {
           setDynamicSteps(data.questions.steps);
-        } else {
-          throw new Error('API 응답 실패');
         }
       } catch (err) {
         console.error('Failed to fetch daily questions:', err);
-        // API 실패 시 기존에 가지고 있던 정적 폴백(Fallback) 데이터 제공
-        const currentIlgan = dayMasterHanja || '辛';
-        const fallbackSteps = [
-          {
-            depth: 1, title: 'Somatic Grounding', color: '#3b82f6', icon: '🔍',
-            question: `[신체 자각] 지금 내 목이나 어깨가 뻣뻣하게 굳어 있지 않은가?`,
-            tip: `${currentIlgan} 특유의 긴장 상태를 감지하세요.`,
-            choices: ['네, 방금 몸에 힘이 들어간 것을 알아차렸습니다.', '아니요, 현재 평온하게 이완되어 있습니다.']
-          },
-          {
-            depth: 2, title: 'Cognitive Defusion', color: '#6366f1', icon: '🧠',
-            question: `[강박 인지] "반드시 이렇게 해야 해"라는 생각이 머리를 맴도는가?`,
-            tip: `인지 왜곡을 감지하세요.`,
-            choices: ['네, 쫓기듯 강박적인 생각 패턴이 돌아가고 있습니다.', '아닙니다, 내가 주도적으로 선택한 몰입 상태입니다.']
-          },
-          {
-            depth: 3, title: 'Socratic Inquiry', color: '#8b5cf6', icon: '🔗',
-            question: `[인지 분리] 이 감정이나 압박감은 나의 결단인가, 내 기질의 자동 반사인가?`,
-            tip: `감정과 나를 분리하세요.`,
-            choices: ['내 뇌의 코어 OS가 만들어낸 일시적 에러코드임을 자각합니다.', '아직 강렬한 감정과 나를 완벽하게 분리해내기 어렵습니다.']
-          },
-          {
-            depth: 4, title: 'Radical Acceptance', color: '#ec4899', icon: '⚖️',
-            question: `[모순 직면] 이 상황을 내 마음대로 통제하려는 시도가, 역설적으로 내 자유를 빼앗고 있지 않은가?`,
-            tip: `통제를 쥐려는 손아귀의 힘을 푸는 순간, 거대한 강물이 보이기 시작합니다.`,
-            choices: ['통제권을 고집하지 않고 자연스러운 흐름에 맡기겠습니다.', '당장은 불안해서 통제권을 완전히 내려놓기 힘듭니다.']
-          },
-          {
-            depth: 5, title: 'Meta-Awareness', color: '#f59e0b', icon: '👁️',
-            question: `[순수 의식] 방금 전까지 갈등하던 나를 고요하게 바라보는 "이 존재"는 누구인가?`,
-            tip: `분노하고 좌절하는 에고(Ego)를 조용히 바라보는 투명한 관찰자, 그것이 진짜 당신입니다.`,
-            choices: ['고요하게 모든 것을 지켜보는 침묵의 관찰자를 느꼈습니다.', '생각이 복잡합니다. 천천히 깊은 호흡만 3번 하겠습니다.']
-          }
-        ];
-        setDynamicSteps(fallbackSteps);
       } finally {
         setIsLoadingSteps(false);
       }
@@ -565,9 +723,9 @@ export default function DailyBioSyncPanel() {
   }, [birthDate]);
 
   const bioSajuAdvice = useMemo(() => {
-    if (!biorhythm || !harmony) return null;
-    return getBioSajuAdvice(dominantElement, biorhythm, harmony);
-  }, [dominantElement, biorhythm, harmony]);
+    if (!biorhythm) return null;
+    return getBioSajuAdvice(dominantElement, biorhythm);
+  }, [dominantElement, biorhythm]);
 
   if (!dayMasterHanja && !birthDate) return null;
 
@@ -599,7 +757,6 @@ export default function DailyBioSyncPanel() {
   const TABS: { id: TabType; label: string; emoji: string }[] = [
     { id: 'harmony',  label: '일진 에너지',    emoji: '⚡' },
     { id: 'bio',      label: '바이오 게이지',  emoji: '📊' },
-    { id: 'akashic',  label: '아카식 레코드',  emoji: '🌌' },
     { id: 'patch',    label: '3S 패치',        emoji: '💉' },
     { id: 'deepscan', label: '딥 스캔 (경고)', emoji: '🚨' },
   ];
@@ -876,15 +1033,6 @@ export default function DailyBioSyncPanel() {
                     ) : (
                       <div className="text-center py-8"><p className="text-xs text-slate-500">생년월일 정보가 필요합니다.<br />만세력에서 입력해 주세요.</p></div>
                     )}
-                  </motion.div>
-                )}
-
-                {activeTab === 'akashic' && (
-                  <motion.div key="akashic"
-                    initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <AkashicRecordSection dayMasterHanja={dayMasterHanja} sajuData={reportData} />
                   </motion.div>
                 )}
 

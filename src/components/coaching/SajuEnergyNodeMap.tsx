@@ -37,6 +37,7 @@ const NODE_META = [
     key: 'resource' as keyof TenGods,
     hanja: '印',
     kor: '인성',
+    keyword: '수용·사고',
     engLabel: 'RESOURCE',
     emoji: '📚',
     color: '#a78bfa',
@@ -52,6 +53,7 @@ const NODE_META = [
     key: 'self' as keyof TenGods,
     hanja: '比',
     kor: '비겁',
+    keyword: '자아·독립',
     engLabel: 'SELF',
     emoji: '⚡',
     color: '#60a5fa',
@@ -67,6 +69,7 @@ const NODE_META = [
     key: 'output' as keyof TenGods,
     hanja: '食',
     kor: '식상',
+    keyword: '표현·실행',
     engLabel: 'OUTPUT',
     emoji: '🎨',
     color: '#34d399',
@@ -82,6 +85,7 @@ const NODE_META = [
     key: 'wealth' as keyof TenGods,
     hanja: '財',
     kor: '재성',
+    keyword: '현실·결과',
     engLabel: 'WEALTH',
     emoji: '💎',
     color: '#fbbf24',
@@ -97,6 +101,7 @@ const NODE_META = [
     key: 'power' as keyof TenGods,
     hanja: '官',
     kor: '관성',
+    keyword: '규칙·통제',
     engLabel: 'POWER',
     emoji: '🏛️',
     color: '#f87171',
@@ -175,13 +180,14 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
         <div className="flex items-start justify-between">
           <div>
             <p className="text-[10px] font-mono text-purple-400 tracking-widest uppercase mb-1">
-              MYEONGSIM · ENERGY NODE MAP
+              MYEONGSIM · NEURAL BEHAVIOR STATS
             </p>
             <h3 className="text-lg font-extrabold text-white">
-              {userName}의 사주 에너지 아키텍처
+              {userName}의 5대 행동 스탯 (육각형 능력치)
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              일간(<span className="font-bold text-purple-300">{dayStem}</span>) 기반 · 5대 에너지 노드 현황 분석
+            <p className="text-[11px] text-slate-400 mt-1.5 break-keep leading-relaxed max-w-sm">
+              * 게임 캐릭터의 육각형 스탯처럼, 당신의 뇌가 정보를 처리하는 비율을 나타냅니다. 
+              <strong>크게 튀어나온 영역이 당신의 '특화 무기'</strong>입니다. 노드를 탭해보세요.
             </p>
           </div>
           <button
@@ -256,7 +262,7 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                   const isSelected = selectedNode === meta.key;
                   const isStrongest = meta.key === strongestKey;
                   const isWeakest   = meta.key === weakestKey;
-                  const radius = Math.max(16, Math.min(28, 14 + pct * 0.5));
+                  const radius = Math.max(22, Math.min(34, 18 + pct * 0.45)); // 텍스트가 잘 보이도록 반경 팽창
 
                   return (
                     <g key={meta.key} onClick={() => setSelectedNode(isSelected ? null : meta.key)} className="cursor-pointer">
@@ -282,14 +288,18 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                       />
                       {/* 취약 노드 X 표시 */}
                       {isWeakest && (
-                        <text x={pt.x + radius - 4} y={pt.y - radius + 4} textAnchor="middle" fontSize={8} fill="#f87171">⚠</text>
+                        <text x={pt.x + radius - 4} y={pt.y - radius + 4} textAnchor="middle" fontSize={10} fill="#f87171">⚠</text>
                       )}
-                      {/* 한자 */}
-                      <text x={pt.x} y={pt.y - 3} textAnchor="middle" fontSize={11} fontWeight="bold" fill={isSelected ? '#fff' : meta.color}>
-                        {meta.hanja}
+                      {/* 한글 직관적 네이밍 */}
+                      <text x={pt.x} y={pt.y - 4} textAnchor="middle" fontSize={10} fontWeight="bold" fill={isSelected ? '#fff' : meta.color}>
+                        {meta.kor}
                       </text>
-                      {/* % */}
-                      <text x={pt.x} y={pt.y + 9} textAnchor="middle" fontSize={8} fill={isSelected ? '#fff' : '#94a3b8'}>
+                      {/* 키워드 설명 */}
+                      <text x={pt.x} y={pt.y + 6} textAnchor="middle" fontSize={8} fill={isSelected ? '#e2e8f0' : '#94a3b8'}>
+                        {meta.keyword}
+                      </text>
+                      {/* % 수치 */}
+                      <text x={pt.x} y={pt.y + 15} textAnchor="middle" fontSize={8} fontWeight="bold" fill={isSelected ? '#fff' : '#64748b'}>
                         {pct}%
                       </text>
                     </g>

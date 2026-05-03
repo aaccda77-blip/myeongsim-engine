@@ -100,3 +100,33 @@ h6 {
   scrollbar-width: none;
   /* Firefox */
 }
+
+/* ==============================================================
+   🚀 모바일 화면 떨림(Jittering) 및 스크롤 최적화 패치
+   ============================================================== */
+
+/* 1. 고무줄 효과 방지 및 기본 터치 최적화 */
+html, body {
+  overscroll-behavior-y: none; /* 최상단/하단 튕김 현상 방지 */
+  touch-action: pan-y; /* 수직 스크롤에만 집중하여 버벅임 방지 */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 2. 동적 Viewport Height (주소창 변동 떨림 방지) */
+.h-screen {
+  height: 100dvh !important;
+}
+.min-h-screen {
+  min-height: 100dvh !important;
+}
+.max-h-screen {
+  max-height: 100dvh !important;
+}
+
+/* 3. 하드웨어 가속 유틸리티 (sticky, fixed 충돌 방지) */
+/* 사용법: 스크롤 영역에 className="overflow-y-auto gpu-accelerated" 추가 */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform, scroll-position;
+  -webkit-overflow-scrolling: touch;
+}

@@ -12,6 +12,9 @@ interface ReportStore {
 
     // 2. Data States
     reportData: ReportData | null;
+    dailyChecklistAnswers: { q: string; a: string }[] | null;
+    deepScanResult: string | null;
+
 
     // 3. Actions
     setStep: (step: number) => void;
@@ -21,6 +24,9 @@ interface ReportStore {
     // 데이터 업데이트 (Partial 허용)
     setReportData: (data: ReportData) => void;
     updateUserData: (data: Partial<ReportData>) => void;
+    setDailyChecklistAnswers: (answers: { q: string; a: string }[]) => void;
+    setDeepScanResult: (result: string | null) => void;
+
 
     // 초기화 (로그아웃 시 필요)
     reset: () => void;
@@ -35,6 +41,9 @@ export const useReportStore = create<ReportStore>()(
             isLoading: false,
             error: null,
             reportData: null, // [Fix] Mock 사용 중단 (실제 데이터 우선)
+            dailyChecklistAnswers: null,
+            deepScanResult: null,
+
 
             // Actions
             setStep: (step) => set({ currentStep: step }),
@@ -57,6 +66,10 @@ export const useReportStore = create<ReportStore>()(
                     : (data as ReportData) // 데이터가 없으면 새로 들어온 걸로 초기화
             })),
 
+            setDailyChecklistAnswers: (answers) => set({ dailyChecklistAnswers: answers }),
+            setDeepScanResult: (result) => set({ deepScanResult: result }),
+
+
             // [Deep Tech] 로그아웃 시 스토어 비우기
             reset: () => set({
                 currentStep: 1,
@@ -72,8 +85,11 @@ export const useReportStore = create<ReportStore>()(
             partialize: (state) => ({
                 // 저장하고 싶은 상태만 선택 (로딩 상태 같은 건 저장 안 함)
                 currentStep: state.currentStep,
-                reportData: state.reportData
+                reportData: state.reportData,
+                dailyChecklistAnswers: state.dailyChecklistAnswers,
+                deepScanResult: state.deepScanResult,
             }),
+
         }
     )
 );

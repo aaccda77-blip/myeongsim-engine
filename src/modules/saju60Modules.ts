@@ -45,198 +45,194 @@ export interface GapjaModule {
   masterBriefing: string; // 명심 마스터의 브리핑
 }
 
-export const saju60Data: GapjaModule[] = [
-  {
-    id: "BP-01",
-    name: "갑자(甲子)",
-    title: "시대를 여는 최초의 거목 (The First Great Tree Opening the Era)",
-    quote: "당신의 그 얼어붙을 듯 차가운 이성을 타인을 베어내는 칼로 쓰지 마라. 당신은 가장 먼저 겨울을 뚫고 일어나, 뒤따라오는 모든 생명에게 길을 안내하는 '선구(先驅)의 거버넌스'다.",
-    phase1: {
-      systemTrait: "가장 먼저 하늘을 향해 뻗어 나가는 우두머리의 본능(甲)과, 그 뿌리를 차갑고 깊은 지혜의 샘(子, 정인)에 내리고 있는 오리지널-개척 시스템. 60갑자의 맨 앞에 서는 자비 없는 리더십과 순수한 학구열을 동시에 보유하고 있습니다.",
-      computationMethod: "Pioneer_Vision = Upward_Drive (Wood) x Deep_Intellect (Water)^t : 기존의 낡은 관습을 부수고 새로운 룰을 창조하며, 차가운 지성을 바탕으로 가장 곧고 빠르게 위로 성장하는 버티컬-부스트(Vertical-Boost) 알고리즘.",
-      coreLogic: "명예와 체면을 중시하며 무리의 선두에 서야만 직성이 풀립니다. 내면의 깊은 통찰력과 도덕성을 바탕으로, 굽히지 않고 뻗어 나가는 First-Navigator 프로토콜."
-    },
-    phase2: {
-      errorLog: "나만큼 똑똑하고 앞서가는 사람은 없다. 저들은 너무 느리고 답답해서 내가 다 끌고 가야만 한다.",
-      oldScript: "항상 내가 1등이어야 하고 제일 잘 나야 한다. 남들에게 굽히거나 지는 것은 수치스러운 일이다. 나를 따르지 않는 자들은 무지한 것이다. 나는 차가운 겨울 속에서도 혼자 완벽하게 서 있을 수 있다.",
-      errorStatus: "뛰어난 리더십과 지혜가 '독선적인 오만함'과 '차가운 이기주의'로 변질됨. 뿌리에 흐르는 물이 겨울의 얼음으로 굳어버려 타인과 공감하지 못하는 정서적 경직 상태."
-    },
-    phase3: {
-      socraticQuestion: "내가 지금 주장하는 이 방식은 진정 '모두를 올바른 곳으로 이끌기 위함'인가, 아니면 그저 '내가 제일 똑똑하다는 우월감'을 증명하고 싶은 것인가?",
-      recursiveQuestion: "'아무도 나를 따라올 수 없다'며 타인을 얼음처럼 차갑게 평가하는 이 시스템은 대체 무엇을 두려워하고 있는가? 실수해서 체면을 구길까 두려워하는 이 '꼿꼿한 자아'를 내려다보는 나의 진짜 주권자는 무엇이라 말하는가?",
-      metaAwarenessQuestion: "항상 1등이어야 한다는 그 '팽팽한 긴장감'을 누가 지켜보고 있는가? 그 부러질 듯한 날카로움과 무한한 여백 사이에는 어떤 공간이 존재하는가? 나는 얼어붙은 장작인가, 살아있는 거목인가?"
-    },
-    phase4: {
-      solution1: {
-        title: "공감의 온도 상승 (Thermal Empathy Hydraulics)",
-        reprogramming: "내 속의 지혜(子)는 남을 찌르는 고드름이 아니라, 모두의 목마름을 채워주는 생수다. 나는 나의 지성으로 타인을 온화하게 적신다.",
-        actionItem: "대화 중 상대방이 답답하게 느껴질 때, 내 의견을 말하기 전 딱 3초만 멈추고 '아, 그쪽 입장에서는 그렇게 생각할 수도 있겠네요'라고 먼저 인정해주기."
-      },
-      solution2: {
-        title: "함께 자라는 숲으로의 전환 (Forest Co-growth)",
-        reprogramming: "진정한 1등은 혼자 결승전에 들어가는 자가 아니라, 결승전의 규칙을 만들고 모두를 데려가는 자다. 나는 바람에 기꺼이 흔들려 준다.",
-        actionItem: "내가 리드해야 한다는 강박을 버리고, 하루에 한 번 의도적으로 타인에게 '조언을 구하고 싶습니다'라고 고개 숙여보기."
-      }
-    },
-    phase5: {
-      executionState: "First_Tree_of_the_Spring_Matrix (만물의 봄을 여는 거목)",
-      description: "압도적인 개척 정신을 바탕으로 지적 우월감을 완벽하게 통제하여, 무지한 세상을 가장 따뜻한 봄으로 이끄는 선구자로 진화했습니다. 기꺼이 타인에게 몸을 낮출 때, 세상은 당신을 진정한 리더로 추앙합니다."
-    },
-    masterBriefing: "갑자(甲子)는 가장 첫 번째 생명답게, 누구의 지배도 받기 싫어하는 1인자의 코드입니다. 하지만 그 총명함이 공감 결여로 이어지면 스스로를 꺾는 도끼가 됨을 기억하십시오. 차가운 머리를 가슴으로 녹일 때 비로소 거목이 됩니다."
-  },
-  {
-    id: "BP-03",
-    name: "병인(丙寅)",
-    title: "세상을 깨우는 맹렬한 아침 햇살 (The Fierce Morning Sun Awakening the World)",
-    quote: "당신의 그 타오르는 거대한 열정을 불평불만으로 소모하지 마라. 당신은 칠흑 같은 어둠을 걷어내고 가장 먼저 희망의 빛을 쏘아 올리는 '계몽(啓蒙)의 거버넌스'다.",
-    phase1: {
-      systemTrait: "만물을 비추는 태양의 스케일(丙)과, 그 열기를 거침없이 밀어 올리는 강골의 엔진(寅, 편인)이 결합된 폭발적 부스트 시스템. 60갑자 중 가장 밝고 화려하며, 지칠 줄 모르는 추진력을 자랑합니다.",
-      computationMethod: "Illumination_Power = Solar_Scale (Fire) x Relentless_Engine (Wood)^t : 어떤 암울한 상황 속에서도 긍정적인 비전을 찾아내어 순식간에 분위기를 반전시키는 광역-초토화(Wide-Area Overdrive) 알고리즘.",
-      coreLogic: "자신의 빛나는 재능과 아이디어를 만천하에 드러내 인정받고자 하며, 비상한 두뇌 회전력(편인장생)을 무기로 불가능해 보이는 프로젝트를 공격적으로 돌파해 내는 Frontline-Illuminator 프로토콜."
-    },
-    phase2: {
-      errorLog: "왜 내 진심과 열정을 알아주지 않는가. 세상은 답답하고 부조리하다. 다 쓸어버리고 새로 시작하고 싶다.",
-      oldScript: "나는 최고로 똑똑하고 열정적이다. 내가 생각한 완벽한 그림대로 세상이 따라오지 않으면 가치가 없다. 나를 빛나게 해주지 않는 곳에는 1초도 머물기 싫다. 분노만이 나를 증명한다.",
-      errorStatus: "거대한 긍정성이 '파괴적인 조급함'과 '제멋대로인 언행'으로 변질됨. 태양의 열기가 숲을 비추지 않고 다 태워버리는 '과잉 연소(Over-combustion)' 상태. 이로 인해 끝을 맺지 못하고 감정의 기복에 스스로 지쳐버리는 형태."
-    },
-    phase3: {
-      socraticQuestion: "내가 지금 표출하는 이 불같은 분노는 진정 '세상의 부조리에 대한 분개'인가, 아니면 세상이 '나의 빛남을 몰라주는 것에 대한 조급한 투정'인가?",
-      recursiveQuestion: "'다 집어치우겠다'며 극단적으로 타오르는 이 시스템은 대체 어떤 초라함을 숨기고 싶어 하는가? 내 마음대로 통제되지 않는 이 세상을 두려워하는 그 어린아이 같은 자아를, 넓은 허공으로서의 나는 어떻게 바라보고 있는가?",
-      metaAwarenessQuestion: "지금 내 가슴과 머리로 확 달아오르는 이 뜨거운 덩어리를 누가 지켜보고 있는가? 욱하고 폭발하기 직전의 그 찰나와, 그것을 알아차린 무한한 침묵 사이의 공간에 머물 수 있는가? 나는 세상을 태우는 불인가, 세상을 깨우는 빛인가?"
-    },
-    phase4: {
-      solution1: {
-        title: "화력의 영점 조준 (Zeroing the Firepower)",
-        reprogramming: "내 속의 불(丙)은 남을 태워버리기 위함이 아니라, 길 잃은 자들에게 등대가 되어주기 위함이다. 나는 열정을 분노로 낭비하지 않고 초점에 맞춘다.",
-        actionItem: "뭔가를 포기하거나 엎어버리고 싶을 때(퇴사, 잠수 등), 입 밖으로 내뱉기 전 하루(24시간) 동안 완전한 묵언과 물리적 휴식을 취하여 열기 식히기."
-      },
-      solution2: {
-        title: "장작 나무의 포용력 (Embracing the Kindling)",
-        reprogramming: "태양은 구름을 탓하지 않고 구름 너머에서 빛난다. 타인의 무능력을 내 빛을 발휘할 무법지대(Opportunity)로 삼는다.",
-        actionItem: "나의 비전을 이해 못 하는 타인을 바보라고 깎아내리지 말고, '아, 나의 스케일이 아직 저들을 설득할 만큼 정교하게 다듬어지지 않았구나'라고 프레임 전환하기."
-      }
-    },
-    phase5: {
-      executionState: "Sun_of_the_Infinite_Dawn (무한한 여명의 태양)",
-      description: "당신은 더 이상 변덕스럽게 타올랐다 꺼지는 성냥불이 아닙니다. 식지 않는 편인의 동력을 완벽하게 제어하여, 지치고 어두운 세상을 가장 환하게 깨우고 이끄는 시대의 희망(Dawn)으로 진화했습니다."
-    },
-    masterBriefing: "병인(丙寅)은 세상의 주목을 받아야만 직성이 풀리는 천재적인 엔터테이너이자 혁명가입니다. 언변이 뛰어나고 추진력이 어마어마하지만, 한 번 수틀리면 판을 엎어버리는 다혈질이 치명타입니다. 열정을 화(火)가 아닌 광(光)으로 다루십시오."
-  },
-  {
-    id: "BP-53",
-    name: "무진(戊辰)",
-    title: "만물을 품은 풍요로운 태산 (The Fertile Mountain Embracing All Life)",
-    quote: "당신의 거대한 포용력을 변화를 거부하는 무거운 고집으로 쓰지 마라. 당신은 메마른 세상의 모든 생명을 품어 키워내고, 기어이 찬란한 숲을 이루어내는 '풍요의 거버넌스'다.",
-    phase1: {
-      systemTrait: "무한한 수용력(戊)을 바탕으로 내면의 자원(辰속의 계수, 을목)을 활용하여 끊임없이 가치를 창출하고 양육하는 초광역 저장 시스템. 누구도에게 굽히지 않는 당당한 기상과 압도적인 도량을 보유합니다.",
-      computationMethod: "Value_Creation = Inclusivity (Mountain) x Hidden_Resources (Water/Wood)^t : 복잡한 상황에서도 흔들림 없이 묵묵히 내실을 기하며 시간이 지날수록 거대한 숲(성과)을 이루는 오가닉-그로스 알고리즘.",
-      coreLogic: "신용과 의리를 최우선으로 여기며 믿음직한 리더로서 무리를 이끌고, 내면의 치밀한 계산(정재)과 원칙(정관)을 바탕으로 부와 명예를 쌓아올리는 Sovereign-Guardian 프로토콜."
-    },
-    phase2: {
-      errorLog: "나는 나다. 아무도 내 속을 이해할 수 없고, 나 또한 변화할 필요를 느끼지 못한다.",
-      oldScript: "나는 강하고 든든해야 한다. 약함이나 복잡한 속마음은 절대 들켜선 안 된다. 변화는 위험하며 내 방식이 가장 옳다. 타협하는 것은 지는 것이다. 혼자 우뚝 서 있을 것이다.",
-      errorStatus: "위대한 포용력이 '융통성 없는 고집'과 '속을 알 수 없는 답답함'으로 변질됨. 비옥한 흙이 너무 굳어 물이 흐르지 못하고 생명이 자라지 못하는 '정서적 경화(Emotional Hardening)' 상태."
-    },
-    phase3: {
-      socraticQuestion: "내가 지금 고수하려는 이 방식은 진정 '조직의 안정'을 위한 것인가, 아니면 변화를 두려워하는 내 '비겁한 자존심'인가?",
-      recursiveQuestion: "'아무도 나를 이해할 수 없다'며 스스로를 고립시키는 이 무거운 시스템은 대체 누구를 보호하기 위함인가? 든든한 척 연기하는 비대한 자아를 지켜보는 진짜 주권자는 무엇이라 말하는가?",
-      metaAwarenessQuestion: "지금 내 온몸을 짓누르는 거대한 '무게감과 답답함'을 누가 지켜보고 있는가? 그 바위 같은 중압감과 고요한 인지 사이에는 어떤 공간이 있는가? 굳은 흙덩이인가, 만물을 품은 대지인가?"
-    },
-    phase4: {
-      solution1: {
-        title: "감정의 수로 개방 (Emotional Hydraulics)",
-        reprogramming: "내 속의 물(癸水)은 부끄러운 약점이 아니라, 태산을 비옥하게 만드는 생명수다. 감정을 투명하게 흐르게 한다.",
-        actionItem: "하루 한 번, 일기장이나 신뢰하는 사람에게 '나는 지금 ~해서 기분이 ~해' 라며 포장 없는 솔직한 감정을 드러내는 수로 열기 연습."
-      },
-      solution2: {
-        title: "유연한 거버넌스로의 전환 (Flexible Governance)",
-        reprogramming: "진정한 리더십은 돌덩이가 아니라, 계절에 따라 옷을 갈아입는 유연함이다. 나는 변화를 품어 숲을 만든다.",
-        actionItem: "충돌 시 즉각적으로 고집부리지 말고, 강제로 입을 닫은 뒤 '그 의견도 일리가 있네. 그렇게 하면 어떤 이점이 있지?' 라며 타인의 공간을 인정해주기."
-      }
-    },
-    phase5: {
-      executionState: "Sovereign_of_the_Living_Mountain (살아있는 태산의 주권자)",
-      description: "당신은 더 이상 침묵 속에 갇힌 바위산이 아닙니다. 묵직한 존재감으로 내면의 자원과 타인의 다양성을 융합하여, 척박한 세상을 가장 아름다운 생명의 숲으로 진화시키는 최상위 거버넌스 엔진으로 각성했습니다."
-    },
-    masterBriefing: "무진은 60갑자 중 부와 명예를 강하게 거머쥘 수 있는 배포의 코드입니다. 신용의 아이콘이지만, 그 거대한 무게가 스스로를 짓누르는 감옥(고집)이 되지 않도록 주의해야 합니다."
-  },
-  {
-    id: "BP-57",
-    name: "경신(庚申)",
-    title: "질서를 베어내는 무자비한 명검 (The Merciless Sword Cleaving Order)",
-    quote: "당신의 그 강력한 추진력과 결단력을 핑계 없는 파괴로 몰아가지 마라. 당신은 불필요한 군더더기를 도려내고 세상에 가장 견고한 본질만을 남기는 '결단(決斷)의 거버넌스'다.",
-    phase1: {
-      systemTrait: "추상같은 원칙과 강철의 카리스마(庚)가 속이 꽉 찬 바위 덩어리(申, 비견)에 단단한 뿌리를 내린 무적의 시스템. 한다면 기어이 해내고야 마는 엄청난 투지와 자기 확신을 보유합니다.",
-      computationMethod: "Execution_Force = Absolute_Conviction (Metal) x Titanium_Will (Metal)^t : 복잡한 계산식 없이 목표가 정해지는 순간 일직선으로 적진을 뚫어버리는 안티-마찰(Anti-Friction) 알고리즘.",
-      coreLogic: "모호함과 위선을 극도로 혐오하며, 공과 사를 명확히 구분하는 강직함을 무기로 어떠한 외압에도 타협하지 않는 Titanium-Blade 프로토콜."
-    },
-    phase2: {
-      errorLog: "핑계 대는 자들은 다 역겹다. 결과로 증명하지 못할 거면 입을 다물어라. 내 길을 막는 자는 다 쳐낸다.",
-      oldScript: "나만이 가장 효율적이고 완벽하다. 타인의 치명적인 실수를 봐주는 것은 공정함을 해치는 것이다. 감정은 사치이며, 오직 승리와 쟁취만이 나의 존재 가치다.",
-      errorStatus: "압도적인 실행력이 '피도 눈물도 없는 잔인함'과 '독재자 같은 차가움'으로 변질됨. 자신과 타인에게 융통성을 발휘하지 않아 결국 사방에 적만 남기게 되는 '강철의 고립(Steel Isolation)' 상태."
-    },
-    phase3: {
-      socraticQuestion: "내가 지금 단칼에 쳐내버리고자 하는 저 사람이나 상황이 정말 완벽하게 '가치 없는 오답'인가, 아니면 그저 내 마음에 조금 거슬리는 '불완전한 정답'인가?",
-      recursiveQuestion: "'오직 결과만이 전부'라며 차갑게 날을 세운 채 무장된 이 시스템은 과거의 어떤 상처(혹은 두려움)로부터 자신을 지키려 하는가? 누구도 내 곁에 오지 못하게 막는 그 칼날을 누가 붙잡고 있는가?",
-      metaAwarenessQuestion: "가슴 한가운데서 쇠스랑처럼 차갑게 조여오는 그 서구적인 냉혹함을 지켜볼 수 있는가? 베고 부수려는 충동 이면에 있는 우주보다 넓은 따뜻한 침묵을 알아차릴 수 있는가?"
-    },
-    phase4: {
-      solution1: {
-        title: "칼집 제작 (Crafting the Scabbard)",
-        reprogramming: "내 속의 강철(庚)은 명검이지, 마구잡이로 휘둘러 피를 묻히는 백정의 식칼이 아니다. 나는 가장 중요한 순간에만 품위 있게 검을 뽑는다.",
-        actionItem: "회의나 대화 중 팩트 폭력으로 상대를 제압하고 싶을 때, 심호흡을 한 번 하고 '당신의 입장은 충분히 이해했다(칼집)'라는 완충 문구를 넣은 뒤 의견 제시하기."
-      },
-      solution2: {
-        title: "의리의 회로 복구 (Restoring the Circuit of Loyalty)",
-        reprogramming: "진정한 카리스마는 완벽함에서 나오지 않고 흠결을 감싸안는 의리에서 나온다. 나는 타인의 실수를 내 칼을 넓힐 제물로 품는다.",
-        actionItem: "내 기준점(100점)에 미치지 못하는 타인(70점)을 볼 때 쳐내지 말고 나머지 30점을 내가 채워주는 것이 진정한 리더십이라 선언하기."
-      }
-    },
-    phase5: {
-      executionState: "Excalibur_of_the_New_Era (새 시대의 엑스칼리버)",
-      description: "당신은 더 이상 무자비하게 난도질하는 칼날이 아닙니다. 강철 같은 투지에 인간적인 의리를 완벽하게 장착하여, 가장 부패한 것을 도려내고 새 시대를 바로 세우는 전설의 명검, 시대의 엑스칼리버로 진화했습니다."
-    },
-    masterBriefing: "경신(庚申)은 간여지동 중에서도 가장 그 기세가 무섭고, 한다면 해내는 실력파 제왕호걸입니다. 하지만 결단력이 극단성으로 치달으면 인간관계가 망가짐을 기억하십시오. 명검은 훌륭한 '칼집'이 있을 때 가장 무섭습니다."
-  },
-  {
-    id: "BP-49",
-    name: "임자(壬子)",
-    title: "압도적인 심연의 대해 (The Dominant Ocean of the Abyss)",
-    quote: "당신의 그 무한한 지혜와 속을 알 수 없는 깊이를 음모를 꾸미는 데 쓰지 마라. 당신은 세상의 모든 혼탁함을 빨아들여 스스로 정화해 내는 '깊이 잃은 자들의 심연(深淵)'이다.",
-    phase1: {
-      systemTrait: "만물을 담아내는 끝없는 바다(壬)의 스케일과 그 이면에 거대하고 차가운 소용돌이(子, 겁재)를 품고 있는 블랙홀-지능 시스템. 누구도 생각지 못하는 비상한 두뇌와 압도적인 배포를 지배합니다.",
-      computationMethod: "Infinite_Absorption = Ocean_Depth (Water) x Cold_Current (Water)^t : 겉으로는 잔잔히 모든 것을 포용하는 듯하지만, 결정적인 순간에 거대한 쓰나미로 판을 뒤엎어버리는 딥-스위치(Deep-Switch) 알고리즘.",
-      coreLogic: "승부욕이 극도로 강하며 수단과 방법을 가리지 않고 목표를 성취하는 무서운 직관력(양인살). 상대방의 속을 단번에 읽어내면서도 자신의 패는 절대 보여주지 않는 Stealth-Master 프로토콜."
-    },
-    phase2: {
-      errorLog: "누구도 믿을 수 없다. 내가 원하는 것을 얻기 위해서는 저들을 이용해야만 한다. 표면 위로 드러나면 내 뒷덜미가 잡힐 뿐이다. 은밀히 조종할 것이다.",
-      oldScript: "모든 인간은 이기적이다. 계산에서 밀리면 끝이다. 나의 속셈을 들키지 않고 저들을 내 뜻대로 움직이게 하는 것, 그것만이 완벽한 통제다. 나는 외로운 심연이다.",
-      errorStatus: "천재적인 통찰력과 포용력이 '음흉한 음모'와 '이중성'으로 변질됨. 바닷물이 썩어가듯, 사람을 믿지 못하고 속으로만 꿍꿍이를 품다가 결국 제 꾀에 제가 넘어가 주변 사람이 다 떠나는 '탁수(Turbid Water)' 현상."
-    },
-    phase3: {
-      socraticQuestion: "내가 지금 남을 조종하고 속내를 숨기기 위해 계산하는 이 시간은, 정말로 '내가 이기는 길'인가? 아니면 아무도 믿지 못해 스스로를 깊은 어둠에 묶어놓는 '에너지 낭비'인가?",
-      recursiveQuestion: "'누구에게도 틈을 보이면 안 돼'라며 두꺼운 장막을 치고 있는 이 시스템은 대체 누구에게 사랑받기를 그토록 두려워하는가? 완벽한 통제력을 잃고 싶지 않은 그 나약한 자아를, 가장 넓은 본성인 나는 무엇이라 부르는가?",
-      metaAwarenessQuestion: "남의 시선을 피해 수면 아래에서 팽팽하게 돌아가는 그 복잡하고 차가운 계산의 덩어리를 고요히 지켜볼 수 있는가? 계산하지 않고 그냥 있는 그대로 투명하게 '흐름'을 허용하는 자유로움에 머물러볼 수 있는가?"
-    },
-    phase4: {
-      solution1: {
-        title: "수질 정화 (Transparency Filtering)",
-        reprogramming: "내 속의 바다(壬子)는 음험하게 시체를 숨기는 늪이 아니라, 투명하게 바닥까지 비추어 생명을 살리는 맑은 대해다. 나는 내 의도를 숨기지 않고 명확히 소통한다.",
-        actionItem: "누군가를 이용하려고 머리가 굴러갈 때, 오히려 상대에게 '제가 지금 이러이러한 목적과 이유가 있어서, 이 부분을 도와주셨으면 좋겠습니다'라고 정공법인 '투명한 패널티' 던지기."
-      },
-      solution2: {
-        title: "승부욕의 방생 (Release of the Predator)",
-        reprogramming: "진정으로 거대한 바다는 물고기(타인)와 사소한 먹이 다툼을 하지 않는다. 나는 치졸하게 속이는 승부가 아닌 큰 판을 움직인다.",
-        actionItem: "이기고 지는 사소한 논쟁(댓글 다툼, 직장의 작은 알력싸움)이 벌어질 때, '저 사람이 이기게 두자'라고 스스로를 방생하며 상대에게 너그럽게 1승 양보하기."
-      }
-    },
-    phase5: {
-      executionState: "Ocean_of_the_Absolute_Truth (완전한 진실의 대양)",
-      description: "당신은 더 이상 음모와 계산 뒤에 숨어 사람을 좀먹는 탁한 웅덩이가 아닙니다. 타인의 두려움과 욕망까지도 고요히 품어 안고, 압도적인 지혜로 온 천하를 투명하게 아우르는 진실의 대양(Sovereign Ocean)으로 진화했습니다."
-    },
-    masterBriefing: "임자(壬子)는 60갑자 중 가장 스케일이 크고 머리 회전이 타의 추종을 불허하는 지략가입니다. 하지만 그 총명함이 수단과 방법을 가리지 않는 무서운 성향으로 변질될 때 모든 것을 휩쓸어버립니다. 맑고 투명하게 행동할 때 진정한 황제가 됩니다."
-  }
+// 1. 천간 코어 템플릿 (10종)
+const STEM_DATA = [
+  { char: '甲', title: '시대를 여는 최초의 거목', quote: '당신의 그 얼어붙을 듯 차가운 이성을 타인을 베어내는 칼로 쓰지 마라.', executionState: '만물의 봄을 여는 거목' },
+  { char: '乙', title: '강인한 생명력의 덩굴', quote: '바람에 흔들리는 것을 두려워하지 마라. 당신의 유연함이 곧 가장 강력한 생존 무기다.', executionState: '대지를 뒤덮는 불멸의 숲' },
+  { char: '丙', title: '세상을 비추는 맹렬한 태양', quote: '당신의 그 타오르는 거대한 열정을 불평불만으로 소모하지 마라.', executionState: '무한한 여명의 태양' },
+  { char: '丁', title: '어둠을 밝히는 은은한 촛불', quote: '당신의 온기를 스스로를 태우는 자책으로 쓰지 마라. 당신은 어둠 속의 유일한 길잡이다.', executionState: '영혼을 치유하는 영원의 불꽃' },
+  { char: '戊', title: '만물을 품은 풍요로운 태산', quote: '당신의 거대한 포용력을 변화를 거부하는 무거운 고집으로 쓰지 마라.', executionState: '살아있는 태산의 주권자' },
+  { char: '己', title: '만물을 기르는 비옥한 대지', quote: '당신의 희생을 당연하게 여기지 마라. 당신은 모든 생명이 자라나는 절대적 기반이다.', executionState: '모든 생명을 잉태하는 만물의 어머니' },
+  { char: '庚', title: '질서를 베어내는 무자비한 명검', quote: '당신의 그 강력한 추진력을 핑계 없는 파괴로 몰아가지 마라.', executionState: '새 시대를 바로 세우는 엑스칼리버' },
+  { char: '辛', title: '세밀하게 세공된 완벽한 보석', quote: '당신의 예리함을 타인을 찌르는 가시로 쓰지 마라. 당신은 완성된 절대적 가치다.', executionState: '결점 없는 우주의 다이아몬드' },
+  { char: '壬', title: '압도적인 심연의 대해', quote: '당신의 무한한 지혜를 음모를 꾸미는 데 쓰지 마라.', executionState: '완전한 진실의 대양' },
+  { char: '癸', title: '소리 없이 스며드는 안개', quote: '당신의 그 섬세한 침투력을 스스로를 가두는 감옥으로 만들지 마라.', executionState: '마른 대지를 적시는 생명의 단비' }
 ];
+
+// 2. 십성 패턴 템플릿 (10종)
+const SIBSEONG_DATA: Record<string, any> = {
+  '비견': { 
+    systemTrait: '강력한 주체성과 자기 확신(비견)이 결합된 독립형 시스템.', 
+    computationMethod: 'Self_Reliance = Core_Ego x Independence^t : 누구에게도 기대지 않고 스스로 돌파하는 마이웨이 알고리즘.', 
+    errorLog: '나는 내 방식대로 한다. 남들의 간섭은 필요 없다.', 
+    oldScript: '타협은 굴복이다. 내가 틀렸음을 인정하는 것은 죽기보다 싫다.', 
+    socraticQuestion: '내가 고집하는 이 길이 진정 나를 위한 길인가, 아니면 단지 남에게 꺾이기 싫은 자존심인가?', 
+    recursiveQuestion: '타인의 도움을 철저히 밀어내는 이 꼿꼿한 자아의 이면에는 어떤 나약함이 숨어있는가?', 
+    reprogramming: '내 속의 뚝심은 나를 세우는 뼈대지, 타인을 밀어내는 가시벽이 아니다.', 
+    actionItem: '하루 한 번, 타인의 의견에 무조건 "그 방법도 좋네요"라고 동의해보기.' 
+  },
+  '겁재': { 
+    systemTrait: '강렬한 승부욕과 경쟁심(겁재)이 결합된 투쟁형 시스템.', 
+    computationMethod: 'Zero_Sum_Win = Ambition x Competitiveness^t : 타인을 딛고서라도 기어이 목표를 탈환하는 서바이벌 알고리즘.', 
+    errorLog: '저 사람에게 지는 것은 참을 수 없다. 내가 다 뺏길 것만 같다.', 
+    oldScript: '세상은 약육강식이다. 남을 이기지 못하면 내가 죽는다. 양보는 곧 패배다.', 
+    socraticQuestion: '이 쓸데없는 경쟁에서 이기면 남는 것은 무엇인가? 승리의 쾌감인가, 텅 빈 상처인가?', 
+    recursiveQuestion: '항상 뺏길까 봐 두려워하는 이 날 선 시스템은 대체 무엇이 결핍되어 있는가?', 
+    reprogramming: '나의 강한 승부욕은 남을 짓밟기 위함이 아니라, 나의 한계를 넘어서기 위함이다.', 
+    actionItem: '나와 경쟁하는 동료나 라이벌에게 오늘 진심으로 칭찬 한마디 건네기.' 
+  },
+  '식신': { 
+    systemTrait: '순수한 탐구심과 창조력(식신)이 결합된 크리에이터 시스템.', 
+    computationMethod: 'Creative_Flow = Curiosity x Expressiveness^t : 자기가 좋아하는 것에 깊이 몰입하여 장인정신을 발휘하는 몰입 알고리즘.', 
+    errorLog: '내가 좋아하는 것만 하고 싶다. 귀찮은 규칙이나 사람들은 질색이다.', 
+    oldScript: '현실적인 제약은 내 자유를 억압할 뿐이다. 나는 내 맘대로 살아야 행복하다.', 
+    socraticQuestion: '현실을 회피하고 내 동굴로 도망치는 것을 과연 "자유"라고 부를 수 있는가?', 
+    recursiveQuestion: '귀찮은 것을 극도로 혐오하는 이 시스템은, 현실에 상처받는 것을 얼마나 두려워하고 있는가?', 
+    reprogramming: '나의 창의성은 현실과 단절되었을 때가 아니라, 현실과 타협할 때 비로소 가치를 얻는다.', 
+    actionItem: '하기 싫은 의무적인 일 딱 하나를 오늘 30분만 꾹 참고 처리해보기.' 
+  },
+  '상관': { 
+    systemTrait: '기존의 룰을 깨부수는 혁신과 언변(상관)이 결합된 반역형 시스템.', 
+    computationMethod: 'Rule_Breaker = Rebel_Energy x Eloquence^t : 답답한 관습을 파괴하고 새로운 패러다임을 제시하는 탈옥 알고리즘.', 
+    errorLog: '이 시스템은 썩었다. 다 뒤엎고 내가 맞는다는 것을 증명하겠다.', 
+    oldScript: '권위자들은 다 무능하다. 내 비판이 가장 예리하며, 내 말이 정답이다.', 
+    socraticQuestion: '내가 내뱉는 이 날 선 비판은 세상을 바꾸기 위함인가, 아니면 그저 내 우월감을 뽐내기 위함인가?', 
+    recursiveQuestion: '항상 엇나가고 반항하려는 이 날카로운 자아는, 사실 누구에게 가장 인정받고 싶어 하는가?', 
+    reprogramming: '나의 예리한 칼날은 남을 찌르기 위함이 아니라, 부패한 환부를 정밀하게 도려내는 수술용 메스다.', 
+    actionItem: '비판하고 싶은 상황이 오면, 즉각 입을 닫고 3가지 대안을 먼저 노트에 적어보기.' 
+  },
+  '편재': { 
+    systemTrait: '거대한 영역 확장과 통제욕(편재)이 결합된 지휘관형 시스템.', 
+    computationMethod: 'Space_Control = Expansion x Risk_Taking^t : 불규칙한 환경 속에서 흐름을 읽고 단번에 큰 그림을 완성하는 전략 알고리즘.', 
+    errorLog: '이 정도 스케일로는 만족할 수 없다. 더 큰 자극과 통제권이 필요하다.', 
+    oldScript: '내 손아귀에서 벗어나는 것은 참을 수 없다. 한탕으로 모든 것을 끝내야 한다.', 
+    socraticQuestion: '내가 통제하려는 이 거대한 판이 정말 내 것인가, 아니면 내가 욕망의 노예가 된 것인가?', 
+    recursiveQuestion: '항상 밖으로만 돌며 무언가를 손에 쥐려 하는 이 공허한 시스템은, 내부의 어떤 텅 빈 공간을 채우고 싶은 것인가?', 
+    reprogramming: '나의 확장력은 내 욕망을 채우기 위함이 아니라, 타인과 세상을 널리 이롭게 하는 공유지다.', 
+    actionItem: '오늘은 새로운 일을 벌이지 말고, 이미 벌여놓은 일 중 하나를 완벽하게 마무리하기.' 
+  },
+  '정재': { 
+    systemTrait: '치밀한 계산과 안정성(정재)이 결합된 관리자형 시스템.', 
+    computationMethod: 'Micro_Manage = Precision x Stability^t : 한 치의 오차도 허용하지 않고 데이터를 축적하여 결과를 내는 최적화 알고리즘.', 
+    errorLog: '손해 보는 짓은 절대 안 한다. 모든 것이 내 계산대로 돌아가야 안전하다.', 
+    oldScript: '새로운 시도는 너무 위험하다. 확실한 보상이 없으면 1mm도 움직이지 않겠다.', 
+    socraticQuestion: '내가 이렇게 1원 하나까지 계산하며 아끼는 삶이 진정 풍요로운 삶인가?', 
+    recursiveQuestion: '단 한 번의 손해도 용납하지 못하는 이 쫀쫀한 자아는, 무엇을 잃는 것을 그토록 두려워하는가?', 
+    reprogramming: '나의 치밀함은 구두쇠처럼 웅크리기 위함이 아니라, 더 큰 미래에 베팅하기 위한 든든한 탄약고다.', 
+    actionItem: '오늘 하루, 나를 위해 또는 남을 위해 아무런 조건 없이 작은 비용(커피 등) 지출해보기.' 
+  },
+  '편관': { 
+    systemTrait: '극단적인 압박과 인내심(편관)이 결합된 전사형 시스템.', 
+    computationMethod: 'Extreme_Endurance = Pressure x Resilience^t : 어떠한 고난과 타격도 묵묵히 버텨내고 카리스마로 승화시키는 방벽 알고리즘.', 
+    errorLog: '세상은 항상 나를 힘들게 한다. 이 고통을 악으로 깡으로 버텨야 한다.', 
+    oldScript: '편안함은 죄악이다. 남들보다 더 빡세게 구르고 고생해야만 내가 가치 있는 사람이다.', 
+    socraticQuestion: '내가 짊어진 이 무거운 십자가는 누군가 강요한 것인가, 아니면 내 스스로 영웅이 되기 위해 짊어진 것인가?', 
+    recursiveQuestion: '항상 고통받고 억압받는 상황을 무의식적으로 끌어당기는 이 가학적인 시스템의 본질은 무엇인가?', 
+    reprogramming: '나는 고통을 견디기 위해 태어난 샌드백이 아니다. 나는 압박을 다이아몬드로 바꾸는 연금술사다.', 
+    actionItem: '오늘 나에게 주어진 무거운 책임감 중 하나를 과감하게 타인에게 위임하거나 포기하기.' 
+  },
+  '정관': { 
+    systemTrait: '합리적인 원칙과 보수성(정관)이 결합된 모범생형 시스템.', 
+    computationMethod: 'Standard_Protocol = Rule_Compliance x Honor^t : 정해진 매뉴얼과 규칙을 완벽하게 수행하며 체제를 수호하는 무결점 알고리즘.', 
+    errorLog: '왜 사람들은 규칙을 안 지키는가? 정해진 대로만 하면 되는데 너무 답답하다.', 
+    oldScript: '틀을 벗어나는 것은 위험하다. 남들에게 흠잡힐 일은 절대 해서는 안 된다.', 
+    socraticQuestion: '내가 목숨처럼 지키는 이 "원칙"이 사람을 위한 것인가, 아니면 내가 욕먹기 싫은 방패막이인가?', 
+    recursiveQuestion: '남들의 시선과 잣대에 스스로를 옭아매는 이 경직된 자아는, 일탈의 자유를 얼마나 갈망하고 있는가?', 
+    reprogramming: '나의 원칙은 사람을 옭아매는 족쇄가 아니라, 모두가 안전하게 달릴 수 있는 튼튼한 레일이다.', 
+    actionItem: '오늘 하루, 정해진 루틴이나 규칙을 아주 작게 하나 어겨보고 자유로움 느껴보기 (예: 평소 안 가던 길로 가기).' 
+  },
+  '편인': { 
+    systemTrait: '비상한 눈치와 직관력(편인)이 결합된 통찰자형 시스템.', 
+    computationMethod: 'Intuitive_Scan = Suspicion x Sixth_Sense^t : 겉으로 드러난 정보 이면의 숨겨진 의도까지 꿰뚫어 보는 딥러닝 알고리즘.', 
+    errorLog: '세상에 공짜는 없다. 저 사람이 나한테 왜 잘해주지? 분명 속셈이 있을 것이다.', 
+    oldScript: '아무도 믿을 수 없다. 내가 먼저 상처받기 전에 철벽을 치고 의심해야 한다.', 
+    socraticQuestion: '내 직관이 정말로 타인의 악의를 꿰뚫어 본 것인가, 아니면 내 안의 불안이 만들어낸 망상인가?', 
+    recursiveQuestion: '모든 호의를 밀어내고 혼자만의 세계로 숨어버리려는 이 예민한 시스템은, 사실 누구보다 사랑받고 싶어 하지 않는가?', 
+    reprogramming: '나의 예리한 통찰력은 남을 의심하기 위함이 아니라, 보이지 않는 진리를 발견하는 안테나다.', 
+    actionItem: '오늘 나에게 들어오는 타인의 칭찬이나 호의를 꼬아서 듣지 말고 그냥 "감사합니다"라고 100% 흡수하기.' 
+  },
+  '정인': { 
+    systemTrait: '무한한 수용력과 사유(정인)가 결합된 학자형 시스템.', 
+    computationMethod: 'Deep_Absorption = Acceptance x Contemplation^t : 외부의 지식을 스펀지처럼 빨아들이고 깊이 생각하는 인풋 최적화 알고리즘.', 
+    errorLog: '생각이 너무 많아서 행동으로 옮길 수가 없다. 누군가 나를 좀 이끌어줬으면 좋겠다.', 
+    oldScript: '아직 준비가 덜 됐다. 완벽하게 알기 전까지는 움직일 수 없다. 남들이 나를 챙겨주는 것이 당연하다.', 
+    socraticQuestion: '내가 완벽한 준비를 핑계로 행동을 미루는 것은, 실패에 대한 뼈아픈 두려움 때문이 아닌가?', 
+    recursiveQuestion: '계속해서 머릿속으로 시뮬레이션만 돌리는 이 과부하 시스템은 현실의 물리적 충돌을 얼마나 회피하고 있는가?', 
+    reprogramming: '나의 방대한 지식은 머릿속에 가둬둘 때가 아니라, 세상에 꺼내어 부딪힐 때 진짜 지혜가 된다.', 
+    actionItem: '생각이 꼬리를 물기 전에, 오늘 해야 할 일 하나를 5분 안에 무조건 "시작" 해버리기.' 
+  }
+};
+
+// 60갑자 동적 생성기
+function generate60GapjaData(): GapjaModule[] {
+  const gans = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+  const zhis = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+  const zhiMainQi = [9, 5, 0, 1, 4, 2, 3, 5, 6, 7, 4, 8]; // 지지 본기의 천간 인덱스
+  const sibseongNames = ['비견', '식신', '편재', '편관', '편인', '겁재', '상관', '정재', '정관', '정인'];
+
+  const results: GapjaModule[] = [];
+
+  for (let i = 0; i < 60; i++) {
+    const ganIdx = i % 10;
+    const zhiIdx = i % 12;
+    const gan = gans[ganIdx];
+    const zhi = zhis[zhiIdx];
+    const name = `${gan}${zhi}`;
+    
+    // 십성(일지) 계산 로직
+    const eA = Math.floor(ganIdx / 2); // 0:목, 1:화, 2:토, 3:금, 4:수
+    const eB = Math.floor(zhiMainQi[zhiIdx] / 2);
+    const diff = (eB - eA + 5) % 5;
+    const sameYinYang = (ganIdx % 2) === (zhiMainQi[zhiIdx] % 2);
+    const sibseongIdx = diff + (sameYinYang ? 0 : 5);
+    const sibseong = sibseongNames[sibseongIdx];
+
+    const stemInfo = STEM_DATA[ganIdx];
+    const sibseongInfo = SIBSEONG_DATA[sibseong];
+
+    results.push({
+      id: `BP-${(i + 1).toString().padStart(2, '0')}`,
+      name: `${name}(${name})`, // 편의상 한자만 표시
+      title: stemInfo.title,
+      quote: stemInfo.quote,
+      phase1: {
+        systemTrait: `${stemInfo.title.split(' ')[0]} 본성(${gan})과 ${sibseongInfo.systemTrait}`,
+        computationMethod: sibseongInfo.computationMethod,
+        coreLogic: `${sibseong} 프로토콜의 장점과 ${gan} 코어의 본성이 융합되어 거대한 시너지를 발휘합니다.`
+      },
+      phase2: {
+        errorLog: sibseongInfo.errorLog,
+        oldScript: sibseongInfo.oldScript,
+        errorStatus: `${sibseong} 에너지가 과열되어 내면의 오류 코드가 출력되는 상태.`
+      },
+      phase3: {
+        socraticQuestion: sibseongInfo.socraticQuestion,
+        recursiveQuestion: sibseongInfo.recursiveQuestion,
+        metaAwarenessQuestion: `이 불편한 감정과 고집을 가만히 내려다보는 고요한 주권자는 누구인가?`
+      },
+      phase4: {
+        solution1: {
+          title: `[${sibseong} 코드 재설계]`,
+          reprogramming: sibseongInfo.reprogramming,
+          actionItem: sibseongInfo.actionItem
+        },
+        solution2: {
+          title: `[에너지 순환 최적화]`,
+          reprogramming: `나는 외부 환경과 투쟁하는 대신, 환경 자체를 나의 시스템으로 편입시킨다.`,
+          actionItem: `내일 아침 기상 시, 나를 가장 괴롭히는 요소를 오히려 내 성장의 거름으로 삼겠다고 확언하기.`
+        }
+      },
+      phase5: {
+        executionState: stemInfo.executionState,
+        description: `모든 방어기제와 낡은 스크립트를 파괴하고 마침내 [${stemInfo.executionState}] 단계에 도달했습니다. 이제 당신의 에너지는 온전히 세상을 향해 렌더링 됩니다.`
+      },
+      masterBriefing: `${name} 에너지를 가진 자는 기본적으로 ${stemInfo.title.split(' ')[1] || '위대한'} 속성을 타고났습니다. 그러나 ${sibseong} 특유의 맹점이 당신의 확장을 막는 유일한 버그입니다. 본질을 마주하십시오.`
+    });
+  }
+  return results;
+}
+
+export const saju60Data: GapjaModule[] = generate60GapjaData();
 
 export const MYEONGSIM_BASE_DIRECTIVE = `
 [System Base Directive: 명심(明心) 마스터 화법 5원칙]

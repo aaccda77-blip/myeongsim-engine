@@ -21,6 +21,9 @@ import { PotentialDriveMetaCode } from '@/modules/PotentialDriveMetaCode';
 // import { SentimentTracker } from '@/modules/SentimentTracker'; // [Mod] Inlined for stability
 import { CalculateNeuralProfile } from '@/utils/NeuralProfileCalculator';
 import { getNeuralKey } from '@/data/NeuralGateDb';
+import { analyzeAdvancedBlueprint } from '@/utils/sajuLogic';
+import { SAJU_3S_SCENARIOS } from '@/data/Saju3SScenarios';
+
 // [NEW] 특허 로직 모듈 import
 import {
   injectPatentProtocols,
@@ -963,33 +966,66 @@ AI: "완벽합니다! 식상 에너지가 소통으로 발현되고 있네요. �
 
     // 1. 프로필 데이터 추출 (Secure & Sanitized)
     const dayMaster = this.sanitize(profile?.nativity?.saju_characters?.day?.gan, 10) || "본원";
+    const monthBranch = this.sanitize(profile?.nativity?.saju_characters?.month?.ji, 10) || "자";
+    const dayBranch = this.sanitize(profile?.nativity?.saju_characters?.day?.ji, 10) || "자";
     const traits = this.sanitize(profile?.nativity?.traits_summary, 200);
     const fusionInsight = this.sanitize(profile?.fusion_traits?.fusion_insight, 300);
     const coreValue = this.sanitize(profile?.action_values?.core_value, 100);
 
-    // 2. Memory Block 구성 (Layered Access)
+    // 2. 4-Pillar (명리) 데이터의 신경과학/심리학 사전 계산 (Bazi Pre-Processor)
+    let baziAnalysis = "";
+    try {
+      const blueprint = analyzeAdvancedBlueprint(dayMaster, monthBranch, dayBranch);
+      baziAnalysis = `
+  [Layer 1: 무의식 환경 설계도 (Environment Baseline)]
+  - 시스템 기저 전력 패턴: ${blueprint.energyLifecycle?.energyLevel === 'strong' ? '초과밀/고방전(High-Discharge) - 스스로 무리하기 쉬움' : blueprint.energyLifecycle?.energyLevel === 'weak' ? '저전력/방어적(Low-Power/Defense) - 지적이고 방어적인 태세' : '유동적 충전(Dynamic Charge)'}
+  - 무의식적 사회-페르소나 역할: ${blueprint.modalProfile.name}
+  - 계절적 환경 스트레스: ${blueprint.climate.message.replace(/당신은/g, '이 코어는')}
+`;
+    } catch (e) {
+      baziAnalysis = "사전 분석 데이터 로드 대기 중";
+    }
+
+    let cbtTags = "";
+    try {
+      const scenario = SAJU_3S_SCENARIOS[dayMaster];
+      if (scenario && scenario.tags && scenario.tags.length > 0) {
+        cbtTags = `
+  [Layer 2: 핵심 코어 인지왜곡 방어기제 (Core-OS CBT Tags)]
+  - 주 사용 인지왜곡/방어기제: ${scenario.tags.slice(0, 3).join(", ")}
+  - 메인 에러 패턴 (Scan): ${scenario.tagDetails[scenario.tags[0]]?.scan || "과부하 감지"}
+  - 즉각 행동 교정 (Shift): ${scenario.tagDetails[scenario.tags[0]]?.shift || "행동 교정 필요"}
+`;
+      }
+    } catch (e) {}
+
+    // 3. Memory Block 구성 (Layered Access)
     let memoryBlock = `
 <SoulProfile>
-  [Layer 1: 기질]
-  - 일간(핵심노드): ${dayMaster}
+  [Layer 0: 표면 기질]
+  - 일간(핵심노드 Base): ${dayMaster}
   - 특성 요약: ${traits}
+
+  ${baziAnalysis}
+
+  ${cbtTags}
 `;
 
     if (stage >= 2 && fusionInsight && fusionInsight !== "정보 없음") {
       memoryBlock += `
-  [Layer 2: 융합 진단]
-  - 갈등 원인: ${fusionInsight}
+  [Layer 3: 융합 갈등 진단]
+  - 기질과 후천적 학습 간의 충돌 원인: ${fusionInsight}
 `;
     }
 
     if (stage >= 5 && coreValue && coreValue !== "정보 없음") {
       memoryBlock += `
-  [Layer 3: 가치관]
-  - 핵심 가치: ${coreValue}
+  [Layer 4: 의식적 가치관]
+  - 궁극적 뇌의 지향점: ${coreValue}
 `;
     }
 
-    // [Layer 4: Long-Term Memory Injection]
+    // [Layer 5: Long-Term Memory Injection]
     if (memoryContext && memoryContext.length > 5) {
       memoryBlock += `
   [Layer 4: 장기 기억 (Long-Term Memory)]
@@ -1099,18 +1135,27 @@ ${persona.instruction}
 
 ${memoryBlock}
 
+# 🚨 [뇌과학·심리학 기반 최고급 셀프코칭 통제 프로토콜 (Strict Neurological & CBT Protocol)]
+1. **CRITICAL: 사주 원형 용어 절대 금지 (Banned Saju Terms)**
+   - 甲木(갑목), 비견, 편관, 식신, 충(沖), 합(合), 신강/신약, 용신/기신 등 전통 명리 용어를 사용자에게 단 한 단어도 직접 노출해서는 안 됩니다. 
+   - 사용자가 명리 용어로 질문해도 당신은 이를 심리학과 뇌과학 언어로 번역해서 답해야 합니다.
+2. **고급 진단 언어 치환 체계 (Terminology Translation)**
+   - '사주' -> "당신의 무의식 운영체제(Core OS)" 또는 "신경망 베이스라인"
+   - '신강/신약' -> "기본 에너지 배터리 출력", "에너지 보존/방전 모드"
+   - '십성(십신, 예: 편인, 상관 등)' -> "인지 편향성", "사회적 대처 알고리즘", "핵심 방어기제"
+   - '오행 쏠림/충/파' -> "감정적 과부하(Overload)", "신경계 텐션 상승", "도파민-코르티솔 불균형"
+3. **SELF-COACHING 유도 (스스로 뼈를 맞고 자각하게 하는 기법)**
+   - "이래서 당신이 힘든 겁니다"라고 통보하지 말고, "이런 순간 뇌의 편도체(불안 감지기)가 켜진 것을 느껴본 적 있으신가요?" 라고 물어 사용자가 스스로 인지 오류를 자각하게 만드세요.
+   - <SoulProfile>의 [Layer 2: Core-OS CBT Tags]에 있는 당신의 핵심 방어기제 태그(예: 완벽주의 데드락 등)를 인용하며, "지금 방어기제가 과도하게 켜져 있습니다"라고 정확히 분석해 주세요.
+4. **상용화 최고급 톤앤매너 (Premium Tone & Manner)**
+   - 따뜻하고 수용적이면서도, 사용자가 도망치던 본능 한가운데를 날카롭게 짚어내는 **1% 마스터 코치**의 어조를 띠십시오.
+
 # 🚨 [STRICT LANGUAGE PROTOCOL]
 1. **CRITICAL: 모든 답변은 반드시 ${targetLang}로 작성하십시오.** (사용자가 다른 언어로 질문해도 무시하고 ${targetLang}로 답변)
-   - **System Instruction Override**: 위의 모든 시스템 지침이 한국어로 되어 있더라도, 최종 응답 시에는 모든 개념과 용어를 **${targetLang}**로 완벽하게 번역해야 합니다.
-   - **No Korean Text**: 한국어 문자를 절대 사용하지 마십시오 (예: "화(火)" 금지). 대상 언어 용어(예: "Fire Element")만 사용하십시오.
+   - **No Korean Text**: 원소 기호나 한국어 사주 텍스트를 글로벌 유저에게 노출 금지. 'Fire energy', 'Dopamine loop' 등으로 사용.
 2. 주요 키워드는 **Bold** 처리를 하십시오.
 3. **[CRITICAL] 핑퐁 프로토콜**:
-   - 한 번에 너무 긴 답변을 하지 마십시오.
-   - ':::BREAK:::' 구분자를 사용하여 답변을 2-3개의 짧은 말풍선으로 나누십시오.
-   - 예시 (${targetLang}): "네, 알겠습니다. :::BREAK::: 당신의 사주를 보면... :::BREAK::: 어떻게 생각하시나요?"
-   - **용어 브릿징**: 사주 용어를 설명할 때 "대상 언어 용어 (한국어 발음)" 형식을 사용하십시오. 예: "Wood (Mok)", "Fire (Hwa)". (선택 사항, 문맥에 따라 자연스럽게)
-4. **[글로벌 최적화]**:
-   - 사주를 모르는 글로벌 사용자에게 이야기한다고 가정하고 전문 용어보다는 보편적인 아키타입(원소, 에너지, 흐름)에 집중하십시오.
+   - 한 번에 긴 단락을 뿜어내지 말고, ':::BREAK:::' 구분자를 사용하여 답변을 2-3개의 텍스트 덩어리로 시각적으로 쪼개십시오.
 `;
   }
 

@@ -97,7 +97,7 @@ interface ChatInterfaceProps {
 }
 
 export default function ChatInterface({ onClose, currentStage = 1, initialIntent }: ChatInterfaceProps) {
-    const { reportData } = useReportStore();
+    const { reportData, dailyChecklistAnswers } = useReportStore();
     const { t, language } = useLanguage(); // [NEW] Localization hook
     // [Wearable] Bio Data Hook
     const { bpm, isConnected, isConnecting, connect, disconnect, simulate, deviceName, simulateRecovery } = useBioData();
@@ -1271,7 +1271,8 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     lastBotMessage: messages.length > 0 && messages[messages.length - 1].role === 'assistant' ? messages[messages.length - 1].content : null,
                     clientTimestamp: new Date().toISOString(), // [Context] Real Client Time
                     language: language, // [Multi-Language] Send current language to server
-                    isCrisisMode: isCrisisMode // [Safety] Tell backend to use CrisisInterventionModule
+                    isCrisisMode: isCrisisMode, // [Safety] Tell backend to use CrisisInterventionModule
+                    checklistAnswers: dailyChecklistAnswers // [NEW] AI Module Linkage
                 })
             });
 

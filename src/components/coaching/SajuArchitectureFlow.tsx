@@ -49,6 +49,8 @@ interface FlowDef {
   coachingShadow: string;
   activationQ: string;
   careers: string[];
+  neuroAnalysis: string;
+  behavioralTactic: string;
 }
 
 const FLOW_DEFS: FlowDef[] = [
@@ -68,6 +70,8 @@ const FLOW_DEFS: FlowDef[] = [
     coachingShadow: '머릿속 아이디어가 세상 밖으로 속 시원하게 나오지 못할 때 극심한 번아웃이 찾아옵니다. 또한 다른 사람의 처리 방식을 쉽게 신뢰하지 못해, 모든 책임을 온전히 혼자 짊어지려다 스스로 고립의 길을 택하는 경향이 있습니다.',
     activationQ: '"완벽하지 않아도 좋습니다. 오늘 당장 세상에 배포할 수 있는 단 1%짜리 초안(Draft)은 무엇입니까?"',
     careers: ['작가·집필', '강의·코칭', '학문 연구', '플랫폼 구축', '컨설턴트'],
+    neuroAnalysis: "전두엽의 정보 수집(SCAN)과 통합 시냅스가 극도로 발달해 있습니다. 방대한 데이터를 자아(Self)라는 필터를 통해 압축한 후, 운동 피질을 자극해 창조적 결과물(SHIFT)로 출력하는 고속 뉴럴 하이웨이가 구축되어 있습니다.",
+    behavioralTactic: "완벽한 100을 만들기 위해 고민하는 '지식 과식증'을 끊어내십시오. 타이머를 15분으로 맞추고 퀄리티에 상관없이 초안을 강제로 뱉어내는 마이크로 해빗(Micro-Habit) 훈련이 뇌의 병목을 뚫어줍니다."
   },
   {
     key: 'BiSikJae',
@@ -85,6 +89,8 @@ const FLOW_DEFS: FlowDef[] = [
     coachingShadow: '본인의 끓어오르는 영감에 지나치게 취해 있다 보면 현실적인 시장 요구(수익성, 데이터)를 간과하게 됩니다. 또한 타인의 지시를 극도로 꺼려 장기적인 파트너십 구축이나 안정적인 자산 축적에 어려움을 겪을 수 있습니다.',
     activationQ: '"화려한 구상을 멈추고 질문해 봅시다. 오늘 내 재능을 곧장 구체적인 수익(데이터)으로 환산해 줄 한 가지 행동은 무엇입니까?"',
     careers: ['프리랜서 크리에이터', '스타트업 창업', '예술가·디자이너', '유튜버·인플루언서', '개인 사업'],
+    neuroAnalysis: "뇌의 보상 회로(도파민 시스템)가 '직접적인 성취와 수익 창출'에 가장 즉각적으로 반응합니다. 중간 단계의 의심이나 망설임을 건너뛰고 자아의 욕망을 행동으로 즉각 전환시키는 행동주의적 신경망이 지배적입니다.",
+    behavioralTactic: "행동이 앞서다 디테일(비용, 리스크)을 놓치는 인지적 맹점이 있습니다. 새로운 아이디어를 행동에 옮기기 직전, 단 3개의 체크리스트(투입 리소스, 마진율, 출구 전략)를 거치는 인지적 브레이크를 강제로 설치하십시오."
   },
   {
     key: 'SikJaeGwan',
@@ -102,6 +108,8 @@ const FLOW_DEFS: FlowDef[] = [
     coachingShadow: '지나치게 목적 지향적으로 폭주하다 보면 자신을 혹사시켜 돌이킬 수 없는 번아웃을 맞이하거나, 가장 가까운 관계들의 감정을 무심하게 메마르게 할 수 있습니다. 모든 것을 득실로만 평가하는 차가운 함정을 주의하세요.',
     activationQ: '"당신의 피나는 노동 없이도 톱니바퀴처럼 저절로 굴러가도록, 오늘 당장 위임하거나 자동화할 수 있는 업무는 무엇입니까?"',
     careers: ['사업가·기업인', '세일즈·마케팅', '투자자', '프로젝트 매니저', '공직·행정가'],
+    neuroAnalysis: "결과 중심의 목표 달성을 지시하는 대뇌기저핵이 폭발적으로 동기화됩니다. 에너지를 분산시키지 않고 권력과 자원을 쟁취하는 데 모든 시냅스 전위를 집중시키는 궁극의 포식자 뇌(Predator Brain) 구조입니다.",
+    behavioralTactic: "자원을 내 통제하에 둬야 한다는 '통제 환상(Illusion of Control)'이 번아웃을 유발합니다. 내가 직접 모든 것을 쥐고 있는 대신, 시스템과 타인에게 권한의 80%를 위임하고 결과만 모니터링하는 위임 훈련을 시작하십시오."
   },
   {
     key: 'JaeGwanIn',
@@ -119,6 +127,8 @@ const FLOW_DEFS: FlowDef[] = [
     coachingShadow: '승리하는 것(수단)에 매몰되어 삶의 진정한 의미(목적)를 잃어버리기 매우 쉽습니다. 철저히 계산된 관계망 속에서 늘 긴장하고 타인을 의심하다 보니 깊고 솔직한 나눔을 하지 못해 고독하고 방어적인 태도로 굳어질 위험이 큽니다.',
     activationQ: '"만약 지금 가진 타이틀과 자산을 내일 모두 내려놓아야 한다면, 세상에 남겨둘 당신만의 오리지널한 진짜 이름과 가치는 무엇입니까?"',
     careers: ['경영자·CEO', '정치인·행정가', '법조인', '금융·투자 전문가', '조직 리더'],
+    neuroAnalysis: "거시적 메타인지(Meta-Cognition)와 사회적 서열을 파악하는 전두극 피질(Frontopolar Cortex)이 고도로 활성화되어 있습니다. 파편화된 사실들 속에서 시스템의 룰과 권력의 흐름을 읽어내는 시냅스 패턴 매칭이 압도적입니다.",
+    behavioralTactic: "모든 상황을 전략과 손익으로만 계산하려는 인지적 편향이 감정적 고립을 부릅니다. 하루에 단 10분, 철저히 목적과 계산이 배제된 '무용한 일'(산책, 명상, 예술 감상)에 뇌의 디폴트 모드 네트워크(DMN)를 개방하십시오."
   },
   {
     key: 'GwanInBi',
@@ -136,6 +146,8 @@ const FLOW_DEFS: FlowDef[] = [
     coachingShadow: '조직과 규칙의 안전망 안에만 머무르다 보면 도전을 지나치게 두려워하고 변화에 무감각해집니다. 지나치게 타인의 평가와 체면을 중시하여 정작 본인이 진정으로 무엇을 원하는지 가슴 뛰는 설렘을 잊고 무기력하게 순응할 위험이 큽니다.',
     activationQ: '"아무도 당신에게 기대하지 않거나 평가하지 않는다면, 오늘 하루 당신의 내면이 미치도록 저지르고 싶은 유쾌한 일탈은 무엇입니까?"',
     careers: ['공무원·행정직', '전문직(의사·변호사)', '학자·연구원', '대기업 관리직', '컴플라이언스 전문가'],
+    neuroAnalysis: "외부의 압력을 방어하고 심리적 안전을 도모하는 부교감 신경계가 매우 섬세하게 세팅되어 있습니다. 타인의 위협이나 기대를 지혜로 완충한 뒤 자신의 에너지로 변환시키는 회복탄력성 회로(Resilience Circuit)가 강력합니다.",
+    behavioralTactic: "타인의 기대치(관성)에 짓눌려 진짜 자아(비겁)가 침묵하면 무기력과 수동적 공격성이 폭발합니다. 타인을 배제한 채 오직 '나의 1차원적인 원초적 욕구'만을 솔직하게 적어내는 저널링(Journaling)으로 자아 피질을 매일 깨우십시오."
   },
 ];
 
@@ -167,10 +179,10 @@ function calcFlowScores(tg: TenGods): { def: FlowDef; score: number; pcts: [numb
       Math.round((v2 / total) * 100),
     ];
 
-    // 활성 기준: 3개 합이 전체의 45% 이상 + 모두 0이 아님
-    const active = flowSum / total >= 0.45 && v0 > 0 && v1 > 0 && v2 > 0;
+    // 활성 기준 수정: 최종 계산된 score 기준(35점 이상) 및 3개 노드 모두 존재할 것
+    const active = score >= 35 && v0 > 0 && v1 > 0 && v2 > 0;
 
-    return { def, score, pcts, active };
+    return { def, score, pcts, active, isBroken: v0 === 0 || v1 === 0 || v2 === 0 };
   }).sort((a, b) => b.score - a.score);
 }
 
@@ -245,12 +257,19 @@ const PatternBar = ({
           {active ? (
             <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-700/60 text-emerald-200">ACTIVE</span>
           ) : (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-400">inactive</span>
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded border border-slate-600/50 bg-slate-800/80 text-slate-400">
+              {(result as any).isBroken ? '연결 단절' : '에너지 미달'}
+            </span>
           )}
         </div>
-        <span className="text-sm font-black" style={{ color: active ? def.color : '#4b5563' }}>
-          {score}pt
-        </span>
+        <div className="flex flex-col items-end">
+          <span className="text-lg font-black leading-none" style={{ color: active ? def.color : '#4b5563' }}>
+            {score}<span className="text-xs font-medium opacity-70">%</span>
+          </span>
+          <span className="text-[8px] font-mono tracking-widest uppercase opacity-60 mt-1" style={{ color: active ? def.color : '#4b5563' }}>
+            Synaptic Sync
+          </span>
+        </div>
       </div>
 
       <div className="flex gap-1 mb-2">
@@ -265,17 +284,16 @@ const PatternBar = ({
         ))}
       </div>
 
-      <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+      <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden shadow-inner">
         <motion.div
           initial={{ width: 0 }}
-          animate={{ width: active ? `${score}%` : '8%' }}
+          animate={{ width: `${score}%` }}
           transition={{ duration: 1, ease: 'easeOut', delay: rank * 0.12 }}
           className="h-full rounded-full"
           style={{
-            background: active
-              ? `linear-gradient(90deg, ${def.color}88, ${def.color})`
-              : 'linear-gradient(90deg, #374151, #4b5563)',
-            opacity: active ? 1 : 0.4
+            background: `linear-gradient(90deg, ${def.color}80, ${def.color})`,
+            opacity: active ? 1 : 0.6,
+            filter: active ? 'drop-shadow(0 0 8px rgba(255,255,255,0.2))' : 'none'
           }}
         />
       </div>
@@ -381,6 +399,28 @@ const DetailPanel = ({ result, pcts, gongmang }: {
           </div>
         </div>
 
+        {/* 심층 뇌과학 코칭 (Deep Neuro-Analysis) */}
+        <div className="p-4 rounded-xl border relative overflow-hidden" style={{ background: `linear-gradient(180deg, ${def.color}10, transparent)`, borderColor: `${def.color}30` }}>
+          <div className="absolute top-0 left-0 w-1 h-full" style={{ background: def.color }}></div>
+          <div className="space-y-4 ml-2">
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-mono font-bold mb-1.5 flex items-center gap-1.5" style={{ color: def.color }}>
+                <span className="text-sm">🧠</span> Deep Neuro-Analysis
+              </p>
+              <h4 className="text-sm font-bold text-white mb-1.5">뇌과학적 행동 기전</h4>
+              <p className="text-xs text-slate-300 leading-relaxed break-keep">{def.neuroAnalysis}</p>
+            </div>
+            <div className="w-full h-px bg-slate-700/50"></div>
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-mono font-bold mb-1.5 flex items-center gap-1.5 text-amber-400">
+                <span className="text-sm">⚔️</span> Cognitive Tactic
+              </p>
+              <h4 className="text-sm font-bold text-amber-100 mb-1.5">행동 교정 전술</h4>
+              <p className="text-xs text-amber-200/80 leading-relaxed break-keep">{def.behavioralTactic}</p>
+            </div>
+          </div>
+        </div>
+
         {/* 활성화 질문 */}
         <div className="p-4 rounded-xl bg-cyan-950/30 border border-cyan-500/30">
           <p className="text-[10px] uppercase tracking-widest text-cyan-400 font-bold mb-2">❓ ACTIVATION QUESTION</p>
@@ -461,7 +501,7 @@ const RadarChart = ({ scores }: { scores: { def: FlowDef; score: number; active:
               <div className="w-2 h-2 rounded-full" style={{ background: s.active ? s.def.color : '#4b5563' }} />
               <span className="text-slate-400">{s.def.korName.split(' ')[0]}</span>
             </div>
-            <span className="font-bold" style={{ color: s.active ? s.def.color : '#4b5563' }}>{s.score}pt</span>
+            <span className="font-bold" style={{ color: s.active ? s.def.color : '#4b5563' }}>{s.score}%</span>
           </div>
         ))}
       </div>
@@ -524,9 +564,12 @@ export default function SajuArchitectureFlow({
                 시스템 흐름 전체 분석
               </span>
             </h2>
-            <p className="text-slate-400 text-xs mt-1">
-              5대 흐름 패턴 전체 스캔 — {activeCount > 0 ? `${activeCount}개 패턴 활성화됨` : '활성 패턴 없음 (단일 집중 구조)'}
-            </p>
+            <div className="text-slate-400 text-xs mt-2 space-y-1">
+              <p>5대 뉴럴 네트워크(흐름 패턴) 스캔 — {activeCount > 0 ? `${activeCount}개 네트워크 활성화됨` : '단일 집중 구조'}</p>
+              <p className="text-[10px] text-slate-500 leading-relaxed max-w-lg mt-1 break-keep">
+                * 퍼센트(%)는 해당 행동 패턴이 뇌 구조에서 얼마나 빠르고 강력하게 발현되는지를 나타내는 <strong className="text-slate-300">시냅스 동기화율(Synaptic Sync Rate)</strong>입니다. 점수가 높을수록 무의식적으로 즉각 발동되는 당신의 강력한 무기입니다.
+              </p>
+            </div>
           </div>
           {/* 핵심 패턴 뱃지 */}
           <div className="flex flex-col items-start md:items-end gap-1.5 shrink-0">
@@ -641,7 +684,7 @@ export default function SajuArchitectureFlow({
         {flowResults.some(r => !r.active) && (
           <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4">
             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono mb-3">
-              ⬜ 비활성 패턴 (데이터 미충족)
+              ⬜ 비활성 패턴 (단절 또는 미달)
             </p>
             <div className="flex flex-wrap gap-2">
               {flowResults.filter(r => !r.active).map(r => (
@@ -650,14 +693,14 @@ export default function SajuArchitectureFlow({
                   onClick={() => setSelectedIdx(flowResults.indexOf(r))}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 hover:border-slate-600 transition-colors"
                 >
-                  <span className="w-2 h-2 rounded-full bg-slate-600" />
+                  <span className="w-2 h-2 rounded-full" style={{ background: r.def.color, opacity: 0.4 }} />
                   <span className="text-[10px] text-slate-400 font-medium">{r.def.korName}</span>
-                  <span className="text-[9px] text-slate-600">{r.score}pt</span>
+                  <span className="text-[9px] text-slate-500 font-bold">{r.score}% ({(r as any).isBroken ? '단절' : '미달'})</span>
                 </button>
               ))}
             </div>
-            <p className="text-[10px] text-slate-600 mt-2">
-              비활성 패턴은 현재 데이터 구조에서 충분히 활성화되지 않은 흐름입니다. 클릭하면 잠재적 코칭 내용을 확인할 수 있습니다.
+            <p className="text-[10px] text-slate-600 mt-3 leading-relaxed break-keep">
+              비활성 패턴은 현재 뇌 구조에서 필수 신경망(노드) 하나가 완전히 끊겨 있거나(연결 단절), 발동 에너지가 부족해(에너지 미달) 현실에서 온전히 쓰이지 못하는 흐름입니다. 클릭하여 원인과 교정 전술을 확인하세요.
             </p>
           </div>
         )}

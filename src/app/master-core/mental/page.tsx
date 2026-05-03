@@ -129,7 +129,7 @@ export default function MentalCoreSimulator() {
             </header>
 
             {/* --- Chat Messages Area --- */}
-            <main className="flex-1 overflow-y-auto p-4 space-y-6 relative z-10 scrollbar-hide">
+            <main className="flex-1 overflow-y-auto gpu-accelerated p-4 space-y-6 relative z-10 scrollbar-hide">
                 <div className="max-w-5xl mx-auto space-y-6">
                     <AnimatePresence initial={false}>
                         {messages.map(msg => (
@@ -217,7 +217,7 @@ export default function MentalCoreSimulator() {
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder="메시지를 입력하여 노드 A 라우팅 반응 및 코어 B 인젝터를 테스트하세요."
+                            placeholder="당신의 현재 고민이나 감정을 편안하게 이야기해 보세요."
                             className="flex-1 bg-transparent text-sm text-gray-200 resize-none outline-none max-h-32 min-h-[44px] px-2 py-3 scrollbar-hide"
                             rows={1}
                         />
@@ -231,10 +231,16 @@ export default function MentalCoreSimulator() {
                             </svg>
                         </button>
                     </div>
-                    <div className="text-center mt-3 flex justify-center gap-4">
-                        <span className="text-[10px] text-red-500/70 border border-red-500/20 px-2 rounded opacity-50">다크 트리거: 우울, 그만, 포기</span>
-                        <span className="text-[10px] text-blue-500/70 border border-blue-500/20 px-2 rounded opacity-50">뉴럴 트리거: 어떻게, 방법, 해결</span>
-                        <span className="text-[10px] text-emerald-500/70 border border-emerald-500/20 px-2 rounded opacity-50">메타 트리거: 깨달, 초월, 자유</span>
+                    <div className="text-center mt-3 flex flex-wrap justify-center gap-4">
+                        <span className="text-[10px] text-red-500/70 border border-red-500/20 px-2 py-0.5 rounded-full opacity-60">
+                            💡 예시: "너무 우울하고 포기하고 싶어"
+                        </span>
+                        <span className="text-[10px] text-blue-500/70 border border-blue-500/20 px-2 py-0.5 rounded-full opacity-60">
+                            💡 예시: "이 문제를 어떻게 해결할 수 있을까?"
+                        </span>
+                        <span className="text-[10px] text-emerald-500/70 border border-emerald-500/20 px-2 py-0.5 rounded-full opacity-60">
+                            💡 예시: "이제 내 운명의 주인이 될 거야!"
+                        </span>
                     </div>
                 </div>
             </footer>

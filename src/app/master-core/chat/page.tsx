@@ -15,8 +15,13 @@ interface Message {
 }
 
 export default function MasterCoreChatTester() {
-    // Default to first item in saju60Data
-    const [selectedGapjaId, setSelectedGapjaId] = useState<string>(saju60Data[0].id);
+    const stems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+    const [selectedStem, setSelectedStem] = useState<string>('甲');
+    
+    // Filter gapjas by selected stem
+    const filteredGapjas = saju60Data.filter(d => d.name.startsWith(selectedStem));
+    
+    const [selectedGapjaId, setSelectedGapjaId] = useState<string>(filteredGapjas[0].id);
     const [currentState, setCurrentState] = useState<SystemState>('IDLE');
     const [messages, setMessages] = useState<Message[]>([
         { id: '1', sender: 'master', text: '환영합니다. 명심(明心) 마스터 네트워크에 연결되었습니다.\n현재 당신의 신경망 베이스(기질)를 선택하고 대화를 시작해 보십시오.' }
@@ -105,9 +110,30 @@ export default function MasterCoreChatTester() {
                     </div>
                 </div>
 
-                {/* Gapja Selector */}
+                {/* Stem Selector (천간 필터) */}
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide py-2 max-w-5xl mx-auto w-full border-b border-gray-800/50 pb-3">
+                    {stems.map(stem => (
+                        <button
+                            key={stem}
+                            onClick={() => {
+                                setSelectedStem(stem);
+                                const firstOfStem = saju60Data.find(d => d.name.startsWith(stem));
+                                if(firstOfStem) setSelectedGapjaId(firstOfStem.id);
+                            }}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${
+                                selectedStem === stem 
+                                ? 'bg-indigo-900/40 border-indigo-500/50 text-indigo-300 shadow-[0_0_10px_rgba(99,102,241,0.2)]' 
+                                : 'bg-gray-900/30 border-gray-800 text-gray-500 hover:text-gray-300'
+                            }`}
+                        >
+                            {stem}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Gapja Selector (필터링된 6갑자) */}
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 max-w-5xl mx-auto w-full">
-                    {saju60Data.map(gapja => (
+                    {filteredGapjas.map(gapja => (
                         <button
                             key={gapja.id}
                             onClick={() => setSelectedGapjaId(gapja.id)}
@@ -124,8 +150,31 @@ export default function MasterCoreChatTester() {
                 </div>
             </header>
 
+            {/* --- Briefing Panel (선택된 기질 요약) --- */}
+            <div className="relative z-10 max-w-5xl mx-auto w-full px-4 pt-4">
+                <motion.div 
+                    key={selectedGapjaId}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-r from-blue-950/30 to-indigo-950/20 border border-blue-900/30 p-4 rounded-2xl shadow-lg backdrop-blur-sm"
+                >
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-xl bg-blue-900/40 border border-blue-500/30 flex items-center justify-center text-lg font-black text-blue-200">
+                            {selectedModule.name.substring(0,2)}
+                        </div>
+                        <div>
+                            <h2 className="text-sm font-bold text-blue-100">{selectedModule.title}</h2>
+                            <p className="text-[10px] text-blue-400/80 font-mono">TARGET PROTOCOL: {selectedModule.id}</p>
+                        </div>
+                    </div>
+                    <p className="text-xs text-gray-300 italic leading-relaxed border-l-2 border-blue-500/30 pl-3 py-1">
+                        "{selectedModule.quote}"
+                    </p>
+                </motion.div>
+            </div>
+
             {/* --- Chat Messages Area --- */}
-            <main className="flex-1 overflow-y-auto p-4 space-y-6 relative z-10 scrollbar-hide">
+            <main className="flex-1 overflow-y-auto gpu-accelerated p-4 space-y-6 relative z-10 scrollbar-hide">
                 <div className="max-w-5xl mx-auto space-y-6">
                     <AnimatePresence initial={false}>
                         {messages.map(msg => (
@@ -213,7 +262,7 @@ export default function MasterCoreChatTester() {
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder="메시지를 입력하여 노드 A 라우팅 반응 및 노드 B 프롬프트 렌더링을 테스트하세요."
+                            placeholder="당신의 현재 고민이나 감정을 편안하게 이야기해 보세요. 명심 마스터가 코칭을 시작합니다."
                             className="flex-1 bg-transparent text-sm text-gray-200 resize-none outline-none max-h-32 min-h-[44px] px-2 py-3 scrollbar-hide"
                             rows={1}
                         />
@@ -228,9 +277,15 @@ export default function MasterCoreChatTester() {
                         </button>
                     </div>
                     <div className="text-center mt-3 flex justify-center gap-4">
-                        <span className="text-[10px] text-red-500/70 border border-red-500/20 px-2 rounded opacity-50">DARK 트리거: 짜증, 화나</span>
-                        <span className="text-[10px] text-blue-500/70 border border-blue-500/20 px-2 rounded opacity-50">NEURAL 트리거: 어떻게, 질문</span>
-                        <span className="text-[10px] text-emerald-500/70 border border-emerald-500/20 px-2 rounded opacity-50">META 트리거: 좋아, 할수있</span>
+                        <span className="text-[10px] text-red-500/70 border border-red-500/20 px-2 py-0.5 rounded-full opacity-60">
+                            💡 예시: "너무 답답하고 짜증나" (방어기제 진단)
+                        </span>
+                        <span className="text-[10px] text-blue-500/70 border border-blue-500/20 px-2 py-0.5 rounded-full opacity-60">
+                            💡 예시: "어떻게 해결하면 좋을까?" (원리 설명)
+                        </span>
+                        <span className="text-[10px] text-emerald-500/70 border border-emerald-500/20 px-2 py-0.5 rounded-full opacity-60">
+                            💡 예시: "좋아, 한 번 실천해볼게!" (솔루션 발급)
+                        </span>
                     </div>
                 </div>
             </footer>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, Sparkles } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
@@ -58,6 +58,8 @@ interface SlideData {
     stepIcon: string;
     stepDesc: string;
     question: string;
+    tip?: string;      // ✅ AI가 생성한 통찰 팁
+    choices?: string[]; // ✅ AI가 생성한 선택지
     inputPlaceholder: string;
 }
 
@@ -221,6 +223,39 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
     const [showCompletion, setShowCompletion] = useState(false);
     const sessionStartRef = useRef<number>(Date.now());
 
+    // ── 일진 기반 동적 질문 상태 ─────────────────────────
+    const [dailyQuestions, setDailyQuestions] = useState<any>(null);
+    const [dailyTheme, setDailyTheme] = useState<string>('');
+    const [isLoadingDaily, setIsLoadingDaily] = useState(false);
+
+    // ── 일진 질문 로드 (모달 열릴 때 자동 실행) ────────────
+    useEffect(() => {
+        if (!isOpen || !data) return;
+        const pillarId = detectPillarId(data);
+        setIsLoadingDaily(true);
+
+        const clientDate = (() => {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        })();
+
+        fetch('/api/daily-questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pillarId, clientDate, sajuData: null }),
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success && res.questions) {
+                setDailyQuestions(res.questions);
+                setDailyTheme(res.questions.dayTheme || '');
+            }
+        })
+        .catch(() => { /* fallback: 기존 SCENARIOS 사용 */ })
+        .finally(() => setIsLoadingDaily(false));
+    }, [isOpen, data]);
+
+
     // [DB] 코칭 로그 자동 저장
     const saveCoachingLog = useCallback(async (pillarId: string, state: StateType, codeName: string) => {
         try {
@@ -295,7 +330,14 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
     const scenario = getScenario(pillarId);
     if (!scenario) return null;
 
-    const stateScenario = scenario[currentState];
+    // ✅ 일진 기반 동적 질문이 있으면 우선 사용, 없으면 기존 SCENARIOS fallback
+    const stateScenario = dailyQuestions?.[currentState]
+        ? {
+            awarenessQuestion: dailyQuestions[currentState].awarenessQuestion,
+            slides: dailyQuestions[currentState].slides,
+            completionMessage: dailyQuestions[currentState].completionMessage,
+          }
+        : scenario[currentState];
     const tab = TAB_CONFIG[currentState];
     const isAwareness = currentStep === -1;
     const currentCode = currentState === 'dark' ? data.darkCode : currentState === 'neural' ? data.neuralCode : data.metaCode;
@@ -344,13 +386,23 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="text-white font-bold text-base">{data.pillarLabel}</span>
+                                    {/* 일진 테마 배지 */}
+                                    {dailyTheme && (
+                                        <span className="text-[9px] font-bold text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 px-2 py-0.5 rounded-full">
+                                            오늘의 테마
+                                        </span>
+                                    )}
                                 </div>
+                                {dailyTheme ? (
+                                    <p className="text-[11px] text-cyan-400 font-medium mb-0.5">✨ {dailyTheme}</p>
+                                ) : null}
                                 <p className={`text-xs font-medium ${tab.accentColor}`}>{tab.icon} {currentCode.name}</p>
                             </div>
                             <button onClick={handleClose} className="text-gray-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10 ml-2">
                                 <X size={18} />
                             </button>
                         </div>
+
 
                         {/* Progress Bar */}
                         {!isAwareness && !showCompletion && (
@@ -417,15 +469,57 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                                                 </p>
                                             </div>
 
-                                            {/* Input Field */}
-                                            <textarea
-                                                value={inputs[inputKey] || ''}
-                                                onChange={(e) => setInputs({ ...inputs, [inputKey]: e.target.value })}
-                                                placeholder={stateScenario.slides[currentStep].inputPlaceholder}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-gray-300 placeholder-gray-600 resize-none focus:outline-none focus:border-purple-500/50 transition-colors"
-                                                rows={3}
-                                            />
-                                            <p className="text-gray-600 text-[11px] mt-2 text-center italic">✨ 마음속 떠오르는 그대로 적어보세요</p>
+                                            {/* AI Tip (Lightbulb) */}
+                                            {stateScenario.slides[currentStep].tip && (
+                                                <div className="flex gap-3 p-3.5 mb-4 bg-white/5 border border-white/10 rounded-2xl">
+                                                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                                                    <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
+                                                        {stateScenario.slides[currentStep].tip}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {/* Choices (Radio Buttons) */}
+                                            {stateScenario.slides[currentStep].choices && stateScenario.slides[currentStep].choices!.length > 0 ? (
+                                                <div className="space-y-2 mb-4">
+                                                    <p className="text-[10px] text-gray-500 uppercase font-black ml-1 mb-2 tracking-widest">Select your state:</p>
+                                                    {stateScenario.slides[currentStep].choices!.map((choice: string, i: number) => {
+                                                        const isSelected = inputs[inputKey] === choice;
+                                                        return (
+                                                            <button
+                                                                key={i}
+                                                                onClick={() => setInputs({ ...inputs, [inputKey]: choice })}
+                                                                className={`w-full flex items-center gap-3 p-4 rounded-2xl border transition-all duration-300 text-left ${
+                                                                    isSelected
+                                                                        ? `bg-white/10 ${tab.borderColor} shadow-[0_0_15px_rgba(255,255,255,0.05)]`
+                                                                        : 'bg-white/5 border-white/5 hover:bg-white/8 hover:border-white/10'
+                                                                }`}
+                                                            >
+                                                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                                                    isSelected ? 'border-amber-400' : 'border-gray-600'
+                                                                }`}>
+                                                                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
+                                                                </div>
+                                                                <span className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-400'}`}>
+                                                                    {choice}
+                                                                </span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            ) : (
+                                                /* Input Field (Fallback/Legacy) */
+                                                <>
+                                                    <textarea
+                                                        value={inputs[inputKey] || ''}
+                                                        onChange={(e) => setInputs({ ...inputs, [inputKey]: e.target.value })}
+                                                        placeholder={stateScenario.slides[currentStep].inputPlaceholder}
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-gray-300 placeholder-gray-600 resize-none focus:outline-none focus:border-purple-500/50 transition-colors"
+                                                        rows={3}
+                                                    />
+                                                    <p className="text-gray-600 text-[11px] mt-2 text-center italic">✨ 마음속 떠오르는 그대로 적어보세요</p>
+                                                </>
+                                            )}
                                         </div>
                                     )}
                                 </motion.div>

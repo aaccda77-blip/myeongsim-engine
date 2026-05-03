@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
     // User might be authenticated or a guest
     try {
         const reqBody = await req.json();
-        const { userId, message, messages, stage, sajuData, birthDate, birthTime, gender, userName, isPremium, lastBotMessage, chatHistory, userSaju, sessionId, clientDate: reqClientDate, language, calendarType, isCrisisMode } = reqBody; // [Fix] Extract calendarType & isCrisisMode
+        const { userId, message, messages, stage, sajuData, birthDate, birthTime, gender, userName, isPremium, lastBotMessage, chatHistory, userSaju, sessionId, clientDate: reqClientDate, language, calendarType, isCrisisMode, checklistAnswers } = reqBody; // [Fix] Extract calendarType, isCrisisMode & checklistAnswers
         const clientDate = reqClientDate ? new Date(reqClientDate) : new Date();
         const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY; // Global API Key for this request
 
@@ -1267,6 +1267,13 @@ export async function POST(req: NextRequest) {
             // [Integration] Append Memory to RAG Context
             if (memoryContext) {
                 ragContext += `\n\n${memoryContext}\n`;
+            }
+
+            // [NEW] Checklist Active Linking module
+            if (checklistAnswers && Array.isArray(checklistAnswers) && checklistAnswers.length > 0) {
+                const qaList = checklistAnswers.map((item: any) => `- ${item.q} : "${item.a}"`).join('\n');
+                ragContext += `\n:::USER_DAILY_BIO_SYNC_CHECKLIST:::\n[시스템 알림] 유저가 방금 5단계 메타인지 자문 체크리스트를 완료했습니다.\n\n[체크 완료 내역 (유저의 현재 심리/신체 상태 인증)]\n${qaList}\n\n-> (지시사항): 명심 코치로서 위 체크리스트 결과 중 눈에 띄는 부분을 짚어주며(예: "방금 어깨가 굳어있다고 하셨죠?" 또는 "강박적인 생각에 시달린다고 솔직히 인정해주셨네요"), 자연스럽게 오늘 대화의 포문을 여는 '선공(First-move)'을 펼치세요.\n:::END_CHECKLIST:::\n`;
+                console.log('🔗 [Bio-Sync] Connected Checkist Answers to RAG Context.');
             }
 
         } catch (featureErr) {

@@ -220,7 +220,7 @@ export default function SocialValueDiscovery() {
             </header>
 
             {/* Content Area */}
-            <main className="flex-1 relative z-10 overflow-y-auto scrollbar-hide">
+            <main className="flex-1 relative z-10 overflow-y-auto gpu-accelerated scrollbar-hide">
                 <AnimatePresence mode="wait">
                     {phase === 'SELECT' && (
                         <motion.div

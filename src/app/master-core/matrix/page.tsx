@@ -55,7 +55,7 @@ export default function MindHackingMatrixPage() {
                         )}
                         <span className="text-xl">⚔️</span>
                         <div>
-                            <h1 className="text-sm font-bold text-red-200">4D 마인드 해킹 매트릭스</h1>
+                            <h1 className="text-sm font-bold text-red-200">마음 재설계 매트릭스</h1>
                             <p className="text-[10px] text-red-500/70 font-mono">SOVEREIGN_4D_MATRIX v1.0</p>
                         </div>
                     </div>
@@ -67,7 +67,7 @@ export default function MindHackingMatrixPage() {
             </header>
 
             {/* Content */}
-            <main className="flex-1 relative z-10 overflow-y-auto scrollbar-hide">
+            <main className="flex-1 relative z-10 overflow-y-auto gpu-accelerated scrollbar-hide">
                 <AnimatePresence mode="wait">
 
                     {/* ============= OVERVIEW ============= */}
@@ -83,10 +83,10 @@ export default function MindHackingMatrixPage() {
                             <div className="text-center mb-8">
                                 <motion.div initial={{ scale: 0.6 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.15 }} className="text-4xl mb-4">⚔️</motion.div>
                                 <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-300 via-white to-amber-300 mb-2">
-                                    Sovereign 4D-Mind Hacking Matrix
+                                    Sovereign 4D-Mind Re-Engineering Matrix
                                 </h2>
                                 <p className="text-[11px] text-gray-500 break-keep max-w-sm mx-auto leading-relaxed">
-                                    동양 사주명리의 원형(Archetype) 데이터 × 서양 제3동향(3rd Wave) 심리치료의<br/>
+                                    동양 사주명리의 원형(Archetype) 데이터 × 서양 심리학 제3의 물결(3rd Wave of CBT)의<br/>
                                     <strong className="text-gray-300">세계 최초 하이브리드 융합 코칭 프레임워크</strong>
                                 </p>
                             </div>
@@ -345,7 +345,7 @@ export default function MindHackingMatrixPage() {
             {/* Footer */}
             <footer className="relative z-10 p-4 border-t border-gray-800/50 bg-[#070A12]/90 backdrop-blur-md">
                 <div className="max-w-2xl mx-auto text-center text-[10px] text-gray-600 font-mono tracking-widest">
-                    SOVEREIGN_4D_MIND_HACKING_MATRIX // CBT × MBCT × DBT × ACT × 사주명리
+                    SOVEREIGN_4D_MIND_RE_ENGINEERING_MATRIX // CBT × MBCT × DBT × ACT × 사주명리
                 </div>
             </footer>
         </div>

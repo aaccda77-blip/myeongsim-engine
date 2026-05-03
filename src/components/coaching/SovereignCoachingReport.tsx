@@ -20,6 +20,7 @@ import SocialAntiPatternAnalysis from './SocialAntiPatternAnalysis';
 import SajuArchitectureFlow from './SajuArchitectureFlow';
 import SajuEnergyNodeMap from './SajuEnergyNodeMap';
 import TripleCoreAnalysis from './TripleCoreAnalysis';
+import SelfCoaching100 from './SelfCoaching100';
 
 // ─────────────────────────────────────────────
 // 타입 정의
@@ -1542,7 +1543,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                 body: JSON.stringify({
                     sajuData: reportData?.saju || userProfile || sajuInfo,
                     userConcern: userConcern.trim(),
-                    isGongmang: false // 향후 공망 로직 연동 가능
+                    isGongmang: sajuInfo.gongmang.isActive,
+                    gongmangData: sajuInfo.gongmang // 공망 상세 데이터 전달
                 }),
             });
             const data = await res.json();
@@ -1581,7 +1583,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                     >
                         <div
                             ref={scrollRef}
-                            className="flex flex-col overflow-y-auto rounded-t-3xl"
+                            className="flex flex-col overflow-y-auto rounded-t-3xl gpu-accelerated"
                             style={{
                                 background: 'linear-gradient(180deg, #0e0e0e 0%, #131313 100%)',
                                 border: '1px solid rgba(242,202,80,0.15)',
@@ -1815,6 +1817,63 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         <p className="text-sm text-gray-300 leading-relaxed">{coaching.phase1.synthesis}</p>
                                     </div>
                                 </section>
+
+                                {/* ── Phase 1.5: Quantum Void ── */}
+                                {sajuInfo.gongmang?.isActive && (
+                                    <section>
+                                        <SectionHeader phase="Phase 1.5 🌌" title="퀀텀 보이드 (Quantum Void) 심층 분석" />
+                                        <div className="p-5 rounded-2xl border border-purple-500/30 overflow-hidden relative"
+                                            style={{ background: 'linear-gradient(135deg, rgba(88,28,135,0.15) 0%, rgba(15,23,42,0.8) 100%)' }}>
+                                            <div className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-20 blur-[60px]"
+                                                style={{ background: 'radial-gradient(circle, #a855f7 0%, transparent 70%)' }} />
+                                            
+                                            <div className="relative z-10">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <span className="text-xl">🌌</span>
+                                                    <h3 className="text-sm font-bold text-purple-300 tracking-wide">
+                                                        당신의 명식에는 특별한 '보이드(Void)'가 존재합니다
+                                                    </h3>
+                                                </div>
+                                                <p className="text-[11px] text-gray-300 leading-relaxed mb-5">
+                                                    전통 명리학에서 '공망(空亡)'이라 부르는 이 현상은 부정적인 결핍이 아닙니다. 오히려 기존의 고정된 카르마(Karma)와 사회적 제약이 <strong>완전히 포맷(Format)된 양자 역학적 빈 공간</strong>을 의미합니다. 이 공간은 무엇이든 채울 수 있는 무한한 자유도와 창조성을 상징합니다.
+                                                </p>
+
+                                                <div className="space-y-3">
+                                                    {sajuInfo.gongmang.hasYear && (
+                                                        <div className="p-4 rounded-xl border border-purple-500/20 bg-purple-900/10">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300">년지 보이드 (환경/조상)</span>
+                                                            </div>
+                                                            <p className="text-[11px] text-gray-300 leading-relaxed">
+                                                                <strong className="text-purple-300">과거의 룰 리셋:</strong> 조상이나 부모 세대가 만들어 놓은 기존의 가풍, 관습, 출발선에 얽매일 필요가 없습니다. 부모의 방식을 답습하기보다 <strong>"완전히 내 대(代)에서 처음부터 새롭게 시작하는 독창적인 무대"</strong>를 개척할 때 가장 큰 에너지가 발현됩니다.
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                    {sajuInfo.gongmang.hasMonth && (
+                                                        <div className="p-4 rounded-xl border border-purple-500/20 bg-purple-900/10">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300">월지 보이드 (사회/직업)</span>
+                                                            </div>
+                                                            <p className="text-[11px] text-gray-300 leading-relaxed">
+                                                                <strong className="text-purple-300">프레임 독립:</strong> 남들이 다 가는 기성 사회의 정해진 궤도에 들어가면 공허함을 느낄 수 있습니다. 기존의 직장 프레임을 벗어나 <strong>자신만의 독보적인 직업관, 대안적인 비즈니스 생태계</strong>를 창조하는 선구자적 역할에 최적화되어 있습니다.
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                    {sajuInfo.gongmang.hasTime && (
+                                                        <div className="p-4 rounded-xl border border-purple-500/20 bg-purple-900/10">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300">시지 보이드 (미래/결과)</span>
+                                                            </div>
+                                                            <p className="text-[11px] text-gray-300 leading-relaxed">
+                                                                <strong className="text-purple-300">무한한 가능성:</strong> 특정 결과물이나 뻔한 미래 목표에 집착할수록 에너지가 소진됩니다. 계산적인 목표를 내려놓을 때, 오히려 당신의 손끝에서 <strong>남들이 감히 상상하지 못하는 영속적인 레거시(Legacy)나 걸작</strong>이 탄생합니다.
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                )}
 
                                 {/* ── Phase 2: Dark Code ── */}
                                 <section>
@@ -2247,9 +2306,29 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                 </section>
                                 )}
 
+                                {/* ── Phase 9: 명심(明心) 셀프 코칭 100 질문 (신규 모듈) ── */}
+                                <section>
+                                    <SectionHeader phase="Phase 9 💡" title="명심(明心) 셀프 코칭 마스터 질문" />
+                                    <div className="p-4 sm:p-5 rounded-3xl border border-yellow-500/20 bg-black/60 shadow-[0_0_40px_rgba(250,204,21,0.03)] backdrop-blur-sm relative overflow-hidden">
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-b from-yellow-500/10 to-transparent blur-2xl pointer-events-none" />
+                                        
+                                        <div className="mb-6 relative z-10 text-center">
+                                            <p className="text-[11px] font-mono text-yellow-500/80 mb-2 tracking-widest uppercase">Myeongsim Master Prompts</p>
+                                            <h3 className="text-base sm:text-lg font-bold text-white mb-2 break-keep">
+                                                명심코칭의 엔진을 돌리는 100가지 자기 질문
+                                            </h3>
+                                            <p className="text-xs text-gray-400 leading-relaxed break-keep">
+                                                소크라테스의 산파술과 메타인지 기법을 융합한 강력한 프롬프트입니다. 일상의 런타임 에러를 디버깅하세요.
+                                            </p>
+                                        </div>
+
+                                        <SelfCoaching100 />
+                                    </div>
+                                </section>
+
 
                                 <section>
-                                    <SectionHeader phase="Phase 5" title="명심 AI 진단 모델" />
+                                    <SectionHeader phase="Phase 10" title="명심 AI 진단 모델" />
                                     <div className="p-5 rounded-2xl border border-indigo-500/20 bg-[#1e1b4b]/40 space-y-5">
                                         <div className="text-center">
                                             <p className="text-[10px] font-mono text-indigo-400 mb-2 tracking-wider">🔬 MYEONGSIM AI ENGINE</p>
