@@ -21,6 +21,7 @@ import { Zap, Activity, Calendar, ChevronDown, Clock, CheckCircle2, Star, Messag
 import DeepScanSection from './DeepScanSection';
 import AkashicRecordSection from './AkashicRecordSection';
 import { DAILY_NEURO_ACTIONS, DAILY_AFFIRMATIONS } from '@/data/DailyActionDB';
+import { DAILY_ENERGY_DB } from '@/data/DailyEnergyDB';
 
 
 // ─────────────────────────────────────────────
@@ -202,98 +203,20 @@ function EnergyHarmonySection({ harmony }: { harmony: DailyHarmonyResult }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeKeyword, setActiveKeyword] = useState<string | null>(null);
   
-  const RELATION_LABELS: Record<string, string> = {
-    SYNC: '동질의 거울', RESOURCE: '생조의 비', FLOW: '발산의 물결', PRESSURE: '압박의 불꽃', ACHIEVEMENT: '쟁취의 과녁',
-  };
-
-  // ── 관계별 상세 코칭 데이터 (예시 + 행동 팁 포함)
-  const RELATION_DETAIL: Record<string, {
-    headline: string;
-    detail: string;
-    examples: string;
-    actionTip: string;
-    keywords: string[];
-    keywordExplanations: Record<string, string>;
-  }> = {
-    SYNC: {
-      headline: '🌀 [동질의 날] — 거울 속의 나와 마주하는 날',
-      detail: `오늘은 당신의 일간(${harmony.userDayMaster})과 완전히 동일한 주파수의 에너지(${harmony.todayGanElement})가 들어오는 상태입니다. 디폴트 모드 네트워크(DMN)가 과활성화되어 자의식이 강해지고 주관이 평소보다 확고해집니다. 강력한 추진력이 되기도 하나, 인지 편향에 의한 마찰이 생길 수 있습니다.`,
-      examples: `💡 예를 들어, 팀원의 의견이 틀리지 않아도 자신의 방식을 고집하게 되거나, 익숙한 루틴에서 벗어나는 것이 평소보다 불편하게 느껴집니다. 반대로 이미 잘하고 있는 내적/독립적 분야에서는 최고점의 안정적 퍼포먼스가 나오는 축복받은 날이기도 합니다.`,
-      actionTip: `🪞 오늘의 실전 팁: 오늘 논쟁이 발생하면 의견을 관철하기 전 딱 1시간만 결정을 뒤로 유보하세요. 자아를 잠시 내려놓고 "타인을 나의 상태를 비추는 거울로 쓴다"고 생각하면 인간관계 마찰을 창조적 에너지로 100% 전환할 수 있습니다.`,
-      keywords: ['자기 객관화', '거울 효과', '주관 유지', '협력'],
-      keywordExplanations: {
-        '자기 객관화': '메타인지(Metacognition)를 담당하는 뇌 부위를 가동하여, 제3자의 시선으로 나의 고집을 분리해 관찰하세요.',
-        '거울 효과': '타인이 나에게 보이는 반응은 내 무의식을 비추는 거울(Mirroring)입니다. 상대를 비난하기 전 내 상태를 먼저 점검해야 마찰이 풀립니다.',
-        '주관 유지': '타인의 기준에 휘둘릴 필요 없습니다. 자아 탄력성이 매우 높으므로 내가 세운 원칙을 묵묵히 유지하는 편이 가장 안전합니다.',
-        '협력': '단독 행동 시 부딪히기 쉬운 날입니다. 나의 에고(Ego)를 살짝 내려놓고 "우리"라는 집단 보상으로 뇌의 목표를 재설정하세요.',
-      }
-    },
-    RESOURCE: {
-      headline: '✨ [수용의 날] — 우주가 당신에게 옥시토신을 쏟아붓는 날',
-      detail: `오늘은 주변 환경이 당신의 일간(${harmony.userDayMaster})에게 아낌없이 양분을 공급하는 생조(生助) 상태입니다. 부교감 신경계가 우위를 점해 뇌가 깊은 수용(Rest and Digest) 모드에 진입합니다. 스펀지가 물을 빨아들이듯 지식 폭발과 통찰 흡수 능력이 극대화됩니다.`,
-      examples: `💡 예를 들어, 오늘 읽은 책 한 챕터나 강의 영상 하나가 평소보다 훨씬 선명하게 장기 기억(Hippocampus)에 꽂힙니다. 이전에 흘려들었던 멘토의 조언이 갑자기 '아, 맞아!' 하는 깨달음의 시냅스로 강력하게 연결되는 날입니다.`,
-      actionTip: `📚 오늘의 실전 팁: 무리하게 아웃풋을 기획하거나 행동 에너지를 소모하지 마세요. 그 대신, 평소 미루어두었던 가장 어려운 전문 서적을 30분 읽거나 멘토에게 조언을 구하세요. 오늘 당신이 입력한 1의 지식은 내일 10의 무기가 됩니다.`,
-      keywords: ['학습 집중', '통찰 연결', '수용력', '안전 기지'],
-      keywordExplanations: {
-        '학습 집중': '해마(Hippocampus)의 정보 흡수력이 최고조에 이른 상태입니다. 오늘은 단순 노동보다 심도 깊은 독서나 지식 습득에 시간을 투자하세요.',
-        '통찰 연결': '파편화되었던 지식들이 뇌 속에서 하나의 거대한 시냅스로 연결됩니다. 깨달음을 얻었을 때 휘발되지 않도록 즉시 기록하세요.',
-        '수용력': '타인의 충고나 새로운 시스템을 튕겨내지 말고 부드럽게 흡수하세요. 무의식이 이질적인 정보를 가장 거부감 없이 받아들이는 날입니다.',
-        '안전 기지': '옥시토신 분비가 필요합니다. 스트레스 환경을 떠나 내가 가장 깊이 신뢰하고 안심할 수 있는 환경(Secure Base)에 머무는 것이 좋습니다.',
-      }
-    },
-    FLOW: {
-      headline: '🌊 [발산의 날] — 도파민의 거침없는 흐름을 허락하세요',
-      detail: `오늘은 당신 내부의 에너지(${harmony.userDayMaster})가 세상 밖으로 거침없이 뻗어가는 생출(生出) 상태입니다. 전두엽의 아이디어 발산 회로가 열리며(Flow State), 표현력과 창조적 충동이 최고조에 달합니다. 통제하려 하지 말고 자연스레 흐름을 타는 유연성이 핵심입니다.`,
-      examples: `💡 예를 들어, 긴장되어 쓰지 못했던 이메일을 순식간에 작성하게 되고, 복잡했던 기획안이 막힘없이 쏟아집니다. 아이디어가 넘치고 무언가를 세상에 던지고 싶은 충동이 강합니다. 단, 에너지가 밖으로 빠르게 빠져나가므로 인지적 방전 속도도 빠릅니다.`,
-      actionTip: `⚡ 오늘의 실전 팁: 오전 11시 이전에 가장 과감한 제안이나 기획안을 밖으로 던지세요! 에너지가 충만한 오전에 아웃풋을 모두 쏟아낸 후, 오후 3시 이후에는 반드시 모든 연결을 끊고 뇌를 강건하게 식히는 완전한 휴식 시간을 30분 이상 가져야 번아웃을 막습니다.`,
-      keywords: ['창조성 폭발', '아이디어 실행', '유연성', '인지적 방전 주의'],
-      keywordExplanations: {
-        '창조성 폭발': '전두엽의 발산 회로가 폭주하고 있습니다. 논리적 검열을 끄고 머릿속 아이디어를 즉각 문서화나 예술적 형태로 쏟아내세요.',
-        '아이디어 실행': '도파민 에너지의 흐름이 실현을 향해 열려 있습니다. 생각에 머물지 말고 가장 작고 가벼운 단위의 행동으로 즉시 옮기세요.',
-        '유연성': '계획이나 규칙에 얽매일수록 능률이 떨어집니다. 환경의 흐름(Flow)에 몸을 맡기고 즉흥적인 아이디어가 자연스럽게 나오도록 허락하세요.',
-        '인지적 방전 주의': '에너지 아웃풋이 극심해 뇌가 매우 빠르게 피로(Burnout)해집니다. 일정 소화 후 반드시 강제 디톡스와 시각적 차단을 병행해야 합니다.',
-      }
-    },
-    PRESSURE: {
-      headline: '🔥 [압박의 날] — 가장 뜨거운 스트레서가 당신의 뇌를 리모델링합니다',
-      detail: `오늘은 외부의 강력한 지배 에너지(${harmony.todayGanElement})가 당신(${harmony.userDayMaster})을 강하게 압박하는 상태입니다. 편도체가 자극을 받아 투쟁-도피(Fight-or-Flight) 반응이 유발되기 쉬우나, 이는 당신의 한계를 깨부수고 실행 기능(Executive Function)을 극대화시키는 우주의 훈련 세션입니다. 순도 높은 강철은 불구덩이에서 완성됩니다.`,
-      examples: `💡 예를 들어, 상사의 까다로운 지시, 갑작스러운 클레임, 무거운 책임감이 평소보다 어깨를 짓누를 수 있습니다. 이를 '재수 없는 사건'으로 인지하면 에너지가 고갈되지만, '나의 관리 능력과 그릇을 확장할 훈련장'으로 프레임을 전환하면 성장 인자가 폭발합니다.`,
-      actionTip: `⚔️ 오늘의 실전 팁: 평소 가장 두렵고 불편하게 미뤄왔던 업무나 대화 하나에만 딱 90분을 온전히 쏟아 정면 돌파하세요. 이 압박 에너지를 역이용해 피하지 않고 과제를 완수해내면, 뇌의 회복탄력성이 급등하며 이번 주 내내 압도적인 자신감이 지속됩니다.`,
-      keywords: ['정면 돌파', '실행 제어', '스트레스 역이용', '극기'],
-      keywordExplanations: {
-        '정면 돌파': '문제를 피하려 할수록 뇌의 불안 스위치가 커집니다. 가장 불편한 대화, 가장 어려운 업무를 첫 번째로 직면하여 압박 고리를 끊어내세요.',
-        '실행 제어': '감정적인 뇌(편도체)의 폭주를 시스템으로 억제하십시오. 전전두엽의 강한 통제력으로 루틴과 규칙에 나를 가두고 기계처럼 해내세요.',
-        '스트레스 역이용': '오늘 쏟아지는 자극은 당신의 능력을 검증하는 모의고사입니다. 스트레스 홀몬인 코르티솔을 집중력의 무기로 치환하여 과업을 장악하세요.',
-        '극기': '스스로와의 싸움입니다. 포기하고 싶은 순간 딱 5분만 더 지속하면 뇌의 회복탄력성(Resilience)이 영구적으로 한 단계 확장됩니다.',
-      }
-    },
-    ACHIEVEMENT: {
-      headline: '🎯 [쟁취의 날] — 도파민 사냥 본능으로 타겟을 저격하세요',
-      detail: `오늘은 당신(${harmony.userDayMaster})이 대상을 온전히 통제하고 획득할 수 있는 성취 시점입니다. 목표를 포착하면 뇌의 보상 회로(Reward Circuit)가 예민하게 반응합니다. 단 1개의 과녁(Target) 조준에 성공하면 거대한 열매를 얻지만, 2~3개로 초점을 분산시키면 시냅스가 낭비되어 아무것도 얻지 못합니다.`,
-      examples: `💡 예를 들어, 수많은 To-Do 리스트를 동시에 다 해내고 싶은 욕망이 솟구칩니다. 그러나 오늘 가장 큰 성과는 '단순 반복 업무 10개'가 아닌 '수익과 직접 연결되는 치명적 결정 1개'에서 나옵니다. 통제력을 전방위로 분산하지 않는 결단력이 필요합니다.`,
-      actionTip: `🎯 오늘의 실전 팁: 오늘 시작하려 했던 10개의 일 중, 오직 목표 달성에 직접적인 타격을 주는 단 하나의 과제만 남기고 9개를 무자비하게 쳐내세요(Selective Attention). 그리고 남은 단 하나의 타겟에 오늘 사용 가능한 모든 시간과 신경통로를 모조리 조준사격하세요.`,
-      keywords: ['선택과 집중', '과감한 타겟팅', '보상 획득', '불필요함 제거'],
-      keywordExplanations: {
-        '선택과 집중': '수많은 선택지가 뇌를 마비시킵니다. "선택적 주의력"을 가동하여 가장 핵심적인 1가지 문제에 모든 시냅스를 몰빵하세요.',
-        '과감한 타겟팅': '무엇을 사냥할지 목표(Target)를 아주 구체적으로 설정하세요. 과녁이 명확해지는 순간 도파민성 추동력이 정확하게 꽂힙니다.',
-        '보상 획득': '승리의 감각을 뇌에 각인시키세요. 아주 작은 목표라도 달성했다면 반드시 스스로에게 보상을 주어 도파민 루프를 완성하세요.',
-        '불필요함 제거': '목표를 방해하는 불필요한 태스크들을 과감히 삭제하세요.'
-      }
-    }
-  };
-
-  const data = RELATION_DETAIL[harmony.relation] || RELATION_DETAIL['SYNC'];
+  const data = DAILY_ENERGY_DB[harmony.tenGod] || DAILY_ENERGY_DB['비견']; // Fallback
   
   return (
     <div className="space-y-4">
       <div className="p-4 rounded-xl border border-white/10 bg-slate-900/50">
-        <h3 className="text-sm font-bold text-white mb-2">{data.headline}</h3>
-        <p className="text-xs text-slate-300 leading-relaxed mb-3">{data.detail}</p>
+        <h3 className="text-[13px] font-bold text-white mb-2 leading-tight">{data.headline}</h3>
+        <p className="text-[11.5px] text-slate-300 leading-relaxed mb-3 break-keep">{data.detail}</p>
         <div className="p-3 bg-white/5 rounded-lg mb-3">
-          <p className="text-xs text-slate-300 leading-relaxed">{data.examples}</p>
+          <p className="text-[11px] text-slate-400 leading-relaxed break-keep">{data.examples}</p>
         </div>
-        <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
-          <p className="text-xs text-indigo-300 leading-relaxed font-medium">{data.actionTip}</p>
+        <div className="p-3 rounded-lg border flex items-start gap-2" style={{ backgroundColor: `${harmony.energyColor}15`, borderColor: `${harmony.energyColor}30` }}>
+          <p className="text-[11.5px] font-medium leading-relaxed break-keep" style={{ color: harmony.energyColor }}>
+            {data.actionTip}
+          </p>
         </div>
       </div>
     </div>

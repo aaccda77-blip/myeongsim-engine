@@ -13,6 +13,7 @@ export interface DailyHarmonyResult {
   todayGanElement: string;    // 오늘 천간 오행
   userDayMaster: string;      // 사용자 일간 (한자)
   relation: EnergyRelation;   // 일간-일진 관계
+  tenGod: string;             // 십성 (비견, 겁재, 등)
   painLevel: number;          // 오늘의 고통 농도 (0-100)
   painReason: string;         // 고통 원인 설명
   breakthroughKeyword: string; // 돌파 키워드
@@ -42,6 +43,23 @@ const DAYMASTER_ELEMENT: Record<string, string> = {
   '庚': '금', '辛': '금',
   '壬': '수', '癸': '수',
 };
+
+const STEM_POLARITY: Record<string, string> = {
+  '甲': '+', '乙': '-', '丙': '+', '丁': '-', '戊': '+', '己': '-', '庚': '+', '辛': '-', '壬': '+', '癸': '-',
+  '갑': '+', '을': '-', '병': '+', '정': '-', '무': '+', '기': '-', '경': '+', '신': '-', '임': '+', '계': '-'
+};
+
+export function getTenGodType(userGan: string, targetGan: string, relation: EnergyRelation): string {
+  const isSamePolarity = STEM_POLARITY[userGan] === STEM_POLARITY[targetGan];
+  switch (relation) {
+    case 'SYNC': return isSamePolarity ? '비견' : '겁재';
+    case 'FLOW': return isSamePolarity ? '식신' : '상관';
+    case 'ACHIEVEMENT': return isSamePolarity ? '편재' : '정재';
+    case 'PRESSURE': return isSamePolarity ? '편관' : '정관';
+    case 'RESOURCE': return isSamePolarity ? '편인' : '정인';
+    default: return '비견';
+  }
+}
 
 // 일간별 특성
 const DAYMASTER_TRAIT: Record<string, string> = {
@@ -209,12 +227,15 @@ export function analyzeDailyHarmony(
   const zhiElement = todayZhiElement || '토'; // fallback
   const microCoaching = `단, 지지의 ${todayZhi}(${zhiElement})가 ${getZhiRelationDetails(userElement, zhiElement)}`;
 
+  const tenGod = getTenGodType(userDayMasterHanja, todayGan, relation);
+
   return {
     todayGan,
     todayZhi,
     todayGanElement,
     userDayMaster: userDayMasterHanja,
     relation,
+    tenGod,
     painLevel,
     painReason: coaching.painReason,
     breakthroughKeyword: coaching.breakthroughs[seed % coaching.breakthroughs.length],
