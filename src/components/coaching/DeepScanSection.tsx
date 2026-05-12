@@ -293,6 +293,7 @@ export default function DeepScanSection({ sajuData }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sajuData,
+          harmony, // ✅ 십성 데이터 주입
           // ✅ 브라우저 로컬 날짜 전송 (서버 UTC 시간대 문제 방지)
           clientDate: (() => {
             const d = new Date();
