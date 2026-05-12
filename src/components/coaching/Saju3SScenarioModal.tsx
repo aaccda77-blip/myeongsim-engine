@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { X, Search, Activity, RefreshCw, CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
+import { X, Search, Activity, RefreshCw, CheckCircle2, ArrowRight, Loader2, Star } from 'lucide-react';
 import { Saju3SScenario } from '@/data/Saju3SScenarios';
 
 type Step = 'TRIGGER' | 'SCAN' | 'SYNC' | 'SHIFT';
