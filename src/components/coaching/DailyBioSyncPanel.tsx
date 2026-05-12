@@ -20,6 +20,7 @@ import {
 import { Zap, Activity, Calendar, ChevronDown, Clock, CheckCircle2, Star, MessageCircle, TrendingUp, Shield, Loader2, Lightbulb } from 'lucide-react';
 import DeepScanSection from './DeepScanSection';
 import AkashicRecordSection from './AkashicRecordSection';
+import { DAILY_NEURO_ACTIONS, DAILY_AFFIRMATIONS } from '@/data/DailyActionDB';
 
 
 // ─────────────────────────────────────────────
@@ -319,14 +320,7 @@ function TimeSlotGuide({ harmony }: { harmony: DailyHarmonyResult }) {
 
   const [selectedSlot, setSelectedSlot] = useState<number>(currentSlotId !== -1 ? currentSlotId : 0);
 
-  const NEURO_ACTIONS: Record<number, Record<string, string>> = {
-    0: { SYNC: '거울 뉴런 활성화 시간. 핵심 가치와 일치하는 프로젝트를 시작하세요.', RESOURCE: '해마의 정보 흡수력 최고조. 기획안 분석에 집중하세요.', FLOW: 'DMN 활성화. 아이디어 도출을 위한 브레인스토밍을 실행하세요.', PRESSURE: '코르티솔 급증. 가장 까다로운 업무를 먼저 처리하세요.', ACHIEVEMENT: '외적 보상 회로 가동. 중요한 결정을 오전 중에 끝내세요.' },
-    1: { SYNC: '유연한 조율 시간. 타인과의 커뮤니케이션에 에너지를 쓰세요.', RESOURCE: '정보 체화 시간. 지식을 문서화하거나 공유해보세요.', FLOW: '딥워크 시간. 1시간만 외부 차단하고 아웃풋을 뽑으세요.', PRESSURE: '편도체 자극 주의. 감정적 반응 대신 논리적으로 대응하세요.', ACHIEVEMENT: '선택적 주의력 발휘. 핵심 타겟 1개만 물고 늘어지세요.' },
-    2: { SYNC: '평온한 복기 시간. 관계의 교훈을 일기로 정리하세요.', RESOURCE: '옥시토신 분비 시간. 멘토나 가족과 정서적 교감을 나누세요.', FLOW: '교감신경 다운 시간. 산책으로 번아웃을 예방하세요.', PRESSURE: '압박을 견딘 자신을 칭찬하고 메타 보상을 허락하세요.', ACHIEVEMENT: '오늘의 성과를 기록하세요. 뇌가 쟁취의 쾌감을 인식합니다.' },
-    3: { SYNC: '무의식 위탁 시간. 뇌의 쿨다운을 위해 시각 자극에서 멀어지세요.', RESOURCE: '장기 기억 전환 시간. 걱정을 내려놓고 깊은 잠을 청하세요.', FLOW: '도파민 셧다운 타이밍. 호흡 명상으로 뇌파를 낮추세요.', PRESSURE: '불안 스위치를 강제로 끄고 생체 리듬을 우주에 맡기세요.', ACHIEVEMENT: '내일 조준할 타겟 하나만 스케치하고 즉시 휴식하세요.' },
-  };
-
-  const actionText = NEURO_ACTIONS[selectedSlot]?.[harmony.relation] || NEURO_ACTIONS[selectedSlot]?.['PRESSURE'];
+  const actionData = DAILY_NEURO_ACTIONS[selectedSlot]?.[harmony.relation] || DAILY_NEURO_ACTIONS[selectedSlot]?.['PRESSURE'];
 
   return (
     <div className="mt-4 space-y-2 relative">
@@ -344,22 +338,35 @@ function TimeSlotGuide({ harmony }: { harmony: DailyHarmonyResult }) {
           );
         })}
       </div>
-      <div className="p-4 rounded-xl border mt-2" style={{ borderColor: `${harmony.energyColor}40`, backgroundColor: `${harmony.energyColor}05` }}>
-        <p className="text-[11.5px] text-slate-200 leading-relaxed font-medium">{actionText}</p>
+      <div className="p-4 rounded-xl border mt-2 flex flex-col gap-2" style={{ borderColor: `${harmony.energyColor}40`, backgroundColor: `${harmony.energyColor}05` }}>
+        <div className="flex items-center gap-1.5 mb-1">
+          <Zap className="w-3 h-3" style={{ color: harmony.energyColor }} />
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: harmony.energyColor }}>
+            {actionData.focus}
+          </span>
+        </div>
+        <p className="text-[12px] text-slate-200 leading-relaxed font-medium break-keep">
+          {actionData.text}
+        </p>
       </div>
     </div>
   );
 }
 
 function AffirmationCard({ harmony }: { harmony: DailyHarmonyResult }) {
+  const affirmationText = DAILY_AFFIRMATIONS[harmony.relation] || DAILY_AFFIRMATIONS['SYNC'];
+
   return (
-    <div className="mt-4 bg-white/5 p-4 rounded-xl border border-white/5">
-      <div className="flex items-center gap-2 mb-2">
+    <div className="mt-4 bg-white/5 p-5 rounded-xl border border-white/5 relative overflow-hidden">
+      {/* 장식용 블러 효과 */}
+      <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20" style={{ backgroundColor: harmony.energyColor }} />
+      
+      <div className="flex items-center gap-2 mb-3 relative z-10">
         <Star className="w-3.5 h-3.5 text-amber-400" />
-        <span className="text-[9px] text-slate-400 font-mono tracking-widest uppercase">오늘의 핵심 선언문</span>
+        <span className="text-[10px] text-slate-400 font-mono tracking-widest uppercase">오늘의 핵심 선언문</span>
       </div>
-      <p className="text-[13px] font-bold text-white italic leading-relaxed">
-        &ldquo;나는 오늘 우주의 흐름과 완전히 하나입니다. 나의 본질은 어떤 환경에서도 흔들리지 않습니다.&rdquo;
+      <p className="text-[13.5px] font-bold text-white italic leading-[1.7] break-keep relative z-10">
+        &ldquo;{affirmationText}&rdquo;
       </p>
     </div>
   );
