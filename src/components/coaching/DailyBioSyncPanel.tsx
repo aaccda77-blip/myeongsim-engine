@@ -885,9 +885,16 @@ export default function DailyBioSyncPanel() {
                           );
                         })()}
                         {bioSajuAdvice && (
-                          <div className="bg-slate-800/40 rounded-xl p-3.5 border border-purple-500/20">
-                            <div className="flex items-center gap-2 mb-1.5"><Shield className="w-3.5 h-3.5 text-purple-400" /><span className="text-[10px] text-purple-400 font-mono tracking-widest uppercase">바이오-사주 통합 조언</span></div>
-                            <p className="text-[11px] text-slate-300 leading-relaxed break-keep">{bioSajuAdvice}</p>
+                          <div className="bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-xl p-4 border border-purple-500/30 shadow-lg shadow-purple-500/5 mt-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Zap className="w-4 h-4 text-purple-400 fill-purple-400/20" />
+                              <span className="text-[11px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-indigo-300 tracking-widest uppercase">
+                                운과 신체의 융합 분석
+                              </span>
+                            </div>
+                            <p className="text-[11.5px] text-slate-200 leading-relaxed break-keep font-medium">
+                              {bioSajuAdvice}
+                            </p>
                           </div>
                         )}
                       </>

@@ -5,6 +5,7 @@
  * - 맞춤형 "오늘의 고통 농도" 및 "돌파 키워드" 생성
  */
 import { DAILY_MISSION_DB } from '@/data/DailyMissionDB';
+import { DAILY_INTEGRATION_DB } from '@/data/DailyIntegrationDB';
 
 export type EnergyRelation = 'SYNC' | 'RESOURCE' | 'FLOW' | 'PRESSURE' | 'ACHIEVEMENT';
 
@@ -305,55 +306,14 @@ export function getBioSajuAdvice(
 ): string {
   if (!biorhythm || !harmony) return '';
 
-  const { physical, emotional, intellectual } = biorhythm;
+  const { physical, emotional, intellectual, overallScore } = biorhythm;
   
-  // 가장 높은 바이오리듬 수치 찾기 (주력 하드웨어)
-  const maxBioVal = Math.max(physical, emotional, intellectual);
-  let dominantBio = 'physical';
-  if (maxBioVal === emotional) dominantBio = 'emotional';
-  if (maxBioVal === intellectual) dominantBio = 'intellectual';
+  // 바이오리듬 전체 컨디션이 50 이상이면 High, 미만이면 Low
+  const isHighCondition = overallScore >= 50;
+  
+  // 십성 데이터 추출
+  const tenGod = harmony.tenGod || '비견';
+  const adviceData = DAILY_INTEGRATION_DB[tenGod] || DAILY_INTEGRATION_DB['비견'];
 
-  // 방전 상태 판별 (가장 높은 수치조차 -20 이하일 때만 완전 방전으로 간주)
-  const isDepleted = maxBioVal < -20;
-
-  // 일진 상태 (네트워크 트래픽/공격)
-  // 고통 농도(painLevel)가 높을수록 RED, 낮을수록 GREEN
-  const isIljinRed = harmony.relation === 'PRESSURE' || harmony.painLevel > 70; // 칠살/스트레스
-  const isIljinGreen = (!isIljinRed) && (harmony.relation === 'ACHIEVEMENT' || harmony.relation === 'RESOURCE' || harmony.painLevel < 30); // 재성/인성/합
-
-  // 1. 배터리가 완전히 방전되었을 때의 경고 (최우선)
-  if (isDepleted && isIljinRed) {
-    return '⚠️ [치명적 에러 위험] 모든 생체 배터리가 방전된 상태에서 외부의 악성 트래픽(충돌/과부하)까지 겹쳤습니다. 불필요한 외출과 만남을 모두 취소하고 절대 안정 및 오프라인 모드를 유지하십시오. 억지로 돌리면 런타임 에러가 발생합니다.';
-  }
-
-  if (isDepleted && isIljinGreen) {
-    return '🔋 [로우 배터리 모드] 외부 네트워크(일진)는 최상의 연결 상태를 보이나, 당신의 배터리가 방전 직전입니다. 운이 좋다고 직접 무리하게 뛰어다니지 말고, 시스템을 자동화하거나 타인에게 업무를 위임(Delegate)하여 좋은 운기를 효율적으로 흡수하세요.';
-  }
-
-  // 2. 일진이 최상(Green)일 때 주력 하드웨어에 따른 코칭
-  if (isIljinGreen) {
-    if (dominantBio === 'physical') {
-      return '🚀 [최적화: 액션] 외부 네트워크(일진)가 쾌적하고 하드웨어(체력)가 완충되었습니다. 책상에 앉아있지 말고 직접 발로 뛰며 외부 미팅과 계약을 주도하세요. 막힘없이 뚫리는 날입니다.';
-    } else if (dominantBio === 'emotional') {
-      return '🚀 [최적화: 네트워킹] 외부 트래픽(일진)이 우호적이고 당신의 공감 모듈(감정)이 최고조입니다. 오늘은 타인과의 대화, 설득, 갈등 조율에서 당신의 부드러운 카리스마가 100% 승리합니다.';
-    } else {
-      return '🚀 [최적화: 기획] 우주적 타이밍(일진)과 당신의 연산 프로세스(지성)가 완벽히 동기화되었습니다. 복잡한 기획, 문서 작업, 중요한 전략적 결단은 무조건 오늘 끝내십시오.';
-    }
-  }
-
-  // 3. 일진이 나쁠(Red) 때 주력 하드웨어에 따른 방어 코칭
-  if (isIljinRed) {
-    if (dominantBio === 'physical') {
-      return '🚨 [방화벽 가동: 체력] 외부에서 악성 트래픽(충돌/과부하)이 쏟아집니다. 다행히 하드웨어(체력)는 튼튼합니다. 이 에너지를 타인과 싸우는 데 낭비하지 말고, 혼자 묵묵히 쳐낼 수 있는 독립적인 단기 목표에 쏟아부으십시오.';
-    } else if (dominantBio === 'emotional') {
-      return '🚨 [방화벽 가동: 멘탈] 외부 공격(충돌)이 거세지만 다행히 당신의 멘탈 방화벽(감정)은 아주 견고합니다. 타인의 무례한 도발이나 압박에 흔들리지 말고 부드러운 카리스마로 상황을 진압하십시오.';
-    } else {
-      return '🚨 [방화벽 가동: 지성] 거센 공격(과부하)이 들어오지만, 당신의 논리 회로(지성)는 매우 냉철합니다. 감정적으로 대응하지 마세요. 상대의 허점을 파악하고 오직 객관적인 데이터(Data)로만 방어해야 합니다.';
-    }
-  }
-
-  // 4. 평범한 일진일 때
-  if (dominantBio === 'physical') return '⚡ 외부 환경은 평이합니다. 오늘은 몸을 움직이는 실행력(체력)이 뇌의 속도를 앞지릅니다. 생각하기 전에 일단 부딪히세요.';
-  if (dominantBio === 'emotional') return '💖 주변 사람들과의 관계가 매끄럽게 돌아갑니다. 평소 불편했던 사람에게 먼저 다가가 스몰토크를 제안해보세요.';
-  return '🧠 집중력과 논리력이 뛰어난 하루입니다. 조용히 내 자리를 지키며 밀린 과제나 복잡한 연산을 처리하세요.';
+  return isHighCondition ? adviceData.highCondition : adviceData.lowCondition;
 }
