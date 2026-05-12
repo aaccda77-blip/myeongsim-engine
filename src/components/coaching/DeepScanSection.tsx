@@ -238,7 +238,7 @@ interface Props {
   harmony: any;
 }
 
-export default function DeepScanSection({ sajuData }: Props) {
+export default function DeepScanSection({ sajuData, harmony }: Props) {
   const { deepScanResult, setDeepScanResult } = useReportStore();
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
