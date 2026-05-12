@@ -472,9 +472,9 @@ export default function DailyBioSyncPanel() {
   const [countdown, setCountdown] = useState('');
   const [streak, setStreak] = useState(1);
 
-  // ── 동적 3S 질문 상태
-  const [dynamicSteps, setDynamicSteps] = useState<any[]>([]);
-  const [isLoadingSteps, setIsLoadingSteps] = useState(false);
+  // ── 동적 3S 질문 상태 (동기화 모듈로 즉각 로딩)
+  // isLoadingSteps는 더 이상 필요 없지만 기존 컴포넌트 하위 호환성을 위해 false로 고정합니다.
+  const isLoadingSteps = false;
 
   // ── 사용자 데이터
   const dayMasterHanja  = useMemo(() => extractDayMasterHanja(reportData), [reportData]);
@@ -491,73 +491,176 @@ export default function DailyBioSyncPanel() {
     );
   }, [dayMasterHanja, todayPillar]);
 
-  // ── AI 3S 질문 Fetch (배포 시 일진에 따른 동적 생성)
-  useEffect(() => {
-    async function fetchDynamicQuestions() {
-      if (!reportData) return;
-      setIsLoadingSteps(true);
-      try {
-        const res = await fetch('/api/daily-questions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            sajuData: { dayMaster: dayMasterHanja }, 
-            pillarId: 'identity', // 기본 코어 영역
-            clientDate: new Date().toISOString().split('T')[0]
-          })
-        });
-        const data = await res.json();
-        if (data.success && data.questions?.steps) {
-          setDynamicSteps(data.questions.steps);
-        } else {
-          throw new Error('API 응답 실패');
+  // ── 5대 일진 에너지 기반 초고도화 질문 모듈 사전 (Dictionary)
+  const dynamicSteps = useMemo(() => {
+    const currentIlgan = dayMasterHanja || '辛';
+    const relation = harmony?.relation || 'SYNC';
+
+    const MODULES: Record<string, any[]> = {
+      SYNC: [
+        {
+          depth: 1, title: 'Somatic Grounding', color: '#3b82f6', icon: '🔍',
+          question: `[신체 자각] 지금 내 목이나 어깨가 뻣뻣하게 굳어 있거나, 내 주장을 관철시키고 싶은 충동이 강하게 들지 않는가?`,
+          tip: `${currentIlgan} 특유의 고집과 방어 기제가 신체적 긴장으로 나타나는 상태를 감지하세요.`,
+          choices: ['네, 무의식적으로 몸에 힘이 들어가고 방어적으로 변했습니다.', '아니요, 현재 평온하게 이완되어 내 의견을 고집하지 않고 있습니다.']
+        },
+        {
+          depth: 2, title: 'Cognitive Defusion', color: '#6366f1', icon: '🧠',
+          question: `[강박 인지] "내가 맞고 저 사람이 틀렸다"는 흑백논리적 사고방식이 머릿속을 지배하고 있지 않은가?`,
+          tip: `나와 타인을 분리하는 인지 왜곡을 객관적으로 감지하세요.`,
+          choices: ['네, 내 방식대로 상황을 통제하고 싶은 마음이 강합니다.', '아닙니다, 다른 사람의 관점도 타당할 수 있다고 생각합니다.']
+        },
+        {
+          depth: 3, title: 'Socratic Inquiry', color: '#8b5cf6', icon: '🔗',
+          question: `[인지 분리] 타인과의 이 마찰감은 객관적 문제 때문인가, 아니면 내 에고(Ego)가 상처받지 않으려는 방어기제인가?`,
+          tip: `타인은 나의 무의식을 비추는 거울입니다. 분노와 나를 분리하세요.`,
+          choices: ['이 불편함은 내 자존심을 지키려는 에고의 작용임을 자각합니다.', '아직 감정과 나를 완벽하게 분리해내기 어렵습니다.']
+        },
+        {
+          depth: 4, title: 'Radical Acceptance', color: '#ec4899', icon: '⚖️',
+          question: `[모순 직면] 나와 완전히 다른 타인의 행동과 생각을, 내 기준에 맞추려 하지 않고 있는 그대로 수용할 수 있는가?`,
+          tip: `통제를 쥐려는 손아귀의 힘을 푸는 순간, 거대한 강물이 보이기 시작합니다.`,
+          choices: ['통제권을 고집하지 않고 자연스러운 흐름에 맡기겠습니다.', '당장은 불안해서 통제권을 완전히 내려놓기 힘듭니다.']
+        },
+        {
+          depth: 5, title: 'Meta-Awareness', color: '#f59e0b', icon: '👁️',
+          question: `[순수 의식] 방금 전까지 고집부리던 나를 고요하게 바라보는 "이 존재"는 누구인가?`,
+          tip: `분노하고 좌절하는 에고를 조용히 바라보는 투명한 관찰자, 그것이 진짜 당신입니다.`,
+          choices: ['고요하게 모든 것을 지켜보는 침묵의 관찰자를 느꼈습니다.', '생각이 복잡합니다. 천천히 깊은 호흡만 3번 하겠습니다.']
         }
-      } catch (err) {
-        console.error('Failed to fetch daily questions:', err);
-        // API 실패 시 기존에 가지고 있던 정적 폴백(Fallback) 데이터 제공
-        const currentIlgan = dayMasterHanja || '辛';
-        const fallbackSteps = [
-          {
-            depth: 1, title: 'Somatic Grounding', color: '#3b82f6', icon: '🔍',
-            question: `[신체 자각] 지금 내 목이나 어깨가 뻣뻣하게 굳어 있지 않은가?`,
-            tip: `${currentIlgan} 특유의 긴장 상태를 감지하세요.`,
-            choices: ['네, 방금 몸에 힘이 들어간 것을 알아차렸습니다.', '아니요, 현재 평온하게 이완되어 있습니다.']
-          },
-          {
-            depth: 2, title: 'Cognitive Defusion', color: '#6366f1', icon: '🧠',
-            question: `[강박 인지] "반드시 이렇게 해야 해"라는 생각이 머리를 맴도는가?`,
-            tip: `인지 왜곡을 감지하세요.`,
-            choices: ['네, 쫓기듯 강박적인 생각 패턴이 돌아가고 있습니다.', '아닙니다, 내가 주도적으로 선택한 몰입 상태입니다.']
-          },
-          {
-            depth: 3, title: 'Socratic Inquiry', color: '#8b5cf6', icon: '🔗',
-            question: `[인지 분리] 이 감정이나 압박감은 나의 결단인가, 내 기질의 자동 반사인가?`,
-            tip: `감정과 나를 분리하세요.`,
-            choices: ['내 뇌의 코어 OS가 만들어낸 일시적 에러코드임을 자각합니다.', '아직 강렬한 감정과 나를 완벽하게 분리해내기 어렵습니다.']
-          },
-          {
-            depth: 4, title: 'Radical Acceptance', color: '#ec4899', icon: '⚖️',
-            question: `[모순 직면] 이 상황을 내 마음대로 통제하려는 시도가, 역설적으로 내 자유를 빼앗고 있지 않은가?`,
-            tip: `통제를 쥐려는 손아귀의 힘을 푸는 순간, 거대한 강물이 보이기 시작합니다.`,
-            choices: ['통제권을 고집하지 않고 자연스러운 흐름에 맡기겠습니다.', '당장은 불안해서 통제권을 완전히 내려놓기 힘듭니다.']
-          },
-          {
-            depth: 5, title: 'Meta-Awareness', color: '#f59e0b', icon: '👁️',
-            question: `[순수 의식] 방금 전까지 갈등하던 나를 고요하게 바라보는 "이 존재"는 누구인가?`,
-            tip: `분노하고 좌절하는 에고(Ego)를 조용히 바라보는 투명한 관찰자, 그것이 진짜 당신입니다.`,
-            choices: ['고요하게 모든 것을 지켜보는 침묵의 관찰자를 느꼈습니다.', '생각이 복잡합니다. 천천히 깊은 호흡만 3번 하겠습니다.']
-          }
-        ];
-        setDynamicSteps(fallbackSteps);
-      } finally {
-        setIsLoadingSteps(false);
-      }
-    }
-    
-    if (activeTab === 'patch' && dynamicSteps.length === 0) {
-      fetchDynamicQuestions();
-    }
-  }, [activeTab, reportData, dayMasterHanja]);
+      ],
+      RESOURCE: [
+        {
+          depth: 1, title: 'Somatic Grounding', color: '#3b82f6', icon: '🔍',
+          question: `[신체 자각] 머리가 무겁거나, 가슴이 답답하며 오만 가지 생각이 꼬리를 물고 이어지지 않는가?`,
+          tip: `${currentIlgan} 특유의 뇌 과부하 상태입니다. 신체보다 뇌의 에너지 소모가 큽니다.`,
+          choices: ['네, 머릿속이 복잡하고 생각의 스위치가 꺼지지 않습니다.', '아니요, 현재 머리가 맑고 불필요한 생각이 없습니다.']
+        },
+        {
+          depth: 2, title: 'Cognitive Defusion', color: '#6366f1', icon: '🧠',
+          question: `[강박 인지] 아직 일어나지 않은 미래에 대해 부정적인 시뮬레이션을 반복해서 돌리고 있지 않은가?`,
+          tip: `그 불안은 뇌가 만들어낸 스팸 메시지입니다. 내용물과 거리를 두세요.`,
+          choices: ['네, 최악의 시나리오를 상상하며 걱정하고 있습니다.', '아닙니다, 지금 이 순간의 현실에만 집중하고 있습니다.']
+        },
+        {
+          depth: 3, title: 'Socratic Inquiry', color: '#8b5cf6', icon: '🔗',
+          question: `[인지 분리] 내 머리를 맴도는 이 생각들은 '객관적 사실(Fact)'인가, 아니면 '뇌가 만들어낸 허상'인가?`,
+          tip: `수많은 생각 중 99%는 쓰레기입니다. 의미 부여를 멈추세요.`,
+          choices: ['대부분 객관적 사실이 아닌 나의 상상과 불안임을 자각합니다.', '아직은 이 생각들이 실제 일어날 현실처럼 두렵습니다.']
+        },
+        {
+          depth: 4, title: 'Radical Acceptance', color: '#ec4899', icon: '⚖️',
+          question: `[모순 직면] 밀려오는 이 혼란스러운 불안감과 생각들을 억지로 없애려 하지 않고, 그저 구름처럼 흘러가게 둘 수 있는가?`,
+          tip: `불안을 통제하려는 시도 자체가 더 큰 불안의 연료가 됩니다.`,
+          choices: ['생각을 통제하지 않고 그저 배경음악처럼 흘러가게 두겠습니다.', '생각을 멈추고 싶은데 자꾸만 끌려들어갑니다.']
+        },
+        {
+          depth: 5, title: 'Meta-Awareness', color: '#f59e0b', icon: '👁️',
+          question: `[순수 의식] 끊임없이 떠드는 나의 생각(Mind)과 그것을 알아차리는 나(Observer)를 분리할 수 있는가?`,
+          tip: `당신은 생각 발전소가 아니라, 그것이 상영되는 텅 빈 스크린입니다.`,
+          choices: ['생각과 나를 완전히 분리하여 스크린 상태에 머물렀습니다.', '생각의 흐름이 너무 빨라 관찰자 모드를 유지하기 어렵습니다.']
+        }
+      ],
+      FLOW: [
+        {
+          depth: 1, title: 'Somatic Grounding', color: '#3b82f6', icon: '🔍',
+          question: `[신체 자각] 심장 박동이 빨라지며, 당장 무언가를 말하거나 즉흥적으로 행동하고 싶은 강한 충동이 느껴지는가?`,
+          tip: `${currentIlgan} 특유의 발산(도파민) 에너지가 몸을 들뜨게 만들고 있습니다.`,
+          choices: ['네, 에너지가 넘쳐서 당장 무엇이든 표출하고 싶습니다.', '아니요, 차분하게 이완된 상태로 행동을 제어하고 있습니다.']
+        },
+        {
+          depth: 2, title: 'Cognitive Defusion', color: '#6366f1', icon: '🧠',
+          question: `[강박 인지] "당장 이걸 해버려야 해", "지금 이 말을 꼭 해야 직성이 풀려"라는 조급함이 올라오지 않는가?`,
+          tip: `충동적인 '행동 강박'을 인지하세요. 멈추지 않으면 실수로 이어집니다.`,
+          choices: ['네, 과정을 생략하고 즉각적인 결과를 보고 싶은 마음이 큽니다.', '아닙니다, 충동에 휩쓸리지 않고 속도를 조절하고 있습니다.']
+        },
+        {
+          depth: 3, title: 'Socratic Inquiry', color: '#8b5cf6', icon: '🔗',
+          question: `[인지 분리] 나의 이 행동이나 말은 장기적 가치를 향한 것인가, 아니면 일시적 감정의 배설인가?`,
+          tip: `에너지를 낭비하지 마세요. 목적 없는 발산은 공허함만 남깁니다.`,
+          choices: ['일시적인 감정적 반응임을 자각하고 한 발 물러서겠습니다.', '장기적 목표에 부합하는 건설적인 아웃풋입니다.']
+        },
+        {
+          depth: 4, title: 'Radical Acceptance', color: '#ec4899', icon: '⚖️',
+          question: `[모순 직면] 완벽하게 다듬어지지 않은 상태로 세상에 던져지는 나의 미숙함을, 수치심 없이 있는 그대로 수용할 수 있는가?`,
+          tip: `창조적 에너지는 필연적으로 실수와 파격을 동반합니다. 두려워 마세요.`,
+          choices: ['결과물의 불완전함을 수용하고 피드백을 기꺼이 감수하겠습니다.', '실수할까 봐 두려워 아직 마음껏 에너지를 발산하지 못하겠습니다.']
+        },
+        {
+          depth: 5, title: 'Meta-Awareness', color: '#f59e0b', icon: '👁️',
+          question: `[순수 의식] 폭포수처럼 쏟아지는 감정과 창조성 속에서도, 휩쓸리지 않고 굳건히 닻을 내린 "의식의 중심"을 감지할 수 있는가?`,
+          tip: `충동에 올라타 서핑을 즐기되, 파도에 잡아먹히지 마십시오.`,
+          choices: ['강렬한 파도 위에서도 고요하게 균형을 잡는 나를 발견했습니다.', '에너지가 너무 강해 아직은 통제하기가 버겁습니다.']
+        }
+      ],
+      PRESSURE: [
+        {
+          depth: 1, title: 'Somatic Grounding', color: '#3b82f6', icon: '🔍',
+          question: `[신체 자각] 위장이 조이거나 명치가 뻐근하며, 호흡이 얕아지는 무거운 억압감(스트레스)을 느끼고 있는가?`,
+          tip: `${currentIlgan} 특유의 책임감과 외부 압박이 교감신경을 자극하고 있습니다.`,
+          choices: ['네, 어깨가 짓눌리는 듯한 긴장감과 심리적 압박이 느껴집니다.', '아니요, 현재 어떠한 압박 없이 깊고 편안한 호흡을 하고 있습니다.']
+        },
+        {
+          depth: 2, title: 'Cognitive Defusion', color: '#6366f1', icon: '🧠',
+          question: `[강박 인지] "내가 다 책임져야 해", "조금이라도 실수하면 끝장이야"라는 극단적인 완벽주의 렌즈를 끼고 있지 않은가?`,
+          tip: `당신의 뇌가 책임감을 과장하여 경고등을 울리고 있습니다.`,
+          choices: ['네, 실패에 대한 두려움 때문에 극도로 예민해져 있습니다.', '아닙니다, 주어진 짐을 객관적인 크기만큼만 인지하고 있습니다.']
+        },
+        {
+          depth: 3, title: 'Socratic Inquiry', color: '#8b5cf6', icon: '🔗',
+          question: `[인지 분리] 나를 짓누르는 이 압박감은 나를 망가뜨리려는 적(Enemy)인가, 아니면 나의 역량을 키우려는 우주의 훈련(Training)인가?`,
+          tip: `스트레스(코르티솔)를 성장의 연료로 프레임 리프레이밍(Reframing) 하세요.`,
+          choices: ['이 고통은 내 한계를 확장하는 근력 운동의 과정임을 자각합니다.', '아직은 이 상황이 너무 버겁고 도망치고 싶습니다.']
+        },
+        {
+          depth: 4, title: 'Radical Acceptance', color: '#ec4899', icon: '⚖️',
+          question: `[모순 직면] 내가 통제할 수 없는 불합리한 외부 환경과 책임을 회피하지 않고, 그저 비바람을 맞듯 온몸으로 뚫고 지나갈 수 있는가?`,
+          tip: `진정한 강함은 부러지지 않는 것이 아니라 꺾이고도 다시 일어서는 것입니다.`,
+          choices: ['피하지 않겠습니다. 이 무거운 책임을 기꺼이 어깨에 짊어지겠습니다.', '솔직히 지금은 이 무거운 짐을 내려놓고 회피하고 싶습니다.']
+        },
+        {
+          depth: 5, title: 'Meta-Awareness', color: '#f59e0b', icon: '👁️',
+          question: `[순수 의식] 태풍의 눈 한가운데처럼, 외부의 엄청난 압박 속에서도 절대 침범받지 않는 당신 내면의 가장 고요한 영토를 확보했는가?`,
+          tip: `진정한 주권자(Sovereign)는 환경이 지배할지라도 내면의 고요함을 뺏기지 않습니다.`,
+          choices: ['폭풍 속에서도 절대 흔들리지 않는 내 안의 고요한 핵을 찾았습니다.', '압박감이 커서 심호흡을 통해 내면의 코어를 다져야겠습니다.']
+        }
+      ],
+      ACHIEVEMENT: [
+        {
+          depth: 1, title: 'Somatic Grounding', color: '#3b82f6', icon: '🔍',
+          question: `[신체 자각] 눈이 뻑뻑하거나 턱관절에 힘이 들어가며, 시선이 여러 곳으로 바쁘게 흩어지는 극도의 산만함을 경험하고 있는가?`,
+          tip: `${currentIlgan} 특유의 도파민 사냥 본능(결과 지향성)이 과활성화된 상태입니다.`,
+          choices: ['네, 마음이 급해서 여러 가지를 한꺼번에 처리하려고 쫓기고 있습니다.', '아니요, 현재 한 가지에만 고요하게 시선을 고정하고 있습니다.']
+        },
+        {
+          depth: 2, title: 'Cognitive Defusion', color: '#6366f1', icon: '🧠',
+          question: `[강박 인지] "이것도 완벽해야 하고, 저것도 빨리 끝내야 해"라며 통제할 수 없는 수많은 목표를 동시에 쥐려는 강박에 빠져있지 않은가?`,
+          tip: `멀티태스킹은 환상입니다. 뇌는 쪼개질수록 성능이 하락합니다.`,
+          choices: ['네, 수많은 투두 리스트(To-Do)에 압도되어 초점이 분산되었습니다.', '아닙니다, 불필요한 가지를 치고 명확한 방향을 유지하고 있습니다.']
+        },
+        {
+          depth: 3, title: 'Socratic Inquiry', color: '#8b5cf6', icon: '🔗',
+          question: `[인지 분리] 오늘 시도하려는 수많은 일들 중, 진정으로 내 삶을 바꾸고 보상을 가져다주는 단 하나(The One Thing)의 핵심 과녁은 무엇인가?`,
+          tip: `나머지 9개는 포기하십시오. 오직 1개의 핀을 쓰러뜨리면 나머지도 도미노처럼 쓰러집니다.`,
+          choices: ['가장 중요한 단 하나의 핵심 목표를 명확히 분리해냈습니다.', '아직 모든 것이 다 중요해 보여 가지치기를 하지 못했습니다.']
+        },
+        {
+          depth: 4, title: 'Radical Acceptance', color: '#ec4899', icon: '⚖️',
+          question: `[모순 직면] 모든 것을 다 가지려는 욕심을 꺾고, 불필요한 기회들을 내 손으로 쓰레기통에 처박는 상실감을 묵묵히 견뎌낼 수 있는가?`,
+          tip: `포기(Give up)하는 용기가 있어야 진정한 쟁취(Achieve)가 가능합니다.`,
+          choices: ['더 큰 쟁취를 위해 가치 없는 것들을 과감하게 버리겠습니다.', '버렸다가 나중에 후회할까 봐 아직 손아귀를 펴지 못하겠습니다.']
+        },
+        {
+          depth: 5, title: 'Meta-Awareness', color: '#f59e0b', icon: '👁️',
+          question: `[순수 의식] 세상의 수많은 소음이 음소거되고, 오직 당신의 단 하나의 타겟(목표물)만 레이저처럼 선명하게 빛나는 완전한 몰입 상태에 진입했는가?`,
+          tip: `에고(Ego)를 지우십시오. 오직 '행위(Do)'와 '목표물'만 존재하는 순수 관찰 상태입니다.`,
+          choices: ['모든 소음이 사라지고, 목표를 향한 차가운 몰입에 진입했습니다.', '아직 미련이 남아 시야가 흐립니다. 호흡으로 초점을 모으겠습니다.']
+        }
+      ]
+    };
+
+    return MODULES[relation] || MODULES['SYNC'];
+  }, [dayMasterHanja, harmony]);
 
   const biorhythm = useMemo(() => {
     if (!birthDate) return null;
