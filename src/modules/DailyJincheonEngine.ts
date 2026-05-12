@@ -4,6 +4,7 @@
  * - 사용자의 일간(日干)과 오늘의 일진(日辰)의 관계를 분석
  * - 맞춤형 "오늘의 고통 농도" 및 "돌파 키워드" 생성
  */
+import { DAILY_MISSION_DB } from '@/data/DailyMissionDB';
 
 export type EnergyRelation = 'SYNC' | 'RESOURCE' | 'FLOW' | 'PRESSURE' | 'ACHIEVEMENT';
 
@@ -228,6 +229,7 @@ export function analyzeDailyHarmony(
   const microCoaching = `단, 지지의 ${todayZhi}(${zhiElement})가 ${getZhiRelationDetails(userElement, zhiElement)}`;
 
   const tenGod = getTenGodType(userDayMasterHanja, todayGan, relation);
+  const missionData = DAILY_MISSION_DB[tenGod] || DAILY_MISSION_DB['비견'];
 
   return {
     todayGan,
@@ -237,11 +239,11 @@ export function analyzeDailyHarmony(
     relation,
     tenGod,
     painLevel,
-    painReason: coaching.painReason,
+    painReason: missionData.summary,
     breakthroughKeyword: coaching.breakthroughs[seed % coaching.breakthroughs.length],
     scanMessage: coaching.scans[idx].replace('[일간특성]', trait),
     syncMessage: coaching.syncs[idx],
-    shiftMission: coaching.shifts[idx],
+    shiftMission: missionData.missions[seed % missionData.missions.length],
     energyColor: coaching.color,
     energyEmoji: coaching.emoji,
     neuroExplanation: coaching.neuroExplanation,

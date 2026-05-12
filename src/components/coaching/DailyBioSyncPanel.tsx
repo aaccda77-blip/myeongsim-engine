@@ -611,23 +611,8 @@ export default function DailyBioSyncPanel() {
     : harmony ? harmony.painLevel : biorhythm ? biorhythm.overallScore : 50;
   const energyColor = harmony?.energyColor ?? '#7c3aed';
 
-  const VERDICT: Record<string, string> = {
-    SYNC:        '오늘은 나를 가장 깊이 마주하고 확신을 가지는 날',
-    RESOURCE:    '우주가 당신에게 영양분을 쏟아붓는 수용의 날',
-    FLOW:        '내 안의 에너지가 세상 밖으로 거침없이 뻗어가는 날',
-    PRESSURE:    '강력한 규칙과 책임감이 당신을 명검으로 다듬는 날',
-    ACHIEVEMENT: '과녁을 명확히 하고 결과를 온전히 쟁취해내는 날',
-  };
-  const verdict = harmony ? VERDICT[harmony.relation as string] || '오늘의 코칭을 확인하세요' : '오늘의 코칭을 확인하세요';
-
-  const MISSION: Record<string, string> = {
-    SYNC:        '오늘 나를 자극하는 타인을 거울 삼아 배울 점 하나를 기록하세요.',
-    RESOURCE:    '오늘 무리한 업무보다 책 1장, 영상 1편이라도 내면 채우기에 집중하세요.',
-    FLOW:        '오전 11시 이전, 머릿속에만 있던 생각이나 제안을 과감히 밖으로 던지세요.',
-    PRESSURE:    '가장 피하고 싶었던 핵심 업무 하나에만 90분을 집중 투자해 정면 돌파하세요.',
-    ACHIEVEMENT: '오늘 할 여러 일 중 목표 달성에 직결되는 단 하나만 남기고 모두 쳐내세요.',
-  };
-  const mission = harmony ? MISSION[harmony.relation as string] : null;
+  const verdict = harmony ? harmony.painReason : '오늘의 코칭을 확인하세요';
+  const mission = harmony ? harmony.shiftMission : null;
 
   const TABS: { id: TabType; label: string; emoji: string }[] = [
     { id: 'harmony',  label: '일진 에너지',    emoji: '⚡' },
