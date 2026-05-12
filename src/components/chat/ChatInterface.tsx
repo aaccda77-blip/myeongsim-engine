@@ -60,7 +60,9 @@ import QuestCard from '../coaching/QuestCard';
 // [NEW] 3S Scenario Interactive Modal State
 import EmotionTagSelector from '../coaching/EmotionTagSelector';
 import Saju3SScenarioModal from '../coaching/Saju3SScenarioModal';
-import { SAJU_3S_SCENARIOS, getScenarioByTag, getTagsBySaju, Saju3SScenario } from '@/data/Saju3SScenarios';
+import { SAJU_3S_SCENARIOS, getScenarioByTag, getTagsBySaju, getDailyTagsBySaju, Saju3SScenario } from '@/data/Saju3SScenarios';
+import { getTodayDailyPillar } from '@/utils/SajuCalculator';
+import { analyzeDailyHarmony } from '@/modules/DailyJincheonEngine';
 
 // [NEW] Visual Psychology Fusion Component
 import { PsychSajuFusionView } from '../visual/PsychSajuFusionView';
@@ -195,14 +197,25 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
 
         // 4. 결과 도출
         if (!finalHanja) {
-            // [BUG FIX] 이전 코드: 여기서 甲 태그를 반환하여 누가 무엇을 입력해도 동일한 태그 표시
-            // 수정: 데이터 구조를 로그로 출력하고, 빈 배열 반환 (사용자에게 데이터 없음 안내)
             console.warn("⚠️ [Sync Fail] Could not detect Ilgan. ReportData structure:", JSON.stringify(reportData).substring(0, 300));
             return [];
         }
 
-        console.log("🎯 [Sync Realtime] Success! Displaying tags for:", finalHanja);
-        return getTagsBySaju(finalHanja);
+        // [초고도화] 일진(Daily GanZhi)을 계산하여 10개 태그 중 오늘의 에너지(Relation)에 맞는 2개만 필터링
+        try {
+            const todayPillar = getTodayDailyPillar();
+            const harmony = analyzeDailyHarmony(
+                finalHanja,
+                todayPillar.gan, todayPillar.zhi,
+                todayPillar.ganElement, todayPillar.zhiElement
+            );
+            
+            console.log("🎯 [Sync Realtime] Success! Displaying dynamic tags for:", finalHanja, "Relation:", harmony.relation);
+            return getDailyTagsBySaju(finalHanja, harmony.relation);
+        } catch (e) {
+            console.error("Failed to calculate daily harmony for tags:", e);
+            return getTagsBySaju(finalHanja).slice(0, 2); // 에러 시 기본 2개 반환
+        }
     }, [reportData]);
 
 

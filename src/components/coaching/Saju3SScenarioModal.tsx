@@ -104,7 +104,7 @@ export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, on
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 p-6 flex flex-col justify-center relative">
+                <div className="flex-1 p-6 flex flex-col justify-center relative min-h-[350px]">
                     <AnimatePresence mode="wait">
                         {step === 'TRIGGER' && (
                             <motion.div
@@ -138,15 +138,28 @@ export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, on
                                 initial="hidden"
                                 animate="visible"
                                 exit="exit"
-                                className="flex flex-col space-y-6"
+                                className="flex flex-col h-full"
                             >
-                                <div className="flex items-center gap-3 text-2xl font-black text-white">
+                                <div className="flex items-center gap-3 text-2xl font-black text-white mb-6">
                                     <Search className="w-8 h-8 text-cyan-400" />
-                                    <h2>Scan. 상태 자각</h2>
+                                    <h2>1. 상태 자각 (Scan)</h2>
                                 </div>
-                                <div className="bg-cyan-900/20 border border-cyan-500/30 p-4 rounded-2xl">
-                                    <p className="text-cyan-200 font-medium mb-4">{scenario.scan.uiMessage}</p>
-                                    <p className="text-gray-300 leading-relaxed text-sm">{displayData.scan}</p>
+                                <div className="bg-cyan-900/20 border border-cyan-500/30 p-5 rounded-2xl flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <p className="text-cyan-200 font-medium mb-4 text-lg">{scenario.scan.uiMessage}</p>
+                                        <p className="text-gray-300 leading-relaxed text-base">{displayData.scan}</p>
+                                    </div>
+                                    <div className="mt-8 space-y-3">
+                                        <p className="text-xs text-gray-400 mb-2">Q. 지금 당신도 이런 상태를 자각하시나요?</p>
+                                        <button onClick={handleNext} className="w-full text-left p-4 rounded-xl border border-cyan-500/30 bg-cyan-900/30 hover:bg-cyan-800/50 text-white font-medium transition-colors flex items-center justify-between group">
+                                            <span>네, 정확히 그런 압박감을 느끼고 있습니다.</span>
+                                            <ArrowRight className="w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </button>
+                                        <button onClick={handleNext} className="w-full text-left p-4 rounded-xl border border-white/5 hover:bg-white/10 text-gray-400 hover:text-gray-200 transition-colors flex items-center justify-between group">
+                                            <span>아니요, 지금은 꽤 안정적입니다. (그래도 진행)</span>
+                                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </button>
+                                    </div>
                                 </div>
                             </motion.div>
                         )}
@@ -158,15 +171,24 @@ export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, on
                                 initial="hidden"
                                 animate="visible"
                                 exit="exit"
-                                className="flex flex-col space-y-6"
+                                className="flex flex-col h-full"
                             >
-                                <div className="flex items-center gap-3 text-2xl font-black text-white">
+                                <div className="flex items-center gap-3 text-2xl font-black text-white mb-6">
                                     <RefreshCw className="w-8 h-8 text-purple-400" />
-                                    <h2>Sync. 본성 동기화</h2>
+                                    <h2>2. 본성 수용 (Sync)</h2>
                                 </div>
-                                <div className="bg-purple-900/20 border border-purple-500/30 p-4 rounded-2xl">
-                                    <p className="text-purple-200 font-medium mb-4">{scenario.sync.uiMessage}</p>
-                                    <p className="text-gray-300 leading-relaxed text-sm">{displayData.sync}</p>
+                                <div className="bg-purple-900/20 border border-purple-500/30 p-5 rounded-2xl flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <p className="text-purple-200 font-medium mb-4 text-lg">{scenario.sync.uiMessage}</p>
+                                        <p className="text-gray-300 leading-relaxed text-base">{displayData.sync}</p>
+                                    </div>
+                                    <div className="mt-8 space-y-3">
+                                        <p className="text-xs text-gray-400 mb-2">Q. 이것이 단점이 아니라 당신의 위대한 본능임을 수용하십니까?</p>
+                                        <button onClick={handleNext} className="w-full text-left p-4 rounded-xl border border-purple-500/30 bg-purple-900/30 hover:bg-purple-800/50 text-white font-medium transition-colors flex items-center justify-between group">
+                                            <span>네, 나를 괴롭히던 감정의 진짜 원리를 이해했습니다.</span>
+                                            <ArrowRight className="w-4 h-4 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </button>
+                                    </div>
                                 </div>
                             </motion.div>
                         )}
@@ -178,54 +200,47 @@ export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, on
                                 initial="hidden"
                                 animate="visible"
                                 exit="exit"
-                                className="flex flex-col space-y-6"
+                                className="flex flex-col h-full"
                             >
-                                <div className="flex items-center gap-3 text-2xl font-black text-white">
+                                <div className="flex items-center gap-3 text-2xl font-black text-white mb-6">
                                     <CheckCircle2 className="w-8 h-8 text-primary-gold" />
-                                    <h2>Shift. 에너지 전환</h2>
+                                    <h2>3. 에너지 전환 (Shift)</h2>
                                 </div>
-                                <div className="bg-primary-gold/10 border border-primary-gold/30 p-4 rounded-2xl">
-                                    <p className="text-primary-gold font-medium mb-4">{scenario.shift.uiMessage}</p>
-                                    <p className="text-gray-300 leading-relaxed text-sm mb-6">{displayData.shift}</p>
+                                <div className="bg-primary-gold/10 border border-primary-gold/30 p-5 rounded-2xl flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <p className="text-primary-gold font-medium mb-4 text-lg">{scenario.shift.uiMessage}</p>
+                                        <p className="text-gray-300 leading-relaxed text-base mb-6">{displayData.shift}</p>
 
-                                    <div className="bg-black/40 p-4 rounded-xl border border-white/5">
-                                        <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">오늘의 Shift 퀘스트</p>
-                                        <p className="text-white font-medium mb-3">{scenario.shift.quest}</p>
-                                        <div className="flex flex-col gap-1 border-t border-white/10 pt-3">
-                                            <span className="text-xs text-gray-400">{scenario.shift.questAction}</span>
-                                            <span className="text-primary-gold font-bold italic">"{scenario.shift.questMantra}"</span>
+                                        <div className="bg-black/40 p-5 rounded-xl border border-white/5 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-24 h-24 bg-primary-gold/10 rounded-full blur-2xl -mr-10 -mt-10" />
+                                            <p className="text-xs text-primary-gold/70 font-bold tracking-widest mb-2 flex items-center gap-1">
+                                                <Star className="w-3 h-3" /> TODAY'S QUEST
+                                            </p>
+                                            <p className="text-white font-bold text-lg mb-3">{scenario.shift.quest}</p>
+                                            <div className="flex flex-col gap-1 border-t border-white/10 pt-3">
+                                                <span className="text-xs text-gray-400">{scenario.shift.questAction}</span>
+                                                <span className="text-primary-gold font-bold italic">"{scenario.shift.questMantra}"</span>
+                                            </div>
                                         </div>
+                                    </div>
+                                    
+                                    <div className="mt-8">
+                                        <button
+                                            onClick={handleNext}
+                                            disabled={isSaving}
+                                            className="w-full py-4 rounded-xl font-bold transition-all bg-primary-gold text-black hover:bg-yellow-500 hover:scale-[1.02] shadow-[0_0_20px_rgba(212,175,55,0.4)] flex justify-center items-center gap-2"
+                                        >
+                                            {isSaving ? (
+                                                <><Loader2 className="w-5 h-5 animate-spin" /> 연산 중...</>
+                                            ) : (
+                                                <><CheckCircle2 className="w-5 h-5" /> 퀘스트 수락하고 완료하기</>
+                                            )}
+                                        </button>
                                     </div>
                                 </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </div>
-
-                {/* Footer Controls */}
-                <div className="p-4 border-t border-white/5 bg-slate-800/30 flex justify-end">
-                    {step !== 'TRIGGER' && (
-                        <button
-                            onClick={handleNext}
-                            disabled={isSaving}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${step === 'SHIFT'
-                                ? 'bg-primary-gold text-black hover:bg-yellow-500 hover:scale-105 shadow-[0_0_15px_rgba(212,175,55,0.4)] disabled:opacity-70 disabled:hover:scale-100'
-                                : 'bg-white/10 text-white hover:bg-white/20'
-                                }`}
-                        >
-                            {isSaving ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    저장 중...
-                                </>
-                            ) : (
-                                <>
-                                    {step === 'SHIFT' ? '퀘스트 수락하기' : '다음 단계로'}
-                                    {step !== 'SHIFT' && <ArrowRight className="w-4 h-4" />}
-                                </>
-                            )}
-                        </button>
-                    )}
                 </div>
 
                 <style>{`

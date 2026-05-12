@@ -319,6 +319,20 @@ export const getTagsBySaju = (stemChar: string | undefined): string[] => {
     return match ? match.tags : Object.values(SAJU_3S_SCENARIOS)[0].tags; 
 };
 
+export const getDailyTagsBySaju = (stemChar: string | undefined, relation: string): string[] => {
+    const allTags = getTagsBySaju(stemChar);
+    if (!allTags || allTags.length < 10) return allTags;
+    
+    switch(relation) {
+        case 'SYNC': return [allTags[0], allTags[1]];
+        case 'RESOURCE': return [allTags[2], allTags[3]];
+        case 'FLOW': return [allTags[4], allTags[5]];
+        case 'PRESSURE': return [allTags[6], allTags[7]];
+        case 'ACHIEVEMENT': return [allTags[8], allTags[9]];
+        default: return [allTags[0], allTags[1]];
+    }
+};
+
 export const getScenarioByTag = (tag: string): Saju3SScenario | undefined => {
     return Object.values(SAJU_3S_SCENARIOS).find((scenario) => scenario.tags.includes(tag));
 };
