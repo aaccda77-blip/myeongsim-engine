@@ -23,7 +23,7 @@ export default function TimelineView() {
         return (
             <div className="h-full flex flex-col items-center justify-center">
                 <Loader2 className="w-8 h-8 text-primary-olive animate-spin mb-2" />
-                <p className="text-gray-500 text-sm">운의 흐름을 읽고 있습니다...</p>
+                <p className="text-gray-500 text-sm">사용자의 기질 데이터를 읽고 있습니다...</p>
             </div>
         );
     }
@@ -107,7 +107,7 @@ export default function TimelineView() {
                 <span className="text-xs text-primary-olive font-bold tracking-widest uppercase border border-primary-olive/30 px-3 py-1 rounded-full bg-primary-olive/10">
                     Part 3. Flow of Fate
                 </span>
-                <h2 className="text-2xl font-serif font-bold text-white mt-4">운의 흐름과 타이밍</h2>
+                <h2 className="text-2xl font-serif font-bold text-white mt-4">사용자의 기질 데이터와 타이밍</h2>
                 <p className="text-sm text-gray-400 mt-2">당신의 12년 흐름을 미리 확인하세요.</p>
             </motion.div>
 

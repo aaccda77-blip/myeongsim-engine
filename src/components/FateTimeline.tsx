@@ -27,7 +27,7 @@ export default function FateTimeline({ timeline }: TimelineProps) {
     return (
         <section className="py-24 px-4 overflow-hidden">
             <div className="max-w-6xl mx-auto">
-                <h2 className="text-3xl font-bold text-white mb-12 text-center">Part 3. 운의 흐름 (Flow of Fate)</h2>
+                <h2 className="text-3xl font-bold text-white mb-12 text-center">Part 3. 사용자의 기질 데이터 (Flow of Fate)</h2>
 
                 <div ref={scrollRef} className="flex overflow-x-auto pb-8 gap-6 snap-x hide-scrollbar">
                     {timeline.map((item, idx) => (

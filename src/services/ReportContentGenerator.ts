@@ -248,7 +248,7 @@ function generateChronosSection(): ReportSection {
         subtitle: '10년 대운과 월별 리듬',
         pageRange: '76-80',
         content: [
-            '## 운의 흐름 분석',
+            '## 사용자의 기질 데이터 분석',
             '',
             '### 📅 10년 대운 (Decade Flow)',
             ...Array.from({ length: 10 }, (_, i) =>

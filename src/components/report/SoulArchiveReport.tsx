@@ -44,7 +44,7 @@ const PARTS = [
     { id: 'tengods', title: 'PART 5', subtitle: '십성 분석', icon: '⚡', color: SECTION_COLORS.tengods },
     { id: 'stars', title: 'PART 6', subtitle: '12운성', icon: '⭐', color: SECTION_COLORS.stars },
     { id: 'void', title: 'PART 7', subtitle: '공망 이론', icon: '🕳️', color: SECTION_COLORS.void },
-    { id: 'chronos', title: 'PART 8', subtitle: '운의 흐름', icon: '⏳', color: SECTION_COLORS.chronos },
+    { id: 'chronos', title: 'PART 8', subtitle: '사용자의 기질 데이터', icon: '⏳', color: SECTION_COLORS.chronos },
     { id: 'energy', title: 'PART 9', subtitle: '에너지 사이클', icon: '🔄', color: SECTION_COLORS.energy },
     { id: 'therapy', title: 'PART 10', subtitle: '심리 치유', icon: '🧠', color: SECTION_COLORS.therapy },
     { id: 'startup', title: 'PART 11', subtitle: '성장 전략', icon: '🚀', color: SECTION_COLORS.startup },
@@ -571,7 +571,7 @@ function ChronosSection({ iljuKey }: { iljuKey: string }) {
             className="space-y-6"
         >
             <SectionHeader
-                title="운의 흐름 (Chronos)"
+                title="사용자의 기질 데이터 (Chronos)"
                 subtitle="10년 라이프 웨이브와 월별 리듬"
                 gradient={SECTION_COLORS.chronos}
             />

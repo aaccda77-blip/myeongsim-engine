@@ -47,7 +47,7 @@ export const SAJU_MODES: Record<string, QuantumMode> = {
 export const DAILY_MODES: Record<string, QuantumMode> = {
     'ms_daily_quest': {
         title: "⚔️ 오늘의 퀘스트 (Daily Quest)",
-        subtitle: "오늘의 운을 200% 활용하는 법",
+        subtitle: "오늘의 기질 데이터를 200% 활용하는 법",
         core_concept: "운은 기다리는 게 아니라 **'쓰는 것'**입니다. 오늘 들어온 **'재성(Money)'** 기운을 잡기 위해 지금 당장 해야 할 **'행동 미션'**을 드립니다.",
         saju_analysis_guide: "Based on today's Iljin (Daily Pillar), assign a specific micro-mission. E.g., If Fire day -> 'Speak up/Present'. If Water day -> 'Plan/Think'."
     },

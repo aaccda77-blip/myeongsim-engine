@@ -65,7 +65,7 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA") 
 
     // --- PART 3: CHRONOS (Time Flow) - 30 Pages simulation ---
     report += `\n---\n\n`;
-    report += `## PART 3. 운의 흐름 (Chronos Analysis)\n\n`;
+    report += `## PART 3. 사용자의 기질 데이터 (Chronos Analysis)\n\n`;
     report += `향후 10년의 대운과 12개월의 상세 흐름을 분석합니다.\n\n`;
 
     report += `### 3.1 10년 대운 (The Decade Flow)\n`;

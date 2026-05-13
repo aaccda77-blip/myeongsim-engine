@@ -45,7 +45,7 @@ export default function VisualSajuDashboard({ onClose, onChatIntent, birthDate, 
 
                 {/* 2. Life Graph */}
                 <div className="mb-4">
-                    <h3 className="text-gray-400 text-xs font-bold uppercase mb-1 px-1">운의 흐름 (Flow)</h3>
+                    <h3 className="text-gray-400 text-xs font-bold uppercase mb-1 px-1">사용자의 기질 데이터 (Flow)</h3>
                     <LifeCurveChart onSelectAge={(age, score) => setSelectedAge({ age, score })} birthDate={birthDate} />
                 </div>
 

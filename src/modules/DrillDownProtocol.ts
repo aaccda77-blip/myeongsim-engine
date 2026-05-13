@@ -493,7 +493,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         neuro_trigger: "오늘 뭘 해야 운이 트일까?",
         style: 'default',
         sub_menus: [
-            { id: "d_0", label: "⚔️ 오늘의 퀘스트 (Quest)", desc: "오늘의 운을 200% 활용법", intent: "ms_daily_quest" },
+            { id: "d_0", label: "⚔️ 오늘의 퀘스트 (Quest)", desc: "오늘의 기질 데이터를 200% 활용법", intent: "ms_daily_quest" },
             { id: "d_1", label: "🔋 오행 에너지 충전소 (Charge)", desc: "부족한 기운 즉시 처방", intent: "ms_energy_station" },
             { id: "d_3", label: "🧘 명상 가이드", desc: "5분 마음 정화", intent: "meditation_guide" },
             { id: "d_4", label: "✅ 미션 기록", desc: "실천 이력 확인", intent: "mission_history" }
