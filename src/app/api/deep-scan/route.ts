@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { sajuData, clientDate, harmony } = body; // ✅ 클라이언트 로컬 날짜 및 harmony 수신
+    const { sajuData, clientDate, harmony, biorhythm } = body; // ✅ 바이오리듬 추가 수신
 
     // ── 서버사이드 사주 계산 ─────────────────
     const neural = calculateNeuralCode(sajuData);
@@ -183,6 +183,10 @@ ${neural.pillars}
 - 일간(내담자): ${neural.day.slice(0, 1)} (${neural.day})
 - 오늘 일진의 십성(TenGod): ${tenGod}
 
+${biorhythm ? `[내담자 현재 생체 에너지(바이오리듬)]
+- 통합 컨디션 점수: ${biorhythm.overallScore} / 100
+- 상세 상태: 신체(${biorhythm.physicalLabel}), 감정(${biorhythm.emotionalLabel}), 지성(${biorhythm.intellectualLabel})` : ''}
+
 🔥 [절대 준수 지침: ${tenGod}의 날 특별 모듈] 🔥
 오늘의 메인 테마: "${currentModule.theme}"
 AI 분석 톤앤매너: ${currentModule.instruction}
@@ -197,6 +201,7 @@ Action Plan(Shift) 지침: ${currentModule.shiftContext}
 4. narrative는 아래 구조로 핵심만 임팩트 있게 작성 (공백 포함 400~500자 내외):
    - "오늘 일진 ${dayGanZhi}(${tenGod})의 기운이 내담자의 [日干]과 만나..."
    - Scan(현상) → Sync(조화/충돌) → Shift(전략) 구조로 전개하며, 메인 테마를 강렬하게 부각시킬 것.
+   ${biorhythm ? `- 🔥 [한계 돌파 융합 분석] narrative의 결론부에는 반드시 내담자의 [생체 에너지 통합 점수(${biorhythm.overallScore}점)]를 언급하며 운(명리)과 신체(바이오리듬)를 융합하여 서술할 것. (예: 압박이 강한 일진이나 생체 에너지가 높으면 "막중한 책임이 떨어졌지만 당신의 빵빵한 생체 에너지가 이를 비웃습니다. 성장을 위한 바벨로 삼으십시오!" 반대로 에너지가 낮으면 "에너지가 고갈된 상태이므로 철저한 방어가 우선입니다" 처럼 초고도화하여 표현)` : ''}
 5. shift는 위 [Action Plan 지침]을 철저히 반영하여 3가지 실천 전략 도출
 
 반드시 마크다운 코드블록 없이 JSON 객체 하나만 출력하세요. "{" 로 시작하여 "}" 로 끝낼 것.

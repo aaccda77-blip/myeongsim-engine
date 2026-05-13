@@ -932,7 +932,7 @@ export default function DailyBioSyncPanel() {
                     initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <DeepScanSection sajuData={reportData} harmony={harmony} />
+                    <DeepScanSection sajuData={reportData} harmony={harmony} biorhythm={biorhythm} />
                   </motion.div>
                 )}
 

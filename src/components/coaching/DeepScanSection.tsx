@@ -236,9 +236,10 @@ function ClashCard({
 interface Props {
   sajuData: any;
   harmony: any;
+  biorhythm?: any;
 }
 
-export default function DeepScanSection({ sajuData, harmony }: Props) {
+export default function DeepScanSection({ sajuData, harmony, biorhythm }: Props) {
   const { deepScanResult, setDeepScanResult } = useReportStore();
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -294,6 +295,7 @@ export default function DeepScanSection({ sajuData, harmony }: Props) {
         body: JSON.stringify({
           sajuData,
           harmony, // ✅ 십성 데이터 주입
+          biorhythm, // ✅ 바이오리듬(생체 에너지) 데이터 주입
           // ✅ 브라우저 로컬 날짜 전송 (서버 UTC 시간대 문제 방지)
           clientDate: (() => {
             const d = new Date();
