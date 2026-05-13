@@ -132,21 +132,56 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isTyping]);
 
+  // ─── 실시간 심리 프로파일링 상태 (빅파이브 + MBTI 누적) ───
+  const [psychProfile, setPsychProfile] = useState<any>({
+    openness: undefined, conscientiousness: undefined,
+    extraversion: undefined, agreeableness: undefined,
+    neuroticism: undefined, mbtiTendency: '',
+    totalResponses: 0,
+  });
+  const [microQ, setMicroQ] = useState<any>(null);
+
+  const handleMicroAnswer = (choice: any, dimension: string) => {
+    // 빅파이브 점수 누적 (이동 평균)
+    setPsychProfile((prev: any) => {
+      const count = prev.totalResponses + 1;
+      const oldVal = prev[dimension];
+      const newVal = oldVal !== undefined
+        ? Math.round((oldVal * (count - 1) + choice.score) / count)
+        : choice.score;
+      return { ...prev, [dimension]: newVal, totalResponses: count };
+    });
+    // 선택 내용을 채팅에 반영
+    setMessages(prev => [...prev, {
+      role: 'user',
+      content: `🧠 [심리 프로파일링 응답] ${choice.text}`
+    }]);
+    setMicroQ(null);
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
     const userMessage = inputMessage;
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInputMessage('');
     setIsTyping(true);
+    setMicroQ(null);
     try {
       const res = await fetch('/api/live-sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage, sajuData, harmony, biorhythm, wearableData: bio })
+        body: JSON.stringify({
+          message: userMessage, sajuData, harmony, biorhythm,
+          wearableData: bio, psychProfile,
+        })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      // 마이크로 질문이 있으면 세팅
+      if (data.microQuestion) {
+        setMicroQ(data.microQuestion);
+      }
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: '❌ 신경망 연결에 실패했습니다.' }]);
     } finally {
@@ -327,9 +362,16 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
       <div className="bg-[#0b1018] border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl relative" style={{ height: '500px' }}>
         <div className="absolute -top-20 -left-20 w-40 h-40 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
 
-        <div className="p-3 bg-white/5 border-b border-white/5 flex items-center gap-2 z-10">
-          <Zap className="w-4 h-4 text-amber-400" />
-          <span className="text-[12px] font-bold text-slate-200">명심 OS 코칭 연결망</span>
+        <div className="p-3 bg-white/5 border-b border-white/5 flex items-center justify-between z-10">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-amber-400" />
+            <span className="text-[12px] font-bold text-slate-200">명심 OS 코칭 연결망</span>
+          </div>
+          {psychProfile.totalResponses > 0 && (
+            <span className="text-[9px] px-2 py-0.5 bg-violet-500/20 text-violet-300 rounded-full font-mono border border-violet-500/20">
+              🧬 프로필 {psychProfile.totalResponses}회 측정
+            </span>
+          )}
         </div>
 
         <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 z-10 scrollbar-hide">
@@ -370,6 +412,35 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
                     <ReactMarkdown remarkPlugins={[remarkGfm]} components={renderers}>{msg.content}</ReactMarkdown>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          ))}
+
+          {/* ─── 마이크로 심리 프로파일링 질문 카드 ─── */}
+          {microQ && !isTyping && (
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+              className="flex items-start gap-2">
+              <div className="w-6 h-6 rounded-full bg-violet-950 border border-violet-500/30 flex items-center justify-center shrink-0 mt-1">
+                <span className="text-[11px]">🧬</span>
+              </div>
+              <div className="bg-violet-950/20 border border-violet-500/25 rounded-2xl rounded-tl-none p-3 max-w-[90%]">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <span className="text-[9px] px-1.5 py-0.5 bg-violet-500/20 text-violet-300 rounded-full font-mono">
+                    {microQ.type === 'big5' ? 'BIG FIVE' : 'MBTI'} · {microQ.dimension?.toUpperCase()}
+                  </span>
+                  <span className="text-[9px] text-violet-400/60">실시간 프로파일링</span>
+                </div>
+                <p className="text-[12px] text-violet-100 mb-3 leading-relaxed break-keep">{microQ.question}</p>
+                <div className="space-y-1.5">
+                  {microQ.choices?.map((c: any) => (
+                    <button key={c.id}
+                      onClick={() => handleMicroAnswer(c, microQ.dimension)}
+                      className="w-full text-left px-3 py-2 rounded-xl bg-violet-500/10 border border-violet-500/20 text-[11px] text-violet-100 hover:bg-violet-500/25 hover:border-violet-400/40 transition-all duration-200 flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-violet-500/20 flex items-center justify-center text-[10px] font-bold text-violet-300 shrink-0">{c.id}</span>
+                      <span className="break-keep">{c.text}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </motion.div>
           ))}

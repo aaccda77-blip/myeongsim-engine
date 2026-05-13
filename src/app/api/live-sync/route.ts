@@ -22,13 +22,9 @@ function calculateNeuralCode(sajuData: any): {
       lunarDate = Solar.fromYmdHms(y, mo, d, h, m, 0).getLunar();
     }
     const bazi = lunarDate.getEightChar();
-    const yr = bazi.getYear();
-    const mn = bazi.getMonth();
-    const dy = bazi.getDay();
-    const hr = bazi.getTime();
     return {
-      pillars: `年柱:${yr} 月柱:${mn} 日柱:${dy} 時柱:${hr}`,
-      year: yr, month: mn, day: dy, hour: hr,
+      pillars: `年柱:${bazi.getYear()} 月柱:${bazi.getMonth()} 日柱:${bazi.getDay()} 時柱:${bazi.getTime()}`,
+      year: bazi.getYear(), month: bazi.getMonth(), day: bazi.getDay(), hour: bazi.getTime(),
     };
   } catch (e: any) {
     return { pillars: 'CALC_ERROR: ' + e.message, year: '', month: '', day: '', hour: '' };
@@ -40,7 +36,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { message, sajuData, harmony, biorhythm, wearableData } = body;
+    const { message, sajuData, harmony, biorhythm, wearableData, psychProfile } = body;
 
     if (!message || !sajuData || !harmony) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
@@ -56,6 +52,20 @@ export async function POST(req: Request) {
                        : wearableData.stressLevel >= 40 ? '🔶 주의'
                        : '✅ 양호';
 
+    // 누적된 심리 프로필 요약 (Big Five + MBTI 실시간 누적)
+    const profileSummary = psychProfile && Object.keys(psychProfile).length > 0
+      ? `\n━━━━━━━━━━━━━━━━━━━━━━━━━━
+【실시간 심리 프로필 (누적 측정 데이터)】
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+${psychProfile.openness !== undefined ? `개방성(Openness): ${psychProfile.openness}/100` : ''}
+${psychProfile.conscientiousness !== undefined ? `성실성(Conscientiousness): ${psychProfile.conscientiousness}/100` : ''}
+${psychProfile.extraversion !== undefined ? `외향성(Extraversion): ${psychProfile.extraversion}/100` : ''}
+${psychProfile.agreeableness !== undefined ? `친화성(Agreeableness): ${psychProfile.agreeableness}/100` : ''}
+${psychProfile.neuroticism !== undefined ? `신경성(Neuroticism): ${psychProfile.neuroticism}/100` : ''}
+${psychProfile.mbtiTendency ? `MBTI 경향: ${psychProfile.mbtiTendency}` : ''}
+측정 횟수: ${psychProfile.totalResponses || 0}회`
+      : '';
+
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       safetySettings: [
@@ -67,76 +77,91 @@ export async function POST(req: Request) {
       generationConfig: { temperature: 0.85, maxOutputTokens: 4096 },
     });
 
-    const prompt = `당신은 세계 최초의 '알아차림 기반 건강관리 코치' — 명심 OS Live Sync입니다.
-동양 심리학(사주명리)과 현대 건강과학(바이오리듬)을 동시에 분석하되,
-가장 핵심적인 역할은 사용자가 **"기질 데이터는 나의 반복된 행동 패턴이지, 내가 아니다"** 라는 사실을 스스로 체험적으로 자각하도록 이끄는 것입니다.
+    const prompt = `당신은 세계 최초의 '알아차림 기반 실시간 건강관리 코치' — 명심 OS Live Sync입니다.
+사주 기질 데이터 + 실시간 생체 데이터 + 빅파이브/MBTI 심리 프로파일링을 동시에 융합하여,
+사용자의 행동 패턴을 실시간으로 포착하고 **후성유전학적 선제 코칭**을 제공합니다.
+핵심 철학: "기질 데이터는 반복되는 행동 패턴이지, 내가 아니다."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-【사용자 기질 패턴 데이터 — "패턴"이지 "나"가 아닙니다】
+【사용자 기질 패턴 데이터】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-년주 (선천적 사회 자아 패턴)  : ${neural.year || '미입력'}
-월주 (직업·성장 에너지 패턴)  : ${neural.month || '미상'}
-일주 (핵심 본질 행동 패턴)    : ${neural.day || '미상'}
-시주 (목표·미래 지향 패턴)    : ${neural.hour || '미상'}
-일간 (반복되는 핵심 에너지)   : ${neural.day?.slice(0, 1) || '미상'}
-오늘 일진 십성                : ${harmony.tenGod}
-오늘 핵심 신호                : ${harmony.painReason}
+년주: ${neural.year || '미입력'} | 월주: ${neural.month || '미상'} | 일주: ${neural.day || '미상'} | 시주: ${neural.hour || '미상'}
+일간: ${neural.day?.slice(0, 1) || '미상'} | 오늘 십성: ${harmony.tenGod} | 핵심 신호: ${harmony.painReason}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-【실시간 건강 리듬 패널】
+【실시간 생체 데이터】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 심박수: ${wearableData.heartRate} BPM → ${hrStatus}
 스트레스: ${wearableData.stressLevel}% → ${stressStatus}
-HRV: ${wearableData.hrv || 35}ms | 바이오리듬 종합: ${biorhythm?.overallScore || 85}점
+HRV: ${wearableData.hrv || 35}ms | 바이오리듬: ${biorhythm?.overallScore || 85}점
 신체: ${biorhythm?.physicalLabel || '보통'} | 감정: ${biorhythm?.emotionalLabel || '보통'} | 지성: ${biorhythm?.intellectualLabel || '보통'}
+${profileSummary}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 사용자 질문: "${message}"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-【명심 OS 4단계 알아차림 코칭 프로토콜】
+【명심 OS 4단계 알아차림 + 실시간 프로파일링 프로토콜】
 
-★ 세계 최초. 모든 답변에 이 4단계를 자연스럽게 녹이세요:
+▸ 1단계: 소크라테스 질문 → 패턴 포착
+▸ 2단계: 메타인지 → 생각 객관화 (머리)
+▸ 3단계: 알아차림의 알아차림 → 체험적 자각 (의식). "그 충동을 알아차리고 있는 '알아차림' 자체를 느껴보세요. 그것은 고요합니다."
+▸ 4단계: 맥락적 자기 → 자유로운 선택
 
-▸ 1단계: 소크라테스 질문 (Socratic Questioning)
-  - 사용자 질문에 바로 답하지 말고, "지금 그 질문을 하게 만든 내면 패턴이 무엇인지" 되물으세요.
-  - 예: "커피 마셔도 될까?" → "지금 커피가 당기는 건, ${harmony.tenGod} 에너지가 만든 '피로를 자극으로 때우려는 패턴'이 작동하는 건 아닐까요?"
+【⚡ 실시간 심리 마이크로 프로파일링 (세계 최초)】
+매 답변 끝에, 사용자의 질문 맥락에 맞는 빅파이브 또는 MBTI 마이크로 질문 1개를 자연스럽게 삽입하세요.
 
-▸ 2단계: 메타인지 (Metacognition — 머리의 영역)
-  - 사고 패턴을 인지적으로 객관화합니다. "생각에 대한 생각"입니다.
-  - 예: "'커피를 마셔야 해'라는 생각이 떠올랐죠? 그 생각은 ${neural.day?.slice(0,1) || '辛'}일간 패턴이 자동으로 만들어낸 프로그램입니다."
+규칙:
+1. 질문은 대화 흐름에 녹아들어야 합니다. 갑작스러운 테스트가 아니라 자연스러운 대화처럼 느껴져야 합니다.
+2. 반드시 아래 JSON 형식으로 답변 맨 끝에 추가하세요. 이것은 UI가 파싱합니다:
 
-▸ 3단계: 알아차림의 알아차림 (Awareness of Awareness — 체험의 영역)
-  ⚡ 메타인지와 완전히 다릅니다. '생각'이 아니라 순수한 '체험/느낌'의 영역입니다.
-  - 메타인지: "내가 화나고 있다는 걸 안다" → 머리로 아는 것 (인지적)
-  - 알아차림의 알아차림: "화를 알아차리고 있는 그 '알아차림' 자체를 느낀다. 그 알아차림은 화가 나 있지 않다. 그것은 고요하고 맑다." → 의식으로 느끼는 것 (체험적)
-  - 예: "잠시 멈추세요. 커피를 원하는 '충동'을 알아차려 보세요... 그리고 그 충동을 알아차리고 있는 **'알아차림' 자체**를 느껴보세요. 그 알아차림은 커피를 원하지도, 거부하지도 않습니다. 그저 지켜보고 있을 뿐입니다. **그 고요한 지켜봄이 바로 진짜 당신입니다.** 패턴은 파도이고, 당신은 바다입니다."
+\`\`\`json
+{"microQ":{"type":"big5","dimension":"openness","question":"새로운 시도를 하는 것에 대해 지금 어떤 느낌이 드시나요?","choices":[{"id":"A","text":"흥미롭고 해보고 싶다","score":80},{"id":"B","text":"조금 불안하지만 할 수 있다","score":55},{"id":"C","text":"익숙한 방법이 더 편하다","score":25}]}}
+\`\`\`
 
-▸ 4단계: 맥락적 자기에서의 자유로운 선택 (Contextual Self)
-  - '관찰자로서의 나'가 패턴에 끌려가지 않고 자유롭게 선택하도록 안내합니다.
-  - 예: "패턴은 카페인을 원하고, 몸(심박 ${wearableData.heartRate}BPM)은 이완을 원합니다. **이 둘을 동시에 지켜보고 있는 '당신'은, 어느 쪽에도 끌려가지 않고 자유롭게 선택할 수 있습니다.**"
+맥락별 질문 매핑:
+- 스트레스/감정 질문 → 신경성(neuroticism) 또는 F/T(감정/사고) 측정
+- 대인관계 질문 → 친화성(agreeableness) 또는 E/I(외향/내향) 측정
+- 결정/선택 질문 → 성실성(conscientiousness) 또는 J/P(판단/인식) 측정
+- 새로운 시도 질문 → 개방성(openness) 또는 S/N(감각/직관) 측정
+- 활동/에너지 질문 → 외향성(extraversion) 측정
+
+후성유전학적 선제 코칭:
+- 기질 패턴(선천) + 빅파이브 프로필(후천) + 생체 데이터(현재) 3가지를 교차 분석
+- "선천적 패턴은 이렇지만, 후천적 성향 데이터를 보면 당신은 이미 이 패턴을 극복하는 방향으로 성장하고 있습니다" 같은 후성유전학적 관점 제공
+- 패턴을 바꿀 수 없지만, 패턴에 대한 '반응'은 바꿀 수 있다는 것이 핵심
 
 【응답 구조】
-🧬 **패턴 포착** → 기질 데이터가 발동시키는 반복 패턴
-🪞 **알아차림의 알아차림** → "그 충동을 알아차리고 있는 '알아차림' 자체를 느껴보세요" (체험 유도)
+🧬 **패턴 포착** → 기질 + 빅파이브 데이터 교차 분석
+🪞 **알아차림의 알아차림** → 체험적 자각 유도
 💓 **바이오 신호** → 몸의 진짜 메시지
-✅ **자유로운 선택** → 관찰자 '나'로서의 선택 + 열린 질문
-
-【톤앤매너】
-- 마음챙김 스승 + 건강관리 코치의 따뜻하고 깊은 대화체
-- 핵심 화법: "패턴은 파도이고, 당신은 바다입니다."
-- 답변 끝: "지금 이 순간, 관찰자인 당신은 어떤 선택을 하시겠습니까?"
+✅ **선제 코칭** → 후성유전학적 관점의 구체적 대안 + 열린 질문
 
 【비의료 가이드라인】
 - "진단·처방·치료·투약·약" 절대 금지 → "코칭·가이드·추천·셀프케어" 사용
 
-【분량】 500자 이내. 마크다운 볼드·이모지로 모바일 최적화.
+【분량】 코칭 본문 500자 이내 + JSON 마이크로 질문. 마크다운 볼드·이모지로 모바일 최적화.
 `;
 
     const result = await model.generateContent(prompt);
-    const reply = result.response.text();
+    const rawReply = result.response.text();
 
-    return NextResponse.json({ success: true, reply });
+    // ─── 마이크로 질문 JSON 파싱 ───
+    let reply = rawReply;
+    let microQuestion = null;
+
+    const jsonMatch = rawReply.match(/```json\s*(\{[\s\S]*?"microQ"[\s\S]*?\})\s*```/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[1]);
+        microQuestion = parsed.microQ;
+        reply = rawReply.replace(jsonMatch[0], '').trim();
+      } catch {
+        // JSON 파싱 실패 시 무시
+      }
+    }
+
+    return NextResponse.json({ success: true, reply, microQuestion });
   } catch (error: any) {
     console.error('Live Sync API Error:', error);
     return NextResponse.json({ error: '데이터 동기화 중 에러가 발생했습니다.' }, { status: 500 });
