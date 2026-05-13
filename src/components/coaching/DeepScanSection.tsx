@@ -703,11 +703,7 @@ export default function DeepScanSection({ sajuData, harmony, biorhythm }: Props)
                             </p>
                           ))}
                         </div>
-                        <div className="pt-2 border-t border-white/10">
-                          <p className="text-[9px] font-mono text-slate-600 text-center">
-                            이 분석은 Myeongsim OS · Gemini 2.5 Flash 기반 명리 AI가 생성했습니다
-                          </p>
-                        </div>
+
                       </div>
                     </motion.div>
                   )}
