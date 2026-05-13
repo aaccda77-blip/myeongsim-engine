@@ -217,7 +217,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
             </div>
             <div className="bg-cyan-950/20 border border-cyan-500/20 rounded-2xl rounded-tl-none p-3 max-w-[85%]">
               <p className="text-[12px] text-cyan-100 leading-relaxed break-keep">
-                운의 흐름과 생체 에너지가 동기화되었습니다. 지금 무엇을 앞두고 계신가요? 상황을 말씀해주시면 <strong>즉각적인 행동 지침(Action Plan)</strong>을 도출하겠습니다.
+                사용자의 기질 데이터와 생체 에너지가 동기화되었습니다. 지금 무엇을 앞두고 계신가요? 상황을 말씀해주시면 <strong>즉각적인 행동 지침(Action Plan)</strong>을 도출하겠습니다.
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {['커피 마셔도 될까?', '운동 다녀올게', '중요한 미팅 전이야'].map((suggestion, idx) => (
