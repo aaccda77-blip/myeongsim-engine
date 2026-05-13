@@ -268,10 +268,10 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
                 BIORHYTHM <span className="text-slate-600">(생체 리듬)</span>
               </p>
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="55%" outerRadius="45%">
+                <RadarChart cx="50%" cy="55%" outerRadius="45%" data={radarData}>
                   <PolarGrid stroke="#ffffff10" />
                   <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 8 }} />
-                  <Radar name="바이오" dataKey="value" data={radarData} stroke={themeColor} fill={themeColor} fillOpacity={0.2} />
+                  <Radar name="바이오" dataKey="value" stroke={themeColor} fill={themeColor} fillOpacity={0.2} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
@@ -289,7 +289,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
       </div>
 
       {/* ─── 챗봇 ─── */}
-      <div className="bg-[#0b1018] border border-white/10 rounded-2xl flex flex-col overflow-hidden h-[350px] shadow-2xl relative">
+      <div className="bg-[#0b1018] border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl relative" style={{ height: '500px' }}>
         <div className="absolute -top-20 -left-20 w-40 h-40 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
 
         <div className="p-3 bg-white/5 border-b border-white/5 flex items-center gap-2 z-10">
