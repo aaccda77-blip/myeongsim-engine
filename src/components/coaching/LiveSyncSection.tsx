@@ -10,24 +10,28 @@ import {
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-// ─── 가상 생체 데이터 (Mock Wearable Data) ────────
-const MOCK_BIO_DATA = {
-  heartRate: 92,
-  stressLevel: 78,
-  hrv: 35,
-  spo2: 98,         // 혈중 산소 포화도
-  sleepScore: 72,   // 수면 품질
-  recovery: 61,     // 회복 점수
-  calories: 420,    // 활동 칼로리
-  bodyTemp: 36.7,   // 체온
+// ─── 동적 생체 시뮬레이션 함수 ────────
+function randomBetween(min: number, max: number) {
+  return Math.round((Math.random() * (max - min) + min) * 10) / 10;
+}
+function clamp(val: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, val));
+}
+function jitter(base: number, range: number, min: number, max: number) {
+  return clamp(Math.round(base + (Math.random() * range * 2 - range)), min, max);
+}
+
+const INITIAL_BIO = {
+  heartRate: 92, stressLevel: 78, hrv: 35, spo2: 98,
+  sleepScore: 72, recovery: 61, calories: 420, bodyTemp: 36.7,
 };
 
-const generateChartData = () => {
+const generateChartData = (baseHR: number) => {
   const data = [];
-  let currentHR = MOCK_BIO_DATA.heartRate;
+  let currentHR = baseHR;
   for (let i = 0; i < 20; i++) {
     currentHR += Math.floor(Math.random() * 7) - 3;
-    data.push({ time: i, hr: Math.max(60, Math.min(130, currentHR)) });
+    data.push({ time: i, hr: clamp(currentHR, 55, 135) });
   }
   return data;
 };
@@ -80,31 +84,49 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
   const scrollRef = useRef<HTMLDivElement>(null);
   const themeColor = harmony?.energyColor || '#10b981';
 
-  // 레이더 차트 데이터 (바이오리듬 기반)
-  const radarData = [
-    { subject: '신체', value: Math.round(((biorhythm?.physical ?? 30) + 100) / 2) },
-    { subject: '감정', value: Math.round(((biorhythm?.emotional ?? 20) + 100) / 2) },
-    { subject: '지성', value: Math.round(((biorhythm?.intellectual ?? 50) + 100) / 2) },
-    { subject: '수면', value: MOCK_BIO_DATA.sleepScore },
-    { subject: '회복', value: MOCK_BIO_DATA.recovery },
-  ];
+  // ─── 동적 생체 데이터 (3초마다 자연스럽게 변동) ───
+  const [bio, setBio] = useState(INITIAL_BIO);
 
   useEffect(() => {
-    setChartData(generateChartData());
-    const interval = setInterval(() => {
-      setChartData((prev) => {
+    setChartData(generateChartData(bio.heartRate));
+
+    const bioInterval = setInterval(() => {
+      setBio(prev => ({
+        heartRate:    jitter(prev.heartRate,   3,  62, 115),
+        stressLevel:  jitter(prev.stressLevel, 4,  30, 95),
+        hrv:          jitter(prev.hrv,         3,  18, 65),
+        spo2:         jitter(prev.spo2,        1,  94, 100),
+        sleepScore:   prev.sleepScore, // 수면 점수는 하루 단위 (변동 없음)
+        recovery:     jitter(prev.recovery,    2,  35, 95),
+        calories:     prev.calories + Math.round(Math.random() * 5), // 칼로리는 누적
+        bodyTemp:     +(clamp(prev.bodyTemp + (Math.random() * 0.2 - 0.1), 36.1, 37.5)).toFixed(1),
+      }));
+    }, 3000);
+
+    const chartInterval = setInterval(() => {
+      setChartData(prev => {
         const newData = [...prev.slice(1)];
-        const lastHR = newData[newData.length - 1]?.hr || MOCK_BIO_DATA.heartRate;
+        const lastHR = newData[newData.length - 1]?.hr || 85;
         newData.push({
           time: prev[prev.length - 1].time + 1,
-          hr: Math.max(60, Math.min(130, lastHR + (Math.floor(Math.random() * 7) - 3)))
+          hr: clamp(lastHR + (Math.floor(Math.random() * 7) - 3), 55, 135)
         });
         return newData;
       });
     }, 2000);
+
     setTimeout(() => setIsSyncing(false), 1500);
-    return () => clearInterval(interval);
+    return () => { clearInterval(bioInterval); clearInterval(chartInterval); };
   }, []);
+
+  // 레이더 차트 데이터 (바이오리듬 + 동적 데이터)
+  const radarData = [
+    { subject: '신체', value: Math.round(((biorhythm?.physical ?? 30) + 100) / 2) },
+    { subject: '감정', value: Math.round(((biorhythm?.emotional ?? 20) + 100) / 2) },
+    { subject: '지성', value: Math.round(((biorhythm?.intellectual ?? 50) + 100) / 2) },
+    { subject: '수면', value: bio.sleepScore },
+    { subject: '회복', value: bio.recovery },
+  ];
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -120,7 +142,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
       const res = await fetch('/api/live-sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage, sajuData, harmony, biorhythm, wearableData: MOCK_BIO_DATA })
+        body: JSON.stringify({ message: userMessage, sajuData, harmony, biorhythm, wearableData: bio })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -174,9 +196,9 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
                   <p className="text-[8px] text-red-300/60 leading-tight">심박수</p>
                 </div>
               </div>
-              <p className="text-2xl font-black text-white">{MOCK_BIO_DATA.heartRate} <span className="text-[10px] font-normal text-slate-400">BPM</span></p>
+              <p className="text-2xl font-black text-white">{bio.heartRate} <span className="text-[10px] font-normal text-slate-400">BPM</span></p>
               <div className="mt-1.5 h-1 w-full bg-red-950 rounded-full overflow-hidden">
-                <motion.div className="h-full bg-red-500 rounded-full" initial={{ width: 0 }} animate={{ width: '80%' }} transition={{ duration: 1 }} />
+                <motion.div className="h-full bg-red-500 rounded-full" animate={{ width: `${Math.min(100, Math.round(bio.heartRate / 1.2))}%` }} transition={{ duration: 0.8 }} />
               </div>
             </div>
 
@@ -189,9 +211,9 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
                   <p className="text-[8px] text-amber-300/60 leading-tight">스트레스 지수</p>
                 </div>
               </div>
-              <p className="text-2xl font-black text-white">{MOCK_BIO_DATA.stressLevel}<span className="text-[10px] font-normal text-slate-400">%</span></p>
+              <p className="text-2xl font-black text-white">{bio.stressLevel}<span className="text-[10px] font-normal text-slate-400">%</span></p>
               <div className="mt-1.5 h-1 w-full bg-amber-950 rounded-full overflow-hidden">
-                <motion.div className="h-full bg-amber-500 rounded-full" initial={{ width: 0 }} animate={{ width: '78%' }} transition={{ duration: 1 }} />
+                <motion.div className="h-full bg-amber-500 rounded-full" animate={{ width: `${bio.stressLevel}%` }} transition={{ duration: 0.8 }} />
               </div>
             </div>
 
@@ -217,26 +239,26 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
           <div className="grid grid-cols-5 gap-2">
             <MiniMetricCard
               icon={<Wind className="w-3 h-3" />} label="SpO2" labelKor="혈중 산소"
-              value={MOCK_BIO_DATA.spo2} unit="%" barPct={98} color="text-sky-400"
-              warn={MOCK_BIO_DATA.spo2 < 95}
+              value={bio.spo2} unit="%" barPct={bio.spo2} color="text-sky-400"
+              warn={bio.spo2 < 95}
             />
             <MiniMetricCard
               icon={<Activity className="w-3 h-3" />} label="HRV" labelKor="심박변이도"
-              value={MOCK_BIO_DATA.hrv} unit="ms" barPct={35} color="text-violet-400"
-              warn={MOCK_BIO_DATA.hrv < 40}
+              value={bio.hrv} unit="ms" barPct={Math.round(bio.hrv * 1.5)} color="text-violet-400"
+              warn={bio.hrv < 30}
             />
             <MiniMetricCard
               icon={<Moon className="w-3 h-3" />} label="SLEEP" labelKor="수면 품질"
-              value={MOCK_BIO_DATA.sleepScore} unit="점" barPct={72} color="text-indigo-400"
+              value={bio.sleepScore} unit="점" barPct={bio.sleepScore} color="text-indigo-400"
             />
             <MiniMetricCard
               icon={<Zap className="w-3 h-3" />} label="RECOVERY" labelKor="회복 점수"
-              value={MOCK_BIO_DATA.recovery} unit="점" barPct={61} color="text-emerald-400"
-              warn={MOCK_BIO_DATA.recovery < 65}
+              value={bio.recovery} unit="점" barPct={bio.recovery} color="text-emerald-400"
+              warn={bio.recovery < 50}
             />
             <MiniMetricCard
               icon={<Flame className="w-3 h-3" />} label="CALORIES" labelKor="활동 칼로리"
-              value={MOCK_BIO_DATA.calories} unit="kcal" barPct={60} color="text-orange-400"
+              value={bio.calories} unit="kcal" barPct={Math.min(100, Math.round(bio.calories / 8))} color="text-orange-400"
             />
           </div>
 
@@ -278,11 +300,24 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
           </div>
 
           {/* ─── 알림 배너 ─── */}
-          <div className="p-2.5 bg-red-950/30 border border-red-500/30 rounded-lg flex items-start gap-2">
-            <ShieldAlert className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-            <p className="text-[11px] text-red-200 leading-relaxed break-keep">
-              <span className="font-bold">System Alert:</span> 교감신경이 과항진(스트레스 78% / HRV 35ms)된 상태입니다. 오늘{' '}
-              <strong>{harmony?.tenGod || '일진'}</strong> 에너지와 맞물려 충동적 결정 위험이 높습니다.
+          <div className={`p-2.5 rounded-lg flex items-start gap-2 ${
+            bio.stressLevel >= 70 ? 'bg-red-950/30 border border-red-500/30' :
+            bio.stressLevel >= 50 ? 'bg-amber-950/30 border border-amber-500/30' :
+            'bg-emerald-950/30 border border-emerald-500/30'
+          }`}>
+            <ShieldAlert className={`w-4 h-4 shrink-0 mt-0.5 ${
+              bio.stressLevel >= 70 ? 'text-red-400' : bio.stressLevel >= 50 ? 'text-amber-400' : 'text-emerald-400'
+            }`} />
+            <p className={`text-[11px] leading-relaxed break-keep ${
+              bio.stressLevel >= 70 ? 'text-red-200' : bio.stressLevel >= 50 ? 'text-amber-200' : 'text-emerald-200'
+            }`}>
+              <span className="font-bold">{bio.stressLevel >= 70 ? '⚠️ 주의 알림:' : bio.stressLevel >= 50 ? '🔶 참고 알림:' : '✅ 양호 상태:'}</span>{' '}
+              {bio.stressLevel >= 70
+                ? `스트레스 ${bio.stressLevel}% / HRV ${bio.hrv}ms → 교감신경이 과항진 상태입니다. 오늘 ${harmony?.tenGod || '일진'} 에너지와 맞물려 충동적 결정에 주의하세요.`
+                : bio.stressLevel >= 50
+                ? `스트레스 ${bio.stressLevel}% → 약간 긴장 상태입니다. 호흡 조절로 부교감신경을 활성화해 보세요.`
+                : `스트레스 ${bio.stressLevel}% / 회복 ${bio.recovery}점 → 안정적인 컨디션입니다. 적극적인 활동에 적합합니다!`
+              }
             </p>
           </div>
         </div>
