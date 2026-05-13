@@ -339,10 +339,10 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
             </div>
             <div className="bg-cyan-950/20 border border-cyan-500/20 rounded-2xl rounded-tl-none p-3 max-w-[85%]">
               <p className="text-[12px] text-cyan-100 leading-relaxed break-keep">
-                사용자의 기질 데이터와 생체 에너지가 동기화되었습니다. 지금 무엇을 앞두고 계신가요? 상황을 말씀해주시면 <strong>즉각적인 행동 지침(Action Plan)</strong>을 도출하겠습니다.
+                🪞 기질 데이터와 생체 에너지가 동기화되었습니다. 기질 데이터는 <strong>반복되는 행동 패턴</strong>이지, 진짜 당신이 아닙니다. 지금 무엇을 앞두고 계신가요? 패턴을 알아차리고, <strong>관찰자인 '나'</strong>로서 선택할 수 있도록 코칭해 드리겠습니다.
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
-                {['커피 마셔도 될까?', '운동 다녀올게', '중요한 미팅 전이야'].map((s, i) => (
+                {['커피 마셔도 될까?', '짜증이 나는데 왜 그럴까?', '중요한 미팅 전이야', '나는 왜 이 패턴을 반복할까?'].map((s, i) => (
                   <button key={i} onClick={() => setInputMessage(s)}
                     className="text-[10px] px-2 py-1 bg-white/5 border border-white/10 rounded-full text-slate-300 hover:bg-white/10 transition-colors">
                     "{s}"
