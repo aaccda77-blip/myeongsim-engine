@@ -393,7 +393,7 @@ function DailyPatchSection({ steps, isLoading, onComplete }: { steps: any[], isL
 // ─────────────────────────────────────────────
 // 메인 패널 컴포넌트 — 프리미엄 리디자인
 // ─────────────────────────────────────────────
-type TabType = 'harmony' | 'bio' | 'akashic' | 'patch' | 'deepscan';
+type TabType = 'harmony' | 'bio' | 'akashic' | 'patch' | 'deepscan' | 'livesync';
 
 
 export default function DailyBioSyncPanel() {
@@ -615,7 +615,7 @@ export default function DailyBioSyncPanel() {
   const verdict = harmony ? harmony.painReason : '오늘의 코칭을 확인하세요';
   const mission = harmony ? harmony.shiftMission : null;
 
-  const TABS: { id: TabType | 'livesync'; label: string; emoji: string }[] = [
+  const TABS: { id: TabType; label: string; emoji: string }[] = [
     { id: 'harmony',  label: '일진 에너지',    emoji: '⚡' },
     { id: 'bio',      label: '바이오 게이지',  emoji: '📊' },
     { id: 'akashic',  label: '아카식 레코드',  emoji: '🌌' },
