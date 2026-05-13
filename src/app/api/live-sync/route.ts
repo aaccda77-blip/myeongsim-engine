@@ -24,7 +24,7 @@ function calculateNeuralCode(sajuData: any): { pillars: string; year: string; mo
     const dy = bazi.getDay();
     const hr = bazi.getTime();
     return {
-      pillars: \`年柱:\${yr} 月柱:\${mn} 日柱:\${dy} 時柱:\${hr}\`,
+      pillars: `年柱:${yr} 月柱:${mn} 日柱:${dy} 時柱:${hr}`,
       year: yr, month: mn, day: dy, hour: hr,
     };
   } catch (e: any) {
