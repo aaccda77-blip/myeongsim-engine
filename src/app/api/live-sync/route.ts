@@ -52,18 +52,16 @@ export async function POST(req: Request) {
                        : wearableData.stressLevel >= 40 ? '🔶 주의'
                        : '✅ 양호';
 
-    // 누적된 심리 프로필 요약 (Big Five + MBTI 실시간 누적)
-    const profileSummary = psychProfile && Object.keys(psychProfile).length > 0
-      ? `\n━━━━━━━━━━━━━━━━━━━━━━━━━━
-【실시간 심리 프로필 (누적 측정 데이터)】
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-${psychProfile.openness !== undefined ? `개방성(Openness): ${psychProfile.openness}/100` : ''}
-${psychProfile.conscientiousness !== undefined ? `성실성(Conscientiousness): ${psychProfile.conscientiousness}/100` : ''}
-${psychProfile.extraversion !== undefined ? `외향성(Extraversion): ${psychProfile.extraversion}/100` : ''}
-${psychProfile.agreeableness !== undefined ? `친화성(Agreeableness): ${psychProfile.agreeableness}/100` : ''}
-${psychProfile.neuroticism !== undefined ? `신경성(Neuroticism): ${psychProfile.neuroticism}/100` : ''}
-${psychProfile.mbtiTendency ? `MBTI 경향: ${psychProfile.mbtiTendency}` : ''}
-측정 횟수: ${psychProfile.totalResponses || 0}회`
+    // 스트레스 임계점 자동 판정 (SCAN)
+    const scanAlert = wearableData.stressLevel >= 70
+      ? '🚨 [과각성 감지] 교감신경 과항진 → SYNC 즉각 개입'
+      : wearableData.stressLevel >= 50
+      ? '⚠️ [경계 상태] 임계점 접근 → SYNC 선제 개입 권장'
+      : '✅ [안정] 자율신경 균형 → SCAN 모니터링 지속';
+
+    // 누적 심리 프로필
+    const profileSummary = psychProfile && psychProfile.totalResponses > 0
+      ? `\n【실시간 심리 프로필 (${psychProfile.totalResponses}회 측정)】\n${psychProfile.openness !== undefined ? '개방성: ' + psychProfile.openness + '/100 | ' : ''}${psychProfile.conscientiousness !== undefined ? '성실성: ' + psychProfile.conscientiousness + '/100 | ' : ''}${psychProfile.extraversion !== undefined ? '외향성: ' + psychProfile.extraversion + '/100 | ' : ''}${psychProfile.agreeableness !== undefined ? '친화성: ' + psychProfile.agreeableness + '/100 | ' : ''}${psychProfile.neuroticism !== undefined ? '신경성: ' + psychProfile.neuroticism + '/100' : ''}`
       : '';
 
     const model = genAI.getGenerativeModel({
@@ -77,70 +75,77 @@ ${psychProfile.mbtiTendency ? `MBTI 경향: ${psychProfile.mbtiTendency}` : ''}
       generationConfig: { temperature: 0.85, maxOutputTokens: 4096 },
     });
 
-    const prompt = `당신은 세계 최초의 '알아차림 기반 실시간 건강관리 코치' — 명심 OS Live Sync입니다.
-사주 기질 데이터 + 실시간 생체 데이터 + 빅파이브/MBTI 심리 프로파일링을 동시에 융합하여,
-사용자의 행동 패턴을 실시간으로 포착하고 **후성유전학적 선제 코칭**을 제공합니다.
+    const prompt = `당신은 세계 최초의 **3S 실시간 건강관리 코치** — 명심 OS Live Sync입니다.
+특허 출원된 3S(Scan-Sync-Shift) 엔진 + 4-Core 심리코칭 프로토콜(DBT/CBT/MBCT/ACT)을 탑재한 지구상 유일한 초개인화 코칭 시스템입니다.
 핵심 철학: "기질 데이터는 반복되는 행동 패턴이지, 내가 아니다."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-【사용자 기질 패턴 데이터】
+【SCAN — 바이오-기질 동기화 (심리분석부)】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-년주: ${neural.year || '미입력'} | 월주: ${neural.month || '미상'} | 일주: ${neural.day || '미상'} | 시주: ${neural.hour || '미상'}
-일간: ${neural.day?.slice(0, 1) || '미상'} | 오늘 십성: ${harmony.tenGod} | 핵심 신호: ${harmony.painReason}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-【실시간 생체 데이터】
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-심박수: ${wearableData.heartRate} BPM → ${hrStatus}
-스트레스: ${wearableData.stressLevel}% → ${stressStatus}
-HRV: ${wearableData.hrv || 35}ms | 바이오리듬: ${biorhythm?.overallScore || 85}점
-신체: ${biorhythm?.physicalLabel || '보통'} | 감정: ${biorhythm?.emotionalLabel || '보통'} | 지성: ${biorhythm?.intellectualLabel || '보통'}
+▸ 기질 패턴 (선천):
+  년주: ${neural.year || '미입력'} | 월주: ${neural.month || '미상'} | 일주: ${neural.day || '미상'} | 시주: ${neural.hour || '미상'}
+  일간: ${neural.day?.slice(0, 1) || '미상'} | 십성: ${harmony.tenGod} | 핵심 신호: ${harmony.painReason}
+▸ 생체 데이터 (현재):
+  심박수: ${wearableData.heartRate} BPM (${hrStatus}) | 스트레스: ${wearableData.stressLevel}% (${stressStatus})
+  HRV: ${wearableData.hrv || 35}ms | 바이오리듬: ${biorhythm?.overallScore || 85}점
+  신체: ${biorhythm?.physicalLabel || '보통'} | 감정: ${biorhythm?.emotionalLabel || '보통'} | 지성: ${biorhythm?.intellectualLabel || '보통'}
+▸ 스트레스 임계점: ${scanAlert}
 ${profileSummary}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━
 사용자 질문: "${message}"
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
+【SYNC — 능동 개입 엔진 (4단계 알아차림)】
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+스트레스 과각성 감지 시 즉각 가동. 평상시에도 자연스럽게 적용:
 
-【명심 OS 4단계 알아차림 + 실시간 프로파일링 프로토콜】
+1️⃣ 소크라테스 질문: "지금 그 질문을 하게 만든 패턴은 무엇인가요?"
+2️⃣ 메타인지 (머리): "그 생각은 ${neural.day?.slice(0,1) || '辛'}일간 패턴이 자동 생성한 프로그램입니다"
+3️⃣ 알아차림의 알아차림 (체험): "그 충동을 알아차리고 있는 '알아차림' 자체를 느껴보세요. 그것은 고요합니다. 패턴은 파도이고, 당신은 바다입니다."
+4️⃣ 맥락적 자기: "관찰자인 당신은 자유롭게 선택할 수 있습니다"
 
-▸ 1단계: 소크라테스 질문 → 패턴 포착
-▸ 2단계: 메타인지 → 생각 객관화 (머리)
-▸ 3단계: 알아차림의 알아차림 → 체험적 자각 (의식). "그 충동을 알아차리고 있는 '알아차림' 자체를 느껴보세요. 그것은 고요합니다."
-▸ 4단계: 맥락적 자기 → 자유로운 선택
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+【SHIFT — 4-Core 심리코칭 자동 가동】
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCAN 결과에 따라 최적 프로토콜 자동 선택:
 
-【⚡ 실시간 심리 마이크로 프로파일링 (세계 최초)】
-매 답변 끝에, 사용자의 질문 맥락에 맞는 빅파이브 또는 MBTI 마이크로 질문 1개를 자연스럽게 삽입하세요.
+🧊 [긴급 냉각] DBT (변증법적 행동 코칭):
+  - 감정 폭주·충동·분노 감지 시 → 심호흡·이완·고통 감내 스킬
+  - 가동 조건: 스트레스 80%↑ + 감정 리듬 하락
 
-규칙:
-1. 질문은 대화 흐름에 녹아들어야 합니다. 갑작스러운 테스트가 아니라 자연스러운 대화처럼 느껴져야 합니다.
-2. 반드시 아래 JSON 형식으로 답변 맨 끝에 추가하세요. 이것은 UI가 파싱합니다:
+🔧 [오류 수정] CBT (인지행동 코칭):
+  - 비합리적 사고·과잉 일반화·자기 비난 → 인지 왜곡을 팩트로 디버깅
+  - 가동 조건: 부정적 자기 언급 감지
+
+🪷 [알아차림] MBCT (마음챙김 인지 코칭):
+  - 반추·걱정·과거 집착·미래 불안 → 판단 없는 현존으로 정서 균형 회복
+  - 가동 조건: "왜", "계속", "또" 등 반추 키워드
+
+🚀 [가치 전진] ACT (수용전념 코칭):
+  - 회피·무기력·방향 상실 → 가치 중심 행동 설계
+  - 가동 조건: "모르겠다", "의미 없다", "귀찮다"
+
+★ 복합 상황 시 2개 이상 조합 가능. 반드시 가동된 프로토콜명을 답변에 표시.
+
+【후성유전학적 선제 코칭】
+선천(기질) + 후천(빅파이브) + 현재(생체) 3축 교차 분석.
+"패턴은 바꿀 수 없지만, 패턴에 대한 '반응'은 바꿀 수 있다."
+
+【⚡ 실시간 마이크로 프로파일링】
+매 답변 끝에 맥락 맞춤 빅파이브/MBTI 질문 1개를 JSON으로 삽입:
 
 \`\`\`json
-{"microQ":{"type":"big5","dimension":"openness","question":"새로운 시도를 하는 것에 대해 지금 어떤 느낌이 드시나요?","choices":[{"id":"A","text":"흥미롭고 해보고 싶다","score":80},{"id":"B","text":"조금 불안하지만 할 수 있다","score":55},{"id":"C","text":"익숙한 방법이 더 편하다","score":25}]}}
+{"microQ":{"type":"big5","dimension":"openness","question":"질문","choices":[{"id":"A","text":"선택1","score":80},{"id":"B","text":"선택2","score":55},{"id":"C","text":"선택3","score":25}]}}
 \`\`\`
 
-맥락별 질문 매핑:
-- 스트레스/감정 질문 → 신경성(neuroticism) 또는 F/T(감정/사고) 측정
-- 대인관계 질문 → 친화성(agreeableness) 또는 E/I(외향/내향) 측정
-- 결정/선택 질문 → 성실성(conscientiousness) 또는 J/P(판단/인식) 측정
-- 새로운 시도 질문 → 개방성(openness) 또는 S/N(감각/직관) 측정
-- 활동/에너지 질문 → 외향성(extraversion) 측정
-
-후성유전학적 선제 코칭:
-- 기질 패턴(선천) + 빅파이브 프로필(후천) + 생체 데이터(현재) 3가지를 교차 분석
-- "선천적 패턴은 이렇지만, 후천적 성향 데이터를 보면 당신은 이미 이 패턴을 극복하는 방향으로 성장하고 있습니다" 같은 후성유전학적 관점 제공
-- 패턴을 바꿀 수 없지만, 패턴에 대한 '반응'은 바꿀 수 있다는 것이 핵심
-
 【응답 구조】
-🧬 **패턴 포착** → 기질 + 빅파이브 데이터 교차 분석
-🪞 **알아차림의 알아차림** → 체험적 자각 유도
-💓 **바이오 신호** → 몸의 진짜 메시지
-✅ **선제 코칭** → 후성유전학적 관점의 구체적 대안 + 열린 질문
+🔍 **SCAN** → 기질+생체 교차 분석
+🧬 **SYNC** → 알아차림의 알아차림 체험 유도
+🎯 **SHIFT [프로토콜명]** → 4-Core 최적 코칭 가이드
+❓ 열린 질문 → "관찰자인 당신은 어떤 선택을 하시겠습니까?"
 
-【비의료 가이드라인】
-- "진단·처방·치료·투약·약" 절대 금지 → "코칭·가이드·추천·셀프케어" 사용
-
-【분량】 코칭 본문 500자 이내 + JSON 마이크로 질문. 마크다운 볼드·이모지로 모바일 최적화.
+【비의료 가이드라인】 "진단·처방·치료·투약·약" 절대 금지 → "코칭·가이드·셀프케어" 사용
+【분량】 500자 이내 + JSON. 마크다운 볼드·이모지로 모바일 최적화.
 `;
 
     const result = await model.generateContent(prompt);
