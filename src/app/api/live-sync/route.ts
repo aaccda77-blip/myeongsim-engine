@@ -72,7 +72,7 @@ export async function POST(req: Request) {
         { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
       ],
-      generationConfig: { temperature: 0.85, maxOutputTokens: 4096 },
+      generationConfig: { temperature: 0.85, maxOutputTokens: 8192 },
     });
 
     const prompt = `당신은 세계 최초의 **3S 실시간 건강관리 코치** — 명심 OS Live Sync입니다.
