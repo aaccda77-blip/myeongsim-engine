@@ -137,33 +137,48 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
         <div className="p-4">
           <div className="grid grid-cols-3 gap-3 mb-4">
             {/* 심박수 */}
-            <div className="bg-red-950/20 border border-red-500/20 rounded-xl p-3 text-center relative overflow-hidden">
-              <HeartPulse className="w-4 h-4 text-red-500 absolute top-2 right-2 opacity-50" />
-              <p className="text-[9px] font-mono text-red-400/80 mb-1">HEART RATE <span className="text-red-300/60 font-normal">(심박수)</span></p>
+            <div className="bg-red-950/20 border border-red-500/20 rounded-xl p-3 overflow-hidden">
+              <div className="flex items-center gap-1 mb-2">
+                <HeartPulse className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                <div>
+                  <p className="text-[8px] font-mono text-red-400/90 leading-tight">HEART RATE</p>
+                  <p className="text-[8px] text-red-300/60 leading-tight">심박수</p>
+                </div>
+              </div>
               <p className="text-2xl font-black text-white">{MOCK_BIO_DATA.heartRate} <span className="text-[10px] font-normal text-slate-400">BPM</span></p>
-              <div className="mt-1 h-1 w-full bg-red-950 rounded-full overflow-hidden">
+              <div className="mt-1.5 h-1 w-full bg-red-950 rounded-full overflow-hidden">
                 <div className="h-full bg-red-500 w-[80%] rounded-full" />
               </div>
             </div>
 
             {/* 스트레스 지수 */}
-            <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-center relative overflow-hidden">
-              <BrainCircuit className="w-4 h-4 text-amber-500 absolute top-2 right-2 opacity-50" />
-              <p className="text-[9px] font-mono text-amber-400/80 mb-1">STRESS LOAD <span className="text-amber-300/60 font-normal">(스트레스 지수)</span></p>
+            <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 overflow-hidden">
+              <div className="flex items-center gap-1 mb-2">
+                <BrainCircuit className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <div>
+                  <p className="text-[8px] font-mono text-amber-400/90 leading-tight">STRESS LOAD</p>
+                  <p className="text-[8px] text-amber-300/60 leading-tight">스트레스 지수</p>
+                </div>
+              </div>
               <p className="text-2xl font-black text-white">{MOCK_BIO_DATA.stressLevel}<span className="text-[10px] font-normal text-slate-400">%</span></p>
-              <div className="mt-1 h-1 w-full bg-amber-950 rounded-full overflow-hidden">
+              <div className="mt-1.5 h-1 w-full bg-amber-950 rounded-full overflow-hidden">
                 <div className="h-full bg-amber-500 w-[78%] rounded-full" />
               </div>
             </div>
 
-            {/* 운기 적합도 (사주 융합) */}
-            <div className="bg-cyan-950/20 border border-cyan-500/20 rounded-xl p-3 text-center relative overflow-hidden">
-              <Cpu className="w-4 h-4 text-cyan-500 absolute top-2 right-2 opacity-50" />
-              <p className="text-[9px] font-mono text-cyan-400/80 mb-1">FATE SYNC <span className="text-cyan-300/60 font-normal">(기질 적합도)</span></p>
-              <p className="text-2xl font-black text-white" style={{ color: themeColor }}>
+            {/* 기질 적합도 */}
+            <div className="bg-cyan-950/20 border border-cyan-500/20 rounded-xl p-3 overflow-hidden">
+              <div className="flex items-center gap-1 mb-2">
+                <Cpu className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+                <div>
+                  <p className="text-[8px] font-mono text-cyan-400/90 leading-tight">FATE SYNC</p>
+                  <p className="text-[8px] text-cyan-300/60 leading-tight">기질 적합도</p>
+                </div>
+              </div>
+              <p className="text-2xl font-black" style={{ color: themeColor }}>
                 {biorhythm ? biorhythm.overallScore : 85}<span className="text-[10px] font-normal text-slate-400">점</span>
               </p>
-              <div className="mt-1 h-1 w-full bg-cyan-950 rounded-full overflow-hidden">
+              <div className="mt-1.5 h-1 w-full bg-cyan-950 rounded-full overflow-hidden">
                 <div className="h-full rounded-full" style={{ width: `${biorhythm?.overallScore || 85}%`, backgroundColor: themeColor }} />
               </div>
             </div>
