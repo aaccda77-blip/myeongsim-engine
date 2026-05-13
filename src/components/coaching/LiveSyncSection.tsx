@@ -207,7 +207,6 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
             <Zap className="w-4 h-4 text-amber-400" />
             <span className="text-[12px] font-bold text-slate-200">명심 OS 코칭 연결망</span>
           </div>
-          <span className="text-[9px] text-slate-500">Gemini 2.5 Flash</span>
         </div>
 
         {/* 메시지 영역 */}
