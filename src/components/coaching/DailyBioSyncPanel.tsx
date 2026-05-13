@@ -20,6 +20,7 @@ import {
 import { Zap, Activity, Calendar, ChevronDown, Clock, CheckCircle2, Star, MessageCircle, TrendingUp, Shield, Loader2, Lightbulb } from 'lucide-react';
 import DeepScanSection from './DeepScanSection';
 import AkashicRecordSection from './AkashicRecordSection';
+import LiveSyncSection from './LiveSyncSection';
 import { DAILY_NEURO_ACTIONS, DAILY_AFFIRMATIONS } from '@/data/DailyActionDB';
 import { DAILY_ENERGY_DB } from '@/data/DailyEnergyDB';
 
@@ -614,12 +615,13 @@ export default function DailyBioSyncPanel() {
   const verdict = harmony ? harmony.painReason : '오늘의 코칭을 확인하세요';
   const mission = harmony ? harmony.shiftMission : null;
 
-  const TABS: { id: TabType; label: string; emoji: string }[] = [
+  const TABS: { id: TabType | 'livesync'; label: string; emoji: string }[] = [
     { id: 'harmony',  label: '일진 에너지',    emoji: '⚡' },
     { id: 'bio',      label: '바이오 게이지',  emoji: '📊' },
     { id: 'akashic',  label: '아카식 레코드',  emoji: '🌌' },
     { id: 'patch',    label: '3S 패치',        emoji: '💉' },
     { id: 'deepscan', label: '딥 스캔 (경고)', emoji: '🚨' },
+    { id: 'livesync', label: 'Live Sync [PRO]',emoji: '📡' },
   ];
 
 
@@ -933,6 +935,15 @@ export default function DailyBioSyncPanel() {
                     transition={{ duration: 0.25 }}
                   >
                     <DeepScanSection sajuData={reportData} harmony={harmony} biorhythm={biorhythm} />
+                  </motion.div>
+                )}
+
+                {activeTab === 'livesync' && harmony && (
+                  <motion.div key="livesync"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <LiveSyncSection sajuData={reportData} harmony={harmony} biorhythm={biorhythm} />
                   </motion.div>
                 )}
 
