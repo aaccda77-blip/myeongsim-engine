@@ -789,7 +789,7 @@ export default function DailyBioSyncPanel() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.35 }}
-            className="overflow-hidden"
+            className="overflow-visible"
           >
             <div className="bg-[#0b1018]/90 border border-white/[0.06] rounded-2xl p-4 backdrop-blur-md">
 
