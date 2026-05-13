@@ -126,11 +126,11 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
         <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-cyan-400" />
-            <span className="text-[11px] font-mono tracking-widest text-slate-300">MYEONGSIM BIO-LINK [PRO]</span>
+            <span className="text-[11px] font-mono tracking-widest text-slate-300">MYEONGSIM BIO-LINK <span className="text-cyan-400/80">[PRO]</span> <span className="text-slate-500 text-[9px] font-normal">(생체 연결망)</span></span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-mono text-emerald-400">CONNECTED</span>
+            <span className="text-[10px] font-mono text-emerald-400">CONNECTED <span className="text-emerald-300/70">(연결됨)</span></span>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
             {/* 심박수 */}
             <div className="bg-red-950/20 border border-red-500/20 rounded-xl p-3 text-center relative overflow-hidden">
               <HeartPulse className="w-4 h-4 text-red-500 absolute top-2 right-2 opacity-50" />
-              <p className="text-[9px] font-mono text-red-400/80 mb-1">HEART RATE</p>
+              <p className="text-[9px] font-mono text-red-400/80 mb-1">HEART RATE <span className="text-red-300/60 font-normal">(심박수)</span></p>
               <p className="text-2xl font-black text-white">{MOCK_BIO_DATA.heartRate} <span className="text-[10px] font-normal text-slate-400">BPM</span></p>
               <div className="mt-1 h-1 w-full bg-red-950 rounded-full overflow-hidden">
                 <div className="h-full bg-red-500 w-[80%] rounded-full" />
@@ -149,7 +149,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
             {/* 스트레스 지수 */}
             <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-center relative overflow-hidden">
               <BrainCircuit className="w-4 h-4 text-amber-500 absolute top-2 right-2 opacity-50" />
-              <p className="text-[9px] font-mono text-amber-400/80 mb-1">STRESS LOAD</p>
+              <p className="text-[9px] font-mono text-amber-400/80 mb-1">STRESS LOAD <span className="text-amber-300/60 font-normal">(스트레스 지수)</span></p>
               <p className="text-2xl font-black text-white">{MOCK_BIO_DATA.stressLevel}<span className="text-[10px] font-normal text-slate-400">%</span></p>
               <div className="mt-1 h-1 w-full bg-amber-950 rounded-full overflow-hidden">
                 <div className="h-full bg-amber-500 w-[78%] rounded-full" />
@@ -159,7 +159,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
             {/* 운기 적합도 (사주 융합) */}
             <div className="bg-cyan-950/20 border border-cyan-500/20 rounded-xl p-3 text-center relative overflow-hidden">
               <Cpu className="w-4 h-4 text-cyan-500 absolute top-2 right-2 opacity-50" />
-              <p className="text-[9px] font-mono text-cyan-400/80 mb-1">FATE SYNC</p>
+              <p className="text-[9px] font-mono text-cyan-400/80 mb-1">FATE SYNC <span className="text-cyan-300/60 font-normal">(기질 적합도)</span></p>
               <p className="text-2xl font-black text-white" style={{ color: themeColor }}>
                 {biorhythm ? biorhythm.overallScore : 85}<span className="text-[10px] font-normal text-slate-400">점</span>
               </p>
@@ -171,7 +171,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
 
           {/* 심박수 라이브 차트 */}
           <div className="h-24 w-full bg-black/20 rounded-lg p-2 border border-white/5 relative">
-            <p className="absolute top-2 left-2 text-[9px] font-mono text-slate-500 z-10">REAL-TIME ECG SIMULATION</p>
+            <p className="absolute top-2 left-2 text-[9px] font-mono text-slate-500 z-10">REAL-TIME ECG <span className="text-slate-600">(실시간 심전도)</span></p>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>
