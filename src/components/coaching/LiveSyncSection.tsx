@@ -417,7 +417,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
           ))}
 
           {/* ─── 마이크로 심리 프로파일링 질문 카드 ─── */}
-          {microQ && !isTyping && (
+          {microQ && !isTyping ? (
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
               className="flex items-start gap-2">
               <div className="w-6 h-6 rounded-full bg-violet-950 border border-violet-500/30 flex items-center justify-center shrink-0 mt-1">
@@ -443,7 +443,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
                 </div>
               </div>
             </motion.div>
-          ))}
+          ) : null}
 
           {isTyping && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-2">
