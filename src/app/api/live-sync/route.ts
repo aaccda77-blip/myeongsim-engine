@@ -1,6 +1,36 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
-import { calculateNeuralCode } from '@/utils/sajuCalculator';
+
+function calculateNeuralCode(sajuData: any): { pillars: string; year: string; month: string; day: string; hour: string; } {
+  try {
+    const { Solar, Lunar } = require('lunar-javascript');
+    const birthDate = sajuData.birthDate || sajuData.birth_date;
+    const birthTime = sajuData.birthTime || sajuData.birth_time || '12:00';
+    const calendarType = sajuData.meta?.calendarType || sajuData.calendar_type || 'solar';
+    if (!birthDate) return { pillars: 'DATA_MISSING', year: '', month: '', day: '', hour: '' };
+
+    const [y, mo, d] = birthDate.split('-').map(Number);
+    const [h, m] = birthTime.split(':').map(Number);
+
+    let lunarDate;
+    if (calendarType === 'lunar') {
+      lunarDate = Lunar.fromYmdHms(y, mo, d, h, m, 0);
+    } else {
+      lunarDate = Solar.fromYmdHms(y, mo, d, h, m, 0).getLunar();
+    }
+    const bazi = lunarDate.getEightChar();
+    const yr = bazi.getYear();
+    const mn = bazi.getMonth();
+    const dy = bazi.getDay();
+    const hr = bazi.getTime();
+    return {
+      pillars: \`年柱:\${yr} 月柱:\${mn} 日柱:\${dy} 時柱:\${hr}\`,
+      year: yr, month: mn, day: dy, hour: hr,
+    };
+  } catch (e: any) {
+    return { pillars: 'CALC_ERROR: ' + e.message, year: '', month: '', day: '', hour: '' };
+  }
+}
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
