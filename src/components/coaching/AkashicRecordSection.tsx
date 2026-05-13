@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, ServerCrash, Wrench, ChevronRight, Activity, Terminal, Calendar as CalendarIcon, Shield, Zap, Info, ChevronDown } from 'lucide-react';
+import { AlertTriangle, ServerCrash, Wrench, ChevronRight, Activity, Terminal, Calendar as CalendarIcon, Shield, Zap, Info, ChevronDown, BrainCircuit, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Solar } from 'lunar-javascript';
@@ -152,15 +152,19 @@ const STATUS_INFO: Record<string, { color: string, label: string, desc: string }
 export default function AkashicRecordSection({ 
   dayMasterHanja,
   sajuData,
-  harmony
+  harmony,
+  biorhythm
 }: { 
   dayMasterHanja?: string | null;
   sajuData?: any;
   harmony?: any;
+  biorhythm?: any;
 }) {
   const [viewMode, setViewMode] = useState<'post-mortem' | 'forecast'>('post-mortem');
   const [expandedAction, setExpandedAction] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<number>(1);
+  const [aiCoachingCache, setAiCoachingCache] = useState<Record<number, string>>({});
+  const [isCoachingLoading, setIsCoachingLoading] = useState(false);
   const masterKey = dayMasterHanja || '辛';
   
   // 일진 십성 기반으로 아카식 데이터 가져오기
@@ -174,6 +178,40 @@ export default function AkashicRecordSection({
   useEffect(() => {
     setSelectedDay(currentDay);
   }, [currentDay]);
+
+  // AI 실시간 융합 코칭 패치 로직
+  useEffect(() => {
+    const fetchAiCoaching = async () => {
+      const selectedData = calendarDays.find(d => d.date === selectedDay);
+      // 디테일 데이터가 없거나, 이미 캐시에 있으면 패스
+      if (!selectedData?.detailData || aiCoachingCache[selectedDay]) return;
+
+      setIsCoachingLoading(true);
+      try {
+        const res = await fetch('/api/akashic-coach', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sajuData,
+            biorhythm,
+            calendarDay: selectedData
+          })
+        });
+        const json = await res.json();
+        if (json.reply) {
+          setAiCoachingCache(prev => ({ ...prev, [selectedDay]: json.reply }));
+        }
+      } catch (err) {
+        console.error('Failed to fetch AI coaching:', err);
+      } finally {
+        setIsCoachingLoading(false);
+      }
+    };
+
+    if (viewMode === 'forecast') {
+      fetchAiCoaching();
+    }
+  }, [selectedDay, viewMode, calendarDays, sajuData, biorhythm, aiCoachingCache]);
 
   // Markdown 렌더러
   const renderers = {
@@ -403,10 +441,23 @@ export default function AkashicRecordSection({
                             {calendarDays.find(d => d.date === selectedDay)?.detailData.cause}
                           </p>
                           <div className="h-px w-full bg-white/5 my-2"></div>
-                          <p className="text-[12px] text-slate-300 leading-relaxed">
-                            <span className="text-cyan-400 font-bold block mb-1">💡 [명심 코칭 지침]</span>
-                            {calendarDays.find(d => d.date === selectedDay)?.detailData.action}
-                          </p>
+                          
+                          <div className="text-[12px] text-slate-300 leading-relaxed">
+                            <span className="text-cyan-400 font-bold block mb-1 flex items-center gap-1.5">
+                              <BrainCircuit className="w-3.5 h-3.5" />
+                              [Live Sync 융합 코칭 지침]
+                            </span>
+                            {isCoachingLoading && !aiCoachingCache[selectedDay] ? (
+                              <div className="flex items-center gap-2 mt-2 py-1">
+                                <Loader2 className="w-3 h-3 text-cyan-500 animate-spin" />
+                                <span className="text-[11px] text-cyan-400/70 animate-pulse font-mono tracking-widest">ANALYZING BIOSYNC DATA...</span>
+                              </div>
+                            ) : (
+                              <div className="mt-1 text-cyan-50/90 leading-relaxed break-keep border-l-2 border-cyan-500/30 pl-2">
+                                {aiCoachingCache[selectedDay] || calendarDays.find(d => d.date === selectedDay)?.detailData.action}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ) : (
