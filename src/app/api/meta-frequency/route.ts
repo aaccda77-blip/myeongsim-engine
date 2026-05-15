@@ -90,13 +90,19 @@ export async function POST(req: Request) {
 🔹 뉴럴 코드: [${dailyState.neuralCode.tag}] ${dailyState.neuralCode.desc}
 🚀 메타 코드: [${dailyState.metaCode.tag}] ${dailyState.metaCode.desc}
 
+【사용자 원국 (4기둥 전체 맥락)】
+사주 원국: 년주(${sajuData?.yearPillar || '알수없음'}), 월주(${sajuData?.monthPillar || '알수없음'}), 일주(${sajuData?.dayPillar || '알수없음'}), 시주(${sajuData?.timePillar || '알수없음'})
+(AI 지시: 일간과 오늘의 일진의 관계를 핵심으로 하되, 사주 원국 전체의 에너지가 오늘 어떻게 작용하는지도 부드럽게 융합하여 코칭에 반영하세요.)
+
 【사용자 현재 주파수】
 ${levelState.emoji} **${levelState.label}** — ${levelState.metaphor}
 ${userMessage ? `사용자 메시지: "${userMessage}"` : '(선택지를 통해 자기 진단)'}
 
-【생체 데이터】
-심박: ${safeBio.heartRate}BPM | 스트레스: ${safeBio.stress}% | HRV: ${safeBio.hrv}ms
-바이오 교차: ${bioSyncMessage}
+【생체 에너지 및 바이오리듬 융합】
+- 실시간 신체 상태: 심박 ${safeBio.heartRate}BPM | 스트레스 ${safeBio.stress}% | HRV ${safeBio.hrv}ms
+- 일일 바이오리듬: 신체(${biorhythm?.physicalLabel || '보통'}), 감정(${biorhythm?.emotionalLabel || '보통'}), 지성(${biorhythm?.intellectualLabel || '보통'})
+- 교차 분석 결과: ${bioSyncMessage}
+(AI 지시: 다크/뉴럴/메타 상태를 해석할 때, 현재의 생체 에너지와 바이오리듬 상태를 반드시 융합하여 입체적이고 과학적인 피드백을 제공하세요.)
 
 【당신의 역할】
 ${activeLevel === 'dark' ? `사용자는 현재 다크 코드에 동일시되어 있습니다.
