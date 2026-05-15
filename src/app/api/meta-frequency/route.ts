@@ -10,11 +10,29 @@ import {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+/**
+ * 오늘의 실제 일진(日辰)을 lunar-javascript로 자동 계산
+ */
+function getTodayDayPillar(): string {
+  try {
+    const { Solar } = require('lunar-javascript');
+    const now = new Date();
+    const solar = Solar.fromYmdHms(
+      now.getFullYear(), now.getMonth() + 1, now.getDate(),
+      now.getHours(), now.getMinutes(), 0
+    );
+    const lunar = solar.getLunar();
+    const bazi = lunar.getEightChar();
+    return bazi.getDay(); // 오늘의 일주 간지 (예: "己丑")
+  } catch {
+    return '己丑';
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const {
-      dayPillar,       // 오늘 일진 간지 (예: "갑자")
       userMessage,     // 사용자 메시지 (주파수 감지용)
       selectedLevel,   // 사용자가 선택한 주파수 레벨
       bio,             // 생체 데이터
@@ -22,15 +40,17 @@ export async function POST(req: Request) {
       sajuData,        // 사주 데이터 (추가 컨텍스트)
     } = body;
 
-    if (!dayPillar) {
-      return NextResponse.json({ error: '일진 데이터가 필요합니다.' }, { status: 400 });
-    }
-
+    // ★ 핵심: 오늘의 실제 일진을 서버에서 자동 계산 (사용자 생년 일주가 아님!)
+    const todayPillar = getTodayDayPillar();
     const safeBio = bio || { stress: 55, hrv: 40, heartRate: 85 };
+    
+    // 사용자 일간 추출 (갑, 을, 병...)
+    const userDayStem = sajuData?.dayPillar ? sajuData.dayPillar.charAt(0) : '갑';
 
-    // 1. 오늘의 주파수 상태 산출
+    // 1. 오늘의 주파수 상태 산출 (실제 일진 기반)
     const dailyState = calculateDailyFrequency(
-      dayPillar,
+      userDayStem,
+      todayPillar,
       userMessage || '',
       safeBio,
       biorhythm
@@ -64,7 +84,8 @@ export async function POST(req: Request) {
 - 뉴럴 코드로 도구처럼 잘 쓰는 것도 좋지만, 메타 코드는 잘 쓰는 것조차 집착하지 않는 것입니다.
 - 메타 코드 = 하되 안 할 수도 있는 상태. 즐기되 열심히 하되 안 할 수도 있는 궁극의 자유.
 
-【오늘의 3계층 코드】
+【개인화된 에너지 분석】
+사용자의 일간(${userDayStem})과 오늘의 일진(${todayPillar})이 만나 형성된 십성: ${dailyState.codeName}
 🔻 다크 코드: [${dailyState.darkCode.tag}] ${dailyState.darkCode.desc}
 🔹 뉴럴 코드: [${dailyState.neuralCode.tag}] ${dailyState.neuralCode.desc}
 🚀 메타 코드: [${dailyState.metaCode.tag}] ${dailyState.metaCode.desc}
@@ -111,7 +132,7 @@ ${levelState.emoji} **[${levelState.label} 주파수 감지]**
     return NextResponse.json({
       success: true,
       dailyState: {
-        todayPillar: dailyState.todayPillar,
+        todayPillar,
         codeName: dailyState.codeName,
         darkCode: dailyState.darkCode,
         neuralCode: dailyState.neuralCode,

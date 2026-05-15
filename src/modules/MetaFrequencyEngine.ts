@@ -231,38 +231,37 @@ export function analyzeBioFrequencySync(
 }
 
 /**
- * 메인 엔진: 오늘의 전체 주파수 상태 산출
+ * 메인 엔진: 사용자의 일간(나)과 오늘 일진(운) 간의 십성을 분석하여
+ * 초개인화된 다크/뉴럴/메타 코드를 산출
  */
 export function calculateDailyFrequency(
-  dayPillar: string,
+  userDayStem: string, // 사용자의 일간 (예: "辛")
+  todayPillar: string, // 오늘 일진 (예: "己丑")
   userMessage: string,
   bio: { stress: number; hrv: number; heartRate: number },
   biorhythm?: { physicalLabel?: string; emotionalLabel?: string; intellectualLabel?: string }
 ): DailyFrequencyState {
-  // 1. 오늘의 3계층 코드 조회
-  const code = getTodayThreeLayerCode(dayPillar);
-  const fallbackCode: ThreeLayerCode = {
-    id: 0,
-    codeName: '탐색자',
-    neuralCode: { tag: 'Explorer', desc: '새로운 가능성을 탐색하는 상태' },
-    darkCode: { tag: 'Wanderer', desc: '방향을 찾고 있는 상태' },
-    metaCode: { tag: 'Free Spirit', desc: '자유로운 영혼의 상태' },
-  };
-  const activeCode = code || fallbackCode;
+  
+  // 1. 십성 계산
+  const todayStem = todayPillar.charAt(0);
+  const tenGod = getTenGod(userDayStem, todayStem);
 
-  // 2. 사용자 메시지에서 현재 주파수 감지
+  // 2. 십성 기반 3계층 코드 (초개인화)
+  const activeCode = TEN_GODS_META_CODES[tenGod] || TEN_GODS_META_CODES['비견'];
+
+  // 3. 사용자 메시지에서 현재 주파수 감지
   const freqAnalysis = userMessage ? analyzeFrequency(userMessage) : null;
   const currentLevel: ConsciousnessLevel = freqAnalysis?.level || 'neural';
 
-  // 3. 재귀적 자기질문 생성
+  // 4. 재귀적 자기질문 생성
   const selfInquiry = getSelfInquiry(currentLevel);
 
-  // 4. 선택지 질문 생성
+  // 5. 선택지 질문 생성
   const frequencyQuestion = generateFrequencyQuestion(activeCode);
 
   return {
-    todayPillar: dayPillar,
-    codeName: activeCode.codeName,
+    todayPillar: todayPillar,
+    codeName: `[오늘의 에너지: ${tenGod}]`,
     darkCode: activeCode.darkCode,
     neuralCode: activeCode.neuralCode,
     metaCode: activeCode.metaCode,
@@ -280,3 +279,115 @@ export function calculateDailyFrequency(
     },
   };
 }
+
+// ═══════════════════════════════════════════════════
+// 십성(Ten Gods) 계산 엔진
+// ═══════════════════════════════════════════════════
+
+const STEMS = [
+  { name: '갑', element: '목', yinYang: '+' }, { name: '을', element: '목', yinYang: '-' },
+  { name: '병', element: '화', yinYang: '+' }, { name: '정', element: '화', yinYang: '-' },
+  { name: '무', element: '토', yinYang: '+' }, { name: '기', element: '토', yinYang: '-' },
+  { name: '경', element: '금', yinYang: '+' }, { name: '신', element: '금', yinYang: '-' },
+  { name: '임', element: '수', yinYang: '+' }, { name: '계', element: '수', yinYang: '-' },
+];
+
+function getStemInfo(char: string) {
+  const koreanMap: Record<string, string> = {
+    '甲': '갑', '乙': '을', '丙': '병', '丁': '정', '戊': '무', 
+    '己': '기', '庚': '경', '辛': '신', '壬': '임', '癸': '계'
+  };
+  const normalized = koreanMap[char] || char;
+  return STEMS.find(s => s.name === normalized) || STEMS[0];
+}
+
+function getTenGod(meChar: string, targetChar: string): string {
+  const me = getStemInfo(meChar);
+  const target = getStemInfo(targetChar);
+
+  const isSameYinYang = me.yinYang === target.yinYang;
+
+  // 내가 극한다 (극재)
+  const controls: Record<string, string> = { '목': '토', '화': '금', '토': '수', '금': '목', '수': '화' };
+  // 나를 극한다 (관살)
+  const controlledBy: Record<string, string> = { '목': '금', '화': '수', '토': '목', '금': '화', '수': '토' };
+  // 내가 생한다 (식상)
+  const generates: Record<string, string> = { '목': '화', '화': '토', '토': '금', '금': '수', '수': '목' };
+  // 나를 생한다 (인성)
+  const generatedBy: Record<string, string> = { '목': '수', '화': '목', '토': '화', '금': '토', '수': '금' };
+
+  if (me.element === target.element) return isSameYinYang ? '비견' : '겁재';
+  if (controls[me.element] === target.element) return isSameYinYang ? '편재' : '정재';
+  if (controlledBy[me.element] === target.element) return isSameYinYang ? '편관' : '정관';
+  if (generates[me.element] === target.element) return isSameYinYang ? '식신' : '상관';
+  if (generatedBy[me.element] === target.element) return isSameYinYang ? '편인' : '정인';
+
+  return '비견';
+}
+
+// ═══════════════════════════════════════════════════
+// 십성 기반 초개인화 다크/뉴럴/메타 코드 정의
+// ═══════════════════════════════════════════════════
+
+const TEN_GODS_META_CODES: Record<string, ThreeLayerCode> = {
+  '비견': {
+    id: 1, codeName: '비견',
+    darkCode: { tag: '고집/마찰', desc: '내 주장을 꺾지 않아 타인과 불필요한 마찰을 빚는 상태 (자아 방어기제)' },
+    neuralCode: { tag: '주체성/독립', desc: '외부에 휘둘리지 않고 나만의 중심을 확고히 세우는 도구로 활용' },
+    metaCode: { tag: '조율자', desc: '주장하되 고집하지 않고, 언제든 유연하게 중심을 이동할 수 있는 자유' },
+  },
+  '겁재': {
+    id: 2, codeName: '겁재',
+    darkCode: { tag: '비교/질투', desc: '타인의 성취를 나의 패배로 인식하며 무한 경쟁과 시기심에 빠진 상태' },
+    neuralCode: { tag: '건강한 승부욕', desc: '비교를 통한 자극을 성장을 위한 부스터(연료)로 전환하여 쓰는 상태' },
+    metaCode: { tag: '상생/연대', desc: '승패의 제로섬 게임에서 벗어나, 타인의 성장을 온전히 기뻐하는 초월적 상태' },
+  },
+  '식신': {
+    id: 3, codeName: '식신',
+    darkCode: { tag: '회피/나태', desc: '현실의 책임감을 피해 단순한 쾌락이나 좋아하는 일에만 과몰입하는 상태' },
+    neuralCode: { tag: '창조/몰입', desc: '순수한 호기심과 즐거움을 생산적인 결과물로 승화시키는 상태' },
+    metaCode: { tag: '무위의 유희', desc: '목적 없이도 즐겁고, 결과에 집착하지 않으며 그저 행위 자체를 놀이처럼 즐김' },
+  },
+  '상관': {
+    id: 4, codeName: '상관',
+    darkCode: { tag: '비난/반항', desc: '불합리함에 대해 정제되지 않은 분노를 표출하여 상황을 악화시키는 상태' },
+    neuralCode: { tag: '혁신/비판적 사고', desc: '기존 시스템의 오류를 정확히 짚어내어 창조적 파괴의 도구로 쓰는 상태' },
+    metaCode: { tag: '자비로운 개선', desc: '칼날 같은 비판조차 상대를 살리는 따뜻한 처방이 되는 고차원적 소통' },
+  },
+  '편재': {
+    id: 5, codeName: '편재',
+    darkCode: { tag: '초조/통제', desc: '빠른 결과를 원하며 모든 공간과 상황을 내 뜻대로 장악하려는 강박' },
+    neuralCode: { tag: '공간 장악력', desc: '넓은 시야로 전체 판을 읽고 자원을 효율적으로 배치하는 전략적 모드' },
+    metaCode: { tag: '흐름에 맡김', desc: '과정을 완벽히 기획하되, 최종 결과는 우주의 흐름에 내어맡기는 여유' },
+  },
+  '정재': {
+    id: 6, codeName: '정재',
+    darkCode: { tag: '손실 회피/인색', desc: '가진 것을 잃을까 두려워 꽉 움켜쥐고 변화를 거부하는 상태' },
+    neuralCode: { tag: '정밀한 관리', desc: '불확실성을 줄이고 자산을 안정적이고 꼼꼼하게 관리하는 도구' },
+    metaCode: { tag: '무소유의 풍요', desc: '가진 것에 감사하되, 언제든 놓을 수 있어 역설적으로 가장 풍요로운 상태' },
+  },
+  '편관': {
+    id: 7, codeName: '편관',
+    darkCode: { tag: '자기 학대/강박', desc: '비현실적인 엄격한 잣대로 스스로를 채찍질하며 극도의 압박을 받는 상태' },
+    neuralCode: { tag: '강인한 책임감', desc: '난관을 돌파하는 강력한 카리스마와 문제 해결의 동력으로 활용' },
+    metaCode: { tag: '평온한 전사', desc: '태풍의 눈 속에서도 가장 고요하며, 외부의 압력에 전혀 상처받지 않는 경지' },
+  },
+  '정관': {
+    id: 8, codeName: '정관',
+    darkCode: { tag: '눈치/억압', desc: '타인의 시선이나 사회적 규범에 얽매여 진짜 내 목소리를 내지 못하는 상태' },
+    neuralCode: { tag: '합리적 조율', desc: '조직 내에서 원칙을 지키면서도 합리적으로 시스템을 운영하는 리더십' },
+    metaCode: { tag: '자유로운 규범', desc: '스스로가 법이 되어 자연스럽게 도리를 행하되, 어떤 규제에도 구속되지 않음' },
+  },
+  '편인': {
+    id: 9, codeName: '편인',
+    darkCode: { tag: '의심/망상', desc: '과보호나 과거의 상처로 인해 세상을 불신하고 부정적 시나리오를 돌리는 상태' },
+    neuralCode: { tag: '직관적 통찰', desc: '남들이 보지 못하는 이면의 진실을 날카롭게 꿰뚫어보는 영감의 도구' },
+    metaCode: { tag: '초월적 지혜', desc: '직관조차 집착하지 않고, 그저 텅 빈 거울처럼 세상을 있는 그대로 비춤' },
+  },
+  '정인': {
+    id: 10, codeName: '정인',
+    darkCode: { tag: '의존/지연', desc: '끊임없이 외부의 인정을 갈구하거나 준비만 하며 실행을 미루는 상태' },
+    neuralCode: { tag: '지식 수용성', desc: '방대한 정보를 스펀지처럼 흡수하여 나의 지적 자산으로 만드는 능력' },
+    metaCode: { tag: '무조건적 수용', desc: '배움과 가르침의 경계가 무너지고, 존재 자체로 세상과 사랑을 주고받는 상태' },
+  },
+};

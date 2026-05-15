@@ -476,7 +476,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
       </div>
 
       {/* ─── 의식 주파수 분석 (독립 프리미엄 모듈) ─── */}
-      <MetaFrequencyPanel sajuData={sajuData} harmony={harmony} biorhythm={biorhythm} isPremium={true} />
+      <MetaFrequencyPanel sajuData={sajuData} harmony={harmony} biorhythm={biorhythm} bio={bio} isPremium={true} />
     </div>
   );
 }

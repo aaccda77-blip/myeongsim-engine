@@ -17,6 +17,7 @@ interface MetaFrequencyPanelProps {
   sajuData: any;
   harmony: any;
   biorhythm: any;
+  bio?: any;
   isPremium?: boolean;
 }
 
@@ -43,7 +44,7 @@ const LEVEL_CONFIG = {
   },
 };
 
-export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, isPremium = true }: MetaFrequencyPanelProps) {
+export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, isPremium = true }: MetaFrequencyPanelProps) {
   const [dailyState, setDailyState] = useState<any>(null);
   const [aiReply, setAiReply] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<ConsciousnessLevel | null>(null);
@@ -51,24 +52,23 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, isPre
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 일진 간지 추출
-  const dayPillar = harmony?.dayPillar || sajuData?.dayPillar || '갑자';
-
-  // 초기 로드: 오늘의 3계층 코드 가져오기
+  // 초기 로드: 오늘의 3계층 코드 가져오기 (일진은 서버에서 자동 계산)
   useEffect(() => {
     fetchFrequencyState();
-  }, [dayPillar]);
+  }, []);
 
+  // bio 데이터가 변경되면, 서버에 다시 분석을 요청할지 여부는 판단 필요함 (일단은 초기 진입 시 + 측정 버튼 클릭 시에만 반영됨)
+  
   const fetchFrequencyState = async (level?: ConsciousnessLevel) => {
     setIsLoading(true);
     try {
+      const currentBio = bio || { stress: 55, hrv: 40, heartRate: 85 };
       const res = await fetch('/api/meta-frequency', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          dayPillar,
           selectedLevel: level,
-          bio: { stress: 55, hrv: 40, heartRate: 85 },
+          bio: currentBio,
           biorhythm,
           sajuData,
         }),
