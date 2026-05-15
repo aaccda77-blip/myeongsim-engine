@@ -13,6 +13,25 @@
 import { ThreeLayerCodeSystem, ThreeLayerCode } from './ThreeLayerCodeSystem';
 import { analyzeFrequency, FrequencyAnalysis } from './FrequencyDetector';
 
+/**
+ * 오늘의 실제 일진(日辰)을 lunar-javascript로 자동 계산
+ */
+export function getTodayDayPillar(): string {
+  try {
+    const { Solar } = require('lunar-javascript');
+    const now = new Date();
+    const solar = Solar.fromYmdHms(
+      now.getFullYear(), now.getMonth() + 1, now.getDate(),
+      now.getHours(), now.getMinutes(), 0
+    );
+    const lunar = solar.getLunar();
+    const bazi = lunar.getEightChar();
+    return bazi.getDay(); // 오늘의 일주 간지 (예: "己丑")
+  } catch {
+    return '己丑';
+  }
+}
+
 // ═══════════════════════════════════════════════════
 // 타입 정의
 // ═══════════════════════════════════════════════════
