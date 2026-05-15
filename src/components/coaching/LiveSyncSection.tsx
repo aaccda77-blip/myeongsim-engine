@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import MetaFrequencyPanel from './MetaFrequencyPanel';
 
 // ─── 동적 생체 시뮬레이션 함수 ────────
 function randomBetween(min: number, max: number) {
@@ -473,6 +474,9 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
           </div>
         </div>
       </div>
+
+      {/* ─── 의식 주파수 분석 (독립 프리미엄 모듈) ─── */}
+      <MetaFrequencyPanel sajuData={sajuData} harmony={harmony} biorhythm={biorhythm} isPremium={true} />
     </div>
   );
 }
