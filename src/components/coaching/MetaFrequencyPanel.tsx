@@ -174,7 +174,6 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, isPre
                         ? `${cfg.bg} ${cfg.border} ring-1 ring-offset-1 ring-offset-[#0b1018]`
                         : 'bg-white/5 border-white/10 hover:bg-white/10'
                     }`}
-                    style={isSelected ? { ringColor: cfg.color } : undefined}
                   >
                     <div className="text-[14px] mb-1">{cfg.emoji}</div>
                     <div className={`text-[9px] font-bold mb-0.5 ${isSelected ? cfg.text : 'text-slate-300'}`}>
