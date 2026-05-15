@@ -29,6 +29,35 @@ function getTodayDayPillar(): string {
   }
 }
 
+function calculateNeuralCode(sajuData: any): {
+  pillars: string; year: string; month: string; day: string; hour: string;
+} {
+  try {
+    const { Solar, Lunar } = require('lunar-javascript');
+    const birthDate = sajuData?.birthDate || sajuData?.birth_date;
+    const birthTime = sajuData?.birthTime || sajuData?.birth_time || '12:00';
+    const calendarType = sajuData?.meta?.calendarType || sajuData?.calendar_type || 'solar';
+    if (!birthDate) return { pillars: 'DATA_MISSING', year: '', month: '', day: '', hour: '' };
+
+    const [y, mo, d] = birthDate.split('-').map(Number);
+    const [h, m] = birthTime.split(':').map(Number);
+
+    let lunarDate;
+    if (calendarType === 'lunar') {
+      lunarDate = Lunar.fromYmdHms(y, mo, d, h, m, 0);
+    } else {
+      lunarDate = Solar.fromYmdHms(y, mo, d, h, m, 0).getLunar();
+    }
+    const bazi = lunarDate.getEightChar();
+    return {
+      pillars: `年柱:${bazi.getYear()} 月柱:${bazi.getMonth()} 日柱:${bazi.getDay()} 時柱:${bazi.getTime()}`,
+      year: bazi.getYear(), month: bazi.getMonth(), day: bazi.getDay(), hour: bazi.getTime(),
+    };
+  } catch (e: any) {
+    return { pillars: 'CALC_ERROR: ' + e.message, year: '', month: '', day: '', hour: '' };
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -44,8 +73,18 @@ export async function POST(req: Request) {
     const todayPillar = getTodayDayPillar();
     const safeBio = bio || { stress: 55, hrv: 40, heartRate: 85 };
     
-    // 사용자 일간 추출 (갑, 을, 병...)
-    const userDayStem = sajuData?.dayPillar ? sajuData.dayPillar.charAt(0) : '갑';
+    // ─── 사용자 일간 정밀 추출 ───
+    let userDayStem = '갑';
+    if (sajuData) {
+      // 1. neural code 계산 시도
+      const neural = calculateNeuralCode(sajuData);
+      if (neural.day) {
+        userDayStem = neural.day.charAt(0);
+      } else if (sajuData.dayPillar) {
+        userDayStem = sajuData.dayPillar.charAt(0);
+      }
+    }
+
 
     // 1. 오늘의 주파수 상태 산출 (실제 일진 기반)
     const dailyState = calculateDailyFrequency(
