@@ -153,9 +153,17 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
         {/* ─── 오늘의 3계층 코드 카드 ─── */}
         {dailyState && (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-            <p className="text-[10px] text-slate-500 font-mono mb-2">
-              오늘의 일진: {dailyState.todayPillar} · {dailyState.codeName}
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[10px] text-slate-500 font-mono">
+                오늘의 일진: {dailyState.todayPillar} · {dailyState.codeName}
+              </p>
+              {dailyState.gongmang?.isTodayGongmang && (
+                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-500/40 animate-pulse">
+                  <Sparkles className="w-2.5 h-2.5 text-indigo-400" />
+                  <span className="text-[8px] font-bold text-indigo-300">공망 감지</span>
+                </div>
+              )}
+            </div>
             <div className="grid grid-cols-3 gap-2">
               {(['dark', 'neural', 'meta'] as ConsciousnessLevel[]).map((level) => {
                 const cfg = LEVEL_CONFIG[level];
@@ -250,6 +258,20 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
             className="p-2.5 rounded-xl bg-white/5 border border-white/10">
             <p className="text-[10px] text-slate-300 leading-relaxed break-keep">
               {dailyState.bioSyncMessage}
+            </p>
+          </motion.div>
+        )}
+
+        {/* ─── 공망(Gongmang) 융합 가이드 ─── */}
+        {dailyState?.gongmang?.isTodayGongmang && (
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+            className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Sparkles className="w-3 h-3 text-indigo-400" />
+              <span className="text-[10px] font-black text-indigo-300 uppercase tracking-tighter">Gongmang Fusion Active</span>
+            </div>
+            <p className="text-[9px] text-indigo-200/80 leading-relaxed break-keep">
+              {dailyState.gongmang.description}
             </p>
           </motion.div>
         )}

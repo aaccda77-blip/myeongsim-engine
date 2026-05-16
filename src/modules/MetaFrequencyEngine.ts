@@ -12,6 +12,7 @@
 
 import { ThreeLayerCodeSystem, ThreeLayerCode } from './ThreeLayerCodeSystem';
 import { analyzeFrequency, FrequencyAnalysis } from './FrequencyDetector';
+import { GongmangInfo, calculateGongmang } from './GongmangEngine';
 
 /**
  * 오늘의 실제 일진(日辰)을 lunar-javascript로 자동 계산
@@ -71,6 +72,8 @@ export interface DailyFrequencyState {
   selfInquiry: string;
   // 선택지 질문
   frequencyQuestion: FrequencyQuestion;
+  // 공망 데이터 융합
+  gongmang?: GongmangInfo;
   // 바이오 데이터 연동
   bioSync: {
     stress: number;
@@ -254,33 +257,38 @@ export function analyzeBioFrequencySync(
  * 초개인화된 다크/뉴럴/메타 코드를 산출
  */
 export function calculateDailyFrequency(
-  userDayStem: string, // 사용자의 일간 (예: "辛")
-  todayPillar: string, // 오늘 일진 (예: "己丑")
+  userDayPillar: string, // 사용자의 일주 (예: "辛巳")
+  todayPillar: string,   // 오늘 일진 (예: "己丑")
   userMessage: string,
   bio: { stress: number; hrv: number; heartRate: number },
   biorhythm?: { physicalLabel?: string; emotionalLabel?: string; intellectualLabel?: string }
 ): DailyFrequencyState {
   
-  // 1. 십성 계산
+  const userDayStem = userDayPillar.charAt(0);
   const todayStem = todayPillar.charAt(0);
+
+  // 1. 십성 계산
   const tenGod = getTenGod(userDayStem, todayStem);
 
-  // 2. 십성 기반 3계층 코드 (초개인화)
+  // 2. 공망 계산
+  const gongmang = calculateGongmang(userDayPillar, todayPillar);
+
+  // 3. 십성 기반 3계층 코드 (초개인화)
   const activeCode = TEN_GODS_META_CODES[tenGod] || TEN_GODS_META_CODES['비견'];
 
-  // 3. 사용자 메시지에서 현재 주파수 감지
+  // 4. 사용자 메시지에서 현재 주파수 감지
   const freqAnalysis = userMessage ? analyzeFrequency(userMessage) : null;
   const currentLevel: ConsciousnessLevel = freqAnalysis?.level || 'neural';
 
-  // 4. 재귀적 자기질문 생성
+  // 5. 재귀적 자기질문 생성
   const selfInquiry = getSelfInquiry(currentLevel);
 
-  // 5. 선택지 질문 생성
+  // 6. 선택지 질문 생성
   const frequencyQuestion = generateFrequencyQuestion(activeCode);
 
   return {
     todayPillar: todayPillar,
-    codeName: `[오늘의 에너지: ${tenGod}]`,
+    codeName: `[오늘의 에너지: ${tenGod}]${gongmang.isTodayGongmang ? ' (공망)' : ''}`,
     darkCode: activeCode.darkCode,
     neuralCode: activeCode.neuralCode,
     metaCode: activeCode.metaCode,
@@ -288,6 +296,7 @@ export function calculateDailyFrequency(
     frequencyAnalysis: freqAnalysis,
     selfInquiry,
     frequencyQuestion,
+    gongmang,
     bioSync: {
       stress: bio.stress,
       hrv: bio.hrv,

@@ -73,22 +73,16 @@ export async function POST(req: Request) {
     const todayPillar = getTodayDayPillar();
     const safeBio = bio || { stress: 55, hrv: 40, heartRate: 85 };
     
-    // ─── 사용자 일간 정밀 추출 ───
-    let userDayStem = '갑';
+    // ─── 사용자 일주(Day Pillar) 및 일간 정밀 추출 ───
+    let userDayPillar = '갑자';
     if (sajuData) {
-      // 1. neural code 계산 시도
       const neural = calculateNeuralCode(sajuData);
-      if (neural.day) {
-        userDayStem = neural.day.charAt(0);
-      } else if (sajuData.dayPillar) {
-        userDayStem = sajuData.dayPillar.charAt(0);
-      }
+      userDayPillar = neural.day || sajuData.dayPillar || '갑자';
     }
 
-
-    // 1. 오늘의 주파수 상태 산출 (실제 일진 기반)
+    // 1. 오늘의 주파수 상태 산출 (실제 일진 기반 + 공망 융합)
     const dailyState = calculateDailyFrequency(
-      userDayStem,
+      userDayPillar,
       todayPillar,
       userMessage || '',
       safeBio,
@@ -132,6 +126,11 @@ export async function POST(req: Request) {
 【사용자 원국 (4기둥 전체 맥락)】
 사주 원국: 년주(${sajuData?.yearPillar || '알수없음'}), 월주(${sajuData?.monthPillar || '알수없음'}), 일주(${sajuData?.dayPillar || '알수없음'}), 시주(${sajuData?.timePillar || '알수없음'})
 (AI 지시: 일간과 오늘의 일진의 관계를 핵심으로 하되, 사주 원국 전체의 에너지가 오늘 어떻게 작용하는지도 부드럽게 융합하여 코칭에 반영하세요.)
+
+【공망(空亡) 데이터 및 초고도화 분석】
+- 사용자 공망: ${dailyState.gongmang?.branches.join(', ') || '없음'}
+- 오늘 일진의 공망 여부: ${dailyState.gongmang?.isTodayGongmang ? '🚀 [공망일 감지]' : '정상'}
+(AI 지시: 공망은 "비어있음"을 뜻하며, 해당 기운이 들어와도 실질적인 작용력이 약화되거나 예상 밖의 흐름을 보임을 의미합니다. 특히 오늘 일진이 공망일 경우, 재성이나 관성 등의 세속적 욕망(다크 코드)이 얼마나 허무한 것인지, 그리고 왜 이 시기에 '비움'과 '메타 인지'가 가장 강력한 전략이 되는지를 명리학적+심리학적 근거를 들어 고도화된 설명을 제공하세요. 공망이 충(冲)이나 형(刑)과 만날 때의 에너지 변화도 가능하다면 융합하여 분석하세요.)
 
 【사용자 현재 주파수】
 ${levelState.emoji} **${levelState.label}** — ${levelState.metaphor}
@@ -186,6 +185,7 @@ ${levelState.emoji} **[${levelState.label} 주파수 감지]**
         selfInquiry,
         bioSyncMessage,
         frequencyQuestion: dailyState.frequencyQuestion,
+        gongmang: dailyState.gongmang,
       },
       aiReply,
     });
