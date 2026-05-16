@@ -118,7 +118,7 @@ export async function POST(req: Request) {
 - 메타 코드 = 하되 안 할 수도 있는 상태. 즐기되 열심히 하되 안 할 수도 있는 궁극의 자유.
 
 【개인화된 에너지 분석】
-사용자의 일간(${userDayStem})과 오늘의 일진(${todayPillar})이 만나 형성된 십성: ${dailyState.codeName}
+사용자의 일간(${userDayPillar.charAt(0)})과 오늘의 일진(${todayPillar})이 만나 형성된 십성: ${dailyState.codeName}
 🔻 다크 코드: [${dailyState.darkCode.tag}] ${dailyState.darkCode.desc}
 🔹 뉴럴 코드: [${dailyState.neuralCode.tag}] ${dailyState.neuralCode.desc}
 🚀 메타 코드: [${dailyState.metaCode.tag}] ${dailyState.metaCode.desc}
