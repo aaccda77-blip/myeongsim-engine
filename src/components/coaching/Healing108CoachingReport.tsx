@@ -19,7 +19,7 @@ export default function Healing108CoachingReport({
     userProfile
 }: Healing108CoachingReportProps) {
     const { reportData } = useReportStore();
-    const activeSaju = userProfile?.saju || reportData?.saju;
+    const activeSaju = reportData?.saju || userProfile?.saju;
 
     // --- 108페이지 내비게이션 상태 ---
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
