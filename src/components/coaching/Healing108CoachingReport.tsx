@@ -50,21 +50,30 @@ export default function Healing108CoachingReport({
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [recursiveConfirmed, setRecursiveConfirmed] = useState<Record<string, boolean>>({});
 
+    // [NEW] 실시간 AI 개인화 생성형 백서 관련 상태
+    const [aiPageContent, setAiPageContent] = useState<Record<string, { title: string; desc: string; socratic: string; recursive: string }>>({});
+    const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+
     // 108페이지 키 배열
     const pageKeys = Object.keys(saju108Matrix).sort();
     const currentPageKey = pageKeys[currentPageIndex];
     const currentPageData = saju108Matrix[currentPageKey];
 
+
+
     // 사용자별 고유 캐시 키 정의
     const userKey = userProfile?.id || userProfile?.userName || 'guest';
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
+    const aiContentKey = `ms_108_ai_content_${userKey}`; // AI 치유 본문 격리 캐시 키
 
-    // --- 로컬스토리지 답변 로딩 & 자동 캐싱 ---
+    // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const cachedAnswers = localStorage.getItem(answersKey);
             const cachedConfirmed = localStorage.getItem(confirmedKey);
+            const cachedAiContent = localStorage.getItem(aiContentKey);
+
             if (cachedAnswers) {
                 setAnswers(JSON.parse(cachedAnswers));
             } else {
@@ -75,8 +84,58 @@ export default function Healing108CoachingReport({
             } else {
                 setRecursiveConfirmed({}); // 다른 사용자로 전환 시 자각 승인 초기화 및 갱신
             }
+            if (cachedAiContent) {
+                setAiPageContent(JSON.parse(cachedAiContent));
+            } else {
+                setAiPageContent({}); // 새로운 사용자 전환 시 AI 백서 생성 데이터 초기화 및 갱신
+            }
         }
     }, [userKey]); // [초고도화] 사용자가 바뀌면 실시간으로 데이터를 분리 스위칭합니다.
+
+    // [NEW] 페이지 진입 및 인덱스 변경 시, Gemini API와 온디맨드로 실시간 1대1 치유 콘텐츠를 작성하는 이펙트
+    useEffect(() => {
+        const triggerAiGeneration = async () => {
+            if (!isOpen) return;
+
+            // 1. 이미 캐시된 사용자 맞춤형 AI 콘텐츠가 있다면 즉시 로딩 없이 패스
+            if (aiPageContent[currentPageKey]) return;
+
+            // 2. 사주 데이터가 온전치 않은 비회원/체험 상태라면 무리한 서버 부하 방지를 위해 즉시 폴백
+            if (!userProfile?.saju) return;
+
+            setIsGeneratingAi(true);
+
+            try {
+                const response = await fetch('/api/coaching/generate-108', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pageKey: currentPageKey,
+                        sajuData: userProfile.saju,
+                        originalPage: currentPageData
+                    })
+                });
+
+                if (!response.ok) throw new Error('108 AI Generation Failed');
+                const data = await response.json();
+
+                if (data.success && data.pageData) {
+                    const updatedContent = {
+                        ...aiPageContent,
+                        [currentPageKey]: data.pageData
+                    };
+                    setAiPageContent(updatedContent);
+                    localStorage.setItem(aiContentKey, JSON.stringify(updatedContent));
+                }
+            } catch (err) {
+                console.warn('❌ [Gemini 108 API] 생성 오류로 인해 정적 템플릿 Fallback으로 우아하게 자동 대체합니다:', err);
+            } finally {
+                setIsGeneratingAi(false);
+            }
+        };
+
+        triggerAiGeneration();
+    }, [currentPageIndex, userKey, isOpen]);
 
     const handleAnswerChange = (pageKey: string, text: string) => {
         const updated = { ...answers, [pageKey]: text };
@@ -519,11 +578,26 @@ export default function Healing108CoachingReport({
         return resolved;
     };
 
+    const hasAiContent = !!aiPageContent[currentPageKey];
+    const displayTitle = hasAiContent 
+        ? aiPageContent[currentPageKey].title 
+        : getResolvedText(currentPageData?.title);
+    const displayDesc = hasAiContent 
+        ? aiPageContent[currentPageKey].desc 
+        : getResolvedText(currentPageData?.desc);
+    const displaySocratic = hasAiContent 
+        ? aiPageContent[currentPageKey].socratic 
+        : getResolvedText(currentPageData?.socratic);
+    const displayRecursive = hasAiContent 
+        ? aiPageContent[currentPageKey].recursive 
+        : getResolvedText(currentPageData?.recursive);
+
     // --- 페이지 검색 및 필터링 ---
     const filteredPageKeys = pageKeys.filter(key => {
         const page = saju108Matrix[key];
-        const resolvedTitle = getResolvedText(page.title);
-        const resolvedDesc = getResolvedText(page.desc);
+        const hasAi = !!aiPageContent[key];
+        const resolvedTitle = hasAi ? aiPageContent[key].title : getResolvedText(page.title);
+        const resolvedDesc = hasAi ? aiPageContent[key].desc : getResolvedText(page.desc);
         return (
             key.toLowerCase().includes(searchQuery.toLowerCase()) ||
             resolvedTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -572,20 +646,26 @@ export default function Healing108CoachingReport({
             const ans = answers[key] || '(작성된 자각 기록이 없습니다.)';
             const isConfirmed = recursiveConfirmed[key] ? '승인 및 자각 완료' : '미확정 상태';
 
+            const hasAi = !!aiPageContent[key];
+            const title = hasAi ? aiPageContent[key].title : getResolvedText(page.title);
+            const desc = hasAi ? aiPageContent[key].desc : getResolvedText(page.desc);
+            const socratic = hasAi ? aiPageContent[key].socratic : getResolvedText(page.socratic);
+            const recursive = hasAi ? aiPageContent[key].recursive : getResolvedText(page.recursive);
+
             printHtml += `
                 <div class="page-break">
-                    <div class="meta">PAGE ${index + 1} // CODE: ${key}</div>
-                    <h1>${getResolvedText(page.title)}</h1>
+                    <div class="meta">PAGE ${index + 1} // CODE: ${key} ${hasAi ? '(AI 초개인화 맞춤집필)' : ''}</div>
+                    <h1>${title}</h1>
                     <div class="content-box">
                         <div class="section-title">💡 우주 기질 디버깅 조언</div>
-                        <div class="text">${getResolvedText(page.desc)}</div>
+                        <div class="text">${desc}</div>
                     </div>
                     <div class="section-title">❓ 소크라테스식 치유 자각 질문</div>
-                    <div class="text">${getResolvedText(page.socratic)}</div>
+                    <div class="text">${socratic}</div>
                     <div class="section-title">📝 나의 내면 성찰 기록</div>
                     <div class="answer">${ans}</div>
                     <div class="section-title">🔄 순환식 참나 무한 수용 확약 (${isConfirmed})</div>
-                    <div class="text" style="font-weight: bold; color: #4b5563;">"${getResolvedText(page.recursive)}"</div>
+                    <div class="text" style="font-weight: bold; color: #4b5563;">"${recursive}"</div>
                 </div>
             `;
         });
@@ -705,6 +785,8 @@ export default function Healing108CoachingReport({
                                 const isCurrent = idx === currentPageIndex;
                                 const isAnswered = answers[key]?.trim() !== '';
                                 const isConfirmed = recursiveConfirmed[key];
+                                const hasAi = !!aiPageContent[key];
+                                const resolvedTitle = hasAi ? aiPageContent[key].title : getResolvedText(page.title);
 
                                 return (
                                     <button
@@ -729,9 +811,10 @@ export default function Healing108CoachingReport({
                                                 <span>CODE: {key}</span>
                                                 {isAnswered && <span className="text-blue-400">● 기록</span>}
                                                 {isConfirmed && <span className="text-pink-400">● 자각</span>}
+                                                {hasAi && <span className="text-pink-500/80 font-black">★ AI</span>}
                                             </div>
                                             <div className="text-xs truncate font-medium mt-0.5">
-                                                {getResolvedText(page.title)}
+                                                {resolvedTitle}
                                             </div>
                                         </div>
                                     </button>
@@ -902,54 +985,97 @@ export default function Healing108CoachingReport({
                                 {currentPageKey}
                             </div>
 
-                            {/* 카드 제목 */}
-                            <div className="space-y-0.5 sm:space-y-1">
-                                <span className="text-[8px] sm:text-[9px] font-black text-pink-400 tracking-widest uppercase">PAGE {currentPageIndex + 1} // CHIMERA SECURE</span>
-                                <h1 className="text-base sm:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 leading-snug">
-                                    {getResolvedText(currentPageData?.title)}
-                                </h1>
-                            </div>
-
-                            {/* 본문 조언 (모바일 폰트 가독성 최적화) */}
-                            <div className="text-xs sm:text-sm text-gray-300/90 leading-relaxed font-normal bg-white/2 border border-white/5 rounded-2xl p-3.5 sm:p-5 max-h-[220px] sm:max-h-[300px] lg:max-h-[400px] xl:max-h-[480px] overflow-y-auto custom-scrollbar">
-                                {getResolvedText(currentPageData?.desc)}
-                            </div>
-
-                            {/* Socratic 성찰 질문 */}
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-1.5 text-pink-400 text-[10px] sm:text-xs font-bold tracking-widest uppercase">
-                                    <span>❓ 소크라테스식 치유 자각 질문</span>
+                            {isGeneratingAi ? (
+                                <div className="flex flex-col items-center justify-center py-16 sm:py-24 space-y-6">
+                                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
+                                        {/* 네온 그라데이션 회전 아우라 */}
+                                        <motion.div
+                                            animate={{ rotate: 360 }}
+                                            transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+                                            className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-65 blur-md"
+                                        />
+                                        {/* 안쪽 회전 마스크 서클 */}
+                                        <motion.div
+                                            animate={{ rotate: -360 }}
+                                            transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
+                                            className="absolute w-[90%] h-[90%] rounded-full bg-gray-950/90 border border-white/10 flex items-center justify-center shadow-[inset_0_0_20px_rgba(236,72,153,0.25)]"
+                                        >
+                                            <Sparkles className="text-pink-400 animate-pulse" size={24} />
+                                        </motion.div>
+                                    </div>
+                                    <div className="text-center space-y-2.5 px-4 max-w-md">
+                                        <span className="text-[9px] font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 uppercase animate-pulse">AI Synthesis Channeling</span>
+                                        <p className="text-xs sm:text-sm text-gray-300 font-semibold leading-relaxed">
+                                            Gemini AI가 당신의 기질 주파수를 감지하여<br className="hidden sm:inline" /> 백서를 실시간 집필하는 중입니다...
+                                        </p>
+                                        <div className="flex items-center justify-center gap-1.5 pt-1">
+                                            <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-[10px] sm:text-xs text-gray-400 italic pl-1 leading-relaxed">
-                                    "{getResolvedText(currentPageData?.socratic)}"
-                                </div>
-                                <textarea
-                                    value={answers[currentPageKey] || ''}
-                                    onChange={(e) => handleAnswerChange(currentPageKey, e.target.value)}
-                                    placeholder="마음의 대답을 다정하게 기록해 봅니다..."
-                                    className="w-full h-16 sm:h-20 p-2.5 bg-gray-950/60 rounded-xl border border-white/5 focus:outline-none focus:border-pink-500/50 text-[11px] sm:text-xs text-white placeholder-gray-600 transition-all leading-relaxed resize-none"
-                                />
-                            </div>
+                            ) : (
+                                <>
+                                    {/* 카드 제목 */}
+                                    <div className="space-y-0.5 sm:space-y-1">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[8px] sm:text-[9px] font-black text-pink-400 tracking-widest uppercase">
+                                                PAGE {currentPageIndex + 1} // {hasAiContent ? '🌸 AI 초개인화 맞춤집필' : 'CHIMERA SECURE'}
+                                            </span>
+                                            {hasAiContent && (
+                                                <span className="bg-pink-500/10 border border-pink-500/20 text-[8px] font-bold text-pink-400 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(236,72,153,0.1)]">
+                                                    <Sparkles size={8} className="animate-spin-slow" /> AI 맞춤 백서
+                                                </span>
+                                            )}
+                                        </div>
+                                        <h1 className="text-base sm:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 leading-snug">
+                                            {displayTitle}
+                                        </h1>
+                                    </div>
 
-                            {/* 참나 확약 및 승인 버튼 */}
-                            <div className="bg-gradient-to-r from-pink-950/5 via-purple-950/5 to-transparent border border-pink-500/10 rounded-2xl p-3 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
-                                <div className="flex-1 space-y-0.5">
-                                    <span className="text-[8px] font-bold text-pink-400 tracking-widest uppercase">🔄 참나 무한 수용 확약</span>
-                                    <p className="text-[10px] sm:text-xs font-medium text-gray-300 leading-normal">
-                                        "{getResolvedText(currentPageData?.recursive)}"
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={() => handleConfirmRecursive(currentPageKey)}
-                                    className={`w-full xs:w-auto px-3.5 py-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 ${
-                                        recursiveConfirmed[currentPageKey]
-                                            ? 'bg-pink-500 text-white shadow-[0_4px_12px_rgba(236,72,153,0.25)] hover:bg-pink-600'
-                                            : 'bg-white/5 border border-white/10 hover:bg-white/10 text-pink-400 hover:text-white'
-                                    }`}
-                                >
-                                    <span>{recursiveConfirmed[currentPageKey] ? '🌸 온전히 자각함' : '자각 및 승인'}</span>
-                                </button>
-                            </div>
+                                    {/* 본문 조언 (모바일 폰트 가독성 최적화) */}
+                                    <div className="text-xs sm:text-sm text-gray-300/90 leading-relaxed font-normal bg-white/2 border border-white/5 rounded-2xl p-3.5 sm:p-5 max-h-[220px] sm:max-h-[300px] lg:max-h-[400px] xl:max-h-[480px] overflow-y-auto custom-scrollbar whitespace-pre-wrap">
+                                        {displayDesc}
+                                    </div>
+
+                                    {/* Socratic 성찰 질문 */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-1.5 text-pink-400 text-[10px] sm:text-xs font-bold tracking-widest uppercase">
+                                            <span>❓ 소크라테스식 치유 자각 질문</span>
+                                        </div>
+                                        <div className="text-[10px] sm:text-xs text-gray-400 italic pl-1 leading-relaxed whitespace-pre-wrap">
+                                            "{displaySocratic}"
+                                        </div>
+                                        <textarea
+                                            value={answers[currentPageKey] || ''}
+                                            onChange={(e) => handleAnswerChange(currentPageKey, e.target.value)}
+                                            placeholder="마음의 대답을 다정하게 기록해 봅니다..."
+                                            className="w-full h-16 sm:h-20 p-2.5 bg-gray-950/60 rounded-xl border border-white/5 focus:outline-none focus:border-pink-500/50 text-[11px] sm:text-xs text-white placeholder-gray-600 transition-all leading-relaxed resize-none"
+                                        />
+                                    </div>
+
+                                    {/* 참나 확약 및 승인 버튼 */}
+                                    <div className="bg-gradient-to-r from-pink-950/5 via-purple-950/5 to-transparent border border-pink-500/10 rounded-2xl p-3 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
+                                        <div className="flex-1 space-y-0.5">
+                                            <span className="text-[8px] font-bold text-pink-400 tracking-widest uppercase">🔄 참나 무한 수용 확약</span>
+                                            <p className="text-[10px] sm:text-xs font-medium text-gray-300 leading-normal whitespace-pre-wrap">
+                                                "{displayRecursive}"
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleConfirmRecursive(currentPageKey)}
+                                            className={`w-full xs:w-auto px-3.5 py-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 ${
+                                                recursiveConfirmed[currentPageKey]
+                                                    ? 'bg-pink-500 text-white shadow-[0_4px_12px_rgba(236,72,153,0.25)] hover:bg-pink-600'
+                                                    : 'bg-white/5 border border-white/10 hover:bg-white/10 text-pink-400 hover:text-white'
+                                            }`}
+                                        >
+                                            <span>{recursiveConfirmed[currentPageKey] ? '🌸 온전히 자각함' : '자각 및 승인'}</span>
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* 페이징 내비게이터 */}
