@@ -19,7 +19,32 @@ export default function Healing108CoachingReport({
     userProfile
 }: Healing108CoachingReportProps) {
     const { reportData } = useReportStore();
-    const activeSaju = reportData?.saju || userProfile?.saju;
+
+    // [Hyper-Pass] Zustand Hydration 지연을 완벽 격파하기 위한 로컬 스토리지 동적 다이렉트 파싱 장치
+    const getSajuFromLocalStorage = (): any => {
+        if (typeof window === 'undefined') return null;
+        try {
+            const storageStr = localStorage.getItem('myeongsim-report-storage');
+            if (storageStr) {
+                const parsed = JSON.parse(storageStr);
+                return parsed?.state?.reportData?.saju || null;
+            }
+        } catch (e) {
+            console.warn('⚠️ [Hyper-Pass] myeongsim-report-storage 파싱 실패:', e);
+        }
+        return null;
+    };
+
+    // activeSaju를 리액티브 상태(State)로 선언하여 Hydration Lag를 즉시 탈출
+    const [activeSaju, setActiveSaju] = useState<any>(null);
+
+    useEffect(() => {
+        if (isOpen) {
+            const localSaju = getSajuFromLocalStorage();
+            const storeSaju = reportData?.saju || userProfile?.saju;
+            setActiveSaju(storeSaju || localSaju);
+        }
+    }, [isOpen, reportData, userProfile]);
 
     // --- 108페이지 내비게이션 상태 ---
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
