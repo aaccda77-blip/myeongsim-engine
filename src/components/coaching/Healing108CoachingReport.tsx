@@ -91,7 +91,8 @@ export default function Healing108CoachingReport({
     const userKey = getSajuFingerprint();
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
-    const aiContentKey = `ms_108_ai_content_${userKey}`; // AI 치유 본문 격리 캐시 키
+    // [Bug Fix] 기존에 잘못 캐시된 '신금' 데이터를 모두 무효화하기 위해 캐시 키 버전(v2) 추가
+    const aiContentKey = `ms_108_ai_content_v2_${userKey}`; // AI 치유 본문 격리 캐시 키
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
