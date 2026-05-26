@@ -19,7 +19,7 @@ export default function Healing108CoachingReport({
     userProfile
 }: Healing108CoachingReportProps) {
     const { reportData } = useReportStore();
-    const activeSaju = userProfile?.saju || reportData;
+    const activeSaju = userProfile?.saju || reportData?.saju;
 
     // --- 108페이지 내비게이션 상태 ---
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -65,10 +65,12 @@ export default function Healing108CoachingReport({
 
 
 
-    // 사용자별 고유 캐시 키 정의 (생년월일 및 시간을 결합하여 완전 격리)
+    // 사용자별 고유 캐시 키 정의 (생년월일, 시간, 이름, 사주 글자 등을 결합하여 완벽한 격리 보장)
     const userKey = reportData?.birthDate 
         ? `${reportData.userName || 'user'}_${reportData.birthDate.replace(/[^0-9]/g, '')}_${(reportData.birthTime || '').replace(/[^0-9]/g, '')}` 
-        : (userProfile?.id || userProfile?.userName || 'guest');
+        : activeSaju
+        ? `${activeSaju.dayMaster || 'guest'}_${activeSaju.tenGods?.self || 0}${activeSaju.tenGods?.output || 0}${activeSaju.tenGods?.wealth || 0}${activeSaju.tenGods?.power || 0}${activeSaju.tenGods?.resource || 0}`
+        : 'guest';
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
     const aiContentKey = `ms_108_ai_content_${userKey}`; // AI 치유 본문 격리 캐시 키
