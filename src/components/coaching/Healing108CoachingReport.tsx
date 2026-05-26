@@ -123,11 +123,26 @@ export default function Healing108CoachingReport({
         const triggerAiGeneration = async () => {
             if (!isOpen) return;
 
+            // [Bug Fix] React state 비동기 업데이트로 인한 Race Condition 방지:
+            // 첫 렌더링 시 aiPageContent가 아직 이전 유저의 캐시를 들고 있을 수 있으므로, 
+            // 현재 userKey에 해당하는 최신 로컬스토리지를 직접 확인합니다.
+            const currentCacheStr = typeof window !== 'undefined' ? localStorage.getItem(aiContentKey) : null;
+            const currentCache = currentCacheStr ? JSON.parse(currentCacheStr) : {};
+
             // 1. 이미 캐시된 사용자 맞춤형 AI 콘텐츠가 있다면 즉시 로딩 없이 패스
-            if (aiPageContent[currentPageKey]) return;
+            if (currentCache[currentPageKey]) {
+                // 혹시 상태가 아직 동기화 안 됐다면 동기화 시켜줌
+                if (!aiPageContent[currentPageKey]) {
+                    setAiPageContent(currentCache);
+                }
+                return;
+            }
 
             // 2. 사주 데이터가 온전치 않은 비회원/체험 상태라면 무리한 서버 부하 방지를 위해 즉시 폴백
             if (!activeSaju) return;
+
+            // [Bug Fix] 만약 fingerprint가 guest로 빠졌다면(이전 데이터 구조 등), 폴백으로 처리
+            if (userKey === 'guest') return;
 
             setIsGeneratingAi(true);
 
@@ -146,12 +161,14 @@ export default function Healing108CoachingReport({
                 const data = await response.json();
 
                 if (data.success && data.pageData) {
-                    const updatedContent = {
-                        ...aiPageContent,
-                        [currentPageKey]: data.pageData
-                    };
-                    setAiPageContent(updatedContent);
-                    localStorage.setItem(aiContentKey, JSON.stringify(updatedContent));
+                    setAiPageContent(prev => {
+                        const updatedContent = {
+                            ...prev,
+                            [currentPageKey]: data.pageData
+                        };
+                        localStorage.setItem(aiContentKey, JSON.stringify(updatedContent));
+                        return updatedContent;
+                    });
                 }
             } catch (err) {
                 console.warn('❌ [Gemini 108 API] 생성 오류로 인해 정적 템플릿 Fallback으로 우아하게 자동 대체합니다:', err);
@@ -161,7 +178,7 @@ export default function Healing108CoachingReport({
         };
 
         triggerAiGeneration();
-    }, [currentPageIndex, userKey, isOpen]);
+    }, [currentPageIndex, userKey, isOpen, aiContentKey, activeSaju, currentPageData]);
 
     const handleAnswerChange = (pageKey: string, text: string) => {
         const updated = { ...answers, [pageKey]: text };
@@ -348,36 +365,7 @@ export default function Healing108CoachingReport({
 
         const saju = activeSaju;
 
-        // --- 1. 일간(Day Master) 동적 매핑 ---
-        const dmCharRaw = saju.dayMaster || '辛';
-        const dmKey = dmCharRaw.charAt(0);
-
-        const DAY_MASTER_MAP: Record<string, { full: string; short: string; char: string; color: string }> = {
-            '甲': { full: '푸르고 곧게 뻗어가는 아름다운 소나무(甲木)', short: '소나무', char: '甲木', color: '초록빛' },
-            '갑': { full: '푸르고 곧게 뻗어가는 아름다운 소나무(甲木)', short: '소나무', char: '甲木', color: '초록빛' },
-            '乙': { full: '싱그럽고 유연하게 싹터 오르는 푸른 새싹(乙木)', short: '푸른 새싹', char: '乙木', color: '연두빛' },
-            '을': { full: '싱그럽고 유연하게 싹터 오르는 푸른 새싹(乙木)', short: '푸른 새싹', char: '乙木', color: '연두빛' },
-            '丙': { full: '만물을 따뜻하게 비추는 이글거리는 태양(丙火)', short: '뜨거운 태양', char: '丙火', color: '붉은빛' },
-            '병': { full: '만물을 따뜻하게 비추는 이글거리는 태양(丙火)', short: '뜨거운 태양', char: '丙火', color: '붉은빛' },
-            '丁': { full: '어둠 속을 고요하고 은은하게 밝히는 등대불(丁火)', short: '은은한 등대불', char: '丁火', color: '정화불빛' },
-            '정': { full: '어둠 속을 고요하고 은은하게 밝히는 등대불(丁火)', short: '은은한 등대불', char: '丁火', color: '정화불빛' },
-            '戊': { full: '우뚝 솟아 세상을 든든하게 지켜주는 광활한 태산(戊土)', short: '든든한 태산', char: '戊土', color: '황토빛' },
-            '무': { full: '우뚝 솟아 세상을 든든하게 지켜주는 광활한 태산(戊土)', short: '든든한 태산', char: '戊土', color: '황토빛' },
-            '己': { full: '풍요로운 씨앗을 품어 키워내는 따뜻한 텃밭(己土)', short: '부드러운 텃밭', char: '己土', color: '따스한 흙빛' },
-            '기': { full: '풍요로운 씨앗을 품어 키워내는 따뜻한 텃밭(己土)', short: '부드러운 텃밭', char: '己土', color: '따스한 흙빛' },
-            '庚': { full: '아직 다듬어지지 않은 단단하고 웅장한 원석(庚金)', short: '단단한 원석', char: '庚金', color: '금빛' },
-            '경': { full: '아직 다듬어지지 않은 단단하고 웅장한 원석(庚金)', short: '단단한 원석', char: '庚金', color: '금빛' },
-            '辛': { full: '눈부시게 맑고 예리한 은색 다이아몬드(辛金)', short: '은빛 다이아몬드', char: '辛金', color: '은빛' },
-            '신': { full: '눈부시게 맑고 예리한 은색 다이아몬드(辛金)', short: '은빛 다이아몬드', char: '辛金', color: '은빛' },
-            '壬': { full: '모든 것을 깊이 있게 품어내는 넓고 신비로운 바다(壬水)', short: '깊은 바다', char: '壬水', color: '물빛' },
-            '임': { full: '모든 것을 깊이 있게 품어내는 넓고 신비로운 바다(壬水)', short: '깊은 바다', char: '壬水', color: '물빛' },
-            '癸': { full: '하늘에서 내리는 맑고 시원한 은하수 오아시스(癸水)', short: '맑은 은하수', char: '癸水', color: '푸른 물빛' },
-            '계': { full: '하늘에서 내리는 맑고 시원한 은하수 오아시스(癸水)', short: '맑은 은하수', char: '癸水', color: '푸른 물빛' }
-        };
-
-        const dmInfo = DAY_MASTER_MAP[dmKey] || DAY_MASTER_MAP['辛'];
-
-        // --- 2. 사주 4기둥 간지 추출 로직 ---
+        // --- 2. 사주 4기둥 간지 추출 로직 (위로 이동) ---
         const getPillar = (type: 'year' | 'month' | 'day' | 'time') => {
             const flatKey = `${type}Pillar` as keyof typeof saju;
             if (saju[flatKey]) return saju[flatKey];
@@ -411,6 +399,38 @@ export default function Healing108CoachingReport({
             }
             return '';
         };
+
+        const dmCharFromDay = getChar(p.day, 'stem');
+
+        // --- 1. 일간(Day Master) 동적 매핑 ---
+        // [Bug Fix] dayMaster 필드가 없더라도 일주 천간에서 추출하여 신금(辛)으로 하드 폴백되는 것 방지
+        const dmCharRaw = saju.dayMaster || dmCharFromDay || '辛';
+        const dmKey = dmCharRaw.charAt(0);
+
+        const DAY_MASTER_MAP: Record<string, { full: string; short: string; char: string; color: string }> = {
+            '甲': { full: '푸르고 곧게 뻗어가는 아름다운 소나무(甲木)', short: '소나무', char: '甲木', color: '초록빛' },
+            '갑': { full: '푸르고 곧게 뻗어가는 아름다운 소나무(甲木)', short: '소나무', char: '甲木', color: '초록빛' },
+            '乙': { full: '싱그럽고 유연하게 싹터 오르는 푸른 새싹(乙木)', short: '푸른 새싹', char: '乙木', color: '연두빛' },
+            '을': { full: '싱그럽고 유연하게 싹터 오르는 푸른 새싹(乙木)', short: '푸른 새싹', char: '乙木', color: '연두빛' },
+            '丙': { full: '만물을 따뜻하게 비추는 이글거리는 태양(丙火)', short: '뜨거운 태양', char: '丙火', color: '붉은빛' },
+            '병': { full: '만물을 따뜻하게 비추는 이글거리는 태양(丙火)', short: '뜨거운 태양', char: '丙火', color: '붉은빛' },
+            '丁': { full: '어둠 속을 고요하고 은은하게 밝히는 등대불(丁火)', short: '은은한 등대불', char: '丁火', color: '정화불빛' },
+            '정': { full: '어둠 속을 고요하고 은은하게 밝히는 등대불(丁火)', short: '은은한 등대불', char: '丁火', color: '정화불빛' },
+            '戊': { full: '우뚝 솟아 세상을 든든하게 지켜주는 광활한 태산(戊土)', short: '든든한 태산', char: '戊土', color: '황토빛' },
+            '무': { full: '우뚝 솟아 세상을 든든하게 지켜주는 광활한 태산(戊土)', short: '든든한 태산', char: '戊土', color: '황토빛' },
+            '己': { full: '풍요로운 씨앗을 품어 키워내는 따뜻한 텃밭(己土)', short: '부드러운 텃밭', char: '己土', color: '따스한 흙빛' },
+            '기': { full: '풍요로운 씨앗을 품어 키워내는 따뜻한 텃밭(己土)', short: '부드러운 텃밭', char: '己土', color: '따스한 흙빛' },
+            '庚': { full: '아직 다듬어지지 않은 단단하고 웅장한 원석(庚金)', short: '단단한 원석', char: '庚金', color: '금빛' },
+            '경': { full: '아직 다듬어지지 않은 단단하고 웅장한 원석(庚金)', short: '단단한 원석', char: '庚金', color: '금빛' },
+            '辛': { full: '눈부시게 맑고 예리한 은색 다이아몬드(辛金)', short: '은빛 다이아몬드', char: '辛金', color: '은빛' },
+            '신': { full: '눈부시게 맑고 예리한 은색 다이아몬드(辛金)', short: '은빛 다이아몬드', char: '辛金', color: '은빛' },
+            '壬': { full: '모든 것을 깊이 있게 품어내는 넓고 신비로운 바다(壬水)', short: '깊은 바다', char: '壬水', color: '물빛' },
+            '임': { full: '모든 것을 깊이 있게 품어내는 넓고 신비로운 바다(壬水)', short: '깊은 바다', char: '壬水', color: '물빛' },
+            '癸': { full: '하늘에서 내리는 맑고 시원한 은하수 오아시스(癸水)', short: '맑은 은하수', char: '癸水', color: '푸른 물빛' },
+            '계': { full: '하늘에서 내리는 맑고 시원한 은하수 오아시스(癸水)', short: '맑은 은하수', char: '癸水', color: '푸른 물빛' }
+        };
+
+        const dmInfo = DAY_MASTER_MAP[dmKey] || DAY_MASTER_MAP['辛'];
 
         const Ganji = {
             year: `${getChar(p.year, 'stem')}${getChar(p.year, 'branch')}`,
