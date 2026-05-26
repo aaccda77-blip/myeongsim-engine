@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX, FileText, ChevronLeft, ChevronRight, X, Heart, Sparkles, BookOpen, Menu, Search } from 'lucide-react';
 import { saju108Matrix } from '@/data/saju108Matrix';
 import { useReportStore } from '@/store/useReportStore';
+import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 
 interface Healing108CoachingReportProps {
     isOpen: boolean;
@@ -40,9 +41,36 @@ export default function Healing108CoachingReport({
 
     useEffect(() => {
         if (isOpen) {
+            let finalSaju = null;
             const localSaju = getSajuFromLocalStorage();
             const storeSaju = reportData?.saju || userProfile?.saju;
-            setActiveSaju(storeSaju || localSaju);
+            
+            finalSaju = storeSaju || localSaju;
+
+            // [초고도화] 만약 스토어나 로컬에 데이터가 없고, 유저 프로필(메타데이터)에 생년월일이 있다면 즉석 계산!
+            if (!finalSaju && userProfile?.user_metadata) {
+                const rawDate = userProfile.user_metadata.saju_data?.date || userProfile.user_metadata.birth_date;
+                if (rawDate) {
+                    try {
+                        const rawTime = userProfile.user_metadata.saju_data?.time || '12:00';
+                        const gender = userProfile.user_metadata.saju_data?.gender || 'male';
+                        const result = calculateSaju(rawDate, rawTime, 'solar', gender);
+                        if (result && result.success) {
+                            const stats = calculateSajuStats(result.fourPillars, result.dayMasterChar);
+                            finalSaju = {
+                                dayMaster: result.dayMaster,
+                                fourPillars: result.fourPillars,
+                                elements: stats.ohaeng,
+                                tenGods: stats.tenGods
+                            };
+                            console.log('✅ [Healing108] Profile 기반 사주 즉석 복구 성공:', finalSaju.dayMaster);
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ [Healing108] Profile 기반 즉석 사주 계산 실패:', e);
+                    }
+                }
+            }
+            setActiveSaju(finalSaju);
         }
     }, [isOpen, reportData, userProfile]);
 
