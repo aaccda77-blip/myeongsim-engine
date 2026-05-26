@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX, FileText, ChevronLeft, ChevronRight, X, Heart, Sparkles, BookOpen, Menu, Search } from 'lucide-react';
 import { saju108Matrix } from '@/data/saju108Matrix';
+import { useReportStore } from '@/store/useReportStore';
 
 interface Healing108CoachingReportProps {
     isOpen: boolean;
@@ -17,6 +18,9 @@ export default function Healing108CoachingReport({
     onClose,
     userProfile
 }: Healing108CoachingReportProps) {
+    const { reportData } = useReportStore();
+    const activeSaju = userProfile?.saju || reportData;
+
     // --- 108페이지 내비게이션 상태 ---
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
@@ -101,7 +105,7 @@ export default function Healing108CoachingReport({
             if (aiPageContent[currentPageKey]) return;
 
             // 2. 사주 데이터가 온전치 않은 비회원/체험 상태라면 무리한 서버 부하 방지를 위해 즉시 폴백
-            if (!userProfile?.saju) return;
+            if (!activeSaju) return;
 
             setIsGeneratingAi(true);
 
@@ -111,7 +115,7 @@ export default function Healing108CoachingReport({
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         pageKey: currentPageKey,
-                        sajuData: userProfile.saju,
+                        sajuData: activeSaju,
                         originalPage: currentPageData
                     })
                 });
@@ -301,7 +305,7 @@ export default function Healing108CoachingReport({
             YEAR_2029: '2029년 己酉년'
         };
 
-        if (!userProfile?.saju) {
+        if (!activeSaju) {
             // 사주 정보가 없을 경우, 태그들을 자연스러운 디폴트 텍스트로 치환
             let resolved = text;
             Object.entries(defaultValues).forEach(([key, val]) => {
@@ -320,7 +324,7 @@ export default function Healing108CoachingReport({
             return resolved;
         }
 
-        const saju = userProfile.saju;
+        const saju = activeSaju;
 
         // --- 1. 일간(Day Master) 동적 매핑 ---
         const dmCharRaw = saju.dayMaster || '辛';
