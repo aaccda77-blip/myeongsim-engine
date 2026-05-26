@@ -37,19 +37,9 @@ export async function POST(req: NextRequest) {
       generationConfig: { temperature: 0.8, maxOutputTokens: 2048 },
     });
 
-    // [Bug Fix] dayMaster가 비어있는 예전 데이터 구조 대비 폴백 로직 추가
-    let dmText = sajuData.dayMaster;
-    if (!dmText) {
-      if (sajuData.fourPillars?.day?.gan?.char) {
-        dmText = sajuData.fourPillars.day.gan.char;
-      } else {
-        dmText = '알 수 없음';
-      }
-    }
-
     // 사용자의 사주 정보를 텍스트 포맷으로 보기 좋게 정리
     const sajuBrief = `
-- 일간(Day Master): ${dmText}
+- 일간(Day Master): ${sajuData.dayMaster || '알 수 없음'}
 - 사주 십신 분포: 비겁(${sajuData.tenGods?.self || 0}), 식상(${sajuData.tenGods?.output || 0}), 재성(${sajuData.tenGods?.wealth || 0}), 관성(${sajuData.tenGods?.power || 0}), 인성(${sajuData.tenGods?.resource || 0})
 - 현재 대운: ${sajuData.currentDaewoon || '황금 대운'}
 - 사주 오행 점수: 목(Wood:${sajuData.ohaeng?.wood || 0}), 화(Fire:${sajuData.ohaeng?.fire || 0}), 토(Earth:${sajuData.ohaeng?.earth || 0}), 금(Metal:${sajuData.ohaeng?.metal || 0}), 수(Water:${sajuData.ohaeng?.water || 0})

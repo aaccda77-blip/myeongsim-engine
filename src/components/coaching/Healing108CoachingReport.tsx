@@ -148,13 +148,22 @@ export default function Healing108CoachingReport({
             setIsGeneratingAi(true);
 
             try {
+                // [프롬프트 튜닝 초고도화] 원본에 적혀있던 '신금'이나 '을신충' 하드코딩 텍스트가 제미나이를 오염시켜
+                // 신금 스토리만 복제해서 집필하는 현상을 원천 차단하기 위해, 1차 치환된 템플릿 텍스트를 건넵니다!
+                const resolvedOriginalPage = {
+                    title: getResolvedText(currentPageData?.title),
+                    desc: getResolvedText(currentPageData?.desc),
+                    socratic: getResolvedText(currentPageData?.socratic),
+                    recursive: getResolvedText(currentPageData?.recursive),
+                };
+
                 const response = await fetch('/api/coaching/generate-108', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         pageKey: currentPageKey,
                         sajuData: activeSaju,
-                        originalPage: currentPageData
+                        originalPage: resolvedOriginalPage
                     })
                 });
 
