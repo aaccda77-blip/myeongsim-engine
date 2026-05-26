@@ -55,26 +55,39 @@ export default function Healing108CoachingReport({
     const currentPageKey = pageKeys[currentPageIndex];
     const currentPageData = saju108Matrix[currentPageKey];
 
+    // 사용자별 고유 캐시 키 정의
+    const userKey = userProfile?.id || userProfile?.userName || 'guest';
+    const answersKey = `ms_108_answers_${userKey}`;
+    const confirmedKey = `ms_108_confirmed_${userKey}`;
+
     // --- 로컬스토리지 답변 로딩 & 자동 캐싱 ---
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const cachedAnswers = localStorage.getItem('ms_108_answers');
-            const cachedConfirmed = localStorage.getItem('ms_108_confirmed');
-            if (cachedAnswers) setAnswers(JSON.parse(cachedAnswers));
-            if (cachedConfirmed) setRecursiveConfirmed(JSON.parse(cachedConfirmed));
+            const cachedAnswers = localStorage.getItem(answersKey);
+            const cachedConfirmed = localStorage.getItem(confirmedKey);
+            if (cachedAnswers) {
+                setAnswers(JSON.parse(cachedAnswers));
+            } else {
+                setAnswers({}); // 다른 사용자로 전환 시 이전 답변이 묻어나는 현상 완벽 방지
+            }
+            if (cachedConfirmed) {
+                setRecursiveConfirmed(JSON.parse(cachedConfirmed));
+            } else {
+                setRecursiveConfirmed({}); // 다른 사용자로 전환 시 자각 승인 초기화 및 갱신
+            }
         }
-    }, []);
+    }, [userKey]); // [초고도화] 사용자가 바뀌면 실시간으로 데이터를 분리 스위칭합니다.
 
     const handleAnswerChange = (pageKey: string, text: string) => {
         const updated = { ...answers, [pageKey]: text };
         setAnswers(updated);
-        localStorage.setItem('ms_108_answers', JSON.stringify(updated));
+        localStorage.setItem(answersKey, JSON.stringify(updated));
     };
 
     const handleConfirmRecursive = (pageKey: string) => {
         const updated = { ...recursiveConfirmed, [pageKey]: !recursiveConfirmed[pageKey] };
         setRecursiveConfirmed(updated);
-        localStorage.setItem('ms_108_confirmed', JSON.stringify(updated));
+        localStorage.setItem(confirmedKey, JSON.stringify(updated));
 
         // 햅틱 진동 피드백
         if (typeof navigator !== 'undefined' && navigator.vibrate) {
