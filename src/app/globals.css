@@ -105,10 +105,10 @@ h6 {
    🚀 모바일 화면 떨림(Jittering) 및 스크롤 최적화 패치
    ============================================================== */
 
-/* 1. 고무줄 효과 방지 및 기본 터치 최적화 */
+/* 1. 고무줄 효과 방지 및 기본 터치 최적화 (핀치 줌 확대 허용) */
 html, body {
   overscroll-behavior-y: none; /* 최상단/하단 튕김 현상 방지 */
-  touch-action: pan-y; /* 수직 스크롤에만 집중하여 버벅임 방지 */
+  touch-action: manipulation; /* 스크롤 및 손가락으로 넓히는 핀치 줌(확대/축소) 허용 */
   -webkit-overflow-scrolling: touch;
 }
 

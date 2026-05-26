@@ -195,16 +195,22 @@ export default function MultiDimensionalBlueprint({ data = mockData }: { data?: 
                 <div className="mt-10 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 p-6 rounded-2xl border border-indigo-500/20">
                     <div className="flex items-center mb-3">
                         <span className="text-indigo-400 mr-2 text-xl">💡</span>
-                        <h4 className="font-bold text-indigo-200">Coach's Note (관점의 전환)</h4>
+                        <h4 className="font-bold text-indigo-200">Coach's Note (그림자를 다루는 아름다운 연금술)</h4>
                     </div>
                     <p className="text-slate-300 text-sm leading-relaxed mb-3">
-                        주의: 이 분석은 당신을 인위적으로 개조하려는 것이 아닙니다. 세상과 나를 바라보는 <strong>'태도와 관점의 전환'</strong>을 위한 가이드입니다.
+                        주의: 이 분석은 당신을 억지로 깎아내거나 인위적으로 개조하려는 차가운 지침이 아닙니다. 내면의 날씨를 포근히 품고 내 삶의 방향타를 맑게 쥐기 위한 <strong>'존엄한 관점의 대전환'</strong>을 향한 따뜻한 초대입니다.
                     </p>
                     <p className="text-slate-300 text-sm leading-relaxed mb-3">
-                        시스템의 역설은, ⚠️ <strong>[다크 코드]</strong>를 억지로 삭제하거나 부정하려 할수록 오류(Error)가 더 잦아진다는 점입니다.
+                        시스템의 역설은, 가슴속 ⚠️ <strong>[다크 코드(그림자)]</strong>를 억지로 도려내어 삭제하거나 부정하려 할수록, 온 신경계가 아프게 울부짖으며 충돌과 오류(Error)를 더 자주 일으킨다는 점입니다.
+                    </p>
+                    <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                        그림자는 없애고 정복해야 할 가여운 적이 아니며, 그렇다고 그 차가운 어둠에 끌려다니며 나 자신과 맹목적으로 동일시해야 할 감옥도 아닙니다.
+                    </p>
+                    <p className="text-slate-300 text-sm leading-relaxed mb-3 font-semibold text-indigo-200">
+                        오히려 내면에 드리운 어두운 그림자야말로, 진정한 인생의 주체(Subject)로 당당히 서기 위해 늘 펼쳐져 있는 <strong>'가장 눈부시고 고귀한 창조의 밑거름이자 재료'</strong>입니다.
                     </p>
                     <p className="text-slate-300 text-sm leading-relaxed">
-                        나의 예민함, 고집, 불안조차 <strong>"나를 보호하기 위해 설치된 초기 설정(Default)"</strong>이었음을 있는 그대로 온전히 <strong>승인(Accept)</strong>할 때, 비로소 강력한 ✨ <strong>[뉴럴 코드]</strong>로의 업데이트가 시작됩니다.
+                        나의 예민함, 고집, 불안조차 <strong>"나를 보호하기 위해 작동하던 신성한 초기 설정(Default)"</strong>이었음을 있는 그대로 온전히 <strong>승인(Accept)</strong>하고, 이 그림자를 찬란한 삶을 빚어낼 위대한 연료로 변환하여 귀하게 써 내려갈 때, 비로소 강력한 ✨ <strong>[뉴럴 코드]</strong>의 활성화와 함께 진정한 나로서 살아갈 수 있는 거대한 우주적 원동력이 깨어납니다.
                     </p>
                 </div>
 

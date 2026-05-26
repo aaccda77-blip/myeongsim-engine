@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Eye, Zap, Lock, Crown, ArrowRight, RefreshCw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { DETAILED_COACHING_GUIDE } from '../../constants/detailedCoachingGuide';
 
 /**
  * MetaFrequencyPanel.tsx
@@ -48,8 +49,18 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
   const [dailyState, setDailyState] = useState<any>(null);
   const [aiReply, setAiReply] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<ConsciousnessLevel | null>(null);
+  const [isDescExpanded, setIsDescExpanded] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAnalyzed, setIsAnalyzed] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<{
+    level: ConsciousnessLevel;
+    label: string;
+    emoji: string;
+    tag: string;
+    desc: string;
+    tenGod: string;
+  } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // 초기 로드: 오늘의 3계층 코드 가져오기 (일진은 서버에서 자동 계산)
@@ -89,10 +100,34 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
   };
 
   const handleSelectLevel = (level: ConsciousnessLevel) => {
-    setSelectedLevel(level);
-    setAiReply('');
-    setIsAnalyzed(false);
-    fetchFrequencyState(level);
+    const code = level === 'dark' ? dailyState?.darkCode
+               : level === 'neural' ? dailyState?.neuralCode
+               : dailyState?.metaCode;
+    
+    // codeName에서 십성(예: '정재') 추출
+    const match = dailyState?.codeName?.match(/\[오늘의 에너지:\s*([^\]]+)\]/);
+    const tenGod = match ? match[1].trim() : '비견';
+
+    if (selectedLevel === level) {
+      // 이미 선택된 상태에서 한 번 더 누르면 -> 프리미엄 상세 해독 모달 팝업 오픈!
+      if (code) {
+        setModalData({
+          level,
+          label: LEVEL_CONFIG[level].label,
+          emoji: LEVEL_CONFIG[level].emoji,
+          tag: code.tag,
+          desc: code.desc,
+          tenGod
+        });
+        setIsModalOpen(true);
+      }
+    } else {
+      setSelectedLevel(level);
+      setIsDescExpanded(true); // 새로운 카드 선택 시 친절하게 펼쳐서 다 보여주기!
+      setAiReply('');
+      setIsAnalyzed(false);
+      fetchFrequencyState(level);
+    }
   };
 
   const handleRefresh = () => {
@@ -188,9 +223,16 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
                       {cfg.label}
                     </div>
                     <div className="text-[8px] text-slate-500 font-mono">{code.tag}</div>
-                    <div className="text-[8px] text-slate-400 mt-1 leading-relaxed line-clamp-2 break-keep">
+                    <div className={`text-[8px] text-slate-400 mt-1 leading-relaxed break-keep transition-all duration-300 ${
+                      isSelected && isDescExpanded ? '' : 'line-clamp-2'
+                    }`}>
                       {code.desc}
                     </div>
+                    {isSelected && (
+                      <div className="text-[7px] text-amber-400/80 block text-right mt-1.5 font-mono select-none opacity-90 animate-pulse">
+                        ✨ 한 번 더 눌러 상세 처방
+                      </div>
+                    )}
                   </motion.button>
                 );
               })}
@@ -352,6 +394,110 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
           </motion.div>
         )}
       </div>
+
+      {/* ─── 프리미엄 상세 해독 모달 (Glassmorphism & Metallic Neon) ─── */}
+      <AnimatePresence>
+        {isModalOpen && modalData && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
+            {/* 백드롭 블러 암전 배경 */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="absolute inset-0 bg-black/75 backdrop-blur-md"
+            />
+
+            {/* 모달 본체 */}
+            <motion.div
+              initial={{ y: '100%', opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: '100%', opacity: 0, scale: 0.95 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+              className="relative w-full max-w-md bg-slate-950/90 border border-white/15 rounded-3xl overflow-hidden shadow-2xl z-10 p-6 text-slate-100 backdrop-blur-xl"
+            >
+              {/* 상단 럭셔리 글로우 */}
+              <div 
+                className="absolute -top-24 left-1/2 -translate-x-1/2 w-60 h-60 blur-3xl rounded-full opacity-35 animate-pulse" 
+                style={{
+                  background: `radial-gradient(circle, ${LEVEL_CONFIG[modalData.level].color} 0%, transparent 70%)`
+                }}
+              />
+
+              {/* 닫기 버튼 */}
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-4 right-4 p-1.5 bg-white/5 hover:bg-white/10 rounded-full border border-white/10 text-slate-400 hover:text-white transition-all z-20"
+              >
+                <span className="sr-only">닫기</span>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* 모달 헤더 */}
+              <div className="text-center mb-5 relative z-10">
+                <span className="text-[28px] inline-block mb-1.5 animate-bounce">{modalData.emoji}</span>
+                <h4 className="text-[13px] font-mono tracking-widest text-slate-400 uppercase">
+                  {modalData.tenGod} 에너지 해독
+                </h4>
+                <h3 className="text-[20px] font-black tracking-tight" style={{ color: LEVEL_CONFIG[modalData.level].color }}>
+                  {modalData.label} 상세 처방 보고서
+                </h3>
+                <div className="mt-1 text-[10px] text-slate-500 font-mono">
+                  CODE NAME: {modalData.tag}
+                </div>
+              </div>
+
+              {/* 모달 바디 (내용) */}
+              <div className="space-y-4 relative z-10 max-h-[350px] overflow-y-auto pr-1">
+                {/* 1. 상태 심층 분석 */}
+                <div className="bg-white/5 border border-white/5 rounded-2xl p-4">
+                  <h5 className="text-[11px] font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                    현재 의식 주파수 현상
+                  </h5>
+                  <p className="text-[12px] text-slate-300 leading-relaxed break-keep font-light">
+                    {DETAILED_COACHING_GUIDE[modalData.tenGod]?.[modalData.level]?.detailedDesc || modalData.desc}
+                  </p>
+                </div>
+
+                {/* 2. 에고 디버깅 처방 */}
+                <div className="bg-gradient-to-br from-indigo-950/20 to-slate-950 border border-indigo-500/20 rounded-2xl p-4">
+                  <h5 className="text-[11px] font-bold text-indigo-300 mb-1.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                    에고 디버깅 해독 솔루션 (ACT)
+                  </h5>
+                  <p className="text-[12px] text-indigo-200 leading-relaxed break-keep font-light">
+                    {DETAILED_COACHING_GUIDE[modalData.tenGod]?.[modalData.level]?.debuggingPrescription || '현재 의식 상태를 한 걸음 떨어져 관찰하며 깊은 호흡으로 에너지를 정돈해 보세요.'}
+                  </p>
+                </div>
+
+                {/* 3. 오늘 당장 실천할 액션 플랜 */}
+                <div className="bg-gradient-to-br from-amber-950/20 to-slate-950 border border-amber-500/20 rounded-2xl p-4">
+                  <h5 className="text-[11px] font-bold text-amber-300 mb-1.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    오늘의 마이크로 실천 행동
+                  </h5>
+                  <p className="text-[12px] text-amber-100 leading-relaxed break-keep font-semibold">
+                    💡 {DETAILED_COACHING_GUIDE[modalData.tenGod]?.[modalData.level]?.dailyActionPlan || '내 삶의 주체로서 작은 긍정적인 행동을 온전히 선택하여 실행해보세요.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* 하단 제어 */}
+              <div className="mt-6 flex justify-end gap-2 relative z-10">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-full py-2.5 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 rounded-xl text-[12px] font-bold text-slate-200 transition-all border border-white/5 active:scale-95"
+                >
+                  확인 완료
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

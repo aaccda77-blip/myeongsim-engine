@@ -48,6 +48,8 @@ const AwakeningChat = dynamic(() => import('@/components/coaching/AwakeningChat'
 const SajuAnalysisReportModal = dynamic(() => import('@/components/report/SajuAnalysisReportModal'), { ssr: false });
 // [NEW] 사회적기여 — 명심 프리미엄 통합 코칭 리포트
 const SovereignCoachingReport = dynamic(() => import('@/components/coaching/SovereignCoachingReport'), { ssr: false });
+// [NEW] 108 자각 백서 프리미엄 독립 모달 임포트
+const Healing108CoachingReport = dynamic(() => import('@/components/coaching/Healing108CoachingReport'), { ssr: false });
 
 
 
@@ -468,6 +470,7 @@ export default function DrillDownIconMenu({
 
     const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
     const [showSovereignReport, setShowSovereignReport] = useState(false); // [NEW] 사회적기여 리포트
+    const [showHealing108Report, setShowHealing108Report] = useState(false); // [NEW] 108 자각 백서
     const { reportData } = useReportStore();
 
 
@@ -1022,6 +1025,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 108 자각 메뉴 — 108페이지 초감동 자각 백서 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowHealing108Report(true)}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(236,72,153,0.25), rgba(219,39,119,0.2))',
+                        border: '1px solid rgba(236,72,153,0.4)',
+                        boxShadow: '0 4px 15px rgba(236,72,153,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🌸</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6' }}>108 자각</div>
+                        <div style={styles.neuroTrigger}>힐링 자각 백서</div>
+                    </div>
+                </button>
+
                 {icons.map((icon) => {
                     const isHovered = hoveredIcon === icon.id;
                     const translatedLabel = t(`menu.${icon.id.toLowerCase()}`) || icon.label;
@@ -1401,6 +1425,13 @@ export default function DrillDownIconMenu({
             <SovereignCoachingReport
                 isOpen={showSovereignReport}
                 onClose={() => setShowSovereignReport(false)}
+                userProfile={userProfile}
+            />
+
+            {/* [NEW] 108 자각 백서 모달 */}
+            <Healing108CoachingReport
+                isOpen={showHealing108Report}
+                onClose={() => setShowHealing108Report(false)}
                 userProfile={userProfile}
             />
 

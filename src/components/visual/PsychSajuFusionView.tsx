@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ACTSandboxPanel } from '../coaching/debugging/ACTSandboxPanel';
 
 interface FusionData {
     bigFive: {
@@ -125,6 +126,7 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
     const [activeTab, setActiveTab] = useState<'fusion' | 'evolution'>('fusion');
     const [simStep, setSimStep] = useState<number>(0);
     const [selectedCase, setSelectedCase] = useState<'BP54' | 'BP18' | 'DARK01'>('BP54');
+    const [isSandboxOpen, setIsSandboxOpen] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -189,18 +191,26 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
 
                 {/* Tabs */}
                 {scanned && (
-                    <div className="flex border-b border-gray-800 bg-gray-900/50 px-6">
-                        <button 
-                            onClick={() => setActiveTab('fusion')}
-                            className={`py-4 px-6 text-sm font-bold border-b-2 transition-colors ${activeTab === 'fusion' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                    <div className="flex flex-wrap items-center justify-between border-b border-gray-800 bg-gray-900/50 px-6">
+                        <div className="flex flex-wrap">
+                            <button 
+                                onClick={() => setActiveTab('fusion')}
+                                className={`py-4 px-6 text-sm font-bold border-b-2 transition-colors ${activeTab === 'fusion' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                            >
+                                1. 교차 분석 (Cross-Mapping)
+                            </button>
+                            <button 
+                                onClick={() => { setActiveTab('evolution'); setSimStep(1); }}
+                                className={`py-4 px-6 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'evolution' ? 'border-purple-500 text-purple-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                            >
+                                2. 다차원 인지 진화 시뮬레이터 <span className="px-2 py-0.5 rounded text-[10px] bg-red-500/20 text-red-400 border border-red-500/30">심사위원 데모</span>
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => setIsSandboxOpen(true)}
+                            className="my-2 py-2 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs font-black tracking-wider uppercase shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
                         >
-                            1. 교차 분석 (Cross-Mapping)
-                        </button>
-                        <button 
-                            onClick={() => { setActiveTab('evolution'); setSimStep(1); }}
-                            className={`py-4 px-6 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'evolution' ? 'border-purple-500 text-purple-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
-                        >
-                            2. 다차원 인지 진화 시뮬레이터 <span className="px-2 py-0.5 rounded text-[10px] bg-red-500/20 text-red-400 border border-red-500/30">심사위원 데모</span>
+                            ⚡ 3세대 심리 디버깅 콘솔 가동
                         </button>
                     </div>
                 )}
@@ -552,6 +562,16 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                     )}
                 </div>
             </motion.div>
+
+            {/* 3세대 ACT 심리 디버깅 샌드박스 모달 연동 */}
+            <AnimatePresence>
+                {isSandboxOpen && (
+                    <ACTSandboxPanel 
+                        isOpen={isSandboxOpen} 
+                        onClose={() => setIsSandboxOpen(false)} 
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 };

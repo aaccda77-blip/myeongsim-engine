@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SafetyDisclaimerModal from "@/components/modals/SafetyDisclaimerModal";
@@ -16,10 +16,17 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
-// 2. 메타데이터 (중복 제거 및 명심코칭 설정 확정)
+// 2. 메타데이터 및 뷰포트 설정 (모바일 핀치 줌 확대 완전 허용)
 export const metadata: Metadata = {
     title: "명심코칭 (Myeongsim Coaching)",
     description: "당신의 운명을 읽고 마음을 치유합니다.",
+};
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
 };
 
 export default function RootLayout({
