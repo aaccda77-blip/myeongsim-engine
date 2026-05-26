@@ -65,12 +65,30 @@ export default function Healing108CoachingReport({
 
 
 
-    // 사용자별 고유 캐시 키 정의 (생년월일, 시간, 이름, 사주 글자 등을 결합하여 완벽한 격리 보장)
-    const userKey = reportData?.birthDate 
-        ? `${reportData.userName || 'user'}_${reportData.birthDate.replace(/[^0-9]/g, '')}_${(reportData.birthTime || '').replace(/[^0-9]/g, '')}` 
-        : activeSaju
-        ? `${activeSaju.dayMaster || 'guest'}_${activeSaju.tenGods?.self || 0}${activeSaju.tenGods?.output || 0}${activeSaju.tenGods?.wealth || 0}${activeSaju.tenGods?.power || 0}${activeSaju.tenGods?.resource || 0}`
-        : 'guest';
+    // 사용자 사주 여덟 글자(팔자) 기하학적 완벽 고유 지문(Fingerprint) 추출 함수
+    const getSajuFingerprint = (): string => {
+        if (!activeSaju) return 'guest';
+
+        const getPillarGanji = (pillar: any) => {
+            if (!pillar) return '';
+            const gan = typeof pillar.gan === 'object' ? pillar.gan.char : pillar.gan || pillar.ganKor || '';
+            const ji = typeof pillar.ji === 'object' ? pillar.ji.char : pillar.ji || pillar.jiKor || '';
+            return `${gan}${ji}`;
+        };
+
+        const year = getPillarGanji(activeSaju.fourPillars?.year || activeSaju.yearPillar || activeSaju.year);
+        const month = getPillarGanji(activeSaju.fourPillars?.month || activeSaju.monthPillar || activeSaju.month);
+        const day = getPillarGanji(activeSaju.fourPillars?.day || activeSaju.dayPillar || activeSaju.day);
+        const hour = getPillarGanji(activeSaju.fourPillars?.time || activeSaju.timePillar || activeSaju.time);
+        const dm = activeSaju.dayMaster || '';
+
+        const rawFingerprint = `${dm}_${year}${month}${day}${hour}`;
+        // 특수문자 제거 후 안전한 키 변환
+        return rawFingerprint.replace(/[^ㄱ-ㅎ가-힣A-Za-z0-9]/g, '') || 'guest';
+    };
+
+    // 사용자별 고유 캐시 키 정의 (생년월일 및 시간을 포함하여 사주 지문으로 완벽 격리)
+    const userKey = getSajuFingerprint();
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
     const aiContentKey = `ms_108_ai_content_${userKey}`; // AI 치유 본문 격리 캐시 키
