@@ -117,7 +117,7 @@ export default function Healing108CoachingReport({
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
     // [Bug Fix] 기존에 잘못 캐시된 '신금' 데이터를 모두 무효화하기 위해 캐시 키 버전(v2) 추가
-    const aiContentKey = `ms_108_ai_content_v2_${userKey}`; // AI 치유 본문 격리 캐시 키
+    const aiContentKey = `ms_108_ai_content_v3_${userKey}`; // AI 치유 본문 격리 캐시 키
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
@@ -167,8 +167,8 @@ export default function Healing108CoachingReport({
             // 2. 사주 데이터가 온전치 않은 비회원/체험 상태라면 무리한 서버 부하 방지를 위해 즉시 폴백
             if (!activeSaju) return;
 
-            // [Bug Fix] 만약 fingerprint가 guest로 빠졌다면(이전 데이터 구조 등), 폴백으로 처리
-            if (userKey === 'guest') return;
+            // [Bug Fix] guest fingerprint라도 AI 생성을 시도합니다 (생년월일만 있는 경우 등)
+            // if (userKey === 'guest') return; // 주석 처리하여 무조건 API 호출 허용
 
             setIsGeneratingAi(true);
 
