@@ -269,15 +269,25 @@ export default function Healing108CoachingReport({
 
         const DAY_MASTER_MAP: Record<string, { full: string; short: string; char: string; color: string }> = {
             '甲': { full: '푸르고 곧게 뻗어가는 아름다운 소나무(甲木)', short: '소나무', char: '甲木', color: '초록빛' },
+            '갑': { full: '푸르고 곧게 뻗어가는 아름다운 소나무(甲木)', short: '소나무', char: '甲木', color: '초록빛' },
             '乙': { full: '싱그럽고 유연하게 싹터 오르는 푸른 새싹(乙木)', short: '푸른 새싹', char: '乙木', color: '연두빛' },
+            '을': { full: '싱그럽고 유연하게 싹터 오르는 푸른 새싹(乙木)', short: '푸른 새싹', char: '乙木', color: '연두빛' },
             '丙': { full: '만물을 따뜻하게 비추는 이글거리는 태양(丙火)', short: '뜨거운 태양', char: '丙火', color: '붉은빛' },
+            '병': { full: '만물을 따뜻하게 비추는 이글거리는 태양(丙火)', short: '뜨거운 태양', char: '丙火', color: '붉은빛' },
             '丁': { full: '어둠 속을 고요하고 은은하게 밝히는 등대불(丁火)', short: '은은한 등대불', char: '丁火', color: '정화불빛' },
+            '정': { full: '어둠 속을 고요하고 은은하게 밝히는 등대불(丁火)', short: '은은한 등대불', char: '丁火', color: '정화불빛' },
             '戊': { full: '우뚝 솟아 세상을 든든하게 지켜주는 광활한 태산(戊土)', short: '든든한 태산', char: '戊土', color: '황토빛' },
+            '무': { full: '우뚝 솟아 세상을 든든하게 지켜주는 광활한 태산(戊土)', short: '든든한 태산', char: '戊土', color: '황토빛' },
             '己': { full: '풍요로운 씨앗을 품어 키워내는 따뜻한 텃밭(己土)', short: '부드러운 텃밭', char: '己土', color: '따스한 흙빛' },
+            '기': { full: '풍요로운 씨앗을 품어 키워내는 따뜻한 텃밭(己土)', short: '부드러운 텃밭', char: '己土', color: '따스한 흙빛' },
             '庚': { full: '아직 다듬어지지 않은 단단하고 웅장한 원석(庚金)', short: '단단한 원석', char: '庚金', color: '금빛' },
+            '경': { full: '아직 다듬어지지 않은 단단하고 웅장한 원석(庚金)', short: '단단한 원석', char: '庚金', color: '금빛' },
             '辛': { full: '눈부시게 맑고 예리한 은색 다이아몬드(辛金)', short: '은빛 다이아몬드', char: '辛金', color: '은빛' },
+            '신': { full: '눈부시게 맑고 예리한 은색 다이아몬드(辛金)', short: '은빛 다이아몬드', char: '辛金', color: '은빛' },
             '壬': { full: '모든 것을 깊이 있게 품어내는 넓고 신비로운 바다(壬水)', short: '깊은 바다', char: '壬水', color: '물빛' },
-            '癸': { full: '하늘에서 내리는 맑고 시원한 은하수 오아시스(癸水)', short: '맑은 은하수', char: '癸水', color: '푸른 물빛' }
+            '임': { full: '모든 것을 깊이 있게 품어내는 넓고 신비로운 바다(壬水)', short: '깊은 바다', char: '壬水', color: '물빛' },
+            '癸': { full: '하늘에서 내리는 맑고 시원한 은하수 오아시스(癸水)', short: '맑은 은하수', char: '癸水', color: '푸른 물빛' },
+            '계': { full: '하늘에서 내리는 맑고 시원한 은하수 오아시스(癸水)', short: '맑은 은하수', char: '癸水', color: '푸른 물빛' }
         };
 
         const dmInfo = DAY_MASTER_MAP[dmKey] || DAY_MASTER_MAP['辛'];
@@ -300,16 +310,19 @@ export default function Healing108CoachingReport({
 
         const getChar = (obj: any, part: 'stem' | 'branch') => {
             if (!obj) return '';
-            if (part === 'stem' && typeof obj.stem === 'string') return obj.stem;
-            if (part === 'branch' && typeof obj.branch === 'string') return obj.branch;
+            if (typeof obj === 'string') return obj.charAt(0);
 
             if (part === 'stem') {
-                if (obj.gan && typeof obj.gan === 'object' && obj.gan.char) return obj.gan.char;
                 if (typeof obj.gan === 'string') return obj.gan;
+                if (typeof obj.ganKor === 'string') return obj.ganKor;
+                if (typeof obj.stem === 'string') return obj.stem;
+                if (obj.gan && typeof obj.gan === 'object' && obj.gan.char) return obj.gan.char;
             }
             if (part === 'branch') {
-                if (obj.ji && typeof obj.ji === 'object' && obj.ji.char) return obj.ji.char;
                 if (typeof obj.ji === 'string') return obj.ji;
+                if (typeof obj.jiKor === 'string') return obj.jiKor;
+                if (typeof obj.branch === 'string') return obj.branch;
+                if (obj.ji && typeof obj.ji === 'object' && obj.ji.char) return obj.ji.char;
             }
             return '';
         };
@@ -325,19 +338,13 @@ export default function Healing108CoachingReport({
 
         // --- 3. 오행별 대표 십신 및 은유 도출 알고리즘 ---
         const ElemOfStem: Record<string, 'wood' | 'fire' | 'earth' | 'metal' | 'water'> = {
-            '甲': 'wood', '乙': 'wood',
-            '丙': 'fire', '丁': 'fire',
-            '戊': 'earth', '己': 'earth',
-            '庚': 'metal', '辛': 'metal',
-            '壬': 'water', '癸': 'water'
+            '甲': 'wood', '乙': 'wood', '丙': 'fire', '丁': 'fire', '戊': 'earth', '己': 'earth', '庚': 'metal', '辛': 'metal', '壬': 'water', '癸': 'water',
+            '갑': 'wood', '을': 'wood', '병': 'fire', '정': 'fire', '무': 'earth', '기': 'earth', '경': 'metal', '신': 'metal', '임': 'water', '계': 'water'
         };
 
         const ElemOfBranch: Record<string, 'wood' | 'fire' | 'earth' | 'metal' | 'water'> = {
-            '寅': 'wood', '卯': 'wood',
-            '巳': 'fire', '午': 'fire',
-            '辰': 'earth', '戌': 'earth', '丑': 'earth', '未': 'earth',
-            '申': 'metal', '酉': 'metal',
-            '亥': 'water', '子': 'water'
+            '寅': 'wood', '卯': 'wood', '巳': 'fire', '午': 'fire', '辰': 'earth', '戌': 'earth', '丑': 'earth', '未': 'earth', '申': 'metal', '酉': 'metal', '亥': 'water', '子': 'water',
+            '인': 'wood', '묘': 'wood', '사': 'fire', '오': 'fire', '진': 'earth', '술': 'earth', '축': 'earth', '미': 'earth', '신': 'metal', '유': 'metal', '해': 'water', '자': 'water'
         };
 
         const dmElem = ElemOfStem[dmKey] || 'metal';
@@ -360,11 +367,16 @@ export default function Healing108CoachingReport({
                 if (!item) continue;
                 const stemChar = getChar(item, 'stem');
                 const branchChar = getChar(item, 'branch');
+                
                 if (stemChar && ElemOfStem[stemChar.charAt(0)] === targetOhaeng) {
-                    return stemChar + (ElemOfStem[stemChar.charAt(0)] === 'metal' ? '金' : ElemOfStem[stemChar.charAt(0)] === 'wood' ? '木' : ElemOfStem[stemChar.charAt(0)] === 'fire' ? '火' : ElemOfStem[stemChar.charAt(0)] === 'earth' ? '土' : '水');
+                    const char = stemChar.charAt(0);
+                    const suffix = ElemOfStem[char] === 'metal' ? '金' : ElemOfStem[char] === 'wood' ? '木' : ElemOfStem[char] === 'fire' ? '火' : ElemOfStem[char] === 'earth' ? '土' : '水';
+                    return char + suffix;
                 }
                 if (branchChar && ElemOfBranch[branchChar.charAt(0)] === targetOhaeng) {
-                    return branchChar + (ElemOfBranch[branchChar.charAt(0)] === 'metal' ? '金' : ElemOfBranch[branchChar.charAt(0)] === 'wood' ? '木' : ElemOfBranch[branchChar.charAt(0)] === 'fire' ? '火' : ElemOfBranch[branchChar.charAt(0)] === 'earth' ? '土' : '水');
+                    const char = branchChar.charAt(0);
+                    const suffix = ElemOfBranch[char] === 'metal' ? '金' : ElemOfBranch[char] === 'wood' ? '木' : ElemOfBranch[char] === 'fire' ? '火' : ElemOfBranch[char] === 'earth' ? '土' : '水';
+                    return char + suffix;
                 }
             }
             const ohaengToGanji: Record<string, string> = {
