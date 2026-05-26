@@ -65,8 +65,10 @@ export default function Healing108CoachingReport({
 
 
 
-    // 사용자별 고유 캐시 키 정의
-    const userKey = userProfile?.id || userProfile?.userName || 'guest';
+    // 사용자별 고유 캐시 키 정의 (생년월일 및 시간을 결합하여 완전 격리)
+    const userKey = reportData?.birthDate 
+        ? `${reportData.userName || 'user'}_${reportData.birthDate.replace(/[^0-9]/g, '')}_${(reportData.birthTime || '').replace(/[^0-9]/g, '')}` 
+        : (userProfile?.id || userProfile?.userName || 'guest');
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
     const aiContentKey = `ms_108_ai_content_${userKey}`; // AI 치유 본문 격리 캐시 키
