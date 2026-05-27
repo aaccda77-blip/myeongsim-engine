@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, FileText, ChevronLeft, ChevronRight, X, Heart, Sparkles, BookOpen, Menu, Search, Sprout, Leaf, TreeDeciduous, Trees } from 'lucide-react';
+import { Volume2, VolumeX, FileText, ChevronLeft, ChevronRight, X, Heart, Sparkles, BookOpen, Menu, Search } from 'lucide-react';
 import { saju108Matrix } from '@/data/saju108Matrix';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
@@ -1017,13 +1017,13 @@ export default function Healing108CoachingReport({
                         <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg transition-all duration-500">
                                 {totalProgress < 25 ? (
-                                    <Sprout size={16} className="text-white animate-pulse" />
+                                    <span className="text-lg animate-pulse" title="알">🥚</span>
                                 ) : totalProgress < 50 ? (
-                                    <Leaf size={16} className="text-white drop-shadow-sm" />
+                                    <span className="text-lg drop-shadow-sm animate-bounce" title="부화">🐣</span>
                                 ) : totalProgress < 75 ? (
-                                    <TreeDeciduous size={16} className="text-white drop-shadow-md" />
+                                    <span className="text-lg drop-shadow-md" title="아기 공룡">🦕</span>
                                 ) : (
-                                    <Trees size={16} className="text-white drop-shadow-lg" />
+                                    <span className="text-xl drop-shadow-lg" title="어른 공룡">🦖</span>
                                 )}
                             </div>
                             <div>
