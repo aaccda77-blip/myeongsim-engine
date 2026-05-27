@@ -254,13 +254,19 @@ export default function Healing108CoachingReport({
                     recursive: getResolvedText(pageData.recursive),
                 };
 
+                // [진단 로그] 서버로 보내는 데이터 확인
+                const profile = buildSajuProfile();
+                console.log('🔍 [Healing108] API로 보내는 sajuProfile:', JSON.stringify(profile).substring(0, 300));
+                console.log('🔍 [Healing108] activeSaju.dayMaster:', activeSaju?.dayMaster);
+                console.log('🔍 [Healing108] activeSaju.fourPillars:', JSON.stringify(activeSaju?.fourPillars));
+
                 const response = await fetch('/api/coaching/generate-108', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         pageKey: targetKey,
                         sajuData: activeSaju,
-                        sajuProfile: buildSajuProfile(),
+                        sajuProfile: profile,
                         originalPage: resolvedOriginalPage
                     })
                 });

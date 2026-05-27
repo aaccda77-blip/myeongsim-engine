@@ -27,6 +27,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { pageKey, sajuData, sajuProfile, originalPage } = body;
 
+    // [진단 로그] 서버에 도달한 데이터 완전 투명 공개
+    console.log(`\n🔍 [generate-108] ===== ${pageKey} 생성 요청 =====`);
+    console.log(`📋 sajuProfile 키 수: ${sajuProfile ? Object.keys(sajuProfile).length : 'NULL/UNDEFINED'}`);
+    console.log(`📋 sajuProfile.dayMasterChar: "${sajuProfile?.dayMasterChar || 'MISSING'}"`);
+    console.log(`📋 sajuProfile.killerAnalogy: "${sajuProfile?.killerAnalogy || 'MISSING'}"`);
+    console.log(`📋 sajuProfile.primaryClash: "${sajuProfile?.primaryClash || 'MISSING'}"`);
+    console.log(`📋 sajuData.dayMaster: "${sajuData?.dayMaster || 'MISSING'}"`);
+    console.log(`📋 sajuData.fourPillars.day: ${JSON.stringify(sajuData?.fourPillars?.day || 'MISSING')}`);
+    console.log(`📋 sajuData.tenGods: ${JSON.stringify(sajuData?.tenGods || 'MISSING')}`);
+    console.log(`📋 sajuData.elements: ${JSON.stringify(sajuData?.elements || 'MISSING')}`);
+    console.log(`📋 originalPage.title: "${(originalPage?.title || '').substring(0, 50)}..."`);
+
     if (!pageKey || !sajuData || !originalPage) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
     }
