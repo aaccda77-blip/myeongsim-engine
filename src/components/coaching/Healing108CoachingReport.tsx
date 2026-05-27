@@ -162,7 +162,7 @@ export default function Healing108CoachingReport({
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
     // [Bug Fix] 기존에 잘못 캐시된 데이터를 모두 무효화하기 위해 캐시 키 버전(v4) 추가
-    const aiContentKey = `ms_108_ai_content_v6_${userKey}`; // AI 치유 본문 격리 캐시 키 - 사기둥 완전 연동 버전
+    const aiContentKey = `ms_108_ai_content_v7_${userKey}`; // v7: sajuProfile 기반 초개인화 프롬프트 적용
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
@@ -260,6 +260,7 @@ export default function Healing108CoachingReport({
                     body: JSON.stringify({
                         pageKey: targetKey,
                         sajuData: activeSaju,
+                        sajuProfile: buildSajuProfile(),
                         originalPage: resolvedOriginalPage
                     })
                 });
@@ -414,6 +415,37 @@ export default function Healing108CoachingReport({
             }
         };
     }, [isBreathingActive, breathingPhase]);
+
+    // --- 기질데이터 풍부한 사주 프로파일 빌더 (API 전달용) ---
+    const buildSajuProfile = (): Record<string, string> => {
+        if (!activeSaju) return {};
+        // getResolvedText 내부에서 쓰는 동일한 로직으로 프로파일 생성
+        const dummyText = [
+            '{{DAY_MASTER_CHAR}}', '{{DAY_MASTER_ANALOGY}}', '{{DAY_MASTER_SHORT_ANALOGY}}',
+            '{{KILLER_ELEMENT}}', '{{KILLER_ANALOGY}}', '{{KILLER_NAME}}',
+            '{{EXPRESSION_ELEMENT}}', '{{EXPRESSION_ANALOGY}}', '{{EXPRESSION_SHORT_ANALOGY}}', '{{EXPRESSION_NAME}}',
+            '{{DRYER_ELEMENT}}', '{{DRYER_ANALOGY}}',
+            '{{COMPETITOR_ELEMENT}}', '{{COMPETITOR_ANALOGY}}', '{{COMPETITOR_NAME}}',
+            '{{ASSET_ELEMENT}}', '{{ASSET_ANALOGY}}', '{{ASSET_SHORT_ANALOGY}}', '{{ASSET_NAME}}',
+            '{{PRIMARY_CLASH}}', '{{CURRENT_DAEWOON_GANJI}}', '{{CURRENT_DAEWOON_ANALOGY}}',
+            '{{SAJU_GANJI}}'
+        ].join('|||');
+        const resolved = getResolvedText(dummyText);
+        const values = resolved.split('|||');
+        const keys = [
+            'dayMasterChar', 'dayMasterAnalogy', 'dayMasterShortAnalogy',
+            'killerElement', 'killerAnalogy', 'killerName',
+            'expressionElement', 'expressionAnalogy', 'expressionShortAnalogy', 'expressionName',
+            'dryerElement', 'dryerAnalogy',
+            'competitorElement', 'competitorAnalogy', 'competitorName',
+            'assetElement', 'assetAnalogy', 'assetShortAnalogy', 'assetName',
+            'primaryClash', 'currentDaewoonGanji', 'currentDaewoonAnalogy',
+            'sajuGanji'
+        ];
+        const profile: Record<string, string> = {};
+        keys.forEach((k, i) => { profile[k] = values[i] || ''; });
+        return profile;
+    };
 
     // --- 기질데이터 실시간 템플릿 치환기 (resolveDynamicText) ---
     const getResolvedText = (text: string | undefined): string => {
