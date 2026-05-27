@@ -56,7 +56,7 @@ export default function CoverView() {
         }, 800);
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = (targetRoute: 'intro' | 'onboarding' = 'intro') => {
         if (!previewPillars) return;
 
         // 1. Calculate Elements
@@ -112,7 +112,11 @@ export default function CoverView() {
             } as any
         });
 
-        nextStep(); // Move to Intro
+        if (targetRoute === 'onboarding') {
+            router.push('/onboarding');
+        } else {
+            nextStep(); // Move to Intro
+        }
     };
 
     const ResultPillar = ({ label, gan, ji }: { label: string, gan: any, ji: any }) => (
@@ -376,7 +380,7 @@ export default function CoverView() {
 
                             {/* 확인 & 코칭 시작 버튼 */}
                             <button
-                                onClick={handleConfirm}
+                                onClick={() => handleConfirm('intro')}
                                 className="w-full bg-white hover:bg-gray-100 text-deep-slate font-bold py-5 rounded-xl text-lg transition-all shadow-xl flex justify-center items-center gap-2 group ring-4 ring-white/5 active:scale-95 mb-3"
                             >
                                 🚀 나의 강점 활용법 코칭받기
@@ -385,7 +389,7 @@ export default function CoverView() {
 
                             {/* 새로운 맞춤형 명심코칭 시작 버튼 (독립 모듈 연결) */}
                             <button
-                                onClick={() => router.push('/onboarding')}
+                                onClick={() => handleConfirm('onboarding')}
                                 className="w-full bg-primary-olive hover:bg-[#6e944b] text-white font-bold py-5 rounded-xl text-lg transition-all shadow-[0_0_20px_rgba(101,140,66,0.2)] hover:shadow-[0_0_30px_rgba(101,140,66,0.4)] flex justify-center items-center gap-2 group active:scale-95"
                             >
                                 <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
