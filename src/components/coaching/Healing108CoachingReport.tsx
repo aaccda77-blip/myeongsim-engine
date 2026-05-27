@@ -48,11 +48,11 @@ export default function Healing108CoachingReport({
             finalSaju = storeSaju || localSaju;
 
             // [초고도화] 만약 스토어나 로컬의 사주 데이터가 불완전하고, 생년월일(birthDate) 원본이 존재한다면 완벽하게 즉석 계산하여 연동!
-            const rawDate = reportData?.birthDate || reportData?.birth_date || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
+            const rawDate = reportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
             
             if ((!finalSaju || !finalSaju.fourPillars || Object.keys(finalSaju.fourPillars).length === 0) && rawDate) {
                 try {
-                    const rawTime = reportData?.birthTime || reportData?.birth_time || userProfile?.birthTime || userProfile?.birth_time || userProfile?.user_metadata?.saju_data?.time || '12:00';
+                    const rawTime = reportData?.birthTime || userProfile?.birthTime || userProfile?.birth_time || userProfile?.user_metadata?.saju_data?.time || '12:00';
                     const gender = reportData?.gender || userProfile?.gender || userProfile?.user_metadata?.saju_data?.gender || 'male';
                     const result = calculateSaju(rawDate, rawTime, 'solar', gender);
                     if (result && result.success) {
