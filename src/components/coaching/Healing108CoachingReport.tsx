@@ -61,9 +61,11 @@ export default function Healing108CoachingReport({
                             dayMaster: result.dayMaster,
                             fourPillars: result.fourPillars,
                             elements: stats.ohaeng,
-                            tenGods: stats.tenGods
+                            tenGods: stats.tenGods,
+                            currentDaewoon: result.currentDaewoon || null,
+                            currentSeun: result.currentSeun || null
                         };
-                        console.log('✅ [Healing108] 생년월일 기반 사주 100% 즉석 복구 연동 성공:', finalSaju.dayMaster);
+                        console.log('✅ [Healing108] 생년월일 기반 사주 100% 즉석 복구 연동 성공:', finalSaju.dayMaster, '대운:', finalSaju.currentDaewoon);
                     }
                 } catch (e) {
                     console.warn('⚠️ [Healing108] 생년월일 기반 즉석 사주 계산 실패:', e);
@@ -160,7 +162,7 @@ export default function Healing108CoachingReport({
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
     // [Bug Fix] 기존에 잘못 캐시된 데이터를 모두 무효화하기 위해 캐시 키 버전(v4) 추가
-    const aiContentKey = `ms_108_ai_content_v5_${userKey}`; // AI 치유 본문 격리 캐시 키
+    const aiContentKey = `ms_108_ai_content_v6_${userKey}`; // AI 치유 본문 격리 캐시 키 - 사기둥 완전 연동 버전
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
