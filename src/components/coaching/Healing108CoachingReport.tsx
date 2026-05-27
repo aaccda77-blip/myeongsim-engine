@@ -188,102 +188,103 @@ export default function Healing108CoachingReport({
             }
         }
     }, [userKey]); // [초고도화] 사용자가 바뀌면 실시간으로 데이터를 분리 스위칭합니다.
-
-    // [초고도화] 배치 생성 진행률 상태
-    const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0, isRunning: false });
-
-    // [초고도화] 리포트 열릴 때 108페이지 전체를 배치로 AI 생성하는 이펙트
+    // [초고도화] 스텔스 모드(Lazy Loading) AI 생성 큐 및 진행 상태
+    // 로딩 UI를 띄우지 않고 백그라운드에서 조용히 생성합니다.
+    const [generatingQueue, setGeneratingQueue] = useState<string[]>([]);
+    
+    // [초고도화] 현재 보고 있는 페이지와 인접한 페이지들을 큐에 추가
     useEffect(() => {
-        const triggerBatchGeneration = async () => {
-            if (!isOpen || !activeSaju || userKey === 'guest') return;
+        if (!isOpen || !activeSaju || userKey === 'guest') return;
 
-            // 이미 캐시된 AI 콘텐츠가 있는지 확인
-            const currentCacheStr = typeof window !== 'undefined' ? localStorage.getItem(aiContentKey) : null;
-            const currentCache = currentCacheStr ? JSON.parse(currentCacheStr) : {};
+        const currentCacheStr = typeof window !== 'undefined' ? localStorage.getItem(aiContentKey) : null;
+        const currentCache = currentCacheStr ? JSON.parse(currentCacheStr) : {};
 
-            // 아직 생성되지 않은 페이지만 필터링
-            const uncachedKeys = pageKeys.filter(key => !currentCache[key]);
+        // 상태가 아직 동기화 안 됐다면 로컬에서 가져와서 동기화
+        if (Object.keys(aiPageContent).length === 0 && Object.keys(currentCache).length > 0) {
+            setAiPageContent(currentCache);
+        }
 
-            // 이미 전부 캐시 되어 있으면 즉시 로드 후 패스
-            if (uncachedKeys.length === 0) {
-                if (Object.keys(aiPageContent).length < pageKeys.length) {
-                    setAiPageContent(currentCache);
+        // 현재 페이지 + 뒤로 3장 (미리 생성)
+        const pagesToPreload: string[] = [];
+        for (let i = 0; i <= 3; i++) {
+            const idx = currentPageIndex + i;
+            if (idx < pageKeys.length) {
+                const key = pageKeys[idx];
+                // 캐시에 없고 큐에도 없으면 추가
+                if (!currentCache[key] && !aiPageContent[key]) {
+                    pagesToPreload.push(key);
                 }
+            }
+        }
+
+        if (pagesToPreload.length > 0) {
+            setGeneratingQueue(prev => {
+                const newQueue = [...prev];
+                pagesToPreload.forEach(k => {
+                    if (!newQueue.includes(k)) newQueue.push(k);
+                });
+                return newQueue;
+            });
+        }
+    }, [currentPageIndex, isOpen, activeSaju, userKey, aiContentKey, aiPageContent]);
+
+    // [초고도화] 큐에 들어온 페이지들을 하나씩 백그라운드에서 스텔스로 생성
+    useEffect(() => {
+        if (generatingQueue.length === 0 || isGeneratingAi) return;
+
+        const processNextInQueue = async () => {
+            const targetKey = generatingQueue[0];
+            const pageData = saju108Matrix[targetKey];
+            if (!pageData) {
+                setGeneratingQueue(prev => prev.slice(1));
                 return;
             }
 
-            // 배치 생성 시작
-            setIsGeneratingAi(true);
-            setBatchProgress({ current: 0, total: uncachedKeys.length, isRunning: true });
-
-            const BATCH_SIZE = 8; // 한 번에 8페이지씩
-            const MAX_CONCURRENT = 3; // 최대 3개 동시 실행
-            const allResults: Record<string, any> = { ...currentCache };
-
-            // 배치 청크 분할
-            const batches: string[][] = [];
-            for (let i = 0; i < uncachedKeys.length; i += BATCH_SIZE) {
-                batches.push(uncachedKeys.slice(i, i + BATCH_SIZE));
+            // 만약 현재 보고 있는 페이지가 큐의 첫 번째라면 살짝 로딩 표시를 해줄 수 있음 (isGeneratingAi true)
+            // 하지만 스텔스 모드이므로 전체 화면을 가리는 로딩창은 띄우지 않기 위해 UI에서 로딩 디자인을 최소화합니다.
+            if (targetKey === currentPageKey) {
+                setIsGeneratingAi(true); 
             }
 
-            // 배치 실행 함수
-            const executeBatch = async (batchKeys: string[]) => {
-                try {
-                    const pages = batchKeys.map(key => {
-                        const page = saju108Matrix[key];
-                        return {
-                            pageKey: key,
-                            title: getResolvedText(page?.title),
-                            desc: getResolvedText(page?.desc),
-                            socratic: getResolvedText(page?.socratic),
-                            recursive: getResolvedText(page?.recursive),
-                        };
-                    });
+            try {
+                const resolvedOriginalPage = {
+                    title: getResolvedText(pageData.title),
+                    desc: getResolvedText(pageData.desc),
+                    socratic: getResolvedText(pageData.socratic),
+                    recursive: getResolvedText(pageData.recursive),
+                };
 
-                    const response = await fetch('/api/coaching/generate-108-batch', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ pages, sajuData: activeSaju })
-                    });
+                const response = await fetch('/api/coaching/generate-108', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pageKey: targetKey,
+                        sajuData: activeSaju,
+                        originalPage: resolvedOriginalPage
+                    })
+                });
 
-                    if (!response.ok) throw new Error('Batch generation failed');
+                if (response.ok) {
                     const data = await response.json();
-
-                    if (data.success && data.results) {
-                        Object.assign(allResults, data.results);
-                        // 진행률 실시간 업데이트
-                        setBatchProgress(prev => ({
-                            ...prev,
-                            current: Math.min(prev.current + batchKeys.length, prev.total)
-                        }));
-                        // 중간 결과도 실시간으로 UI에 반영
-                        setAiPageContent(prev => ({ ...prev, ...data.results }));
+                    if (data.success && data.pageData) {
+                        setAiPageContent(prev => {
+                            const updated = { ...prev, [targetKey]: data.pageData };
+                            localStorage.setItem(aiContentKey, JSON.stringify(updated));
+                            return updated;
+                        });
                     }
-                } catch (err) {
-                    console.warn('❌ [배치 생성] 일부 페이지 생성 실패 (폴백 적용):', err);
-                    setBatchProgress(prev => ({
-                        ...prev,
-                        current: Math.min(prev.current + batchKeys.length, prev.total)
-                    }));
                 }
-            };
-
-            // 동시성 제한 병렬 실행
-            for (let i = 0; i < batches.length; i += MAX_CONCURRENT) {
-                const concurrentBatches = batches.slice(i, i + MAX_CONCURRENT);
-                await Promise.all(concurrentBatches.map(batch => executeBatch(batch)));
+            } catch (err) {
+                console.warn(`❌ [Gemini 108 API] ${targetKey} 스텔스 생성 오류 (폴백 대체):`, err);
+            } finally {
+                setIsGeneratingAi(false);
+                setGeneratingQueue(prev => prev.slice(1)); // 완료된 건 큐에서 제거
             }
-
-            // 전체 완료 후 캐시 저장
-            localStorage.setItem(aiContentKey, JSON.stringify(allResults));
-            setAiPageContent(allResults);
-            setIsGeneratingAi(false);
-            setBatchProgress({ current: 0, total: 0, isRunning: false });
-            console.log('✅ [Healing108] 108페이지 전체 AI 배치 생성 완료!', Object.keys(allResults).length, '페이지');
         };
 
-        triggerBatchGeneration();
-    }, [userKey, isOpen, activeSaju]);
+        processNextInQueue();
+    }, [generatingQueue, isGeneratingAi, activeSaju, aiContentKey, currentPageKey]);
+
 
     const handleAnswerChange = (pageKey: string, text: string) => {
         const updated = { ...answers, [pageKey]: text };
@@ -1159,37 +1160,14 @@ export default function Healing108CoachingReport({
                                             transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
                                             className="absolute w-[90%] h-[90%] rounded-full bg-gray-950/90 border border-white/10 flex items-center justify-center shadow-[inset_0_0_20px_rgba(236,72,153,0.25)]"
                                         >
-                                            {batchProgress.isRunning ? (
-                                                <span className="text-2xl">{
-                                                    batchProgress.total > 0 && batchProgress.current / batchProgress.total < 0.25 ? '🥚' :
-                                                    batchProgress.total > 0 && batchProgress.current / batchProgress.total < 0.5 ? '🐣' :
-                                                    batchProgress.total > 0 && batchProgress.current / batchProgress.total < 0.75 ? '🦕' : '🦖'
-                                                }</span>
-                                            ) : (
-                                                <Sparkles className="text-pink-400 animate-pulse" size={24} />
-                                            )}
+                                            <Sparkles className="text-pink-400 animate-pulse" size={24} />
                                         </motion.div>
                                     </div>
                                     <div className="text-center space-y-2.5 px-4 max-w-md">
                                         <span className="text-[9px] font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 uppercase animate-pulse">AI Synthesis Channeling</span>
                                         <p className="text-xs sm:text-sm text-gray-300 font-semibold leading-relaxed">
-                                            명심AI 코치가 당신만의 108 자각 백서를<br className="hidden sm:inline" /> 한 장 한 장 정성껏 집필하는 중입니다...
+                                            명심AI 코치가 당신의 기질 주파수를 감지하여<br className="hidden sm:inline" /> 백서를 실시간 집필하는 중입니다...
                                         </p>
-                                        {batchProgress.isRunning && batchProgress.total > 0 && (
-                                            <div className="space-y-2 pt-2">
-                                                <div className="w-full max-w-xs mx-auto h-2 bg-gray-900 rounded-full overflow-hidden border border-white/5">
-                                                    <motion.div
-                                                        initial={{ width: 0 }}
-                                                        animate={{ width: `${Math.round((batchProgress.current / batchProgress.total) * 100)}%` }}
-                                                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                                                        className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 shadow-[0_0_10px_rgba(236,72,153,0.5)]"
-                                                    />
-                                                </div>
-                                                <p className="text-[10px] text-gray-500 font-bold">
-                                                    {batchProgress.current} / {batchProgress.total} 페이지 완료 ({Math.round((batchProgress.current / batchProgress.total) * 100)}%)
-                                                </p>
-                                            </div>
-                                        )}
                                         <div className="flex items-center justify-center gap-1.5 pt-1">
                                             <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                                             <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
