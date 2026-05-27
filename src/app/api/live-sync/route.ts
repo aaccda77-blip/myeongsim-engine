@@ -35,18 +35,28 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 import { analyzeFrequency } from '@/modules/FrequencyDetector';
 import { getTodayDayPillar, calculateDailyFrequency } from '@/modules/MetaFrequencyEngine';
+import { determineCoachingCore } from '@/modules/CoreRouterEngine';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { message, sajuData, harmony, biorhythm, wearableData, psychProfile } = body;
+    const { message, sajuData, harmony, biorhythm, wearableData, psychProfile, conversationHistory } = body;
 
     if (!message || !sajuData || !harmony) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
     }
 
     const neural = calculateNeuralCode(sajuData);
-    const userDayStem = neural.day?.slice(0, 1) || '갑';
+    const userDayStem = sajuData.dayMaster || sajuData.fourPillars?.day?.gan || neural.day?.slice(0, 1) || '갑';
+    
+    const p = sajuData.fourPillars;
+    let fullSajuInfo = "정보 없음";
+    if (p && p.year && p.month && p.day && p.time) {
+        fullSajuInfo = `년주: ${p.year.gan || ''}${p.year.ji || ''}, 월주: ${p.month.gan || ''}${p.month.ji || ''}, 일주: ${p.day.gan || ''}${p.day.ji || ''}, 시주: ${p.time.gan || ''}${p.time.ji || ''}`;
+    } else if (neural.pillars && !neural.pillars.includes('DATA_MISSING')) {
+        fullSajuInfo = neural.pillars;
+    }
+
     const todayPillar = getTodayDayPillar();
     
     // ─── 의식 주파수 동적 감지 ───
@@ -71,6 +81,9 @@ export async function POST(req: Request) {
       : wearableData.stressLevel >= 50
       ? '⚠️ [경계 상태] 임계점 접근 → SYNC 선제 개입 권장'
       : '✅ [안정] 자율신경 균형 → SCAN 모니터링 지속';
+
+    // ─── 4-Core 자동 라우팅 스위칭 ───
+    const coreAnalysis = determineCoachingCore(message, wearableData.stressLevel);
 
     // 누적 심리 프로필
     const profileSummary = psychProfile && psychProfile.totalResponses > 0
@@ -106,7 +119,22 @@ export async function POST(req: Request) {
 - 코칭 방향: 목적 없는 즐거움과 무위(無爲)의 유희를 강화하세요. "이 고요함 속에서 오늘 하루 어떤 아름다운 것을 창조해 보시겠습니까?" 같은 창조적 질문을 던지세요.`;
     }
 
-    const prompt = `당신은 세계 최초의 **3S 실시간 건강관리 코치** — 명심 OS Live Sync입니다.
+    let prompt = '';
+    
+    if (coreAnalysis.targetCore === 'NONE') {
+      prompt = `당신은 명심(Myeongsim) AI 코치입니다.
+현재 상황은 사용자가 일상적인 대화나 명백한 정보(예: "내 사주가 뭐야?")를 요구하고 있습니다.
+따라서 복잡한 코칭 구조(SCAN, SYNC, SHIFT 등)나 소크라테스식 질문, 메타인지 분석 등을 전부 배제하고 일반적인 제미나이(Gemini) 모델처럼 매우 친절하고 상세하게 사용자의 질문에 직접적으로 답변하세요.
+
+사용자가 자신의 사주나 정보에 대해 물어보면, 당신이 알고 있는 아래의 정확한 분석 데이터를 활용하여 년주, 월주, 일주, 시주 전체를 아우르는 맞춤형 기질 분석을 매우 풍부하고 상세하게 풀어서 설명해 주세요. 사주 원국 외의 내용에 대해서는 자연스럽고 다정하게 대답하세요.
+
+【사용자 사주 데이터】
+- 사주 원국: ${fullSajuInfo}
+- 일간(Day Master): ${userDayStem}
+
+사용자 질문: "${message}"`;
+    } else {
+      prompt = `당신은 세계 최초의 **3S 실시간 건강관리 코치** — 명심 OS Live Sync입니다.
 특허 출원된 3S(Scan-Sync-Shift) 엔진 + 4-Core 심리코칭 프로토콜(DBT/CBT/MBCT/ACT)을 탑재한 지구상 유일한 초개인화 코칭 시스템입니다.
 핵심 철학: "기질 데이터는 반복되는 행동 패턴이지, 내가 아니다."
 
@@ -122,6 +150,10 @@ export async function POST(req: Request) {
 ▸ 스트레스 임계점: ${scanAlert}
 ${profileSummary}
 
+${conversationHistory && conversationHistory.length > 0 ? `
+【최근 대화 기록】
+${conversationHistory.slice(-5).map((m: any) => `${m.role === 'user' ? '사용자' : '코치'}: ${m.content}`).join('\n')}
+` : ''}
 사용자 질문: "${message}"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -142,25 +174,7 @@ ${profileSummary}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 【SHIFT — 4-Core 심리코칭 자동 가동】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-SCAN 결과에 따라 최적 프로토콜 자동 선택:
-
-🧊 [긴급 냉각] DBT (변증법적 행동 코칭):
-  - 감정 폭주·충동·분노 감지 시 → 심호흡·이완·고통 감내 스킬
-  - 가동 조건: 스트레스 80%↑ + 감정 리듬 하락
-
-🔧 [오류 수정] CBT (인지행동 코칭):
-  - 비합리적 사고·과잉 일반화·자기 비난 → 인지 왜곡을 팩트로 디버깅
-  - 가동 조건: 부정적 자기 언급 감지
-
-🪷 [알아차림] MBCT (마음챙김 인지 코칭):
-  - 반추·걱정·과거 집착·미래 불안 → 판단 없는 현존으로 정서 균형 회복
-  - 가동 조건: "왜", "계속", "또" 등 반추 키워드
-
-🚀 [가치 전진] ACT (수용전념 코칭):
-  - 회피·무기력·방향 상실 → 가치 중심 행동 설계
-  - 가동 조건: "모르겠다", "의미 없다", "귀찮다"
-
-★ 복합 상황 시 2개 이상 조합 가능. 반드시 가동된 프로토콜명을 답변에 표시.
+${coreAnalysis.promptInjection}
 
 【후성유전학적 선제 코칭】
 선천(기질) + 후천(빅파이브) + 현재(생체) 3축 교차 분석.
@@ -182,6 +196,7 @@ SCAN 결과에 따라 최적 프로토콜 자동 선택:
    - 여기에 해당 프로토콜의 구체적 코칭 가이드 제공
 ❓ **[META - 선택의 순간]** (관찰자 '나'로서의 선택을 묻는 열린 질문)
 `;
+    }
 
     const result = await model.generateContent(prompt);
     const rawReply = result.response.text();
@@ -201,7 +216,17 @@ SCAN 결과에 따라 최적 프로토콜 자동 선택:
       }
     }
 
-    return NextResponse.json({ success: true, reply, microQuestion });
+    // ─── 실시간 개입 (Intervention) 판별 ───
+    const requiresIntervention = wearableData.stressLevel >= 75 || currentLevel === 'dark' || coreAnalysis.targetCore === 'DBT';
+
+    return NextResponse.json({ 
+        success: true, 
+        reply, 
+        microQuestion, 
+        requiresIntervention,
+        targetCore: coreAnalysis.targetCore,
+        coreDescription: coreAnalysis.description
+    });
   } catch (error: any) {
     console.error('Live Sync API Error:', error);
     return NextResponse.json({ error: '데이터 동기화 중 에러가 발생했습니다.' }, { status: 500 });

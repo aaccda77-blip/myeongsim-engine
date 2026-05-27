@@ -50,6 +50,8 @@ const SajuAnalysisReportModal = dynamic(() => import('@/components/report/SajuAn
 const SovereignCoachingReport = dynamic(() => import('@/components/coaching/SovereignCoachingReport'), { ssr: false });
 // [NEW] 108 자각 백서 프리미엄 독립 모달 임포트
 const Healing108CoachingReport = dynamic(() => import('@/components/coaching/Healing108CoachingReport'), { ssr: false });
+// [NEW] Sovereign 3S Protocol Modal
+const Sovereign3SProtocolModal = dynamic(() => import('@/components/coaching/Sovereign3SProtocolModal'), { ssr: false });
 
 
 
@@ -471,6 +473,7 @@ export default function DrillDownIconMenu({
     const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
     const [showSovereignReport, setShowSovereignReport] = useState(false); // [NEW] 사회적기여 리포트
     const [showHealing108Report, setShowHealing108Report] = useState(false); // [NEW] 108 자각 백서
+    const [showSovereign3S, setShowSovereign3S] = useState(false); // [NEW] 소버린 3S 프로토콜
     const { reportData } = useReportStore();
 
 
@@ -1025,6 +1028,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 소버린 3S 메뉴 — 초고도화 보건 아키텍처 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowSovereign3S(true)}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.2))',
+                        border: '1px solid rgba(6,182,212,0.4)',
+                        boxShadow: '0 4px 15px rgba(6,182,212,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🧬</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>소버린 3S</div>
+                        <div style={styles.neuroTrigger}>보건 시스템 스캔</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 108 자각 메뉴 — 108페이지 초감동 자각 백서 */}
                 <button
                     style={styles.iconButton}
@@ -1465,6 +1489,13 @@ export default function DrillDownIconMenu({
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* [NEW] 소버린 3S 프로토콜 모달 */}
+            <Sovereign3SProtocolModal
+                isOpen={showSovereign3S}
+                onClose={() => setShowSovereign3S(false)}
+                userProfile={userProfile}
+            />
         </>
     );
 }

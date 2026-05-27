@@ -140,6 +140,22 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
     neuroticism: undefined, mbtiTendency: '',
     totalResponses: 0,
   });
+
+  const PSYCH_PROFILE_KEY = 'ms_live_sync_profile';
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(PSYCH_PROFILE_KEY);
+      if (stored) {
+        try {
+          setPsychProfile(JSON.parse(stored));
+        } catch (e) {
+          console.warn('프로필 파싱 실패', e);
+        }
+      }
+    }
+  }, []);
+
   const [microQ, setMicroQ] = useState<any>(null);
 
   const handleMicroAnswer = (choice: any, dimension: string) => {
@@ -150,7 +166,11 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
       const newVal = oldVal !== undefined
         ? Math.round((oldVal * (count - 1) + choice.score) / count)
         : choice.score;
-      return { ...prev, [dimension]: newVal, totalResponses: count };
+      const nextProfile = { ...prev, [dimension]: newVal, totalResponses: count };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(PSYCH_PROFILE_KEY, JSON.stringify(nextProfile));
+      }
+      return nextProfile;
     });
     // 선택 내용을 채팅에 반영
     setMessages(prev => [...prev, {
@@ -159,6 +179,11 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
     }]);
     setMicroQ(null);
   };
+
+  const [isInterventionActive, setIsInterventionActive] = useState(false);
+  const [interventionMessage, setInterventionMessage] = useState('');
+  const [activeCore, setActiveCore] = useState<string>('NONE'); // [NEW] 4-Core 라우팅 상태
+  const [coreDescription, setCoreDescription] = useState<string>('');
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
@@ -173,15 +198,28 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage, sajuData, harmony, biorhythm,
-          wearableData: bio, psychProfile,
+          wearableData: bio, psychProfile, conversationHistory: messages,
         })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+      
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      
+      if (data.requiresIntervention) {
+        setInterventionMessage('잠시 멈추세요. 현재 교감신경이 과항진 상태이며, 인지 왜곡 패턴이 감지되었습니다.');
+        setIsInterventionActive(true);
+      }
+      
       // 마이크로 질문이 있으면 세팅
       if (data.microQuestion) {
         setMicroQ(data.microQuestion);
+      }
+      
+      // 4-Core 라우팅 결과 세팅
+      if (data.targetCore) {
+        setActiveCore(data.targetCore);
+        setCoreDescription(data.coreDescription || '');
       }
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: '❌ 신경망 연결에 실패했습니다.' }]);
@@ -196,7 +234,55 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 relative">
+      <AnimatePresence>
+        {isInterventionActive && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 bg-black/90 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center p-6 border border-red-500/30 overflow-hidden"
+          >
+            {/* Background warning pulse */}
+            <div className="absolute inset-0 bg-red-900/10 animate-pulse" />
+            
+            {/* Breathing Animation */}
+            <div className="relative w-32 h-32 mb-8 flex items-center justify-center">
+              <motion.div
+                animate={{ scale: [1, 1.5, 1] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute inset-0 rounded-full border border-cyan-500/50 bg-cyan-500/10"
+              />
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
+                className="absolute inset-4 rounded-full border border-cyan-400/40 bg-cyan-400/20"
+              />
+              <BrainCircuit className="w-8 h-8 text-cyan-300 relative z-10" />
+            </div>
+
+            <h3 className="text-xl font-black text-red-400 mb-2 font-mono tracking-widest text-center">
+              [ SCAN ALERT ]
+            </h3>
+            
+            <p className="text-[13px] text-red-200 text-center leading-relaxed break-keep max-w-[80%] mb-6">
+              {interventionMessage}
+            </p>
+
+            <p className="text-[14px] text-cyan-200 text-center leading-relaxed break-keep font-medium mb-8">
+              "잠시 호흡을 고르고, 당신을 관찰하는 '나'로 돌아오세요."
+            </p>
+
+            <button
+              onClick={() => setIsInterventionActive(false)}
+              className="px-6 py-2.5 bg-cyan-950/50 border border-cyan-500/50 rounded-full text-[13px] text-cyan-300 hover:bg-cyan-900/50 transition-colors font-medium z-10"
+            >
+              인지했습니다 (복귀)
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ─── 헤더 ─── */}
       <div className="bg-[#080b12] border border-white/10 rounded-2xl overflow-hidden relative shadow-lg">
         {isSyncing && (
@@ -361,12 +447,33 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
 
       {/* ─── 챗봇 ─── */}
       <div className="bg-[#0b1018] border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl relative" style={{ height: '500px' }}>
-        <div className="absolute -top-20 -left-20 w-40 h-40 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
+        {/* 다이내믹 코어 배경 그라데이션 */}
+        <div className={`absolute -top-20 -left-20 w-40 h-40 blur-3xl rounded-full pointer-events-none transition-colors duration-1000 ${
+            activeCore === 'CBT' ? 'bg-orange-500/20' :
+            activeCore === 'ACT' ? 'bg-emerald-500/20' :
+            activeCore === 'DBT' ? 'bg-blue-500/20' :
+            activeCore === 'MBCT' ? 'bg-purple-500/20' :
+            'bg-cyan-500/10'
+        }`} />
 
         <div className="p-3 bg-white/5 border-b border-white/5 flex items-center justify-between z-10">
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-amber-400" />
             <span className="text-[12px] font-bold text-slate-200">명심 OS 코칭 연결망</span>
+            {activeCore !== 'NONE' && (
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }} 
+                animate={{ opacity: 1, x: 0 }} 
+                className={`ml-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-tight border shadow-sm ${
+                  activeCore === 'CBT' ? 'bg-orange-950/40 text-orange-400 border-orange-500/30' :
+                  activeCore === 'ACT' ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/30' :
+                  activeCore === 'DBT' ? 'bg-blue-950/40 text-blue-400 border-blue-500/30' :
+                  'bg-purple-950/40 text-purple-400 border-purple-500/30'
+                }`}
+              >
+                {coreDescription}
+              </motion.div>
+            )}
           </div>
           {psychProfile.totalResponses > 0 && (
             <span className="text-[9px] px-2 py-0.5 bg-violet-500/20 text-violet-300 rounded-full font-mono border border-violet-500/20">
@@ -399,14 +506,32 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
             <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} items-start gap-2`}>
               {msg.role === 'assistant' && (
-                <div className="w-6 h-6 rounded-full bg-cyan-950 border border-cyan-500/30 flex items-center justify-center shrink-0 mt-1">
-                  <BrainCircuit className="w-3.5 h-3.5 text-cyan-400" />
+                <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 mt-1 ${
+                  activeCore === 'CBT' ? 'bg-orange-950 border-orange-500/30' :
+                  activeCore === 'ACT' ? 'bg-emerald-950 border-emerald-500/30' :
+                  activeCore === 'DBT' ? 'bg-blue-950 border-blue-500/30' :
+                  activeCore === 'MBCT' ? 'bg-purple-950 border-purple-500/30' :
+                  'bg-cyan-950 border-cyan-500/30'
+                }`}>
+                  <BrainCircuit className={`w-3.5 h-3.5 ${
+                    activeCore === 'CBT' ? 'text-orange-400' :
+                    activeCore === 'ACT' ? 'text-emerald-400' :
+                    activeCore === 'DBT' ? 'text-blue-400' :
+                    activeCore === 'MBCT' ? 'text-purple-400' :
+                    'text-cyan-400'
+                  }`} />
                 </div>
               )}
               <div className={`p-3 rounded-2xl max-w-[85%] ${
                 msg.role === 'user'
                   ? 'bg-slate-700 text-white rounded-tr-none text-[13px]'
-                  : 'bg-cyan-950/20 border border-cyan-500/20 text-cyan-50 rounded-tl-none text-[12.5px]'
+                  : `border rounded-tl-none text-[12.5px] ${
+                      activeCore === 'CBT' ? 'bg-orange-950/20 border-orange-500/20 text-orange-50' :
+                      activeCore === 'ACT' ? 'bg-emerald-950/20 border-emerald-500/20 text-emerald-50' :
+                      activeCore === 'DBT' ? 'bg-blue-950/20 border-blue-500/20 text-blue-50' :
+                      activeCore === 'MBCT' ? 'bg-purple-950/20 border-purple-500/20 text-purple-50' :
+                      'bg-cyan-950/20 border-cyan-500/20 text-cyan-50'
+                    }`
               }`}>
                 {msg.role === 'user' ? msg.content : (
                   <div className="prose prose-invert prose-sm max-w-none">
