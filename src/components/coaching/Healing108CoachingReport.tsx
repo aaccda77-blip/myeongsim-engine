@@ -162,7 +162,7 @@ export default function Healing108CoachingReport({
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
     // [Bug Fix] 기존에 잘못 캐시된 데이터를 모두 무효화하기 위해 캐시 키 버전(v4) 추가
-    const aiContentKey = `ms_108_ai_content_v7_${userKey}`; // v7: sajuProfile 기반 초개인화 프롬프트 적용
+    const aiContentKey = `ms_108_ai_content_v8_${userKey}`; // v8: getChar 버그 수정으로 완벽한 기질 추출 완료
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
@@ -240,10 +240,9 @@ export default function Healing108CoachingReport({
                 return;
             }
 
-            // 만약 현재 보고 있는 페이지가 큐의 첫 번째라면 살짝 로딩 표시를 해줄 수 있음 (isGeneratingAi true)
-            // 하지만 스텔스 모드이므로 전체 화면을 가리는 로딩창은 띄우지 않기 위해 UI에서 로딩 디자인을 최소화합니다.
-            if (targetKey === currentPageKey) {
-                setIsGeneratingAi(true); 
+            const isCurrentPage = targetKey === currentPageKey;
+            if (isCurrentPage) {
+                setIsGeneratingAi(true);
             }
 
             try {
