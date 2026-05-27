@@ -47,27 +47,26 @@ export default function Healing108CoachingReport({
             
             finalSaju = storeSaju || localSaju;
 
-            // [초고도화] 만약 스토어나 로컬에 데이터가 없고, 유저 프로필(메타데이터)에 생년월일이 있다면 즉석 계산!
-            if (!finalSaju && userProfile?.user_metadata) {
-                const rawDate = userProfile.user_metadata.saju_data?.date || userProfile.user_metadata.birth_date;
-                if (rawDate) {
-                    try {
-                        const rawTime = userProfile.user_metadata.saju_data?.time || '12:00';
-                        const gender = userProfile.user_metadata.saju_data?.gender || 'male';
-                        const result = calculateSaju(rawDate, rawTime, 'solar', gender);
-                        if (result && result.success) {
-                            const stats = calculateSajuStats(result.fourPillars, result.dayMasterChar);
-                            finalSaju = {
-                                dayMaster: result.dayMaster,
-                                fourPillars: result.fourPillars,
-                                elements: stats.ohaeng,
-                                tenGods: stats.tenGods
-                            };
-                            console.log('✅ [Healing108] Profile 기반 사주 즉석 복구 성공:', finalSaju.dayMaster);
-                        }
-                    } catch (e) {
-                        console.warn('⚠️ [Healing108] Profile 기반 즉석 사주 계산 실패:', e);
+            // [초고도화] 만약 스토어나 로컬의 사주 데이터가 불완전하고, 생년월일(birthDate) 원본이 존재한다면 완벽하게 즉석 계산하여 연동!
+            const rawDate = reportData?.birthDate || reportData?.birth_date || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
+            
+            if ((!finalSaju || !finalSaju.fourPillars || Object.keys(finalSaju.fourPillars).length === 0) && rawDate) {
+                try {
+                    const rawTime = reportData?.birthTime || reportData?.birth_time || userProfile?.birthTime || userProfile?.birth_time || userProfile?.user_metadata?.saju_data?.time || '12:00';
+                    const gender = reportData?.gender || userProfile?.gender || userProfile?.user_metadata?.saju_data?.gender || 'male';
+                    const result = calculateSaju(rawDate, rawTime, 'solar', gender);
+                    if (result && result.success) {
+                        const stats = calculateSajuStats(result.fourPillars, result.dayMasterChar);
+                        finalSaju = {
+                            dayMaster: result.dayMaster,
+                            fourPillars: result.fourPillars,
+                            elements: stats.ohaeng,
+                            tenGods: stats.tenGods
+                        };
+                        console.log('✅ [Healing108] 생년월일 기반 사주 100% 즉석 복구 연동 성공:', finalSaju.dayMaster);
                     }
+                } catch (e) {
+                    console.warn('⚠️ [Healing108] 생년월일 기반 즉석 사주 계산 실패:', e);
                 }
             }
 
