@@ -47,12 +47,15 @@ export async function POST(req: Request) {
     }
 
     const neural = calculateNeuralCode(sajuData);
-    const userDayStem = sajuData.dayMaster || sajuData.fourPillars?.day?.gan || neural.day?.slice(0, 1) || '갑';
+    const getGanChar = (gan: any) => typeof gan === 'object' && gan !== null ? gan.char : gan;
+    const getJiChar = (ji: any) => typeof ji === 'object' && ji !== null ? ji.char : ji;
+
+    const userDayStem = (sajuData.dayMaster ? sajuData.dayMaster.split(' ')[0] : null) || getGanChar(sajuData.fourPillars?.day?.gan) || neural.day?.slice(0, 1) || '갑';
     
     const p = sajuData.fourPillars;
     let fullSajuInfo = "정보 없음";
     if (p && p.year && p.month && p.day && p.time) {
-        fullSajuInfo = `년주: ${p.year.gan || ''}${p.year.ji || ''}, 월주: ${p.month.gan || ''}${p.month.ji || ''}, 일주: ${p.day.gan || ''}${p.day.ji || ''}, 시주: ${p.time.gan || ''}${p.time.ji || ''}`;
+        fullSajuInfo = `년주: ${getGanChar(p.year.gan) || ''}${getJiChar(p.year.ji) || ''}, 월주: ${getGanChar(p.month.gan) || ''}${getJiChar(p.month.ji) || ''}, 일주: ${getGanChar(p.day.gan) || ''}${getJiChar(p.day.ji) || ''}, 시주: ${getGanChar(p.time.gan) || ''}${getJiChar(p.time.ji) || ''}`;
     } else if (neural.pillars && !neural.pillars.includes('DATA_MISSING')) {
         fullSajuInfo = neural.pillars;
     }
