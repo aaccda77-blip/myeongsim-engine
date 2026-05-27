@@ -70,6 +70,22 @@ export default function Healing108CoachingReport({
                     }
                 }
             }
+
+            // [최종 안전장치] 만약 모든 데이터가 비어있다면, 서버가 에러를 뱉지 않도록 기본 갑자일주(甲子) 목업 데이터를 채워줍니다.
+            if (!finalSaju) {
+                finalSaju = {
+                    dayMaster: "갑목",
+                    fourPillars: {
+                        year: { gan: "甲", ji: "子" },
+                        month: { gan: "甲", ji: "子" },
+                        day: { gan: "甲", ji: "子", char: "甲" },
+                        time: { gan: "甲", ji: "子" }
+                    },
+                    elements: { wood: 1, fire: 0, earth: 0, metal: 0, water: 0 },
+                    tenGods: { self: 0, output: 0, wealth: 0, power: 0, resource: 0 }
+                };
+                console.warn('⚠️ [Healing108] 데이터가 완전히 비어있어 기본 갑자일주 데이터를 주입했습니다.');
+            }
             setActiveSaju(finalSaju);
         }
     }, [isOpen, reportData, userProfile]);
@@ -144,8 +160,8 @@ export default function Healing108CoachingReport({
     const userKey = getSajuFingerprint();
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
-    // [Bug Fix] 기존에 잘못 캐시된 '신금' 데이터를 모두 무효화하기 위해 캐시 키 버전(v2) 추가
-    const aiContentKey = `ms_108_ai_content_v3_${userKey}`; // AI 치유 본문 격리 캐시 키
+    // [Bug Fix] 기존에 잘못 캐시된 데이터를 모두 무효화하기 위해 캐시 키 버전(v4) 추가
+    const aiContentKey = `ms_108_ai_content_v4_${userKey}`; // AI 치유 본문 격리 캐시 키
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
