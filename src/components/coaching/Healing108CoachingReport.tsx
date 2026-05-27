@@ -189,76 +189,101 @@ export default function Healing108CoachingReport({
         }
     }, [userKey]); // [초고도화] 사용자가 바뀌면 실시간으로 데이터를 분리 스위칭합니다.
 
-    // [NEW] 페이지 진입 및 인덱스 변경 시, Gemini API와 온디맨드로 실시간 1대1 치유 콘텐츠를 작성하는 이펙트
-    useEffect(() => {
-        const triggerAiGeneration = async () => {
-            if (!isOpen) return;
+    // [초고도화] 배치 생성 진행률 상태
+    const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0, isRunning: false });
 
-            // [Bug Fix] React state 비동기 업데이트로 인한 Race Condition 방지:
-            // 첫 렌더링 시 aiPageContent가 아직 이전 유저의 캐시를 들고 있을 수 있으므로, 
-            // 현재 userKey에 해당하는 최신 로컬스토리지를 직접 확인합니다.
+    // [초고도화] 리포트 열릴 때 108페이지 전체를 배치로 AI 생성하는 이펙트
+    useEffect(() => {
+        const triggerBatchGeneration = async () => {
+            if (!isOpen || !activeSaju || userKey === 'guest') return;
+
+            // 이미 캐시된 AI 콘텐츠가 있는지 확인
             const currentCacheStr = typeof window !== 'undefined' ? localStorage.getItem(aiContentKey) : null;
             const currentCache = currentCacheStr ? JSON.parse(currentCacheStr) : {};
 
-            // 1. 이미 캐시된 사용자 맞춤형 AI 콘텐츠가 있다면 즉시 로딩 없이 패스
-            if (currentCache[currentPageKey]) {
-                // 혹시 상태가 아직 동기화 안 됐다면 동기화 시켜줌
-                if (!aiPageContent[currentPageKey]) {
+            // 아직 생성되지 않은 페이지만 필터링
+            const uncachedKeys = pageKeys.filter(key => !currentCache[key]);
+
+            // 이미 전부 캐시 되어 있으면 즉시 로드 후 패스
+            if (uncachedKeys.length === 0) {
+                if (Object.keys(aiPageContent).length < pageKeys.length) {
                     setAiPageContent(currentCache);
                 }
                 return;
             }
 
-            // 2. 사주 데이터가 온전치 않은 비회원/체험 상태라면 무리한 서버 부하 방지를 위해 즉시 폴백
-            if (!activeSaju) return;
-
-            // [Bug Fix] guest fingerprint라도 AI 생성을 시도합니다 (생년월일만 있는 경우 등)
-            // if (userKey === 'guest') return; // 주석 처리하여 무조건 API 호출 허용
-
+            // 배치 생성 시작
             setIsGeneratingAi(true);
+            setBatchProgress({ current: 0, total: uncachedKeys.length, isRunning: true });
 
-            try {
-                // [프롬프트 튜닝 초고도화] 원본에 적혀있던 '신금'이나 '을신충' 하드코딩 텍스트가 제미나이를 오염시켜
-                // 신금 스토리만 복제해서 집필하는 현상을 원천 차단하기 위해, 1차 치환된 템플릿 텍스트를 건넵니다!
-                const resolvedOriginalPage = {
-                    title: getResolvedText(currentPageData?.title),
-                    desc: getResolvedText(currentPageData?.desc),
-                    socratic: getResolvedText(currentPageData?.socratic),
-                    recursive: getResolvedText(currentPageData?.recursive),
-                };
+            const BATCH_SIZE = 8; // 한 번에 8페이지씩
+            const MAX_CONCURRENT = 3; // 최대 3개 동시 실행
+            const allResults: Record<string, any> = { ...currentCache };
 
-                const response = await fetch('/api/coaching/generate-108', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        pageKey: currentPageKey,
-                        sajuData: activeSaju,
-                        originalPage: resolvedOriginalPage
-                    })
-                });
-
-                if (!response.ok) throw new Error('108 AI Generation Failed');
-                const data = await response.json();
-
-                if (data.success && data.pageData) {
-                    setAiPageContent(prev => {
-                        const updatedContent = {
-                            ...prev,
-                            [currentPageKey]: data.pageData
-                        };
-                        localStorage.setItem(aiContentKey, JSON.stringify(updatedContent));
-                        return updatedContent;
-                    });
-                }
-            } catch (err) {
-                console.warn('❌ [Gemini 108 API] 생성 오류로 인해 정적 템플릿 Fallback으로 우아하게 자동 대체합니다:', err);
-            } finally {
-                setIsGeneratingAi(false);
+            // 배치 청크 분할
+            const batches: string[][] = [];
+            for (let i = 0; i < uncachedKeys.length; i += BATCH_SIZE) {
+                batches.push(uncachedKeys.slice(i, i + BATCH_SIZE));
             }
+
+            // 배치 실행 함수
+            const executeBatch = async (batchKeys: string[]) => {
+                try {
+                    const pages = batchKeys.map(key => {
+                        const page = saju108Matrix[key];
+                        return {
+                            pageKey: key,
+                            title: getResolvedText(page?.title),
+                            desc: getResolvedText(page?.desc),
+                            socratic: getResolvedText(page?.socratic),
+                            recursive: getResolvedText(page?.recursive),
+                        };
+                    });
+
+                    const response = await fetch('/api/coaching/generate-108-batch', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pages, sajuData: activeSaju })
+                    });
+
+                    if (!response.ok) throw new Error('Batch generation failed');
+                    const data = await response.json();
+
+                    if (data.success && data.results) {
+                        Object.assign(allResults, data.results);
+                        // 진행률 실시간 업데이트
+                        setBatchProgress(prev => ({
+                            ...prev,
+                            current: Math.min(prev.current + batchKeys.length, prev.total)
+                        }));
+                        // 중간 결과도 실시간으로 UI에 반영
+                        setAiPageContent(prev => ({ ...prev, ...data.results }));
+                    }
+                } catch (err) {
+                    console.warn('❌ [배치 생성] 일부 페이지 생성 실패 (폴백 적용):', err);
+                    setBatchProgress(prev => ({
+                        ...prev,
+                        current: Math.min(prev.current + batchKeys.length, prev.total)
+                    }));
+                }
+            };
+
+            // 동시성 제한 병렬 실행
+            for (let i = 0; i < batches.length; i += MAX_CONCURRENT) {
+                const concurrentBatches = batches.slice(i, i + MAX_CONCURRENT);
+                await Promise.all(concurrentBatches.map(batch => executeBatch(batch)));
+            }
+
+            // 전체 완료 후 캐시 저장
+            localStorage.setItem(aiContentKey, JSON.stringify(allResults));
+            setAiPageContent(allResults);
+            setIsGeneratingAi(false);
+            setBatchProgress({ current: 0, total: 0, isRunning: false });
+            console.log('✅ [Healing108] 108페이지 전체 AI 배치 생성 완료!', Object.keys(allResults).length, '페이지');
         };
 
-        triggerAiGeneration();
-    }, [currentPageIndex, userKey, isOpen, aiContentKey, activeSaju, currentPageData]);
+        triggerBatchGeneration();
+    }, [userKey, isOpen, activeSaju]);
 
     const handleAnswerChange = (pageKey: string, text: string) => {
         const updated = { ...answers, [pageKey]: text };
@@ -1134,14 +1159,37 @@ export default function Healing108CoachingReport({
                                             transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
                                             className="absolute w-[90%] h-[90%] rounded-full bg-gray-950/90 border border-white/10 flex items-center justify-center shadow-[inset_0_0_20px_rgba(236,72,153,0.25)]"
                                         >
-                                            <Sparkles className="text-pink-400 animate-pulse" size={24} />
+                                            {batchProgress.isRunning ? (
+                                                <span className="text-2xl">{
+                                                    batchProgress.total > 0 && batchProgress.current / batchProgress.total < 0.25 ? '🥚' :
+                                                    batchProgress.total > 0 && batchProgress.current / batchProgress.total < 0.5 ? '🐣' :
+                                                    batchProgress.total > 0 && batchProgress.current / batchProgress.total < 0.75 ? '🦕' : '🦖'
+                                                }</span>
+                                            ) : (
+                                                <Sparkles className="text-pink-400 animate-pulse" size={24} />
+                                            )}
                                         </motion.div>
                                     </div>
                                     <div className="text-center space-y-2.5 px-4 max-w-md">
                                         <span className="text-[9px] font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 uppercase animate-pulse">AI Synthesis Channeling</span>
                                         <p className="text-xs sm:text-sm text-gray-300 font-semibold leading-relaxed">
-                                            명심AI 코치가 당신의 기질 주파수를 감지하여<br className="hidden sm:inline" /> 백서를 실시간 집필하는 중입니다...
+                                            명심AI 코치가 당신만의 108 자각 백서를<br className="hidden sm:inline" /> 한 장 한 장 정성껏 집필하는 중입니다...
                                         </p>
+                                        {batchProgress.isRunning && batchProgress.total > 0 && (
+                                            <div className="space-y-2 pt-2">
+                                                <div className="w-full max-w-xs mx-auto h-2 bg-gray-900 rounded-full overflow-hidden border border-white/5">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${Math.round((batchProgress.current / batchProgress.total) * 100)}%` }}
+                                                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                                                        className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 shadow-[0_0_10px_rgba(236,72,153,0.5)]"
+                                                    />
+                                                </div>
+                                                <p className="text-[10px] text-gray-500 font-bold">
+                                                    {batchProgress.current} / {batchProgress.total} 페이지 완료 ({Math.round((batchProgress.current / batchProgress.total) * 100)}%)
+                                                </p>
+                                            </div>
+                                        )}
                                         <div className="flex items-center justify-center gap-1.5 pt-1">
                                             <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                                             <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
