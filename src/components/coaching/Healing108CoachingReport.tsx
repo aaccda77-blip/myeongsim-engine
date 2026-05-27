@@ -527,7 +527,11 @@ export default function Healing108CoachingReport({
 
         const getChar = (obj: any, part: 'stem' | 'branch') => {
             if (!obj) return '';
-            if (typeof obj === 'string') return obj.charAt(0);
+            if (typeof obj === 'string') {
+                if (part === 'stem') return obj.charAt(0);
+                if (part === 'branch' && obj.length > 1) return obj.charAt(1);
+                return obj.charAt(0);
+            }
 
             if (part === 'stem') {
                 if (typeof obj.gan === 'string') return obj.gan;
