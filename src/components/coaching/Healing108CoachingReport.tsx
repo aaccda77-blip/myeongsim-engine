@@ -50,7 +50,7 @@ export default function Healing108CoachingReport({
             // [초고도화] 만약 스토어나 로컬의 사주 데이터가 불완전하고, 생년월일(birthDate) 원본이 존재한다면 완벽하게 즉석 계산하여 연동!
             const rawDate = reportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
             
-            if ((!finalSaju || !finalSaju.fourPillars || Object.keys(finalSaju.fourPillars).length === 0) && rawDate) {
+            if ((!finalSaju || !finalSaju.fourPillars || Object.keys(finalSaju.fourPillars).length === 0 || !finalSaju.elements || !finalSaju.tenGods) && rawDate) {
                 try {
                     const rawTime = reportData?.birthTime || userProfile?.birthTime || userProfile?.birth_time || userProfile?.user_metadata?.saju_data?.time || '12:00';
                     const gender = reportData?.gender || userProfile?.gender || userProfile?.user_metadata?.saju_data?.gender || 'male';
@@ -160,7 +160,7 @@ export default function Healing108CoachingReport({
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
     // [Bug Fix] 기존에 잘못 캐시된 데이터를 모두 무효화하기 위해 캐시 키 버전(v4) 추가
-    const aiContentKey = `ms_108_ai_content_v4_${userKey}`; // AI 치유 본문 격리 캐시 키
+    const aiContentKey = `ms_108_ai_content_v5_${userKey}`; // AI 치유 본문 격리 캐시 키
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {

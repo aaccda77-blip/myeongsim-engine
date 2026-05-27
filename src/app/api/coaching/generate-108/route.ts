@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 - 일간(Day Master): ${sajuData.dayMaster || '알 수 없음'}
 - 사주 십신 분포: 비겁(${sajuData.tenGods?.self || 0}), 식상(${sajuData.tenGods?.output || 0}), 재성(${sajuData.tenGods?.wealth || 0}), 관성(${sajuData.tenGods?.power || 0}), 인성(${sajuData.tenGods?.resource || 0})
 - 현재 대운: ${sajuData.currentDaewoon || '황금 대운'}
-- 사주 오행 점수: 목(Wood:${sajuData.ohaeng?.wood || 0}), 화(Fire:${sajuData.ohaeng?.fire || 0}), 토(Earth:${sajuData.ohaeng?.earth || 0}), 금(Metal:${sajuData.ohaeng?.metal || 0}), 수(Water:${sajuData.ohaeng?.water || 0})
+- 사주 오행 점수: 목(Wood:${sajuData.elements?.wood || 0}), 화(Fire:${sajuData.elements?.fire || 0}), 토(Earth:${sajuData.elements?.earth || 0}), 금(Metal:${sajuData.elements?.metal || 0}), 수(Water:${sajuData.elements?.water || 0})
     `.trim();
 
     const prompt = `
