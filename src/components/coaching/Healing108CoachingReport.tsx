@@ -1131,7 +1131,7 @@ export default function Healing108CoachingReport({
                                     <div className="text-center space-y-2.5 px-4 max-w-md">
                                         <span className="text-[9px] font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 uppercase animate-pulse">AI Synthesis Channeling</span>
                                         <p className="text-xs sm:text-sm text-gray-300 font-semibold leading-relaxed">
-                                            Gemini AI가 당신의 기질 주파수를 감지하여<br className="hidden sm:inline" /> 백서를 실시간 집필하는 중입니다...
+                                            명심AI 코치가 당신의 기질 주파수를 감지하여<br className="hidden sm:inline" /> 백서를 실시간 집필하는 중입니다...
                                         </p>
                                         <div className="flex items-center justify-center gap-1.5 pt-1">
                                             <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
