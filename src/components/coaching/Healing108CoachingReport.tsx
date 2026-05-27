@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, FileText, ChevronLeft, ChevronRight, X, Heart, Sparkles, BookOpen, Menu, Search } from 'lucide-react';
+import { Volume2, VolumeX, FileText, ChevronLeft, ChevronRight, X, Heart, Sparkles, BookOpen, Menu, Search, Sprout, Leaf, TreeDeciduous, Trees } from 'lucide-react';
 import { saju108Matrix } from '@/data/saju108Matrix';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
@@ -807,10 +807,10 @@ export default function Healing108CoachingReport({
         }, 800);
     };
 
-    const totalProgress = Math.round(
-        ((Object.keys(answers).filter(k => answers[k]?.trim() !== '').length +
-        Object.keys(recursiveConfirmed).filter(k => recursiveConfirmed[k]).length) / (pageKeys.length * 2)) * 100
-    );
+    const completedAnswersCount = Object.keys(answers).filter(k => answers[k]?.trim() !== '').length;
+    const confirmedCount = Object.keys(recursiveConfirmed).filter(k => recursiveConfirmed[k]).length;
+    const totalCompletedCount = completedAnswersCount + confirmedCount;
+    const totalProgress = Math.round((totalCompletedCount / (pageKeys.length * 2)) * 100);
 
     // PC/모바일 화면 크기 실시간 감지
     const [isLargeScreen, setIsLargeScreen] = React.useState(false);
@@ -1015,12 +1015,20 @@ export default function Healing108CoachingReport({
                     {/* 진행률 게이지 배너 */}
                     <div className="w-full max-w-3xl bg-white/2 border border-white/5 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-4 backdrop-blur-md shrink-0">
                         <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg">
-                                <Sparkles size={16} className="text-white" />
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg transition-all duration-500">
+                                {totalProgress < 25 ? (
+                                    <Sprout size={16} className="text-white animate-pulse" />
+                                ) : totalProgress < 50 ? (
+                                    <Leaf size={16} className="text-white drop-shadow-sm" />
+                                ) : totalProgress < 75 ? (
+                                    <TreeDeciduous size={16} className="text-white drop-shadow-md" />
+                                ) : (
+                                    <Trees size={16} className="text-white drop-shadow-lg" />
+                                )}
                             </div>
                             <div>
                                 <h4 className="text-[10px] sm:text-xs font-bold text-gray-400 tracking-wider">나의 내면 디버깅 진행도</h4>
-                                <p className="text-[8px] sm:text-[9px] text-gray-500">108 자각 설계 중 총 {Object.keys(answers).filter(k => answers[k]?.trim() !== '').length}개 성찰 완료</p>
+                                <p className="text-[8px] sm:text-[9px] text-gray-500">108 자각 설계 중 총 {totalCompletedCount}개 성찰 완료</p>
                             </div>
                         </div>
                         <div className="flex-1 max-w-md flex items-center gap-2 sm:gap-3">
