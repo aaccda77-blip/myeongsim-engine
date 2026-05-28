@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../components";
 
 /* 1. Next.js 개발 표시기 숨김 (개발 편의를 위해 주석 처리를 권장하나, 요청대로 유지) */
 [data-nextjs-toast],

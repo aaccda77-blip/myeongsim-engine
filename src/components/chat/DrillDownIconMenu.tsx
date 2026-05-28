@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Music, X, Globe } from 'lucide-react';
+import { Music, X, Globe, Cpu } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule';
 import TalentReportCard from '@/components/chat/TalentReportCard';
@@ -52,6 +52,7 @@ const SovereignCoachingReport = dynamic(() => import('@/components/coaching/Sove
 const Healing108CoachingReport = dynamic(() => import('@/components/coaching/Healing108CoachingReport'), { ssr: false });
 // [NEW] Sovereign 3S Protocol Modal
 const Sovereign3SProtocolModal = dynamic(() => import('@/components/coaching/Sovereign3SProtocolModal'), { ssr: false });
+const MyeongsimOSDashboard = dynamic(() => import('@/components/os/MyeongsimOSDashboard'), { ssr: false });
 
 
 
@@ -472,8 +473,9 @@ export default function DrillDownIconMenu({
 
     const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
     const [showSovereignReport, setShowSovereignReport] = useState(false); // [NEW] 사회적기여 리포트
-    const [showHealing108Report, setShowHealing108Report] = useState(false); // [NEW] 108 자각 백서
-    const [showSovereign3S, setShowSovereign3S] = useState(false); // [NEW] 소버린 3S 프로토콜
+    const [showHealing108Report, setShowHealing108Report] = useState(false); // [NEW] 108 자각 증명서
+    const [showMyeongsimOS, setShowMyeongsimOS] = useState(false); // [NEW] 명심 OS 대시보드
+    const [showSovereign3S, setShowSovereign3S] = useState(false); // [NEW] 소버린 3S 팝업프로토콜
     const { reportData } = useReportStore();
 
 
@@ -1070,6 +1072,32 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 명심 OS 코칭 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowMyeongsimOS(true)}
+                >
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(135deg, #4ade80 0%, #3b82f6 100%)',
+                        boxShadow: '0 0 15px rgba(74, 222, 128, 0.4)',
+                        marginBottom: '8px',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <Cpu className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#4ade80' }}>명심 OS</div>
+                        <div style={styles.neuroTrigger}>시스템 디버깅</div>
+                    </div>
+                </button>
+
                 {icons.map((icon) => {
                     const isHovered = hoveredIcon === icon.id;
                     const translatedLabel = t(`menu.${icon.id.toLowerCase()}`) || icon.label;
@@ -1458,6 +1486,14 @@ export default function DrillDownIconMenu({
                 onClose={() => setShowHealing108Report(false)}
                 userProfile={userProfile}
             />
+
+            {/* [NEW] 명심 OS 대시보드 */}
+            {showMyeongsimOS && (
+                <MyeongsimOSDashboard 
+                    isModal={true}
+                    onClose={() => setShowMyeongsimOS(false)}
+                />
+            )}
 
             {/* SOS Breathing Guide Modal */}
             {showBreathingGuide && (

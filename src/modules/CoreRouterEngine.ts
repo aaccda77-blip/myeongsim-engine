@@ -50,9 +50,13 @@ export function determineCoachingCore(message: string, stressLevel: number = 50)
 
     let maxScore = Math.max(cbtScore, actScore, dbtScore, mbctScore);
     let targetCore: CoachingCore = 'NONE';
+    const isInfoQuery = message.includes('?') || message.includes('뭐야') || message.includes('어때') || message.includes('알려줘') || message.includes('어떻게');
 
+    if (isInfoQuery) {
+        targetCore = 'NONE';
+    }
     // 1. 키워드 점수 기반 할당 (가장 높은 점수)
-    if (maxScore > 0) {
+    else if (maxScore > 0) {
         // 동점일 경우 긴급도가 높은 순으로 우선순위 부여: DBT > CBT > MBCT > ACT
         if (dbtScore === maxScore) targetCore = 'DBT';
         else if (cbtScore === maxScore) targetCore = 'CBT';
@@ -60,16 +64,11 @@ export function determineCoachingCore(message: string, stressLevel: number = 50)
         else if (actScore === maxScore) targetCore = 'ACT';
     } 
     // 2. 매칭되는 키워드가 없을 때 생체 데이터(스트레스) 기반 라우팅
-    // 단, 사용자가 명백히 정보나 질문을 요구하는 경우는 강제 코칭을 생략 (일반 대화 모드 유지)
     else {
-        const isInfoQuery = message.includes('?') || message.includes('뭐야') || message.includes('어때') || message.includes('알려줘') || message.includes('어떻게');
-        
-        if (!isInfoQuery) {
-            if (stressLevel >= 85) {
-                targetCore = 'DBT'; // 극단적 스트레스 시 강제 제어
-            } else if (stressLevel >= 65) {
-                targetCore = 'ACT'; // 약간 높은 스트레스 시 수용/행동 유도
-            }
+        if (stressLevel >= 85) {
+            targetCore = 'DBT'; // 극단적 스트레스 시 강제 제어
+        } else if (stressLevel >= 65) {
+            targetCore = 'ACT'; // 약간 높은 스트레스 시 수용/행동 유도
         }
     }
 

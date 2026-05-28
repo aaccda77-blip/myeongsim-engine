@@ -4,6 +4,8 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useReportStore } from '@/store/useReportStore';
 import { getTodayDailyPillar } from '@/utils/SajuCalculator';
+import DailyMindRoutine from './DailyMindRoutine';
+import MindGrowthStages from './MindGrowthStages';
 
 /**
  * TodayEnergyDashboard - 오늘의 에너지 대시보드
@@ -388,6 +390,10 @@ export default function TodayEnergyDashboard({
                     </div>
                     <span className="text-gray-600 group-hover:text-amber-400 transition-colors">→</span>
                 </motion.div>
+
+                {/* --- [NEW] 데일리 마음 정렬 루틴 & 마음 성장 단계 --- */}
+                <DailyMindRoutine />
+                <MindGrowthStages />
             </main>
 
             {/* 하단 네비게이션 */}

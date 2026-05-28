@@ -943,7 +943,7 @@ export default function DailyBioSyncPanel() {
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <LiveSyncSection sajuData={reportData} harmony={harmony} biorhythm={biorhythm} />
+                    <LiveSyncSection sajuData={reportData?.saju || {}} harmony={harmony} biorhythm={biorhythm} />
                   </motion.div>
                 )}
 
