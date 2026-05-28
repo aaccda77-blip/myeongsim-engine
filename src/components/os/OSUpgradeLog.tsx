@@ -1,11 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, TrendingUp, GitMerge, Fingerprint, X, ChevronRight, Sparkles, BookOpen } from 'lucide-react';
+import { Database, TrendingUp, GitMerge, Fingerprint, X, ChevronRight, Sparkles, BookOpen, Calendar, History } from 'lucide-react';
 import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 import DeepHealingGuideModal from './DeepHealingGuideModal';
 import HealingArchiveModal from './HealingArchiveModal';
 import ZeroPointDashboard from './ZeroPointDashboard';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { useReportStore } from '@/store/useReportStore';
 
 const zeroPointData = [
   { name: '집착도', uv: 30, fill: '#ef4444' }, // Red
@@ -291,20 +293,56 @@ export default function OSUpgradeLog() {
   const [showHealingArchive, setShowHealingArchive] = useState(false);
   const [healingDate, setHealingDate] = useState<string | undefined>(undefined);
 
+  // [초개인화 모듈] 유저 및 기질 데이터 연동
+  const { id: userId } = useAuthUser();
+  const { reportData } = useReportStore();
+  const [historyList, setHistoryList] = useState<any[]>([]);
+  const [isLoadingDaily, setIsLoadingDaily] = useState(false);
+
   useEffect(() => {
-    const fetchDaily = async () => {
+    const fetchDailyAndHistory = async () => {
+      // 1) 사주 일간 정보 획득 및 정화
+      const rawDayMaster = reportData?.saju?.dayMaster || '갑';
+      const dayMaster = typeof rawDayMaster === 'string' ? rawDayMaster.charAt(0) : '갑';
+
+      setIsLoadingDaily(true);
       try {
-        const res = await fetch('/api/os/daily-matrix');
+        // 2) 오늘 자 맞춤 매트릭스 로드 또는 AI 생성 (POST 호출)
+        const res = await fetch('/api/os/my-daily-matrix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: userId || 'anonymous', dayMaster })
+        });
         if (res.ok) {
-          const data = await res.json();
-          setDailyPair(data);
+          const resData = await res.json();
+          if (resData.success) {
+            setDailyPair(resData.data);
+          }
         }
       } catch (e) {
-        console.error('Failed to fetch daily matrix', e);
+        console.error('Failed to fetch personalized daily matrix', e);
+      } finally {
+        setIsLoadingDaily(false);
+      }
+
+      // 3) 과거 히스토리 목록 로드 (로그인 유저일 때만)
+      if (userId && userId !== 'anonymous') {
+        try {
+          const historyRes = await fetch(`/api/os/my-matrix-history?userId=${userId}`);
+          if (historyRes.ok) {
+            const historyData = await historyRes.json();
+            if (historyData.success) {
+              setHistoryList(historyData.data);
+            }
+          }
+        } catch (he) {
+          console.error('Failed to fetch matrix history', he);
+        }
       }
     };
-    fetchDaily();
-  }, []);
+
+    fetchDailyAndHistory();
+  }, [userId, reportData]);
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-start p-6 overflow-y-auto overflow-x-hidden relative scrollbar-hide">
@@ -446,6 +484,58 @@ export default function OSUpgradeLog() {
                   </div>
                 </div>
               )}
+
+              {/* Past History Matrix Pairs (초개인화 히스토리 아카이브) */}
+              {historyList.length > 0 && (
+                <>
+                  <div className="text-[9px] font-mono text-cyan-400/80 tracking-widest mt-4 mb-2 pl-1 flex items-center gap-1.5 shrink-0 z-10 border-t border-slate-800/60 pt-4">
+                    <History className="w-3 h-3 text-cyan-400" />
+                    MY DEBUGGING HISTORY ({historyList.length})
+                  </div>
+                  {historyList.map((item) => {
+                    const theme = item.theme || { bg: 'bg-slate-800/40', border: 'border-slate-700/30', textTitle: 'text-slate-300', textLight: 'text-slate-100', textDark: 'text-slate-500/70', dot: 'bg-slate-400' };
+                    return (
+                      <div 
+                        key={`history-${item.id}`} 
+                        onClick={() => setSelectedPair({
+                          code: item.code,
+                          reality: item.reality,
+                          theme: theme,
+                          coaching: item.coaching
+                        })}
+                        className="flex justify-between items-center w-full z-10 shrink-0 cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] group relative mb-3"
+                      >
+                        <div className={`w-[45%] ${theme.bg} border ${theme.border} rounded-xl p-3 text-center shadow-lg relative overflow-hidden z-10`}>
+                          <div className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ChevronRight className={`w-3 h-3 ${theme.textTitle}`} />
+                          </div>
+                          <div className="absolute top-1 left-2 flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-full backdrop-blur-md">
+                            <Calendar className="w-2.5 h-2.5 text-cyan-400" />
+                            <span className="text-[7px] font-bold text-cyan-300 tracking-tighter">{item.date}</span>
+                          </div>
+                          <span className={`block text-[9px] ${theme.textDark} mb-1 mt-2`}>내면의 소스코드</span>
+                          <span className={`text-[11px] ${theme.textLight} font-bold break-keep`}>{item.code}</span>
+                        </div>
+                        
+                        <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.05)] z-20 group-hover:bg-slate-700 transition-colors">
+                          <span className="text-[10px] group-hover:rotate-180 transition-transform duration-500">🔄</span>
+                        </div>
+                        
+                        <div className={`w-[45%] bg-slate-800/40 border border-slate-700/50 rounded-xl p-3 text-center shadow-lg group-hover:${theme.bg} group-hover:${theme.border} transition-colors z-10`}>
+                          <span className="block text-[9px] text-slate-500 group-hover:text-slate-400 mb-1 mt-2">투사된 현실</span>
+                          <span className="text-[11px] text-slate-300 font-bold break-keep group-hover:text-white">{item.reality}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+
+              {/* Static Reference Library */}
+              <div className="text-[9px] font-mono text-slate-600 tracking-widest mt-4 mb-2 pl-1 flex items-center gap-1.5 shrink-0 z-10 border-t border-slate-800/60 pt-4">
+                <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+                STATIC REFERENCE LIBRARY
+              </div>
 
               {/* Existing Matrix Pairs */}
               {pairsData.map((pair, idx) => (
