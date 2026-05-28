@@ -302,8 +302,33 @@ export default function OSUpgradeLog() {
   useEffect(() => {
     const fetchDailyAndHistory = async () => {
       // 1) 사주 일간 정보 획득 및 정화
-      const rawDayMaster = reportData?.saju?.dayMaster || '갑';
-      const dayMaster = typeof rawDayMaster === 'string' ? rawDayMaster.charAt(0) : '갑';
+      //    ⚠️ reportData.saju.dayMaster는 "신금" 같은 형태 → charAt(0) = "신"
+      //    reportData가 아직 로딩 안 됐으면 API 호출을 보류합니다.
+      const rawDayMaster = reportData?.saju?.dayMaster;
+      if (!rawDayMaster) {
+        // 기질 데이터가 아직 없으면 히스토리만 로드하고, 맞춤 카드 생성은 스킵
+        if (userId && userId !== 'anonymous') {
+          try {
+            const historyRes = await fetch(`/api/os/my-matrix-history?userId=${userId}`);
+            if (historyRes.ok) {
+              const historyData = await historyRes.json();
+              if (historyData.success) {
+                setHistoryList(historyData.data);
+              }
+            }
+          } catch (he) {
+            console.error('Failed to fetch matrix history', he);
+          }
+        }
+        return; // dayMaster 없이는 맞춤 카드 생성 불가 → 조기 종료
+      }
+
+      // dayMaster 추출: "신금" → "신", "갑" → "갑" (객체인 경우도 안전 처리)
+      const dayMaster = typeof rawDayMaster === 'string' 
+        ? rawDayMaster.charAt(0) 
+        : (rawDayMaster as any)?.char || (rawDayMaster as any)?.label?.charAt(0) || '갑';
+
+      console.log('[OSUpgradeLog] 🧬 사용자 기질 dayMaster 감지:', dayMaster, '(raw:', rawDayMaster, ')');
 
       setIsLoadingDaily(true);
       try {
@@ -343,6 +368,7 @@ export default function OSUpgradeLog() {
 
     fetchDailyAndHistory();
   }, [userId, reportData]);
+
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-start p-6 overflow-y-auto overflow-x-hidden relative scrollbar-hide">
