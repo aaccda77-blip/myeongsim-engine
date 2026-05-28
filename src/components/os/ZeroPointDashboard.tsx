@@ -5,7 +5,7 @@ import { Fingerprint, CheckCircle2, AlertTriangle, Wind } from 'lucide-react';
 
 const THEMES = {
   deepSea: {
-    name: '심해의 자궁',
+    name: '심해의 안식처',
     icon: '🌊',
     color: 'from-blue-600 to-indigo-900',
     zeroColor: 'from-cyan-400 to-blue-600',
