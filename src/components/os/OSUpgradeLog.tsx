@@ -565,21 +565,66 @@ export default function OSUpgradeLog() {
                   <p className="text-sm text-slate-300 leading-relaxed break-keep">{selectedPair.coaching.recursive}</p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5 rounded-2xl border border-slate-700/50">
-                  <h4 className="text-xs font-mono text-purple-400 mb-2 flex items-center gap-2">
-                    <span className="text-base">👁️</span> 메타 인지 (객관적 관찰)
-                  </h4>
-                  <p className="text-sm text-slate-300 leading-relaxed break-keep">{selectedPair.coaching.meta}</p>
-                </div>
-
-                {selectedPair.coaching.pureAwareness && (
-                  <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5 rounded-2xl border border-slate-700/50 mt-4">
-                    <h4 className="text-xs font-mono text-fuchsia-400 mb-2 flex items-center gap-2">
-                      <span className="text-base">🌌</span> 알아차림의 알아차림 (순수 의식)
-                    </h4>
-                    <p className="text-sm text-slate-300 leading-relaxed break-keep">{selectedPair.coaching.pureAwareness}</p>
+                {/* 2-Step Awakening Process */}
+                <div className="bg-gradient-to-b from-slate-950/80 to-slate-900/80 p-4 sm:p-5 rounded-2xl border border-purple-500/10 space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-bold text-purple-300 border-b border-purple-500/10 pb-2">
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                    <span>의식 리셋 2단계 디버깅 프로세스</span>
                   </div>
-                )}
+                  
+                  {/* Step 1: Meta-cognition */}
+                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30 hover:border-purple-500/20 transition-all">
+                    <h4 className="text-xs font-bold text-purple-400 mb-2 flex items-center gap-2">
+                      <span className="text-xs bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded font-mono">STEP 1</span>
+                      👁️ 메타 인지 (객관적 관찰)
+                    </h4>
+                    <p className="text-sm text-slate-300 leading-relaxed break-keep">
+                      {selectedPair.coaching.meta}
+                    </p>
+                    <span className="block text-[10px] text-slate-500 mt-2 font-mono">➔ 에고의 생각과 감정을 관찰자 시점으로 가만히 바라봅니다.</span>
+                  </div>
+
+                  {selectedPair.coaching.pureAwareness ? (
+                    <>
+                      {/* Connector Animation */}
+                      <div className="flex flex-col items-center justify-center py-1">
+                        <div className="w-[2px] h-6 bg-gradient-to-b from-purple-500 to-fuchsia-500 animate-pulse" />
+                        <span className="text-[9px] text-fuchsia-400/80 font-mono tracking-widest uppercase my-1 animate-pulse">
+                          Deepen Awareness (차원 상승)
+                        </span>
+                        <div className="w-[2px] h-6 bg-gradient-to-b from-fuchsia-500 to-pink-500 animate-pulse" />
+                      </div>
+
+                      {/* Step 2: Awareness of Awareness */}
+                      <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30 hover:border-fuchsia-500/20 transition-all relative overflow-hidden group">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-fuchsia-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                        <h4 className="text-xs font-bold text-fuchsia-400 mb-2 flex items-center gap-2 relative z-10">
+                          <span className="text-xs bg-fuchsia-500/20 text-fuchsia-300 px-1.5 py-0.5 rounded font-mono">STEP 2</span>
+                          🌌 알아차림의 알아차림 (순수 자각)
+                        </h4>
+                        <p className="text-sm text-slate-200 font-medium leading-relaxed break-keep relative z-10">
+                          {selectedPair.coaching.pureAwareness}
+                        </p>
+                        <span className="block text-[10px] text-slate-500 mt-2 font-mono relative z-10">➔ 관찰하고 있는 '텅 빈 배경 자체(자각 그 자체)'에 머무릅니다.</span>
+                      </div>
+                    </>
+                  ) : (
+                    // Fallback if pureAwareness is missing
+                    <>
+                      <div className="flex flex-col items-center justify-center py-1">
+                        <div className="w-[2px] h-4 bg-slate-700" />
+                      </div>
+                      <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30">
+                        <h4 className="text-xs font-bold text-fuchsia-400 mb-2 flex items-center gap-2">
+                          🌌 알아차림의 알아차림
+                        </h4>
+                        <p className="text-sm text-slate-400 italic">
+                          현재 의식 튜닝 데이터를 분석 중입니다...
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
                 
                 <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5 rounded-2xl border border-slate-700/50 relative overflow-hidden">
                   <div className={`absolute inset-0 bg-gradient-to-r ${selectedPair.theme.bg} opacity-50`} />
