@@ -53,7 +53,10 @@ const getDayTheme = (dayIndex: number) => {
   }
 };
 
+import { useAuthUser } from '@/hooks/useAuthUser';
+
 export default function ZeroPointDashboard() {
+  const user = useAuthUser();
   const [dayIndex, setDayIndex] = useState(1);
   const [isAligned, setIsAligned] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
@@ -88,11 +91,24 @@ export default function ZeroPointDashboard() {
     }, 20);
   };
 
-  const completeAlignment = () => {
+  const completeAlignment = async () => {
     stopPress();
     setIsAligned(true);
     if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
       window.navigator.vibrate(200); // Stronger haptic on completion
+    }
+
+    // Call API to register alignment for today
+    if (user && user.id !== 'anonymous') {
+      try {
+        await fetch('/api/os/zero-point/align', { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id })
+        });
+      } catch (e) {
+        console.error('Failed to align zero point', e);
+      }
     }
   };
 

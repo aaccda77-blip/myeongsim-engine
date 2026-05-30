@@ -1,18 +1,21 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, TrendingUp, GitMerge, Fingerprint, X, ChevronRight, Sparkles, BookOpen, Calendar, History } from 'lucide-react';
+import { Database, TrendingUp, GitMerge, Fingerprint, X, ChevronRight, Sparkles, BookOpen, Calendar, History, Cpu, Terminal, Rocket } from 'lucide-react';
 import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 import DeepHealingGuideModal from './DeepHealingGuideModal';
+import MatrixRebuildModal from './MatrixRebuildModal';
+import DailyDebuggingModal from './DailyDebuggingModal';
+import DebuggingArchiveModal from './DebuggingArchiveModal';
 import HealingArchiveModal from './HealingArchiveModal';
+import FrequencyLevelUpModal from './FrequencyLevelUpModal';
+import FrequencyArchiveModal from './FrequencyArchiveModal';
 import ZeroPointDashboard from './ZeroPointDashboard';
+import DailyMatrixComments from './DailyMatrixComments';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { useReportStore } from '@/store/useReportStore';
 
-const zeroPointData = [
-  { name: '집착도', uv: 30, fill: '#ef4444' }, // Red
-  { name: '평온도', uv: 85, fill: '#10b981' }, // Emerald
-];
+
 
 interface CoachingData {
   desc: string;
@@ -288,16 +291,31 @@ const pairsData: PairData[] = [
 export default function OSUpgradeLog() {
   const [selectedPair, setSelectedPair] = useState<typeof pairsData[0] | null>(null);
   const [dailyPair, setDailyPair] = useState<typeof pairsData[0] | null>(null);
+  const [currentUserDayMaster, setCurrentUserDayMaster] = useState<string>('甲');
   const [showZeroModal, setShowZeroModal] = useState(false);
   const [showHealingGuide, setShowHealingGuide] = useState(false);
+  const [showRebuildModal, setShowRebuildModal] = useState(false);
+  const [showDebuggingModal, setShowDebuggingModal] = useState(false);
+  const [showDebuggingArchive, setShowDebuggingArchive] = useState(false);
   const [showHealingArchive, setShowHealingArchive] = useState(false);
   const [healingDate, setHealingDate] = useState<string | undefined>(undefined);
+  const [debuggingDate, setDebuggingDate] = useState<string | undefined>(undefined);
+  const [showLevelUpModal, setShowLevelUpModal] = useState(false);
+  const [showLevelUpArchive, setShowLevelUpArchive] = useState(false);
+  const [levelUpDate, setLevelUpDate] = useState<string | undefined>(undefined);
 
   // [초개인화 모듈] 유저 및 기질 데이터 연동
   const { id: userId } = useAuthUser();
   const { reportData } = useReportStore();
   const [historyList, setHistoryList] = useState<any[]>([]);
   const [isLoadingDaily, setIsLoadingDaily] = useState(false);
+
+  const [zeroPointScore, setZeroPointScore] = useState(85);
+  const [zeroPointStatus, setZeroPointStatus] = useState('Stable');
+  const [zeroPointChartData, setZeroPointChartData] = useState([
+    { name: '에고', uv: 15, fill: '#334155' }, 
+    { name: '영점', uv: 85, fill: '#10b981' }
+  ]);
 
   useEffect(() => {
     const fetchDailyAndHistory = async () => {
@@ -328,7 +346,8 @@ export default function OSUpgradeLog() {
         ? rawDayMaster.charAt(0) 
         : (rawDayMaster as any)?.char || (rawDayMaster as any)?.label?.charAt(0) || '갑';
 
-      console.log('[OSUpgradeLog] 🧬 사용자 기질 dayMaster 감지:', dayMaster, '(raw:', rawDayMaster, ')');
+      console.log('[OSUpgradeLog] 추출된 dayMaster 값:', dayMaster, '(raw:', rawDayMaster, ')');
+      setCurrentUserDayMaster(dayMaster);
 
       setIsLoadingDaily(true);
       try {
@@ -363,12 +382,35 @@ export default function OSUpgradeLog() {
         } catch (he) {
           console.error('Failed to fetch matrix history', he);
         }
+
+        // 4) 제로 포인트 스코어 로드
+        try {
+          const zpRes = await fetch(`/api/os/zero-point?userId=${userId}`);
+          if (zpRes.ok) {
+            const zpData = await zpRes.json();
+            if (zpData.success) {
+              setZeroPointScore(zpData.score);
+              setZeroPointStatus(zpData.status);
+              setZeroPointChartData(zpData.chartData);
+            }
+          }
+        } catch (e) {
+          console.error('Failed to fetch zero point stats', e);
+        }
       }
     };
 
     fetchDailyAndHistory();
   }, [userId, reportData]);
 
+
+  const getPillarStr = (pillar: any) => {
+    if (!pillar) return undefined;
+    const g = pillar.gan?.char || pillar.gan;
+    const j = pillar.ji?.char || pillar.ji;
+    if (!g || !j) return undefined;
+    return String(g) + String(j);
+  };
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-start p-6 overflow-y-auto overflow-x-hidden relative scrollbar-hide">
@@ -398,6 +440,65 @@ export default function OSUpgradeLog() {
               </span>
             </button>
             <button
+              onClick={() => setShowRebuildModal(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 border border-emerald-900/50 text-sm font-bold text-emerald-400 transition-all hover:bg-emerald-950/50 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] group"
+            >
+              <Cpu className="w-4 h-4 group-hover:animate-pulse" />
+              <span>소스코드 리빌딩 (Zero Point 일지)</span>
+            </button>
+            <button
+              onClick={() => { 
+                if (!reportData?.saju?.fourPillars) {
+                  alert('사주 정보(생년월일)가 연동되지 않았습니다. 메인 화면에서 명심 리포트를 먼저 생성해 주세요.');
+                  window.location.href = '/';
+                  return;
+                }
+                setDebuggingDate(undefined); 
+                setShowDebuggingModal(true); 
+              }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-rose-950/50 to-violet-950/50 border border-rose-800/50 text-sm font-bold text-rose-300 transition-all hover:border-rose-500/50 hover:shadow-[0_0_25px_rgba(244,63,94,0.2)] group"
+            >
+              <Terminal className="w-4 h-4 text-rose-400 group-hover:animate-pulse" />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-rose-300 to-violet-300">
+                🤖 매트릭스 디버깅 리포트 (AI)
+              </span>
+            </button>
+            <button
+              onClick={() => setShowDebuggingArchive(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 text-sm font-medium text-slate-300 transition-all hover:border-rose-500/30 hover:shadow-[0_0_20px_rgba(244,63,94,0.15)] group"
+            >
+              <History className="w-4 h-4 text-rose-400 group-hover:animate-bounce" />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-rose-200 to-violet-200">
+                디버깅 아카이브
+              </span>
+            </button>
+            <button
+              onClick={() => { 
+                if (!reportData?.saju?.fourPillars) {
+                  alert('사주 정보(생년월일)가 연동되지 않았습니다. 메인 화면에서 명심 리포트를 먼저 생성해 주세요.');
+                  window.location.href = '/';
+                  return;
+                }
+                setLevelUpDate(undefined); 
+                setShowLevelUpModal(true); 
+              }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-fuchsia-950/50 to-rose-950/50 border border-fuchsia-800/50 text-sm font-bold text-fuchsia-300 transition-all hover:border-fuchsia-500/50 hover:shadow-[0_0_25px_rgba(217,70,239,0.2)] group"
+            >
+              <Rocket className="w-4 h-4 text-fuchsia-400 group-hover:animate-bounce" />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-300 to-rose-300">
+                🚀 내면 주파수 레벨업 (3단계 부스트)
+              </span>
+            </button>
+            <button
+              onClick={() => setShowLevelUpArchive(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 text-sm font-medium text-slate-300 transition-all hover:border-fuchsia-500/30 hover:shadow-[0_0_20px_rgba(217,70,239,0.15)] group"
+            >
+              <History className="w-4 h-4 text-fuchsia-400 group-hover:animate-bounce" />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-200 to-rose-200">
+                주파수 레벨업 기록
+              </span>
+            </button>
+            <button
               onClick={() => setShowHealingArchive(true)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 text-sm font-medium text-slate-300 transition-all hover:border-cyan-500/30 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] group"
             >
@@ -411,10 +512,49 @@ export default function OSUpgradeLog() {
 
         <ZeroPointDashboard />
 
+        <div className="mt-8">
+          <DailyMatrixComments />
+        </div>
+
         {showHealingGuide && (
           <DeepHealingGuideModal 
-            dateString={healingDate} 
+            dateString={healingDate}
+            userId={userId || undefined}
+            dayMaster={currentUserDayMaster}
             onClose={() => { setShowHealingGuide(false); setHealingDate(undefined); }} 
+          />
+        )}
+
+        {showRebuildModal && (
+          <MatrixRebuildModal 
+            userId={userId || 'anonymous'}
+            onClose={() => setShowRebuildModal(false)} 
+          />
+        )}
+
+        {showDebuggingModal && (
+          <DailyDebuggingModal
+            userId={userId || undefined}
+            dayMaster={currentUserDayMaster}
+            yearPillar={getPillarStr(reportData?.saju?.fourPillars?.year)}
+            monthPillar={getPillarStr(reportData?.saju?.fourPillars?.month)}
+            dayPillar={getPillarStr(reportData?.saju?.fourPillars?.day)}
+            hourPillar={getPillarStr(reportData?.saju?.fourPillars?.time)}
+            gender={'남성'}
+            targetDate={debuggingDate}
+            onClose={() => { setShowDebuggingModal(false); setDebuggingDate(undefined); }}
+          />
+        )}
+
+        {showDebuggingArchive && (
+          <DebuggingArchiveModal
+            userId={userId || undefined}
+            onClose={() => setShowDebuggingArchive(false)}
+            onSelectDate={(date) => {
+              setDebuggingDate(date);
+              setShowDebuggingArchive(false);
+              setShowDebuggingModal(true);
+            }}
           />
         )}
 
@@ -425,6 +565,32 @@ export default function OSUpgradeLog() {
               setHealingDate(date);
               setShowHealingArchive(false);
               setShowHealingGuide(true);
+            }}
+          />
+        )}
+
+        {showLevelUpModal && (
+          <FrequencyLevelUpModal
+            userId={userId || undefined}
+            dayMaster={currentUserDayMaster}
+            yearPillar={getPillarStr(reportData?.saju?.fourPillars?.year)}
+            monthPillar={getPillarStr(reportData?.saju?.fourPillars?.month)}
+            dayPillar={getPillarStr(reportData?.saju?.fourPillars?.day)}
+            hourPillar={getPillarStr(reportData?.saju?.fourPillars?.time)}
+            gender={'남성'}
+            targetDate={levelUpDate}
+            onClose={() => { setShowLevelUpModal(false); setLevelUpDate(undefined); }}
+          />
+        )}
+
+        {showLevelUpArchive && (
+          <FrequencyArchiveModal
+            userId={userId || undefined}
+            onClose={() => setShowLevelUpArchive(false)}
+            onSelectDate={(date) => {
+              setLevelUpDate(date);
+              setShowLevelUpArchive(false);
+              setShowLevelUpModal(true);
             }}
           />
         )}
@@ -449,13 +615,17 @@ export default function OSUpgradeLog() {
             
             <div className="w-full h-48 relative -ml-4">
               <ResponsiveContainer width="100%" height="100%">
-                <RadialBarChart cx="50%" cy="50%" innerRadius="50%" outerRadius="100%" barSize={15} data={zeroPointData}>
+                <RadialBarChart cx="50%" cy="50%" innerRadius="50%" outerRadius="100%" barSize={15} data={zeroPointChartData}>
                   <RadialBar background dataKey="uv" cornerRadius={10} />
                 </RadialBarChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pl-4">
-                <span className="text-3xl font-black text-emerald-400">85<span className="text-sm">%</span></span>
-                <span className="text-[9px] text-emerald-500/50 uppercase tracking-widest">Stable</span>
+                <span className={`text-3xl font-black ${zeroPointStatus === 'Chaos' || zeroPointStatus === 'Agitated' ? 'text-amber-400' : 'text-emerald-400'}`}>
+                  {zeroPointScore}<span className="text-sm">%</span>
+                </span>
+                <span className={`text-[9px] uppercase tracking-widest ${zeroPointStatus === 'Chaos' || zeroPointStatus === 'Agitated' ? 'text-amber-500/70' : 'text-emerald-500/70'}`}>
+                  {zeroPointStatus}
+                </span>
               </div>
             </div>
             
@@ -669,16 +839,30 @@ export default function OSUpgradeLog() {
                 
                 <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5 rounded-2xl border border-slate-700/50">
                   <h4 className="text-xs font-mono text-amber-400 mb-2 flex items-center gap-2">
-                    <span className="text-base">🤔</span> 소크라테스 문답
+                    <span className="text-base">🤔</span> 소크라테스 문답 {(selectedPair.coaching as any).msc_self_kindness ? "& 연민의 자각 (Self-Kindness)" : ""}
                   </h4>
-                  <p className="text-sm text-slate-300 leading-relaxed break-keep">{selectedPair.coaching.socratic}</p>
+                  <div className="text-sm text-slate-300 leading-relaxed break-keep">
+                    <p>{selectedPair.coaching.socratic}</p>
+                    {(selectedPair.coaching as any).msc_self_kindness && (
+                      <div className="mt-3 text-rose-300/90 bg-rose-950/30 p-3 rounded-lg border border-rose-500/20 font-medium">
+                        💖 {(selectedPair.coaching as any).msc_self_kindness}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5 rounded-2xl border border-slate-700/50">
                   <h4 className="text-xs font-mono text-indigo-400 mb-2 flex items-center gap-2">
-                    <span className="text-base">🔁</span> 재귀적 질문
+                    <span className="text-base">🔁</span> 재귀적 질문 {(selectedPair.coaching as any).msc_common_humanity ? "& 보편적 연결 (Common Humanity)" : ""}
                   </h4>
-                  <p className="text-sm text-slate-300 leading-relaxed break-keep">{selectedPair.coaching.recursive}</p>
+                  <div className="text-sm text-slate-300 leading-relaxed break-keep">
+                    <p>{selectedPair.coaching.recursive}</p>
+                    {(selectedPair.coaching as any).msc_common_humanity && (
+                      <div className="mt-3 text-sky-300/90 bg-sky-950/30 p-3 rounded-lg border border-sky-500/20 font-medium">
+                        🤝 {(selectedPair.coaching as any).msc_common_humanity}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 {/* 2-Step Awakening Process */}
@@ -746,7 +930,7 @@ export default function OSUpgradeLog() {
                   <div className={`absolute inset-0 bg-gradient-to-r ${selectedPair.theme.bg} opacity-50`} />
                   <div className="relative z-10">
                     <h4 className="text-xs font-mono text-cyan-400 mb-2 flex items-center gap-2">
-                      <span className="text-base">✨</span> Zero Point 솔루션
+                      <span className="text-base">✨</span> Zero Point 솔루션 {(selectedPair.coaching as any).msc_self_kindness ? "(True Acceptance)" : ""}
                     </h4>
                     <p className="text-sm text-white font-medium leading-relaxed break-keep">{selectedPair.coaching.awareness}</p>
                   </div>

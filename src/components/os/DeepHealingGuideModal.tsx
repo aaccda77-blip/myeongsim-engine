@@ -27,10 +27,12 @@ interface Comment {
 
 interface Props {
   onClose: () => void;
-  dateString?: string; // Optional: To load a specific past date
+  dateString?: string;
+  userId?: string;
+  dayMaster?: string;
 }
 
-export default function DeepHealingGuideModal({ onClose, dateString }: Props) {
+export default function DeepHealingGuideModal({ onClose, dateString, userId, dayMaster }: Props) {
   const [post, setPost] = useState<HealingPost | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,14 +47,32 @@ export default function DeepHealingGuideModal({ onClose, dateString }: Props) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const url = dateString ? `/api/os/daily-healing?date=${dateString}` : '/api/os/daily-healing';
-        const res = await fetch(url);
-        if (res.ok) {
-          const json = await res.json();
-          setPost(json);
-          
-          if (json.id) {
-            fetchComments(json.id);
+        // Use the personalized API if we have user info
+        if (userId && dayMaster) {
+          const res = await fetch('/api/os/my-daily-healing', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, dayMaster })
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success) {
+              setPost(json.data);
+              if (json.data.id) {
+                fetchComments(json.data.id);
+              }
+            }
+          }
+        } else {
+          // Fallback to global if not logged in
+          const url = dateString ? `/api/os/daily-healing?date=${dateString}` : '/api/os/daily-healing';
+          const res = await fetch(url);
+          if (res.ok) {
+            const json = await res.json();
+            setPost(json);
+            if (json.id) {
+              fetchComments(json.id);
+            }
           }
         }
       } catch (err) {
@@ -66,7 +86,8 @@ export default function DeepHealingGuideModal({ onClose, dateString }: Props) {
 
   const fetchComments = async (postId: string) => {
     try {
-      const res = await fetch(`/api/os/daily-healing/comments?postId=${postId}`);
+      const endpoint = (userId && dayMaster) ? '/api/os/my-daily-healing/comments' : '/api/os/daily-healing/comments';
+      const res = await fetch(`${endpoint}?postId=${postId}`);
       if (res.ok) {
         setComments(await res.json());
       }
@@ -81,7 +102,8 @@ export default function DeepHealingGuideModal({ onClose, dateString }: Props) {
 
     try {
       setIsSubmitting(true);
-      const res = await fetch('/api/os/daily-healing/comments', {
+      const endpoint = (userId && dayMaster) ? '/api/os/my-daily-healing/comments' : '/api/os/daily-healing/comments';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

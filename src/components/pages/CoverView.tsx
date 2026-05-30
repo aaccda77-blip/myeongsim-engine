@@ -36,7 +36,6 @@ export default function CoverView() {
             const timeVal = birthTime === 'unknown' ? '12:00' : birthTime; // Default to noon for unknown
             const pillars = calculateSaju(birthDate, timeVal, calendarType, gender);
             setPreviewPillars(pillars);
-
             updateUserData({
                 userName: name,
                 birthDate,
@@ -48,7 +47,17 @@ export default function CoverView() {
                     gender,
                     isTimeUnknown: birthTime === 'unknown',
                     isLeapMonth: reportData?.meta?.isLeapMonth || false
-                }
+                },
+                saju: {
+                    ...reportData?.saju,
+                    dayMaster: pillars.dayMaster || `${pillars.day.gan.char} (${pillars.day.gan.color})`,
+                    fourPillars: {
+                        year: pillars.year,
+                        month: pillars.month,
+                        day: pillars.day,
+                        time: birthTime === 'unknown' ? { gan: { char: '?' }, ji: { char: '?' } } : pillars.time,
+                    }
+                } as any
             });
 
             setViewMode('result');
