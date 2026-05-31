@@ -112,12 +112,12 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
   };
 
   const sections = [
-    { id: 'overview', label: '바이오리듬', icon: Radio, color: 'text-cyan-400' },
-    { id: 'matrix', label: '매트릭스 디버깅', icon: Bug, color: 'text-rose-400' },
-    { id: 'coaching', label: '코칭 풀이', icon: Brain, color: 'text-amber-400' },
-    { id: 'questions', label: '소크라테스 문답', icon: Scan, color: 'text-violet-400' },
-    { id: 'reset', label: '의식 리셋', icon: Eye, color: 'text-cyan-400' },
-    { id: 'zeropoint', label: 'Zero Point', icon: Target, color: 'text-emerald-400' },
+    { id: 'overview', label: '오늘의 마음 날씨', icon: Radio, color: 'text-cyan-400' },
+    { id: 'matrix', label: '마음속 이야기', icon: Bug, color: 'text-rose-400' },
+    { id: 'coaching', label: '따뜻한 코칭', icon: Brain, color: 'text-amber-400' },
+    { id: 'questions', label: '마음 돌아보기', icon: Scan, color: 'text-violet-400' },
+    { id: 'reset', label: '마음 치유', icon: Eye, color: 'text-cyan-400' },
+    { id: 'zeropoint', label: '온전한 나', icon: Target, color: 'text-emerald-400' },
     { id: 'worksheet', label: '워크시트', icon: Edit3, color: 'text-rose-300' },
   ];
 
@@ -143,7 +143,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
             <h2 className="text-sm font-bold flex items-center gap-2 font-mono">
               <Terminal className="w-4 h-4 text-emerald-400" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-                🤖 Myeongsim AI 매트릭스 디버깅 리포트
+                🌿 오늘의 명심 마음 치유 리포트
               </span>
             </h2>
             <button onClick={onClose} className="text-slate-500 hover:text-slate-300 transition-colors">
@@ -179,8 +179,8 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                   <Cpu className="w-10 h-10 text-emerald-400" />
                 </motion.div>
                 <div className="text-center">
-                  <p className="text-sm text-emerald-400 font-mono mb-1">매트릭스 디버깅 리포트 컴파일 중...</p>
-                  <p className="text-xs text-slate-500">사주 기질 × 오늘 일진 × CBT·DBT·ACT·MBCT 통합 분석</p>
+                  <p className="text-sm text-emerald-400 font-mono mb-1">오늘의 마음 치유 리포트를 준비하고 있어요...</p>
+                  <p className="text-xs text-slate-500">당신의 타고난 기질과 오늘의 에너지를 정성껏 분석하고 있습니다</p>
                 </div>
                 <div className="w-48 h-1 bg-slate-800 rounded-full overflow-hidden">
                   <motion.div
@@ -210,7 +210,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     <div className="bg-slate-950 border border-cyan-900/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <Cpu className="w-4 h-4 text-cyan-400" />
-                        <span className="text-xs font-bold text-cyan-400 font-mono">타깃 OS</span>
+                        <span className="text-xs font-bold text-cyan-400 font-mono">나의 타고난 기질</span>
                       </div>
                       <p className="text-sm text-cyan-100/80 leading-relaxed">{report.targetOS}</p>
                     </div>
@@ -219,7 +219,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     <div className="bg-gradient-to-r from-amber-950/30 to-rose-950/30 border border-amber-800/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Zap className="w-4 h-4 text-amber-400" />
-                        <span className="text-xs font-bold text-amber-400 font-mono">오늘의 데일리 키워드</span>
+                        <span className="text-xs font-bold text-amber-400 font-mono">오늘의 마음 테마</span>
                       </div>
                       <p className="text-base font-bold text-amber-200">{report.dailyKeyword}</p>
                     </div>
@@ -228,7 +228,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     <div className="bg-slate-950 border border-slate-800 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <Radio className="w-4 h-4 text-cyan-400" />
-                        <span className="text-xs font-bold text-cyan-400 font-mono">명심 바이오리듬</span>
+                        <span className="text-xs font-bold text-cyan-400 font-mono">오늘의 마음 파동</span>
                       </div>
                       <p className="text-sm text-slate-300 leading-relaxed">{report.biorhythmAnalysis}</p>
                     </div>
@@ -239,14 +239,14 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                 {activeSection === 'matrix' && (
                   <motion.div key="matrix" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} className="space-y-5">
                     <div className="text-center mb-4">
-                      <span className="text-xs font-bold text-slate-500 font-mono">매트릭스 디버깅 (CBT · DBT · ACT · MBCT 통합 마스터 로직)</span>
+                      <span className="text-xs font-bold text-slate-500 font-mono">상처받은 마음의 이야기 (내면 깊은 곳의 목소리를 들어봅니다)</span>
                     </div>
 
                     {/* Inner Source Code */}
                     <div className="bg-slate-950 border border-rose-900/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <Bug className="w-4 h-4 text-rose-400" />
-                        <span className="text-xs font-bold text-rose-400 font-mono">내면의 소스코드</span>
+                        <span className="text-xs font-bold text-rose-400 font-mono">마음속 숨겨진 상처</span>
                       </div>
                       <p className="text-sm text-rose-100/80 leading-[1.8]">{report.innerSourceCode}</p>
                     </div>
@@ -259,7 +259,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     <div className="bg-slate-950 border border-violet-900/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <Globe className="w-4 h-4 text-violet-400" />
-                        <span className="text-xs font-bold text-violet-400 font-mono">투사된 현실</span>
+                        <span className="text-xs font-bold text-violet-400 font-mono">상처가 만들어낸 현실</span>
                       </div>
                       <p className="text-sm text-violet-100/80 leading-[1.8]">{report.projectedReality}</p>
                     </div>
@@ -272,7 +272,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     <div className="bg-slate-950 border border-amber-900/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-lg">💡</span>
-                        <span className="text-xs font-bold text-amber-400 font-mono">명심 코칭 풀이</span>
+                        <span className="text-xs font-bold text-amber-400 font-mono">💡 따뜻한 명심 코칭</span>
                       </div>
                       <p className="text-sm text-amber-100/80 leading-[1.9]">{report.coachingInsight}</p>
                     </div>
@@ -285,7 +285,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     <div className="bg-slate-950 border border-violet-900/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-lg">🤔</span>
-                        <span className="text-xs font-bold text-violet-400 font-mono">소크라테스 문답 (객관화 및 효용성 검증)</span>
+                        <span className="text-xs font-bold text-violet-400 font-mono">🤔 한 발짝 물러서서 바라보기</span>
                       </div>
                       <p className="text-sm text-violet-100/80 leading-[1.9] italic">{report.socraticQuestion}</p>
                     </div>
@@ -293,7 +293,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     <div className="bg-slate-950 border border-indigo-900/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-lg">🔁</span>
-                        <span className="text-xs font-bold text-indigo-400 font-mono">재귀적 질문 (에러 로그의 기원)</span>
+                        <span className="text-xs font-bold text-indigo-400 font-mono">🔁 이 마음은 어디서 왔을까?</span>
                       </div>
                       <p className="text-sm text-indigo-100/80 leading-[1.9] italic">{report.recursiveQuestion}</p>
                     </div>
@@ -304,7 +304,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                 {activeSection === 'reset' && (
                   <motion.div key="reset" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} className="space-y-5">
                     <div className="text-center mb-2">
-                      <span className="text-xs font-bold text-slate-500 font-mono">의식 리셋 2단계 디버깅 프로세스</span>
+                      <span className="text-xs font-bold text-slate-500 font-mono">마음 치유 2단계 여행</span>
                     </div>
 
                     {/* STEP 1 */}
@@ -314,13 +314,13 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                       </div>
                       <div className="flex items-center gap-2 mb-3">
                         <Eye className="w-4 h-4 text-cyan-400" />
-                        <span className="text-xs font-bold text-cyan-400 font-mono">👁️ 메타 인지 (객관적 관찰)</span>
+                        <span className="text-xs font-bold text-cyan-400 font-mono">👁️ 한 걸음 물러서서 바라보기</span>
                       </div>
                       <p className="text-sm text-cyan-100/80 leading-[1.9]">{report.step1_metaCognition}</p>
-                      <p className="text-xs text-cyan-500/60 mt-3 italic">➔ 에고의 생각과 감정을 관찰자 시점으로 가만히 바라봅니다.</p>
+                      <p className="text-xs text-cyan-500/60 mt-3 italic">➔ 지금 내 안에 떠오르는 생각과 감정을 있는 그대로 가만히 바라봅니다.</p>
                     </div>
 
-                    <div className="text-center text-xs text-slate-600 font-mono">Deepen Awareness (차원 상승)</div>
+                    <div className="text-center text-xs text-slate-600 font-mono">더 깊은 평화로 나아가기</div>
 
                     {/* STEP 2 */}
                     <div className="bg-slate-950 border border-indigo-900/30 rounded-xl p-4">
@@ -329,10 +329,10 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                       </div>
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-lg">🌌</span>
-                        <span className="text-xs font-bold text-indigo-400 font-mono">알아차림의 알아차림 (순수 자각)</span>
+                        <span className="text-xs font-bold text-indigo-400 font-mono">고요한 내면의 빛 (순수한 나)</span>
                       </div>
                       <p className="text-sm text-indigo-100/80 leading-[1.9]">{report.step2_pureAwareness}</p>
-                      <p className="text-xs text-indigo-500/60 mt-3 italic">➔ 관찰하고 있는 '텅 빈 배경 자체(자각 그 자체)'에 머무릅니다.</p>
+                      <p className="text-xs text-indigo-500/60 mt-3 italic">➔ 생각과 감정 너머에 있는 고요하고 맑은 본래의 나에게 머무릅니다.</p>
                     </div>
                   </motion.div>
                 )}
@@ -343,16 +343,16 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     <div className="bg-gradient-to-b from-emerald-950/30 to-slate-950 border border-emerald-900/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-lg">✨</span>
-                        <span className="text-xs font-bold text-emerald-400 font-mono">Zero Point 솔루션</span>
+                        <span className="text-xs font-bold text-emerald-400 font-mono">✨ 온전한 나를 되찾는 길</span>
                       </div>
                       <p className="text-sm text-emerald-100/80 leading-[1.8] mb-5">{report.zeroPointSolution.intro}</p>
 
                       <div className="space-y-3">
                         {[
                           { num: 1, label: '수용', text: report.zeroPointSolution.step1_acceptance, color: 'text-cyan-400', border: 'border-cyan-900/30' },
-                          { num: 2, label: '현재 앵커링', text: report.zeroPointSolution.step2_anchoring, color: 'text-blue-400', border: 'border-blue-900/30' },
-                          { num: 3, label: '클린 코드 입력', text: report.zeroPointSolution.step3_cleanCode, color: 'text-amber-400', border: 'border-amber-900/30' },
-                          { num: 4, label: '전념 행동', text: report.zeroPointSolution.step4_commitment, color: 'text-emerald-400', border: 'border-emerald-900/30' },
+                          { num: 2, label: '지금 이 순간', text: report.zeroPointSolution.step2_anchoring, color: 'text-blue-400', border: 'border-blue-900/30' },
+                          { num: 3, label: '마음 다시 쓰기', text: report.zeroPointSolution.step3_cleanCode, color: 'text-amber-400', border: 'border-amber-900/30' },
+                          { num: 4, label: '한 걸음 내딛기', text: report.zeroPointSolution.step4_commitment, color: 'text-emerald-400', border: 'border-emerald-900/30' },
                         ].map(item => (
                           <div key={item.num} className={`bg-slate-950 border ${item.border} rounded-lg p-3`}>
                             <div className="flex items-start gap-2">
@@ -389,7 +389,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     </div>
                     
                     <p className="text-xs text-slate-400">
-                      오늘의 매트릭스 디버깅 리포트를 읽고 난 후의 느낌, 떠오르는 통찰, 혹은 내일의 나에게 남기는 다짐을 기록해보세요.
+                      오늘의 마음 치유 리포트를 읽고 느낀 점, 떠오르는 생각, 혹은 내일의 나에게 남기는 따뜻한 다짐을 기록해보세요.
                     </p>
 
                     <div className="flex-1 relative min-h-[250px]">

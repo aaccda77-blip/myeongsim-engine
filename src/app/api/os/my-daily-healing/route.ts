@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     "act": "행동의 나침반(ACT)이 필요할 때 생각의 늪에서 빠져나와 가치 있는 삶으로 발걸음을 옮기도록 독려하는 메시지"
   },
   "module4": {
-    "title": "오늘의 마음 처방전",
+    "title": "오늘의 마음코칭솔루션",
     "affirmations": [
       "허용을 위한 긍정 확언 1문장",
       "포용을 위한 긍정 확언 1문장",

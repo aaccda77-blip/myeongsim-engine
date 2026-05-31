@@ -29,13 +29,11 @@ const GAN_YINYANG: Record<string, string> = {
 
 // 따뜻한 자연 은유 매핑 (일간 기질별) — 한글 + 한자 키 모두 지원
 const DAY_MASTER_EMPATHY_METAPHOR: Record<string, string> = {
-    // 한글 키 (프론트엔드에서 넘어오는 형식)
     '갑': '깊게 뿌리내린 든든한 나무 (한결같은 지지)', '을': '어디서든 피어나는 부드러운 화초 (유연한 생명력)',
     '병': '세상을 비추는 밝은 태양 (모두에게 온기를 주는 빛)', '정': '어둠을 밝히는 따뜻한 촛불 (세심하고 은은한 따뜻함)',
     '무': '묵묵히 품어주는 넓은 대지 (모든 것을 수용하는 포용력)', '기': '생명을 품은 비옥한 흙 (다정하고 아늑한 품)',
     '경': '흔들림 없는 단단한 바위 (변치 않는 우직한 믿음)', '신': '섬세하고 반짝이는 보석 (고귀하고 빛나는 가치)',
     '임': '지혜롭게 흐르는 넓은 바다 (깊고 넓은 지혜의 물결)', '계': '생명을 깨우는 맑은 단비 (세심하게 어루만지는 촉촉함)',
-    // 한자 키 (호환용)
     '甲': '깊게 뿌리내린 든든한 나무 (한결같은 지지)', '乙': '어디서든 피어나는 부드러운 화초 (유연한 생명력)',
     '丙': '세상을 비추는 밝은 태양 (모두에게 온기를 주는 빛)', '丁': '어둠을 밝히는 따뜻한 촛불 (세심하고 은은한 따뜻함)',
     '戊': '묵묵히 품어주는 넓은 대지 (모든 것을 수용하는 포용력)', '己': '생명을 품은 비옥한 흙 (다정하고 아늑한 품)',
@@ -109,46 +107,49 @@ export async function POST(req: Request) {
       }
     }
 
+    // 2. 당일 일진 및 바이오리듬 연산 (사주 명리학 + 바이오리듬)
     const biorhythm = DailyLuckEngine.calculate(cleanDayMaster);
 
-    // 3. 사주 명식 은유 조립
-    const yearGan = cleanYear?.charAt(0) || '甲';
-    const monthGan = cleanMonth?.charAt(0) || '甲';
-    const hourGan = cleanHour?.charAt(0) || '甲';
-    
-    const yearIT = DAY_MASTER_EMPATHY_METAPHOR[yearGan] || '외부 환경(참조)';
-    const monthIT = DAY_MASTER_EMPATHY_METAPHOR[monthGan] || '분산 캐시(참조)';
-    const dayIT = DAY_MASTER_EMPATHY_METAPHOR[cleanDayMaster] || '코어 프로세서(참조)';
-    const hourIT = DAY_MASTER_EMPATHY_METAPHOR[hourGan] || '프라이빗 자원(참조)';
+    // 사주 원국 정보 조립
+    const pillarsDisplay = `년주 ${cleanYear || '?'}, 월주 ${cleanMonth || '?'}, 일주 ${cleanDay || '?'}, 시주 ${cleanHour || '?'}`;
+    const yearIT = cleanYear ? (GAN_ELEMENTS_EN[cleanYear.charAt(0)] || 'Self') : 'Self';
+    const monthIT = cleanMonth ? (GAN_ELEMENTS_EN[cleanMonth.charAt(0)] || 'Self') : 'Self';
+    const dayIT = cleanDayMaster ? (GAN_ELEMENTS_EN[cleanDayMaster] || 'Self') : 'Self';
+    const hourIT = cleanHour ? (GAN_ELEMENTS_EN[cleanHour.charAt(0)] || 'Self') : 'Self';
 
-    // 사주 명식 표기
-    const pillarsDisplay = `${cleanYear || yearGan}년 ${cleanMonth || monthGan}월 ${cleanDay || cleanDayMaster}일 ${cleanHour || hourGan}시`;
-
-    // 오늘 일진과의 십성 관계
-    const todayGan = biorhythm.ganji.charAt(0);
-    const myElementEN = GAN_ELEMENTS_EN[cleanDayMaster] || 'metal';
-    const todayElementEN = GAN_ELEMENTS_EN[todayGan] || 'metal';
-    const relation = getRelation(myElementEN, todayElementEN);
+    // 오늘의 관계성(십성 기반) 및 데일리 키워드 도출
+    const todayElement = GAN_ELEMENTS_EN[biorhythm.ganji.charAt(0)] || 'wood';
+    const myElement = GAN_ELEMENTS_EN[cleanDayMaster] || 'wood';
+    const relation = getRelation(myElement, todayElement);
     const dailyKeyword = getDailyKeyword(relation, biorhythm.ganji);
 
-    // 4. Gemini API 프롬프트
+    // 천기 정보 표시용 한자 매핑
+    const getHanjaPillar = (p?: string) => {
+      if (!p || p.length < 2) return '?';
+      const g = GAN_HANJA[p.charAt(0)] || p.charAt(0);
+      const z = ZHI_HANJA[p.charAt(1)] || p.charAt(1);
+      return g + z;
+    };
+    const pillarsHanja = `${getHanjaPillar(cleanYear)}(년) ${getHanjaPillar(cleanMonth)}(월) ${getHanjaPillar(cleanDay)}(일) ${getHanjaPillar(cleanHour)}(시)`;
+
+    // 3. Gemini AI 프롬프트 조립 및 호출
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    const model = genAI.getGenerativeModel({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-      generationConfig: { responseMimeType: 'application/json' }
+    const model = genAI.getGenerativeModel({ 
+      model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
     });
 
-    const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 감동적인 심리 코치입니다.
-아래 사용자의 사주 기질을 오늘 일진 에너지와 바탕으로, 상처받은 마음을 어루만지고 용기를 주는 '매트릭스 디버깅 리포트'를 작성하세요.
+    const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 감동적인 마음 치유 코치입니다.
+아래 사용자의 타고난 기질과 오늘의 에너지를 바탕으로, 상처받은 마음을 다정하게 어루만지고 용기를 건네는 '오늘의 마음 치유 리포트'를 작성하세요.
 
 === 사용자 프로필 ===
-- 사주 정보: ${pillarsDisplay} / ${gender || '성별 미상'}
-- 기질적 특징: ${yearIT}(사회적 환경) / ${monthIT}(내면의 무의식) / ${dayIT}(나의 본질) / ${hourIT}(나의 무기)
-- 일간(나의 영혼): ${cleanDayMaster} (${GAN_ELEMENTS_EN[cleanDayMaster]}, ${GAN_YINYANG[cleanDayMaster]})
+- 사주 정보: ${pillarsDisplay} (${pillarsHanja}) / ${gender || '성별 미상'}
+- 타고난 기질: 년주(${yearIT}) / 월주(${monthIT}) / 일주(${dayIT}) / 시주(${hourIT})
+- 일간(나의 영혼): ${cleanDayMaster}
 - 오늘 일진: ${biorhythm.ganji} (${dateString})
 - 오늘 운세 요약: ${dailyKeyword} (관계성: ${relation})
 
-=== 작성 지침 ===
+=== 핵심 작성 규칙 ===
 - **출력 형식**: 반드시 순수 JSON 형식으로만 출력할 것. 마크다운(\`\`\`json 등) 금지.
 - **Tone & Manner**: 따뜻하고 감동적이며 용기를 주는 시선. 너무 길지 않고 간결하면서도 직관적으로.
 

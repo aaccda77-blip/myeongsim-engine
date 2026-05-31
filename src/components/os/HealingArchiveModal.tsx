@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, ChevronRight, BookOpen } from 'lucide-react';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 interface ArchiveItem {
   id: string;
@@ -18,11 +19,15 @@ interface Props {
 export default function HealingArchiveModal({ onClose, onSelectDate }: Props) {
   const [archives, setArchives] = useState<ArchiveItem[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // [초개인화 모듈] 로그인된 유저 ID 획득하여 개인화 아카이브 융합
+  const { id: userId } = useAuthUser();
 
   useEffect(() => {
     const fetchArchives = async () => {
       try {
-        const res = await fetch('/api/os/healing-board?limit=30');
+        const url = `/api/os/healing-board?limit=30${userId ? `&userId=${userId}` : ''}`;
+        const res = await fetch(url);
         if (res.ok) {
           setArchives(await res.json());
         }
@@ -33,7 +38,7 @@ export default function HealingArchiveModal({ onClose, onSelectDate }: Props) {
       }
     };
     fetchArchives();
-  }, []);
+  }, [userId]);
 
   return (
     <AnimatePresence>

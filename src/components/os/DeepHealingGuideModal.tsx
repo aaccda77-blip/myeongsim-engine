@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, Heart, Compass, Shield, Wind, CheckCircle2, MessageCircle, Send } from 'lucide-react';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { useReportStore } from '@/store/useReportStore';
 
 interface HealingModuleData {
   theme: string;
@@ -43,16 +45,47 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // [초개인화 모듈] 스토어와 Auth 훅을 통한 안전 데이터 획득
+  const { id: authUserId } = useAuthUser();
+  const { reportData } = useReportStore();
+
+  const finalUserId = userId || authUserId || undefined;
+  
+  // dayMaster 정교한 추출
+  const rawDayMaster = reportData?.saju?.dayMaster;
+  const storeDayMaster = typeof rawDayMaster === 'string' 
+    ? rawDayMaster.charAt(0) 
+    : (rawDayMaster as any)?.char || (rawDayMaster as any)?.label?.charAt(0) || undefined;
+    
+  const finalDayMaster = dayMaster || storeDayMaster || undefined;
+
+  // 오행별 뱃지 스타일 헬퍼
+  const getElementBadge = (dm: string) => {
+    switch (dm) {
+      case '甲': return { name: '갑목(甲木)', style: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]' };
+      case '乙': return { name: '을목(乙木)', style: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]' };
+      case '丙': return { name: '병화(丙火)', style: 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.15)]' };
+      case '丁': return { name: '정화(丁火)', style: 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.15)]' };
+      case '戊': return { name: '무토(戊土)', style: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.15)]' };
+      case '己': return { name: '기토(己土)', style: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.15)]' };
+      case '庚': return { name: '경금(庚金)', style: 'bg-slate-300/10 text-slate-300 border-slate-300/20 shadow-[0_0_15px_rgba(203,213,225,0.15)]' };
+      case '辛': return { name: '신금(辛金)', style: 'bg-violet-500/10 text-violet-400 border-violet-500/20 shadow-[0_0_15px_rgba(139,92,246,0.15)]' };
+      case '壬': return { name: '임수(壬水)', style: 'bg-sky-500/10 text-sky-400 border-sky-500/20 shadow-[0_0_15px_rgba(14,165,233,0.15)]' };
+      case '癸': return { name: '계수(癸水)', style: 'bg-sky-500/10 text-sky-400 border-sky-500/20 shadow-[0_0_15px_rgba(14,165,233,0.15)]' };
+      default: return { name: `${dm} 기질`, style: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         // Use the personalized API if we have user info
-        if (userId && dayMaster) {
+        if (finalUserId && finalDayMaster) {
           const res = await fetch('/api/os/my-daily-healing', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, dayMaster })
+            body: JSON.stringify({ userId: finalUserId, dayMaster: finalDayMaster })
           });
           if (res.ok) {
             const json = await res.json();
@@ -82,11 +115,11 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
       }
     };
     fetchData();
-  }, [dateString]);
+  }, [dateString, finalUserId, finalDayMaster]);
 
   const fetchComments = async (postId: string) => {
     try {
-      const endpoint = (userId && dayMaster) ? '/api/os/my-daily-healing/comments' : '/api/os/daily-healing/comments';
+      const endpoint = (finalUserId && finalDayMaster) ? '/api/os/my-daily-healing/comments' : '/api/os/daily-healing/comments';
       const res = await fetch(`${endpoint}?postId=${postId}`);
       if (res.ok) {
         setComments(await res.json());
@@ -102,7 +135,7 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
 
     try {
       setIsSubmitting(true);
-      const endpoint = (userId && dayMaster) ? '/api/os/my-daily-healing/comments' : '/api/os/daily-healing/comments';
+      const endpoint = (finalUserId && finalDayMaster) ? '/api/os/my-daily-healing/comments' : '/api/os/daily-healing/comments';
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -157,10 +190,28 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
           {/* Header */}
           <div className="relative border-b border-slate-800 p-6 flex justify-between items-center bg-slate-900/60 backdrop-blur-md shrink-0">
             <div>
-              <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-purple-300 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-emerald-400" />
-                상처가 별이 되는 시간
-              </h2>
+              <div className="flex items-center gap-3 flex-wrap">
+                <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-purple-300 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-emerald-400" />
+                  상처가 별이 되는 시간
+                </h2>
+                
+                {/* 초개인화 사주 연동 상태 뱃지 */}
+                {finalDayMaster ? (
+                  (() => {
+                    const badge = getElementBadge(finalDayMaster);
+                    return (
+                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border animate-pulse ${badge.style}`}>
+                        🧬 생년월일 연동 완료 ({badge.name} 맞춤 치유)
+                      </span>
+                    );
+                  })()
+                ) : (
+                  <span className="text-[11px] font-bold bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full border border-amber-500/20">
+                    ⚠️ 생년월일 미연동 (기본 기질: 甲)
+                  </span>
+                )}
+              </div>
               {post && (
                 <p className="text-sm text-slate-400 mt-1">
                   [{post.date_string}] 오늘의 테마: {post.theme}
@@ -181,6 +232,18 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
               </div>
             ) : data ? (
               <>
+                {/* 생년월일 미연동 시 안내 박스 */}
+                {!finalDayMaster && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl flex items-start gap-3">
+                    <span className="text-lg">💡</span>
+                    <div>
+                      <h4 className="text-xs font-bold text-amber-300">생년월일을 연동하여 진짜 기질 맞춤형 힐링을 만나보세요!</h4>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                        현재 생년월일 정보가 연동되지 않아 기본값(갑목 기질)으로 생성된 치유 가이드가 보이고 있습니다. 메인 화면에서 <strong>명심 리포트</strong>를 생성하시면, 나만의 사주 일간 오행과 오늘의 바이오리듬이 완벽히 연합된 초개인화 AI 힐링 메시지가 실시간으로 활성화됩니다!
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
                 {/* Module 1: 마주함 */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-6 rounded-2xl border border-slate-700/50">
                   <h3 className="text-sm font-mono text-emerald-400 mb-3 flex items-center gap-2">
