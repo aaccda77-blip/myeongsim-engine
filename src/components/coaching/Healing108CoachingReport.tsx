@@ -198,9 +198,9 @@ export default function Healing108CoachingReport({
     // 로딩 UI를 띄우지 않고 백그라운드에서 조용히 생성합니다.
     const [generatingQueue, setGeneratingQueue] = useState<string[]>([]);
     
-    // [초고도화] 현재 보고 있는 페이지와 인접한 페이지들을 큐에 추가
+    // [초고도화] 현재 보고 있는 페이지 동기화
     useEffect(() => {
-        if (!isOpen || !activeSaju) return; // guest 유저도 자유롭게 체험할 수 있도록 문턱 완전 오픈!
+        if (!isOpen || !activeSaju) return; 
 
         const currentCacheStr = typeof window !== 'undefined' ? localStorage.getItem(aiContentKey) : null;
         const currentCache = currentCacheStr ? JSON.parse(currentCacheStr) : {};
@@ -209,30 +209,25 @@ export default function Healing108CoachingReport({
         if (Object.keys(aiPageContent).length === 0 && Object.keys(currentCache).length > 0) {
             setAiPageContent(currentCache);
         }
-
-        // 현재 페이지 + 뒤로 3장 (미리 생성)
-        const pagesToPreload: string[] = [];
-        for (let i = 0; i <= 3; i++) {
-            const idx = currentPageIndex + i;
-            if (idx < pageKeys.length) {
-                const key = pageKeys[idx];
-                // 캐시에 없고 큐에도 없으면 추가
-                if (!currentCache[key] && !aiPageContent[key]) {
-                    pagesToPreload.push(key);
-                }
-            }
+        
+        // [DB 연동] 유저 ID가 있으면 서버 DB에서 생성 내역을 불러옴
+        if (userProfile?.id) {
+            fetch(`/api/coaching/108-reports?userId=${userProfile.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.reports && Object.keys(data.reports).length > 0) {
+                        setAiPageContent(prev => {
+                            const merged = { ...prev, ...data.reports };
+                            localStorage.setItem(aiContentKey, JSON.stringify(merged));
+                            return merged;
+                        });
+                    }
+                })
+                .catch(err => console.warn('DB에서 AI 리포트를 불러오는데 실패했습니다.', err));
         }
-
-        if (pagesToPreload.length > 0) {
-            setGeneratingQueue(prev => {
-                const newQueue = [...prev];
-                pagesToPreload.forEach(k => {
-                    if (!newQueue.includes(k)) newQueue.push(k);
-                });
-                return newQueue;
-            });
-        }
-    }, [currentPageIndex, isOpen, activeSaju, aiContentKey, aiPageContent]);
+        
+        // 자동 생성(요금 폭탄 유발) 기능 삭제됨: 오직 수동 생성만 허용
+    }, [currentPageIndex, isOpen, activeSaju, aiContentKey, userProfile?.id]);
 
     // [초고도화] 큐에 들어온 페이지들을 하나씩 백그라운드에서 스텔스로 생성
     useEffect(() => {
@@ -364,10 +359,29 @@ export default function Healing108CoachingReport({
                         localStorage.setItem(aiContentKey, JSON.stringify(updated));
                         return updated;
                     });
+                    
+                    // [DB 연동] DB에 저장하여 영구 보존
+                    if (userProfile?.id) {
+                        fetch('/api/coaching/108-reports', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId: userProfile.id,
+                                pageKey: currentPageKey,
+                                generatedContent: data.pageData
+                            })
+                        }).catch(err => console.warn('DB 저장 실패:', err));
+                    }
+                } else {
+                    alert("AI 응답에 오류가 있습니다 (데이터 불일치). 다시 시도해 주세요.");
                 }
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                alert(`서버 오류가 발생했습니다. 상태 코드: ${response.status}\n잠시 후 다시 시도해 주세요.`);
             }
-        } catch (err) {
-            console.warn(`❌ [Gemini 108 API] 수동 재생성 오류:`, err);
+        } catch (err: any) {
+            console.warn(`🚨 [Gemini 108 API] 수동 재생성 오류:`, err);
+            alert(`네트워크 오류가 발생했습니다: ${err.message}`);
         } finally {
             setIsGeneratingAi(false);
         }
@@ -935,11 +949,11 @@ export default function Healing108CoachingReport({
                     <h1>${title}</h1>
                     ${darkCodeCbt ? `
                     <div class="content-box">
-                        <div class="section-title">🌑 평생의 다크 코드 해체 (CBT 인지행동치료)</div>
+                        <div class="section-title">☁️ 마음의 그림자 걷어내기 (인지 치유)</div>
                         <div class="text">${darkCodeCbt}</div>
-                        <div class="section-title" style="margin-top:20px;">✨ 평생의 메타 코드 승화 (ACT 수용전념치료)</div>
+                        <div class="section-title" style="margin-top:20px;">🌟 나의 빛나는 본질 받아들이기 (수용과 전념)</div>
                         <div class="text">${metaCodeAct}</div>
-                        <div class="section-title" style="margin-top:20px;">🧬 기질 맞춤형 위기 탈출 알고리즘 (DBT 변증법적 행동치료)</div>
+                        <div class="section-title" style="margin-top:20px;">🌿 마음이 흔들릴 때, 나를 지키는 다정한 처방전 (행동 치유)</div>
                         <div class="text">${neuralCodeDbt}</div>
                     </div>
                     ` : `
@@ -948,11 +962,11 @@ export default function Healing108CoachingReport({
                         <div class="text">${desc}</div>
                     </div>
                     `}
-                    <div class="section-title">💡 초개인화 심층 자각 질문 (MBCT 마음챙김 인지치료)</div>
+                    <div class="section-title">🕊️ 고요한 내면에게 건네는 따뜻한 질문 (마음챙김 질문)</div>
                     <div class="text">${socratic}</div>
                     <div class="section-title">✍️ 나의 내면 치유 기록</div>
                     <div class="answer">${ans}</div>
-                    <div class="section-title">🌳 평생 수용 확약 및 영혼의 만트라 (MBSR 스트레스 감소) (${isConfirmed})</div>
+                    <div class="section-title">🌸 나를 온전히 사랑하기 위한 오늘의 확언 (만트라) (스트레스 감소) (${isConfirmed})</div>
                     <div class="text" style="font-weight: bold; color: #4b5563;">"${recursive}"</div>
                 </div>
             `;
@@ -1019,12 +1033,12 @@ export default function Healing108CoachingReport({
 
     return createPortal(
         <div
-            className="fixed top-0 left-0 z-[1020] bg-[#06080F]/95 backdrop-blur-xl font-sans text-gray-200"
+            className="fixed top-0 left-0 z-[1020] bg-gradient-to-br from-indigo-50/90 via-white/90 to-peach-50/90 backdrop-blur-2xl font-sans text-slate-700"
             style={{ width: '100vw', height: '100dvh', display: 'flex', flexDirection: 'row', overflow: 'hidden' }}
         >
             {/* 배경 그라데이션 오라 효과 */}
-            <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] rounded-full bg-pink-500/10 blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] rounded-full bg-purple-500/10 blur-[120px] pointer-events-none" />
+            <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] rounded-full bg-rose-500/10 blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] rounded-full bg-indigo-200/40 blur-[120px] pointer-events-none" />
 
             {/* 모바일용 오버레이 배경 */}
             {!isLargeScreen && sidebarOpen && (
@@ -1035,17 +1049,17 @@ export default function Healing108CoachingReport({
             )}
 
             {/* ===== 사이드바 (PC: relative flex, 모바일: fixed overlay) ===== */}
-            <div style={sidebarStyle} className="bg-gray-950 border-r border-white/5 flex flex-col backdrop-blur-md">
+            <div style={sidebarStyle} className="bg-white/40 border-r border-white/40 shadow-sm flex flex-col backdrop-blur-md">
                 <div style={{ width: isLargeScreen ? '300px' : '280px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                         {/* 사이드바 헤더 */}
-                        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                        <div className="p-4 border-b border-white/40 flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <BookOpen className="text-pink-400" size={18} />
-                                <span className="font-bold text-xs sm:text-sm tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">108 자각 설계 인덱스</span>
+                                <BookOpen className="text-rose-500" size={18} />
+                                <span className="font-bold text-xs sm:text-sm tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-indigo-500">108 자각 설계 인덱스</span>
                             </div>
                             <button
                                 onClick={() => setSidebarOpen(false)}
-                                className="text-gray-500 hover:text-white p-1 rounded-md hover:bg-white/5 transition-colors"
+                                className="text-slate-500 hover:text-slate-800 p-1 rounded-md hover:bg-white/40 transition-colors"
                             >
                                 <X size={16} />
                             </button>
@@ -1054,13 +1068,13 @@ export default function Healing108CoachingReport({
                         {/* 사이드바 검색창 */}
                         <div className="p-3">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
                                 <input
                                     type="text"
                                     placeholder="자각 코드 / 키워드 검색..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-2 bg-white/5 rounded-lg border border-white/5 focus:outline-none focus:border-pink-500/50 text-xs text-white placeholder-gray-500 transition-colors"
+                                    className="w-full pl-9 pr-4 py-2 bg-white/40 rounded-lg border border-white/40 focus:outline-none focus:border-pink-500/50 text-xs text-slate-800 placeholder-slate-400 transition-colors"
                                 />
                             </div>
                         </div>
@@ -1085,20 +1099,20 @@ export default function Healing108CoachingReport({
                                         }}
                                         className={`w-full text-left p-2.5 rounded-xl transition-all duration-300 flex items-center gap-2.5 border ${
                                             isCurrent
-                                                ? 'bg-gradient-to-r from-pink-500/20 to-purple-500/10 border-pink-500/40 shadow-[0_4px_12px_rgba(236,72,153,0.15)] text-pink-100'
-                                                : 'bg-white/2 border-transparent hover:bg-white/5 text-gray-400 hover:text-white'
+                                                ? 'bg-gradient-to-r from-rose-100 to-indigo-100 border-rose-200 shadow-[0_4px_12px_rgba(236,72,153,0.15)] text-indigo-900'
+                                                : 'bg-white/30 border-transparent hover:bg-white/40 text-slate-500 hover:text-indigo-600'
                                         }`}
                                     >
                                         <div className={`w-6.5 h-6.5 rounded-lg flex items-center justify-center text-[10px] font-bold ${
-                                            isCurrent ? 'bg-pink-500/30 text-pink-300' : 'bg-white/5 text-gray-400'
+                                            isCurrent ? 'bg-rose-200 text-rose-700' : 'bg-white/40 text-slate-500'
                                         }`}>
                                             {String(idx + 1).padStart(3, '0')}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="text-[9px] font-bold text-gray-500 flex items-center gap-1">
+                                            <div className="text-[9px] font-bold text-slate-500 flex items-center gap-1">
                                                 <span>CODE: {key}</span>
-                                                {isAnswered && <span className="text-blue-400">● 기록</span>}
-                                                {isConfirmed && <span className="text-pink-400">● 자각</span>}
+                                                {isAnswered && <span className="text-teal-500">● 기록</span>}
+                                                {isConfirmed && <span className="text-rose-500">● 자각</span>}
                                                 {hasAi && <span className="text-pink-500/80 font-black">★ AI</span>}
                                             </div>
                                             <div className="text-xs truncate font-medium mt-0.5">
@@ -1115,19 +1129,19 @@ export default function Healing108CoachingReport({
             {/* ===== 메인 콘텐츠 영역 ===== */}
             <div style={{ flex: 1, minWidth: 0, height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
                 {/* 1. 고정 헤더 영역 */}
-                <header className="h-14 sm:h-16 border-b border-white/5 bg-gray-950/40 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0">
+                <header className="h-14 sm:h-16 border-b border-white/40 bg-white/40 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
                         {/* 햄버거 토글 메뉴 버튼 (사이드바 제어) */}
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="bg-white/5 border border-white/5 hover:bg-white/10 text-gray-300 p-2 rounded-xl transition-all"
+                            className="bg-white/40 border border-white/40 hover:bg-white/70 text-slate-600 p-2 rounded-xl transition-all"
                             title="메뉴 열기/닫기"
                         >
                             <Menu size={18} />
                         </button>
                         <div className="flex items-center gap-2">
-                            <span className="text-xs sm:text-sm font-bold text-white tracking-widest hidden xs:inline">SAJU OS v4.0</span>
-                            <span className="bg-pink-500/10 border border-pink-500/30 text-[9px] sm:text-[10px] font-bold text-pink-400 px-2 py-0.5 rounded-full">108 자각 백서</span>
+                            <span className="text-xs sm:text-sm font-bold text-slate-800 tracking-widest hidden xs:inline">SAJU OS v4.0</span>
+                            <span className="bg-rose-500/10 border border-pink-500/30 text-[9px] sm:text-[10px] font-bold text-rose-500 px-2 py-0.5 rounded-full">108 자각 백서</span>
                         </div>
                     </div>
 
@@ -1140,11 +1154,11 @@ export default function Healing108CoachingReport({
                                 disabled={isGeneratingAi}
                                 className={`p-2 rounded-xl border flex items-center gap-1.5 transition-all text-[9px] font-bold tracking-wider ${
                                     isGeneratingAi
-                                        ? 'bg-pink-500/10 border-pink-500/30 text-pink-300 cursor-not-allowed shadow-[0_0_10px_rgba(236,72,153,0.1)]'
-                                        : 'bg-white/5 border-white/5 hover:bg-white/10 text-gray-400 hover:text-pink-400 hover:border-pink-500/20'
+                                        ? 'bg-rose-500/10 border-pink-500/30 text-pink-300 cursor-not-allowed shadow-[0_0_10px_rgba(236,72,153,0.1)]'
+                                        : 'bg-white/40 border-white/40 hover:bg-white/70 text-slate-500 hover:text-rose-500 hover:border-pink-500/20'
                                 }`}
                             >
-                                <RefreshCw size={14} className={isGeneratingAi ? 'animate-spin text-pink-400' : ''} />
+                                <RefreshCw size={14} className={isGeneratingAi ? 'animate-spin text-rose-500' : ''} />
                                 {isGeneratingAi ? '생성 중...' : '새 기질로 다시 생성 (AI)'}
                             </button>
                         )}
@@ -1154,7 +1168,7 @@ export default function Healing108CoachingReport({
                             className={`p-2 rounded-xl border flex items-center gap-1.5 transition-all ${
                                 isPlayingBgm
                                     ? 'bg-purple-500/20 border-purple-500/40 text-purple-300 shadow-[0_0_10px_rgba(139,92,246,0.2)]'
-                                    : 'bg-white/5 border-white/5 hover:bg-white/10 text-gray-400 hover:text-white'
+                                    : 'bg-white/40 border-white/40 hover:bg-white/70 text-slate-500 hover:text-indigo-600'
                             }`}
                         >
                             {isPlayingBgm ? <Volume2 size={16} /> : <VolumeX size={16} />}
@@ -1166,7 +1180,7 @@ export default function Healing108CoachingReport({
                             className={`p-2 rounded-xl border flex items-center gap-1.5 transition-all ${
                                 isBreathingActive
                                     ? 'bg-blue-500/20 border-blue-500/40 text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.2)]'
-                                    : 'bg-white/5 border-white/5 hover:bg-white/10 text-gray-400 hover:text-white'
+                                    : 'bg-white/40 border-white/40 hover:bg-white/70 text-slate-500 hover:text-indigo-600'
                             }`}
                         >
                             <Heart size={16} className={isBreathingActive ? 'animate-pulse' : ''} />
@@ -1175,7 +1189,7 @@ export default function Healing108CoachingReport({
 
                         <button
                             onClick={triggerFullPrint}
-                            className="bg-white/5 border border-white/5 hover:bg-white/10 text-gray-300 hover:text-white p-2 rounded-xl transition-all"
+                            className="bg-white/40 border border-white/40 hover:bg-white/70 text-slate-600 hover:text-slate-800 p-2 rounded-xl transition-all"
                             title="전체 기록 PDF 저장"
                         >
                             <FileText size={16} />
@@ -1183,7 +1197,7 @@ export default function Healing108CoachingReport({
 
                         <button
                             onClick={onClose}
-                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 hover:bg-pink-500/20 border border-white/5 hover:border-pink-500/30 text-gray-400 hover:text-pink-400 flex items-center justify-center transition-all"
+                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/40 hover:bg-rose-100 border border-white/40 hover:border-rose-300 text-slate-500 hover:text-rose-500 flex items-center justify-center transition-all"
                         >
                             <X size={18} />
                         </button>
@@ -1193,7 +1207,7 @@ export default function Healing108CoachingReport({
                 {/* 2. 스크롤 영역 (inline style로 완벽한 flex overflow 제어) */}
                 <div className="custom-scrollbar" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
                     {/* 진행률 게이지 배너 */}
-                    <div className="w-full max-w-3xl bg-white/2 border border-white/5 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-4 backdrop-blur-md shrink-0">
+                    <div className="w-full max-w-3xl bg-white/30 border border-white/40 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-4 backdrop-blur-md shrink-0">
                         <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg transition-all duration-500">
                                 {totalProgress < 25 ? (
@@ -1207,12 +1221,12 @@ export default function Healing108CoachingReport({
                                 )}
                             </div>
                             <div>
-                                <h4 className="text-[10px] sm:text-xs font-bold text-gray-400 tracking-wider">나의 내면 디버깅 진행도</h4>
-                                <p className="text-[8px] sm:text-[9px] text-gray-500">108 자각 설계 중 총 {totalCompletedCount}개 성찰 완료</p>
+                                <h4 className="text-[10px] sm:text-xs font-bold text-slate-500 tracking-wider">나의 내면 디버깅 진행도</h4>
+                                <p className="text-[8px] sm:text-[9px] text-slate-500">108 자각 설계 중 총 {totalCompletedCount}개 성찰 완료</p>
                             </div>
                         </div>
                         <div className="flex-1 max-w-md flex items-center gap-2 sm:gap-3">
-                            <div className="flex-1 h-2 bg-gray-900 rounded-full overflow-hidden border border-white/5 relative">
+                            <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden border border-white/40 relative">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${totalProgress}%` }}
@@ -1220,7 +1234,7 @@ export default function Healing108CoachingReport({
                                     className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 shadow-[0_0_10px_rgba(236,72,153,0.5)]"
                                 />
                             </div>
-                            <span className="text-[10px] sm:text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 w-8 text-right">{totalProgress}%</span>
+                            <span className="text-[10px] sm:text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-indigo-500 w-8 text-right">{totalProgress}%</span>
                         </div>
                     </div>
 
@@ -1233,18 +1247,18 @@ export default function Healing108CoachingReport({
                                 exit={{ height: 0, opacity: 0 }}
                                 className="w-full max-w-3xl overflow-hidden shrink-0"
                             >
-                                <div className="bg-gradient-to-br from-blue-950/20 to-purple-950/20 border border-blue-500/20 rounded-3xl p-4 sm:p-5 flex flex-col items-center justify-center space-y-3 backdrop-blur-md relative">
+                                <div className="bg-gradient-to-br from-teal-50/80 to-blue-50/80 border border-teal-200 shadow-lg rounded-3xl p-4 sm:p-5 flex flex-col items-center justify-center space-y-3 backdrop-blur-md relative">
                                     <div className="absolute top-2.5 right-2.5">
                                         <button
                                             onClick={stopBreathing}
-                                            className="text-gray-500 hover:text-white p-1 hover:bg-white/5 rounded-md"
+                                            className="text-slate-500 hover:text-slate-800 p-1 hover:bg-white/40 rounded-md"
                                         >
                                             <X size={14} />
                                         </button>
                                     </div>
 
                                     <div className="text-center">
-                                        <div className="text-[10px] sm:text-xs font-bold text-blue-400 tracking-widest uppercase">
+                                        <div className="text-[10px] sm:text-xs font-bold text-teal-500 tracking-widest uppercase">
                                             {breathingPhase === 'inhale' && '🌬️ 들숨 (Inhale) — 마음의 은하수 흡입'}
                                             {breathingPhase === 'hold' && '⏳ 멈춤 (Hold) — 맑은 부교감 냉각수 순환'}
                                             {breathingPhase === 'exhale' && '💨 날숨 (Exhale) — 묵은 후회와 아픔 방출'}
@@ -1258,7 +1272,7 @@ export default function Healing108CoachingReport({
                                                 opacity: breathingPhase === 'hold' ? 0.8 : 0.4,
                                             }}
                                             transition={{ duration: 5, ease: 'easeInOut' }}
-                                            className="absolute inset-0 rounded-full border border-blue-400/30 shadow-[0_0_20px_rgba(59,130,246,0.25)] pointer-events-none"
+                                            className="absolute inset-0 rounded-full border border-teal-300/50 shadow-[0_0_30px_rgba(45,212,191,0.3)] pointer-events-none"
                                         />
 
                                         <motion.div
@@ -1266,10 +1280,10 @@ export default function Healing108CoachingReport({
                                                 scale: breathingPhase === 'inhale' ? 1.15 : breathingPhase === 'hold' ? 1.15 : 0.9,
                                                 backgroundColor:
                                                     breathingPhase === 'inhale'
-                                                        ? 'rgba(59, 130, 246, 0.2)'
+                                                        ? 'rgba(45, 212, 191, 0.3)'
                                                         : breathingPhase === 'hold'
-                                                        ? 'rgba(139, 92, 246, 0.25)'
-                                                        : 'rgba(236, 72, 153, 0.2)',
+                                                        ? 'rgba(99, 102, 241, 0.3)'
+                                                        : 'rgba(244, 63, 94, 0.3)',
                                                 borderColor:
                                                     breathingPhase === 'inhale'
                                                         ? '#3b82f6'
@@ -1280,7 +1294,7 @@ export default function Healing108CoachingReport({
                                             transition={{ duration: 5, ease: 'easeInOut' }}
                                             className="w-18 h-18 sm:w-20 sm:h-20 rounded-full border-2 flex flex-col items-center justify-center shadow-inner relative"
                                         >
-                                            <span className="text-xl sm:text-2xl font-black text-white">{breathingTimer}</span>
+                                            <span className="text-xl sm:text-2xl font-black text-slate-800">{breathingTimer}</span>
                                         </motion.div>
                                     </div>
                                 </div>
@@ -1291,7 +1305,7 @@ export default function Healing108CoachingReport({
                     {/* 메인 성찰 카드 영역 */}
                     <main className="w-full max-w-3xl flex flex-col space-y-4 sm:space-y-6 pb-16 lg:pb-24">
                         {/* 성찰 카드 */}
-                        <div className="bg-gray-900/40 border border-white/5 hover:border-pink-500/10 shadow-2xl rounded-3xl p-5 sm:p-7 backdrop-blur-md relative flex flex-col space-y-4 sm:space-y-5 transition-all duration-300 w-full">
+                        <div className="bg-white/60 border border-white/400 shadow-xl shadow-indigo-100/40 hover:border-pink-500/10 shadow-2xl rounded-3xl p-5 sm:p-7 backdrop-blur-md relative flex flex-col space-y-4 sm:space-y-5 transition-all duration-300 w-full">
                             {/* 데코 코드 */}
                             <div className="absolute top-3 right-4 text-[9px] sm:text-xs font-black font-mono tracking-widest text-pink-500/30">
                                 {currentPageKey}
@@ -1310,18 +1324,18 @@ export default function Healing108CoachingReport({
                                         <motion.div
                                             animate={{ rotate: -360 }}
                                             transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
-                                            className="absolute w-[90%] h-[90%] rounded-full bg-gray-950/90 border border-white/10 flex items-center justify-center shadow-[inset_0_0_20px_rgba(236,72,153,0.25)]"
+                                            className="absolute w-[90%] h-[90%] rounded-full bg-white/80 border border-white/50 flex items-center justify-center shadow-[inset_0_0_20px_rgba(236,72,153,0.25)]"
                                         >
-                                            <Sparkles className="text-pink-400 animate-pulse" size={24} />
+                                            <Sparkles className="text-rose-500 animate-pulse" size={24} />
                                         </motion.div>
                                     </div>
                                     <div className="text-center space-y-2.5 px-4 max-w-md">
-                                        <span className="text-[9px] font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 uppercase animate-pulse">AI Synthesis Channeling</span>
-                                        <p className="text-xs sm:text-sm text-gray-300 font-semibold leading-relaxed">
+                                        <span className="text-[9px] font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-indigo-500 uppercase animate-pulse">AI Synthesis Channeling</span>
+                                        <p className="text-xs sm:text-sm text-slate-600 font-semibold leading-relaxed">
                                             명심AI 코치가 당신의 기질 주파수를 감지하여<br className="hidden sm:inline" /> 백서를 실시간 집필하는 중입니다...
                                         </p>
                                         <div className="flex items-center justify-center gap-1.5 pt-1">
-                                            <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <span className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                                             <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                                             <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                         </div>
@@ -1332,16 +1346,16 @@ export default function Healing108CoachingReport({
                                     {/* 카드 제목 */}
                                     <div className="space-y-0.5 sm:space-y-1">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[8px] sm:text-[9px] font-black text-pink-400 tracking-widest uppercase">
-                                                PAGE {currentPageIndex + 1} // {hasAiContent ? '🌸 AI 초개인화 맞춤집필' : 'CHIMERA SECURE'}
+                                            <span className="text-[8px] sm:text-[9px] font-black text-rose-500 tracking-widest uppercase">
+                                                PAGE {currentPageIndex + 1} // {hasAiContent ? '🌸 AI 초개인화 맞춤집필' : 'MIND REFRESH'}
                                             </span>
                                             {hasAiContent && (
-                                                <span className="bg-pink-500/10 border border-pink-500/20 text-[8px] font-bold text-pink-400 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(236,72,153,0.1)]">
+                                                <span className="bg-rose-500/10 border border-pink-500/20 text-[8px] font-bold text-rose-500 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(236,72,153,0.1)]">
                                                     <Sparkles size={8} className="animate-spin-slow" /> AI 맞춤 백서
                                                 </span>
                                             )}
                                         </div>
-                                        <h1 className="text-base sm:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 leading-snug">
+                                        <h1 className="text-base sm:text-xl font-extrabold text-slate-800 leading-snug">
                                             {displayTitle}
                                         </h1>
                                     </div>
@@ -1350,64 +1364,64 @@ export default function Healing108CoachingReport({
                                     {hasAiContent && aiPageContent[currentPageKey].darkCodeCbt ? (
                                         <div className="space-y-4">
                                             {/* CBT 모듈 */}
-                                            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                                                <h3 className="text-pink-300 font-semibold mb-2 flex items-center gap-2">
-                                                    🌑 평생의 다크 코드 해체 <span className="text-xs text-white/40 font-normal bg-black/20 px-2 py-0.5 rounded-full">CBT 인지행동치료</span>
+                                            <div className="p-4 bg-white/40 border border-white/50 rounded-2xl">
+                                                <h3 className="text-rose-600 font-bold mb-2 flex items-center gap-2">
+                                                    ☁️ 마음의 그림자 걷어내기 <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full">인지 치유</span>
                                                 </h3>
-                                                <p className="text-gray-300 leading-relaxed text-[15px] whitespace-pre-wrap">
+                                                <p className="text-slate-600 leading-relaxed text-[15px] whitespace-pre-wrap">
                                                     {aiPageContent[currentPageKey].darkCodeCbt}
                                                 </p>
                                             </div>
 
                                             {/* ACT 모듈 */}
-                                            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                                                <h3 className="text-purple-300 font-semibold mb-2 flex items-center gap-2">
-                                                    ✨ 평생의 메타 코드 승화 <span className="text-xs text-white/40 font-normal bg-black/20 px-2 py-0.5 rounded-full">ACT 수용전념치료</span>
+                                            <div className="p-4 bg-white/40 border border-white/50 rounded-2xl">
+                                                <h3 className="text-indigo-600 font-bold mb-2 flex items-center gap-2">
+                                                    🌟 나의 빛나는 본질 받아들이기 <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full">수용과 전념</span>
                                                 </h3>
-                                                <p className="text-gray-300 leading-relaxed text-[15px] whitespace-pre-wrap">
+                                                <p className="text-slate-600 leading-relaxed text-[15px] whitespace-pre-wrap">
                                                     {aiPageContent[currentPageKey].metaCodeAct}
                                                 </p>
                                             </div>
 
                                             {/* DBT 모듈 */}
-                                            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                                                <h3 className="text-blue-300 font-semibold mb-2 flex items-center gap-2">
-                                                    🧬 기질 맞춤형 위기 탈출 알고리즘 <span className="text-xs text-white/40 font-normal bg-black/20 px-2 py-0.5 rounded-full">DBT 변증법적 행동치료</span>
+                                            <div className="p-4 bg-white/40 border border-white/50 rounded-2xl">
+                                                <h3 className="text-teal-600 font-bold mb-2 flex items-center gap-2">
+                                                    🌿 마음이 흔들릴 때, 나를 지키는 다정한 처방전 <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full">행동 치유</span>
                                                 </h3>
-                                                <p className="text-gray-300 leading-relaxed text-[15px] whitespace-pre-wrap">
+                                                <p className="text-slate-600 leading-relaxed text-[15px] whitespace-pre-wrap">
                                                     {aiPageContent[currentPageKey].neuralCodeDbt}
                                                 </p>
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="p-5 md:p-6 bg-white/5 border border-white/10 rounded-2xl text-gray-300 leading-relaxed text-[15px] whitespace-pre-wrap shadow-inner relative overflow-hidden group">
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 rounded-full blur-3xl group-hover:bg-pink-500/10 transition-colors duration-500"></div>
+                                        <div className="p-5 md:p-6 bg-white/40 border border-white/50 rounded-2xl text-slate-600 leading-relaxed text-[15px] whitespace-pre-wrap shadow-inner relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-3xl group-hover:bg-rose-500/10 transition-colors duration-500"></div>
                                             {aiPageContent[currentPageKey]?.desc || getResolvedText(currentPageData?.desc)}
                                         </div>
                                     )}
 
                                     {/* MBCT 소크라테스식 자각 질문 */}
                                     <div className="mt-8 space-y-4">
-                                        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                                            💡 초개인화 심층 자각 질문
-                                            <span className="text-xs text-white/40 font-normal bg-white/5 px-2 py-0.5 rounded-full">MBCT 마음챙김 인지치료</span>
+                                        <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                                            🕊️ 고요한 내면에게 건네는 따뜻한 질문
+                                            <span className="text-xs text-slate-400 font-normal bg-white/40 px-2 py-0.5 rounded-full">마음챙김 질문</span>
                                         </h3>
-                                        <div className="p-4 md:p-5 bg-pink-500/10 border border-pink-500/20 rounded-2xl text-pink-100/90 leading-relaxed text-[15px] shadow-[0_4px_20px_rgba(236,72,153,0.05)]">
+                                        <div className="p-4 md:p-5 bg-rose-500/10 border border-pink-500/20 rounded-2xl text-indigo-900/90 leading-relaxed text-[15px] shadow-[0_4px_20px_rgba(236,72,153,0.05)]">
                                             {aiPageContent[currentPageKey]?.socratic || getResolvedText(currentPageData?.socratic)}
                                         </div>
                                         <textarea
                                             value={answers[currentPageKey] || ''}
                                             onChange={(e) => handleAnswerChange(currentPageKey, e.target.value)}
                                             placeholder="마음의 대답을 다정하게 기록해 봅니다..."
-                                            className="w-full h-16 sm:h-20 p-2.5 bg-gray-950/60 rounded-xl border border-white/5 focus:outline-none focus:border-pink-500/50 text-[11px] sm:text-xs text-white placeholder-gray-600 transition-all leading-relaxed resize-none"
+                                            className="w-full h-16 sm:h-20 p-2.5 bg-white/60 rounded-xl border border-white/40 focus:outline-none focus:border-pink-500/50 text-[11px] sm:text-xs text-slate-800 placeholder-gray-600 transition-all leading-relaxed resize-none"
                                         />
                                     </div>
 
                                     {/* 참나 확약 및 승인 버튼 */}
-                                    <div className="bg-gradient-to-r from-pink-950/5 via-purple-950/5 to-transparent border border-pink-500/10 rounded-2xl p-3 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
+                                    <div className="bg-gradient-to-r from-rose-50/50 via-indigo-50/50 to-transparent border border-rose-100 rounded-2xl p-3 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
                                         <div className="flex-1 space-y-0.5">
-                                            <span className="text-white">🌳 평생 수용 확약 및 영혼의 만트라 <span className="text-xs text-white/40 font-normal bg-black/20 px-2 py-0.5 rounded-full ml-1">MBSR 스트레스 감소</span></span>
-                                            <div className="text-[15px] text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                            <span className="text-slate-800">🌸 나를 온전히 사랑하기 위한 오늘의 확언 (만트라) <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full ml-1">스트레스 감소</span></span>
+                                            <div className="text-[15px] text-slate-600 leading-relaxed whitespace-pre-wrap">
                                                 "{aiPageContent[currentPageKey]?.recursive || getResolvedText(currentPageData?.recursive)}"
                                             </div>
                                         </div>
@@ -1415,8 +1429,8 @@ export default function Healing108CoachingReport({
                                             onClick={() => handleConfirmRecursive(currentPageKey)}
                                             className={`w-full xs:w-auto px-3.5 py-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 ${
                                                 recursiveConfirmed[currentPageKey]
-                                                    ? 'bg-pink-500 text-white shadow-[0_4px_12px_rgba(236,72,153,0.25)] hover:bg-pink-600'
-                                                    : 'bg-white/5 border border-white/10 hover:bg-white/10 text-pink-400 hover:text-white'
+                                                    ? 'bg-rose-500 text-slate-800 shadow-[0_4px_12px_rgba(236,72,153,0.25)] hover:bg-rose-600'
+                                                    : 'bg-white/40 border border-white/50 hover:bg-white/70 text-rose-500 hover:text-slate-800'
                                             }`}
                                         >
                                             <span>{recursiveConfirmed[currentPageKey] ? '🌸 온전히 자각함' : '자각 및 승인'}</span>
@@ -1436,12 +1450,12 @@ export default function Healing108CoachingReport({
                                     }
                                 }}
                                 disabled={currentPageIndex === 0}
-                                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none transition-all"
+                                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/40 hover:bg-white/70 border border-white/40 text-slate-500 hover:text-indigo-600 flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none transition-all"
                             >
                                 <ChevronLeft size={18} />
                             </button>
 
-                            <span className="text-[10px] sm:text-xs font-bold text-gray-500 tracking-wider">
+                            <span className="text-[10px] sm:text-xs font-bold text-slate-500 tracking-wider">
                                 {currentPageIndex + 1} / {pageKeys.length} 페이지
                             </span>
 
@@ -1453,7 +1467,7 @@ export default function Healing108CoachingReport({
                                     }
                                 }}
                                 disabled={currentPageIndex === pageKeys.length - 1}
-                                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none transition-all"
+                                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/40 hover:bg-white/70 border border-white/40 text-slate-500 hover:text-indigo-600 flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none transition-all"
                             >
                                 <ChevronRight size={18} />
                             </button>
