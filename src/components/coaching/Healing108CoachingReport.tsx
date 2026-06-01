@@ -43,9 +43,10 @@ export default function Healing108CoachingReport({
         if (isOpen) {
             let finalSaju = null;
             const localSaju = getSajuFromLocalStorage();
-            const storeSaju = reportData?.saju || userProfile?.saju;
             
-            finalSaju = storeSaju || localSaju;
+            // [Zustand 최우선 반영] Zustand 스토어가 최우선, 그 다음 로컬스토리지 백업 캐시, 부모 세션 프로필은 최후의 폴백 안전장치로 활용
+            finalSaju = reportData?.saju || localSaju || userProfile?.saju;
+
 
             // [초고도화] 만약 스토어나 로컬의 사주 데이터가 불완전하고, 생년월일(birthDate) 원본이 존재한다면 완벽하게 즉석 계산하여 연동!
             const rawDate = reportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
@@ -247,11 +248,12 @@ export default function Healing108CoachingReport({
 
             try {
                 const resolvedOriginalPage = {
-                    title: getResolvedText(pageData.title),
-                    desc: getResolvedText(pageData.desc),
-                    socratic: getResolvedText(pageData.socratic),
-                    recursive: getResolvedText(pageData.recursive),
+                    title: getResolvedText(pageData.title, activeSaju),
+                    desc: getResolvedText(pageData.desc, activeSaju),
+                    socratic: getResolvedText(pageData.socratic, activeSaju),
+                    recursive: getResolvedText(pageData.recursive, activeSaju),
                 };
+
 
                 // [진단 로그] 서버로 보내는 데이터 확인
                 const profile = buildSajuProfile();
@@ -310,28 +312,40 @@ export default function Healing108CoachingReport({
     };
 
     const forceRegenerateCurrentPage = async () => {
-        if (!activeSaju || userKey === 'guest' || isGeneratingAi) return;
+        // [Zustand 실시간 최신 사주 강제 확보] 로컬 상태 락인 완벽 방지
+        const latestStoreSaju = useReportStore.getState().reportData?.saju;
+        const finalTargetSaju = latestStoreSaju || activeSaju;
+
+        if (!finalTargetSaju || userKey === 'guest' || isGeneratingAi) return;
 
         setIsGeneratingAi(true);
         try {
             const pageData = saju108Matrix[currentPageKey];
             if (!pageData) return;
 
+            // [로컬 캐시 즉시 제거] 수동 재생성 요청 시 해당 페이지의 예전 AI 캐시를 강제 파괴
+            setAiPageContent(prev => {
+                const updated = { ...prev };
+                delete updated[currentPageKey];
+                localStorage.setItem(aiContentKey, JSON.stringify(updated));
+                return updated;
+            });
+
             const resolvedOriginalPage = {
-                title: getResolvedText(pageData.title),
-                desc: getResolvedText(pageData.desc),
-                socratic: getResolvedText(pageData.socratic),
-                recursive: getResolvedText(pageData.recursive),
+                title: getResolvedText(pageData.title, finalTargetSaju),
+                desc: getResolvedText(pageData.desc, finalTargetSaju),
+                socratic: getResolvedText(pageData.socratic, finalTargetSaju),
+                recursive: getResolvedText(pageData.recursive, finalTargetSaju),
             };
 
-            const profile = buildSajuProfile();
+            const profile = buildSajuProfile(finalTargetSaju);
 
             const response = await fetch('/api/coaching/generate-108', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     pageKey: currentPageKey,
-                    sajuData: activeSaju,
+                    sajuData: finalTargetSaju,
                     sajuProfile: profile,
                     originalPage: resolvedOriginalPage
                 })
@@ -353,6 +367,7 @@ export default function Healing108CoachingReport({
             setIsGeneratingAi(false);
         }
     };
+
 
     // --- 528Hz 평온 BGM 제어 ---
     useEffect(() => {
@@ -467,8 +482,9 @@ export default function Healing108CoachingReport({
     }, [isBreathingActive, breathingPhase]);
 
     // --- 기질데이터 풍부한 사주 프로파일 빌더 (API 전달용) ---
-    const buildSajuProfile = (): Record<string, string> => {
-        if (!activeSaju) return {};
+    const buildSajuProfile = (targetSaju?: any): Record<string, string> => {
+        const finalSaju = targetSaju !== undefined ? targetSaju : activeSaju;
+        if (!finalSaju) return {};
         // getResolvedText 내부에서 쓰는 동일한 로직으로 프로파일 생성
         const dummyText = [
             '{{DAY_MASTER_CHAR}}', '{{DAY_MASTER_ANALOGY}}', '{{DAY_MASTER_SHORT_ANALOGY}}',
@@ -480,7 +496,7 @@ export default function Healing108CoachingReport({
             '{{PRIMARY_CLASH}}', '{{CURRENT_DAEWOON_GANJI}}', '{{CURRENT_DAEWOON_ANALOGY}}',
             '{{SAJU_GANJI}}'
         ].join('|||');
-        const resolved = getResolvedText(dummyText);
+        const resolved = getResolvedText(dummyText, finalSaju);
         const values = resolved.split('|||');
         const keys = [
             'dayMasterChar', 'dayMasterAnalogy', 'dayMasterShortAnalogy',
@@ -497,8 +513,9 @@ export default function Healing108CoachingReport({
         return profile;
     };
 
+
     // --- 기질데이터 실시간 템플릿 치환기 (resolveDynamicText) ---
-    const getResolvedText = (text: string | undefined): string => {
+    const getResolvedText = (text: string | undefined, customSaju?: any): string => {
         if (!text) return '';
 
         // 기본값(Fallback) 매핑 정의 - 사주 정보가 없거나 불완전할 때 사용
@@ -532,7 +549,9 @@ export default function Healing108CoachingReport({
             YEAR_2029: '2029년 己酉년'
         };
 
-        if (!activeSaju) {
+        const targetSaju = customSaju !== undefined ? customSaju : activeSaju;
+
+        if (!targetSaju) {
             // 사주 정보가 없을 경우, 태그들을 자연스러운 디폴트 텍스트로 치환
             let resolved = text;
             Object.entries(defaultValues).forEach(([key, val]) => {
@@ -551,7 +570,7 @@ export default function Healing108CoachingReport({
             return resolved;
         }
 
-        const saju = activeSaju;
+        const saju = targetSaju;
 
         // --- 2. 사주 4기둥 간지 추출 로직 (위로 이동) ---
         const getPillar = (type: 'year' | 'month' | 'day' | 'time') => {
