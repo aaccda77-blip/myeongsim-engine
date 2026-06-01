@@ -223,6 +223,70 @@ const SCENARIOS: Record<string, PillarScenario> = {
     },
 };
 
+interface AnswerCard {
+    title: string;
+    text: string;
+}
+
+// 🌸 질문 내용에 대응되는 초보자용 다정하고 감동적인 추천 답변 카드 3종 생성 헬퍼
+const getRecommendedAnswers = (questionText: string): AnswerCard[] => {
+    // 1. 산파술 질문용 추천 답변
+    if (questionText.includes('불씨') || questionText.includes('치유력')) {
+        return [
+            { title: "🌱 상처 너머의 빛 알아차림", text: "상대방의 차가운 거절 너머에 있는 '더는 상처받고 싶지 않아 웅크린 진짜 슬픔'을 따뜻하게 안아주는 데서 시작해요." },
+            { title: "🕯️ 포기 뒤에 숨겨진 절실함", text: "가망 없다고 외치는 건 실은 '누구보다 뜨겁게 다시 살아나고 싶다'는 절박한 내면의 소리임을 끝까지 믿어줍니다." },
+            { title: "🌌 흔들림 없는 평온의 통로", text: "상대의 절망적인 에고에 휩쓸리지 않고, 내 안의 흔들림 없는 평온과 온전한 자비의 빛을 상대에게 묵묵히 스며들게 합니다." }
+        ];
+    }
+    
+    if (questionText.includes('초조함') || questionText.includes('결실')) {
+        return [
+            { title: "🌳 과정 자체의 풍요로움", text: "당장 열매를 맺지 않아도 대지가 묵묵히 영양분을 머금듯, 내 삶의 매 순간이 이미 온전한 성장의 과정임을 믿어봅니다." },
+            { title: "🛡️ 내면의 오랜 수호자 포용", text: "초조해하는 내 안의 어린아이에게 '결과가 나오지 않아도 네 존재는 언제나 100% 완벽하게 소중해'라고 속삭여 줍니다." },
+            { title: "✨ 결과 집착의 힘 완화", text: "열매의 크기나 속도에 나를 묶어두지 않고, 지금 밭을 일구고 땀 흘리는 나의 위대한 존재 자체에 충만함을 느낍니다." }
+        ];
+    }
+
+    if (questionText.includes('완벽') || questionText.includes('면도날') || questionText.includes('흠결')) {
+        return [
+            { title: "💎 빈틈을 수용하는 우아함", text: "완벽해야만 대접받을 수 있다는 두려움을 가만히 내려놓고, 흠집조차 우아한 삶의 고유한 무늬로 안아줍니다." },
+            { title: "💆 팽팽한 긴장감 이완하기", text: "오차 없는 완벽의 감옥에서 벗어나 '실수해도 아무 일도 일어나지 않아, 넌 충분히 세련되고 빛나'라며 어깨의 짐을 내려놓습니다." },
+            { title: "🌌 있는 그대로의 온전함 자각", text: "타인의 평가나 시선이라는 낡은 거울에 내 민낯을 비추지 않고, 내 존재 자체만으로 이미 고귀한 기준이 됨을 자각합니다." }
+        ];
+    }
+
+    if (questionText.includes('보호색') || questionText.includes('눈물겨운 적응력') || questionText.includes('대본')) {
+        return [
+            { title: "🎨 내 고유의 색깔 회복", text: "더 이상 남들의 배경에 나를 억지로 녹여 숨기지 않고, 내 안의 뾰족하고 매력적인 참된 나만의 고유한 컬러를 당당히 꺼내 보입니다." },
+            { title: "🎭 무대 밖 진짜 나 사랑하기", text: "남의 시선을 만족시키기 위해 억지로 바꾸던 보호색을 지우고, 무대 뒤에서 숨 고르는 내 민낯을 다정하게 안아줍니다." },
+            { title: "📜 나만의 주체적인 인생 대본", text: "타인이 쥐여준 각본에 흔들리지 않고, 온전히 나만의 지혜와 창의성을 담아 주도적으로 내 삶의 이야기를 새롭게 써 내려갑니다." }
+        ];
+    }
+
+    if (questionText.includes('강철 같은 뚝심') || questionText.includes('돌파력') || questionText.includes('장애물')) {
+        return [
+            { title: "⛰️ 부드러운 허용과 수용", text: "망치로 벽을 깨부수려 고집하기보다, 상황의 흐름을 부드럽게 타고 넘는 물 같은 유연한 돌파력에 내면의 여유를 줍니다." },
+            { title: "🤝 함께 나아가는 신뢰의 힘", text: "나 혼자만의 뚝심으로 모든 짐을 지지 않고, 동료들의 지혜를 온화하게 모아 하나의 거대한 숲으로 완성해 나갑니다." },
+            { title: "🌌 흔들리지 않는 내면의 중심", text: "소리치며 나를 증명하려 애쓰지 않아도, 내 존재는 이미 굳건한 태산처럼 흔들림 없는 단단함을 지니고 있음을 편안히 맑게 깨닫습니다." }
+        ];
+    }
+
+    if (questionText.includes('수고로움') || questionText.includes('이타적') || questionText.includes('옥토') || questionText.includes('개척')) {
+        return [
+            { title: "🌾 생명을 소생시키는 자비", text: "메마르고 아픈 땅에 스며드는 따뜻한 봄비처럼, 내 손길이 닿는 모든 이들에게 가만히 생명의 불씨를 불어넣습니다." },
+            { title: "🕊️ 타인을 살리며 나를 치유하기", text: "타인의 성장을 돕는 헌신적인 기쁨 속에서, 실은 내 안에 갇혀 있던 작은 상처들도 함께 눈 녹듯 사르르 녹아내림을 자각합니다." },
+            { title: "✨ 거대한 옥토 생태계 완성", text: "개인의 성공을 넘어서, 모두가 조화롭게 뿌리내리고 함께 웃을 수 있는 울창하고 찬란한 숲을 묵묵히 빚어냅니다." }
+        ];
+    }
+
+    // 2. 보편적인 성찰 질문용 추천 답변 (Fallback)
+    return [
+        { title: "🍃 있는 그대로의 평온한 수용", text: "어렵게 극복하려 애쓰지 않고, 지금 느껴지는 불안과 조급함을 물 흐르듯 가만히 관찰하며 부드럽게 받아들입니다." },
+        { title: "💡 생각과 감정으로부터의 분리", text: "이 아픈 감정은 내 존재의 일부가 겪는 바람일 뿐, 나의 거대한 본래 본질은 고요하고 굳건한 하늘 자체임을 알아차립니다." },
+        { title: "✨ 따뜻한 셀프 Compassion", text: "그동안 아등바등 버티며 상처받지 않으려 발버둥 쳤던 나 자신에게 '정말 고생 많았어, 이제 편안해져도 돼'라고 위로합니다." }
+    ];
+};
+
 // ============== Helper: Get scenario for pillar ==============
 function getScenario(pillarId: string): PillarScenario | null {
     return SCENARIOS[pillarId] || null;
@@ -572,10 +636,46 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                                                         value={inputs[inputKey] || ''}
                                                         onChange={(e) => setInputs({ ...inputs, [inputKey]: e.target.value })}
                                                         placeholder={stateScenario.slides[currentStep].inputPlaceholder}
-                                                        className="w-full bg-black/30 border border-white/5 rounded-2xl p-5 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all shadow-inner"
+                                                        className="w-full bg-black/30 border border-white/5 rounded-2xl p-5 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all shadow-inner mb-4"
                                                         rows={3}
                                                     />
-                                                    <p className="text-gray-500/80 text-[11px] mt-3 text-center font-medium">✨ 마음에 떠오르는 단어들을 편안하게 적어보세요</p>
+                                                    
+                                                    {/* 🌿 적기 어려운 초보자를 위한 사주 맞춤형 감동 답변 선택 카드 덱 */}
+                                                    <div className="space-y-2 mb-3">
+                                                        <p className="text-[10px] text-gray-500/80 font-bold ml-1 flex items-center gap-1.5">
+                                                            <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
+                                                            <span>답변하기가 막막하시다면? (추천 답변 카드 선택)</span>
+                                                        </p>
+                                                        <div className="grid grid-cols-1 gap-2 max-h-[170px] overflow-y-auto pr-0.5 scrollbar-thin">
+                                                            {getRecommendedAnswers(stateScenario.slides[currentStep].question).map((ans, i) => {
+                                                                const isChoiceSelected = inputs[inputKey] === ans.text;
+                                                                return (
+                                                                    <button
+                                                                        key={i}
+                                                                        type="button"
+                                                                        onClick={() => setInputs({ ...inputs, [inputKey]: ans.text })}
+                                                                        className={`w-full flex flex-col gap-1 p-3.5 rounded-2xl border text-left transition-all duration-300 ${
+                                                                            isChoiceSelected
+                                                                                ? `bg-white/10 ${tab.borderColor} shadow-[0_0_15px_rgba(255,255,255,0.05)] scale-[1.01]`
+                                                                                : 'bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/10'
+                                                                        }`}
+                                                                    >
+                                                                        <div className="flex justify-between items-center w-full">
+                                                                            <span className={`text-[12.5px] font-bold ${isChoiceSelected ? 'text-amber-300' : 'text-gray-300'}`}>
+                                                                                {ans.title}
+                                                                            </span>
+                                                                            {isChoiceSelected && (
+                                                                                <span className="text-[8px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">선택됨</span>
+                                                                            )}
+                                                                        </div>
+                                                                        <p className="text-[11px] text-gray-400 leading-relaxed break-keep">
+                                                                            {ans.text}
+                                                                        </p>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
                                                 </>
                                             )}
                                         </div>
