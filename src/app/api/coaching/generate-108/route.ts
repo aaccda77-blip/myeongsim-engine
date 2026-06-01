@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         temperature: 0.85, 
         maxOutputTokens: 2048,
         responseMimeType: "application/json",
-        responseSchema: jsonSchema
+        // responseSchema: jsonSchema
       },
     });
 
