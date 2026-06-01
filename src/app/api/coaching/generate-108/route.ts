@@ -41,18 +41,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
     }
 
-    // JSON 출력 강제를 위한 정밀한 responseSchema 정의 (SchemaType 열거형 강제 적용 및 캐스팅으로 TypeScript 엄격 타입 에러 영구 박멸)
+    // 10개 모듈 초고도화 JSON 스키마
     const jsonSchema: any = {
       type: SchemaType.OBJECT,
       properties: {
-        title: { type: SchemaType.STRING, description: "내담자 맞춤형 시적/감동적 제목" },
-        darkCodeCbt: { type: SchemaType.STRING, description: "CBT 기반 다크 코드 해체 (기질적 인지 왜곡 분석)" },
-        metaCodeAct: { type: SchemaType.STRING, description: "ACT 기반 메타 코드 승화 (기질 수용 및 가치 전념)" },
-        neuralCodeDbt: { type: SchemaType.STRING, description: "DBT 기반 위기 탈출 알고리즘 (스트레스 대처 행동 지침)" },
-        socratic: { type: SchemaType.STRING, description: "MBCT 기반 마음챙김 소크라테스식 심층 자각 질문" },
-        recursive: { type: SchemaType.STRING, description: "MBSR 기반 참나무 평생 수용 확약 및 영혼의 만트라" }
+        title: { type: SchemaType.STRING, description: "시적이고 감동적인 맞춤 제목" },
+        sajuAnalysis: { type: SchemaType.STRING, description: "이 주제에 대한 사주 기질 분석 요약" },
+        darkCodeCbt: { type: SchemaType.STRING, description: "CBT 다크코드 - 생각의 함정 해체" },
+        metaCodeAct: { type: SchemaType.STRING, description: "ACT 메타코드 - 있는 그대로 받아들이기" },
+        neuralCodeDbt: { type: SchemaType.STRING, description: "DBT 뉴럴코드 - 마음이 흔들릴 때 처방전" },
+        socraticMbct: { type: SchemaType.STRING, description: "MBCT 마음챙김 자각 질문" },
+        relaxMbsr: { type: SchemaType.STRING, description: "MBSR 스트레스 이완 안내" },
+        selfCompassionMsc: { type: SchemaType.STRING, description: "MSC 자기연민 실천법" },
+        coachingSolution: { type: SchemaType.STRING, description: "오늘부터 실천할 코칭 솔루션" },
+        mantra: { type: SchemaType.STRING, description: "평생 꺼내 읽는 확언문" }
       },
-      required: ["title", "darkCodeCbt", "metaCodeAct", "neuralCodeDbt", "socratic", "recursive"]
+      required: ["title", "sajuAnalysis", "darkCodeCbt", "metaCodeAct", "neuralCodeDbt", "socraticMbct", "relaxMbsr", "selfCompassionMsc", "coachingSolution", "mantra"]
     };
 
     const model = google.getGenerativeModel({
@@ -64,8 +68,8 @@ export async function POST(req: NextRequest) {
         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
       ],
       generationConfig: { 
-        temperature: 0.85, 
-        maxOutputTokens: 4096,
+        temperature: 0.88, 
+        maxOutputTokens: 6144,
         responseMimeType: "application/json",
         responseSchema: jsonSchema
       },
@@ -185,19 +189,28 @@ ${tenGodNarrative.map(n => `  · ${n}`).join('\n')}
 - 원래 확약문: ${originalPage.recursive}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[✍️ 평생 통합 치유 리포트 - 5대 심리치료 융합 모듈 지침 🌸]
+[✍️ 6대 심리치료 + 사주 분석 + 코칭 솔루션 — 10모듈 초고도화 지침 🌸]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-중요: 각 항목은 반드시 100~150자 이내로 간결하게 작성하세요. 절대 200자를 넘기지 마세요.
+★ 문체 규칙 (절대 지켜야 할 3가지):
+- 전문 용어 금지! "인지 왜곡", "변증법" 같은 말 대신 "생각의 함정", "마음의 균형" 같은 쉬운 말을 쓰세요.
+- "~해요", "~거예요", "~죠" 같은 다정하고 따뜻한 친구 말투로 쓰세요.
+- 읽는 사람의 마음을 어루만지는 감동적이고 시적인 이야기체로 쓰세요.
 
-1. **title**: "${sp.dayMasterShortAnalogy || '일간'}" 본질을 담은 시적 제목 (20자 이내)
-2. **darkCodeCbt**: 이 페이지 주제와 기질의 인지 왜곡을 다정하게 해체 (100~150자)
-3. **metaCodeAct**: 기질을 수용하고 가치로 승화시키는 관점 전환 (100~150자)
-4. **neuralCodeDbt**: 위기 상황에서의 감정 조절 행동 지침 (100~150자)
-5. **socratic**: 내면 성찰을 위한 따뜻한 질문 2개 (100~150자)
-6. **recursive**: 평생 꺼내 읽는 긍정 확언문 (100~150자)
+★ 각 필드는 80~120자 이내로 간결하게! 절대 150자를 넘기지 마세요.
 
-반드시 title, darkCodeCbt, metaCodeAct, neuralCodeDbt, socratic, recursive 6개 필드만 포함하세요.
+1. **title**: "${sp.dayMasterShortAnalogy || '일간'}" 본질을 담은 따뜻하고 시적인 제목 (20자 이내)
+2. **sajuAnalysis**: 이 페이지의 주제가 내 사주(일간: ${sp.dayMasterChar || '?'}, 오행 강점/약점)와 어떻게 연결되는지 쉽고 다정하게 설명 (80~120자)
+3. **darkCodeCbt**: [다크코드 🌑] 이 주제에서 내 기질 때문에 자꾸 빠지는 '생각의 함정'을 따뜻하게 알려주고 해체 (80~120자)
+4. **metaCodeAct**: [메타코드 ✨] 단점이라고 생각했던 내 기질을 있는 그대로 받아들이고, 오히려 빛나는 강점으로 바꾸는 관점 전환 (80~120자)
+5. **neuralCodeDbt**: [뉴럴코드 🧬] 이 주제로 마음이 흔들리고 힘들 때, 나를 지켜줄 구체적이고 다정한 행동 처방전 (80~120자)
+6. **socraticMbct**: [마음챙김 🕊️] 내면을 깊이 들여다보게 하는 따뜻한 자각 질문 2개 (80~120자)
+7. **relaxMbsr**: [이완 🧘] 이 주제의 스트레스를 녹이는 호흡법이나 바디스캔 등 구체적 이완 안내 (80~120자)
+8. **selfCompassionMsc**: [자기연민 💛] 나를 비난하는 마음을 멈추고, 따뜻하게 나를 안아주는 자기연민 실천법 (80~120자)
+9. **coachingSolution**: [코칭 솔루션 🎯] 오늘부터 바로 실천할 수 있는 구체적인 행동 과제 1~2개 (80~120자)
+10. **mantra**: [만트라 🌸] 힘들 때마다 꺼내 읽으면 마음에 평화가 깃드는 아름다운 확언문 (80~120자)
+
+반드시 위 10개 필드(title, sajuAnalysis, darkCodeCbt, metaCodeAct, neuralCodeDbt, socraticMbct, relaxMbsr, selfCompassionMsc, coachingSolution, mantra)만 포함하세요.
 `.trim();
 
     const result = await model.generateContent(prompt);

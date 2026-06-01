@@ -865,18 +865,21 @@ export default function Healing108CoachingReport({
     };
 
     const hasAiContent = !!aiPageContent[currentPageKey];
+    const ai = aiPageContent[currentPageKey] || {} as any;
     const displayTitle = hasAiContent 
-        ? aiPageContent[currentPageKey].title 
+        ? ai.title 
         : getResolvedText(currentPageData?.title);
-    const displayDesc = hasAiContent 
-        ? aiPageContent[currentPageKey].desc 
-        : getResolvedText(currentPageData?.desc);
-    const displaySocratic = hasAiContent 
-        ? aiPageContent[currentPageKey].socratic 
-        : getResolvedText(currentPageData?.socratic);
-    const displayRecursive = hasAiContent 
-        ? aiPageContent[currentPageKey].recursive 
-        : getResolvedText(currentPageData?.recursive);
+    // 10모듈 필드 추출 (하위호환: 기존 6필드 데이터도 정상 표시)
+    const displaySajuAnalysis = ai.sajuAnalysis || null;
+    const displayDarkCode = ai.darkCodeCbt || null;
+    const displayMetaCode = ai.metaCodeAct || null;
+    const displayNeuralCode = ai.neuralCodeDbt || null;
+    const displaySocratic = ai.socraticMbct || ai.socratic || getResolvedText(currentPageData?.socratic);
+    const displayRelaxMbsr = ai.relaxMbsr || null;
+    const displaySelfCompassion = ai.selfCompassionMsc || null;
+    const displayCoachingSolution = ai.coachingSolution || null;
+    const displayMantra = ai.mantra || ai.recursive || getResolvedText(currentPageData?.recursive);
+    const displayDesc = ai.desc || getResolvedText(currentPageData?.desc);
 
     // --- 페이지 검색 및 필터링 ---
     const filteredPageKeys = pageKeys.filter(key => {
@@ -1360,55 +1363,106 @@ export default function Healing108CoachingReport({
                                         </h1>
                                     </div>
 
-                                    {/* [평생 통합 리포트 모듈 시작] */}
-                                    {hasAiContent && aiPageContent[currentPageKey].darkCodeCbt ? (
+                                    {/* ===== 10개 모듈 초고도화 시스템 ===== */}
+                                    {hasAiContent && displayDarkCode ? (
                                         <div className="space-y-4">
-                                            {/* CBT 모듈 */}
-                                            <div className="p-4 bg-white/40 border border-white/50 rounded-2xl">
-                                                <h3 className="text-rose-600 font-bold mb-2 flex items-center gap-2">
-                                                    ☁️ 마음의 그림자 걷어내기 <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full">인지 치유</span>
+                                            {/* 1. 사주 기질 분석 카드 */}
+                                            {displaySajuAnalysis && (
+                                            <div className="p-4 bg-gradient-to-r from-slate-50/80 to-indigo-50/60 border border-slate-200/60 rounded-2xl backdrop-blur-sm">
+                                                <h3 className="text-slate-700 font-bold mb-2 flex items-center gap-2 text-sm">
+                                                    🔮 나의 사주 기질 분석 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">사주 해석</span>
                                                 </h3>
-                                                <p className="text-slate-600 leading-relaxed text-[15px] whitespace-pre-wrap">
-                                                    {aiPageContent[currentPageKey].darkCodeCbt}
-                                                </p>
+                                                <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displaySajuAnalysis}</p>
+                                            </div>
+                                            )}
+
+                                            {/* 2. CBT 다크코드 */}
+                                            <div className="p-4 bg-gradient-to-r from-rose-50/60 to-white/60 border border-rose-200/50 rounded-2xl backdrop-blur-sm">
+                                                <h3 className="text-rose-600 font-bold mb-2 flex items-center gap-2 text-sm">
+                                                    🌑 다크코드 — 생각의 함정 걷어내기 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">CBT 인지치유</span>
+                                                </h3>
+                                                <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayDarkCode}</p>
                                             </div>
 
-                                            {/* ACT 모듈 */}
-                                            <div className="p-4 bg-white/40 border border-white/50 rounded-2xl">
-                                                <h3 className="text-indigo-600 font-bold mb-2 flex items-center gap-2">
-                                                    🌟 나의 빛나는 본질 받아들이기 <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full">수용과 전념</span>
+                                            {/* 3. ACT 메타코드 */}
+                                            <div className="p-4 bg-gradient-to-r from-indigo-50/60 to-white/60 border border-indigo-200/50 rounded-2xl backdrop-blur-sm">
+                                                <h3 className="text-indigo-600 font-bold mb-2 flex items-center gap-2 text-sm">
+                                                    ✨ 메타코드 — 빛나는 본질 받아들이기 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">ACT 수용전념</span>
                                                 </h3>
-                                                <p className="text-slate-600 leading-relaxed text-[15px] whitespace-pre-wrap">
-                                                    {aiPageContent[currentPageKey].metaCodeAct}
-                                                </p>
+                                                <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayMetaCode}</p>
                                             </div>
 
-                                            {/* DBT 모듈 */}
-                                            <div className="p-4 bg-white/40 border border-white/50 rounded-2xl">
-                                                <h3 className="text-teal-600 font-bold mb-2 flex items-center gap-2">
-                                                    🌿 마음이 흔들릴 때, 나를 지키는 다정한 처방전 <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full">행동 치유</span>
+                                            {/* 4. DBT 뉴럴코드 */}
+                                            <div className="p-4 bg-gradient-to-r from-teal-50/60 to-white/60 border border-teal-200/50 rounded-2xl backdrop-blur-sm">
+                                                <h3 className="text-teal-600 font-bold mb-2 flex items-center gap-2 text-sm">
+                                                    🧬 뉴럴코드 — 마음이 흔들릴 때 처방전 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">DBT 행동치유</span>
                                                 </h3>
-                                                <p className="text-slate-600 leading-relaxed text-[15px] whitespace-pre-wrap">
-                                                    {aiPageContent[currentPageKey].neuralCodeDbt}
-                                                </p>
+                                                <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayNeuralCode}</p>
                                             </div>
+
+                                            {/* 5. MBCT 마음챙김 자각 */}
+                                            <div className="p-4 bg-gradient-to-r from-amber-50/60 to-white/60 border border-amber-200/50 rounded-2xl backdrop-blur-sm">
+                                                <h3 className="text-amber-700 font-bold mb-2 flex items-center gap-2 text-sm">
+                                                    🕊️ 마음챙김 자각 질문 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">MBCT 마음챙김</span>
+                                                </h3>
+                                                <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displaySocratic}</p>
+                                            </div>
+
+                                            {/* 6. MBSR 스트레스 이완 */}
+                                            {displayRelaxMbsr && (
+                                            <div className="p-4 bg-gradient-to-r from-cyan-50/60 to-white/60 border border-cyan-200/50 rounded-2xl backdrop-blur-sm">
+                                                <h3 className="text-cyan-700 font-bold mb-2 flex items-center gap-2 text-sm">
+                                                    🧘 스트레스 이완 안내 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">MBSR 이완</span>
+                                                </h3>
+                                                <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayRelaxMbsr}</p>
+                                            </div>
+                                            )}
+
+                                            {/* 7. MSC 자기연민 */}
+                                            {displaySelfCompassion && (
+                                            <div className="p-4 bg-gradient-to-r from-purple-50/60 to-white/60 border border-purple-200/50 rounded-2xl backdrop-blur-sm">
+                                                <h3 className="text-purple-600 font-bold mb-2 flex items-center gap-2 text-sm">
+                                                    💛 자기연민 실천 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">MSC 자기연민</span>
+                                                </h3>
+                                                <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displaySelfCompassion}</p>
+                                            </div>
+                                            )}
+
+                                            {/* 8. 코칭 솔루션 */}
+                                            {displayCoachingSolution && (
+                                            <div className="p-4 bg-gradient-to-r from-emerald-50/60 to-white/60 border border-emerald-200/50 rounded-2xl backdrop-blur-sm">
+                                                <h3 className="text-emerald-600 font-bold mb-2 flex items-center gap-2 text-sm">
+                                                    🎯 오늘의 코칭 솔루션 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">실천 과제</span>
+                                                </h3>
+                                                <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayCoachingSolution}</p>
+                                            </div>
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="p-5 md:p-6 bg-white/40 border border-white/50 rounded-2xl text-slate-600 leading-relaxed text-[15px] whitespace-pre-wrap shadow-inner relative overflow-hidden group">
                                             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-3xl group-hover:bg-rose-500/10 transition-colors duration-500"></div>
-                                            {aiPageContent[currentPageKey]?.desc || getResolvedText(currentPageData?.desc)}
+                                            {displayDesc}
                                         </div>
                                     )}
 
-                                    {/* MBCT 소크라테스식 자각 질문 */}
+                                    {/* MBCT 소크라테스식 자각 질문 (AI가 없을 때도 기본 데이터로 표시) */}
+                                    {!hasAiContent && (
                                     <div className="mt-8 space-y-4">
                                         <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
                                             🕊️ 고요한 내면에게 건네는 따뜻한 질문
                                             <span className="text-xs text-slate-400 font-normal bg-white/40 px-2 py-0.5 rounded-full">마음챙김 질문</span>
                                         </h3>
                                         <div className="p-4 md:p-5 bg-rose-500/10 border border-pink-500/20 rounded-2xl text-indigo-900/90 leading-relaxed text-[15px] shadow-[0_4px_20px_rgba(236,72,153,0.05)]">
-                                            {aiPageContent[currentPageKey]?.socratic || getResolvedText(currentPageData?.socratic)}
+                                            {displaySocratic}
                                         </div>
+                                    </div>
+                                    )}
+
+                                    {/* 자각 기록 textarea */}
+                                    <div className="mt-4 space-y-3">
+                                        <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                            ✍️ 나의 자각 기록
+                                        </h3>
                                         <textarea
                                             value={answers[currentPageKey] || ''}
                                             onChange={(e) => handleAnswerChange(currentPageKey, e.target.value)}
@@ -1417,12 +1471,12 @@ export default function Healing108CoachingReport({
                                         />
                                     </div>
 
-                                    {/* 참나 확약 및 승인 버튼 */}
+                                    {/* 9. 만트라 확언 + 승인 버튼 */}
                                     <div className="bg-gradient-to-r from-rose-50/50 via-indigo-50/50 to-transparent border border-rose-100 rounded-2xl p-3 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
                                         <div className="flex-1 space-y-0.5">
-                                            <span className="text-slate-800">🌸 나를 온전히 사랑하기 위한 오늘의 확언 (만트라) <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full ml-1">스트레스 감소</span></span>
+                                            <span className="text-slate-800 text-sm font-semibold">🌸 만트라 — 나를 온전히 사랑하는 확언 <span className="text-xs text-slate-400 font-normal bg-slate-200/50 px-2 py-0.5 rounded-full ml-1">확언</span></span>
                                             <div className="text-[15px] text-slate-600 leading-relaxed whitespace-pre-wrap">
-                                                "{aiPageContent[currentPageKey]?.recursive || getResolvedText(currentPageData?.recursive)}"
+                                                "{displayMantra}"
                                             </div>
                                         </div>
                                         <button
