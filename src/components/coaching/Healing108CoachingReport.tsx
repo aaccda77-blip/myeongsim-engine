@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, FileText, ChevronLeft, ChevronRight, X, Heart, Sparkles, BookOpen, Menu, Search } from 'lucide-react';
+import { Volume2, VolumeX, FileText, ChevronLeft, ChevronRight, X, Heart, Sparkles, BookOpen, Menu, Search, RefreshCw } from 'lucide-react';
 import { saju108Matrix } from '@/data/saju108Matrix';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
@@ -306,6 +306,51 @@ export default function Healing108CoachingReport({
         // 햅틱 진동 피드백
         if (typeof navigator !== 'undefined' && navigator.vibrate) {
             navigator.vibrate(30);
+        }
+    };
+
+    const forceRegenerateCurrentPage = async () => {
+        if (!activeSaju || userKey === 'guest' || isGeneratingAi) return;
+
+        setIsGeneratingAi(true);
+        try {
+            const pageData = saju108Matrix[currentPageKey];
+            if (!pageData) return;
+
+            const resolvedOriginalPage = {
+                title: getResolvedText(pageData.title),
+                desc: getResolvedText(pageData.desc),
+                socratic: getResolvedText(pageData.socratic),
+                recursive: getResolvedText(pageData.recursive),
+            };
+
+            const profile = buildSajuProfile();
+
+            const response = await fetch('/api/coaching/generate-108', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pageKey: currentPageKey,
+                    sajuData: activeSaju,
+                    sajuProfile: profile,
+                    originalPage: resolvedOriginalPage
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.pageData) {
+                    setAiPageContent(prev => {
+                        const updated = { ...prev, [currentPageKey]: data.pageData };
+                        localStorage.setItem(aiContentKey, JSON.stringify(updated));
+                        return updated;
+                    });
+                }
+            }
+        } catch (err) {
+            console.warn(`❌ [Gemini 108 API] 수동 재생성 오류:`, err);
+        } finally {
+            setIsGeneratingAi(false);
         }
     };
 
@@ -1038,6 +1083,22 @@ export default function Healing108CoachingReport({
 
                     {/* 이완 사운드 & 심호흡 컨트롤 */}
                     <div className="flex items-center gap-2">
+                        {/* 새 기질로 다시 생성 버튼 */}
+                        {activeSaju && userKey !== 'guest' && (
+                            <button
+                                onClick={forceRegenerateCurrentPage}
+                                disabled={isGeneratingAi}
+                                className={`p-2 rounded-xl border flex items-center gap-1.5 transition-all text-[9px] font-bold tracking-wider ${
+                                    isGeneratingAi
+                                        ? 'bg-pink-500/10 border-pink-500/30 text-pink-300 cursor-not-allowed shadow-[0_0_10px_rgba(236,72,153,0.1)]'
+                                        : 'bg-white/5 border-white/5 hover:bg-white/10 text-gray-400 hover:text-pink-400 hover:border-pink-500/20'
+                                }`}
+                            >
+                                <RefreshCw size={14} className={isGeneratingAi ? 'animate-spin text-pink-400' : ''} />
+                                {isGeneratingAi ? '생성 중...' : '새 기질로 다시 생성 (AI)'}
+                            </button>
+                        )}
+
                         <button
                             onClick={toggleBgm}
                             className={`p-2 rounded-xl border flex items-center gap-1.5 transition-all ${
