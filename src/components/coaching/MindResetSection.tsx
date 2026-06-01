@@ -330,46 +330,36 @@ export default function MindResetSection() {
                   autoFocus
                 />
                 
-                {/* 🌿 입력창 클릭 시(Focus)에만 사주 8자 종합 분석 고민 카드 덱이 영롱하게 솟아오름 */}
-                <AnimatePresence>
-                  {isFocused && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0, y: 15 }}
-                      animate={{ opacity: 1, height: 'auto', y: 0 }}
-                      exit={{ opacity: 0, height: 0, y: 15 }}
-                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                      className="mt-2 space-y-2 overflow-hidden w-full"
-                    >
-                      <p className="text-[11px] text-cyan-500/80 flex items-center gap-1.5 font-bold ml-1">
-                        <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-                        {reportData ? "당신의 년월일시 사주 종합 분석에 어울리는 추천 고민" : "초보자를 위한 추천 고민 선택지"}
-                      </p>
-                      <div className="grid grid-cols-1 gap-2.5 max-h-[190px] overflow-y-auto pr-1 scrollbar-thin">
-                        {getTroubleCards(reportData).map((card, i) => (
-                          <motion.div
-                            key={i}
-                            whileHover={{ scale: 1.01, borderColor: 'rgba(6,182,212,0.4)' }}
-                            whileTap={{ scale: 0.99 }}
-                            onClick={() => setInputValue(card.text)}
-                            className={`cursor-pointer text-left p-3.5 rounded-xl border border-cyan-950/40 bg-slate-950/80 backdrop-blur-md transition-all ${
-                              inputValue === card.text
-                                ? 'border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)] bg-cyan-950/20'
-                                : 'hover:bg-slate-900/50'
-                            }`}
-                          >
-                            <div className="flex justify-between items-center mb-1">
-                              <span className="text-xs font-bold text-cyan-300">{card.title}</span>
-                              {inputValue === card.text && (
-                                <span className="text-[9px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded font-mono">선택됨</span>
-                              )}
-                            </div>
-                            <p className="text-[11px] text-slate-400/90 leading-relaxed break-keep">{card.desc}</p>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* 🌿 사주 8자 종합 분석 고민 카드 덱 (초보자용 가이드 - 100% 상시 오픈으로 최강의 신뢰성 보장) */}
+                <div className="mt-2 space-y-2 w-full">
+                  <p className="text-[11px] text-cyan-500/80 flex items-center gap-1.5 font-bold ml-1">
+                    <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                    {reportData ? "당신의 년월일시 사주 종합 분석에 어울리는 추천 고민" : "초보자를 위한 추천 고민 선택지"}
+                  </p>
+                  <div className="grid grid-cols-1 gap-2.5 max-h-[190px] overflow-y-auto pr-1 scrollbar-thin">
+                    {getTroubleCards(reportData).map((card, i) => (
+                      <motion.div
+                        key={i}
+                        whileHover={{ scale: 1.01, borderColor: 'rgba(6,182,212,0.4)' }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={() => setInputValue(card.text)}
+                        className={`cursor-pointer text-left p-3.5 rounded-xl border border-cyan-950/40 bg-slate-950/80 backdrop-blur-md transition-all ${
+                          inputValue === card.text
+                            ? 'border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)] bg-cyan-950/20'
+                            : 'hover:bg-slate-900/50'
+                        }`}
+                      >
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-bold text-cyan-300">{card.title}</span>
+                          {inputValue === card.text && (
+                            <span className="text-[9px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded font-mono">선택됨</span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-400/90 leading-relaxed break-keep">{card.desc}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
 
                 <button 
                   type="submit"
