@@ -68,10 +68,12 @@ export async function POST(req: NextRequest) {
         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
       ],
       generationConfig: { 
-        temperature: 0.88, 
-        maxOutputTokens: 6144,
+        temperature: 0.8, 
+        maxOutputTokens: 4096,
         responseMimeType: "application/json",
-        responseSchema: jsonSchema
+        responseSchema: jsonSchema,
+        // @ts-ignore - thinking budget 제한으로 504 타임아웃 방지
+        thinkingConfig: { thinkingBudget: 1024 }
       },
     });
 
@@ -197,20 +199,20 @@ ${tenGodNarrative.map(n => `  · ${n}`).join('\n')}
 - "~해요", "~거예요", "~죠" 같은 다정하고 따뜻한 친구 말투로 쓰세요.
 - 읽는 사람의 마음을 어루만지는 감동적이고 시적인 이야기체로 쓰세요.
 
-★ 각 필드는 80~120자 이내로 간결하게! 절대 150자를 넘기지 마세요.
+★ 각 필드는 반드시 50~80자! 절대 100자를 넘기지 마세요. 짧고 임팩트 있게!
 
-1. **title**: "${sp.dayMasterShortAnalogy || '일간'}" 본질을 담은 따뜻하고 시적인 제목 (20자 이내)
-2. **sajuAnalysis**: 이 페이지의 주제가 내 사주(일간: ${sp.dayMasterChar || '?'}, 오행 강점/약점)와 어떻게 연결되는지 쉽고 다정하게 설명 (80~120자)
-3. **darkCodeCbt**: [다크코드 🌑] 이 주제에서 내 기질 때문에 자꾸 빠지는 '생각의 함정'을 따뜻하게 알려주고 해체 (80~120자)
-4. **metaCodeAct**: [메타코드 ✨] 단점이라고 생각했던 내 기질을 있는 그대로 받아들이고, 오히려 빛나는 강점으로 바꾸는 관점 전환 (80~120자)
-5. **neuralCodeDbt**: [뉴럴코드 🧬] 이 주제로 마음이 흔들리고 힘들 때, 나를 지켜줄 구체적이고 다정한 행동 처방전 (80~120자)
-6. **socraticMbct**: [마음챙김 🕊️] 내면을 깊이 들여다보게 하는 따뜻한 자각 질문 2개 (80~120자)
-7. **relaxMbsr**: [이완 🧘] 이 주제의 스트레스를 녹이는 호흡법이나 바디스캔 등 구체적 이완 안내 (80~120자)
-8. **selfCompassionMsc**: [자기연민 💛] 나를 비난하는 마음을 멈추고, 따뜻하게 나를 안아주는 자기연민 실천법 (80~120자)
-9. **coachingSolution**: [코칭 솔루션 🎯] 오늘부터 바로 실천할 수 있는 구체적인 행동 과제 1~2개 (80~120자)
-10. **mantra**: [만트라 🌸] 힘들 때마다 꺼내 읽으면 마음에 평화가 깃드는 아름다운 확언문 (80~120자)
+1. **title**: 시적 제목 (15자 이내)
+2. **sajuAnalysis**: 이 주제와 내 사주의 연결 (50~80자)
+3. **darkCodeCbt**: 생각의 함정 해체 (50~80자)
+4. **metaCodeAct**: 기질 수용과 강점 전환 (50~80자)
+5. **neuralCodeDbt**: 힘들 때 행동 처방전 (50~80자)
+6. **socraticMbct**: 내면 자각 질문 1~2개 (50~80자)
+7. **relaxMbsr**: 구체적 이완 안내 (50~80자)
+8. **selfCompassionMsc**: 자기연민 실천법 (50~80자)
+9. **coachingSolution**: 오늘 실천 과제 1개 (50~80자)
+10. **mantra**: 확언문 한 줄 (50~80자)
 
-반드시 위 10개 필드(title, sajuAnalysis, darkCodeCbt, metaCodeAct, neuralCodeDbt, socraticMbct, relaxMbsr, selfCompassionMsc, coachingSolution, mantra)만 포함하세요.
+10개 필드만 포함. 짧고 다정하게!
 `.trim();
 
     const result = await model.generateContent(prompt);
