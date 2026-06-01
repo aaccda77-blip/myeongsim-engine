@@ -1582,7 +1582,6 @@ export default function Healing108CoachingReport({
                             </main>
                         </div>
                     </div>
-                </div>
 
                 {/* ===== 모듈 상세 풀이 모달 ===== */}
                 <AnimatePresence>
@@ -1662,6 +1661,7 @@ export default function Healing108CoachingReport({
                         </motion.div>
                     )}
                 </AnimatePresence>
+                </div>
             </div>
     , portalContainer!);
 }
