@@ -52,6 +52,28 @@ const TAB_CONFIG: Record<StateType, {
     },
 };
 
+// ============== 💡 질문 유형별 감동 해설 및 격려 메세지 딕셔너리 ==============
+const GUIDE_CONTENTS: Record<string, { title: string; subtitle: string; body: string; quote: string }> = {
+    'Socratic': {
+        title: "🔍 산파술 질문의 따뜻한 본질",
+        subtitle: "내면의 상처를 지켜주던 수호자와 인사하기",
+        body: "이 질문은 마음 깊은 곳에서 나를 다치지 않게 하려고 평생 애쓰던 '내면의 오랜 수호자'를 만나는 첫걸음이에요.\n\n불안함, 예민함, 혹은 과한 욕심 같은 아픈 감정들은 실은 당신이 더는 상처받지 않도록 에고가 켜둔 비상 알람이랍니다. 지금의 힘든 나를 비난하기보다, '그동안 나를 지키느라 정말 애썼구나' 하고 가슴속을 따뜻하게 다독여 주세요.",
+        quote: "🌿 \"완벽하지 않아도 괜찮아요. 지친 에고를 먼저 부드럽게 안아줄 때, 진짜 나다운 치유가 시작됩니다.\""
+    },
+    'Recursive': {
+        title: "🔄 재귀적 질문의 따뜻한 본질",
+        subtitle: "내 마음에 굳게 박힌 슬픈 규칙 들여다보기",
+        body: "이 질문은 내 무의식 속에 깊숙이 숨어있던 '오래된 에러 코드'를 가만히 발견하는 소중한 시간이에요.\n\n우리는 살아가면서 '완벽하지 못하면 사랑받지 못할 거야', 혹은 '남을 먼저 돕지 않으면 내 가치가 증명되지 않아' 같은 슬픈 규칙을 나도 모르게 마음에 적어두곤 하죠. 그 낡고 어두운 규칙을 조용히 양지로 꺼내어 빛으로 비추어 보세요.",
+        quote: "💎 \"우리는 존재 자체로 이미 온전하고 완벽한 걸작입니다. 낡은 상처의 조건표에 내 가치를 가두지 마세요.\""
+    },
+    'Awareness': {
+        title: "👁️ 알아차림 질문의 따뜻한 본질",
+        subtitle: "생각의 폭풍우 속에서도 절대 흔들리지 않는 고요한 나",
+        body: "이 질문은 휘몰아치는 생각과 두려움에서 30cm 정도만 살짝 물러나, 그 폭풍우를 가만히 바라보는 맑은 하늘처럼 고요한 참나(순수 자각)를 마주하는 단계입니다.\n\n불안하고 슬픈 마음은 흘러가는 '영화 장면'일 뿐, '영사기 스크린 자체인 당신'을 절대 훼손할 수 없답니다. 관찰자 시선에서 상처를 묵묵히 견디느라 피로했던 스스로에게 세상에서 가장 감동적이고 다정한 찬사와 지지를 건네주세요.",
+        quote: "🌌 \"당신은 흙탕물이 아니라 그 모든 출렁임을 품고 있는 고요하고 웅장한 바다 자체입니다.\""
+    }
+};
+
 // ============== SCENARIO DATA (한 글자도 빠짐없이 원문 그대로) ==============
 interface SlideData {
     stepLabel: string;
@@ -221,7 +243,19 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
     const [currentStep, setCurrentStep] = useState(-1); // -1 = awareness screen
     const [inputs, setInputs] = useState<Record<string, string>>({});
     const [showCompletion, setShowCompletion] = useState(false);
+    const [activeGuide, setActiveGuide] = useState<string | null>(null); // ✅ 질문 가이드 팝업 상태
     const sessionStartRef = useRef<number>(Date.now());
+
+    // 💡 질문 유형에 따른 가이드 팝업 호출 함수
+    const handleShowGuide = (stepLabel: string) => {
+        if (stepLabel.toLowerCase().includes('산파') || stepLabel.toLowerCase().includes('socratic')) {
+            setActiveGuide('Socratic');
+        } else if (stepLabel.toLowerCase().includes('재귀') || stepLabel.toLowerCase().includes('recursive')) {
+            setActiveGuide('Recursive');
+        } else {
+            setActiveGuide('Awareness');
+        }
+    };
 
     // ── 일진 기반 동적 질문 상태 ─────────────────────────
     const [dailyQuestions, setDailyQuestions] = useState<any>(null);
@@ -296,6 +330,7 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
         setCurrentState('dark');
         setShowCompletion(false);
         setInputs({});
+        setActiveGuide(null); // ✅ 가이드 상태 초기화
         onClose();
     }, [onClose]);
 
@@ -473,10 +508,23 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                                                 <p className="text-gray-400/90 text-sm font-medium">{stateScenario.slides[currentStep].stepDesc}</p>
                                             </div>
 
-                                            <div className={`bg-gradient-to-br ${tab.bgGradient} rounded-[1.5rem] p-6 border ${tab.borderColor} mb-5 shadow-inner relative`}>
-                                                <p className="text-gray-200 text-[15px] leading-loose font-medium text-center break-keep">
+                                            <div 
+                                                onClick={() => handleShowGuide(stateScenario.slides[currentStep].stepLabel)}
+                                                className={`bg-gradient-to-br ${tab.bgGradient} rounded-[1.5rem] p-6 border ${tab.borderColor} mb-3 shadow-inner relative cursor-pointer hover:border-indigo-500/50 hover:bg-white/[0.02] active:scale-[0.99] transition-all group overflow-hidden`}
+                                            >
+                                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse" />
+                                                <p className="text-gray-200 text-[15px] leading-loose font-medium text-center break-keep group-hover:text-white transition-colors">
                                                     "{stateScenario.slides[currentStep].question}"
                                                 </p>
+                                            </div>
+
+                                            {/* 💡 질문 힌트 가이드 라인 */}
+                                            <div 
+                                                onClick={() => handleShowGuide(stateScenario.slides[currentStep].stepLabel)}
+                                                className="text-center text-[10px] text-gray-500 hover:text-cyan-400 transition-all cursor-pointer flex items-center justify-center gap-1.5 mb-5 select-none"
+                                            >
+                                                <Sparkles className="w-3.5 h-3.5 text-cyan-400/80 animate-pulse" />
+                                                <span>질문이 막막하거나 어려우신가요? (클릭하여 다정한 가이드 읽기)</span>
                                             </div>
 
                                             {/* AI Tip (Lightbulb) */}
@@ -555,6 +603,62 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                                             (<>다음으로<ChevronRight size={16} /></>)}
                             </button>
                         </div>
+                        {/* 💡 세상에서 가장 다정하고 감동적인 질문 가이드 오버레이 팝업 */}
+                        <AnimatePresence>
+                            {activeGuide && GUIDE_CONTENTS[activeGuide] && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="absolute inset-0 z-[100] bg-black/85 backdrop-blur-lg flex flex-col justify-end p-6 select-none"
+                                >
+                                    <motion.div
+                                        initial={{ y: 50, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        exit={{ y: 50, opacity: 0 }}
+                                        transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+                                        className="w-full flex flex-col max-h-[85%] overflow-y-auto scrollbar-hide bg-slate-900/90 border border-white/10 rounded-[1.8rem] p-6 shadow-2xl"
+                                    >
+                                        <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-3">
+                                            <div className="flex items-center gap-2">
+                                                <Sparkles className="w-4 h-4 text-cyan-400 animate-pulse" />
+                                                <span className="text-xs font-bold text-cyan-400 font-mono tracking-wider uppercase">Myeongsim Coach Guide</span>
+                                            </div>
+                                            <button 
+                                                onClick={() => setActiveGuide(null)} 
+                                                className="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/5 backdrop-blur-md bg-white/5"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+
+                                        <h4 className="text-white font-extrabold text-[16px] tracking-tight leading-snug break-keep mb-1">
+                                            {GUIDE_CONTENTS[activeGuide].title}
+                                        </h4>
+                                        <p className="text-cyan-200/80 text-[11px] font-bold tracking-tight mb-4">
+                                            {GUIDE_CONTENTS[activeGuide].subtitle}
+                                        </p>
+
+                                        <div className="text-gray-300 text-[12.5px] leading-relaxed break-keep font-medium mb-6 whitespace-pre-wrap">
+                                            {GUIDE_CONTENTS[activeGuide].body}
+                                        </div>
+
+                                        <div className="bg-cyan-950/20 border border-cyan-800/30 rounded-2xl p-4 shadow-inner">
+                                            <p className="text-cyan-300/90 text-xs italic leading-relaxed break-keep text-center font-bold">
+                                                {GUIDE_CONTENTS[activeGuide].quote}
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            onClick={() => setActiveGuide(null)}
+                                            className="w-full mt-6 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-[13px] py-4 rounded-2xl shadow-lg transition-all"
+                                        >
+                                            네, 따뜻한 마음으로 다시 답해볼게요 ✨
+                                        </button>
+                                    </motion.div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 </motion.div>
             )}

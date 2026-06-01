@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Bug, Scan, Eye, Sparkles, Brain, Activity, Shield, RotateCcw } from 'lucide-react';
+import { useReportStore } from '@/store/useReportStore';
 
 interface DebuggingData {
   sourceCode: string;
@@ -15,9 +16,201 @@ interface DebuggingData {
   zeroPointSolutions: { title: string; text: string }[];
 }
 
+interface TroubleCard {
+  title: string;
+  desc: string;
+  text: string;
+}
+
+// 🌿 사주 8자(5대 역량 스탯 + 일간) 종합 분석 1:1 고민 템플릿 생성 헬퍼
+const getTroubleCards = (reportData: any): TroubleCard[] => {
+  if (!reportData) {
+    return [
+      {
+        title: "🌌 불확실한 미래",
+        desc: "미래에 대한 불안 때문에 가슴이 답답하고 잠을 설쳐요.",
+        text: "미래에 대한 불확실성 때문에 가슴이 답답하고 불안해서 자꾸만 조급해지고 잠을 설쳐요."
+      },
+      {
+        title: "🤝 관계 속의 외로움",
+        desc: "사람들 사이에서 겉돌거나 고립되는 느낌이 들고 눈치가 보여요.",
+        text: "주변 사람들과의 관계 속에서 끊임없이 오해를 사거나 겉돌고 눈치를 보느라 마음이 피곤해요."
+      },
+      {
+        title: "👣 나아갈 길의 모호함",
+        desc: "내가 가고 있는 길이 맞는지 회의감이 들고 무기력해요.",
+        text: "내가 열심히 가고 있는 이 길이 정말 맞는지 확신이 서지 않아 매 순간이 무기력하고 회의감이 들어요."
+      }
+    ];
+  }
+
+  const { stats, saju } = reportData;
+  const dayMaster = saju?.dayMaster || '';
+
+  // 5대 스탯 중 최댓값 찾기
+  const statsList = [
+    { key: 'empathy', value: stats?.empathy || 0, label: '공감 과부하' },
+    { key: 'leadership', value: stats?.leadership || 0, label: '리더십 강박' },
+    { key: 'creativity', value: stats?.creativity || 0, label: '생각 과잉' },
+    { key: 'wealth', value: stats?.wealth || 0, label: '결과 초조' },
+    { key: 'execution', value: stats?.execution || 0, label: '완벽주의/자책' }
+  ];
+  statsList.sort((a, b) => b.value - a.value);
+  const topStat = statsList[0];
+
+  const cards: TroubleCard[] = [];
+
+  // 1. 최상위 스탯 기반 고민 추천 (2개 추출)
+  if (topStat.key === 'empathy') {
+    cards.push({
+      title: "❤️ 공감 과부하",
+      desc: "타인의 부정적인 감정에 너무 쉽게 휩쓸려 내 에너지가 방전돼요.",
+      text: "주변 사람들의 슬픔이나 짜증 같은 부정적인 감정을 귀신같이 흡수하느라 내 마음이 텅 비고 지쳐버렸어요."
+    });
+    cards.push({
+      title: "🎭 타인의 시선",
+      desc: "모두를 실망시키지 않으려 눈치 보며 가면을 쓰느라 피곤해요.",
+      text: "타인의 기대와 눈치를 보며 항상 다정하고 온화한 가면을 쓰느라 정작 내 진짜 감정은 억누르고 외로워요."
+    });
+  } else if (topStat.key === 'leadership') {
+    cards.push({
+      title: "👑 완벽한 책임감",
+      desc: "모든 상황을 혼자 짊어지고 이끌어야 한다는 강박에 짓눌려요.",
+      text: "내가 모든 것을 다 완벽하게 책임지고 리드해야 한다는 강박 때문에 남에게 의지하지도 못하고 외롭게 번아웃이 왔어요."
+    });
+    cards.push({
+      title: "🛡️ 통제력 상실 두려움",
+      desc: "상황이 내 통제를 벗어날 때 심장이 뛰고 극도로 불안해져요.",
+      text: "상황이나 결과가 내 예상과 통제를 벗어나는 순간, 엄청난 패배감이 들고 실패한 것 같아 심장 밑바닥이 불안해져요."
+    });
+  } else if (topStat.key === 'creativity') {
+    cards.push({
+      title: "💭 생각의 늪 (과잉)",
+      desc: "생각이 꼬리에 꼬리를 물고 이어져 머릿속이 터질 것 같아요.",
+      text: "조용히 잠들고 싶은데도 머릿속에서 수많은 생각과 최악의 시나리오가 끊임없이 재생되어 뇌가 쉬지 못하고 지쳐있어요."
+    });
+    cards.push({
+      title: "⏳ 시작의 두려움",
+      desc: "생각만 하다가 행동으로 옮기지 못하고 시간만 흐르는 게 겁나요.",
+      text: "머릿속으로 수백 번 시뮬레이션을 돌리며 완벽을 기하지만 정작 실행으로 첫 발을 떼는 것이 두렵고 시작조차 무기력해요."
+    });
+  } else if (topStat.key === 'wealth') {
+    cards.push({
+      title: "📈 결과와 결실 강박",
+      desc: "눈에 보이는 뚜렷한 성과가 즉시 나오지 않으면 극도로 초조해요.",
+      text: "열심히 공들였는데도 당장 손에 잡히는 수치적인 성과나 보상이 따라오지 않아 내 가치까지 전부 쓸모없게 느껴지고 조급해요."
+    });
+    cards.push({
+      title: "🏃 뒤처지는 두려움",
+      desc: "동료들보다 낙오되거나 뒤처지는 것 같아 매 순간 쫓기는 기분이에요.",
+      text: "나만 제자리에 고여있고 다른 사람들은 저 멀리 앞서가는 것 같아, 숨 가쁘게 달리면서도 한편으론 늘 뒤처질까 봐 불안해요."
+    });
+  } else { // execution
+    cards.push({
+      title: "🔍 극단적 완벽주의",
+      desc: "사소한 실수나 부족함도 용납할 수 없어 나를 끊임없이 채찍질해요.",
+      text: "아주 조그마한 실수나 흠집 하나에도 억장이 무너져 내리고, 내 자신에게 가혹할 정도로 비판적인 잣대를 들이대며 질책해요."
+    });
+    cards.push({
+      title: "⛓️ 굳어버린 긴장감",
+      desc: "실수하면 모든 게 망가질 것 같은 공포에 온몸이 뻣뻣하게 굳어요.",
+      text: "한 번의 실수가 도미노처럼 내 모든 평판과 미래를 무너뜨릴 것 같다는 공포심에 가슴이 굳고 편안하게 쉴 수가 없어요."
+    });
+  }
+
+  // 2. 사주 일간(Day Master) 기반 기질형 고민 추천 (1개 추가)
+  const ganMap: Record<string, { title: string; desc: string; text: string }> = {
+    '甲': {
+      title: "🌳 甲木(갑목)의 강박",
+      desc: "가장 든든한 나무가 되어야 한다는 생각에 약점을 감추고 버텨요.",
+      text: "하늘을 향해 곧게 뻗은 아름다운 나무처럼 늘 단단하고 흔들림 없어야 한다는 부담에 내 유약한 상처를 털어놓지 못하고 굳어가고 있어요."
+    },
+    '乙': {
+      title: "🌱 乙木(을목)의 소진",
+      desc: "바람에 흔들리며 남들의 장단에 맞춰주느라 에너지가 방전됐어요.",
+      text: "갈등을 만들지 않고 유연하게 주변 조화를 지키느라 정작 내가 진정으로 원하고 외치는 내면의 소리는 외면당한 채 속앓이를 하고 있어요."
+    },
+    '丙': {
+      title: "☀️ 丙火(병화)의 가면",
+      desc: "항상 태양처럼 밝고 찬란한 모습만 보여줘야 해서 눈물이 나요.",
+      text: "남들에게는 항상 늘 긍정적이고 화사한 에너지만 나눠주어야 한다는 압박감에, 내 깊은 어둠과 우울을 감춘 채 외롭게 썩어가고 있어요."
+    },
+    '丁': {
+      title: "🕯️ 丁火(정화)의 서운함",
+      desc: "따뜻하게 챙겨주면서도 혼자 서운함을 삼키고 곱씹게 돼요.",
+      text: "촛불처럼 나를 녹여 남들을 보살펴 주면서도 정작 나는 누구에게도 따뜻하게 품어지지 못하는 것 같아 가슴 깊은 곳에서 서운함과 서글픔이 밀려와요."
+    },
+    '戊': {
+      title: "⛰️ 戊土(무토)의 고독",
+      desc: "거대한 산처럼 흔들림 없어야 해서 어떤 아픔도 털어놓지 못해요.",
+      text: "다들 나를 믿음직한 산으로 보기에 어떤 짐을 지고 있어도 든든하게 웃어야만 해서, 외롭게 내 눈물을 땅 깊은 곳에 묻어두고 속을 썩이고 있어요."
+    },
+    '己': {
+      title: "🌾 己土(기토)의 피로",
+      desc: "타인의 징징거림을 다 수용해주다 정작 내 밭이 황폐해졌어요.",
+      text: "남들의 투정과 상처받은 마음을 다정하게 감싸안고 치유해 주었지만, 이제는 과부하가 걸려 내 마음 밭이 완전히 황폐화되고 메말라 버렸어요."
+    },
+    '庚': {
+      title: "⚔️ 庚金(경금)의 단단함",
+      desc: "강인한 철벽을 두르고 홀로 외로운 싸움을 하며 단단히 굳었어요.",
+      text: "상처받거나 흔들리지 않기 위해 내 주위에 날카롭고 굳건한 바위 성벽을 쌓아 올렸는데, 결국 아무도 다가오지 않는 감옥이 되어 외로워요."
+    },
+    '辛': {
+      title: "💎 辛金(신금)의 예민함",
+      desc: "실수 한 번에 낙오될 것 같은 두려움에 날카로운 날이 서 있어요.",
+      text: "다이아몬드처럼 가장 완벽하게 반짝여야 한다는 공포에 사소한 흠집 하나에도 온몸이 난도질당하는 기분이며 날카롭게 날이 서 피곤해요."
+    },
+    '壬': {
+      title: "🌊 壬水(임수)의 침잠",
+      desc: "바다 같은 감정의 깊은 바닥에 잠겨 우울의 파도에 허우적대요.",
+      text: "끝을 알 수 없는 무거운 상념의 바다 깊은 곳으로 한없이 가라앉는 기분이며, 미래에 대한 아득한 두려움이 거센 파도처럼 밀려옵니다."
+    },
+    '癸': {
+      title: "☔ 癸水(계수)의 눈치",
+      desc: "단비처럼 스며들려다 나조차 희미해져 관계 속에 전전긍긍해요.",
+      text: "타인의 기분과 마음 날씨에 내 존재를 안개처럼 맞춰주다 보니 나 자신이 다 증발해버린 것 같고 쓸모없는 메아리가 된 것 같아 서글퍼요."
+    }
+  };
+
+  const masterGan = dayMaster ? dayMaster.trim() : '';
+  if (ganMap[masterGan]) {
+    cards.push(ganMap[masterGan]);
+  } else {
+    cards.push({
+      title: "🌌 불확실한 미래",
+      desc: "미래에 대한 불안 때문에 가슴이 답답하고 잠을 설쳐요.",
+      text: "미래에 대한 불확실성 때문에 가슴이 답답하고 불안해서 자꾸만 조급해지고 잠을 설쳐요."
+    });
+  }
+
+  // 3. 3개 보장
+  const defaultList = [
+    {
+      title: "🤝 관계 속의 외로움",
+      desc: "사람들 사이에서 겉돌거나 고립되는 느낌이 들고 눈치가 보여요.",
+      text: "주변 사람들과의 관계 속에서 끊임없이 오해를 사거나 겉돌고 눈치를 보느라 마음이 피곤해요."
+    },
+    {
+      title: "👣 나아갈 길의 모호함",
+      desc: "내가 가고 있는 길이 맞는지 회의감이 들고 무기력해요.",
+      text: "내가 열심히 가고 있는 이 길이 정말 맞는지 확신이 서지 않아 매 순간이 무기력하고 회의감이 들어요."
+    }
+  ];
+
+  let defaultIdx = 0;
+  while (cards.length < 3 && defaultIdx < defaultList.length) {
+    cards.push(defaultList[defaultIdx]);
+    defaultIdx++;
+  }
+
+  return cards.slice(0, 3);
+};
+
 export default function MindResetSection() {
+  const { reportData } = useReportStore();
   const [phase, setPhase] = useState<'INPUT' | 'SCANNING' | 'SCROLL' | 'ZERO_POINT'>('INPUT');
   const [inputValue, setInputValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   
   // 데이터 상태
   const [debuggingData, setDebuggingData] = useState<DebuggingData | null>(null);
@@ -119,29 +312,65 @@ export default function MindResetSection() {
           <motion.div 
             key="phase-1"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, filter: 'blur(10px)' }}
-            className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-black"
+            className="absolute inset-0 flex flex-col items-center justify-start sm:justify-center p-6 bg-black overflow-y-auto scrollbar-hide"
           >
-            <Terminal className="w-8 h-8 text-cyan-500 mb-6 animate-pulse" />
-            <p className="text-cyan-400 font-mono text-sm mb-8 typing-effect">
-              &gt; 당신을 무력하게 만드는 생각이나 감정을 입력해 주세요_
-            </p>
-            <form onSubmit={handleInputSubmit} className="w-full max-w-md">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="예: 남을 돕고 싶은데 능력이 안 돼서 서글퍼요."
-                className="w-full bg-slate-900/80 border border-cyan-900/50 rounded-xl px-5 py-4 text-cyan-50 text-sm focus:outline-none focus:border-cyan-500/80 transition-colors shadow-[0_0_15px_rgba(6,182,212,0.1)] focus:shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                autoFocus
-              />
-              <button 
-                type="submit"
-                disabled={!inputValue.trim()}
-                className="w-full mt-4 bg-cyan-950/40 border border-cyan-800 text-cyan-400 font-mono text-xs py-3 rounded-xl hover:bg-cyan-900/60 transition-colors disabled:opacity-30"
-              >
-                [ ENTER : 시스템 스캔 시작 ]
-              </button>
-            </form>
+            <div className="w-full max-w-md py-4 flex flex-col items-center">
+              <Terminal className="w-8 h-8 text-cyan-500 mb-4 animate-pulse shrink-0" />
+              <p className="text-cyan-400 font-mono text-xs sm:text-sm mb-6 typing-effect shrink-0 text-center">
+                &gt; 당신을 무력하게 만드는 생각이나 감정을 입력해 주세요_
+              </p>
+              <form onSubmit={handleInputSubmit} className="w-full flex flex-col gap-3 shrink-0">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  placeholder="예: 남을 돕고 싶은데 능력이 안 돼서 서글퍼요."
+                  className="w-full bg-slate-900/80 border border-cyan-900/50 rounded-xl px-5 py-4 text-cyan-50 text-sm focus:outline-none focus:border-cyan-500/80 transition-colors shadow-[0_0_15px_rgba(6,182,212,0.1)] focus:shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                  autoFocus
+                />
+                
+                {/* 🌿 사주 8자 종합 분석 고민 카드 덱 (초보자용 가이드) */}
+                <div className="mt-2 space-y-2">
+                  <p className="text-[11px] text-cyan-500/80 flex items-center gap-1.5 font-bold ml-1">
+                    <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                    {reportData ? "당신의 년월일시 사주 종합 분석에 어울리는 추천 고민" : "초보자를 위한 추천 고민 선택지"}
+                  </p>
+                  <div className="grid grid-cols-1 gap-2.5">
+                    {getTroubleCards(reportData).map((card, i) => (
+                      <motion.div
+                        key={i}
+                        whileHover={{ scale: 1.01, borderColor: 'rgba(6,182,212,0.4)' }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={() => setInputValue(card.text)}
+                        className={`cursor-pointer text-left p-3.5 rounded-xl border border-cyan-950/40 bg-slate-950/80 backdrop-blur-md transition-all ${
+                          inputValue === card.text
+                            ? 'border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)] bg-cyan-950/20'
+                            : 'hover:bg-slate-900/50'
+                        }`}
+                      >
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-bold text-cyan-300">{card.title}</span>
+                          {inputValue === card.text && (
+                            <span className="text-[9px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded font-mono">선택됨</span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-400/90 leading-relaxed break-keep">{card.desc}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                <button 
+                  type="submit"
+                  disabled={!inputValue.trim()}
+                  className="w-full mt-2 bg-cyan-950/40 border border-cyan-800 text-cyan-400 font-mono text-xs py-4 rounded-xl hover:bg-cyan-900/60 transition-all disabled:opacity-30 flex items-center justify-center gap-1.5"
+                >
+                  <Scan className="w-4 h-4" />
+                  [ ENTER : 마음 디버깅 스캔 시작 ]
+                </button>
+              </form>
+            </div>
           </motion.div>
         )}
 
