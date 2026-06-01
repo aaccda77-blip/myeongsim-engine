@@ -277,19 +277,68 @@ function TimeSlotGuide({ harmony }: { harmony: DailyHarmonyResult }) {
   );
 }
 
-function AffirmationCard({ harmony }: { harmony: DailyHarmonyResult }) {
-  const affirmationText = DAILY_AFFIRMATIONS[harmony.relation] || DAILY_AFFIRMATIONS['SYNC'];
+function AffirmationCard({ harmony, dayMasterHanja }: { harmony: DailyHarmonyResult; dayMasterHanja: string | null }) {
+  const defaultAffirmationText = DAILY_AFFIRMATIONS[harmony.relation] || DAILY_AFFIRMATIONS['SYNC'];
+  const [affirmationText, setAffirmationText] = useState(defaultAffirmationText);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    const fetchAffirmation = async () => {
+      if (!dayMasterHanja || !harmony) return;
+      const todayDateStr = new Date().toISOString().split('T')[0];
+      const cacheKey = `myeongsim_affirmation_${dayMasterHanja}_${harmony.todayGan}${harmony.todayZhi}_${todayDateStr}`;
+      
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        setAffirmationText(cached);
+        return;
+      }
+
+      setIsGenerating(true);
+      try {
+        const res = await fetch('/api/coaching/daily-affirmation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dayMaster: dayMasterHanja,
+            todayGanji: `${harmony.todayGan}${harmony.todayZhi}`,
+            relation: harmony.relation,
+            defaultAffirmation: defaultAffirmationText
+          })
+        });
+        const data = await res.json();
+        if (data.affirmation) {
+          setAffirmationText(data.affirmation);
+          localStorage.setItem(cacheKey, data.affirmation);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+    fetchAffirmation();
+  }, [dayMasterHanja, harmony.todayGan, harmony.todayZhi, harmony.relation, defaultAffirmationText]);
 
   return (
-    <div className="mt-4 bg-white/5 p-5 rounded-xl border border-white/5 relative overflow-hidden">
+    <div className="mt-4 bg-white/5 p-5 rounded-xl border border-white/5 relative overflow-hidden group">
       {/* 장식용 블러 효과 */}
       <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20" style={{ backgroundColor: harmony.energyColor }} />
       
-      <div className="flex items-center gap-2 mb-3 relative z-10">
-        <Star className="w-3.5 h-3.5 text-amber-400" />
-        <span className="text-[10px] text-slate-400 font-mono tracking-widest uppercase">오늘의 핵심 선언문</span>
+      <div className="flex items-center justify-between mb-3 relative z-10">
+        <div className="flex items-center gap-2">
+          <Star className="w-3.5 h-3.5 text-amber-400" />
+          <span className="text-[10px] text-slate-400 font-mono tracking-widest uppercase">오늘의 핵심 선언문</span>
+        </div>
+        {isGenerating && (
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-800/50 border border-slate-700">
+            <Loader2 className="w-2.5 h-2.5 text-amber-400 animate-spin" />
+            <span className="text-[8px] text-slate-300">AI 맞춤 작성 중...</span>
+          </div>
+        )}
       </div>
-      <p className="text-[13.5px] font-bold text-white italic leading-[1.7] break-keep relative z-10">
+      <p className="text-[13.5px] font-bold text-white italic leading-[1.7] break-keep relative z-10 transition-opacity duration-500" style={{ opacity: isGenerating ? 0.5 : 1 }}>
         &ldquo;{affirmationText}&rdquo;
       </p>
     </div>
@@ -835,7 +884,7 @@ export default function DailyBioSyncPanel() {
                   >
                     <EnergyHarmonySection harmony={harmony} />
                     <TimeSlotGuide harmony={harmony} />
-                    <AffirmationCard harmony={harmony} />
+                    <AffirmationCard harmony={harmony} dayMasterHanja={dayMasterHanja} />
                   </motion.div>
                 )}
 
