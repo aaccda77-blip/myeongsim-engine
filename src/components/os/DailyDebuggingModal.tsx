@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Cpu, Bug, Globe, ShieldCheck, Loader2, ChevronRight, Zap, Brain, Eye, Target, AlertTriangle, Scan, Radio, Terminal, Edit3, Save } from 'lucide-react';
+import { X, Cpu, Bug, Globe, ShieldCheck, Loader2, ChevronRight, Zap, Brain, Eye, Target, AlertTriangle, Scan, Radio, Terminal, Edit3, Save, RefreshCw } from 'lucide-react';
 
 interface DebuggingReport {
   targetOS: string;
@@ -44,43 +44,60 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
   const [worksheetText, setWorksheetText] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchReport = async () => {
+  const loadReport = async (force: boolean = false) => {
+    if (force) {
+      setIsRefreshing(true);
+    } else {
       setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch('/api/os/daily-debugging', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: userId || 'anonymous', dayMaster, yearPillar, monthPillar, dayPillar, hourPillar, gender, targetDate })
-        });
-        if (!res.ok) throw new Error('API 호출 실패');
-        const data = await res.json();
-        if (data.success && data.data?.content) {
-          setReport(data.data.content);
-          
-          // 워크시트 내용 불러오기
-          if (userId && userId !== 'anonymous') {
-            const dateToLoad = targetDate || new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
-            const wsRes = await fetch(`/api/os/debugging-worksheet?userId=${userId}&dateString=${dateToLoad}`);
-            if (wsRes.ok) {
-              const wsData = await wsRes.json();
-              if (wsData.success && wsData.text) {
-                setWorksheetText(wsData.text);
-              }
+    }
+    setError(null);
+    try {
+      const res = await fetch('/api/os/daily-debugging', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          userId: userId || 'anonymous', 
+          dayMaster, 
+          yearPillar, 
+          monthPillar, 
+          dayPillar, 
+          hourPillar, 
+          gender, 
+          targetDate,
+          forceRefresh: force 
+        })
+      });
+      if (!res.ok) throw new Error('API 호출 실패');
+      const data = await res.json();
+      if (data.success && data.data?.content) {
+        setReport(data.data.content);
+        
+        // 워크시트 내용 불러오기
+        if (userId && userId !== 'anonymous') {
+          const dateToLoad = targetDate || new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+          const wsRes = await fetch(`/api/os/debugging-worksheet?userId=${userId}&dateString=${dateToLoad}`);
+          if (wsRes.ok) {
+            const wsData = await wsRes.json();
+            if (wsData.success && wsData.text) {
+              setWorksheetText(wsData.text);
             }
           }
-        } else {
-          throw new Error(data.error || '데이터 파싱 실패');
         }
-      } catch (e: any) {
-        setError(e.message);
-      } finally {
-        setIsLoading(false);
+      } else {
+        throw new Error(data.error || '데이터 파싱 실패');
       }
-    };
-    fetchReport();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadReport();
   }, [userId, dayMaster, targetDate]);
 
   const handleSaveWorksheet = async () => {
@@ -146,9 +163,26 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                 🌿 오늘의 명심 마음 치유 리포트
               </span>
             </h2>
-            <button onClick={onClose} className="text-slate-500 hover:text-slate-300 transition-colors">
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              {/* 새 기질로 다시 생성 버튼 */}
+              {dayMaster && userId && userId !== 'anonymous' && (
+                <button
+                  onClick={() => loadReport(true)}
+                  disabled={isLoading || isRefreshing}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all duration-300 ${
+                    isRefreshing 
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 cursor-not-allowed'
+                      : 'bg-slate-800/60 border-slate-700/80 text-slate-300 hover:text-emerald-300 hover:border-emerald-500/30 hover:bg-emerald-500/5 shadow-sm'
+                  }`}
+                >
+                  <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-emerald-400' : ''}`} />
+                  {isRefreshing ? '재생성 중...' : '새 기질로 다시 생성 (AI)'}
+                </button>
+              )}
+              <button onClick={onClose} className="text-slate-500 hover:text-slate-300 transition-colors p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Tab Navigation */}

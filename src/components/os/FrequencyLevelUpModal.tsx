@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Cpu, Rocket, ChevronRight, Zap, Eye, Target, Terminal, Edit3, Save, ShieldAlert, CheckCircle2, Navigation, Loader2 } from 'lucide-react';
+import { X, Cpu, Rocket, ChevronRight, Zap, Eye, Target, Terminal, Edit3, Save, ShieldAlert, CheckCircle2, Navigation, Loader2, RefreshCw } from 'lucide-react';
 
 interface FrequencyReport {
   targetOS: string;
@@ -49,40 +49,57 @@ export default function FrequencyLevelUpModal({ userId, dayMaster, yearPillar, m
   const [worksheetText, setWorksheetText] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const loadReport = async (force: boolean = false) => {
+    if (force) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    setError(null);
+    try {
+      const res = await fetch('/api/os/frequency-shift', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          userId: userId || 'anonymous', 
+          dayMaster, 
+          yearPillar, 
+          monthPillar, 
+          dayPillar, 
+          hourPillar, 
+          gender, 
+          targetDate,
+          forceRefresh: force 
+        })
+      });
+      if (!res.ok) throw new Error('API 호출 실패');
+      const data = await res.json();
+      if (data.success && data.data?.content) {
+        setReport(data.data.content);
+        
+        if (userId && userId !== 'anonymous') {
+          const dateToLoad = targetDate || new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+          const wsRes = await fetch(`/api/os/frequency-worksheet?userId=${userId}&dateString=${dateToLoad}`);
+          if (wsRes.ok) {
+            const wsData = await wsRes.json();
+            if (wsData.success && wsData.text) setWorksheetText(wsData.text);
+          }
+        }
+      } else {
+        throw new Error(data.error || '데이터 파싱 실패');
+      }
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchReport = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch('/api/os/frequency-shift', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: userId || 'anonymous', dayMaster, yearPillar, monthPillar, dayPillar, hourPillar, gender, targetDate })
-        });
-        if (!res.ok) throw new Error('API 호출 실패');
-        const data = await res.json();
-        if (data.success && data.data?.content) {
-          setReport(data.data.content);
-          
-          if (userId && userId !== 'anonymous') {
-            const dateToLoad = targetDate || new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
-            const wsRes = await fetch(`/api/os/frequency-worksheet?userId=${userId}&dateString=${dateToLoad}`);
-            if (wsRes.ok) {
-              const wsData = await wsRes.json();
-              if (wsData.success && wsData.text) setWorksheetText(wsData.text);
-            }
-          }
-        } else {
-          throw new Error(data.error || '데이터 파싱 실패');
-        }
-      } catch (e: any) {
-        setError(e.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchReport();
+    loadReport();
   }, [userId, dayMaster, targetDate]);
 
   const handleSaveWorksheet = async () => {
@@ -144,9 +161,26 @@ export default function FrequencyLevelUpModal({ userId, dayMaster, yearPillar, m
                 내면 주파수 레벨업 (3단계 부스트)
               </span>
             </h2>
-            <button onClick={onClose} className="text-slate-500 hover:text-slate-300 transition-colors">
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              {/* 새 기질로 다시 생성 버튼 */}
+              {dayMaster && userId && userId !== 'anonymous' && (
+                <button
+                  onClick={() => loadReport(true)}
+                  disabled={isLoading || isRefreshing}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all duration-300 ${
+                    isRefreshing 
+                      ? 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-300 cursor-not-allowed'
+                      : 'bg-slate-800/60 border-slate-700/80 text-slate-300 hover:text-fuchsia-300 hover:border-fuchsia-500/30 hover:bg-fuchsia-500/5 shadow-sm'
+                  }`}
+                >
+                  <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-fuchsia-400' : ''}`} />
+                  {isRefreshing ? '재생성 중...' : '새 기질로 다시 생성 (AI)'}
+                </button>
+              )}
+              <button onClick={onClose} className="text-slate-500 hover:text-slate-300 transition-colors p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Navigation */}

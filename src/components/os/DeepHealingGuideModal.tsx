@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X, Heart, Compass, Shield, Wind, CheckCircle2, MessageCircle, Send } from 'lucide-react';
+import { Sparkles, X, Heart, Compass, Shield, Wind, CheckCircle2, MessageCircle, Send, RefreshCw } from 'lucide-react';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { useReportStore } from '@/store/useReportStore';
 
@@ -44,6 +44,7 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
   const [newGuestName, setNewGuestName] = useState('');
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // [초개인화 모듈] 스토어와 Auth 훅을 통한 안전 데이터 획득
   const { id: authUserId } = useAuthUser();
@@ -76,45 +77,56 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
+  const loadHealingGuide = async (force: boolean = false) => {
+    try {
+      if (force) {
+        setIsRefreshing(true);
+      } else {
         setLoading(true);
-        // Use the personalized API if we have user info
-        if (finalUserId && finalDayMaster) {
-          const res = await fetch('/api/os/my-daily-healing', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: finalUserId, dayMaster: finalDayMaster })
-          });
-          if (res.ok) {
-            const json = await res.json();
-            if (json.success) {
-              setPost(json.data);
-              if (json.data.id) {
-                fetchComments(json.data.id);
-              }
-            }
-          }
-        } else {
-          // Fallback to global if not logged in
-          const url = dateString ? `/api/os/daily-healing?date=${dateString}` : '/api/os/daily-healing';
-          const res = await fetch(url);
-          if (res.ok) {
-            const json = await res.json();
-            setPost(json);
-            if (json.id) {
-              fetchComments(json.id);
+      }
+      
+      // Use the personalized API if we have user info
+      if (finalUserId && finalDayMaster) {
+        const res = await fetch('/api/os/my-daily-healing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            userId: finalUserId, 
+            dayMaster: finalDayMaster,
+            forceRefresh: force 
+          })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success) {
+            setPost(json.data);
+            if (json.data.id) {
+              fetchComments(json.data.id);
             }
           }
         }
-      } catch (err) {
-        console.error("Failed to load healing guide", err);
-      } finally {
-        setLoading(false);
+      } else {
+        // Fallback to global if not logged in
+        const url = dateString ? `/api/os/daily-healing?date=${dateString}` : '/api/os/daily-healing';
+        const res = await fetch(url);
+        if (res.ok) {
+          const json = await res.json();
+          setPost(json);
+          if (json.id) {
+            fetchComments(json.id);
+          }
+        }
       }
-    };
-    fetchData();
+    } catch (err) {
+      console.error("Failed to load healing guide", err);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadHealingGuide();
   }, [dateString, finalUserId, finalDayMaster]);
 
   const fetchComments = async (postId: string) => {
@@ -218,9 +230,26 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
                 </p>
               )}
             </div>
-            <button onClick={onClose} className="p-2 bg-slate-800/50 hover:bg-slate-700 rounded-full text-slate-400 transition-colors">
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {/* 새 기질로 다시 생성 버튼 (생년월일 연동 시에만 노출) */}
+              {finalDayMaster && finalUserId && (
+                <button
+                  onClick={() => loadHealingGuide(true)}
+                  disabled={loading || isRefreshing}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all duration-300 ${
+                    isRefreshing 
+                      ? 'bg-purple-500/10 border-purple-500/30 text-purple-300 cursor-not-allowed'
+                      : 'bg-slate-800/60 border-slate-700/80 text-slate-300 hover:text-purple-300 hover:border-purple-500/30 hover:bg-purple-500/5 shadow-sm'
+                  }`}
+                >
+                  <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-purple-400' : ''}`} />
+                  {isRefreshing ? '새로 생성 중...' : '새 기질로 다시 생성 (AI)'}
+                </button>
+              )}
+              <button onClick={onClose} className="p-2 bg-slate-800/50 hover:bg-slate-700 rounded-full text-slate-400 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Scrollable Content */}

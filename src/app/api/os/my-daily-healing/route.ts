@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { userId, dayMaster } = body;
+    const { userId, dayMaster, forceRefresh } = body;
 
     if (!dayMaster) {
       return NextResponse.json({ error: 'dayMaster is required' }, { status: 400 });
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const dateString = kstDate.toISOString().split('T')[0];
 
     // 1. 이미 저장된 개인화 데이터가 존재하면 즉시 반환
-    if (userId && userId !== 'anonymous') {
+    if (userId && userId !== 'anonymous' && !forceRefresh) {
       const { data: existingData, error: dbError } = await supabaseAdmin
         .from('user_healing_posts')
         .select('*')
@@ -103,19 +103,20 @@ export async function POST(req: Request) {
     if (userId && userId !== 'anonymous') {
       const { data: insertedData, error: insertError } = await supabaseAdmin
         .from('user_healing_posts')
-        .insert([
+        .upsert(
           {
             user_id: userId,
             date_string: dateString,
             theme: parsedData.theme,
             content: parsedData
-          }
-        ])
+          },
+          { onConflict: 'user_id,date_string' }
+        )
         .select()
         .single();
 
       if (insertError) {
-        console.error('Supabase Healing Post DB Insert Error (ignoring to prevent failure):', insertError);
+        console.error('Supabase Healing Post DB Upsert Error (ignoring to prevent failure):', insertError);
       } else if (insertedData) {
         savedPost = insertedData;
       }

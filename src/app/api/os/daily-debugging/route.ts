@@ -75,7 +75,7 @@ const GAN_ELEMENTS_EN: Record<string, string> = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { userId, dayMaster, yearPillar, monthPillar, dayPillar, hourPillar, gender, targetDate } = body;
+    const { userId, dayMaster, yearPillar, monthPillar, dayPillar, hourPillar, gender, targetDate, forceRefresh } = body;
 
     if (!dayMaster) {
       return NextResponse.json({ error: 'dayMaster is required' }, { status: 400 });
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
     const dateString = targetDate || kstDate.toISOString().split('T')[0];
 
     // 1. 캐시 확인
-    if (userId && userId !== 'anonymous') {
+    if (userId && userId !== 'anonymous' && !forceRefresh) {
       const { data: existingData } = await supabaseAdmin
         .from('user_debugging_reports')
         .select('*')
@@ -203,16 +203,19 @@ export async function POST(req: Request) {
     if (userId && userId !== 'anonymous') {
       const { data: insertedData, error: insertError } = await supabaseAdmin
         .from('user_debugging_reports')
-        .insert([{
-          user_id: userId,
-          date_string: dateString,
-          content: parsedData
-        }])
+        .upsert(
+          {
+            user_id: userId,
+            date_string: dateString,
+            content: parsedData
+          },
+          { onConflict: 'user_id,date_string' }
+        )
         .select()
         .single();
 
       if (insertError) {
-        console.error('DB Insert Error (non-fatal):', insertError);
+        console.error('DB Upsert Error (non-fatal):', insertError);
       } else if (insertedData) {
         savedReport = insertedData;
       }
