@@ -21,6 +21,7 @@ import { Zap, Activity, Calendar, ChevronDown, Clock, CheckCircle2, Star, Messag
 import DeepScanSection from './DeepScanSection';
 import AkashicRecordSection from './AkashicRecordSection';
 import LiveSyncSection from './LiveSyncSection';
+import MindResetSection from './MindResetSection';
 import { DAILY_NEURO_ACTIONS, DAILY_AFFIRMATIONS } from '@/data/DailyActionDB';
 import { DAILY_ENERGY_DB } from '@/data/DailyEnergyDB';
 
@@ -442,7 +443,7 @@ function DailyPatchSection({ steps, isLoading, onComplete }: { steps: any[], isL
 // ─────────────────────────────────────────────
 // 메인 패널 컴포넌트 — 프리미엄 리디자인
 // ─────────────────────────────────────────────
-type TabType = 'harmony' | 'bio' | 'akashic' | 'patch' | 'deepscan' | 'livesync';
+type TabType = 'harmony' | 'bio' | 'akashic' | 'patch' | 'deepscan' | 'livesync' | 'mindreset';
 
 
 export default function DailyBioSyncPanel() {
@@ -670,6 +671,7 @@ export default function DailyBioSyncPanel() {
     { id: 'akashic',  label: '아카식 레코드',  emoji: '🌌' },
     { id: 'patch',    label: '3S 패치',        emoji: '💉' },
     { id: 'deepscan', label: '딥 스캔 (경고)', emoji: '🚨' },
+    { id: 'mindreset',label: '마음 리셋',      emoji: '✨' },
     { id: 'livesync', label: 'Live Sync [PRO]',emoji: '📡' },
   ];
 
@@ -984,6 +986,15 @@ export default function DailyBioSyncPanel() {
                     transition={{ duration: 0.25 }}
                   >
                     <DeepScanSection sajuData={reportData} harmony={harmony} biorhythm={biorhythm} />
+                  </motion.div>
+                )}
+
+                {activeTab === 'mindreset' && (
+                  <motion.div key="mindreset"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <MindResetSection />
                   </motion.div>
                 )}
 
