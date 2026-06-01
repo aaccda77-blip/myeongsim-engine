@@ -45,13 +45,15 @@ export default function Healing108CoachingReport({
             const rawDate = reportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
             const rawTime = reportData?.birthTime || userProfile?.birthTime || userProfile?.birth_time || userProfile?.user_metadata?.saju_data?.time || '12:00';
             const gender = reportData?.gender || userProfile?.gender || userProfile?.user_metadata?.saju_data?.gender || 'male';
+            const calendarType = reportData?.meta?.calendarType || userProfile?.calendar_type || userProfile?.user_metadata?.saju_data?.calendar_type || 'solar';
 
             let finalSaju = null;
 
             // [로컬 캐시 무효화 및 즉석 계산] 생년월일 원본이 존재한다면, 낡은 로컬 캐시 정합성 버그를 원천 파괴하기 위해 즉석에서 100% 실시간 만세력 계산 기동!
             if (rawDate) {
                 try {
-                    const result = calculateSaju(rawDate, rawTime, 'solar', gender);
+                    // [Bug Fix] 하드코딩된 'solar' 대신 사용자가 선택한 calendarType('lunar'/'solar')를 동적으로 확실히 주입
+                    const result = calculateSaju(rawDate, rawTime, calendarType, gender);
                     if (result && result.success) {
                         const stats = calculateSajuStats(result.fourPillars, result.dayMasterChar);
                         finalSaju = {
@@ -62,7 +64,7 @@ export default function Healing108CoachingReport({
                             currentDaewoon: result.currentDaewoon || null,
                             currentSeun: result.currentSeun || null
                         };
-                        console.log('✅ [Healing108] 100% 무결한 실시간 즉석 만세력 계산 성공:', finalSaju.dayMaster, '대운:', finalSaju.currentDaewoon);
+                        console.log('✅ [Healing108] 100% 무결한 실시간 즉석 만세력 계산 성공:', finalSaju.dayMaster, '대운:', finalSaju.currentDaewoon, '달력유형:', calendarType);
                     }
                 } catch (e) {
                     console.warn('⚠️ [Healing108] 실시간 사주 계산 실패:', e);
@@ -165,8 +167,8 @@ export default function Healing108CoachingReport({
     const userKey = getSajuFingerprint();
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
-    // [Bug Fix] 기존에 잘못 캐시된 데이터를 모두 무효화하기 위해 캐시 키 버전(v4) 추가
-    const aiContentKey = `ms_108_ai_content_v8_${userKey}`; // v8: getChar 버그 수정으로 완벽한 기질 추출 완료
+    // [Bug Fix] 기존에 잘못 캐시된 데이터를 모두 무효화하기 위해 캐시 키 버전(v9) 추가
+    const aiContentKey = `ms_108_ai_content_v9_${userKey}`; // v9: 실시간 만세력 정렬 및 락인 완벽 파괴 버전
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
@@ -315,9 +317,9 @@ export default function Healing108CoachingReport({
     };
 
     const forceRegenerateCurrentPage = async () => {
-        // [Zustand 실시간 최신 사주 강제 확보] 로컬 상태 락인 완벽 방지
+        // [Zustand 실시간 최신 사주 강제 확보] 실시간 만세력 재연산된 activeSaju를 1순위로 삼아 락인 완벽 방지
         const latestStoreSaju = useReportStore.getState().reportData?.saju;
-        const finalTargetSaju = latestStoreSaju || activeSaju;
+        const finalTargetSaju = activeSaju || latestStoreSaju;
 
         if (!finalTargetSaju || userKey === 'guest' || isGeneratingAi) return;
 
