@@ -1,118 +1,52 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, SchemaType } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-
-const google = new GoogleGenerativeAI(
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || ''
-);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(req: NextRequest) {
-  let latestRawText = '';
-
   try {
-    const body = await req.json();
-    const { bugInput } = body;
+    const { problem } = await req.json();
 
-    console.log(`\n🔍 [mind-reset] ===== 마음 리셋 생성 요청 =====`);
-    console.log(`📋 사용자 입력(Bug): "${bugInput}"`);
-
-    if (!bugInput) {
-      return NextResponse.json({ error: '입력된 감정/생각이 없습니다.' }, { status: 400 });
+    if (!problem) {
+      return NextResponse.json({ error: 'Problem text is required' }, { status: 400 });
     }
 
-    const jsonSchema: any = {
-      type: SchemaType.OBJECT,
-      properties: {
-        innerCode: { type: SchemaType.STRING, description: "Phase 1: 내면의 소스코드 (사용자의 입력이 어떤 심리적 버그로 인해 발생했는지 진단)" },
-        projectedReality: { type: SchemaType.STRING, description: "Phase 2: 투사된 현실 (버그로 인해 세상이 어떻게 왜곡되어 보이는지 설명)" },
-        coachingSolution: { type: SchemaType.STRING, description: "Phase 3: 명심 코칭 풀이 (버그를 해제하는 따뜻한 관점 전환)" },
-        socraticQuestion: { type: SchemaType.STRING, description: "Phase 4: 소크라테스 문답 (스스로 객관화할 수 있는 질문)" },
-        recursiveQuestion: { type: SchemaType.STRING, description: "Phase 5: 재귀적 질문 (이 패턴이 과거 어디서부터 시작되었는지 묻는 질문)" },
-        metaCognition: { type: SchemaType.STRING, description: "STEP 1: 메타 인지 (감정을 객관적으로 관찰하는 방법)" },
-        pureAwareness: { type: SchemaType.STRING, description: "STEP 2: 알아차림의 알아차림 (텅 빈 배경, 순수 자각으로의 초대)" },
-        zeroPointList: { 
-          type: SchemaType.ARRAY, 
-          description: "Zero Point 솔루션 4단계 (수용, 현재 앵커링, 클린 코드 입력, 전념 행동)",
-          items: {
-            type: SchemaType.OBJECT,
-            properties: {
-              title: { type: SchemaType.STRING },
-              text: { type: SchemaType.STRING }
-            },
-            required: ["title", "text"]
-          }
-        },
-        zeroPointEnding: { type: SchemaType.STRING, description: "마지막 감동적인 맺음말" }
-      },
-      required: ["innerCode", "projectedReality", "coachingSolution", "socraticQuestion", "recursiveQuestion", "metaCognition", "pureAwareness", "zeroPointList", "zeroPointEnding"]
-    };
+    const prompt = `당신은 최상위 5D 의식 디버깅 및 심리 치유 마스터 '명심 코치'입니다.
+사용자가 자신의 무기력함이나 부정적인 감정(다크 코드)을 입력했습니다.
+다음 5대 심리 기법(CBT, DBT, ACT, MBCT, MBSR)을 완벽히 융합하여, 입력된 고민에 맞게 아래의 포맷을 정확히 유지하면서 각 항목의 텍스트를 작성해 주세요. 
+반드시 각 항목은 사용자의 특정 상황을 깊게 위로하고 치유하는 통찰(Insight)을 담아야 합니다. 어투는 단호하면서도 매우 따뜻하고 감동적이어야 합니다. 
 
-    const model = google.getGenerativeModel({
+사용자의 고민: "${problem}"
+
+응답 형식 (JSON):
+- sourceCode (내면의 소스코드): 사용자의 고민 기저에 깔린 핵심 신념(CBT)과 왜곡, 과각성(MBSR), 파국적 시나리오(MBCT) 등을 해부하듯 분석. (약 3~4문장)
+- projectedReality (투사된 현실): 이 다크 코드가 사용자의 일상에서 어떻게 '결핍의 주파수'를 방출하고 현실을 왜곡하여 고통을 가중시키고 있는지 설명. (약 3~4문장)
+- myeongsimCoaching (명심 코칭 풀이): 이 고통의 진짜 원인은 에러가 아니라, 오히려 내면의 선한 의도나 한계를 지닌 인간성에서 기인함을 밝히며, 이를 전면적으로 수용(DBT)하고 지혜로운 마음을 회복하도록 돕는 따뜻한 통찰. (약 4~5문장, 두 문단 정도로 분리 가능하도록 줄바꿈 사용)
+- socratesQuestion (소크라테스 문답): 사용자가 객관화할 수 있도록 던지는 날카로우면서도 통찰력 있는 질문. (약 2문장)
+- recursiveQuestion (재귀적 질문): 언제부터 이 악성 코드가 시작되었는지 성찰하게 하는 질문. (약 2문장)
+- step1 (메타 인지): 능력이 부족하거나 감정이 휘몰아치는 상황을 판단 없이 관찰(MBSR)하도록 하는 첫 번째 실천 행동 가이드. (약 3문장)
+- step2 (알아차림의 알아차림): 텅 빈 자각 자체에 머무르도록 이끄는 두 번째 차원 상승 가이드. (약 3문장)
+- zeroPointSolutions (배열, 크기 4): [수용], [현재 앵커링], [클린 코드 입력], [전념 행동] 이라는 제목(title)과 함께 각각의 행동 지침(text)을 구체적으로 제공.
+
+참고: 생성되는 텍스트 안에서 각 심리기법의 주요 용어(예: CBT, DBT, ACT, MBCT, MBSR, 핵심 신념, 파국화, 경험 회피 등)를 적절히 활용하여 전문성을 강조하세요.`;
+
+    const model = genAI.getGenerativeModel({ 
       model: 'gemini-2.5-flash',
-      safetySettings: [
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-      ],
-      generationConfig: { 
-        temperature: 0.85, 
-        maxOutputTokens: 3000,
-        responseMimeType: "application/json",
-        responseSchema: jsonSchema
-      },
+      generationConfig: {
+        responseMimeType: 'application/json',
+      }
     });
-
-    const prompt = `
-당신은 세계 최고의 디지털 치료제(DTx) AI, '소버린 마인드 리셋'의 핵심 엔진입니다.
-사용자가 자신의 무력감, 고통, 혹은 부정적인 생각(심리적 다크 코드)을 입력했습니다.
-
-사용자 입력: "${bugInput}"
-
-이 입력을 바탕으로, CBT(인지행동치료), DBT(변증법적 행동치료), ACT(수용전념치료), MBCT(마음챙김 인지치료), MBSR(마음챙김 기반 스트레스 감소), 그리고 MSC(마음챙김 자기연민) 6가지 심리 기법을 모두 융합하여 완벽하게 개인화된 치유의 여정을 작성하세요.
-초보자도 100% 이해하기 쉽도록 극도로 친절하고, 눈물이 날 만큼 따뜻하며 감동적인 '초고도화된 디지털 치료제'의 최고봉 수준으로 작성해야 합니다.
-
-작성 지침:
-1. 중요한 심리학적 기법명이나 핵심 키워드(예: [CBT: 인지적 융합], [MSC: 자기연민])를 강조할 때는 반드시 HTML <strong> 태그를 사용하세요. (예: <strong>[MSC: 자기연민]</strong>)
-2. 줄바꿈이 필요한 곳은 <br/> 태그를 사용하세요.
-3. 각 섹션의 분위기:
-   - innerCode (내면의 소스코드): 사용자의 아픔을 시스템 버그로 은유하며 분석.
-   - projectedReality (투사된 현실): 아픔으로 인해 왜곡된 세상을 묘사.
-   - coachingSolution (명심 코칭 풀이): 다정하게 오해를 풀어주는 해결책 (MSC, CBT 활용).
-   - socraticQuestion (소크라테스 문답): 객관화 및 효용성을 묻는 뼈때리면서도 따뜻한 질문.
-   - recursiveQuestion (재귀적 질문): 언제부터 이 상처가 시작되었는지 내면 아이를 안아주는 질문.
-   - metaCognition (메타 인지): 감정에 매몰되지 않고 한 발짝 떨어져 관찰하는 법 (MBSR 활용).
-   - pureAwareness (순수 자각): 거대한 우주나 바다 같은 알아차림 속으로 초대 (ACT, MBCT 활용).
-   - zeroPointList: 4개의 솔루션 (수용, 현재 앵커링, 클린 코드 입력, 전념 행동).
-   - zeroPointEnding: 눈물이 날 만큼 따뜻하고 희망찬 맺음말.
-`;
 
     const result = await model.generateContent(prompt);
-    const response = result.response;
-    latestRawText = response.text();
+    const responseText = result.response.text();
+    
+    // JSON 파싱
+    const debuggingData = JSON.parse(responseText);
 
-    if (!latestRawText || latestRawText.trim().length === 0) {
-      throw new Error('AI 응답 없음');
-    }
-
-    const start = latestRawText.indexOf('{');
-    const end = latestRawText.lastIndexOf('}');
-    if (start === -1 || end === -1) throw new Error('JSON 파싱 실패');
-
-    const pageData = JSON.parse(latestRawText.substring(start, end + 1));
-
-    return NextResponse.json({
-      success: true,
-      data: pageData
-    });
+    return NextResponse.json({ success: true, data: debuggingData });
 
   } catch (error: any) {
-    console.error('mind-reset API Error:', error);
-    return NextResponse.json({
-      error: error?.message || '실시간 AI 생성 중 오류 발생',
-      details: latestRawText || 'No Output'
-    }, { status: 500 });
+    console.error('[Mind Reset API Error]:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

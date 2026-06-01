@@ -36,19 +36,19 @@ const TAB_CONFIG: Record<StateType, {
     bgGradient: string; borderColor: string; dotColor: string; btnGradient: string;
 }> = {
     dark: {
-        label: '다크 코드', icon: '⚠️', accentColor: 'text-red-400',
-        bgGradient: 'from-red-900/20 to-rose-900/10', borderColor: 'border-red-500/30',
-        dotColor: 'bg-red-500', btnGradient: 'from-red-600 to-rose-600',
+        label: '다크 코드', icon: '🕯️', accentColor: 'text-rose-400',
+        bgGradient: 'from-rose-950/40 to-pink-900/10', borderColor: 'border-rose-500/20',
+        dotColor: 'bg-rose-400', btnGradient: 'from-rose-500/80 to-pink-600/80',
     },
     neural: {
-        label: '뉴럴 코드', icon: '✨', accentColor: 'text-emerald-400',
-        bgGradient: 'from-emerald-900/20 to-teal-900/10', borderColor: 'border-emerald-500/30',
-        dotColor: 'bg-emerald-500', btnGradient: 'from-emerald-600 to-teal-600',
+        label: '뉴럴 코드', icon: '🌱', accentColor: 'text-teal-400',
+        bgGradient: 'from-teal-950/40 to-emerald-900/10', borderColor: 'border-teal-500/20',
+        dotColor: 'bg-teal-400', btnGradient: 'from-teal-500/80 to-emerald-600/80',
     },
     meta: {
-        label: '메타 코드', icon: '👑', accentColor: 'text-purple-400',
-        bgGradient: 'from-purple-900/20 to-violet-900/10', borderColor: 'border-purple-500/30',
-        dotColor: 'bg-purple-500', btnGradient: 'from-purple-600 to-violet-600',
+        label: '메타 코드', icon: '🕊️', accentColor: 'text-indigo-400',
+        bgGradient: 'from-indigo-950/40 to-violet-900/10', borderColor: 'border-indigo-500/20',
+        dotColor: 'bg-indigo-400', btnGradient: 'from-indigo-500/80 to-violet-600/80',
     },
 };
 
@@ -358,60 +358,63 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                         exit={{ y: 100, opacity: 0, scale: 0.95 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="relative z-10 w-full max-w-md mx-4 mb-4 sm:mb-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-700 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+                        className="relative z-10 w-full max-w-md mx-4 mb-4 sm:mb-0 bg-slate-900/85 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] max-h-[90vh] flex flex-col"
                     >
                         {/* Background Glow */}
                         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                            <div className={`absolute top-[-30%] right-[-30%] w-[80%] h-[80%] ${currentState === 'dark' ? 'bg-red-900/15' : currentState === 'neural' ? 'bg-emerald-900/15' : 'bg-purple-900/15'
-                                } blur-[80px] rounded-full transition-colors duration-500`} />
+                            <div className={`absolute top-[-30%] right-[-30%] w-[80%] h-[80%] ${currentState === 'dark' ? 'bg-rose-900/20' : currentState === 'neural' ? 'bg-teal-900/20' : 'bg-indigo-900/20'
+                                } blur-[100px] rounded-full transition-colors duration-1000 animate-pulse`} />
                         </div>
 
-                        {/* 3-TAB STATE SELECTOR */}
-                        <div className="relative z-10 flex border-b border-white/5 flex-shrink-0">
+                        {/* 3-TAB STATE SELECTOR (Floating Pill Style) */}
+                        <div className="relative z-10 flex p-1 mx-4 mt-5 mb-2 bg-black/40 rounded-2xl border border-white/5 flex-shrink-0 shadow-inner">
                             {(['dark', 'neural', 'meta'] as StateType[]).map((state) => {
                                 const cfg = TAB_CONFIG[state];
                                 const isActive = currentState === state;
                                 return (
                                     <button key={state} onClick={() => handleStateChange(state)}
-                                        className={`flex-1 py-3 text-center text-xs font-bold transition-all duration-300 border-b-2 ${isActive ? `${cfg.accentColor} ${cfg.borderColor} bg-white/5` : 'text-gray-600 border-transparent hover:bg-white/5'
+                                        className={`flex-1 py-2.5 text-center text-xs font-bold transition-all duration-300 rounded-xl ${isActive ? `${cfg.accentColor} bg-white/10 shadow-sm border border-white/10` : 'text-gray-500 hover:text-gray-300 hover:bg-white/5 border border-transparent'
                                             }`}>
-                                        <span className="mr-1">{cfg.icon}</span>{cfg.label}
+                                        <span className="mr-1.5 opacity-90">{cfg.icon}</span>{cfg.label}
                                     </button>
                                 );
                             })}
                         </div>
 
                         {/* Header */}
-                        <div className="relative z-10 px-5 pt-4 pb-2 flex justify-between items-start flex-shrink-0">
+                        <div className="relative z-10 px-6 pt-5 pb-3 flex justify-between items-start flex-shrink-0">
                             <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-white font-bold text-base">{data.pillarLabel}</span>
+                                <div className="flex items-center gap-2 mb-1.5">
+                                    <span className="text-white/90 font-bold text-lg tracking-tight">{data.pillarLabel}</span>
                                     {/* 일진 테마 배지 */}
                                     {dailyTheme && (
-                                        <span className="text-[9px] font-bold text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 px-2 py-0.5 rounded-full">
+                                        <span className="text-[10px] font-bold text-cyan-300 bg-cyan-900/30 border border-cyan-400/30 px-2.5 py-0.5 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.2)]">
                                             오늘의 테마
                                         </span>
                                     )}
                                 </div>
                                 {dailyTheme ? (
-                                    <p className="text-[11px] text-cyan-400 font-medium mb-0.5">✨ {dailyTheme}</p>
+                                    <p className="text-xs text-cyan-200/80 font-medium mb-1.5">✨ {dailyTheme}</p>
                                 ) : null}
-                                <p className={`text-xs font-medium ${tab.accentColor}`}>{tab.icon} {currentCode.name}</p>
+                                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 ${tab.accentColor}`}>
+                                    <span className="text-xs">{tab.icon}</span>
+                                    <span className="text-[11px] font-bold tracking-wide">{currentCode.name}</span>
+                                </div>
                             </div>
-                            <button onClick={handleClose} className="text-gray-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10 ml-2">
-                                <X size={18} />
+                            <button onClick={handleClose} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-white/10 ml-2 backdrop-blur-md bg-white/5">
+                                <X size={16} />
                             </button>
                         </div>
 
 
                         {/* Progress Bar */}
                         {!isAwareness && !showCompletion && (
-                            <div className="relative z-10 px-5 pb-2 flex-shrink-0">
-                                <div className="flex gap-2">
+                            <div className="relative z-10 px-6 pb-2 flex-shrink-0">
+                                <div className="flex gap-2.5">
                                     {[0, 1, 2].map(i => (
-                                        <div key={i} className="flex-1 h-1 rounded-full overflow-hidden bg-white/10">
+                                        <div key={i} className="flex-1 h-1.5 rounded-full overflow-hidden bg-black/40 border border-white/5 shadow-inner">
                                             <motion.div initial={{ width: 0 }} animate={{ width: i <= currentStep ? '100%' : '0%' }}
-                                                transition={{ duration: 0.5 }} className={`h-full rounded-full ${tab.dotColor}`} />
+                                                transition={{ duration: 0.8, ease: "easeOut" }} className={`h-full rounded-full ${tab.dotColor} shadow-[0_0_8px_currentColor]`} />
                                         </div>
                                     ))}
                                 </div>
@@ -439,41 +442,48 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
 
                                     {/* === AWARENESS SCREEN (Step 1: 상태 자각) === */}
                                     {isAwareness && !showCompletion && (
-                                        <div>
-                                            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${tab.bgGradient} border ${tab.borderColor} mb-4`}>
-                                                <span className={`text-[11px] font-bold ${tab.accentColor}`}>Step 1 · 상태 자각</span>
+                                        <div className="px-1">
+                                            <div className="text-center mb-6 mt-2">
+                                                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br ${tab.bgGradient} border ${tab.borderColor} mb-4 shadow-lg shadow-black/20`}>
+                                                    <span className="text-2xl">{tab.icon}</span>
+                                                </div>
+                                                <h3 className="text-white/90 font-bold text-xl mb-2 tracking-tight">잠시 멈춰서,<br />내 마음을 들여다볼까요?</h3>
+                                                <p className="text-gray-400 text-sm">심호흡을 하고, 아래 질문을 천천히 읽어보세요.</p>
                                             </div>
-                                            <h3 className="text-white font-bold text-base mb-4">지금 나는 어떤 상태인가요?</h3>
-                                            <div className={`bg-gradient-to-br ${tab.bgGradient} rounded-2xl p-4 border ${tab.borderColor}`}>
-                                                <p className={`font-bold text-sm mb-2 ${tab.accentColor}`}>{tab.icon} {currentCode.name}</p>
-                                                <p className="text-gray-300 text-sm leading-relaxed">{stateScenario.awarenessQuestion}</p>
+                                            
+                                            <div className={`bg-gradient-to-br ${tab.bgGradient} rounded-[1.5rem] p-6 border ${tab.borderColor} shadow-inner relative overflow-hidden group`}>
+                                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                                                <p className="text-gray-200 text-[15px] leading-loose font-medium text-center break-keep">
+                                                    "{stateScenario.awarenessQuestion}"
+                                                </p>
                                             </div>
-                                            <p className="text-gray-600 text-[11px] mt-4 text-center italic">이 상태가 공감된다면, 아래 버튼을 눌러 코칭을 시작하세요</p>
                                         </div>
                                     )}
 
                                     {/* === SLIDE SCREENS (산파술 / 재귀적 / 알아차림의알아차림) === */}
                                     {!isAwareness && !showCompletion && stateScenario.slides[currentStep] && (
-                                        <div>
-                                            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${tab.bgGradient} border ${tab.borderColor} mb-1`}>
-                                                <span className="text-sm">{stateScenario.slides[currentStep].stepIcon}</span>
-                                                <span className={`text-[11px] font-bold ${tab.accentColor}`}>
-                                                    STEP {currentStep + 1} · {stateScenario.slides[currentStep].stepLabel}
-                                                </span>
+                                        <div className="px-1">
+                                            <div className="flex flex-col items-center text-center mb-6 mt-2">
+                                                <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/30 border border-white/5 mb-3 backdrop-blur-sm shadow-inner`}>
+                                                    <span className="text-sm opacity-80">{stateScenario.slides[currentStep].stepIcon}</span>
+                                                    <span className={`text-[11px] font-bold tracking-widest uppercase ${tab.accentColor}`}>
+                                                        Step {currentStep + 1} · {stateScenario.slides[currentStep].stepLabel}
+                                                    </span>
+                                                </div>
+                                                <p className="text-gray-400/90 text-sm font-medium">{stateScenario.slides[currentStep].stepDesc}</p>
                                             </div>
-                                            <p className="text-gray-500 text-xs mb-3 ml-1">{stateScenario.slides[currentStep].stepDesc}</p>
 
-                                            <div className={`bg-gradient-to-br ${tab.bgGradient} rounded-2xl p-4 border ${tab.borderColor} mb-4`}>
-                                                <p className="text-gray-300 text-sm leading-relaxed">
-                                                    {stateScenario.slides[currentStep].question}
+                                            <div className={`bg-gradient-to-br ${tab.bgGradient} rounded-[1.5rem] p-6 border ${tab.borderColor} mb-5 shadow-inner relative`}>
+                                                <p className="text-gray-200 text-[15px] leading-loose font-medium text-center break-keep">
+                                                    "{stateScenario.slides[currentStep].question}"
                                                 </p>
                                             </div>
 
                                             {/* AI Tip (Lightbulb) */}
                                             {stateScenario.slides[currentStep].tip && (
-                                                <div className="flex gap-3 p-3.5 mb-4 bg-white/5 border border-white/10 rounded-2xl">
-                                                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                                                    <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
+                                                <div className="flex gap-3 p-4 mb-5 bg-black/20 border border-white/5 rounded-2xl backdrop-blur-sm shadow-inner">
+                                                    <Sparkles className="w-4 h-4 text-amber-300/80 shrink-0 mt-0.5" />
+                                                    <p className="text-xs text-gray-400/90 leading-relaxed font-medium break-keep">
                                                         {stateScenario.slides[currentStep].tip}
                                                     </p>
                                                 </div>
@@ -481,8 +491,8 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
 
                                             {/* Choices (Radio Buttons) */}
                                             {stateScenario.slides[currentStep].choices && stateScenario.slides[currentStep].choices!.length > 0 ? (
-                                                <div className="space-y-2 mb-4">
-                                                    <p className="text-[10px] text-gray-500 uppercase font-black ml-1 mb-2 tracking-widest">Select your state:</p>
+                                                <div className="space-y-2.5 mb-2">
+                                                    <p className="text-[10px] text-gray-500/70 uppercase font-black ml-2 mb-2 tracking-widest">나의 마음 선택하기</p>
                                                     {stateScenario.slides[currentStep].choices!.map((choice: string, i: number) => {
                                                         const isSelected = inputs[inputKey] === choice;
                                                         return (
@@ -491,16 +501,16 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                                                                 onClick={() => setInputs({ ...inputs, [inputKey]: choice })}
                                                                 className={`w-full flex items-center gap-3 p-4 rounded-2xl border transition-all duration-300 text-left ${
                                                                     isSelected
-                                                                        ? `bg-white/10 ${tab.borderColor} shadow-[0_0_15px_rgba(255,255,255,0.05)]`
-                                                                        : 'bg-white/5 border-white/5 hover:bg-white/8 hover:border-white/10'
+                                                                        ? `bg-white/10 ${tab.borderColor} shadow-[0_0_15px_rgba(255,255,255,0.05)] scale-[1.02]`
+                                                                        : 'bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/10'
                                                                 }`}
                                                             >
-                                                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
                                                                     isSelected ? 'border-amber-400' : 'border-gray-600'
                                                                 }`}>
-                                                                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
+                                                                    {isSelected && <motion.div initial={{scale:0}} animate={{scale:1}} className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
                                                                 </div>
-                                                                <span className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-400'}`}>
+                                                                <span className={`text-[13.5px] leading-relaxed font-medium ${isSelected ? 'text-white' : 'text-gray-400'}`}>
                                                                     {choice}
                                                                 </span>
                                                             </button>
@@ -514,10 +524,10 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                                                         value={inputs[inputKey] || ''}
                                                         onChange={(e) => setInputs({ ...inputs, [inputKey]: e.target.value })}
                                                         placeholder={stateScenario.slides[currentStep].inputPlaceholder}
-                                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-gray-300 placeholder-gray-600 resize-none focus:outline-none focus:border-purple-500/50 transition-colors"
+                                                        className="w-full bg-black/30 border border-white/5 rounded-2xl p-5 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all shadow-inner"
                                                         rows={3}
                                                     />
-                                                    <p className="text-gray-600 text-[11px] mt-2 text-center italic">✨ 마음속 떠오르는 그대로 적어보세요</p>
+                                                    <p className="text-gray-500/80 text-[11px] mt-3 text-center font-medium">✨ 마음에 떠오르는 단어들을 편안하게 적어보세요</p>
                                                 </>
                                             )}
                                         </div>
@@ -527,20 +537,22 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                         </div>
 
                         {/* Footer */}
-                        <div className="relative z-10 px-5 pb-5 pt-2 flex justify-between items-center flex-shrink-0 border-t border-white/5">
+                        <div className="relative z-10 px-6 pb-6 pt-4 flex justify-between items-center flex-shrink-0 border-t border-white/5 bg-slate-900/50 backdrop-blur-md">
                             <div>
                                 {currentStep > -1 && !showCompletion && (
                                     <button onClick={() => setCurrentStep(prev => prev - 1)}
-                                        className="px-4 py-2.5 rounded-xl text-gray-400 text-sm font-medium hover:bg-white/5 transition-all">← 이전</button>
+                                        className="px-4 py-3 rounded-xl text-gray-400 text-[13px] font-medium hover:bg-white/5 hover:text-white transition-all flex items-center gap-1">
+                                        ← 이전
+                                    </button>
                                 )}
                             </div>
                             <button onClick={handleNext}
-                                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all bg-gradient-to-r ${showCompletion ? 'from-amber-500 to-orange-500' : `${tab.btnGradient}`
+                                className={`flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl font-bold text-[14px] text-white shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto bg-gradient-to-r ${showCompletion ? 'from-amber-500 to-orange-500' : `${tab.btnGradient}`
                                     }`}>
-                                {showCompletion ? (<><Sparkles size={14} />자각 완료</>) :
-                                    isAwareness ? (<>코칭 시작<ChevronRight size={14} /></>) :
-                                        currentStep === 2 ? (<><Sparkles size={14} />Shift 완료</>) :
-                                            (<>다음 단계<ChevronRight size={14} /></>)}
+                                {showCompletion ? (<><Sparkles size={16} />여정 완료</>) :
+                                    isAwareness ? (<>네, 치유 여정을 시작할게요 ✨</>) :
+                                        currentStep === 2 ? (<><Sparkles size={16} />마음 전환 완료</>) :
+                                            (<>다음으로<ChevronRight size={16} /></>)}
                             </button>
                         </div>
                     </motion.div>
