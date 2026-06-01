@@ -134,6 +134,11 @@ export default function Healing108CoachingReport({
     const [aiPageContent, setAiPageContent] = useState<Record<string, { title: string; desc?: string; darkCodeCbt?: string; metaCodeAct?: string; neuralCodeDbt?: string; socratic?: string; recursive?: string; sajuAnalysis?: string; socraticMbct?: string; relaxMbsr?: string; selfCompassionMsc?: string; coachingSolution?: string; mantra?: string }>>({});
     const [isGeneratingAi, setIsGeneratingAi] = useState(false);
 
+    // [모듈 상세 모달] 클릭 시 AI가 상세 풀이해주는 카드 모달
+    const [expandedModule, setExpandedModule] = useState<{ type: string; label: string; icon: string; color: string; shortContent: string } | null>(null);
+    const [expandedDetail, setExpandedDetail] = useState<Record<string, string>>({});
+    const [isExpandLoading, setIsExpandLoading] = useState(false);
+
     // 108페이지 키 배열
     const pageKeys = Object.keys(saju108Matrix).sort();
     const currentPageKey = pageKeys[currentPageIndex];
@@ -308,6 +313,43 @@ export default function Healing108CoachingReport({
         // 햅틱 진동 피드백
         if (typeof navigator !== 'undefined' && navigator.vibrate) {
             navigator.vibrate(30);
+        }
+    };
+
+    // [모듈 상세 모달] 카드 클릭 → AI 상세 풀이 생성
+    const handleExpandModule = async (type: string, label: string, icon: string, color: string, shortContent: string) => {
+        setExpandedModule({ type, label, icon, color, shortContent });
+        const cacheKey = `${currentPageKey}_${type}`;
+
+        // 이미 캐시된 상세 내용이 있으면 재사용 (요금 절약!)
+        if (expandedDetail[cacheKey]) return;
+
+        setIsExpandLoading(true);
+        try {
+            const sp = activeSaju ? {
+                dayMasterChar: activeSaju.dayMaster,
+                dayMasterAnalogy: activeSaju.dayMasterAnalogy || '',
+            } : {};
+
+            const res = await fetch('/api/coaching/expand-module', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    moduleType: type,
+                    shortContent,
+                    pageTitle: displayTitle,
+                    sajuProfile: sp
+                })
+            });
+
+            const data = await res.json();
+            if (data.success && data.detail) {
+                setExpandedDetail(prev => ({ ...prev, [cacheKey]: data.detail }));
+            }
+        } catch (e) {
+            console.error('모듈 상세 생성 실패:', e);
+        } finally {
+            setIsExpandLoading(false);
         }
     };
 
@@ -1368,51 +1410,57 @@ export default function Healing108CoachingReport({
                                         <div className="space-y-4">
                                             {/* 1. 사주 기질 분석 카드 */}
                                             {displaySajuAnalysis && (
-                                            <div className="p-4 bg-gradient-to-r from-slate-50/80 to-indigo-50/60 border border-slate-200/60 rounded-2xl backdrop-blur-sm">
+                                            <div onClick={() => handleExpandModule('sajuAnalysis', '나의 사주 기질 분석', '🔮', 'slate', displaySajuAnalysis)} className="p-4 bg-gradient-to-r from-slate-50/80 to-indigo-50/60 border border-slate-200/60 rounded-2xl backdrop-blur-sm cursor-pointer hover:shadow-lg hover:border-slate-300 transition-all duration-300 group">
                                                 <h3 className="text-slate-700 font-bold mb-2 flex items-center gap-2 text-sm">
                                                     🔮 나의 사주 기질 분석 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">사주 해석</span>
+                                                    <span className="ml-auto text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">클릭하면 자세히 →</span>
                                                 </h3>
                                                 <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displaySajuAnalysis}</p>
                                             </div>
                                             )}
 
                                             {/* 2. CBT 다크코드 */}
-                                            <div className="p-4 bg-gradient-to-r from-rose-50/60 to-white/60 border border-rose-200/50 rounded-2xl backdrop-blur-sm">
+                                            <div onClick={() => handleExpandModule('darkCodeCbt', '다크코드 — 생각의 함정 걷어내기', '🌑', 'rose', displayDarkCode!)} className="p-4 bg-gradient-to-r from-rose-50/60 to-white/60 border border-rose-200/50 rounded-2xl backdrop-blur-sm cursor-pointer hover:shadow-lg hover:border-rose-300 transition-all duration-300 group">
                                                 <h3 className="text-rose-600 font-bold mb-2 flex items-center gap-2 text-sm">
                                                     🌑 다크코드 — 생각의 함정 걷어내기 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">CBT 인지치유</span>
+                                                    <span className="ml-auto text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">클릭하면 자세히 →</span>
                                                 </h3>
                                                 <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayDarkCode}</p>
                                             </div>
 
                                             {/* 3. ACT 메타코드 */}
-                                            <div className="p-4 bg-gradient-to-r from-indigo-50/60 to-white/60 border border-indigo-200/50 rounded-2xl backdrop-blur-sm">
+                                            <div onClick={() => handleExpandModule('metaCodeAct', '메타코드 — 빛나는 본질 받아들이기', '✨', 'indigo', displayMetaCode!)} className="p-4 bg-gradient-to-r from-indigo-50/60 to-white/60 border border-indigo-200/50 rounded-2xl backdrop-blur-sm cursor-pointer hover:shadow-lg hover:border-indigo-300 transition-all duration-300 group">
                                                 <h3 className="text-indigo-600 font-bold mb-2 flex items-center gap-2 text-sm">
                                                     ✨ 메타코드 — 빛나는 본질 받아들이기 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">ACT 수용전념</span>
+                                                    <span className="ml-auto text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">클릭하면 자세히 →</span>
                                                 </h3>
                                                 <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayMetaCode}</p>
                                             </div>
 
                                             {/* 4. DBT 뉴럴코드 */}
-                                            <div className="p-4 bg-gradient-to-r from-teal-50/60 to-white/60 border border-teal-200/50 rounded-2xl backdrop-blur-sm">
+                                            <div onClick={() => handleExpandModule('neuralCodeDbt', '뉴럴코드 — 마음이 흔들릴 때 처방전', '🧬', 'teal', displayNeuralCode!)} className="p-4 bg-gradient-to-r from-teal-50/60 to-white/60 border border-teal-200/50 rounded-2xl backdrop-blur-sm cursor-pointer hover:shadow-lg hover:border-teal-300 transition-all duration-300 group">
                                                 <h3 className="text-teal-600 font-bold mb-2 flex items-center gap-2 text-sm">
                                                     🧬 뉴럴코드 — 마음이 흔들릴 때 처방전 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">DBT 행동치유</span>
+                                                    <span className="ml-auto text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">클릭하면 자세히 →</span>
                                                 </h3>
                                                 <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayNeuralCode}</p>
                                             </div>
 
                                             {/* 5. MBCT 마음챙김 자각 */}
-                                            <div className="p-4 bg-gradient-to-r from-amber-50/60 to-white/60 border border-amber-200/50 rounded-2xl backdrop-blur-sm">
+                                            <div onClick={() => handleExpandModule('socraticMbct', '마음챙김 자각 질문', '🕊️', 'amber', displaySocratic)} className="p-4 bg-gradient-to-r from-amber-50/60 to-white/60 border border-amber-200/50 rounded-2xl backdrop-blur-sm cursor-pointer hover:shadow-lg hover:border-amber-300 transition-all duration-300 group">
                                                 <h3 className="text-amber-700 font-bold mb-2 flex items-center gap-2 text-sm">
                                                     🕊️ 마음챙김 자각 질문 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">MBCT 마음챙김</span>
+                                                    <span className="ml-auto text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">클릭하면 자세히 →</span>
                                                 </h3>
                                                 <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displaySocratic}</p>
                                             </div>
 
                                             {/* 6. MBSR 스트레스 이완 */}
                                             {displayRelaxMbsr && (
-                                            <div className="p-4 bg-gradient-to-r from-cyan-50/60 to-white/60 border border-cyan-200/50 rounded-2xl backdrop-blur-sm">
+                                            <div onClick={() => handleExpandModule('relaxMbsr', '스트레스 이완 안내', '🧘', 'cyan', displayRelaxMbsr)} className="p-4 bg-gradient-to-r from-cyan-50/60 to-white/60 border border-cyan-200/50 rounded-2xl backdrop-blur-sm cursor-pointer hover:shadow-lg hover:border-cyan-300 transition-all duration-300 group">
                                                 <h3 className="text-cyan-700 font-bold mb-2 flex items-center gap-2 text-sm">
                                                     🧘 스트레스 이완 안내 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">MBSR 이완</span>
+                                                    <span className="ml-auto text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">클릭하면 자세히 →</span>
                                                 </h3>
                                                 <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayRelaxMbsr}</p>
                                             </div>
@@ -1420,9 +1468,10 @@ export default function Healing108CoachingReport({
 
                                             {/* 7. MSC 자기연민 */}
                                             {displaySelfCompassion && (
-                                            <div className="p-4 bg-gradient-to-r from-purple-50/60 to-white/60 border border-purple-200/50 rounded-2xl backdrop-blur-sm">
+                                            <div onClick={() => handleExpandModule('selfCompassionMsc', '자기연민 실천', '💛', 'purple', displaySelfCompassion)} className="p-4 bg-gradient-to-r from-purple-50/60 to-white/60 border border-purple-200/50 rounded-2xl backdrop-blur-sm cursor-pointer hover:shadow-lg hover:border-purple-300 transition-all duration-300 group">
                                                 <h3 className="text-purple-600 font-bold mb-2 flex items-center gap-2 text-sm">
                                                     💛 자기연민 실천 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">MSC 자기연민</span>
+                                                    <span className="ml-auto text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">클릭하면 자세히 →</span>
                                                 </h3>
                                                 <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displaySelfCompassion}</p>
                                             </div>
@@ -1430,9 +1479,10 @@ export default function Healing108CoachingReport({
 
                                             {/* 8. 코칭 솔루션 */}
                                             {displayCoachingSolution && (
-                                            <div className="p-4 bg-gradient-to-r from-emerald-50/60 to-white/60 border border-emerald-200/50 rounded-2xl backdrop-blur-sm">
+                                            <div onClick={() => handleExpandModule('coachingSolution', '오늘의 코칭 솔루션', '🎯', 'emerald', displayCoachingSolution)} className="p-4 bg-gradient-to-r from-emerald-50/60 to-white/60 border border-emerald-200/50 rounded-2xl backdrop-blur-sm cursor-pointer hover:shadow-lg hover:border-emerald-300 transition-all duration-300 group">
                                                 <h3 className="text-emerald-600 font-bold mb-2 flex items-center gap-2 text-sm">
                                                     🎯 오늘의 코칭 솔루션 <span className="text-[10px] text-slate-400 font-normal bg-white/60 px-2 py-0.5 rounded-full">실천 과제</span>
+                                                    <span className="ml-auto text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">클릭하면 자세히 →</span>
                                                 </h3>
                                                 <p className="text-slate-600 leading-relaxed text-[14px] whitespace-pre-wrap">{displayCoachingSolution}</p>
                                             </div>
@@ -1523,12 +1573,92 @@ export default function Healing108CoachingReport({
                                 disabled={currentPageIndex === pageKeys.length - 1}
                                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/40 hover:bg-white/70 border border-white/40 text-slate-500 hover:text-indigo-600 flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none transition-all"
                             >
-                                <ChevronRight size={18} />
-                            </button>
+                                        <ChevronRight size={18} />
+                                    </button>
+                                </div>
+                            </main>
                         </div>
-                    </main>
+                    </div>
                 </div>
+
+                {/* ===== 모듈 상세 풀이 모달 ===== */}
+                <AnimatePresence>
+                    {expandedModule && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+                            onClick={() => setExpandedModule(null)}
+                        >
+                            {/* 백드롭 */}
+                            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+                            {/* 모달 카드 */}
+                            <motion.div
+                                initial={{ scale: 0.9, y: 20 }}
+                                animate={{ scale: 1, y: 0 }}
+                                exit={{ scale: 0.9, y: 20 }}
+                                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="relative w-full max-w-lg max-h-[80vh] overflow-y-auto bg-white/95 backdrop-blur-xl border border-white/60 rounded-3xl shadow-2xl p-6 sm:p-8 z-10"
+                            >
+                                {/* 닫기 버튼 */}
+                                <button
+                                    onClick={() => setExpandedModule(null)}
+                                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-100 hover:bg-rose-100 flex items-center justify-center text-slate-400 hover:text-rose-500 transition-all"
+                                >
+                                    <X size={16} />
+                                </button>
+
+                                {/* 아이콘 + 제목 */}
+                                <div className="flex items-start gap-3 mb-5">
+                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-100 to-indigo-100 flex items-center justify-center text-2xl shadow-inner shrink-0">
+                                        {expandedModule.icon}
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg font-extrabold text-slate-800 leading-snug">{expandedModule.label}</h2>
+                                        <p className="text-[11px] text-slate-400 mt-0.5">AI가 당신의 기질에 맞춰 자세히 풀어드려요</p>
+                                    </div>
+                                </div>
+
+                                {/* 요약 원문 */}
+                                <div className="bg-gradient-to-r from-rose-50/60 to-indigo-50/40 border border-slate-200/50 rounded-2xl p-4 mb-5">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">요약</p>
+                                    <p className="text-sm text-slate-700 leading-relaxed">{expandedModule.shortContent}</p>
+                                </div>
+
+                                {/* 상세 풀이 */}
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-bold text-rose-500 uppercase tracking-wider flex items-center gap-1">
+                                        <Sparkles size={10} /> 상세 풀이
+                                    </p>
+                                    {isExpandLoading ? (
+                                        <div className="flex flex-col items-center py-8 space-y-3">
+                                            <div className="relative w-12 h-12">
+                                                <motion.div
+                                                    animate={{ rotate: 360 }}
+                                                    transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-400 to-indigo-400 opacity-50 blur-sm"
+                                                />
+                                                <div className="absolute inset-1 rounded-full bg-white flex items-center justify-center">
+                                                    <Sparkles size={16} className="text-rose-500 animate-pulse" />
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-slate-500">AI 코치가 상세하게 풀어쓰는 중...</p>
+                                        </div>
+                                    ) : expandedDetail[`${currentPageKey}_${expandedModule.type}`] ? (
+                                        <div className="text-[14px] text-slate-700 leading-[1.8] whitespace-pre-wrap">
+                                            {expandedDetail[`${currentPageKey}_${expandedModule.type}`]}
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-slate-400 italic">생성 중 오류가 발생했어요. 다시 클릭해 주세요.</p>
+                                    )}
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-        </div>
     , portalContainer!);
 }
