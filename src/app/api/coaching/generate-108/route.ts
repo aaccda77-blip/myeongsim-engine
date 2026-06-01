@@ -65,9 +65,9 @@ export async function POST(req: NextRequest) {
       ],
       generationConfig: { 
         temperature: 0.85, 
-        maxOutputTokens: 2048,
+        maxOutputTokens: 4096,
         responseMimeType: "application/json",
-        // responseSchema: jsonSchema
+        responseSchema: jsonSchema
       },
     });
 
@@ -188,26 +188,16 @@ ${tenGodNarrative.map(n => `  · ${n}`).join('\n')}
 [✍️ 평생 통합 치유 리포트 - 5대 심리치료 융합 모듈 지침 🌸]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. **[제목] 내담자의 일간 은유를 사용한 시적 제목**: "${sp.dayMasterShortAnalogy || '일간'}"이라는 고유한 본질을 주인공으로 삼아, 서정적인 시적 제목으로 창조하세요.
+중요: 각 항목은 반드시 100~150자 이내로 간결하게 작성하세요. 절대 200자를 넘기지 마세요.
 
-2. **[CBT 인지행동치료] 평생의 다크 코드 해체 (darkCodeCbt)**: 
-   - 기질적 취약점과 십신 심리 서사를 바탕으로, 내담자가 평생 반복해서 빠지기 쉬운 **'생각의 함정(인지 왜곡)'**을 해체합니다.
-   - 예: "당신은 '완벽하지 않으면 실패'라는 흑백논리에 빠지기 쉬운 기질입니다." (학술 용어 대신 다정하게) 200~300자.
+1. **title**: "${sp.dayMasterShortAnalogy || '일간'}" 본질을 담은 시적 제목 (20자 이내)
+2. **darkCodeCbt**: 이 페이지 주제와 기질의 인지 왜곡을 다정하게 해체 (100~150자)
+3. **metaCodeAct**: 기질을 수용하고 가치로 승화시키는 관점 전환 (100~150자)
+4. **neuralCodeDbt**: 위기 상황에서의 감정 조절 행동 지침 (100~150자)
+5. **socratic**: 내면 성찰을 위한 따뜻한 질문 2개 (100~150자)
+6. **recursive**: 평생 꺼내 읽는 긍정 확언문 (100~150자)
 
-3. **[ACT 수용전념치료] 평생의 메타 코드 승화 (metaCodeAct)**:
-   - 기질을 통제하려 하지 않고 수용하며, 그 단점을 빛나는 가치로 승화시키는 평생의 관점 전환법.
-   - 부족한 ${(ohaengLabels as any)[minElem[0]]} 기운을 보듬고 넘치는 ${(ohaengLabels as any)[maxElem[0]]} 기운을 다독이는 다정한 200~300자.
-
-4. **[DBT 변증법적 행동치료] 기질 맞춤형 위기 탈출 알고리즘 (neuralCodeDbt)**:
-   - 극한의 스트레스 상황에서 내담자의 기질이 무너질 때, 파괴적 충동을 막아줄 구체적인 감정 조절 및 고통 감내 행동 지침 (뉴럴 코드). 200~300자.
-
-5. **[MBCT 마음챙김 인지치료] 초개인화 심층 자각 (socratic)**:
-   - "지금 당신이 느끼는 그 두려움은 '진짜 당신'인가요, 기질의 날씨일 뿐인가요?" 와 같은, 내담자가 메타인지적으로 성찰할 수 있는 따뜻한 2~3개의 소크라테스식 질문.
-
-6. **[MBSR 스트레스 감소] 참나무 평생 수용 확약 및 영혼의 만트라 (recursive)**:
-   - 가만히 소리 내어 읊기만 해도 마음에 평화가 깃드는 포근하고 시적인 긍정 확언문. 평생 꺼내 읽는 방어막 역할.
-
-반드시 정해진 JSON 스키마 규격을 충족하여 출력하세요.
+반드시 title, darkCodeCbt, metaCodeAct, neuralCodeDbt, socratic, recursive 6개 필드만 포함하세요.
 `.trim();
 
     const result = await model.generateContent(prompt);
