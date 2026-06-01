@@ -131,7 +131,7 @@ export default function Healing108CoachingReport({
     const [recursiveConfirmed, setRecursiveConfirmed] = useState<Record<string, boolean>>({});
 
     // [NEW] 실시간 AI 개인화 생성형 백서 관련 상태
-    const [aiPageContent, setAiPageContent] = useState<Record<string, { title: string; desc: string; socratic: string; recursive: string }>>({});
+    const [aiPageContent, setAiPageContent] = useState<Record<string, { title: string; desc?: string; darkCodeCbt?: string; metaCodeAct?: string; neuralCodeDbt?: string; socratic: string; recursive: string }>>({});
     const [isGeneratingAi, setIsGeneratingAi] = useState(false);
 
     // 108페이지 키 배열
@@ -159,16 +159,16 @@ export default function Healing108CoachingReport({
         const dm = activeSaju.dayMaster || '';
 
         const rawFingerprint = `${dm}_${year}${month}${day}${hour}`;
-        // 특수문자 제거 후 안전한 키 변환
-        return rawFingerprint.replace(/[^ㄱ-ㅎ가-힣A-Za-z0-9]/g, '') || 'guest';
+        // 특수문자 제거 후 안전한 키 변환 (한글, 영어, 숫자, 한자 모두 허용)
+        return rawFingerprint.replace(/[^ㄱ-ㅎ가-힣A-Za-z0-9一-龥]/g, '') || 'guest';
     };
 
     // 사용자별 고유 캐시 키 정의 (생년월일 및 시간을 포함하여 사주 지문으로 완벽 격리)
     const userKey = getSajuFingerprint();
     const answersKey = `ms_108_answers_${userKey}`;
     const confirmedKey = `ms_108_confirmed_${userKey}`;
-    // [Bug Fix] 기존에 잘못 캐시된 데이터를 모두 무효화하기 위해 캐시 키 버전(v9) 추가
-    const aiContentKey = `ms_108_ai_content_v9_${userKey}`; // v9: 실시간 만세력 정렬 및 락인 완벽 파괴 버전
+    // [Bug Fix] 기존에 잘못 캐시된 데이터를 완전히 무효화하고 다크/뉴럴/메타코드 스키마를 고착하기 위해 캐시 키 버전(v12) 업그레이드
+    const aiContentKey = `ms_108_ai_content_v12_${userKey}`; // v12: Gemini responseSchema 탑재 버전
 
     // --- 로컬스토리지 답변 및 AI 생성 데이터 로딩 & 자동 캐싱 ---
     useEffect(() => {
@@ -193,14 +193,14 @@ export default function Healing108CoachingReport({
                 setAiPageContent({}); // 새로운 사용자 전환 시 AI 백서 생성 데이터 초기화 및 갱신
             }
         }
-    }, [userKey]); // [초고도화] 사용자가 바뀌면 실시간으로 데이터를 분리 스위칭합니다.
+    }, [userKey, aiContentKey, answersKey, confirmedKey]); // [초고도화] 사용자가 바뀌거나 캐시 버전이 바뀌면 실시간으로 데이터를 분리 스위칭합니다.
     // [초고도화] 스텔스 모드(Lazy Loading) AI 생성 큐 및 진행 상태
     // 로딩 UI를 띄우지 않고 백그라운드에서 조용히 생성합니다.
     const [generatingQueue, setGeneratingQueue] = useState<string[]>([]);
     
     // [초고도화] 현재 보고 있는 페이지와 인접한 페이지들을 큐에 추가
     useEffect(() => {
-        if (!isOpen || !activeSaju || userKey === 'guest') return;
+        if (!isOpen || !activeSaju) return; // guest 유저도 자유롭게 체험할 수 있도록 문턱 완전 오픈!
 
         const currentCacheStr = typeof window !== 'undefined' ? localStorage.getItem(aiContentKey) : null;
         const currentCache = currentCacheStr ? JSON.parse(currentCacheStr) : {};
@@ -232,7 +232,7 @@ export default function Healing108CoachingReport({
                 return newQueue;
             });
         }
-    }, [currentPageIndex, isOpen, activeSaju, userKey, aiContentKey, aiPageContent]);
+    }, [currentPageIndex, isOpen, activeSaju, aiContentKey, aiPageContent]);
 
     // [초고도화] 큐에 들어온 페이지들을 하나씩 백그라운드에서 스텔스로 생성
     useEffect(() => {
@@ -577,12 +577,13 @@ export default function Healing108CoachingReport({
 
         const saju = targetSaju;
 
-        // --- 2. 사주 4기둥 간지 추출 로직 (위로 이동) ---
-        const getPillar = (type: 'year' | 'month' | 'day' | 'time') => {
-            const flatKey = `${type}Pillar` as keyof typeof saju;
-            if (saju[flatKey]) return saju[flatKey];
-            if (saju.fourPillars && saju.fourPillars[type]) return saju.fourPillars[type];
-            if (saju[type]) return saju[type];
+        try {
+            // --- 2. 사주 4기둥 간지 추출 로직 (위로 이동) ---
+            const getPillar = (type: 'year' | 'month' | 'day' | 'time') => {
+                const flatKey = `${type}Pillar` as keyof typeof saju;
+                if (saju[flatKey]) return saju[flatKey];
+                if (saju.fourPillars && saju.fourPillars[type]) return saju.fourPillars[type];
+                if (saju[type]) return saju[type];
             return null;
         };
 
@@ -838,6 +839,15 @@ export default function Healing108CoachingReport({
         resolved = resolved.replace(/\{\{CURRENT_YEAR_GANJI\}\}/g, '올해의 조율 기류');
 
         return resolved;
+        } catch (error) {
+            console.error('⚠️ [getResolvedText] 사주 치환 연산 중 에러 발생 (안전 폴백 적용):', error);
+            let resolved = text;
+            Object.entries(defaultValues).forEach(([key, val]) => {
+                const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+                resolved = resolved.replace(regex, val);
+            });
+            return resolved;
+        }
     };
 
     const hasAiContent = !!aiPageContent[currentPageKey];
@@ -859,7 +869,9 @@ export default function Healing108CoachingReport({
         const page = saju108Matrix[key];
         const hasAi = !!aiPageContent[key];
         const resolvedTitle = hasAi ? aiPageContent[key].title : getResolvedText(page.title);
-        const resolvedDesc = hasAi ? aiPageContent[key].desc : getResolvedText(page.desc);
+        const resolvedDesc = hasAi && aiPageContent[key].darkCodeCbt 
+            ? aiPageContent[key].darkCodeCbt 
+            : (hasAi && aiPageContent[key].desc ? aiPageContent[key].desc : getResolvedText(page.desc));
         return (
             key.toLowerCase().includes(searchQuery.toLowerCase()) ||
             resolvedTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -875,7 +887,7 @@ export default function Healing108CoachingReport({
         let printHtml = `
             <html>
             <head>
-                <title>명심코칭 108 자각 힐링 백서</title>
+                <title>명심코칭 108 자각 힐링 백서 v11</title>
                 <style>
                     body {
                         font-family: 'Outfit', 'Inter', 'Noto Sans KR', sans-serif;
@@ -899,7 +911,7 @@ export default function Healing108CoachingReport({
                 </style>
             </head>
             <body>
-                <h1 style="text-align: center; font-size: 28px; margin-bottom: 10px;">🌌 108 자각 힐링 백서 기록집</h1>
+                <h1 style="text-align: center; font-size: 28px; margin-bottom: 10px;">🌌 108 자각 힐링 백서 v11</h1>
                 <p style="text-align: center; color: #555; margin-bottom: 40px;">당신의 영혼 아키텍처를 치유하는 108개의 우주 기질 설계서</p>
         `;
 
@@ -910,23 +922,37 @@ export default function Healing108CoachingReport({
 
             const hasAi = !!aiPageContent[key];
             const title = hasAi ? aiPageContent[key].title : getResolvedText(page.title);
-            const desc = hasAi ? aiPageContent[key].desc : getResolvedText(page.desc);
+            const desc = hasAi && aiPageContent[key].desc ? aiPageContent[key].desc : getResolvedText(page.desc);
+            const darkCodeCbt = hasAi ? aiPageContent[key].darkCodeCbt : null;
+            const metaCodeAct = hasAi ? aiPageContent[key].metaCodeAct : null;
+            const neuralCodeDbt = hasAi ? aiPageContent[key].neuralCodeDbt : null;
             const socratic = hasAi ? aiPageContent[key].socratic : getResolvedText(page.socratic);
             const recursive = hasAi ? aiPageContent[key].recursive : getResolvedText(page.recursive);
 
             printHtml += `
                 <div class="page-break">
-                    <div class="meta">PAGE ${index + 1} // CODE: ${key} ${hasAi ? '(AI 초개인화 맞춤집필)' : ''}</div>
+                    <div class="meta">PAGE ${index + 1} // CODE: ${key} ${hasAi ? '(평생 통합 리포트 AI 적용)' : ''}</div>
                     <h1>${title}</h1>
+                    ${darkCodeCbt ? `
                     <div class="content-box">
-                        <div class="section-title">💡 우주 기질 디버깅 조언</div>
+                        <div class="section-title">🌑 평생의 다크 코드 해체 (CBT 인지행동치료)</div>
+                        <div class="text">${darkCodeCbt}</div>
+                        <div class="section-title" style="margin-top:20px;">✨ 평생의 메타 코드 승화 (ACT 수용전념치료)</div>
+                        <div class="text">${metaCodeAct}</div>
+                        <div class="section-title" style="margin-top:20px;">🧬 기질 맞춤형 위기 탈출 알고리즘 (DBT 변증법적 행동치료)</div>
+                        <div class="text">${neuralCodeDbt}</div>
+                    </div>
+                    ` : `
+                    <div class="content-box">
+                        <div class="section-title">💎 영혼의 마스터 플랜</div>
                         <div class="text">${desc}</div>
                     </div>
-                    <div class="section-title">❓ 소크라테스식 치유 자각 질문</div>
+                    `}
+                    <div class="section-title">💡 초개인화 심층 자각 질문 (MBCT 마음챙김 인지치료)</div>
                     <div class="text">${socratic}</div>
-                    <div class="section-title">📝 나의 내면 성찰 기록</div>
+                    <div class="section-title">✍️ 나의 내면 치유 기록</div>
                     <div class="answer">${ans}</div>
-                    <div class="section-title">🔄 순환식 참나 무한 수용 확약 (${isConfirmed})</div>
+                    <div class="section-title">🌳 평생 수용 확약 및 영혼의 만트라 (MBSR 스트레스 감소) (${isConfirmed})</div>
                     <div class="text" style="font-weight: bold; color: #4b5563;">"${recursive}"</div>
                 </div>
             `;
@@ -1320,18 +1346,54 @@ export default function Healing108CoachingReport({
                                         </h1>
                                     </div>
 
-                                    {/* 본문 조언 (모바일 폰트 가독성 최적화) */}
-                                    <div className="text-xs sm:text-sm text-gray-300/90 leading-relaxed font-normal bg-white/2 border border-white/5 rounded-2xl p-3.5 sm:p-5 max-h-[220px] sm:max-h-[300px] lg:max-h-[400px] xl:max-h-[480px] overflow-y-auto custom-scrollbar whitespace-pre-wrap">
-                                        {displayDesc}
-                                    </div>
+                                    {/* [평생 통합 리포트 모듈 시작] */}
+                                    {hasAiContent && aiPageContent[currentPageKey].darkCodeCbt ? (
+                                        <div className="space-y-4">
+                                            {/* CBT 모듈 */}
+                                            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                                <h3 className="text-pink-300 font-semibold mb-2 flex items-center gap-2">
+                                                    🌑 평생의 다크 코드 해체 <span className="text-xs text-white/40 font-normal bg-black/20 px-2 py-0.5 rounded-full">CBT 인지행동치료</span>
+                                                </h3>
+                                                <p className="text-gray-300 leading-relaxed text-[15px] whitespace-pre-wrap">
+                                                    {aiPageContent[currentPageKey].darkCodeCbt}
+                                                </p>
+                                            </div>
 
-                                    {/* Socratic 성찰 질문 */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-1.5 text-pink-400 text-[10px] sm:text-xs font-bold tracking-widest uppercase">
-                                            <span>❓ 소크라테스식 치유 자각 질문</span>
+                                            {/* ACT 모듈 */}
+                                            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                                <h3 className="text-purple-300 font-semibold mb-2 flex items-center gap-2">
+                                                    ✨ 평생의 메타 코드 승화 <span className="text-xs text-white/40 font-normal bg-black/20 px-2 py-0.5 rounded-full">ACT 수용전념치료</span>
+                                                </h3>
+                                                <p className="text-gray-300 leading-relaxed text-[15px] whitespace-pre-wrap">
+                                                    {aiPageContent[currentPageKey].metaCodeAct}
+                                                </p>
+                                            </div>
+
+                                            {/* DBT 모듈 */}
+                                            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                                <h3 className="text-blue-300 font-semibold mb-2 flex items-center gap-2">
+                                                    🧬 기질 맞춤형 위기 탈출 알고리즘 <span className="text-xs text-white/40 font-normal bg-black/20 px-2 py-0.5 rounded-full">DBT 변증법적 행동치료</span>
+                                                </h3>
+                                                <p className="text-gray-300 leading-relaxed text-[15px] whitespace-pre-wrap">
+                                                    {aiPageContent[currentPageKey].neuralCodeDbt}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="text-[10px] sm:text-xs text-gray-400 italic pl-1 leading-relaxed whitespace-pre-wrap">
-                                            "{displaySocratic}"
+                                    ) : (
+                                        <div className="p-5 md:p-6 bg-white/5 border border-white/10 rounded-2xl text-gray-300 leading-relaxed text-[15px] whitespace-pre-wrap shadow-inner relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 rounded-full blur-3xl group-hover:bg-pink-500/10 transition-colors duration-500"></div>
+                                            {aiPageContent[currentPageKey]?.desc || getResolvedText(currentPageData?.desc)}
+                                        </div>
+                                    )}
+
+                                    {/* MBCT 소크라테스식 자각 질문 */}
+                                    <div className="mt-8 space-y-4">
+                                        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                                            💡 초개인화 심층 자각 질문
+                                            <span className="text-xs text-white/40 font-normal bg-white/5 px-2 py-0.5 rounded-full">MBCT 마음챙김 인지치료</span>
+                                        </h3>
+                                        <div className="p-4 md:p-5 bg-pink-500/10 border border-pink-500/20 rounded-2xl text-pink-100/90 leading-relaxed text-[15px] shadow-[0_4px_20px_rgba(236,72,153,0.05)]">
+                                            {aiPageContent[currentPageKey]?.socratic || getResolvedText(currentPageData?.socratic)}
                                         </div>
                                         <textarea
                                             value={answers[currentPageKey] || ''}
@@ -1344,10 +1406,10 @@ export default function Healing108CoachingReport({
                                     {/* 참나 확약 및 승인 버튼 */}
                                     <div className="bg-gradient-to-r from-pink-950/5 via-purple-950/5 to-transparent border border-pink-500/10 rounded-2xl p-3 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
                                         <div className="flex-1 space-y-0.5">
-                                            <span className="text-[8px] font-bold text-pink-400 tracking-widest uppercase">🔄 참나 무한 수용 확약</span>
-                                            <p className="text-[10px] sm:text-xs font-medium text-gray-300 leading-normal whitespace-pre-wrap">
-                                                "{displayRecursive}"
-                                            </p>
+                                            <span className="text-white">🌳 평생 수용 확약 및 영혼의 만트라 <span className="text-xs text-white/40 font-normal bg-black/20 px-2 py-0.5 rounded-full ml-1">MBSR 스트레스 감소</span></span>
+                                            <div className="text-[15px] text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                                "{aiPageContent[currentPageKey]?.recursive || getResolvedText(currentPageData?.recursive)}"
+                                            </div>
                                         </div>
                                         <button
                                             onClick={() => handleConfirmRecursive(currentPageKey)}

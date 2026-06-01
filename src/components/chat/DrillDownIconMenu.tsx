@@ -374,6 +374,13 @@ const resolveDynamicText = (text: string | undefined, userProfile: any, t: any):
     const getChar = (obj: any, part: 'stem' | 'branch') => {
         if (!obj) return '';
 
+        // 0. Try direct string (e.g. '甲子')
+        if (typeof obj === 'string') {
+            if (part === 'stem') return obj.charAt(0);
+            if (part === 'branch' && obj.length > 1) return obj.charAt(1);
+            return obj.charAt(0);
+        }
+
         // [Safety Fix] Ensure we extract a string, never return an object
         // 1. Try Legacy format (obj.stem / obj.branch might be strings)
         if (part === 'stem' && typeof obj.stem === 'string') return obj.stem;
@@ -382,12 +389,14 @@ const resolveDynamicText = (text: string | undefined, userProfile: any, t: any):
         // 2. Try Object format (SajuPillar)
         // If obj.gan is an object { char, color, label }, take .char
         if (part === 'stem') {
-            if (obj.gan && typeof obj.gan === 'object' && obj.gan.char) return obj.gan.char;
             if (typeof obj.gan === 'string') return obj.gan;
+            if (typeof obj.ganKor === 'string') return obj.ganKor;
+            if (obj.gan && typeof obj.gan === 'object' && obj.gan.char) return obj.gan.char;
         }
         if (part === 'branch') {
-            if (obj.ji && typeof obj.ji === 'object' && obj.ji.char) return obj.ji.char;
             if (typeof obj.ji === 'string') return obj.ji;
+            if (typeof obj.jiKor === 'string') return obj.jiKor;
+            if (obj.ji && typeof obj.ji === 'object' && obj.ji.char) return obj.ji.char;
         }
 
         return '?';

@@ -1,16 +1,16 @@
 /**
  * ===============================================================
- * 🌸 108 자각 백서 실시간 AI 초개인화 생성 API (v7 - 완전 리빌드)
+ * 🌸 108 자각 백서 실시간 AI 초개인화 생성 API (v12 - 완전 강화)
  * API Route: /api/coaching/generate-108/route.ts
  * 
- * [v7 핵심 변화]
- * - 클라이언트에서 사전 계산된 풍부한 사주 프로파일(sajuProfile)을 수신
- * - 일간 은유, 관성/식상/재성/비겁 은유, 충 해석, 대운 등 모든 기질 데이터를 활용
- * - AI가 사용자의 구체적인 기질 특성을 깊이 이해하고 감동적인 1:1 치유 스토리를 집필
+ * [v12 핵심 변화]
+ * - Gemini API의 responseSchema & responseMimeType 강제 적용
+ * - 마크다운 코드블록 제거 오류 원천 봉쇄
+ * - 100% 신뢰성 높은 JSON 데이터 제공 보장
  * ===============================================================
  */
 
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, SchemaType } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -35,13 +35,25 @@ export async function POST(req: NextRequest) {
     console.log(`📋 sajuProfile.primaryClash: "${sajuProfile?.primaryClash || 'MISSING'}"`);
     console.log(`📋 sajuData.dayMaster: "${sajuData?.dayMaster || 'MISSING'}"`);
     console.log(`📋 sajuData.fourPillars.day: ${JSON.stringify(sajuData?.fourPillars?.day || 'MISSING')}`);
-    console.log(`📋 sajuData.tenGods: ${JSON.stringify(sajuData?.tenGods || 'MISSING')}`);
-    console.log(`📋 sajuData.elements: ${JSON.stringify(sajuData?.elements || 'MISSING')}`);
     console.log(`📋 originalPage.title: "${(originalPage?.title || '').substring(0, 50)}..."`);
 
     if (!pageKey || !sajuData || !originalPage) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
     }
+
+    // JSON 출력 강제를 위한 정밀한 responseSchema 정의 (SchemaType 열거형 강제 적용 및 캐스팅으로 TypeScript 엄격 타입 에러 영구 박멸)
+    const jsonSchema: any = {
+      type: SchemaType.OBJECT,
+      properties: {
+        title: { type: SchemaType.STRING, description: "내담자 맞춤형 시적/감동적 제목" },
+        darkCodeCbt: { type: SchemaType.STRING, description: "CBT 기반 다크 코드 해체 (기질적 인지 왜곡 분석)" },
+        metaCodeAct: { type: SchemaType.STRING, description: "ACT 기반 메타 코드 승화 (기질 수용 및 가치 전념)" },
+        neuralCodeDbt: { type: SchemaType.STRING, description: "DBT 기반 위기 탈출 알고리즘 (스트레스 대처 행동 지침)" },
+        socratic: { type: SchemaType.STRING, description: "MBCT 기반 마음챙김 소크라테스식 심층 자각 질문" },
+        recursive: { type: SchemaType.STRING, description: "MBSR 기반 참나무 평생 수용 확약 및 영혼의 만트라" }
+      },
+      required: ["title", "darkCodeCbt", "metaCodeAct", "neuralCodeDbt", "socratic", "recursive"]
+    };
 
     const model = google.getGenerativeModel({
       model: 'gemini-2.5-flash',
@@ -51,7 +63,12 @@ export async function POST(req: NextRequest) {
         { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
       ],
-      generationConfig: { temperature: 0.85, maxOutputTokens: 2048 },
+      generationConfig: { 
+        temperature: 0.85, 
+        maxOutputTokens: 2048,
+        responseMimeType: "application/json",
+        responseSchema: jsonSchema
+      },
     });
 
     // ========== 사주 프로파일 기반 초개인화 컨텍스트 구성 ==========
@@ -168,29 +185,29 @@ ${tenGodNarrative.map(n => `  · ${n}`).join('\n')}
 - 원래 확약문: ${originalPage.recursive}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[✍️ 초개인화 재집필 지침 - 감동 극대화 🌸]
+[✍️ 평생 통합 치유 리포트 - 5대 심리치료 융합 모듈 지침 🌸]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. **내담자의 일간 은유를 아름다운 제목에 녹여주세요**: "title"은 "${sp.dayMasterShortAnalogy || '일간'}"이라는 고유한 본질을 주인공으로 삼아, 지친 마음에 건네는 보석 같고 서정적인 시적 제목으로 창조하세요. (예: "은빛 다이아몬드(辛)인 당신이 너무 엄격한 기준에 지친 밤에게")
+1. **[제목] 내담자의 일간 은유를 사용한 시적 제목**: "${sp.dayMasterShortAnalogy || '일간'}"이라는 고유한 본질을 주인공으로 삼아, 서정적인 시적 제목으로 창조하세요.
 
-2. **십신과 기질 갈등을 따뜻한 이야기처럼 위로하세요**: 위의 "십신 심리 서사" 및 충/형 갈등("${sp.primaryClash || '없음'}")을 참고하되, 절대 "비겁이 0개", "충 때문에" 같은 딱딱한 용어를 쓰지 마세요. 대신 "홀로 모든 비바람을 감당하느라 외로웠던 고독한 전사", "내면의 검열관(${sp.killerAnalogy || '검열관'})이 온종일 당신을 다그치며 생겨난 남몰래 아렸던 마음"처럼 가슴 아픈 내면의 이야기를 따뜻하게 알아주는 단어로 어루만져 주세요.
+2. **[CBT 인지행동치료] 평생의 다크 코드 해체 (darkCodeCbt)**: 
+   - 기질적 취약점과 십신 심리 서사를 바탕으로, 내담자가 평생 반복해서 빠지기 쉬운 **'생각의 함정(인지 왜곡)'**을 해체합니다.
+   - 예: "당신은 '완벽하지 않으면 실패'라는 흑백논리에 빠지기 쉬운 기질입니다." (학술 용어 대신 다정하게) 200~300자.
 
-3. **오행 불균형을 다정하게 감싸 안으세요**: 부족한 ${(ohaengLabels as any)[minElem[0]]}의 기운을 다정하게 채워주고, 넘치는 ${(ohaengLabels as any)[maxElem[0]]}의 부작용을 다독이며, "비록 불완전할지라도 당신은 그 자체로 이미 아름다운 하나의 우주"라는 큰 위로의 메시지를 전개하세요.
+3. **[ACT 수용전념치료] 평생의 메타 코드 승화 (metaCodeAct)**:
+   - 기질을 통제하려 하지 않고 수용하며, 그 단점을 빛나는 가치로 승화시키는 평생의 관점 전환법.
+   - 부족한 ${(ohaengLabels as any)[minElem[0]]} 기운을 보듬고 넘치는 ${(ohaengLabels as any)[maxElem[0]]} 기운을 다독이는 다정한 200~300자.
 
-4. **1:1 러브레터 같은 300~400자의 치유문(desc)을 집필하세요**: 어려운 학술 용어(뇌과학, 인지 왜곡 등)는 철저히 배제하고, 읽는 것만으로도 무거운 마음의 짐이 사르르 내려놓아지고 위안을 얻을 수 있는 다정하고 격조 높은 시적 가사처럼 작성하세요.
+4. **[DBT 변증법적 행동치료] 기질 맞춤형 위기 탈출 알고리즘 (neuralCodeDbt)**:
+   - 극한의 스트레스 상황에서 내담자의 기질이 무너질 때, 파괴적 충동을 막아줄 구체적인 감정 조절 및 고통 감내 행동 지침 (뉴럴 코드). 200~300자.
 
-5. **자각 질문(socratic)과 확약문(recursive)도 지극히 포근하게**:
-   - "socratic": 내담자가 스스로를 의심하거나 탓하지 않고, 그동안의 고단함을 포근히 감싸 안으며 메타인지적으로 성찰할 수 있는 따뜻한 2~3개의 질문으로 만드세요.
-   - "recursive": 복잡하고 장엄한 용어 대신, 가만히 소리 내어 읊기만 해도 마음에 평화가 깃드는 포근하고 시적인 긍정 확언문으로 작성하세요.
+5. **[MBCT 마음챙김 인지치료] 초개인화 심층 자각 (socratic)**:
+   - "지금 당신이 느끼는 그 두려움은 '진짜 당신'인가요, 기질의 날씨일 뿐인가요?" 와 같은, 내담자가 메타인지적으로 성찰할 수 있는 따뜻한 2~3개의 소크라테스식 질문.
 
-⚠️ JSON만 출력. 마크다운 코드블록(\`\`\`) 금지. "{" 로 시작하여 "}" 로 끝낼 것.
+6. **[MBSR 스트레스 감소] 참나무 평생 수용 확약 및 영혼의 만트라 (recursive)**:
+   - 가만히 소리 내어 읊기만 해도 마음에 평화가 깃드는 포근하고 시적인 긍정 확언문. 평생 꺼내 읽는 방어막 역할.
 
-{
-  "title": "내담자 맞춤형 시적/감동적 제목",
-  "desc": "기질 성향에 맞춘 300~400자 눈물겹도록 다정하고 아름다운 치유 편지",
-  "socratic": "자책을 멈추고 스스로를 다정하게 모니터링하는 자각 질문",
-  "recursive": "읊조리기만 해도 평화가 깃드는 포근하고 시적인 영혼의 확언문"
-}
+반드시 정해진 JSON 스키마 규격을 충족하여 출력하세요.
 `.trim();
 
     const result = await model.generateContent(prompt);
