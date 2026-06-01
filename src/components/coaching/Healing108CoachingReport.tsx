@@ -131,7 +131,7 @@ export default function Healing108CoachingReport({
     const [recursiveConfirmed, setRecursiveConfirmed] = useState<Record<string, boolean>>({});
 
     // [NEW] 실시간 AI 개인화 생성형 백서 관련 상태
-    const [aiPageContent, setAiPageContent] = useState<Record<string, { title: string; desc?: string; darkCodeCbt?: string; metaCodeAct?: string; neuralCodeDbt?: string; socratic: string; recursive: string }>>({});
+    const [aiPageContent, setAiPageContent] = useState<Record<string, { title: string; desc?: string; darkCodeCbt?: string; metaCodeAct?: string; neuralCodeDbt?: string; socratic?: string; recursive?: string; sajuAnalysis?: string; socraticMbct?: string; relaxMbsr?: string; selfCompassionMsc?: string; coachingSolution?: string; mantra?: string }>>({});
     const [isGeneratingAi, setIsGeneratingAi] = useState(false);
 
     // 108페이지 키 배열
