@@ -41,20 +41,16 @@ export default function Healing108CoachingReport({
 
     useEffect(() => {
         if (isOpen) {
-            let finalSaju = null;
-            const localSaju = getSajuFromLocalStorage();
-            
-            // [Zustand 최우선 반영] Zustand 스토어가 최우선, 그 다음 로컬스토리지 백업 캐시, 부모 세션 프로필은 최후의 폴백 안전장치로 활용
-            finalSaju = reportData?.saju || localSaju || userProfile?.saju;
-
-
-            // [초고도화] 만약 스토어나 로컬의 사주 데이터가 불완전하고, 생년월일(birthDate) 원본이 존재한다면 완벽하게 즉석 계산하여 연동!
+            // [실시간 만세력 정밀 연산] Zustand 스토어 및 세션으로부터 진짜 실시간 생년월일 정보 실시간 획득
             const rawDate = reportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
-            
-            if ((!finalSaju || !finalSaju.fourPillars || Object.keys(finalSaju.fourPillars).length === 0 || !finalSaju.elements || !finalSaju.tenGods) && rawDate) {
+            const rawTime = reportData?.birthTime || userProfile?.birthTime || userProfile?.birth_time || userProfile?.user_metadata?.saju_data?.time || '12:00';
+            const gender = reportData?.gender || userProfile?.gender || userProfile?.user_metadata?.saju_data?.gender || 'male';
+
+            let finalSaju = null;
+
+            // [로컬 캐시 무효화 및 즉석 계산] 생년월일 원본이 존재한다면, 낡은 로컬 캐시 정합성 버그를 원천 파괴하기 위해 즉석에서 100% 실시간 만세력 계산 기동!
+            if (rawDate) {
                 try {
-                    const rawTime = reportData?.birthTime || userProfile?.birthTime || userProfile?.birth_time || userProfile?.user_metadata?.saju_data?.time || '12:00';
-                    const gender = reportData?.gender || userProfile?.gender || userProfile?.user_metadata?.saju_data?.gender || 'male';
                     const result = calculateSaju(rawDate, rawTime, 'solar', gender);
                     if (result && result.success) {
                         const stats = calculateSajuStats(result.fourPillars, result.dayMasterChar);
@@ -66,11 +62,17 @@ export default function Healing108CoachingReport({
                             currentDaewoon: result.currentDaewoon || null,
                             currentSeun: result.currentSeun || null
                         };
-                        console.log('✅ [Healing108] 생년월일 기반 사주 100% 즉석 복구 연동 성공:', finalSaju.dayMaster, '대운:', finalSaju.currentDaewoon);
+                        console.log('✅ [Healing108] 100% 무결한 실시간 즉석 만세력 계산 성공:', finalSaju.dayMaster, '대운:', finalSaju.currentDaewoon);
                     }
                 } catch (e) {
-                    console.warn('⚠️ [Healing108] 생년월일 기반 즉석 사주 계산 실패:', e);
+                    console.warn('⚠️ [Healing108] 실시간 사주 계산 실패:', e);
                 }
+            }
+
+            // 만약 즉석 계산이 동작하지 않았을 때만 스토어 백업이나 로컬스토리지 캐시를 최후의 폴백으로 탐색!
+            if (!finalSaju) {
+                const localSaju = getSajuFromLocalStorage();
+                finalSaju = reportData?.saju || localSaju || userProfile?.saju;
             }
 
             // [최종 안전장치] 만약 모든 데이터가 비어있다면, 서버가 에러를 뱉지 않도록 기본 갑자일주(甲子) 목업 데이터를 채워줍니다.
@@ -91,6 +93,7 @@ export default function Healing108CoachingReport({
             setActiveSaju(finalSaju);
         }
     }, [isOpen, reportData, userProfile]);
+
 
     // --- 108페이지 내비게이션 상태 ---
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
