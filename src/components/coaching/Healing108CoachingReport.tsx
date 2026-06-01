@@ -1661,7 +1661,6 @@ export default function Healing108CoachingReport({
                         </motion.div>
                     )}
                 </AnimatePresence>
-                </div>
             </div>
     , portalContainer!);
 }
