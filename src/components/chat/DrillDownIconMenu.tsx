@@ -50,8 +50,8 @@ const SajuAnalysisReportModal = dynamic(() => import('@/components/report/SajuAn
 const SovereignCoachingReport = dynamic(() => import('@/components/coaching/SovereignCoachingReport'), { ssr: false });
 // [NEW] 108 자각 백서 프리미엄 독립 모달 임포트
 const Healing108CoachingReport = dynamic(() => import('@/components/coaching/Healing108CoachingReport'), { ssr: false });
-// [NEW] Sovereign 3S Protocol Modal
 const Sovereign3SProtocolModal = dynamic(() => import('@/components/coaching/Sovereign3SProtocolModal'), { ssr: false });
+const MindResetModal = dynamic(() => import('@/components/coaching/MindResetModal'), { ssr: false });
 const MyeongsimOSDashboard = dynamic(() => import('@/components/os/MyeongsimOSDashboard'), { ssr: false });
 
 
@@ -484,7 +484,8 @@ export default function DrillDownIconMenu({
     const [showSovereignReport, setShowSovereignReport] = useState(false); // [NEW] 사회적기여 리포트
     const [showHealing108Report, setShowHealing108Report] = useState(false); // [NEW] 108 자각 증명서
     const [showMyeongsimOS, setShowMyeongsimOS] = useState(false); // [NEW] 명심 OS 대시보드
-    const [showSovereign3S, setShowSovereign3S] = useState(false); // [NEW] 소버린 3S 팝업프로토콜
+    const [showSovereign3S, setShowSovereign3S] = useState(false); // [NEW] 소버린 3S 셋업프로토콜
+    const [showMindReset, setShowMindReset] = useState(false); // [NEW] 5D 마음 리셋 디버깅
     const { reportData } = useReportStore();
 
 
@@ -1060,6 +1061,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 마음 리셋 메뉴 — 5D 심리 디버깅 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowMindReset(true)}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(251,191,36,0.25), rgba(245,158,11,0.2))',
+                        border: '1px solid rgba(251,191,36,0.4)',
+                        boxShadow: '0 4px 15px rgba(251,191,36,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>✨</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>마음 리셋</div>
+                        <div style={styles.neuroTrigger}>5D 매트릭스 디버깅</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 108 자각 메뉴 — 108페이지 초감동 자각 백서 */}
                 <button
                     style={styles.iconButton}
@@ -1540,6 +1562,12 @@ export default function DrillDownIconMenu({
                 isOpen={showSovereign3S}
                 onClose={() => setShowSovereign3S(false)}
                 userProfile={userProfile}
+            />
+
+            {/* [NEW] 마음 리셋 모달 */}
+            <MindResetModal
+                isOpen={showMindReset}
+                onClose={() => setShowMindReset(false)}
             />
         </>
     );
