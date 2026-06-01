@@ -209,7 +209,7 @@ export default function MindResetSection() {
                     <span className="text-xs font-bold text-rose-500 font-mono">내면의 소스코드</span>
                   </div>
                   <p className="text-xs text-rose-100/80 leading-[1.9] mt-2">
-                    {highlightKeywords(debuggingData.sourceCode, 'amber-400')}
+                    {highlightKeywords(debuggingData.sourceCode || (debuggingData as any).source_code || (debuggingData as any).innerCode || (debuggingData as any).inner_code || '', 'amber-400')}
                   </p>
                 </div>
               </ScrollReveal>
@@ -227,7 +227,7 @@ export default function MindResetSection() {
                     <span className="text-xs font-bold text-violet-400 font-mono">투사된 현실</span>
                   </div>
                   <p className="text-xs text-violet-100/80 leading-[1.9] mt-2">
-                    {highlightKeywords(debuggingData.projectedReality, 'amber-400')}
+                    {highlightKeywords(debuggingData.projectedReality || (debuggingData as any).projected_reality || '', 'amber-400')}
                   </p>
                 </div>
               </ScrollReveal>
@@ -239,7 +239,16 @@ export default function MindResetSection() {
                     <span className="text-xs font-bold text-amber-400 font-mono">명심 코칭 풀이</span>
                   </div>
                   <p className="text-xs text-amber-100/80 leading-[1.9] mt-2">
-                    {highlightKeywords(debuggingData.myeongsimCoaching, 'cyan-400')}
+                    {highlightKeywords(
+                      debuggingData.myeongsimCoaching || 
+                      (debuggingData as any).myeongsim_coaching || 
+                      (debuggingData as any).myeongSimCoaching || 
+                      (debuggingData as any).coachingSolution || 
+                      (debuggingData as any).coachingInsight || 
+                      (debuggingData as any).coaching || 
+                      '', 
+                      'cyan-400'
+                    )}
                   </p>
                 </div>
               </ScrollReveal>
@@ -251,7 +260,14 @@ export default function MindResetSection() {
                     <span className="text-xs font-bold text-indigo-400 font-mono">소크라테스 문답 (객관화 및 효용성 검증)</span>
                   </div>
                   <p className="text-xs text-indigo-100/80 leading-[1.9] mt-2 italic">
-                    {highlightKeywords(debuggingData.socratesQuestion, 'amber-400')}
+                    {highlightKeywords(
+                      debuggingData.socratesQuestion || 
+                      (debuggingData as any).socrates_question || 
+                      (debuggingData as any).socraticQuestion || 
+                      (debuggingData as any).socratic_question || 
+                      '', 
+                      'amber-400'
+                    )}
                   </p>
                 </div>
               </ScrollReveal>
@@ -263,7 +279,7 @@ export default function MindResetSection() {
                     <span className="text-xs font-bold text-blue-400 font-mono">재귀적 질문 (에러 로그의 기원)</span>
                   </div>
                   <p className="text-xs text-blue-100/80 leading-[1.9] mt-2 italic">
-                    {highlightKeywords(debuggingData.recursiveQuestion, 'cyan-400')}
+                    {highlightKeywords(debuggingData.recursiveQuestion || (debuggingData as any).recursive_question || '', 'cyan-400')}
                   </p>
                 </div>
               </ScrollReveal>
@@ -283,7 +299,7 @@ export default function MindResetSection() {
                       <span className="text-xs font-bold text-cyan-300 font-mono">메타 인지 (객관적 관찰)</span>
                     </div>
                     <p className="text-xs text-cyan-100/80 leading-[1.9]">
-                      {highlightKeywords(debuggingData.step1, 'cyan-400')}
+                      {highlightKeywords(debuggingData.step1 || (debuggingData as any).step_1 || (debuggingData as any).step1_metaCognition || (debuggingData as any).metaCognition || '', 'cyan-400')}
                     </p>
                   </div>
                 </ScrollReveal>
@@ -302,7 +318,7 @@ export default function MindResetSection() {
                       <span className="text-xs font-bold text-indigo-300 font-mono">알아차림의 알아차림 (순수 자각)</span>
                     </div>
                     <p className="text-xs text-indigo-100/80 leading-[1.9]">
-                      {highlightKeywords(debuggingData.step2, 'indigo-400')}
+                      {highlightKeywords(debuggingData.step2 || (debuggingData as any).step_2 || (debuggingData as any).step2_pureAwareness || (debuggingData as any).pureAwareness || '', 'indigo-400')}
                     </p>
                   </div>
                 </ScrollReveal>
