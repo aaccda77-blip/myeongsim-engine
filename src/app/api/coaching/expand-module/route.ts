@@ -1,10 +1,12 @@
 /**
- * 🔍 모듈 상세 확장 API
- * 10개 모듈 중 하나를 클릭했을 때, 해당 모듈만 상세하게 풀어서 설명
+ * 🔍 모듈 상세 확장 API (Supabase 캐싱 포함)
+ * 1순위: Supabase에 저장된 상세 내용이 있으면 즉시 반환 (AI 호출 0원)
+ * 2순위: 없으면 AI로 생성 → Supabase에 저장 → 반환
  */
 
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
@@ -14,14 +16,39 @@ const google = new GoogleGenerativeAI(
 );
 
 export async function POST(req: NextRequest) {
+  let latestRawText = '';
   try {
     const body = await req.json();
-    const { moduleType, shortContent, pageTitle, sajuProfile } = body;
+    const { moduleType, shortContent, pageTitle, sajuProfile, userKey, pageKey } = body;
 
     if (!moduleType || !shortContent) {
       return NextResponse.json({ error: '필수 데이터 누락' }, { status: 400 });
     }
 
+    // ━━━ 1순위: Supabase에서 캐시된 상세 내용 조회 ━━━
+    if (userKey && pageKey) {
+      try {
+        const { data: existing } = await supabaseAdmin
+          .from('user_108_reports')
+          .select('generated_content')
+          .eq('user_key', userKey)
+          .eq('page_key', pageKey)
+          .maybeSingle();
+
+        if (existing?.generated_content?.expandedDetails?.[moduleType]) {
+          console.log(`✅ [캐시 히트] ${pageKey}/${moduleType} — AI 호출 없이 즉시 반환`);
+          return NextResponse.json({
+            success: true,
+            detail: existing.generated_content.expandedDetails[moduleType],
+            cached: true
+          });
+        }
+      } catch (dbErr) {
+        console.warn('DB 조회 중 오류 (AI로 폴백):', dbErr);
+      }
+    }
+
+    // ━━━ 2순위: AI로 상세 풀이 생성 ━━━
     const sp = sajuProfile || {};
 
     const moduleLabels: Record<string, string> = {
@@ -85,16 +112,53 @@ ${moduleLabel}
     const result = await model.generateContent(prompt);
     const response = result.response;
     const detailedText = response.text();
+    latestRawText = detailedText;
+
+    // ━━━ Supabase에 상세 내용 영구 저장 ━━━
+    if (userKey && pageKey && detailedText) {
+      try {
+        // 기존 행 가져오기
+        const { data: row } = await supabaseAdmin
+          .from('user_108_reports')
+          .select('generated_content')
+          .eq('user_key', userKey)
+          .eq('page_key', pageKey)
+          .maybeSingle();
+
+        if (row) {
+          // 기존 generated_content에 expandedDetails 머지
+          const updatedContent = {
+            ...row.generated_content,
+            expandedDetails: {
+              ...(row.generated_content?.expandedDetails || {}),
+              [moduleType]: detailedText
+            }
+          };
+
+          await supabaseAdmin
+            .from('user_108_reports')
+            .update({ generated_content: updatedContent })
+            .eq('user_key', userKey)
+            .eq('page_key', pageKey);
+
+          console.log(`💾 [DB 저장 완료] ${pageKey}/${moduleType} — 다음부터 AI 호출 불필요`);
+        }
+      } catch (saveErr) {
+        console.warn('DB 저장 실패 (응답은 정상 반환):', saveErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,
-      detail: detailedText
+      detail: detailedText,
+      cached: false
     });
 
   } catch (error: any) {
     console.error('expand-module API Error:', error);
     return NextResponse.json({
       error: error?.message || '상세 설명 생성 중 오류',
+      raw: latestRawText || 'No Output'
     }, { status: 500 });
   }
 }

@@ -271,6 +271,7 @@ export default function Healing108CoachingReport({
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         pageKey: targetKey,
+                        userKey: userKey,
                         sajuData: activeSaju,
                         sajuProfile: profile,
                         originalPage: resolvedOriginalPage
@@ -338,7 +339,9 @@ export default function Healing108CoachingReport({
                     moduleType: type,
                     shortContent,
                     pageTitle: displayTitle,
-                    sajuProfile: sp
+                    sajuProfile: sp,
+                    userKey: userKey,
+                    pageKey: currentPageKey
                 })
             });
 
