@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Cpu, Bug, Globe, ShieldCheck, Loader2, ChevronRight, Zap, Brain, Eye, Target, AlertTriangle, Scan, Radio, Terminal, Edit3, Save, RefreshCw } from 'lucide-react';
+import DragExplainWrapper from '@/components/common/DragExplainWrapper';
+
 
 interface DebuggingReport {
   targetOS: string;
@@ -206,7 +208,9 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
           )}
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-5 scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-5 scrollbar-hide relative">
+            <DragExplainWrapper>
+
             {isLoading && (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
@@ -449,7 +453,9 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                 )}
               </AnimatePresence>
             )}
+            </DragExplainWrapper>
           </div>
+
 
           {/* Footer Navigation */}
           {!isLoading && report && (

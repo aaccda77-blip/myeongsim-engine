@@ -4,6 +4,8 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, Sparkles } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import DragExplainWrapper from '@/components/common/DragExplainWrapper';
+
 
 // ============== Types ==============
 interface CodeInfo {
@@ -522,6 +524,8 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
 
                         {/* Scrollable Content */}
                         <div className="relative z-10 overflow-y-auto flex-1">
+                            <DragExplainWrapper>
+
                             <AnimatePresence mode="wait">
                                 <motion.div key={`${currentState}-${currentStep}-${showCompletion}`}
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
@@ -682,7 +686,9 @@ export default function NeuralCodeCoachingModal({ isOpen, onClose, data }: Neura
                                     )}
                                 </motion.div>
                             </AnimatePresence>
+                            </DragExplainWrapper>
                         </div>
+
 
                         {/* Footer */}
                         <div className="relative z-10 px-6 pb-6 pt-4 flex justify-between items-center flex-shrink-0 border-t border-white/5 bg-slate-900/50 backdrop-blur-md">
