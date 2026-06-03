@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 import { X, Sparkles, TrendingUp, ShieldAlert, Award } from 'lucide-react';
@@ -169,15 +170,18 @@ export default function MyeongsimCoachingDashboard({
     const userId = userProfile?.id || (reportData as any)?.userId || 'guest';
 
     try {
-      // 1. 먼저 DB 조회 (Supabase API)
-      const res = await fetch(`/api/coaching/108-reports?userId=${userId}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.reports && data.reports[sectionId]) {
-          setSectionContent(data.reports[sectionId]);
-          setFetchingCache(false);
-          return;
-        }
+      // 1. 먼저 DB 조회 (Supabase 'report_contents' 테이블 직접 연동)
+      const { data, error } = await supabase
+        .from('report_contents')
+        .select('generated_text')
+        .eq('user_id', userId)
+        .eq('page_id', sectionId)
+        .maybeSingle();
+
+      if (data && !error) {
+        setSectionContent(data.generated_text);
+        setFetchingCache(false);
+        return;
       }
     } catch (e) {
       console.warn('⚠️ DB 캐시 조회 실패, 로컬 캐시 탐색:', e);
@@ -206,60 +210,46 @@ export default function MyeongsimCoachingDashboard({
   const handleGenerateSection = async (sectionId: string, title: string) => {
     setIsSectionLoading(true);
     const userId = userProfile?.id || (reportData as any)?.userId || 'guest';
-    const userKey = activeSaju ? activeSaju.dayMasterChar + '_' + (activeSaju.dayMaster || '') : 'guest';
 
     try {
-      const response = await fetch('/api/coaching/generate-108', {
+      const response = await fetch('/api/generate-myeongsim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pageKey: sectionId,
-          userKey: userKey,
+          userId,
+          pageId: sectionId,
           sajuData: activeSaju,
           sajuProfile: {
             dayMasterChar: activeSaju.dayMasterChar,
             dayMasterAnalogy: metaphor.title,
             sajuGanji: metaphor.sub
-          },
-          originalPage: {
-            title: title,
-            desc: "명심코칭 알고리즘을 통한 인생 흐름 해석"
           }
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.pageData) {
-          const generatedText = data.pageData.desc || data.pageData.generated_text || data.pageData.coachingSolution || JSON.stringify(data.pageData);
-          setSectionContent(generatedText);
+        if (data.success && data.text) {
+          setSectionContent(data.text);
 
           // 로컬 동기화
-          const localCacheKey = `ms_108_ai_content_v12_${userKey}`;
-          const localCacheStr = localStorage.getItem(localCacheKey);
-          const localCache = localCacheStr ? JSON.parse(localCacheStr) : {};
-          localCache[sectionId] = generatedText;
-          localStorage.setItem(localCacheKey, JSON.stringify(localCache));
-
-          // DB 동기화
-          await fetch('/api/coaching/108-reports', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: userId,
-              pageKey: sectionId,
-              generatedContent: generatedText
-            })
-          });
+          if (typeof window !== 'undefined') {
+            const userKey = activeSaju ? activeSaju.dayMasterChar + '_' + (activeSaju.dayMaster || '') : 'guest';
+            const localCacheKey = `ms_108_ai_content_v12_${userKey}`;
+            const localCacheStr = localStorage.getItem(localCacheKey);
+            const localCache = localCacheStr ? JSON.parse(localCacheStr) : {};
+            localCache[sectionId] = data.text;
+            localStorage.setItem(localCacheKey, JSON.stringify(localCache));
+          }
         } else {
-          alert('엔진 해석 데이터 로딩 실패. 다시 시도해주세요.');
+          alert('명심코칭 엔진 가동 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
       } else {
-        alert('명심코칭 AI 엔진 연결 중 오류가 발생했습니다.');
+        alert('명심코칭 엔진 가동 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
     } catch (e) {
       console.error(e);
-      alert('AI 생성 중 오류가 발생했습니다.');
+      alert('AI 생성 요청 중 네트워크 오류가 발생했습니다.');
     } finally {
       setIsSectionLoading(false);
     }
@@ -811,10 +801,10 @@ export default function MyeongsimCoachingDashboard({
             </div>
 
             {/* 우측: 클릭한 섹션의 실시간 온디맨드 뷰어 */}
-            <div className="lg:col-span-2 bg-[#FAF9F5] p-6 rounded-2xl border border-[#EBE7DC] min-h-[400px] flex flex-col justify-center shadow-inner-sm">
+            <div className="lg:col-span-2 min-h-[400px] flex flex-col justify-center">
               {!selectedSection ? (
                 /* 미선택 초기 뷰 */
-                <div className="text-center py-12">
+                <div className="bg-white p-8 rounded-3xl border border-[#EBE7DC] text-center py-12 shadow-sm text-left">
                   <span className="text-4xl mb-4 block">📖</span>
                   <h4 className="text-base font-bold text-slate-800 font-serif">108 자각 백서 열람실</h4>
                   <p className="text-xs text-gray-400 max-w-xs mx-auto mt-2 leading-relaxed">
@@ -823,55 +813,87 @@ export default function MyeongsimCoachingDashboard({
                 </div>
               ) : fetchingCache ? (
                 /* 캐시 로딩 뷰 */
-                <div className="text-center py-12 flex flex-col items-center">
+                <div className="bg-[#FAF9F5] p-8 rounded-3xl border border-[#EBE7DC] text-center py-12 flex flex-col items-center">
                   <div className="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mb-3"></div>
-                  <p className="text-xs text-gray-500 font-medium">운명의 봉인 캐시를 확인하는 중...</p>
+                  <p className="text-xs text-gray-500 font-medium">운명의 봉인을 확인하는 중...</p>
                 </div>
               ) : sectionContent ? (
-                /* 내용 출력 뷰 */
-                <div className="prose prose-stone max-w-none text-slate-700 animate-fade-in flex-grow flex flex-col">
-                  <div className="bg-emerald-50/50 border border-emerald-200/60 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 mb-4 max-w-max">
-                    ✨ 안전하게 보관된 자각 서판 (수파베이스 클라우드 동기화 완료)
+                /* 상태 1: 콘텐츠가 이미 존재할 때 (수파베이스 캐시 로드 완료) */
+                <div className="w-full bg-[#FAF9F5] rounded-3xl border border-[#EBE7DC] shadow-sm overflow-hidden transition-all duration-300 text-left">
+                  <div className="p-5 border-b border-[#EBE7DC] bg-[#FFFDFB] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                      <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-md">
+                        {SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection)?.framework}
+                      </span>
+                      <h3 className="text-lg font-bold text-[#2C2A29] mt-1 font-serif">
+                        {SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection)?.title}
+                      </h3>
+                    </div>
+                    <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                      ID: {selectedSection.toUpperCase()}
+                    </span>
                   </div>
-                  <div className="whitespace-pre-wrap text-sm sm:text-base leading-relaxed text-left font-serif p-4 bg-white rounded-xl border border-[#EAE6DB] flex-grow overflow-y-auto max-h-[50vh] min-h-[300px]">
-                    {sectionContent}
+                  <div className="p-6 bg-white min-h-[200px] flex flex-col justify-center">
+                    <div className="prose prose-stone max-w-none text-[#3A3837] leading-relaxed animate-fade-in">
+                      <div className="bg-emerald-50/50 border border-emerald-200/60 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 mb-4">
+                        ✨ 안심하세요! 이 페이지는 수파베이스 보안 서버에 안전하게 보관되어 있습니다. (API 추가 소모 없음)
+                      </div>
+                      <p className="whitespace-pre-wrap text-sm sm:text-base font-serif leading-loose max-h-[50vh] overflow-y-auto pr-2">{sectionContent}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const item = SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection);
+                        if (item) handleGenerateSection(item.id, item.title);
+                      }}
+                      className="mt-6 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/60 py-2.5 px-4 rounded-lg flex items-center justify-center gap-1.5 self-end transition-all animate-pulse"
+                    >
+                      🔄 AI 엔진으로 다시 해석하기
+                    </button>
                   </div>
-                  <button
-                    onClick={() => {
-                      const item = SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection);
-                      if (item) handleGenerateSection(item.id, item.title);
-                    }}
-                    className="mt-4 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/60 py-2.5 px-4 rounded-lg flex items-center justify-center gap-1.5 self-end transition-all"
-                  >
-                    🔄 AI 엔진으로 다시 해석하기
-                  </button>
                 </div>
               ) : isSectionLoading ? (
-                /* AI 로딩 뷰 */
-                <div className="text-center py-12 flex flex-col items-center justify-center">
-                  <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <p className="text-base font-bold text-amber-800 font-serif animate-pulse">
-                    명심코칭 AI 엔진이 기질 알고리즘을 해독하는 중...
-                  </p>
-                  <p className="text-xs text-gray-400 mt-2">잠시만 기다려주시면 평생 소장 가능한 리포트가 기록됩니다.</p>
+                /* 상태 2: 제미나이 API가 열심히 생성 중일 때 (로딩 애니메이션) */
+                <div className="w-full bg-[#FAF9F5] rounded-3xl border border-[#EBE7DC] shadow-sm overflow-hidden text-center">
+                  <div className="p-6 bg-white min-h-[300px] flex flex-col items-center justify-center">
+                    <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p className="text-base font-bold text-amber-800 font-serif animate-pulse">
+                      명심코칭 AI 엔진이 자네의 무의식 알고리즘을 해석하고 있네...
+                    </p>
+                    <p className="text-xs text-gray-400 mt-2">잠시만 기다려주시면 평생 소장 가능한 리포트가 기록됩니다.</p>
+                  </div>
                 </div>
               ) : (
-                /* 생성 유도 뷰 */
-                <div className="text-center py-12">
-                  <div className="text-4xl mb-4">🔒</div>
-                  <h4 className="text-base font-bold text-slate-800 font-serif">봉인된 자각의 서판일세.</h4>
-                  <p className="text-xs text-gray-400 max-w-md mx-auto mt-2 leading-relaxed px-4">
-                    아래 가동 버튼을 누르면 제미나이 2.5 플래시 분석 엔진이 작동하며, 자네의 타고난 사주 원국과 임상 심리 치료 기법을 융합하여 상세 코칭 풀이를 즉석 작성하네.
-                  </p>
-                  <button
-                    onClick={() => {
-                      const item = SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection);
-                      if (item) handleGenerateSection(item.id, item.title);
-                    }}
-                    className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white font-bold text-sm rounded-xl shadow-md transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-                  >
-                    🔮 AI 명심코칭 엔진 가동 (봉인 해제)
-                  </button>
+                /* 상태 3: 아직 생성되지 않은 페이지일 때 (프리미엄 생성 유도 UI) */
+                <div className="w-full bg-[#FAF9F5] rounded-3xl border border-[#EBE7DC] shadow-sm overflow-hidden text-left">
+                  <div className="p-5 border-b border-[#EBE7DC] bg-[#FFFDFB] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                      <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-md">
+                        {SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection)?.framework}
+                      </span>
+                      <h3 className="text-lg font-bold text-[#2C2A29] mt-1 font-serif">
+                        {SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection)?.title}
+                      </h3>
+                    </div>
+                    <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                      ID: {selectedSection.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="p-8 bg-white min-h-[240px] flex flex-col justify-center text-center">
+                    <div className="text-4xl mb-3">🔒</div>
+                    <p className="text-base font-bold text-[#4A4744] font-serif">아직 봉인 해제되지 않은 운명의 서판일세.</p>
+                    <p className="text-xs text-gray-400 max-w-md mx-auto mt-2 leading-relaxed">
+                      아래 버튼을 누르면 제미나이 2.5 플래시 인지 분석 엔진이 작동하며, 한 번 기록된 천명은 추가 비용 없이 평생 언제든 열람할 수 있네.
+                    </p>
+                    <button
+                      onClick={() => {
+                        const item = SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection);
+                        if (item) handleGenerateSection(item.id, item.title);
+                      }}
+                      className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white font-bold text-sm rounded-xl shadow-md transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 self-center"
+                    >
+                      🔮 AI 명심코칭 엔진 가동 (봉인 해제)
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
