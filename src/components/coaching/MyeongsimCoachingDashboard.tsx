@@ -141,6 +141,73 @@ const SECTIONS_108 = [
   }
 ];
 
+// ─────────────────────────────────────────────────────────────
+// 12운성(Twelve Changs) 및 12신살(Twelve Shinsals) 계산 헬퍼 함수
+// ─────────────────────────────────────────────────────────────
+function get12Unseong(dayStem: string, branch: string): string {
+  const gan = dayStem.trim()[0];
+  const zhi = branch.trim()[0];
+  
+  const ganMap: Record<string, string> = {
+    '갑': '甲', '을': '乙', '병': '丙', '정': '丁', '무': '戊', '기': '己', '경': '庚', '신': '辛', '임': '壬', '계': '癸',
+    '甲': '甲', '乙': '乙', '丙': '丙', '丁': '丁', '戊': '戊', '己': '己', '庚': '庚', '辛': '辛', '壬': '壬', '癸': '癸'
+  };
+  const zhiMap: Record<string, string> = {
+    '자': '子', '축': '丑', '인': '寅', '묘': '卯', '진': '辰', '사': '巳', '오': '午', '미': '未', '신': '申', '유': '酉', '술': '戌', '해': '亥',
+    '子': '子', '丑': '丑', '寅': '寅', '卯': '卯', '辰': '辰', '巳': '巳', '午': '午', '未': '未', '申': '申', '酉': '酉', '戌': '戌', '亥': '亥'
+  };
+
+  const g = ganMap[gan] || '甲';
+  const z = zhiMap[zhi] || '子';
+
+  const rule: Record<string, Record<string, string>> = {
+    '甲': { '亥':'장생', '子':'목욕', '丑':'관대', '寅':'건록', '卯':'제왕', '辰':'쇠', '巳':'병', '午':'사', '未':'묘', '申':'절', '酉':'태', '戌':'양' },
+    '乙': { '午':'장생', '巳':'목욕', '辰':'관대', '卯':'건록', '寅':'제왕', '丑':'쇠', '子':'병', '亥':'사', '戌':'묘', '酉':'절', '申':'태', '未':'양' },
+    '丙': { '寅':'장생', '卯':'목욕', '辰':'관대', '巳':'건록', '午':'제왕', '未':'쇠', '申':'병', '酉':'사', '戌':'묘', '亥':'절', '子':'태', '丑':'양' },
+    '戊': { '寅':'장생', '卯':'목욕', '辰':'관대', '巳':'건록', '午':'제왕', '未':'쇠', '申':'병', '酉':'사', '戌':'묘', '亥':'절', '子':'태', '丑':'양' },
+    '丁': { '酉':'장생', '申':'목욕', '未':'관대', '午':'건록', '巳':'제왕', '辰':'쇠', '卯':'병', '寅':'사', '丑':'묘', '子':'절', '亥':'태', '戌':'양' },
+    '己': { '酉':'장생', '申':'목욕', '未':'관대', '午':'건록', '巳':'제왕', '辰':'쇠', '卯':'병', '寅':'사', '丑':'묘', '子':'절', '亥':'태', '戌':'양' },
+    '庚': { '巳':'장생', '午':'목욕', '未':'관대', '申':'건록', '酉':'제왕', '戌':'쇠', '亥':'병', '子':'사', '丑':'묘', '寅':'절', '卯':'태', '辰':'양' },
+    '辛': { '子':'장생', '亥':'목욕', '戌':'관대', '酉':'건록', '申':'제왕', '未':'쇠', '午':'병', '巳':'사', '辰':'묘', '卯':'절', '寅':'태', '丑':'양' },
+    '壬': { '申':'장생', '酉':'목욕', '戌':'관대', '亥':'건록', '子':'제왕', '丑':'쇠', '寅':'병', '卯':'사', '辰':'묘', '巳':'절', '午':'태', '未':'양' },
+    '癸': { '卯':'장생', '寅':'목욕', '丑':'관대', '子':'건록', '亥':'제왕', '戌':'쇠', '酉':'병', '申':'사', '未':'묘', '午':'절', '巳':'태', '辰':'양' },
+  };
+
+  return rule[g]?.[z] || '건록';
+}
+
+function get12Shinsal(basisBranch: string, targetBranch: string): string {
+  const zhiMap: Record<string, string> = {
+    '자': '子', '축': '丑', '인': '寅', '묘': '卯', '진': '辰', '사': '巳', '오': '午', '미': '未', '신': '申', '유': '酉', '술': '戌', '해': '亥',
+    '子': '子', '丑': '丑', '寅': '寅', '卯': '卯', '辰': '辰', '巳': '巳', '午': '午', '未': '未', '申': '申', '酉': '酉', '戌': '戌', '亥': '亥'
+  };
+
+  const basis = zhiMap[basisBranch.trim()[0]] || '子';
+  const target = zhiMap[targetBranch.trim()[0]] || '子';
+
+  const zhiOrder = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+  const shinsalList = ['지살', '년살', '월살', '망신', '장성', '반안', '역마', '육해', '화개', '겁살', '재살', '천살'];
+
+  let startZhi = '子';
+  if (['寅', '午', '戌'].includes(basis)) {
+    startZhi = '寅';
+  } else if (['申', '子', '辰'].includes(basis)) {
+    startZhi = '申';
+  } else if (['巳', '酉', '丑'].includes(basis)) {
+    startZhi = '巳';
+  } else if (['亥', '卯', '未'].includes(basis)) {
+    startZhi = '亥';
+  }
+
+  const sIdx = zhiOrder.indexOf(startZhi);
+  const tIdx = zhiOrder.indexOf(target);
+  
+  if (sIdx === -1 || tIdx === -1) return '-';
+
+  const diff = (tIdx - sIdx + 12) % 12;
+  return shinsalList[diff];
+}
+
 interface MyeongsimCoachingDashboardProps {
   isOpen?: boolean;
   onClose?: () => void;
@@ -260,13 +327,14 @@ export default function MyeongsimCoachingDashboard({
     dayMaster: "갑목",
     dayMasterChar: "甲",
     fourPillars: {
-      year: { gan: "甲", ji: "子" },
-      month: { gan: "甲", ji: "子" },
-      day: { gan: "甲", ji: "子", char: "甲" },
-      time: { gan: "甲", ji: "子" }
+      year: { gan: "甲", ji: "子", ganKor: "갑", jiKor: "자", ganColor: "#10B981", jiColor: "#3B82F6" },
+      month: { gan: "甲", ji: "子", ganKor: "갑", jiKor: "자", ganColor: "#10B981", jiColor: "#3B82F6" },
+      day: { gan: "甲", ji: "子", ganKor: "갑", jiKor: "자", ganColor: "#10B981", jiColor: "#3B82F6", char: "甲" },
+      time: { gan: "甲", ji: "子", ganKor: "갑", jiKor: "자", ganColor: "#10B981", jiColor: "#3B82F6" }
     },
     elements: { wood: 1, fire: 0, earth: 0, metal: 0, water: 0 },
-    tenGods: { self: 1, output: 0, wealth: 0, power: 0, resource: 0 }
+    tenGods: { self: 1, output: 0, wealth: 0, power: 0, resource: 0 },
+    daewoonList: []
   });
 
   // [Hyper-Pass] 로컬 스토리지 다이렉트 파싱 폴백
@@ -308,7 +376,9 @@ export default function MyeongsimCoachingDashboard({
               elements: stats.ohaeng,
               tenGods: stats.tenGods,
               currentDaewoon: result.currentDaewoon || null,
-              currentSeun: result.currentSeun || null
+              currentSeun: result.currentSeun || null,
+              daewoonList: result.daewoonList || [],
+              birthYear: parseInt(rawDate.split('-')[0], 10)
             };
             console.log('📊 [Dashboard] 실시간 사주 매칭 연동 성공! 생년월일:', rawDate);
           }
@@ -328,6 +398,7 @@ export default function MyeongsimCoachingDashboard({
   }, [isOpen, reportData, userProfile]);
 
   // ── 1. 운명 DNA 메타포 계산 ──
+  const tenGods = activeSaju.tenGods || { self: 0, output: 0, wealth: 0, power: 0, resource: 0 };
   const dayPillar = activeSaju.fourPillars?.day || {};
   const dayGan = dayPillar.gan?.char || dayPillar.gan || activeSaju.dayMasterChar || '甲';
   const dayJi = dayPillar.ji?.char || dayPillar.ji || '子';
@@ -343,8 +414,77 @@ export default function MyeongsimCoachingDashboard({
     };
   }, [dayGan, dayJi, dayMasterName]);
 
+  // ── 1.2. 동적 격국 및 출현 확률 계산 (명리 감정 초고도화) ──
+  const premiumSajuInfo = useMemo(() => {
+    const dm = activeSaju.dayMasterChar || '甲';
+    const elements = activeSaju.elements || { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+    const name = (reportData as any)?.userName || userProfile?.name || userProfile?.user_metadata?.name || '내담자';
+
+    let title = '기질의 조율자';
+    let probability = 8.5;
+    let description = `${name}님은 타고난 일간의 균형을 바탕으로 삶의 중심을 잡고 나아가는 조율자의 면모를 지니고 있습니다.`;
+
+    if (['庚', '辛', '경', '신'].includes(dm) && elements.water >= 2) {
+      title = '금수쌍청(金水雙淸)의 전략가';
+      probability = 4.2;
+      description = `${name}님은 맑고 냉철한 금(金)의 결단력과 깊은 지혜의 수(水)의 물길이 결합되어, 탁월한 분석력과 통찰을 뽐내는 금수쌍청의 전략가 기질을 타고나셨습니다.`;
+    }
+    else if (['甲', '乙', '갑', '을'].includes(dm) && elements.fire >= 2) {
+      title = '목화통명(木火通明)의 예술가';
+      probability = 5.1;
+      description = `${name}님은 나무(木)의 창조성과 타오르는 불(火)의 표현력이 결합되어, 자신의 재능과 지식을 세상에 널리 밝히는 목화통명의 뛰어난 지적 예술가 기질을 지니셨습니다.`;
+    }
+    else if (['壬', '癸', '임', '계'].includes(dm) && elements.wood >= 2) {
+      title = '수목청화(水木淸華)의 교육자';
+      probability = 4.8;
+      description = `${name}님은 차가운 지혜의 물(Water)로 나무(Wood)를 푸르게 길러내어, 세상을 가르치고 타인을 따뜻하게 훈육하는 수목청화의 맑은 교육자 기질을 품고 계십니다.`;
+    }
+    else if (elements.earth >= 2 && elements.metal >= 2) {
+      title = '토금용심(土金用心)의 경영가';
+      probability = 6.8;
+      description = `${name}님은 단단한 대지(Earth)의 포용력과 그 속에 매힌 보석(Metal)의 냉철함이 결합되어, 거대한 시스템을 조직하고 비즈니스를 완벽히 일구어내는 현실적인 경영가 기질이 돋보입니다.`;
+    }
+    else if (elements.fire >= 3) {
+      title = '炎上之象 (염상지상)의 개척자';
+      probability = 3.5;
+      description = `${name}님은 타오르는 뜨거운 불꽃(Fire)의 주파수가 지배적이며, 어떤 난관이 와도 용맹하게 뚫고 나가는 도전성과 열정을 탑재한 염상의 개척자이십니다.`;
+    }
+    else if (elements.metal >= 3) {
+      title = '從革之象 (종혁지상)의 군주';
+      probability = 3.2;
+      description = `${name}님은 서슬 퍼런 무쇠와 보석(Metal)의 칼날 같은 통제력이 강하게 쏠려있어, 부적절한 관습을 과감히 혁파하고 엄격한 주권을 세우는 종혁의 카리스마 군주 기질을 지녔습니다.`;
+    }
+    else if (elements.wood >= 3) {
+      title = '曲直之象 (곡직지상)의 선구자';
+      probability = 3.9;
+      description = `${name}님은 곧게 뻗어나가는 거대한 나무(Wood)들의 기세가 가득하여, 억압에 굴하지 않고 이상향을 향해 꿋꿋이 뻗어가며 새로운 영역을 넓히는 선구자이십니다.`;
+    }
+    else if (elements.water >= 3) {
+      title = '潤下之象 (윤하지상)의 탐험가';
+      probability = 3.1;
+      description = `${name}님은 끊임없이 흐르고 침투하는 거대한 물(Water)의 에너지를 지녀, 무의식의 심연을 탐험하고 세상을 윤택하게 적시는 깊은 지혜의 탐험가이십니다.`;
+    }
+    else if (elements.earth >= 3) {
+      title = '稼穡之象 (가색지상)의 중재자';
+      probability = 4.5;
+      description = `${name}님은 모든 만물을 길러내고 수용하는 광활한 대지(Earth)의 어머니 기운이 강하여, 갈등을 화해시키고 만인을 안착시키는 넉넉한 중재자이십니다.`;
+    }
+
+    return { title, probability, description, name };
+  }, [activeSaju, reportData, userProfile]);
+
+  const premiumBadges = useMemo(() => {
+    const list = [
+      { name: '맑은 지혜의 흐름', value: tenGods.output, key: '식상', emoji: '💧' },
+      { name: '추구하는 재물욕', value: tenGods.wealth, key: '재성', emoji: '🪙' },
+      { name: '나를 지키는 주권', value: tenGods.self, key: '비겁', emoji: '🛡️' },
+      { name: '삶을 규율하는 통제', value: tenGods.power, key: '관성', emoji: '⚖️' },
+      { name: '깊은 학문과 수용', value: tenGods.resource, key: '인성', emoji: '📚' }
+    ];
+    return list.sort((a, b) => b.value - a.value).slice(0, 3);
+  }, [tenGods]);
+
   // ── 2. 십성 레이다 차트 좌표 동적 연산 ──
-  const tenGods = activeSaju.tenGods || { self: 0, output: 0, wealth: 0, power: 0, resource: 0 };
   const radarPoints = useMemo(() => {
     // 십성 데이터의 상대적 강도를 비례하여 SVG 오각형 좌표 도출
     const maxVal = Math.max(tenGods.self, tenGods.output, tenGods.wealth, tenGods.power, tenGods.resource, 1);
@@ -472,6 +612,64 @@ export default function MyeongsimCoachingDashboard({
     });
   }, [dayGan]);
 
+  // ── 7. 10년 주기 대운표 계산 (동적 12운성 및 12신살 포함) ──
+  const daewoonTableData = useMemo(() => {
+    const list = activeSaju.daewoonList || [];
+    const birthYear = activeSaju.birthYear || 1980;
+    const dayStem = activeSaju.dayMasterChar || '甲';
+    const yearZhi = activeSaju.fourPillars?.year?.ji || '子';
+    const currentYear = new Date().getFullYear();
+
+    const getGanBg = (gan: string) => {
+      const info = STEM_INFO[gan];
+      if (!info) return 'bg-slate-500 text-white';
+      if (info.ohaeng === 'wood') return 'bg-green-600 text-white';
+      if (info.ohaeng === 'fire') return 'bg-red-500 text-white';
+      if (info.ohaeng === 'earth') return 'bg-amber-500 text-white';
+      if (info.ohaeng === 'metal') return 'bg-slate-400 text-white';
+      return 'bg-blue-500 text-white'; // water
+    };
+
+    const getJiBg = (ji: string) => {
+      const info = BRANCH_INFO[ji];
+      if (!info) return 'bg-slate-500 text-white';
+      if (info.ohaeng === 'wood') return 'bg-green-600 text-white';
+      if (info.ohaeng === 'fire') return 'bg-red-500 text-white';
+      if (info.ohaeng === 'earth') return 'bg-amber-500 text-white';
+      if (info.ohaeng === 'metal') return 'bg-slate-400 text-white';
+      return 'bg-blue-500 text-white'; // water
+    };
+
+    return list.map((dw: any) => {
+      const gan = dw.ganZhi[0];
+      const ji = dw.ganZhi[1];
+      const startAge = dw.startYear - birthYear;
+      const endAge = dw.endYear - birthYear;
+      const ageRange = `${startAge}-${endAge}`;
+
+      const tSip = getTenGod(dayStem, gan, false);
+      const zSip = getTenGod(dayStem, ji, true);
+      const unseong = get12Unseong(dayStem, ji);
+      const shinsal = get12Shinsal(yearZhi, ji);
+
+      const isActive = currentYear >= dw.startYear && currentYear <= dw.endYear;
+
+      return {
+        year: dw.startYear,
+        age: ageRange,
+        tSip,
+        gan,
+        ji,
+        zSip,
+        un: unseong,
+        sin: shinsal,
+        tGanBg: getGanBg(gan),
+        zziBg: getJiBg(ji),
+        isActive
+      };
+    });
+  }, [activeSaju]);
+
   // 대우주 기질 등급 (SSR, SR 등)
   const ssrBadge = useMemo(() => {
     const isSpecial = tenGods.self >= 3 || tenGods.output >= 3 || tenGods.wealth >= 3 || tenGods.power >= 3 || tenGods.resource >= 3;
@@ -546,20 +744,148 @@ export default function MyeongsimCoachingDashboard({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 프로필 카드 */}
-              <div className="bg-white p-6 rounded-2xl border border-[#EAE6DB] flex flex-col items-center justify-center text-center shadow-inner-sm">
-                <div className="w-24 h-24 bg-[#FFFDF9] border-2 border-amber-500 rounded-full flex items-center justify-center text-5xl shadow-inner mb-4">
-                  {metaphor.emoji}
-                </div>
-                <h3 className="text-xl font-bold text-[#3A3837] font-serif">{metaphor.title}</h3>
-                <p className="text-sm text-amber-700 font-medium tracking-wide mt-1">{metaphor.sub}</p>
-                <div className="mt-4 flex flex-wrap gap-1.5 justify-center">
-                  {['#소통의_달인', '#본질적_자아', '#주권자_에너지', '#심리_디버깅_중'].map((tag, idx) => (
-                    <span key={idx} className="bg-[#F4F1E9] text-[#5C5856] text-xs px-2.5 py-1 rounded-md border border-[#E5E0D3]">
-                      {tag}
+              {/* 초고도화 명국성도 & 격국 카드 */}
+              <div className="bg-white p-6 rounded-2xl border border-[#EAE6DB] flex flex-col justify-between shadow-inner-sm gap-6">
+                
+                {/* 1. 명국성도 (命局星圖) 2행 4열 그리드 (우에서 좌로 년->월->일->시 배치) */}
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-[10px] font-black text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded uppercase tracking-widest">
+                      命局星圖 (명국성도)
                     </span>
-                  ))}
+                    <span className="text-xs font-serif text-[#7A7571] font-bold">
+                      {premiumSajuInfo.name}님께 새겨진 여덟 글자 운명
+                    </span>
+                  </div>
+                  
+                  {/* 8칸 그리드 (우에서 좌로 년->월->일->시 배치) */}
+                  <div className="grid grid-cols-4 gap-2 text-center text-xs font-bold font-sans">
+                    {/* 헤더 */}
+                    <div className="text-gray-400 text-[10px]">시주(時)</div>
+                    <div className="text-amber-800 text-[10px]">일주(日)★</div>
+                    <div className="text-gray-400 text-[10px]">월주(月)</div>
+                    <div className="text-gray-400 text-[10px]">년주(年)</div>
+
+                    {/* 천간 (천간행) */}
+                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                      activeSaju.fourPillars?.time?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      activeSaju.fourPillars?.time?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      activeSaju.fourPillars?.time?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      activeSaju.fourPillars?.time?.ganElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                      activeSaju.fourPillars?.time?.ganElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.time?.gan}</span>
+                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.time?.ganKor || activeSaju.fourPillars?.time?.ganElement}</span>
+                    </div>
+                    <div className={`p-2.5 rounded-lg border-2 ring-2 ring-amber-500/20 flex flex-col items-center justify-center gap-1 ${
+                      activeSaju.fourPillars?.day?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      activeSaju.fourPillars?.day?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      activeSaju.fourPillars?.day?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      activeSaju.fourPillars?.day?.ganElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                      activeSaju.fourPillars?.day?.ganElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.day?.gan}</span>
+                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.day?.ganKor || activeSaju.fourPillars?.day?.ganElement}</span>
+                    </div>
+                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                      activeSaju.fourPillars?.month?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      activeSaju.fourPillars?.month?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      activeSaju.fourPillars?.month?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      activeSaju.fourPillars?.month?.ganElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                      activeSaju.fourPillars?.month?.ganElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.month?.gan}</span>
+                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.month?.ganKor || activeSaju.fourPillars?.month?.ganElement}</span>
+                    </div>
+                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                      activeSaju.fourPillars?.year?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      activeSaju.fourPillars?.year?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      activeSaju.fourPillars?.year?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      activeSaju.fourPillars?.year?.ganElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                      activeSaju.fourPillars?.year?.ganElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.year?.gan}</span>
+                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.year?.ganKor || activeSaju.fourPillars?.year?.ganElement}</span>
+                    </div>
+
+                    {/* 지지 (지지행) */}
+                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                      activeSaju.fourPillars?.time?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      activeSaju.fourPillars?.time?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      activeSaju.fourPillars?.time?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      activeSaju.fourPillars?.time?.jiElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                      activeSaju.fourPillars?.time?.jiElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.time?.ji}</span>
+                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.time?.jiKor || activeSaju.fourPillars?.time?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.time?.ji] || '동물'})</span>
+                    </div>
+                    <div className={`p-2.5 rounded-lg border-2 ring-2 ring-amber-500/20 flex flex-col items-center justify-center gap-1 ${
+                      activeSaju.fourPillars?.day?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      activeSaju.fourPillars?.day?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      activeSaju.fourPillars?.day?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      activeSaju.fourPillars?.day?.jiElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                      activeSaju.fourPillars?.day?.jiElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.day?.ji}</span>
+                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.day?.jiKor || activeSaju.fourPillars?.day?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.day?.ji] || '동물'})</span>
+                    </div>
+                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                      activeSaju.fourPillars?.month?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      activeSaju.fourPillars?.month?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      activeSaju.fourPillars?.month?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      activeSaju.fourPillars?.month?.jiElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                      activeSaju.fourPillars?.month?.jiElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.month?.ji}</span>
+                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.month?.jiKor || activeSaju.fourPillars?.month?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.month?.ji] || '동물'})</span>
+                    </div>
+                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                      activeSaju.fourPillars?.year?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      activeSaju.fourPillars?.year?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      activeSaju.fourPillars?.year?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      activeSaju.fourPillars?.year?.jiElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                      activeSaju.fourPillars?.year?.jiElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.year?.ji}</span>
+                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.year?.jiKor || activeSaju.fourPillars?.year?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.year?.ji] || '동물'})</span>
+                    </div>
+                  </div>
                 </div>
+
+                {/* 2. 격국 / 출현 확률 분석 */}
+                <div className="bg-[#FFFDF9] border border-amber-200/50 p-4 rounded-xl text-left">
+                  <div className="flex justify-between items-start mb-1.5 gap-2">
+                    <div>
+                      <h4 className="text-sm font-bold text-amber-900 font-serif">{premiumSajuInfo.title}</h4>
+                      <p className="text-[10px] text-gray-400 mt-0.5">이 조합의 출현 확률: {premiumSajuInfo.probability}%</p>
+                    </div>
+                    {premiumSajuInfo.probability <= 6 && (
+                      <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-300 animate-pulse whitespace-nowrap">
+                        ⚡ 극희소 조합
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#5C5856] leading-relaxed mb-3">{premiumSajuInfo.description}</p>
+                  
+                  {/* 동적 십신 배지 3선 */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {premiumBadges.map((badge, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1 text-[10px] font-bold text-[#5C5856] bg-white border border-[#EAE6DB] px-2 py-1 rounded-md shadow-sm">
+                        <span>{badge.emoji}</span>
+                        <span>{badge.name} ({badge.key})</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
               </div>
 
               {/* 오각형 레이다 차트 (네이티브 SVG 동적 좌표 연산) */}
@@ -759,6 +1085,105 @@ export default function MyeongsimCoachingDashboard({
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* ==========================================
+              5. 10년 주기 대운표 테이블 (초고도화)
+              ========================================== */}
+          <div className="w-full bg-white p-6 rounded-3xl border border-[#EBE7DC] shadow-sm overflow-hidden mt-8">
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-bold text-[#2C2A29] font-serif">🔮 {premiumSajuInfo.name}님의 대운표</h3>
+              <p className="text-xs text-gray-400 mt-1">인생의 거대한 흐름을 관장하는 10년 주기 대운 주파수</p>
+            </div>
+            
+            <div className="overflow-x-auto rounded-xl border border-[#EAE6DB]">
+              <table className="w-full text-center border-collapse text-sm">
+                <thead>
+                  <tr className="bg-[#F8F6F0] text-[#5C5856] font-bold border-b border-[#EAE6DB]">
+                    <th className="py-3 px-2 border-r border-[#EAE6DB] bg-[#F1EDE2] w-24">구분</th>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <th key={idx} className={`py-3 px-3 border-r border-[#EAE6DB] min-w-[100px] ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/30' : ''}`}>
+                        {col.isActive ? '현재 대운' : `${idx + 1}대운`}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="text-[#2C2A29] font-medium">
+                  <tr className="border-b border-[#EAE6DB]">
+                    <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">년도</td>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <td key={idx} className={`border-r border-[#EAE6DB] font-semibold text-gray-500 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                        {col.year}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-[#EAE6DB]">
+                    <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">나이*¹</td>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <td key={idx} className={`border-r border-[#EAE6DB] text-xs text-gray-600 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                        {col.age}세
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-[#EAE6DB]">
+                    <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">천간십성</td>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <td key={idx} className={`border-r border-[#EAE6DB] text-amber-800 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
+                        {col.tSip}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-[#EAE6DB]">
+                    <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">천간(天干)</td>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <td key={idx} className={`border-r border-[#EAE6DB] p-1.5 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                        <div className={`w-9 h-9 mx-auto flex flex-col items-center justify-center rounded-md text-base font-black ${col.tGanBg}`}>
+                          <span>{col.gan}</span>
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-[#EAE6DB]">
+                    <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">지지(地支)</td>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <td key={idx} className={`border-r border-[#EAE6DB] p-1.5 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                        <div className={`w-9 h-9 mx-auto flex flex-col items-center justify-center rounded-md text-base font-black ${col.zziBg}`}>
+                          <span>{col.ji}</span>
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-[#EAE6DB]">
+                    <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">지지십성</td>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <td key={idx} className={`border-r border-[#EAE6DB] text-emerald-800 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
+                        {col.zSip}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-[#EAE6DB]">
+                    <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">12운성</td>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <td key={idx} className={`border-r border-[#EAE6DB] text-gray-600 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
+                        {col.un}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">12신살</td>
+                    {daewoonTableData.map((col: any, idx: number) => (
+                      <td key={idx} className={`border-r border-[#EAE6DB] text-xs px-2 text-[#7A5B35] font-semibold whitespace-pre-line ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
+                        {col.sin}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <p className="text-[10px] text-gray-400 mt-3 text-left">
+              *¹ 감명물에 작성되는 모든 나이는 특정 년도의 생일이 지난 만 나이로 표기합니다.
+            </p>
           </div>
         </>
       )}
