@@ -2,8 +2,8 @@ import { Solar, Lunar } from 'lunar-javascript';
 
 // Types for our Saju data structure
 export interface SajuPillar {
-    gan: { char: string; color: string; label: string };
-    ji: { char: string; color: string; label: string; animal?: string };
+    gan: { char: string; hanja: string; color: string; label: string };
+    ji: { char: string; hanja: string; color: string; label: string; animal?: string };
 }
 
 export interface FourPillarsData {
@@ -12,34 +12,38 @@ export interface FourPillarsData {
     day: SajuPillar;
     time: SajuPillar;
     dayMaster: string; // The Heavenly Stem of the Day
+    gongmang: string[]; // 공망 한자 지지 목록 예: ['申', '酉']
+    isYearGongmang: boolean;
+    isMonthGongmang: boolean;
+    isTimeGongmang: boolean;
 }
 
 const HEAVENLY_STEMS = [
-    { char: '갑', color: '#10B981', label: '목' }, // 0: Jia (Wood+)
-    { char: '을', color: '#10B981', label: '목' }, // 1: Yi (Wood-)
-    { char: '병', color: '#EF4444', label: '화' }, // 2: Bing (Fire+)
-    { char: '정', color: '#EF4444', label: '화' }, // 3: Ding (Fire-)
-    { char: '무', color: '#F59E0B', label: '토' }, // 4: Wu (Earth+)
-    { char: '기', color: '#F59E0B', label: '토' }, // 5: Ji (Earth-)
-    { char: '경', color: '#9CA3AF', label: '금' }, // 6: Geng (Metal+)
-    { char: '신', color: '#9CA3AF', label: '금' }, // 7: Xin (Metal-)
-    { char: '임', color: '#3B82F6', label: '수' }, // 8: Ren (Water+)
-    { char: '계', color: '#3B82F6', label: '수' }  // 9: Gui (Water-)
+    { char: '갑', hanja: '甲', color: '#10B981', label: '목' }, // 0: Jia (Wood+)
+    { char: '을', hanja: '乙', color: '#10B981', label: '목' }, // 1: Yi (Wood-)
+    { char: '병', hanja: '丙', color: '#EF4444', label: '화' }, // 2: Bing (Fire+)
+    { char: '정', hanja: '丁', color: '#EF4444', label: '화' }, // 3: Ding (Fire-)
+    { char: '무', hanja: '戊', color: '#F59E0B', label: '토' }, // 4: Wu (Earth+)
+    { char: '기', hanja: '己', color: '#F59E0B', label: '토' }, // 5: Ji (Earth-)
+    { char: '경', hanja: '庚', color: '#9CA3AF', label: '금' }, // 6: Geng (Metal+)
+    { char: '신', hanja: '辛', color: '#9CA3AF', label: '금' }, // 7: Xin (Metal-)
+    { char: '임', hanja: '壬', color: '#3B82F6', label: '수' }, // 8: Ren (Water+)
+    { char: '계', hanja: '癸', color: '#3B82F6', label: '수' }  // 9: Gui (Water-)
 ];
 
 const EARTHLY_BRANCHES = [
-    { char: '자', color: '#3B82F6', label: '수', animal: '쥐' },    // 0: Zi
-    { char: '축', color: '#F59E0B', label: '토', animal: '소' },     // 1: Chou
-    { char: '인', color: '#10B981', label: '목', animal: '호랑이' },   // 2: Yin
-    { char: '묘', color: '#10B981', label: '목', animal: '토끼' },  // 3: Mao
-    { char: '진', color: '#F59E0B', label: '토', animal: '용' }, // 4: Chen
-    { char: '사', color: '#EF4444', label: '화', animal: '뱀' },   // 5: Si
-    { char: '오', color: '#EF4444', label: '화', animal: '말' },   // 6: Wu
-    { char: '미', color: '#F59E0B', label: '토', animal: '양' },   // 7: Wei
-    { char: '신', color: '#9CA3AF', label: '금', animal: '원숭이' }, // 8: Shen
-    { char: '유', color: '#9CA3AF', label: '금', animal: '닭' },// 9: You
-    { char: '술', color: '#F59E0B', label: '토', animal: '개' },    // 10: Xu
-    { char: '해', color: '#3B82F6', label: '수', animal: '돼지' }     // 11: Hai
+    { char: '자', hanja: '子', color: '#3B82F6', label: '수', animal: '쥐' },    // 0: Zi
+    { char: '축', hanja: '丑', color: '#F59E0B', label: '토', animal: '소' },     // 1: Chou
+    { char: '인', hanja: '寅', color: '#10B981', label: '목', animal: '호랑이' },   // 2: Yin
+    { char: '묘', hanja: '卯', color: '#10B981', label: '목', animal: '토끼' },  // 3: Mao
+    { char: '진', hanja: '辰', color: '#F59E0B', label: '토', animal: '용' }, // 4: Chen
+    { char: '사', hanja: '巳', color: '#EF4444', label: '화', animal: '뱀' },   // 5: Si
+    { char: '오', hanja: '午', color: '#EF4444', label: '화', animal: '말' },   // 6: Wu
+    { char: '미', hanja: '未', color: '#F59E0B', label: '토', animal: '양' },   // 7: Wei
+    { char: '신', hanja: '申', color: '#9CA3AF', label: '금', animal: '원숭이' }, // 8: Shen
+    { char: '유', hanja: '酉', color: '#9CA3AF', label: '금', animal: '닭' },// 9: You
+    { char: '술', hanja: '戌', color: '#F59E0B', label: '토', animal: '개' },    // 10: Xu
+    { char: '해', hanja: '亥', color: '#3B82F6', label: '수', animal: '돼지' }     // 11: Hai
 ];
 
 // Mapping from Chinese Characters (Library Output) to our Array Indices
@@ -52,6 +56,24 @@ const GAN_MAP: Record<string, number> = {
 const ZHI_MAP: Record<string, number> = {
     '子': 0, '丑': 1, '寅': 2, '卯': 3, '辰': 4, '巳': 5,
     '午': 6, '未': 7, '申': 8, '酉': 9, '戌': 10, '亥': 11
+};
+
+export const calculateGongmang = (dayGanHanja: string, dayZhiHanja: string): string[] => {
+    const ganIdx = GAN_MAP[dayGanHanja];
+    const zhiIdx = ZHI_MAP[dayZhiHanja];
+    if (ganIdx === undefined || zhiIdx === undefined) return [];
+
+    // 순(旬)의 시작 지지 인덱스 구하기
+    const startZhiIdx = (zhiIdx - ganIdx + 12) % 12;
+
+    // 공망 지지 인덱스 (순의 시작 지지에서 10, 11번째 지지)
+    const gongmangZhi1Idx = (startZhiIdx + 10) % 12;
+    const gongmangZhi2Idx = (startZhiIdx + 11) % 12;
+
+    const zhi1 = EARTHLY_BRANCHES[gongmangZhi1Idx].hanja;
+    const zhi2 = EARTHLY_BRANCHES[gongmangZhi2Idx].hanja;
+
+    return [zhi1, zhi2];
 };
 
 export const calculateSaju = (
@@ -79,11 +101,6 @@ export const calculateSaju = (
     // 3. Get Eight Characters (BaZi)
     const bazi = lunarDate.getEightChar();
 
-    // The library handles the complex logic of:
-    // - Local Mean Time adjustments (if configured, strict usage usually requires longitude)
-    // - Midnight boundaries (Zi hour split)
-    // - Solar terms (JieQi) for accurate Month Pillar (critical for Saju)
-
     // 4. Map to Our Structure
     const mapPillar = (ganChar: string, zhiChar: string): SajuPillar => {
         const ganIdx = GAN_MAP[ganChar];
@@ -108,12 +125,21 @@ export const calculateSaju = (
     const timeGan = bazi.getTimeGan();
     const timeZhi = bazi.getTimeZhi();
 
+    const gongmang = calculateGongmang(dayGan, dayZhi);
+    const isYearGongmang = gongmang.includes(yearZhi);
+    const isMonthGongmang = gongmang.includes(monthZhi);
+    const isTimeGongmang = gongmang.includes(timeZhi);
+
     const result = {
         year: mapPillar(yearGan, yearZhi),
         month: mapPillar(monthGan, monthZhi),
         day: mapPillar(dayGan, dayZhi),
         time: mapPillar(timeGan, timeZhi),
-        dayMaster: `${HEAVENLY_STEMS[GAN_MAP[dayGan]].char} (${HEAVENLY_STEMS[GAN_MAP[dayGan]].label})`
+        dayMaster: `${HEAVENLY_STEMS[GAN_MAP[dayGan]].char} (${HEAVENLY_STEMS[GAN_MAP[dayGan]].label})`,
+        gongmang,
+        isYearGongmang,
+        isMonthGongmang,
+        isTimeGongmang
     };
 
     return result;

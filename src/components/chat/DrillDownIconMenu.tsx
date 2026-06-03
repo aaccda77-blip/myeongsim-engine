@@ -53,6 +53,9 @@ const Healing108CoachingReport = dynamic(() => import('@/components/coaching/Hea
 const Sovereign3SProtocolModal = dynamic(() => import('@/components/coaching/Sovereign3SProtocolModal'), { ssr: false });
 const MindResetModal = dynamic(() => import('@/components/coaching/MindResetModal'), { ssr: false });
 const MyeongsimOSDashboard = dynamic(() => import('@/components/os/MyeongsimOSDashboard'), { ssr: false });
+const DecodeReportModal = dynamic(() => import('@/components/coaching/DecodeReportModal'), { ssr: false });
+const PremiumReportModal = dynamic(() => import('@/components/coaching/PremiumReportModal'), { ssr: false });
+const MyeongsimCoachingDashboard = dynamic(() => import('@/components/coaching/MyeongsimCoachingDashboard'), { ssr: false });
 
 
 
@@ -483,10 +486,33 @@ export default function DrillDownIconMenu({
     const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
     const [showSovereignReport, setShowSovereignReport] = useState(false); // [NEW] 사회적기여 리포트
     const [showHealing108Report, setShowHealing108Report] = useState(false); // [NEW] 108 자각 증명서
+    const [showHealing108NewReport, setShowHealing108NewReport] = useState(false); // [NEW] 108 자각 new 대시보드
     const [showMyeongsimOS, setShowMyeongsimOS] = useState(false); // [NEW] 명심 OS 대시보드
     const [showSovereign3S, setShowSovereign3S] = useState(false); // [NEW] 소버린 3S 셋업프로토콜
     const [showMindReset, setShowMindReset] = useState(false); // [NEW] 5D 마음 리셋 디버깅
+    const [showDecodeReport, setShowDecodeReport] = useState(false);
+    const [showPremiumReport, setShowPremiumReport] = useState(false);
     const { reportData } = useReportStore();
+
+    const handleDecodeClick = () => {
+        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+        if (!hasBirthDate) {
+            alert('기질 분석을 위해 생년월일을 먼저 입력해주세요.');
+            useReportStore.getState().setStep(1); // 메인 기질데이터 입력 페이지(Step 1)로 이동
+            return;
+        }
+        setShowDecodeReport(true);
+    };
+
+    const handlePremiumReportClick = () => {
+        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+        if (!hasBirthDate) {
+            alert('심층 리포트를 생성하기 위해 생년월일을 먼저 입력해주세요.');
+            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+            return;
+        }
+        setShowPremiumReport(true);
+    };
 
 
 
@@ -743,6 +769,8 @@ export default function DrillDownIconMenu({
             setShowAwakeningChat(true);
             return;
         }
+
+
 
 
         // [NEW] 80페이지 분량의 소울 아카이브 페이지로 이동
@@ -1082,6 +1110,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 프리미엄 심층 리포트 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={handlePremiumReportClick}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.2))',
+                        border: '1px solid rgba(245, 158, 11, 0.4)',
+                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>💎</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>심층 리포트</div>
+                        <div style={styles.neuroTrigger}>5파트 통합 가이드</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 108 자각 메뉴 — 108페이지 초감동 자각 백서 */}
                 <button
                     style={styles.iconButton}
@@ -1100,6 +1149,48 @@ export default function DrillDownIconMenu({
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#f472b6' }}>108 자각</div>
                         <div style={styles.neuroTrigger}>힐링 자각 백서</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 108 자각 new 메뉴 — 실시간 대시보드 리포트 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowHealing108NewReport(true)}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.2))',
+                        border: '1px solid rgba(245,158,11,0.4)',
+                        boxShadow: '0 4px 15px rgba(245,158,11,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>📊</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>108 자각 new</div>
+                        <div style={styles.neuroTrigger}>실시간 대시보드</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 디코드 메뉴 — 심층 무의식 보고서 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={handleDecodeClick}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.25), rgba(79, 70, 229, 0.2))',
+                        border: '1px solid rgba(147, 51, 234, 0.4)',
+                        boxShadow: '0 4px 15px rgba(147, 51, 234, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🌌</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#c084fc' }}>디코드</div>
+                        <div style={styles.neuroTrigger}>심층 무의식 보고서</div>
                     </div>
                 </button>
 
@@ -1518,11 +1609,22 @@ export default function DrillDownIconMenu({
                 userProfile={userProfile}
             />
 
+            {/* [NEW] 108 자각 new 프리미엄 대시보드 모달 */}
+            <MyeongsimCoachingDashboard
+                isOpen={showHealing108NewReport}
+                onClose={() => setShowHealing108NewReport(false)}
+                userProfile={userProfile}
+            />
+
             {/* [NEW] 명심 OS 대시보드 */}
             {showMyeongsimOS && (
                 <MyeongsimOSDashboard 
                     isModal={true}
                     onClose={() => setShowMyeongsimOS(false)}
+                    onChatIntent={(intent, prompt) => {
+                        setShowMyeongsimOS(false);
+                        onSelectIntent(intent, prompt);
+                    }}
                 />
             )}
 
@@ -1557,6 +1659,8 @@ export default function DrillDownIconMenu({
                 )}
             </AnimatePresence>
 
+
+
             {/* [NEW] 소버린 3S 프로토콜 모달 */}
             <Sovereign3SProtocolModal
                 isOpen={showSovereign3S}
@@ -1568,6 +1672,20 @@ export default function DrillDownIconMenu({
             <MindResetModal
                 isOpen={showMindReset}
                 onClose={() => setShowMindReset(false)}
+            />
+
+            {/* [NEW] 디코드 심층 무의식 보고서 모달 */}
+            <DecodeReportModal
+                isOpen={showDecodeReport}
+                onClose={() => setShowDecodeReport(false)}
+                userProfile={userProfile}
+            />
+
+            {/* [NEW] 프리미엄 5파트 통합 심층 리포트 모달 */}
+            <PremiumReportModal
+                isOpen={showPremiumReport}
+                onClose={() => setShowPremiumReport(false)}
+                userProfile={userProfile}
             />
         </>
     );

@@ -244,6 +244,7 @@ interface IlganCoaching {
     outputCode: string;
     phase1: { title: string; inner: string; env: string; social: string; future: string; synthesis: string };
     darkCode: { id: string; tag: string; symptoms: string[] };
+    metaCode: { id: string; tag: string; values: string[] };
     neuralPrompts: { id: string; label: string; q: string }[];
     steps: { label: string; desc: string }[];
     metaSelf: string;
@@ -297,6 +298,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '타인의 사소한 비판에도 영혼이 베이는 듯한 극심한 감정적 마모',
                 '에너지가 고갈되었음에도 멈추지 못하고 자신을 채찍질하는 강박적 번아웃',
             ],
+        },
+        metaCode: {
+            id: 'M-ACT-ELEGANCE',
+            tag: '빛나는 본질 수용',
+            values: [
+                '나는 이미 완벽하게 제련된 보석임을 알아차리고, 매 순간의 불완전함을 수용합니다.',
+                '평가를 내려놓고 관찰자 시점(Meta-Self)에서 나의 빛과 그림자를 가만히 바라봅니다.',
+                '외부의 기준에 흔들리지 않는 우아한 군주로서의 통치권을 스스로 선언합니다.'
+            ]
         },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"내가 지금 느끼는 이 완벽에 대한 압박은 나의 생존을 돕고 있는가, 아니면 나의 통치권을 침해하고 있는가?"' },
@@ -408,6 +418,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '인정받지 못할 때 폭발하는 자존심',
             ],
         },
+        metaCode: {
+            id: 'M-ACT-FOREST',
+            tag: '포용과 공존의 숲',
+            values: [
+                '홀로 곧추선 강인함을 내려놓고, 다 함께 어우러지는 유연한 상생을 수용합니다.',
+                '독단의 긴장을 풀고, 타인의 시선과 목소리가 지닌 고유한 온기를 깊이 느낍니다.',
+                '생명력 넘치는 숲의 리더로서 경청을 통해 진정한 성장을 지휘합니다.'
+            ]
+        },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"나의 이 확신은 진실에서 나온 것인가, 아니면 두려움에서 나온 방어막인가?"' },
             { id: '02', label: 'RECURSIVE PROMPT', q: '"내가 고집하는 이 방식이 5년 뒤의 나를 위한 것인가, 아니면 지금의 자존심을 위한 것인가?"' },
@@ -517,6 +536,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '결정을 내리지 못하는 만성적 우유부단',
                 '인정받고자 하는 과도한 욕구',
             ],
+        },
+        metaCode: {
+            id: 'M-ACT-FLEXIBILITY',
+            tag: '자유로운 넝쿨',
+            values: [
+                '타인에게 휩쓸리지 않고, 나의 부드러움이 지닌 고유한 뿌리를 깊이 지탱합니다.',
+                '외부 요청에 대한 거절을 두려워하지 않고, 나만의 코어 가치를 최우선으로 수용합니다.',
+                '어떤 벽이든 감싸 오르는 무한한 적응성과 창의적인 연결을 전념하여 실행합니다.'
+            ]
         },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"지금 내가 상대에게 맞추는 것은 진정한 배려인가, 아니면 거절당할 두려움인가?"' },
@@ -632,6 +660,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '자기 자신이 주목의 중심이 되지 못할 때 느끼는 강한 공허감',
             ],
         },
+        metaCode: {
+            id: 'M-ACT-COOLING',
+            tag: '지속가능한 태양',
+            values: [
+                '뜨거운 비추임이 자가 번아웃을 유발할 수 있음을 알아차리고 냉정한 멈춤을 수용합니다.',
+                '타인의 박수 갈채나 인정 의존성 없이도 나 자체로 충분히 눈부심을 인지합니다.',
+                '에너지 리소스를 계획적으로 분산하고 스스로를 온전히 채우는 평화에 머뭅니다.'
+            ]
+        },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"내가 지금 빛나고 싶은 것인가, 아니면 어둠이 두려워 멈추지 못하는 것인가?"' },
             { id: '02', label: 'RECURSIVE PROMPT', q: '"나는 에너지가 100%일 때만 가치 있는 사람인가? 40%의 나는 사랑받을 자격이 없는가?"' },
@@ -745,6 +782,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '사소한 말 한 마디에도 깊이 상처받고 오래 기억하는 과민 반응',
                 '혼자만의 시간 없이 지속되는 인간관계로 인한 만성 피로',
             ],
+        },
+        metaCode: {
+            id: 'M-ACT-EXPRESSION',
+            tag: '솔직한 마음의 빛',
+            values: [
+                '혼자 가슴속으로 삭이며 타오르는 자기 소모를 멈추고 솔직한 감정을 밖으로 개방합니다.',
+                '마음속의 이상적 그림과 다른 어설픈 현실도 아름다운 담금질의 일부로 수용합니다.',
+                '섬세한 통찰의 촛불이 지닌 따스한 영향력을 언어로 자유롭게 출력합니다.'
+            ]
         },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"나는 지금 상대를 위해 빛나고 있는가, 아니면 무서워서 꺼지지 못하고 있는가?"' },
@@ -860,6 +906,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '변화에 대한 불안이 무기력이나 과식 등 신체 증상으로 나타남',
             ],
         },
+        metaCode: {
+            id: 'M-ACT-CENTER',
+            tag: '중심 있는 대지',
+            values: [
+                '모든 것을 감싸 안으려다 에너지가 흩어짐을 알아차리고, 나만의 코어 우선순위를 수용합니다.',
+                '안정에만 머무는 경직성에서 벗어나, 변화의 싹을 틔울 새로운 수용성을 장착합니다.',
+                '든든한 태산처럼 흔들림 없는 중심에서 진정으로 가치 있는 연결에 전념합니다.'
+            ]
+        },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"내가 이 방식을 고수하는 것은 정말 최선이기 때문인가, 아니면 변화가 두렵기 때문인가?"' },
             { id: '02', label: 'RECURSIVE PROMPT', q: '"지금 내가 거부하고 있는 이 변화가 5년 뒤에는 어떻게 보일 것인가?"' },
@@ -973,6 +1028,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '공로를 인정받지 못할 때 조용히 쌓이는 억울함과 서운함',
                 '결정을 내리지 못하고 상황이 해결되기를 기다리는 소극성',
             ],
+        },
+        metaCode: {
+            id: 'M-ACT-OUTFLOW',
+            tag: '텃밭의 비옥한 수확',
+            values: [
+                '생각만 품은 채 안으로 침잠하는 과잉 내성화를 멈추고, 작은 행동으로 텃밭을 개방합니다.',
+                '완벽한 준비를 기다리기보다 지금 당장 80%의 아이디어를 빠르게 세상에 공유합니다.',
+                '타인을 위한 배려 이전에 나 자신의 리소스를 먼저 비옥하게 가꾸는 데 전념합니다.'
+            ]
         },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"나는 지금 모두를 행복하게 하려는 것인가, 아니면 누군가를 불행하게 할까봐 두려운 것인가?"' },
@@ -1088,6 +1152,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '극도의 자기 규율로 인한 심리적 경직과 휴식 불능',
             ],
         },
+        metaCode: {
+        id: 'M-ACT-SOFTNESS',
+        tag: '유연한 단단함',
+        values: [
+            '강하게 버티려다 부러지는 강박을 내려놓고, 부드럽게 흐르는 유연한 타협을 수용합니다.',
+            '약함을 인정하고 기꺼이 협력을 요청하는 것이 더 단단한 제련의 길임을 인지합니다.',
+            '이겨야만 한다는 경쟁심 대신, 상대의 몫을 감싸 안는 주권자의 도량을 선언합니다.'
+        ]
+    },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"나는 지금 강한 것인가, 아니면 굽히는 것이 두려워 경직된 것인가?"' },
             { id: '02', label: 'RECURSIVE PROMPT', q: '"내가 이 싸움에서 이긴다면 무엇을 얻는가? 지는 것이 더 현명한 선택일 때는 없는가?"' },
@@ -1202,6 +1275,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '감정보다 논리를 앞세우다가 정작 내면의 욕구를 무시하는 패턴',
             ],
         },
+        metaCode: {
+        id: 'M-ACT-FLOW',
+        tag: '마르지 않는 깊은 강',
+        values: [
+            '전략 수립에만 머무르며 머뭇거리는 정체를 멈추고, 즉각적인 흐름을 수용합니다.',
+            '웅덩이에 갇힌 불안을 버리고, 깊은 바다로 흘러가기 위한 끊임없는 실행에 집중합니다.',
+            '지혜의 깊이를 대중을 향한 친절하고 명확한 언어로 흘려보내는 데 전념합니다.'
+        ]
+    },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"나는 지금 분석하고 있는가, 아니면 시작하는 것이 두려워 분석을 핑계로 삼고 있는가?"' },
             { id: '02', label: 'RECURSIVE PROMPT', q: '"완벽한 전략이 준비될 때까지 기다린다면, 나는 평생 기다려야 할 수도 있다. 지금 당장 할 수 있는 첫 걸음은 무엇인가?"' },
@@ -1316,6 +1398,15 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '표현하지 못한 감정들이 신체 증상(두통, 소화 장애 등)으로 나타남',
             ],
         },
+        metaCode: {
+        id: 'M-ACT-FILTER',
+        tag: '맑은 이슬비 오아시스',
+        values: [
+            '타인의 감정 쓰레기를 내 것으로 흡수하는 혼선을 차단하고 나만의 경계 필터를 수용합니다.',
+            '알아주기만을 기대하는 암묵적 침묵 대신, 나의 요구를 다정하고 투명하게 직접 소통합니다.',
+            '맑고 시원한 쉼터처럼 주변에 영감을 공급하되 나의 평화를 원천적으로 보호합니다.'
+        ]
+    },
         neuralPrompts: [
             { id: '01', label: 'SOCRATES PROMPT', q: '"내가 느끼는 이 깊은 외로움은 진짜인가, 아니면 나 자신과 연결되지 못해서 오는 것인가?"' },
             { id: '02', label: 'RECURSIVE PROMPT', q: '"나는 언제 마지막으로 온전히 나 자신으로 있었는가? 그때 어떤 느낌이었는가?"' },
@@ -1424,6 +1515,11 @@ const DEFAULT_COACHING: IlganCoaching = {
         id: 'D-PENDING',
         tag: '분석 대기',
         symptoms: ['사주 데이터 입력 후 분석됩니다.'],
+    },
+    metaCode: {
+        id: 'M-PENDING',
+        tag: '분석 대기',
+        values: ['사주 데이터 입력 후 분석됩니다.'],
     },
     neuralPrompts: [
         { id: '01', label: 'UNIVERSAL PROMPT', q: '"지금 이 순간, 나는 내 감정의 주인인가, 아니면 감정에 이끌리는 관객인가?"' },
@@ -1579,7 +1675,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                         exit={{ opacity: 0, y: '100%' }}
                         transition={{ type: 'spring', stiffness: 280, damping: 32 }}
                         className="fixed inset-x-0 bottom-0 z-[90] flex flex-col"
-                        style={{ maxHeight: '95dvh', top: '5dvh' }}
+                        style={{ maxHeight: '100dvh', top: 0 }}
                     >
                         <div
                             ref={scrollRef}
@@ -1896,6 +1992,30 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         </div>
                                     </div>
                                 </section>
+
+                                {/* ── Phase 2.5: Meta Code ── */}
+                                {coaching.metaCode && (
+                                    <section>
+                                        <SectionHeader phase="Phase 2.5 ✨" title="Meta Code (메타코드)" />
+                                        <div className="border-l-4 border-indigo-500 p-5 space-y-4 rounded-r-xl" style={{ background: 'rgba(99,102,241,0.05)' }}>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs font-bold text-indigo-400">META CODE: {coaching.metaCode.id}</span>
+                                                <span className="px-2 py-0.5 bg-indigo-500 text-white text-[10px] font-bold rounded">{coaching.metaCode.tag}</span>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-gray-500 uppercase mb-2">수용과 전념 수칙 (ACT Guidelines):</p>
+                                                <ul className="space-y-2">
+                                                    {coaching.metaCode.values.map((v, i) => (
+                                                        <li key={i} className="flex gap-2 text-xs text-gray-300">
+                                                            <span className="text-indigo-400 shrink-0">•</span>
+                                                            {v}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </section>
+                                )}
 
                                 {/* ── Phase 3: Neural Hacking ── */}
                                 <section>

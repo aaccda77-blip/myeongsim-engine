@@ -27,6 +27,17 @@ export default function CoverView() {
     const [viewMode, setViewMode] = useState<'form' | 'result'>('form');
     const [previewPillars, setPreviewPillars] = useState<any>(null);
 
+    // [SYNC-HYDRATION] 로컬 스토리지 복원 시 상태 동기화
+    useEffect(() => {
+        if (reportData) {
+            if (reportData.userName) setName(reportData.userName);
+            if (reportData.birthDate) setBirthDate(reportData.birthDate);
+            if (reportData.birthTime) setBirthTime(reportData.birthTime);
+            if (reportData.gender) setGender(reportData.gender);
+            if (reportData.meta?.calendarType) setCalendarType(reportData.meta.calendarType);
+        }
+    }, [reportData]);
+
     const handleCheck = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -230,7 +241,7 @@ export default function CoverView() {
                                                 key={type}
                                                 type="button"
                                                 onClick={() => setCalendarType(type as any)}
-                                                className={`px - 3 py - 1 text - [10px] rounded - md font - medium transition - colors ${calendarType === type
+                                                className={`px-3 py-1 text-[10px] rounded-md font-medium transition-colors ${calendarType === type
                                                     ? 'bg-primary-olive text-white'
                                                     : 'text-gray-500 hover:text-gray-300'
                                                     } `}
@@ -294,7 +305,7 @@ export default function CoverView() {
                                         key={g}
                                         type="button"
                                         onClick={() => setGender(g as any)}
-                                        className={`py - 4 rounded - lg font - bold text - sm transition - all ${gender === g
+                                        className={`py-4 rounded-lg font-bold text-sm transition-all ${gender === g
                                             ? 'bg-white text-deep-slate shadow-sm'
                                             : 'bg-secondary-slate/50 border border-white/10 text-gray-400'
                                             } `}

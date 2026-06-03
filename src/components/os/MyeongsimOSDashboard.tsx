@@ -9,16 +9,16 @@ import PotentialDrive from './PotentialDrive';
 import OSUpgradeLog from './OSUpgradeLog';
 import DietProtocol from './DietProtocol';
 import AddictionProtocol from './AddictionProtocol';
-import SajuProtocol from './SajuProtocol';
 
-type TabType = 'desync' | 'debug' | 'potential' | 'log' | 'diet' | 'addiction' | 'saju';
+type TabType = 'desync' | 'debug' | 'potential' | 'log' | 'diet' | 'addiction';
 
 interface Props {
   onClose?: () => void;
   isModal?: boolean;
+  onChatIntent?: (intent: string, prompt: string) => void;
 }
 
-export default function MyeongsimOSDashboard({ onClose, isModal = false }: Props) {
+export default function MyeongsimOSDashboard({ onClose, isModal = false, onChatIntent }: Props) {
   const [activeTab, setActiveTab] = useState<TabType>('desync');
   const [mounted, setMounted] = useState(false);
 
@@ -34,7 +34,6 @@ export default function MyeongsimOSDashboard({ onClose, isModal = false }: Props
       case 'log': return <OSUpgradeLog />;
       case 'diet': return <DietProtocol />;
       case 'addiction': return <AddictionProtocol />;
-      case 'saju': return <SajuProtocol />;
       default: return <DeSyncEgo />;
     }
   };
@@ -46,7 +45,6 @@ export default function MyeongsimOSDashboard({ onClose, isModal = false }: Props
     { id: 'log', label: '업그레이드 로그', icon: <Cpu className="w-4 h-4" /> },
     { id: 'diet', label: '바디 디버깅', icon: <HeartPulse className="w-4 h-4" /> },
     { id: 'addiction', label: '금연·금주', icon: <CigaretteOff className="w-4 h-4" /> },
-    { id: 'saju', label: '운명 포맷', icon: <Orbit className="w-4 h-4" /> },
   ];
 
   const content = (
