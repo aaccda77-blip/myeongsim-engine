@@ -145,8 +145,9 @@ const SECTIONS_108 = [
 // 12운성(Twelve Changs) 및 12신살(Twelve Shinsals) 계산 헬퍼 함수
 // ─────────────────────────────────────────────────────────────
 function get12Unseong(dayStem: string, branch: string): string {
-  const gan = dayStem.trim()[0];
-  const zhi = branch.trim()[0];
+  const gan = (dayStem || '').trim()[0];
+  const zhi = (branch || '').trim()[0];
+  if (!gan || !zhi) return '건록';
   
   const ganMap: Record<string, string> = {
     '갑': '甲', '을': '乙', '병': '丙', '정': '丁', '무': '戊', '기': '己', '경': '庚', '신': '辛', '임': '壬', '계': '癸',
@@ -182,8 +183,8 @@ function get12Shinsal(basisBranch: string, targetBranch: string): string {
     '子': '子', '丑': '丑', '寅': '寅', '卯': '卯', '辰': '辰', '巳': '巳', '午': '午', '未': '未', '申': '申', '酉': '酉', '戌': '戌', '亥': '亥'
   };
 
-  const basis = zhiMap[basisBranch.trim()[0]] || '子';
-  const target = zhiMap[targetBranch.trim()[0]] || '子';
+  const basis = zhiMap[(basisBranch || '').trim()[0]] || '子';
+  const target = zhiMap[(targetBranch || '').trim()[0]] || '子';
 
   const zhiOrder = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
   const shinsalList = ['지살', '년살', '월살', '망신', '장성', '반안', '역마', '육해', '화개', '겁살', '재살', '천살'];
