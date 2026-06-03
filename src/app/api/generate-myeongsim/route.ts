@@ -174,23 +174,25 @@ function getFrameworkPromptForPage(pageId: string, sajuProfile: any): { title: s
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, pageId, sajuData, sajuProfile } = await req.json();
+    const { userId, pageId, sajuData, sajuProfile, force } = await req.json();
 
     if (!userId || !pageId) {
       return NextResponse.json({ success: false, error: 'userId와 pageId가 필요합니다.' }, { status: 400 });
     }
 
     // 1. 수파베이스 캐시 조회 (Cache Hit Check)
-    const { data: cacheData, error: cacheError } = await supabase
-      .from('report_contents')
-      .select('generated_text')
-      .eq('user_id', userId)
-      .eq('page_id', pageId)
-      .maybeSingle();
+    if (!force) {
+      const { data: cacheData, error: cacheError } = await supabase
+        .from('report_contents')
+        .select('generated_text')
+        .eq('user_id', userId)
+        .eq('page_id', pageId)
+        .maybeSingle();
 
-    if (cacheData && !cacheError) {
-      console.log(`✨ [Cache Hit] user_id: ${userId}, page_id: ${pageId}`);
-      return NextResponse.json({ success: true, text: cacheData.generated_text });
+      if (cacheData && !cacheError) {
+        console.log(`✨ [Cache Hit] user_id: ${userId}, page_id: ${pageId}`);
+        return NextResponse.json({ success: true, text: cacheData.generated_text });
+      }
     }
 
     console.log(`⚡ [Cache Miss] Generating new content via Gemini...`);

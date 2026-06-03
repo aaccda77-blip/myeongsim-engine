@@ -275,7 +275,7 @@ export default function MyeongsimCoachingDashboard({
     setFetchingCache(false);
   };
 
-  const handleGenerateSection = async (sectionId: string, title: string) => {
+  const handleGenerateSection = async (sectionId: string, title: string, force = false) => {
     setIsSectionLoading(true);
     const userId = userProfile?.id || (reportData as any)?.userId || 'guest';
 
@@ -291,7 +291,8 @@ export default function MyeongsimCoachingDashboard({
             dayMasterChar: activeSaju.dayMasterChar,
             dayMasterAnalogy: metaphor.title,
             sajuGanji: metaphor.sub
-          }
+          },
+          force
         })
       });
 
@@ -1269,7 +1270,7 @@ export default function MyeongsimCoachingDashboard({
                     <button
                       onClick={() => {
                         const item = SECTIONS_108.flatMap(p => p.items).find(i => i.id === selectedSection);
-                        if (item) handleGenerateSection(item.id, item.title);
+                        if (item) handleGenerateSection(item.id, item.title, true);
                       }}
                       className="mt-6 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/60 py-2.5 px-4 rounded-lg flex items-center justify-center gap-1.5 self-end transition-all animate-pulse"
                     >
