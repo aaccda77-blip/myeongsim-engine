@@ -100,56 +100,77 @@ export default function MyeongsimCoachingDashboard({
   
   const { reportData } = useReportStore();
 
-  // ── [실시간 만세력 연산] ──
-  const activeSaju = useMemo(() => {
-    const rawDate = reportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date;
-    const rawTime = reportData?.birthTime || userProfile?.birthTime || userProfile?.birth_time || '12:00';
-    const calType = reportData?.meta?.calendarType || userProfile?.calendar_type || 'solar';
-    const gender = reportData?.gender || userProfile?.gender || 'male';
+  // ── [실시간 만세력 연산 & Hydration 락 해소 장치] ──
+  const [activeSaju, setActiveSaju] = React.useState<any>({
+    dayMaster: "갑목",
+    dayMasterChar: "甲",
+    fourPillars: {
+      year: { gan: "甲", ji: "子" },
+      month: { gan: "甲", ji: "子" },
+      day: { gan: "甲", ji: "子", char: "甲" },
+      time: { gan: "甲", ji: "子" }
+    },
+    elements: { wood: 1, fire: 0, earth: 0, metal: 0, water: 0 },
+    tenGods: { self: 1, output: 0, wealth: 0, power: 0, resource: 0 }
+  });
 
-    let finalSaju = null;
+  // [Hyper-Pass] 로컬 스토리지 다이렉트 파싱 폴백
+  const getSajuFromLocalStorage = (): any => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const storageStr = localStorage.getItem('myeongsim-report-storage');
+      if (storageStr) {
+        const parsed = JSON.parse(storageStr);
+        return parsed?.state?.reportData || null;
+      }
+    } catch (e) {
+      console.warn('⚠️ [Dashboard] 스토리지 파싱 실패:', e);
+    }
+    return null;
+  };
 
-    if (rawDate) {
-      try {
-        const result = calculateSaju(rawDate, rawTime, calType, gender);
-        if (result && result.success) {
-          const stats = calculateSajuStats(result.fourPillars, result.dayMasterChar);
-          finalSaju = {
-            dayMaster: result.dayMaster,
-            dayMasterChar: result.dayMasterChar,
-            fourPillars: result.fourPillars,
-            elements: stats.ohaeng,
-            tenGods: stats.tenGods,
-            currentDaewoon: result.currentDaewoon || null,
-            currentSeun: result.currentSeun || null
-          };
+  React.useEffect(() => {
+    if (isOpen) {
+      const localData = getSajuFromLocalStorage();
+      const finalReportData = reportData || localData;
+
+      const rawDate = finalReportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
+      const rawTime = finalReportData?.birthTime || userProfile?.birthTime || userProfile?.birth_time || '12:00';
+      const calType = finalReportData?.meta?.calendarType || userProfile?.calendar_type || 'solar';
+      const gender = finalReportData?.gender || userProfile?.gender || 'male';
+
+      let finalSaju = null;
+
+      if (rawDate) {
+        try {
+          const result = calculateSaju(rawDate, rawTime, calType, gender);
+          if (result && result.success) {
+            const stats = calculateSajuStats(result.fourPillars, result.dayMasterChar);
+            finalSaju = {
+              dayMaster: result.dayMaster,
+              dayMasterChar: result.dayMasterChar,
+              fourPillars: result.fourPillars,
+              elements: stats.ohaeng,
+              tenGods: stats.tenGods,
+              currentDaewoon: result.currentDaewoon || null,
+              currentSeun: result.currentSeun || null
+            };
+            console.log('📊 [Dashboard] 실시간 사주 매칭 연동 성공! 생년월일:', rawDate);
+          }
+        } catch (e) {
+          console.warn('⚠️ [Dashboard] 실시간 사주 계산 오류:', e);
         }
-      } catch (e) {
-        console.warn('⚠️ 대시보드 실시간 사주 계산 실패:', e);
+      }
+
+      if (!finalSaju) {
+        finalSaju = finalReportData?.saju || userProfile?.saju;
+      }
+
+      if (finalSaju) {
+        setActiveSaju(finalSaju);
       }
     }
-
-    if (!finalSaju) {
-      finalSaju = reportData?.saju || userProfile?.saju;
-    }
-
-    // 최종 폴백 (갑자일주 기본값)
-    if (!finalSaju) {
-      finalSaju = {
-        dayMaster: "갑목",
-        dayMasterChar: "甲",
-        fourPillars: {
-          year: { gan: "甲", ji: "子" },
-          month: { gan: "甲", ji: "子" },
-          day: { gan: "甲", ji: "子", char: "甲" },
-          time: { gan: "甲", ji: "子" }
-        },
-        elements: { wood: 1, fire: 0, earth: 0, metal: 0, water: 0 },
-        tenGods: { self: 1, output: 0, wealth: 0, power: 0, resource: 0 }
-      };
-    }
-    return finalSaju;
-  }, [reportData, userProfile]);
+  }, [isOpen, reportData, userProfile]);
 
   // ── 1. 운명 DNA 메타포 계산 ──
   const dayPillar = activeSaju.fourPillars?.day || {};
@@ -561,20 +582,13 @@ export default function MyeongsimCoachingDashboard({
   );
 
   // 모달로 열릴 경우
-  if (isOpen) {
-    return (
-      <div className="fixed inset-0 z-[1050] overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-slate-200">
-          {content}
-        </div>
-      </div>
-    );
-  }
+  if (!isOpen) return null;
 
-  // 기본 컴포넌트 렌더링
   return (
-    <div className="min-h-screen bg-[#FDFDFB] py-10 px-4 sm:px-6 lg:px-8 font-sans antialiased selection:bg-amber-200">
-      {content}
+    <div className="fixed inset-0 z-[1050] overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-slate-200">
+        {content}
+      </div>
     </div>
   );
 }
