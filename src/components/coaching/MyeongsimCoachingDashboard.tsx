@@ -87,6 +87,176 @@ const COLOR_MAP: Record<string, { adjective: string; emoji: string }> = {
   '임': { adjective: '검은 파도의', emoji: '🌊' }, '계': { adjective: '맑은 오아시스의', emoji: '💧' }
 };
 
+// ─────────────────────────────────────────────────────────────
+// 🧬 자아 OS 디버깅 10대 일간별 멘탈 스펙트럼 딕셔너리
+// ─────────────────────────────────────────────────────────────
+const OS_DEBUGGING_DICTIONARY: Record<string, {
+  darkCode: string;
+  darkTitle: string;
+  darkDesc: string;
+  neuralCode: string;
+  neuralTitle: string;
+  neuralDesc: string;
+  metaCode: string;
+  metaTitle: string;
+  metaDesc: string;
+  socratic: string;
+  recursive: string;
+  metaQuestion: string;
+  awareness: string;
+}> = {
+  '甲': {
+    darkCode: 'DRK-WOOD-01',
+    darkTitle: '완벽주의적 억압과 과잉 주권의 그림자',
+    darkDesc: '타인의 통제를 견디지 못하고 스스로를 항상 영웅적 리더로 몰아세우는 완고함. 현실의 한계를 마주할 때 유연하게 굽히지 못하고 한순간에 무너져 내리는 자가파괴(Catastrophic collapse) 기전.',
+    neuralCode: 'NRL-WOOD-01',
+    neuralTitle: '전두엽-자율신경계 과부하 루프',
+    neuralDesc: '새로운 기획과 추진에 집착할 때 전전두엽(PFC)과 교감신경계가 과전압으로 치솟아, 극심한 불면과 승모근 경직, 만성 두통을 유발하는 투쟁-도피성 신경망 루프.',
+    metaCode: 'MET-WOOD-01',
+    metaTitle: '유연한 삼림 상생 주파수',
+    metaDesc: '독자적으로 뚫고 나가려는 고립 자아에서 벗어나, 대지의 지지력을 믿고 주변 자원들과 숲을 이루어 유연하고 부드럽게 수용하며 성장하는 본질 코드.',
+    socratic: '내가 지금 억지로 밀어붙이려는 방식이 과연 유일하고 합리적인가? 이 완고함이 내 장기적 평온에 주는 효용은 무엇인가?',
+    recursive: '나는 어릴 적 누구로부터 "강해야만 살아남고 약함을 보이면 즉시 꺾인다"는 억압적 소스코드를 다운로드 받았는가?',
+    metaQuestion: '지금 이 막막하고 무거운 부담감 너머에서, 에고의 모든 분투를 가만히 연민으로 안아주는 관찰자 자아의 크기는 얼마나 광활한가?',
+    awareness: '"어떻게든 돌파해야 한다"는 긴장감 너머, 지금 아무 요구 없이 고요하게 숨 쉬고 있는 고요한 텅 빈 의식 그 자체에 온전히 안주해 보라.'
+  },
+  '乙': {
+    darkCode: 'DRK-WOOD-02',
+    darkTitle: '과도한 타인 동조와 의존적 불안의 늪',
+    darkDesc: '생존과 안정을 위해 타인에게 과도하게 유착되어 눈치를 보거나 비위를 맞추며, 정작 자기 주권과 본질적 색깔을 잃어버리는 자기 지움.',
+    neuralCode: 'NRL-WOOD-02',
+    neuralTitle: '변연계 과민 거절 경보 회로',
+    neuralDesc: '관계 속 거절이나 거부의 미세한 신호에 편도체가 즉각 과잉 경보를 울려 세로토닌을 급감시키고, 만성 대인불안, 신경성 위장 장애, 신체 부종을 유발하는 회로.',
+    metaCode: 'MET-WOOD-02',
+    metaTitle: '바람에 춤추는 잡초의 자생 주파수',
+    metaDesc: '어떤 강풍에도 흔들릴지언정 절대 뿌리째 뽑히지 않는 질긴 자생력을 깨닫고, 타인의 평가에 얽매이지 않는 독립적이고 자유로운 주권을 회복하는 코드.',
+    socratic: '타인의 기분을 맞추지 못하면 내 가치와 생존이 무너질 것이라는 신념이 진실인가? 타인의 평가가 내 실존을 위협할 물리적 권한이 있는가?',
+    recursive: '관계 속에서 버림받을지 모른다는 이 극심한 불안의 코드는 과거 유년 시절 어떤 대상과의 분리 불안과 상처에서 기인했는가?',
+    metaQuestion: '남들의 시선이라는 가상의 안개를 뚫고 올라와, 그 어떤 바람에도 흔들리지 않는 내면의 맑은 실존 자체를 느껴보라.',
+    awareness: '남을 탐색하고 살피려는 촉각을 가만히 거두어들이고, 지금 이 순간 오롯이 지각하고 있는 내 안의 조용하고 맑은 주체 자체에 머물라.'
+  },
+  '丙': {
+    darkCode: 'DRK-FIRE-01',
+    darkTitle: '과잉 발산과 자가 연소(Burnout)의 불씨',
+    darkDesc: '모든 사람의 슬픔과 문제를 자신이 다 비추고 해결해야 한다는 메시아적 책임감. 끊임없이 에너지를 발산하다 결국 텅 비어 재만 남는 자가 소멸 기전.',
+    neuralCode: 'NRL-FIRE-01',
+    neuralTitle: '도파민 폭주 및 부신 피로 악순환',
+    neuralDesc: '환호와 열정적 성취 자극에 뇌가 과도하게 반응하여 도파민을 과다 소모하고, 부신 피질 호르몬 고갈로 심각한 무기력와 만성 피로를 부르는 신경계 고갈 루프.',
+    metaCode: 'MET-FIRE-01',
+    metaTitle: '자비의 훈훈한 자연 복사열',
+    metaDesc: '억지로 타오르려 하지 않아도, 존재 자체로 세상과 타인을 따뜻하게 치유하고 생동감을 불어넣는 잔잔하고 깊은 온도의 자비 주파수.',
+    socratic: '내가 매 순간 밝게 타오르지 않으면 정말 세상이 어둠에 잠기는가? 내가 잠시 빛을 꺼두고 어둠 속에 머물 때 일어나는 실제 비극은 무엇인가?',
+    recursive: '내가 끊임없이 성과를 내거나 타인을 돕지 않으면 가치 없는 존재가 될 것이라는 오래된 인정 강박은 누구의 기대에 보답하려는 것인가?',
+    metaQuestion: '타오르는 불꽃의 열기 너머, 어떤 온도나 모양에도 구속받지 않는 맑고 시원한 의식의 하늘을 가만히 내려다보라.',
+    awareness: '타오르고 싶은 충동과 꺼져가는 허무함, 이 모든 감정의 기복을 있는 그대로 비춰주고 있는 투명하고 고요한 마음의 거울에 안착하라.'
+  },
+  '丁': {
+    darkCode: 'DRK-FIRE-02',
+    darkTitle: '응축된 원망과 보이지 않는 서늘한 소유욕',
+    darkDesc: '겉으로는 다정하고 헌신적인 희생자의 모습을 띠지만, 무의식 밑바닥에서는 타인에 대한 만성적 서운함과 통제 불가능한 차가운 소유욕을 감추어두는 그림자 기전.',
+    neuralCode: 'NRL-FIRE-02',
+    neuralTitle: '세로토닌 누출 및 대뇌피질 야간 과열',
+    neuralDesc: '서운함과 분노를 억누르는 탓에 밤이 되어도 대뇌피질이 식지 못하고 세로토닌 결핍을 초래하여, 야간 불안과 만성 불면증을 유발하는 과열 회로.',
+    metaCode: 'MET-FIRE-02',
+    metaTitle: '지혜의 고결한 등대 주파수',
+    metaDesc: '상대를 소유하고 통제하려는 집착을 내려놓고, 칠흑 같은 밤바다에서 오직 방향만을 묵묵히 잡아주는 초연하고 지혜로운 등대의 힘을 실현하는 코드.',
+    socratic: '상대가 내 기대대로 움직이지 않는 것이 정말 그 사람의 죄인가? 내 원망이 내 마음을 태우는 것 외에 내 삶에 무슨 실용성이 있는가?',
+    recursive: '내 안의 깊은 서운함은 사실 "나를 제발 알아주고 사랑해달라"고 외치는 내면의 어린 상처가 울부짖는 메아리가 아닌가?',
+    metaQuestion: '미움과 서운함의 비바람 속에서도 꺼지지 않는, 내 가슴 한편에 묵묵히 켜져 있는 고요하고 따뜻한 영혼의 불빛을 마주해보라.',
+    awareness: '원망하는 감정과 그것을 억누르는 긴장 자체를 전혀 방해받지 않고 있는 그대로 비춰주는, 평온하고 텅 빈 관찰자의 자리로 돌아가라.'
+  },
+  '戊': {
+    darkCode: 'DRK-EARTH-01',
+    darkTitle: '자아 비대화와 유연성 거부의 바위 장벽',
+    darkDesc: '태산 같은 권위와 신뢰를 지켜야 한다는 강박 때문에 자신의 사소한 과오나 취약성을 절대로 인정하지 않고 타협 없이 고립되어 버리는 자존심의 감옥.',
+    neuralCode: 'NRL-EARTH-01',
+    neuralTitle: '비장-소화계 및 뇌 노폐물 정체 루프',
+    neuralDesc: '생각의 순환이 일어나지 않고 꽉 막혀, 대뇌 피질의 림프 배출이 저하되고 만성 위장 장애, 신체 긴장, 머리가 돌처럼 무거운 피로 회로.',
+    metaCode: 'MET-EARTH-01',
+    metaTitle: '만물을 길러내는 광활한 수용 주파수',
+    metaDesc: '변화에 버티고 저항하려는 힘을 내려놓고, 대지처럼 온갖 계절의 변화와 비바람을 있는 그대로 품어 자양분으로 삼는 회복 코드.',
+    socratic: '내 고집을 꺾고 패배를 인정하면 내 존재 가치가 완전히 소멸하는가? 오히려 생각을 바꾸는 유연함이 더 큰 번영을 가져오진 않는가?',
+    recursive: '나는 왜 항상 "완벽하게 굳건하고 끄떡없는 산맥"이어야만 하는가? 내 취약함을 드러내는 것이 정말 파멸을 부른다고 생각하는가?',
+    metaQuestion: '이 바위 장벽 같은 내 생각의 고집 너머에서, 흘러가는 바람과 비를 조용히 관찰하며 받아들이는 거대하고 우주적인 자아를 보라.',
+    awareness: '변화에 저항하며 묵직하게 버티고 있는 에고의 저항감 자체를, 아무런 무게감 없이 투명하게 알아차리고 있는 맑은 공간에 머물라.'
+  },
+  '己': {
+    darkCode: 'DRK-EARTH-02',
+    darkTitle: '타인 경계 침범과 끝없는 불안의 잡초',
+    darkDesc: '주변인들의 문제를 본인의 일처럼 참견하고 기우를 키우며, 감정 쓰레기통을 자처하다가 결국 원망과 배신감에 잠식되는 자기 파괴 기전.',
+    neuralCode: 'NRL-EARTH-02',
+    neuralTitle: '과사고 뇌하수체 과부하 및 신경 긴장 루프',
+    neuralDesc: '걱정이 꼬리를 물고 이어져 뇌세포의 에너지가 고갈되고 림프 순환 부전, 기력의 급격한 저하를 유발하는 만성 스트레스 회로.',
+    metaCode: 'MET-EARTH-02',
+    metaTitle: '경계가 명확한 아름다운 정원',
+    metaDesc: '타인의 고통을 억지로 대신 지려 하지 않고, 건강한 자아의 울타리를 세워 오직 꽃향기로 세상을 치유하는 건강한 주파수 정렬 코드.',
+    socratic: '내가 주변 사람들을 위해 안달하고 조바심 내는 것이 그들에게 정말 도움이 되는가? 오히려 그들의 자생력을 해치진 않는가?',
+    recursive: '타인을 걱정하고 챙기려는 소스코드는 사실 "쓸모 있는 사람이 되어 버려지지 않겠다"는 원초적 공포의 대리 만족인가?',
+    metaQuestion: '타인의 감정과 불행은 내 영혼의 울타리 바깥에서 일어나는 비바람일 뿐임을 자각하고, 맑게 가꾸어진 내 뜰에서 편안히 머물라.',
+    awareness: '불안해하며 타인을 챙기려 하는 나 자신의 생각들을 따뜻한 자비의 눈으로 조용히 굽어보는, 평온하고 빈 알아차림의 품에 안주하라.'
+  },
+  '庚': {
+    darkCode: 'DRK-METAL-01',
+    darkTitle: '엄격한 흑백논리와 무자비한 관계 숙청',
+    darkDesc: '자신만의 철칙으로 타인을 가혹하게 검열하고, 선에 맞지 않으면 칼로 자르듯 냉혹하게 단절하여 결국 깊은 고립과 고독을 자초하는 어둠.',
+    neuralCode: 'NRL-METAL-01',
+    neuralTitle: '투쟁-도피 생존 반응 및 근골격 긴장성 회로',
+    neuralDesc: '정의와 질서를 강제하려는 탓에 척추 기립근, 턱관절, 승모근이 만성적으로 굳어 긴장성 두통과 뇌압 상승을 부르는 긴장성 뇌-근육 루프.',
+    metaCode: 'MET-METAL-01',
+    metaTitle: '포용을 머금은 굳건한 정의의 주파수',
+    metaDesc: '상처를 입히는 칼날을 거두고, 투박한 원석이 불 속에서 단련되어 만인에게 유익한 위대한 도구로 재탄생하는 성숙의 제련 주파수.',
+    socratic: '온 세상이 내 규칙대로 완벽하게 통제되어야만 내가 안전한가? 타인의 모호함과 실수를 허용하는 것이 내 삶을 덜 피곤하게 만들지 않는가?',
+    recursive: '내가 이토록 차갑고 엄격한 칼날 방어벽을 세운 것은, 어릴 적 "틈을 보이거나 완벽하지 않으면 생존이 위협받았다"는 상처 때문인가?',
+    metaQuestion: '내 날카로운 통제 욕구와 원칙 너머에서, 세상의 다채로운 불완전함을 조용히 지켜보고 허용해주는 드넓은 의식의 하늘을 보라.',
+    awareness: '"저것은 틀렸다"라고 규정하며 칼을 겨누는 내면의 생각 자체를, 그저 묵묵히 흘려보내고 비추는 맑고 평온한 순수 자각으로 존재하라.'
+  },
+  '辛': {
+    darkCode: 'DRK-METAL-02',
+    darkTitle: '극도의 예민한 유리벽과 완벽주의의 그림자',
+    darkDesc: '타인의 사소한 비평이나 태도에도 유리 파편처럼 내면이 깨져, 칼날 같은 독설을 품거나 세상으로부터 스스로를 가두어두는 예민성 기전.',
+    neuralCode: 'NRL-METAL-02',
+    neuralTitle: '대뇌피질 초감각 과부하 및 편도체 폭주 루프',
+    neuralDesc: '시각, 청각, 정서적 오감이 너무 민감하게 열려 있어 일상 자극에도 뇌의 편도체가 비명을 지르며 신경계를 순식간에 탈진시키는 소진 회로.',
+    metaCode: 'MET-METAL-02',
+    metaTitle: '영원의 빛을 뿜는 다이아몬드 지혜',
+    metaDesc: '사소한 자극에 쉽게 흠집 나는 얇은 유리 벽 자아를 내려놓고, 온 세상을 영롱하고 투명하게 비추는 굳건한 다이아몬드 영혼 코드를 실현하는 것.',
+    socratic: '상대의 무심한 반응이 정말 나를 깎아내리기 위한 공격인가? 내가 스스로 유리 파편을 쥐고 내 살을 찌르고 있는 것은 아닌가?',
+    recursive: '내가 가시를 세우고 철벽을 치는 무의식 로그는 사실 "내 여린 본성을 더는 다치게 하고 싶지 않다"는 깊은 상처의 눈물겨운 몸부림인가?',
+    metaQuestion: '상처 입을 수 있는 것은 오직 내 에고(껍질)일 뿐이며, 내 가슴 안의 본래 영혼은 그 어떤 칼날로도 흠집 낼 수 없는 불멸의 보석임을 깨달으라.',
+    awareness: '예민하게 솟아오르는 가시와 아픈 느낌들을 가만히 안아주며, 그것들이 생겼다 사라지는 투명한 마음의 우주 공간 자체에 머물라.'
+  },
+  '壬': {
+    darkCode: 'DRK-WATER-01',
+    darkTitle: '심해 속에 고립된 깊은 감정 회피와 고독',
+    darkDesc: '자신의 슬픔과 약점을 깊은 무의식 밑바닥에 가두어둔 채 묵묵부답으로 일관하다, 속에서 썩어 터질 때 관계를 일시에 유실시키는 회피적 그림자.',
+    neuralCode: 'NRL-WATER-01',
+    neuralTitle: '신경 내분비계 침전 및 기력 다운 루프',
+    neuralDesc: '감정을 외부로 건강하게 방출하지 못해 신체 림프계와 내분비계의 흐름이 막히고, 만성 피로와 심리적 침체에 잠식당하는 저주파 순환 회로.',
+    metaCode: 'MET-WATER-01',
+    metaTitle: '만물을 연결하고 정화하는 대양 주파수',
+    metaDesc: '어둠에 가두어두던 물결을 맑게 흘려보내어 온 세상과 자연스럽게 교류하고, 스스로를 정화하는 광활한 대양의 지혜 코드를 가동하는 것.',
+    socratic: '내 취약함과 아픔을 솔직히 고백했을 때 정말 파멸이 찾아오는가? 꽁꽁 숨겨두는 것이 오히려 주변 사람들을 지치게 만들진 않는가?',
+    recursive: '내가 속마음을 보이면 사람들이 나를 버리거나 만만하게 볼 것이라는 깊은 불신은 과거 어떤 상처에서 시작되었는가?',
+    metaQuestion: '내 안에 출렁이는 아픈 기억들이 깊은 바다 표면의 일시적인 파도일 뿐임을 깨닫고, 더 광활하고 깊은 바다 자체가 되어라.',
+    awareness: '심해 속에 묻어둔 묵직한 응어리들을 억누르지 않고, 그것들을 있는 그대로 흔쾌히 품고 흘려보내는 텅 빈 의식 공간에 안주하라.'
+  },
+  '癸': {
+    darkCode: 'DRK-WATER-02',
+    darkTitle: '극세사 감정 롤러코스터와 만성 조울 기전',
+    darkDesc: '외부의 미세한 기류나 타인의 감정 파동에도 가슴 속 빗방울이 요동쳐, 하루에도 수십 번씩 불안와 환희를 오가는 롤러코스터적 자기 잠식.',
+    neuralCode: 'NRL-WATER-02',
+    neuralTitle: '부신피질 호르몬 만성 고갈 루프',
+    neuralDesc: '사소한 감정 자극에도 아드레날린 수치가 요동쳐, 자율신경계가 과민해지고 늘 극심한 심리 피로감과 신경불안에 시달리는 소진성 뇌 회로.',
+    metaCode: 'MET-WATER-02',
+    metaTitle: '대지를 적시는 치유의 봄비 주파수',
+    metaDesc: '기분의 일렁임에 흔들리지 않고, 하늘에서 내려와 마른 대지를 촉촉하게 적셔 온갖 생명을 피워내는 맑고 치유적인 프리즘 영감 코드.',
+    socratic: '지금 요동치는 이 감정이 정말 내 실존을 삼키는 대재앙인가? 아니면 그저 잠시 내면을 지나가는 봄소나기 같은 구름의 흔적인가?',
+    recursive: '나는 왜 감정의 출렁임을 내 의지로 완벽하게 통제하고 억눌러야 한다는 강박에 갇혀 괴로워하고 있는가?',
+    metaQuestion: '감정이라는 구름이 끼고 걷히는 푸른 하늘처럼, 언제나 그 배후에서 맑고 투명하게 개어 있는 진짜 나의 의식 상태를 마주하라.',
+    awareness: '출렁이는 물방울และ 흩날리는 감정들의 파동 너머, 그 모든 흔들림을 소리 없이 안고 비춰주는 광활하고 고요한 자각에 온전히 머물라.'
+  }
+};
+
 const SECTIONS_108 = [
   {
     part: "Part 0. 나를 알아보기 : 성격·기질·장단점 (p. 5 ~ 32)",
@@ -986,6 +1156,105 @@ export default function MyeongsimCoachingDashboard({
               </p>
             </div>
           </div>
+
+          {/* ==========================================
+              자아 OS 디버깅 센터: 다크/뉴럴/메타 코드 & 4대 치유 문답 (동적 바인딩)
+              ========================================== */}
+          {(() => {
+            const dmChar = (activeSaju?.dayMasterChar || '甲')[0];
+            const debugData = OS_DEBUGGING_DICTIONARY[dmChar] || OS_DEBUGGING_DICTIONARY['甲'];
+            
+            return (
+              <div className="w-full bg-[#181716] text-[#F3EFE9] p-6 sm:p-8 rounded-3xl border border-amber-900/40 shadow-xl mb-8 relative overflow-hidden text-left">
+                {/* 배경 은은한 오렌지 그라데이션 광원 */}
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div className="text-center sm:text-left mb-6 relative z-10">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 border border-amber-500/40 text-amber-400 text-[10px] font-black rounded-full uppercase tracking-widest">
+                    ⚙️ Ego OS Debugging Terminal
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-black font-serif mt-3 tracking-tight text-white">
+                    {premiumSajuInfo.name}님의 자아 OS 핵심 디버깅 스펙트럼
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">
+                    타고난 일간({dmChar}) 기질 주파수에서 누출되는 무의식적 결함과 자가 파괴 메커니즘을 규명하고 뇌 신경망을 재정렬합니다.
+                  </p>
+                </div>
+
+                {/* 3대 코드 모듈 카드 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 relative z-10">
+                  {/* 다크코드 */}
+                  <div className="bg-white/[0.03] border border-white/10 p-5 rounded-2xl relative group hover:border-red-500/40 transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-[10px] font-bold text-red-400 bg-red-950/40 border border-red-900/30 px-2 py-0.5 rounded">
+                          DARK CODE
+                        </span>
+                        <span className="text-xs text-gray-500 font-mono">{debugData.darkCode}</span>
+                      </div>
+                      <h4 className="text-sm font-bold text-white mb-2">{debugData.darkTitle}</h4>
+                    </div>
+                    <p className="text-xs text-gray-400 leading-relaxed mt-2">{debugData.darkDesc}</p>
+                  </div>
+
+                  {/* 뉴럴코드 */}
+                  <div className="bg-white/[0.03] border border-white/10 p-5 rounded-2xl relative group hover:border-cyan-500/40 transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-[10px] font-bold text-cyan-400 bg-cyan-950/40 border border-cyan-900/30 px-2 py-0.5 rounded">
+                          NEURAL CODE
+                        </span>
+                        <span className="text-xs text-gray-500 font-mono">{debugData.neuralCode}</span>
+                      </div>
+                      <h4 className="text-sm font-bold text-white mb-2">{debugData.neuralTitle}</h4>
+                    </div>
+                    <p className="text-xs text-gray-400 leading-relaxed mt-2">{debugData.neuralDesc}</p>
+                  </div>
+
+                  {/* 메타코드 */}
+                  <div className="bg-white/[0.03] border border-white/10 p-5 rounded-2xl relative group hover:border-amber-500/40 transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-[10px] font-bold text-amber-400 bg-amber-950/40 border border-amber-900/30 px-2 py-0.5 rounded">
+                          META CODE
+                        </span>
+                        <span className="text-xs text-gray-500 font-mono">{debugData.metaCode}</span>
+                      </div>
+                      <h4 className="text-sm font-bold text-white mb-2">{debugData.metaTitle}</h4>
+                    </div>
+                    <p className="text-xs text-gray-400 leading-relaxed mt-2">{debugData.metaDesc}</p>
+                  </div>
+                </div>
+
+                {/* 4단계 마음 디버깅 질문 */}
+                <div className="bg-white/[0.01] border border-white/10 rounded-2xl p-5 relative z-10">
+                  <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4 text-amber-500" /> 자아 해킹 방지 4대 치유 문답 (Recursive Inquiry)
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    {[
+                      { label: "🤔 소크라테스 질문 (인지 오류 객관화)", q: debugData.socratic, placeholder: "내 마음의 고집을 덜어내고 실용적인 관점으로 스스로 답해보게..." },
+                      { label: "🔁 재귀적 질문 (에러 로그의 기원 탐색)", q: debugData.recursive, placeholder: "이 상처의 뿌리가 과거 어디서 시작되었는지 기록해보게..." },
+                      { label: "👁️ 메타 질문 (차원 상승 및 meta-자각)", q: debugData.metaQuestion, placeholder: "고통 너머의 투명하고 광활한 맑은 자아의 관점에서 답해보게..." },
+                      { label: "✨ 알아차림의 알아차림 (순수 관찰자 회귀)", q: debugData.awareness, placeholder: "생각을 붙잡지 않고 그 너머에 머무르며 드는 온전한 느낌을 기록해보게..." }
+                    ].map((item, idx) => (
+                      <div key={idx} className="bg-white/5 border border-white/5 p-4 rounded-xl text-left">
+                        <div className="font-bold text-[10px] text-amber-300/80 mb-1">{item.label}</div>
+                        <div className="text-sm font-serif text-white mb-2 leading-relaxed italic">"{item.q}"</div>
+                        <textarea 
+                          rows={2} 
+                          className="w-full bg-[#1F1E1C] border border-white/10 rounded-lg p-2.5 text-xs text-[#FAF9F5] focus:outline-none focus:border-amber-500/40 transition-colors placeholder-gray-600 font-sans"
+                          placeholder={item.placeholder}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* ==========================================
               3. 월별 재물/성취 에너지 흐름도 바 차트
