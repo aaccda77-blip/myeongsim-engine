@@ -14,7 +14,6 @@ import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/ge
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 const supabase = createClient(
@@ -487,9 +486,7 @@ ${mapping.prompt}
       ],
       generationConfig: {
         temperature: 0.8,
-        maxOutputTokens: 2048,
-        // @ts-ignore
-        thinkingConfig: { thinkingBudget: 1024 }
+        maxOutputTokens: 2048
       }
     });
 
