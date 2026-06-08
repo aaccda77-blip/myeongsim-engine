@@ -96,9 +96,10 @@ interface ChatInterfaceProps {
     onClose: () => void;
     currentStage?: number;
     initialIntent?: string | null; // [New] Auto-start Intent
+    initialSectionId?: string | null; // [New] 딥 링크용 초기 섹션 ID
 }
 
-export default function ChatInterface({ onClose, currentStage = 1, initialIntent }: ChatInterfaceProps) {
+export default function ChatInterface({ onClose, currentStage = 1, initialIntent, initialSectionId }: ChatInterfaceProps) {
     const { reportData, dailyChecklistAnswers } = useReportStore();
     const { t, language } = useLanguage(); // [NEW] Localization hook
     // [Wearable] Bio Data Hook
@@ -2565,6 +2566,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                         <DrillDownIconMenu
                             userProfile={reportData}
                             hideTodayEnergy={true}
+                            initialSectionId={initialSectionId || undefined}
                             onSelectIntent={(intent, prompt) => {
                                 // [New] Bio-Sync Dashboard View
                                 if (intent === 'bio_sync_dashboard_view') {

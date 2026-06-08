@@ -183,6 +183,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                 }}
                                 currentStage={demoStage}
                                 initialIntent={searchParams.get('intent')} // [New] Pass Intent
+                                initialSectionId={searchParams.get('section')} // [New] Pass Section ID for Deep Linking
                             />
                         </div>
                     )}

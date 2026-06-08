@@ -203,9 +203,9 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
           <div className="relative border-b border-slate-800 p-6 flex justify-between items-center bg-slate-900/60 backdrop-blur-md shrink-0">
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-purple-300 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-blue-300 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-emerald-400" />
-                  상처가 별이 되는 시간
+                  오늘의 제로포인트
                 </h2>
                 
                 {/* 초개인화 사주 연동 상태 뱃지 */}
@@ -224,6 +224,9 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
                   </span>
                 )}
               </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 font-medium italic">
+                내 의식 스크린에 상영되는 아름다운 우주 영화 한 편
+              </p>
               {post && (
                 <p className="text-sm text-slate-400 mt-1">
                   [{post.date_string}] 오늘의 테마: {post.theme}

@@ -9,6 +9,103 @@ import { X, Sparkles, TrendingUp, ShieldAlert, Award } from 'lucide-react';
 // ─────────────────────────────────────────────────────────────
 // 천간/지지 오행 및 음양 정보 정의
 // ─────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────
+// 🌌 공망(空亡, Void) 동적 계산 헬퍼 함수
+// ─────────────────────────────────────────────────────────────
+function safeChar(val: any): string {
+  if (!val) return '';
+  if (typeof val === 'object') {
+    return (val.char || val.gan || val.ji || '').trim();
+  }
+  return String(val).trim();
+}
+
+function getGongmangBranches(dayGan: any, dayJi: any): string[] {
+  const gans = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'];
+  const jis = ['자', '축', '인', '묘', '진', '사', '오', '미', '신', '유', '술', '해'];
+  const gansHanja = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+  const jisHanja = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+
+  const g = safeChar(dayGan)[0] || '';
+  const z = safeChar(dayJi)[0] || '';
+
+  let ganIdx = gansHanja.indexOf(g);
+  if (ganIdx === -1) ganIdx = gans.indexOf(g);
+
+  let jiIdx = jisHanja.indexOf(z);
+  if (jiIdx === -1) jiIdx = jis.indexOf(z);
+
+  if (ganIdx === -1 || jiIdx === -1) return [];
+
+  const startIdx = (jiIdx - ganIdx + 12) % 12;
+  const gong1Idx = (startIdx + 10) % 12;
+  const gong2Idx = (startIdx + 11) % 12;
+
+  return [
+    jisHanja[gong1Idx],
+    jis[gong1Idx],
+    jisHanja[gong2Idx],
+    jis[gong2Idx]
+  ];
+}
+
+// ─────────────────────────────────────────────────────────────
+// 🧬 명리학-심리학 연동 번역 딕셔너리
+// ─────────────────────────────────────────────────────────────
+const SAJU_TRANSLATION_MAP: Record<string, { title: string; desc: string; advice: string }> = {
+  '甲': { title: '갑목(甲木) : 강직하게 뻗어나가는 리더십 🌲', desc: '하늘을 향해 곧게 뻗어 오르는 거목처럼, 스스로의 주권을 세우고 주도적으로 인생을 개척하는 기운입니다.', advice: '부러질지언정 굽히지 않으려는 완고함을 가끔은 내려놓고, 대지를 유연하게 보듬는 숲의 온화함을 배워보세요.' },
+  '乙': { title: '을목(乙木) : 유연하고 강인한 생명력 🌱', desc: '어떤 비바람에도 꺾이지 않고 끈질기게 생명력을 피워내는 넝쿨풀처럼, 융통성 있고 친화적인 기운입니다.', advice: '상대에게 너무 깊이 의존하거나 동조하려 하지 말고, 바람 속에서도 오롯이 빛나는 본인의 주권을 신뢰해 보세요.' },
+  '丙': { title: '병화(丙火) : 세상을 비추는 밝은 태양 🔥', desc: '모든 만물을 골고루 비추고 활력을 불어넣는 태양의 열정처럼, 세상을 밝히고 앞장서는 에너지입니다.', advice: '스스로를 태워버리는 자가 소모에 빠지지 않도록, 가끔은 태양을 가리고 어둠 속에서 편안히 쉬어가는 시간을 가지세요.' },
+  '丁': { title: '정화(丁火) : 어둠을 밝히는 은은한 등불 🕯️', desc: '어두운 바다의 등대나 추운 겨울밤의 모닥불처럼, 따뜻한 마음으로 주변을 세심하게 보살피고 안도감을 주는 빛입니다.', advice: '상대에 대한 깊은 애정이 원망과 희생양 콤플렉스로 꼬이지 않도록, 자신을 먼저 밝히는 이기적인 연습도 필요합니다.' },
+  '戊': { title: '무토(戊土) : 포용력 있는 웅장한 태산 ⛰️', desc: '비바람을 묵묵히 견뎌내는 태산처럼, 무겁고 진중하며 모든 것을 수용하는 광활한 포용의 기운입니다.', advice: '변화를 두려워하고 고집을 꺾지 못하는 바위가 되지 말고, 계절에 따라 옷을 갈아입는 유연한 산이 되어보세요.' },
+  '己': { title: '기토(己土) : 만물을 길러내는 부드러운 대지 🌾', desc: '생명을 잉태하고 보살피는 옥토처럼, 사람들을 연결하고 중재하며 넉넉하게 품어주는 기운입니다.', advice: '타인의 문제까지 나의 텃밭으로 가져와 걱정하지 말고, 나만의 경계를 명확히 세워 스스로의 마음 정원부터 가꾸세요.' },
+  '庚': { title: '경금(庚金) : 원칙을 세우는 단단한 무쇠 🛡️', desc: '불순물을 허용하지 않는 예리한 칼날이나 단단한 원석처럼, 냉철한 판단력과 엄격한 원칙을 세우는 에너지입니다.', advice: '너무 날카로운 흑백논리로 세상을 재단하다가 고립되지 않도록, 타인의 모호함과 불완전함을 용인하는 여유를 가지세요.' },
+  '辛': { title: '신금(辛金) : 세밀하게 다듬어진 빛나는 보석 💎', desc: '섬세하고 예민하게 세공된 보석처럼, 고귀한 자존감과 완벽주의적 성향, 예리한 미적 감각을 지닌 기운입니다.', advice: '외부의 사소한 충격에도 쉽게 금이 가는 유리 멘탈을 극복하고, 본인의 고유한 빛이 이미 완성되어 있음을 자각하세요.' },
+  '壬': { title: '임수(壬水) : 깊고 넓게 흐르는 큰 바다 🌊', desc: '모든 것을 씻어내고 수용하며 도도하게 흐르는 대양처럼, 넓은 시야와 깊은 지혜, 뛰어난 수용성을 지닌 기운입니다.', advice: '감정과 생각을 심해 속에 묻어두고 회피하지 말고, 맑은 물결로 세상과 유연하게 소통하며 속마음을 표현하세요.' },
+  '癸': { title: '계수(癸水) : 대지를 적시는 생명수 💧', desc: '가뭄을 해갈하는 봄비나 만물에 스며드는 이슬처럼, 세심하고 촉촉하게 주변을 적시는 치유와 감성의 기운입니다.', advice: '외부 환경에 지나치게 예민하게 반응하여 기분이 조울의 롤러코스터를 타지 않도록, 내면에 굳건한 닻을 내리세요.' },
+  '子': { title: '자수(子水) : 밤의 심연을 여는 지혜의 쥐 🐀', desc: '가장 어두운 밤을 상징하며, 생명의 시작과 깊은 무의식적 지혜, 뛰어난 번식력과 아이디어를 품은 물의 기운입니다.', advice: '생각이 너무 깊어져 밤새우는 일 없이, 맑은 물결로 상쾌하게 흘려보내게.' },
+  '丑': { title: '축토(丑土) : 봄을 준비하는 인내의 소 🐂', desc: '얼어붙은 겨울 땅 속에서 씨앗을 품고 봄을 기다리는, 묵묵하고 끈기 있는 인내와 근면의 흙 기운입니다.', advice: '과거의 원망이나 집착을 얼어붙은 땅에 묻어두지 말고, 봄볕에 부드럽게 녹여내게.' },
+  '寅': { title: '인목(寅木) : 뚫고 솟아오르는 용맹한 호랑이 🐅', desc: '언 땅을 뚫고 나오는 새싹의 폭발적인 힘처럼, 두려움 없이 전진하고 새로운 시작을 이끄는 강인한 나무의 기운입니다.', advice: '결과를 빨리 보려는 조급함을 버리고, 한 걸음씩 내딛는 과정의 여유를 즐기게.' },
+  '卯': { title: '묘목(卯木) : 봄바람을 탄 귀여운 푸른 토끼 🐇', desc: '생동감 넘치고 예민한 미적 오감과 순수한 아름다움의 기류입니다.', advice: '사소한 소음에 불안해하지 말고 대지에 닻을 내리게.' },
+  '辰': { title: '진토(辰土) : 구름을 헤치며 승천하는 여의주의 용 🐉', desc: '변화무쌍하게 조화를 부리는 큰 포용력 있는 흙의 기운입니다.', advice: '이상과 현실의 갭에서 스스로 책망 말고 일상의 행복을 느끼게.' },
+  '巳': { title: '사화(巳火) : 빛을 퍼뜨리는 지혜로운 뱀 🐍', desc: '밝고 화려하며 언변이 뛰어나고 융통성 있게 세상을 비추는 초여름의 지혜로운 불기운입니다.', advice: '과도한 발산으로 쉽게 지치지 않도록 조절하게.' },
+  '午': { title: '오화(午火) : 정열적으로 질주하는 붉은 말 🐎', desc: '가장 뜨거운 한여름의 불꽃처럼, 명랑하고 열정적이며 뒤끝 없는 솔직함으로 돌진하는 강력한 불기운입니다.', advice: '급발진하는 열정을 차분히 호흡으로 다스리게.' },
+  '未': { title: '미토(未土) : 열기를 품은 넉넉한 양 🐑', desc: '가장 뜨거운 열기를 품은 마른 땅으로, 꼼꼼하고 희생적이며 만물을 맛깔나게 익히는 흙의 기운입니다.', advice: '내면에 쌓아둔 서운함을 솔직히 표현하게.' },
+  '申': { title: '신금(申金) : 재주 넘치고 예리한 원숭이 🐒', desc: '가을의 서늘한 결실을 알리는 기운으로, 판단력이 빠르고 다재다능하며 예리한 변혁의 쇠 기운입니다.', advice: '너무 날카로운 잣대로 주변을 다치게 하지 말게.' },
+  '酉': { title: '유금(酉金) : 정밀하게 빚어진 맑은 닭 🐓', desc: '가장 순수하게 정제된 보석처럼, 빈틈없이 섬세하고 완벽주의적이며 깔끔한 직관을 지닌 쇠 기운입니다.', advice: '완벽에 대한 강박을 풀고 여유를 가지게.' },
+  '戌': { title: '술토(戌土) : 충직하게 지키는 황금빛 개 🐕', desc: '늦가을의 쓸쓸함을 품고 결실을 보관하는 땅으로, 의리가 깊고 책임감이 강하며 수호하는 흙의 기운입니다.', advice: '과도한 책임감으로 혼자 짊어지지 말게.' },
+  '亥': { title: '해수(亥水) : 풍요를 품고 흐르는 검은 돼지 🐖', desc: '겨울을 알리는 초입의 물로, 만물을 넉넉히 수용하고 지혜롭게 흘러가는 유연하고 다정다감한 물의 기운입니다.', advice: '감정의 소용돌이에 매몰되지 말고 유쾌하게 흘려보내게.' }
+};
+
+const SIPSIN_TRANSLATION_MAP: Record<string, { title: string; desc: string }> = {
+  '비견': { title: '나와 어깨를 나란히 하는 독립심', desc: '경쟁과 자립의 기운. 타인에게 의존하지 않고 주체적으로 나아갑니다.' },
+  '겁재': { title: '투쟁하고 쟁취하는 승부욕', desc: '경쟁심과 탈취의 기운. 손해를 보지 않으려는 강한 자아와 투쟁성을 상징합니다.' },
+  '식신': { title: '여유롭게 뿜어내는 나의 재능', desc: '먹을 복과 연구심. 하나의 기술을 깊게 파고들어 나만의 것으로 만듭니다.' },
+  '상관': { title: '관습을 깨고 표현하는 혁신', desc: '파격과 언변. 뛰어난 표현력으로 잘못된 규칙을 꼬집고 개혁합니다.' },
+  '편재': { title: '광활한 무대를 장악하는 스케일', desc: '큰 재물과 공간 지각력. 모험을 즐기며 큰 무대에서 활약하는 투기성 재물입니다.' },
+  '정재': { title: '안정적으로 모아가는 나의 자산', desc: '티끌 모아 태산. 예측 가능한 안정과 치밀함을 바탕으로 한 정당한 보상입니다.' },
+  '편관': { title: '나를 통제하는 가혹한 규율', desc: '카리스마와 억압. 스트레스를 견뎌내어 명예와 권력을 쥐는 무관의 에너지입니다.' },
+  '정관': { title: '사회를 지키는 합리적 시스템', desc: '원칙과 명예. 타인의 시선과 규범을 중시하며 바르고 안정적인 궤도를 걷습니다.' },
+  '편인': { title: '보이지 않는 세계를 읽는 직관', desc: '신비주의와 고독. 비주류 학문이나 영적인 것에 관심이 많고 눈치가 빠릅니다.' },
+  '정인': { title: '세상으로부터 받는 사랑과 지혜', desc: '학문과 도덕. 스펀지처럼 지식을 수용하며, 타인에게 사랑받고 보살핌을 받는 수용성입니다.' }
+};
+
+const UNSEONG_TRANSLATION_MAP: Record<string, { name: string; phase: string; meaning: string }> = {
+  '장생': { name: '장생', phase: '성장', meaning: '새로운 탄생과 무한한 후원' },
+  '목욕': { name: '목욕', phase: '도전', meaning: '매력 발산과 아찔한 시행착오' },
+  '관대': { name: '관대', phase: '패기', meaning: '당당한 자아와 고집스런 전진' },
+  '건록': { name: '건록', phase: '전성기', meaning: '능력 발휘와 사회적 인정' },
+  '제왕': { name: '제왕', phase: '정점', meaning: '절대적 권력과 정점의 압박감' },
+  '쇠': { name: '쇠', phase: '원숙', meaning: '물러남의 지혜와 깊은 통찰력' },
+  '병': { name: '병', phase: '쇠퇴', meaning: '건강 유의 및 동정심 발현' },
+  '사': { name: '사', phase: '정지', meaning: '육체적 정지와 정신적 탐구' },
+  '묘': { name: '묘', phase: '저장', meaning: '수집, 저축, 무의식의 세계' },
+  '절': { name: '절', phase: '단절', meaning: '바닥을 친 후의 새로운 기로' },
+  '태': { name: '태', phase: '잉태', meaning: '불안정 속에서 싹트는 희망' },
+  '양': { name: '양', phase: '양육', meaning: '안정적인 보살핌과 기획' }
+};
+
 const STEM_INFO: Record<string, { ohaeng: string; polarity: '+' | '-' }> = {
   '甲': { ohaeng: 'wood', polarity: '+' }, '乙': { ohaeng: 'wood', polarity: '-' },
   '丙': { ohaeng: 'fire', polarity: '+' }, '丁': { ohaeng: 'fire', polarity: '-' },
@@ -40,9 +137,11 @@ const BRANCH_INFO: Record<string, { ohaeng: string; polarity: '+' | '-' }> = {
 // 십신 계산 도구
 const OHAENG_RELATION = ['wood', 'fire', 'earth', 'metal', 'water'];
 
-function getTenGod(dayStem: string, targetStemOrBranch: string, isBranch = false): string {
-  const dayInfo = STEM_INFO[dayStem];
-  const targetInfo = isBranch ? BRANCH_INFO[targetStemOrBranch] : STEM_INFO[targetStemOrBranch];
+function getTenGod(dayStem: any, targetStemOrBranch: any, isBranch = false): string {
+  const dStem = safeChar(dayStem);
+  const tStemOrBranch = safeChar(targetStemOrBranch);
+  const dayInfo = STEM_INFO[dStem];
+  const targetInfo = isBranch ? BRANCH_INFO[tStemOrBranch] : STEM_INFO[tStemOrBranch];
   
   if (!dayInfo || !targetInfo) return '-';
 
@@ -314,9 +413,9 @@ const SECTIONS_108 = [
 // ─────────────────────────────────────────────────────────────
 // 12운성(Twelve Changs) 및 12신살(Twelve Shinsals) 계산 헬퍼 함수
 // ─────────────────────────────────────────────────────────────
-function get12Unseong(dayStem: string, branch: string): string {
-  const gan = (dayStem || '').trim()[0];
-  const zhi = (branch || '').trim()[0];
+function get12Unseong(dayStem: any, branch: any): string {
+  const gan = safeChar(dayStem)[0] || '';
+  const zhi = safeChar(branch)[0] || '';
   if (!gan || !zhi) return '건록';
   
   const ganMap: Record<string, string> = {
@@ -347,14 +446,14 @@ function get12Unseong(dayStem: string, branch: string): string {
   return rule[g]?.[z] || '건록';
 }
 
-function get12Shinsal(basisBranch: string, targetBranch: string): string {
+function get12Shinsal(basisBranch: any, targetBranch: any): string {
   const zhiMap: Record<string, string> = {
     '자': '子', '축': '丑', '인': '寅', '묘': '卯', '진': '辰', '사': '巳', '오': '午', '미': '未', '신': '申', '유': '酉', '술': '戌', '해': '亥',
     '子': '子', '丑': '丑', '寅': '寅', '卯': '卯', '辰': '辰', '巳': '巳', '午': '午', '未': '未', '申': '申', '酉': '酉', '戌': '戌', '亥': '亥'
   };
 
-  const basis = zhiMap[(basisBranch || '').trim()[0]] || '子';
-  const target = zhiMap[(targetBranch || '').trim()[0]] || '子';
+  const basis = zhiMap[safeChar(basisBranch)[0] || ''] || '子';
+  const target = zhiMap[safeChar(targetBranch)[0] || ''] || '子';
 
   const zhiOrder = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
   const shinsalList = ['지살', '년살', '월살', '망신', '장성', '반안', '역마', '육해', '화개', '겁살', '재살', '천살'];
@@ -383,16 +482,19 @@ interface MyeongsimCoachingDashboardProps {
   isOpen?: boolean;
   onClose?: () => void;
   userProfile?: any;
+  initialSectionId?: string;
 }
 
 export default function MyeongsimCoachingDashboard({
   isOpen = false,
   onClose,
-  userProfile
+  userProfile,
+  initialSectionId
 }: MyeongsimCoachingDashboardProps) {
   
   const { reportData } = useReportStore();
 
+  const [activeModalData, setActiveModalData] = React.useState<any | null>(null);
   const [activeTab, setActiveTab] = React.useState<'dashboard' | 'report'>('dashboard');
   const [selectedSection, setSelectedSection] = React.useState<string | null>(null);
   const [sectionContent, setSectionContent] = React.useState<string | null>(null);
@@ -400,6 +502,115 @@ export default function MyeongsimCoachingDashboard({
   const [fetchingCache, setFetchingCache] = React.useState<boolean>(false);
 
   // 특정 섹션 클릭 시 수파베이스/로컬 캐시 확인
+  
+  // ── 갭 점수 동적 계산 및 모달 치유 기법 ──
+
+
+  const handleSajuCellClick = (charOrObj: any, position: string) => {
+    const char = safeChar(charOrObj);
+    if (!char) return;
+    const cleanChar = char[0];
+    const trans = SAJU_TRANSLATION_MAP[cleanChar];
+    if (trans) {
+      const dayGan = safeChar(activeSaju?.fourPillars?.day?.gan);
+      const dayJi = safeChar(activeSaju?.fourPillars?.day?.ji);
+      const isGM = getGongmangBranches(dayGan, dayJi).includes(cleanChar) && position.includes('지지');
+      setActiveModalData({
+        type: 'saju',
+        typeLabel: `명국성도 분석 (${position})`,
+        mainIcon: isGM ? '🌌' : '💎',
+        title: `내 운명의 고유 주파수 '${cleanChar}'${isGM ? ' (공망)' : ''}`,
+        subtitle: trans.title,
+        content: (
+          <div className="space-y-4 font-sans text-left">
+            <p className="text-xs text-slate-500 leading-relaxed font-medium">명국성도의 여덟 글자는 평생 자네를 수호하는 고유한 기질의 원천이자 마음의 소스코드라네.</p>
+            {isGM && (
+              <div className="bg-purple-50/50 border border-purple-200/50 p-4 rounded-xl">
+                <span className="block font-bold text-purple-800 text-xs mb-1">🌌 공망(Void) 코칭 솔루션</span>
+                <p className="text-[#4A4744] text-xs leading-relaxed font-semibold italic">
+                  "이 자리는 공망(비워짐)의 자리라네. 남들보다 결핍을 더 강하게 느껴 집착하기 쉽지만, 사실 이 비워짐은 우주를 담아낼 수 있는 무한한 그릇이기도 하지. 집착을 버리고 마음을 편안히 할 때 가장 큰 재능이 폭발할 걸세!"
+                </p>
+              </div>
+            )}
+            <div className="bg-amber-50/50 border border-amber-200/50 p-4 rounded-xl">
+              <span className="block font-bold text-amber-800 text-xs mb-1">🌿 이 글자가 품은 기질 메커니즘</span>
+              <p className="text-[#4A4744] text-sm leading-relaxed">{trans.desc}</p>
+            </div>
+            <div className="bg-[#FFF9F0] border border-amber-200/40 p-4 rounded-xl">
+              <span className="block font-bold text-amber-800 text-xs mb-1">💡 마음을 어루만지는 따뜻한 치유 편지</span>
+              <p className="text-[#4A4744] text-sm leading-relaxed font-semibold italic">"{trans.advice}"</p>
+            </div>
+          </div>
+        )
+      });
+    }
+  };
+
+  const handleMonthlyCellClick = (col: any) => {
+    const tTrans = SIPSIN_TRANSLATION_MAP[col.tSip] || { title: col.tSip, desc: '해당 시기의 심리적 에너지 흐름' };
+    const zTrans = SIPSIN_TRANSLATION_MAP[col.zSip] || { title: col.zSip, desc: '현실에서 나타나는 실질적 환경 변화' };
+    const unNameClean = (col.un || '').replace(/\([가-힣]+\)/g, '').trim();
+    const unTrans = UNSEONG_TRANSLATION_MAP[unNameClean] || { name: col.un, phase: '흐름', meaning: '현재 당신이 겪고 있는 주기' };
+    setActiveModalData({
+      type: 'monthly',
+      typeLabel: '🗓️ 명심코칭 개인 맞춤형 운세 해석',
+      mainIcon: '🗓️',
+      title: `${col.date}의 마음챙김 리포트`,
+      subtitle: `${col.tSip}과 ${col.zSip}이 교차하는 시기`,
+      content: (
+        <div className="space-y-4 font-sans text-left">
+          <div className="bg-blue-50/50 border border-blue-200/50 p-4 rounded-xl">
+            <span className="block font-bold text-blue-800 text-xs mb-1">🌤️ 마음의 날씨 (천간: {col.tSip}) - {tTrans.title}</span>
+            <p className="text-[#4A4744] text-xs leading-relaxed">{tTrans.desc}</p>
+          </div>
+          <div className="bg-green-50/50 border border-green-200/50 p-4 rounded-xl">
+            <span className="block font-bold text-green-800 text-xs mb-1">🌱 현실의 토양 (지지: {col.zSip}) - {zTrans.title}</span>
+            <p className="text-[#4A4744] text-xs leading-relaxed">{zTrans.desc}</p>
+          </div>
+          <div className="bg-purple-50/50 border border-purple-200/50 p-4 rounded-xl">
+            <span className="block font-bold text-purple-800 text-xs mb-1">🔄 운의 파동 (12운성: {unTrans.name}) - {unTrans.phase}기</span>
+            <p className="text-[#4A4744] text-xs leading-relaxed">{unTrans.meaning}</p>
+          </div>
+          <p className="text-xs text-slate-500 italic font-medium mt-2">
+            "이 시기에는 조급함을 내려놓고, 우주의 리듬에 당신의 호흡을 맞춰보세요."
+          </p>
+        </div>
+      )
+    });
+  };
+
+  const handleDaewoonCellClick = (col: any) => {
+    const tTrans = SIPSIN_TRANSLATION_MAP[col.tSip] || { title: col.tSip, desc: '10년을 지배하는 마인드셋' };
+    const zTrans = SIPSIN_TRANSLATION_MAP[col.zSip] || { title: col.zSip, desc: '10년간 깔리는 현실적 무대' };
+    const unNameClean = (col.un || '').replace(/\([가-힣]+\)/g, '').trim();
+    const unTrans = UNSEONG_TRANSLATION_MAP[unNameClean] || { name: col.un, phase: '흐름', meaning: '대운의 거대한 기운 주기' };
+    setActiveModalData({
+      type: 'daewoon',
+      typeLabel: '🌊 10년 주기 대운(大運) 해석',
+      mainIcon: '🌊',
+      title: `${col.age}세 시작되는 새로운 챕터`,
+      subtitle: `${col.gan}${col.ji} 대운의 파도 타기`,
+      content: (
+        <div className="space-y-4 font-sans text-left">
+          <p className="text-xs text-slate-500 leading-relaxed font-medium">대운은 10년마다 바뀌는 당신 삶의 거대한 무대 배경이자 계절입니다.</p>
+          <div className="bg-amber-50/50 border border-amber-200/50 p-4 rounded-xl">
+            <span className="block font-bold text-amber-800 text-xs mb-1">생각의 틀 (천간: {col.tSip}) - {tTrans.title}</span>
+            <p className="text-[#4A4744] text-xs leading-relaxed">{tTrans.desc}</p>
+          </div>
+          <div className="bg-[#FFF9F0] border border-amber-200/40 p-4 rounded-xl">
+            <span className="block font-bold text-amber-800 text-xs mb-1">현실의 무대 (지지: {col.zSip}) - {zTrans.title}</span>
+            <p className="text-[#4A4744] text-xs leading-relaxed">{zTrans.desc}</p>
+          </div>
+          <div className="bg-rose-50/50 border border-rose-200/40 p-4 rounded-xl">
+            <span className="block font-bold text-rose-800 text-xs mb-1">에너지 스케일 (12운성: {unTrans.name}) - {unTrans.phase}</span>
+            <p className="text-[#4A4744] text-xs leading-relaxed">{unTrans.meaning}</p>
+          </div>
+        </div>
+      )
+    });
+  };
+
+
   const handleSectionClick = async (sectionId: string) => {
     setSelectedSection(sectionId);
     setSectionContent(null);
@@ -657,11 +868,9 @@ export default function MyeongsimCoachingDashboard({
   }, [tenGods]);
 
   // ── 2. 십성 레이다 차트 좌표 동적 연산 ──
-  const radarPoints = useMemo(() => {
-    // 십성 데이터의 상대적 강도를 비례하여 SVG 오각형 좌표 도출
+  const radarCoords = useMemo(() => {
     const maxVal = Math.max(tenGods.self, tenGods.output, tenGods.wealth, tenGods.power, tenGods.resource, 1);
-    
-    const getR = (val: number) => 10 + (val / maxVal) * 35; // 최소 반경 10, 최대 45
+    const getR = (val: number) => 10 + (val / maxVal) * 35; 
     
     const rSelf = getR(tenGods.self);
     const rOutput = getR(tenGods.output);
@@ -669,8 +878,7 @@ export default function MyeongsimCoachingDashboard({
     const rPower = getR(tenGods.power);
     const rResource = getR(tenGods.resource);
 
-    // 오각형 꼭짓점 각도 계산
-    const angleSelf = -Math.PI / 2; // 12시
+    const angleSelf = -Math.PI / 2;
     const angleOutput = -Math.PI / 2 + (72 * Math.PI) / 180;
     const angleWealth = -Math.PI / 2 + (144 * Math.PI) / 180;
     const anglePower = -Math.PI / 2 + (216 * Math.PI) / 180;
@@ -682,7 +890,8 @@ export default function MyeongsimCoachingDashboard({
     const pPower = { x: 50 + rPower * Math.cos(anglePower), y: 50 + rPower * Math.sin(anglePower) };
     const pResource = { x: 50 + rResource * Math.cos(angleResource), y: 50 + rResource * Math.sin(angleResource) };
 
-    return `${pSelf.x.toFixed(1)},${pSelf.y.toFixed(1)} ${pOutput.x.toFixed(1)},${pOutput.y.toFixed(1)} ${pWealth.x.toFixed(1)},${pWealth.y.toFixed(1)} ${pPower.x.toFixed(1)},${pPower.y.toFixed(1)} ${pResource.x.toFixed(1)},${pResource.y.toFixed(1)}`;
+    const pointsStr = `${pSelf.x.toFixed(1)},${pSelf.y.toFixed(1)} ${pOutput.x.toFixed(1)},${pOutput.y.toFixed(1)} ${pWealth.x.toFixed(1)},${pWealth.y.toFixed(1)} ${pPower.x.toFixed(1)},${pPower.y.toFixed(1)} ${pResource.x.toFixed(1)},${pResource.y.toFixed(1)}`;
+    return { pointsStr, pSelf, pOutput, pWealth, pPower, pResource };
   }, [tenGods]);
 
   // ── 3. 오행 데이터 비율 계산 ──
@@ -698,14 +907,439 @@ export default function MyeongsimCoachingDashboard({
     };
   }, [elements]);
 
-  // ── 4. 겉과 속 갭 점수 동적 계산 ──
-  const meta = (reportData?.meta || {}) as any;
+  // ── 4. 겉과 속 갭 점수 동적 계산 (오행 편중도 & 십성 불균형도 연동) ──
   const gapScore = useMemo(() => {
-    const perfection = Math.min(98, 50 + (meta.energyLevel ? (100 - meta.energyLevel) / 2 : 34));
-    const anxiety = Math.min(99, 40 + (meta.sleepQuality ? (5 - meta.sleepQuality) * 12 : 42));
-    const decision = meta.stressFactors?.length ? Math.min(90, 40 + meta.stressFactors.length * 10) : 67;
-    return Math.round((perfection + anxiety + decision) / 3);
-  }, [meta]);
+    // 1) 오행 분포의 표준편차 계산 (쏠림 정도)
+    const elArr = [elements.wood, elements.fire, elements.earth, elements.metal, elements.water];
+    const elTotal = elArr.reduce((s, v) => s + v, 0) || 1;
+    const elMean = elTotal / 5;
+    const elVariance = elArr.reduce((s, v) => s + Math.pow(v - elMean, 2), 0) / 5;
+    const elStdDev = Math.sqrt(elVariance);
+    const ohaengGap = Math.min(100, Math.round(elStdDev * 38));
+
+    // 2) 십성 불균형도 계산 (최대 격차)
+    const tgArr = [tenGods.self, tenGods.output, tenGods.wealth, tenGods.power, tenGods.resource];
+    const tgMax = Math.max(...tgArr);
+    const tgMin = Math.min(...tgArr);
+    const tgDiff = tgMax - tgMin;
+    const sipsinGap = Math.min(100, Math.round(tgDiff * 18));
+
+    const rawGap = Math.round(ohaengGap * 0.45 + sipsinGap * 0.55);
+    return Math.max(18, Math.min(96, rawGap));
+  }, [elements, tenGods]);
+
+  
+  // 🌌 5대 십성 그룹별 공망 여부 계산
+  const sipsinGongmang = useMemo(() => {
+    const dayGan = safeChar(activeSaju?.fourPillars?.day?.gan);
+    const dayJi = safeChar(activeSaju?.fourPillars?.day?.ji);
+    const gmBranches = getGongmangBranches(dayGan, dayJi);
+
+    const result = { self: false, output: false, wealth: false, power: false, resource: false };
+    if (gmBranches.length === 0) return result;
+
+    const checkAndAssign = (ji: any) => {
+      if (!ji) return;
+      const cleanJi = safeChar(ji)[0];
+      if (gmBranches.includes(cleanJi)) {
+        const tenGod = getTenGod(dayGan, cleanJi, true);
+        if (['비견', '겁재'].includes(tenGod)) result.self = true;
+        if (['식신', '상관'].includes(tenGod)) result.output = true;
+        if (['편재', '정재'].includes(tenGod)) result.wealth = true;
+        if (['편관', '정관'].includes(tenGod)) result.power = true;
+        if (['편인', '정인'].includes(tenGod)) result.resource = true;
+      }
+    };
+
+    checkAndAssign(activeSaju?.fourPillars?.year?.ji);
+    checkAndAssign(activeSaju?.fourPillars?.month?.ji);
+    checkAndAssign(activeSaju?.fourPillars?.day?.ji);
+    checkAndAssign(activeSaju?.fourPillars?.time?.ji);
+
+    return result;
+  }, [activeSaju]);
+
+  // 십성 레이다 클릭 핸들러
+  const handleSipsinRadarClick = (key: 'self' | 'output' | 'wealth' | 'power' | 'resource') => {
+    const isGM = sipsinGongmang[key];
+    const nameMap = {
+      self: { label: '비겁 (비견/겁재)', title: '나다운 주권과 자립 (비겁) ✊', desc: '내면의 나를 지키는 든든한 뼈대이자, 자립심과 자아의 깊이를 상징합니다.' },
+      output: { label: '식상 (식신/상관)', title: '창조적인 표현과 재능 (식상) 🎨', desc: '세상을 향해 내 지식과 끼를 발산하고, 맛깔나게 나를 표현하는 생명력입니다.' },
+      wealth: { label: '재성 (편재/정재)', title: '현실감각과 결실 (재성) 💰', desc: '세상의 자원을 내 것으로 만들고, 공간을 장악하며 결실을 거두는 현실적 감각입니다.' },
+      power: { label: '관성 (편관/정관)', title: '사회적 명예와 통제력 (관성) 🏛️', desc: '나를 절제하여 사회적 규범에 맞추고, 리더십과 명예를 지켜내는 힘입니다.' },
+      resource: { label: '인성 (편인/정인)', title: '수용성과 깊은 통찰 (인성) 📚', desc: '세상의 지혜를 스펀지처럼 빨아들이고, 직관과 사랑으로 나를 채우는 힐링의 기운입니다.' }
+    };
+    const info = nameMap[key];
+
+    setActiveModalData({
+      type: 'radar',
+      typeLabel: `십성 파동 분석 (${info.label})`,
+      mainIcon: '🎯',
+      title: info.title,
+      subtitle: isGM ? '🌌 공망(Void) 상태 - 비워짐을 채우려는 강력한 영적 갈망' : '✨ 오롯이 빛나는 본질적 기질',
+      content: (
+        <div className="space-y-4 font-sans text-left">
+          <p className="text-sm text-slate-600 leading-relaxed font-medium">{info.desc}</p>
+          {isGM && (
+            <div className="bg-purple-50/50 border border-purple-200/50 p-4 rounded-xl mt-4">
+              <span className="block font-bold text-purple-800 text-xs mb-1">🌌 공망(Void) 코칭 솔루션</span>
+              <p className="text-[#4A4744] text-xs leading-relaxed font-semibold italic">
+                "현재 이 영역은 밑빠진 독처럼 채워도 채워지지 않는 공허함(공망)을 느끼기 쉬운 주파수입니다. 
+                하지만 명심하시게. 비워져 있다는 것은 우주만큼 무한히 담을 수 있다는 뜻이라네. 
+                집착을 내려놓고 마음을 편안하게 비울 때, 오히려 이 영역에서 남들이 흉내 낼 수 없는 비범한 천재성이 폭발할 걸세!"
+              </p>
+            </div>
+          )}
+        </div>
+      )
+    });
+  };
+
+  const handleSSRClick = () => {
+    let titleText = '당신의 타고난 에너지 스케일';
+    let modalContent = null;
+
+    if (isOhaengGujok) {
+      titleText = '🌈 오행구족(五行具足) - 조화와 포용의 아름다운 우주';
+      modalContent = (
+        <div className="space-y-4 font-sans text-left">
+          <div className="bg-emerald-50/50 border border-emerald-200/50 p-5 rounded-2xl">
+            <span className="block font-bold text-emerald-800 text-xs mb-1">🌈 오행구족 조화파 분석</span>
+            <p className="text-[#4A4744] text-sm leading-relaxed">
+              자네가 입력한 <strong>경신년 계미월 신사일 을미시</strong> 사주는 목(木), 화(火), 토(土), 금(金), 수(水) 다섯 가지 우주적 에너지가 단 하나도 빠짐없이 균형 있게 골고루 들어있는 <strong>오행구족(五行具足)</strong> 명식이라네! 
+            </p>
+            <p className="text-[#4A4744] text-xs leading-relaxed mt-2 italic font-semibold text-emerald-950">
+              "사주에 빠진 기운이 없다는 것은 삶의 큰 굴곡이 적고, 어떤 가혹한 환경 변화나 스트레스 속에서도 스스로 중심을 되찾는 강인한 회복 탄력성과 뛰어난 적응력을 타고났음을 뜻하지. 모나거나 치우침 없이 세상을 넓게 수용하고 중재하는 거대한 포용력이 바로 자네의 핵심 무기라네."
+            </p>
+          </div>
+          <div className="bg-white p-3.5 rounded-xl border border-slate-100 space-y-1">
+            <span className="block font-bold text-slate-800 text-xs">💡 조화파를 위한 명심 코칭 조언</span>
+            <p className="text-slate-600 text-xs leading-relaxed">
+              에너지가 한 곳으로 지나치게 쏠려 있지 않고 순환이 잘 되기 때문에, 억지로 남들처럼 유별나거나 뾰족하게 튀려고 애쓸 필요가 전혀 없네. 둥글고 원만하게 사람들을 감싸 안는 조화로운 주권이야말로 세상이 자네에게 기대하는 큰 덕목이라네. 자네가 가진 넉넉함과 안도감의 기류를 온전히 신뢰하시게.
+            </p>
+          </div>
+        </div>
+      );
+    } else {
+      const sipsinNames: Record<string, string> = {
+        self: '비겁(🛡️ 주권)',
+        output: '식상(💧 재능)',
+        wealth: '재성(🪙 결과)',
+        power: '관성(⚖️ 통제)',
+        resource: '인성(📚 통찰)'
+      };
+      
+      const sipsinArr = [
+        { key: 'self', val: tenGods.self },
+        { key: 'output', val: tenGods.output },
+        { key: 'wealth', val: tenGods.wealth },
+        { key: 'power', val: tenGods.power },
+        { key: 'resource', val: tenGods.resource }
+      ];
+      sipsinArr.sort((a, b) => b.val - a.val);
+      const dominantSipsin = sipsinNames[sipsinArr[0].key] || '특정 기운';
+
+      titleText = `⚡ 특정 기질 집중형 - 한 분야의 스페셜리스트`;
+      modalContent = (
+        <div className="space-y-4 font-sans text-left">
+          <div className="bg-amber-50/50 border border-amber-200/50 p-5 rounded-2xl">
+            <span className="block font-bold text-amber-800 text-xs mb-1">⚡ 쏠림 기질 스페셜리스트 분석</span>
+            <p className="text-[#4A4744] text-sm leading-relaxed">
+              자네는 사주의 특정 영역({dominantSipsin})에 에너지가 아주 강렬하게 쏠려 있는 <strong>독특한 기류</strong>를 가졌네.
+            </p>
+            <p className="text-[#4A4744] text-xs leading-relaxed mt-2 italic font-semibold text-amber-950">
+              "십성의 쏠림이나 불균형은 결코 흉이 아니라네. 현대 사회와 비즈니스 환경에서는 모든 분야를 어중간하게 아는 것보다, 한 분야에 미친 듯이 몰입하여 끝장을 보는 '오타쿠적 스페셜리스트'가 세상을 바꾼다네! 자네의 뾰족하게 날이 서 있는 재능은 하늘이 자네에게 준 강력한 특화 무기이니, 억지로 남들처럼 둥글어지거나 무던해지려고 스스로를 깎아내지 마시게."
+            </p>
+          </div>
+          <div className="bg-white p-3.5 rounded-xl border border-slate-100 space-y-1">
+            <span className="block font-bold text-slate-800 text-xs">💡 스페셜리스트를 위한 명심 코칭 조언</span>
+            <p className="text-slate-600 text-xs leading-relaxed">
+              특화된 기운을 자신의 주 무대로 삼되, 빠져 있는 결핍 오행이 주는 취약성(충동성이나 과사고)만 자아 성찰을 통해 잔잔하게 인지하고 보완해주면 되네. 자네의 그 남다른 뾰족함이야말로 가장 위대한 차별성이라네.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    setActiveModalData({
+      type: 'ssr',
+      typeLabel: '💎 대우주 기질 희소성 평가',
+      mainIcon: '👑',
+      title: titleText,
+      subtitle: ssrBadge,
+      content: modalContent
+    });
+  };
+
+  // ── 4.2 갭 점수 디커플링 치유 기법 클릭 핸들러 (1:1 명심 코칭 솔루션 초고도화) ──
+  const handleGapScoreClick = () => {
+    const dayGan = safeChar(activeSaju?.fourPillars?.day?.gan);
+    const dayJi = safeChar(activeSaju?.fourPillars?.day?.ji);
+    const monthJi = safeChar(activeSaju?.fourPillars?.month?.ji);
+
+    const jiToKor: Record<string, string> = {
+      '子': '자', '丑': '축', '寅': '인', '卯': '묘', '辰': '진', '巳': '사',
+      '午': '오', '未': '미', '申': '신', '酉': '유', '戌': '술', '亥': '해',
+      '자': '자', '축': '축', '인': '인', '묘': '묘', '진': '진', '사': '사',
+      '오': '오', '미': '미', '신': '신', '유': '유', '술': '술', '해': '해'
+    };
+
+    const getJiDisplayName = (jiChar: string) => {
+      const kor = jiToKor[jiChar] || jiChar;
+      const ohaengInfo = BRANCH_INFO[jiChar];
+      let hanjaOhaeng = '';
+      if (ohaengInfo) {
+        if (ohaengInfo.ohaeng === 'wood') hanjaOhaeng = '목(木)';
+        else if (ohaengInfo.ohaeng === 'fire') hanjaOhaeng = '화(火)';
+        else if (ohaengInfo.ohaeng === 'earth') hanjaOhaeng = '토(土)';
+        else if (ohaengInfo.ohaeng === 'metal') hanjaOhaeng = '금(金)';
+        else if (ohaengInfo.ohaeng === 'water') hanjaOhaeng = '수(Sub)'; // 물
+      }
+      const hanjaMap: Record<string, string> = {
+        '자': '자', '축': '축', '인': '인', '묘': '묘', '진': '진', '사': '사',
+        '오': '오', '미': '미', '신': '신', '유': '유', '술': '술', '해': '해'
+      };
+      const korChar = jiToKor[jiChar] || jiChar;
+      return korChar + (hanjaMap[korChar] || jiChar) + '(' + (hanjaOhaeng || '물') + ')';
+    };
+
+    const dayJiSipsin = getTenGod(dayGan, dayJi, true);
+    const monthJiSipsin = getTenGod(dayGan, monthJi, true);
+    const dayJiFull = getJiDisplayName(dayJi);
+    const monthJiFull = getJiDisplayName(monthJi);
+
+    // 갭 점수별 동적 해설 문구
+    let scoreFeedback = '';
+    if (gapScore <= 30) {
+      scoreFeedback = '현재 자네의 내면 갭 점수는 ' + gapScore + '점(안정)이라네. 겉마음과 속마음의 에너지가 아주 평화롭게 균형을 이루고 있군. 세상에 보여주는 모습과 본래 타고난 기질이 일치하여 마음에 걸림이 없고 투명한 상태일세. 이 고요한 평온함을 깊이 누리며 한걸음씩 나아가시게.';
+    } else if (gapScore <= 60) {
+      scoreFeedback = '현재 자네의 내면 갭 점수는 ' + gapScore + '점(경계)이라네. 사회적인 역할이나 관계 속의 책임을 다하느라 본래의 솔직한 기질을 조금 억누르며, 무의식 속에서 은근히 많은 에너지를 소모하고 있음을 의미하네. 마음속 피로가 조금씩 누적되고 있으니 지친 자신을 따뜻하게 위로해주시게.';
+    } else {
+      scoreFeedback = '현재 자네의 내면 갭 점수는 ' + gapScore + '점(요망)이라네. 세상이 기대하는 완벽한 페르소나(가면)를 유지하느라 내면에 심각한 에너지 불균형과 정신적 과부하가 걸려 있는 상태일세. 겉을 채우느라 속을 비워두진 않았는지 되돌아보고, 지금이야말로 스스로를 지키기 위해 멈춰야 할 때라네.';
+    }
+
+    const sipsinArr = [
+      { key: 'self', name: '비겁(🛡️ - 나를 지키는 주권)', val: tenGods.self, tip: '자네는 내면에 스스로를 지키려는 방어막(비겁)이 지나치게 견고하여, 남에게 짐을 나누기보다 혼자 모든 것을 짊어지려다 탈진하기 쉬운 성향이 있네. "타인의 조언 경청하기"와 의도적으로 타인에게 도움을 한 가지 요청하는 훈련을 권장하네.' },
+      { key: 'output', name: '식상(💧 - 맑은 지혜와 표현)', val: tenGods.output, tip: '자네는 생각이나 감정을 말과 행동으로 표현하려는 욕구(식상)가 풍부하여 쉽게 감정이 소모되거나 기복이 커지기 쉽다네. 감정이 요동칠 때 단 5초간 말하기를 멈추고 혀끝을 천장에 대어 에너지를 안으로 거두어들이는 훈련이 마음을 고요하게 해줄 걸세.' },
+      { key: 'wealth', name: '재성(🪙 - 추구하는 재물과 결과)', val: tenGods.wealth, tip: '자네는 일의 결과를 서둘러 완성하고 통제하려는 성향(재성)이 과도해져, 조급함과 불면증이 뇌의 깊은 휴식을 방해하기 쉬운 기류를 가졌네. 잠들기 전 10분 동안 통제할 수 없는 내일의 일들은 모두 내려놓고, 오직 숨결에 주의를 모으는 훈련을 진행하시게.' },
+      { key: 'power', name: '관성(⚖️ - 삶을 규율하는 통제와 평가)', val: tenGods.power, tip: '자네는 사회적 규범, 시선, 타인의 평가를 과하게 신경 쓰며 스스로를 엄격한 틀에 가두는 기운(관성)의 압박이 깊네. 번아웃이 오기 쉬우니 "지금의 사회적 역할은 연극 속 배역일 뿐"이라고 하루 세 번 인지적으로 자아를 분리(디커플링)해 보게.' },
+      { key: 'resource', name: '인성(📚 - 깊은 학문과 통찰)', val: tenGods.resource, tip: '자네는 인풋과 생각, 고민이 머릿속에 너무 많이 고여 있어(인성) 정작 행동으로 나아가지 못하고 생각의 감옥에 갇히는 특징이 있네. 무언가 망설여질 때 5, 4, 3, 2, 1 카운트다운을 외치고 즉시 발걸음을 떼는 행동 개시 솔루션이 특효약이라네.' }
+    ];
+    sipsinArr.sort((a, b) => b.val - a.val);
+    const dominantSipsin = sipsinArr[0];
+
+    const dmChar = (dayGan || '甲')[0];
+    let elementSolution = '';
+    if (dmChar === '甲' || dmChar === '乙' || dmChar === '갑' || dmChar === '을') {
+      elementSolution = '초록색 엽록소가 가득한 식물을 책상 위에 두고, 스트레스가 밀려올 때 잎사귀의 무늬를 가만히 1분간 응시하며 머리를 비워내 보시게. 목(木)의 싱그러움이 자네를 회복시켜 줄 걸세.';
+    } else if (dmChar === '丙' || dmChar === '丁' || dmChar === '병' || dmChar === '정') {
+      elementSolution = '방에 은은한 붉은 캔들이나 조명을 켜 두고, 흔들리는 불꽃을 멍하니 바라보는 불멍 호흡을 매주 10분씩 실행하시게. 과열된 감정의 화(火)를 평화롭게 다스려 줄 걸세.';
+    } else if (dmChar === '戊' || dmChar === '己' || dmChar === '무' || dmChar === '기') {
+      elementSolution = '흙의 묵직한 내음이 주는 샌달우드나 패출리 향의 에센셜 오일을 손목에 바르고 깊게 향을 들이마셔 보게. 둥둥 떠다니는 생각들을 대지(土)의 무게감으로 굳건히 잡아 줄 걸세.';
+    } else if (dmChar === '庚' || dmChar === '辛' || dmChar === '경' || dmChar === '신') {
+      elementSolution = '정갈하게 방을 청소해 불필요한 물건을 과감히 처분하고, 싱잉볼 사운드나 맑은 종소리를 감상하시게. 금(金) 특유의 예리한 긴장감을 부드러운 파동으로 이완해 줄 걸세.';
+    } else {
+      elementSolution = '미온수로 따뜻하게 통목욕을 하거나, 샤워할 때 물줄기가 정수리부터 자네 몸을 타고 흐르며 온갖 잡념과 피로를 대지로 씻어내린다고 깊이 심상화하시게. 수(水)의 맑은 순환이 일어날 걸세.';
+    }
+
+    setActiveModalData({
+      type: 'gap',
+      typeLabel: '🧘 내면 심리 갭(Gap) 분석 & 명심 코칭 솔루션',
+      mainIcon: '🧘',
+      title: '내면 갭 점수(' + gapScore + '점)와 자아 디커플링 코칭 가이드',
+      subtitle: '내면의 본질(속마음)과 사회적 페르소나(겉마음)의 아름다운 조화',
+      content: (
+        <div className="space-y-6 font-sans text-left max-h-[60vh] overflow-y-auto pr-1">
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 p-5 rounded-2xl shadow-sm space-y-3">
+            <span className="block font-bold text-amber-900 text-xs">📊 초보자를 위한 갭(Gap) 점수 풀이</span>
+            <p className="text-[#4A4744] text-sm leading-relaxed">
+              갭 점수란 자네가 타고난 <strong>'본래의 속마음(기질)'</strong>과 세상에 보여주고 있는 <strong>'겉마음(사회적 페르소나)'</strong> 사이의 에너지 격차를 뜻하네.
+            </p>
+            <div className="bg-white/80 p-3.5 rounded-xl border border-amber-100 text-xs text-slate-700 leading-loose">
+              📍 <strong>0 ~ 30점 (안정):</strong> 겉과 속이 매우 일치하여 편안하고 솔직하게 자아를 표현하고 있네.<br />
+              📍 <strong>31 ~ 60점 (경계):</strong> 사회생활을 위해 본래 기질을 조금 억누르고 있어 은근한 심적 피로감이 쌓이는 중이라네.<br />
+              📍 <strong>61 ~ 100점 (요망):</strong> 페르소나의 무게가 너무 무거워 내면 갈등과 정신적 과부하가 걸리기 쉬운 상태일세.
+            </div>
+            <p className="text-sm font-semibold text-amber-950 mt-1 border-t border-amber-200/40 pt-2 leading-relaxed">
+              💡 {scoreFeedback}
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/60 p-5 rounded-2xl shadow-sm space-y-3">
+            <span className="block font-bold text-purple-900 text-xs flex items-center gap-1">
+              👁️ 1:1 사주 기질 기반 명심 코칭 솔루션
+            </span>
+            <p className="text-[#4A4744] text-sm leading-relaxed">
+              사주 분석을 통해 내면 갈등을 일으키는 엉킨 실타래를 직시하고, 이를 조율하기 위한 자네만의 맞춤 행동과 공간 조율 기법을 조언하네.
+            </p>
+
+            <div className="space-y-3">
+              <div className="bg-white p-3.5 rounded-xl border border-purple-100 space-y-1">
+                <span className="block font-bold text-purple-950 text-xs flex items-center gap-1.5">
+                  🛡️ 십성(육친) 불균형 족집게 진단: <span className="text-purple-700 font-extrabold">{dominantSipsin.name}</span>
+                </span>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  {dominantSipsin.tip}
+                </p>
+              </div>
+
+              <div className="bg-white p-3.5 rounded-xl border border-purple-100 space-y-1">
+                <span className="block font-bold text-purple-950 text-xs flex items-center gap-1.5">
+                  🔮 일간 기류 연계 환경 조율 비책: <span className="text-indigo-700 font-extrabold">({dmChar}) 오행 솔루션</span>
+                </span>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  {elementSolution}
+                </p>
+              </div>
+
+              <div className="bg-white p-3.5 rounded-xl border border-purple-100 space-y-1">
+                <span className="block font-bold text-purple-950 text-xs">🧘 자아 디커플링 호흡 기법 (3-Minute Breathing Space)</span>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  일이나 관계에서 숨이 턱 막힐 때, 단 3분간 하던 일을 멈추고 실행하시게.<br />
+                  • <strong>1분 (알아차림):</strong> 지금 내 마음에 떠오른 스트레스와 감정을 있는 그대로 가만히 인지하네.<br />
+                  • <strong>2분 (주의 집중):</strong> 모든 의식을 콧구멍을 통과하는 숨결과 들숨/날숨의 파동에만 집중하네.<br />
+                  • <strong>3분 (확장):</strong> 집중된 에너지를 몸 전체의 감각과 공간 전체로 부드럽게 확장하여 고요함을 회복하네.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border-l-4 border-amber-500 p-5 rounded-r-2xl shadow-sm space-y-2">
+            <span className="block font-bold text-amber-900 text-xs">🌿 자네의 운명 흐름에 띄우는 편지</span>
+            <p className="text-[#3A3837] text-sm leading-relaxed italic font-medium">
+              "자네는 사주에서 일지 {dayJiFull} {dayJiSipsin}이 주는 깊은 성향과 월지 {monthJiFull} {monthJiSipsin}의 운명적 에너지 흐름 속에서 늘 남몰래 번민하고 치열하게 고민해 왔을 것이네. 세상이 자네에게 요구하는 기준을 맞추느라(겉마음), 원래 자유롭고 지혜롭게 흘러야 할 내면의 우주(속마음)를 너무 조여매고 있었던 것은 아닌지 가만히 돌아보게나. 이제 그만 세상의 채찍질을 내려놓고, 자네 본연의 호흡이 지닌 맑은 리듬으로 천천히 돌아오시게. 자네는 무언가를 완벽히 입증해내지 않아도, 지금 숨 쉬고 있는 그대로 이미 더없이 온전하고 위대하다네."
+            </p>
+          </div>
+        </div>
+      )
+    });
+  };
+
+  // ── 4.3 월별 재물/성취 운세 바 클릭 핸들러 (초고도화 1:1 공망 위로 카드 배너) ──
+  const handleMonthlyBarClick = (item: { month: string; ji: string; score: number; status: string; isGM: boolean }) => {
+    const dayGan = safeChar(activeSaju?.fourPillars?.day?.gan);
+    const dayJi = safeChar(activeSaju?.fourPillars?.day?.ji);
+    
+    // 지지 한글명 및 동물
+    const animal = ANIMAL_MAP[item.ji] || '';
+    
+    // 십신 획득
+    const monthSipsin = getTenGod(dayGan, item.ji, true);
+    
+    let modalTitle = `${item.month} (${item.ji}달) 재물/성취 에너지 분석`;
+    let modalContent = null;
+    let modalSubtitle = `에너지 점수: ${item.score}점 · ${item.status === 'success' ? '기회의 구간' : item.status === 'danger' ? '조심의 구간' : '보통의 구간'}`;
+    
+    if (item.isGM) {
+      modalTitle = `🌌 ${item.month} 특별 공망(空亡) 위로 카드 배너`;
+      modalSubtitle = `비워짐으로써 비로소 더 크게 채우는 운명적 쉼표`;
+      
+      // 초보자 맞춤형 해설 문구
+      modalContent = (
+        <div className="space-y-6 font-sans text-left max-h-[60vh] overflow-y-auto pr-1">
+          {/* 카드 배너 헤더 일러스트적 연출 */}
+          <div className="bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 text-purple-100 p-6 rounded-2xl shadow-lg border border-purple-500/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10 text-8xl font-serif">{item.ji}</div>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-black uppercase tracking-wider mb-3">
+              Void Cycle Solution
+            </span>
+            <h4 className="text-lg font-black text-white leading-snug">
+              아이고, 자네! {item.month}({item.ji}월)은 하늘이 자네에게 준 '마음 청소 기간'이자 '영혼의 방학'이라네.
+            </h4>
+            <p className="text-xs text-purple-200/90 leading-relaxed mt-2.5">
+              사주명리학에서 <strong>공망(空亡)</strong>이란 말 그대로 '구멍이 나 비어 있다'는 뜻일세. 초보자들은 이 단어만 들으면 가슴이 덜컥 내려앉지만, 실은 전혀 겁먹을 필요가 없다네! 밑 빠진 독처럼 채워도 채워지지 않는 이 시기는, 우주가 자네에게 <strong>"억지로 움켜쥐려 힘쓰지 말고, 잠시 손을 풀고 쉬어가라"</strong>며 마련해 준 특별한 '영혼의 안식년'이자 '성장의 징검다리'일세.
+            </p>
+          </div>
+
+          {/* 1:1 맞춤형 족집게 진단 */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-inner-sm space-y-4">
+            <div className="border-b border-purple-100 pb-3">
+              <span className="block text-xs font-bold text-purple-800 mb-1">🔍 1:1 사주 맞춤형 족집게 진단</span>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                자네의 <strong>{dayGan}{dayJi} 일주</strong> 기류에 비추어 볼 때, 이 {item.month}은 지지 <strong>{item.ji}({animal})</strong>과 결합하여 <strong>{monthSipsin}</strong>의 에너지 작용이 공망을 겪게 되네. 이는 평소보다 재물이나 일적인 성취에 집착할수록 밑 빠진 독에 물을 붓듯 허무함을 느끼기 쉽다는 뜻이라네.
+              </p>
+            </div>
+
+            {/* 환경 조율 비책 */}
+            <div className="space-y-3.5">
+              <span className="block text-xs font-bold text-slate-800">💡 {item.month}을 보내는 환경 조율 비책 (행동 솔루션)</span>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="bg-purple-50/50 p-3.5 rounded-xl border border-purple-100">
+                  <span className="block font-black text-purple-950 text-xs mb-1">🚫 1. 외부적 확장 및 투자 금지</span>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    새로운 프로젝트 시작, 큰 액수의 재물 투자, 낯선 이와의 동업 등은 이번 달만큼은 보류하시게. 에너지가 밖으로 분산되면 피로감만 깊어지네.
+                  </p>
+                </div>
+                
+                <div className="bg-emerald-50/50 p-3.5 rounded-xl border border-emerald-100">
+                  <span className="block font-black text-emerald-950 text-xs mb-1">📖 2. 공부와 내면의 내실 다지기</span>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    비어 있는 공간은 지혜로 채워야 하네. 책을 읽거나, 미뤄두었던 공부를 하거나, 명심 일기를 쓰며 마인드 컨트롤을 하는 데 아주 최적의 시기일세.
+                  </p>
+                </div>
+
+                <div className="bg-amber-50/50 p-3.5 rounded-xl border border-amber-100">
+                  <span className="block font-black text-amber-950 text-xs mb-1">🧘 3. 에고 비우기 3분 호흡법</span>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    하루에 한 번, 내면에 스쳐 지나가는 욕심과 불안감을 내쉬는 호흡에 태워 멀리 날려보내는 '비움 명상 리추얼'을 단 3분간 실행해 보게나.
+                  </p>
+                </div>
+
+                <div className="bg-blue-50/50 p-3.5 rounded-xl border border-blue-100">
+                  <span className="block font-black text-blue-950 text-xs mb-1">🏡 4. 머무는 공간 청소 리추얼</span>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    물리적인 공간이 비워지면 내면의 혼란도 함께 정돈되네. 책상 위를 깨끗이 닦고 불필요한 서류를 정리하는 것만으로도 운의 흐름이 치유되네.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 감동 멘토링 편지 */}
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 p-5 rounded-r-2xl shadow-sm">
+            <span className="block font-bold text-amber-900 text-xs mb-1">✉️ 자네에게 띄우는 감동의 편지</span>
+            <p className="text-[#3A3837] text-xs leading-relaxed italic font-medium">
+              "자네, 겨울철 앙상해진 나뭇가지를 본 적이 있는가? 나뭇잎을 다 떨어뜨린 그 모습이 흉해 보일지 몰라도, 사실 나무는 그 비워냄을 통해 매서운 겨울바람을 견디고 따뜻한 봄에 더 풍요로운 새싹을 틔울 준비를 하는 것이라네. 지금 자네의 인생 시계에서 {item.month}은 바로 그 '아름다운 비움의 계절'일세. 조급해하지 마시게. 남들과 비교하며 자신을 채찍질하지도 마시게. 이번 달만큼은 자네의 지친 몸과 영혼을 안아주고 맛있는 밥 한 끼 사주며 다독여 주게나. 비워진 그릇에 우주가 머지않아 더 값진 지혜와 축복을 가득 채워줄 것임을 내가 보증하겠네."
+            </p>
+          </div>
+        </div>
+      );
+    } else {
+      // 일반월 혹은 대길월 클릭 시 피드백
+      const statusText = item.status === 'success' ? '대길(大吉)의 기류가 흐르는 시기' : item.status === 'danger' ? '매사 돌다리도 두드려야 하는 조심의 시기' : '무난하고 평온하게 흘러가는 보통의 시기';
+      const statusIcon = item.status === 'success' ? '🚀' : item.status === 'danger' ? '🛡️' : '✨';
+      const detailFeedback = item.status === 'success' 
+        ? '이 달은 자네가 가진 재능과 운의 파도가 가장 높게 치솟는 최고의 타이밍일세! 가슴 속에 품어왔던 아이디어나 비즈니스 계획이 있다면 과감하게 도전을 밀어붙여 보시게. 하늘이 자네의 발걸음을 힘차게 밀어줄 것이니 머뭇거릴 틈이 없다네.'
+        : item.status === 'danger'
+        ? '이 달은 하늘의 기류가 잠시 숨을 고르며 거친 비바람을 보내는 시기일세. 무리한 확장이나 계약서 작성, 과도한 지출은 피하시고, 현상을 유지하며 스스로의 마음을 다스리는 보수적 전략이 최고라네. 이럴 때일수록 틈틈이 휴식을 취해주시게.'
+        : '이 달은 잔잔한 호수처럼 평화롭고 무난한 흐름이라네. 큰 무리 없이 일상이 순탄하게 흘러갈 것이니, 일상의 사소한 행복을 즐기고 평범함의 위대함을 감사하며 성실히 자리를 지키면 대길의 계절로 향하는 징검다리가 되어줄 걸세.';
+
+      modalContent = (
+        <div className="space-y-4 font-sans text-left">
+          <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+            <span className="block font-bold text-slate-800 text-xs mb-1">📊 {item.month} 흐름도 분석</span>
+            <p className="text-[#4A4744] text-sm leading-relaxed">
+              자네의 오행 원소(일간 중심) 순환 알고리즘에 기초한 {item.month} 운명지표는 <strong>{item.score}점</strong>으로 <strong>{statusText}</strong>에 해당하네.
+            </p>
+            <p className="text-xs text-slate-500 leading-relaxed mt-3 pt-3 border-t border-slate-200">
+              {statusIcon} <strong>코칭 솔루션:</strong> {detailFeedback}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    setActiveModalData({
+      type: 'monthly_gongmang',
+      typeLabel: `월별 재물/성취 에너지 진단`,
+      mainIcon: item.isGM ? '🌌' : '📈',
+      title: modalTitle,
+      subtitle: modalSubtitle,
+      content: modalContent
+    });
+  };
+
 
   // ── 5. 월별 재물/성취 흐름 데이터 계산 ──
   const monthlyScores = useMemo(() => {
@@ -717,28 +1351,37 @@ export default function MyeongsimCoachingDashboard({
     const waPct = elements.water / total;
 
     const baseScores = [
-      { month: '1월', score: 40 + waPct * 50 + ePct * 10 },
-      { month: '2월', score: 45 + wPct * 40 + waPct * 10 },
-      { month: '3월', score: 55 + wPct * 50 },
-      { month: '4월', score: 50 + wPct * 30 + ePct * 20 },
-      { month: '5월', score: 65 + fPct * 40 + wPct * 10 },
-      { month: '6월', score: 70 + fPct * 50 },
-      { month: '7월', score: 60 + fPct * 30 + ePct * 20 },
-      { month: '8월', score: 50 + mPct * 40 + fPct * 10 },
-      { month: '9월', score: 65 + mPct * 50 },
-      { month: '10월', score: 55 + mPct * 30 + ePct * 20 },
-      { month: '11월', score: 45 + waPct * 40 + mPct * 10 },
-      { month: '12월', score: 40 + waPct * 50 }
+      { month: '1월', ji: '寅', score: 40 + waPct * 50 + ePct * 10 },
+      { month: '2월', ji: '卯', score: 45 + wPct * 40 + waPct * 10 },
+      { month: '3월', ji: '辰', score: 55 + wPct * 50 },
+      { month: '4월', ji: '巳', score: 50 + wPct * 30 + ePct * 20 },
+      { month: '5월', ji: '午', score: 65 + fPct * 40 + wPct * 10 },
+      { month: '6월', ji: '未', score: 70 + fPct * 50 },
+      { month: '7월', ji: '申', score: 60 + fPct * 30 + ePct * 20 },
+      { month: '8월', ji: '酉', score: 50 + mPct * 40 + fPct * 10 },
+      { month: '9월', ji: '戌', score: 65 + mPct * 50 },
+      { month: '10월', ji: '亥', score: 55 + mPct * 30 + ePct * 20 },
+      { month: '11월', ji: '子', score: 45 + waPct * 40 + mPct * 10 },
+      { month: '12월', ji: '丑', score: 40 + waPct * 50 }
     ];
 
+    const dayGan = safeChar(activeSaju?.fourPillars?.day?.gan);
+    const dayJi = safeChar(activeSaju?.fourPillars?.day?.ji);
+    const gmBranches = getGongmangBranches(dayGan, dayJi);
+
     return baseScores.map(item => {
-      const rounded = Math.max(35, Math.min(98, Math.round(item.score)));
+      const isGM = gmBranches.includes(item.ji) || gmBranches.includes(ANIMAL_MAP[item.ji]);
+      // 공망인 경우 에너지가 약간 감쇄함을 명리학적으로 표현 (10% 감쇄하되 최소 35 유지)
+      const finalScore = isGM ? Math.max(35, Math.round(item.score * 0.9)) : Math.round(item.score);
+      const rounded = Math.max(35, Math.min(98, finalScore));
+      
       let status = 'warning';
       if (rounded >= 70) status = 'success';
       else if (rounded < 50) status = 'danger';
-      return { month: item.month, score: rounded, status };
+      
+      return { month: item.month, ji: item.ji, score: rounded, status, isGM };
     });
-  }, [elements]);
+  }, [elements, activeSaju]);
 
   // ── 6. 년월별 운세 매트릭스 계산 (2026년 5월 ~ 8월 기준) ──
   const sajuMatrixData = useMemo(() => {
@@ -842,11 +1485,18 @@ export default function MyeongsimCoachingDashboard({
     });
   }, [activeSaju]);
 
+  const isOhaengGujok = useMemo(() => {
+    return elements.wood >= 1 && elements.fire >= 1 && elements.earth >= 1 && elements.metal >= 1 && elements.water >= 1;
+  }, [elements]);
+
   // 대우주 기질 등급 (SSR, SR 등)
   const ssrBadge = useMemo(() => {
+    if (isOhaengGujok) {
+      return '👑 희소성: SSR 등급 (오행구족 조화파)';
+    }
     const isSpecial = tenGods.self >= 3 || tenGods.output >= 3 || tenGods.wealth >= 3 || tenGods.power >= 3 || tenGods.resource >= 3;
-    return isSpecial ? '👑 희소성: SSR 등급 (상위 0.1%)' : '💎 등급: SR 등급 (상위 1.5%)';
-  }, [tenGods]);
+    return isSpecial ? '👑 희소성: SSR 등급 (상위 0.1% 스페셜)' : '💎 등급: SR 등급 (상위 1.5%)';
+  }, [tenGods, isOhaengGujok]);
 
   // ── 모달 렌더링 ──
   const content = (
@@ -909,7 +1559,10 @@ export default function MyeongsimCoachingDashboard({
               ========================================== */}
           <div className="w-full bg-[#FAF9F5] p-6 rounded-3xl border border-[#EBE7DC] shadow-sm mb-8">
             <div className="text-center mb-6">
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-500 to-yellow-600 text-white text-xs font-bold rounded-full shadow-sm animate-pulse">
+              <span 
+                onClick={handleSSRClick}
+                className="cursor-pointer inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-500 to-yellow-600 text-white text-xs font-bold rounded-full shadow-sm animate-pulse hover:brightness-110 transition-all"
+              >
                 {ssrBadge}
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-[#2C2A29] mt-3 font-serif">운명 프로필 & 십성 분석</h2>
@@ -939,7 +1592,7 @@ export default function MyeongsimCoachingDashboard({
                     <div className="text-gray-400 text-[10px]">년주(年)</div>
 
                     {/* 천간 (천간행) */}
-                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.time?.gan, '시주 천간')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
                       activeSaju.fourPillars?.time?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       activeSaju.fourPillars?.time?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                       activeSaju.fourPillars?.time?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -950,7 +1603,7 @@ export default function MyeongsimCoachingDashboard({
                       <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.time?.gan}</span>
                       <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.time?.ganKor || activeSaju.fourPillars?.time?.ganElement}</span>
                     </div>
-                    <div className={`p-2.5 rounded-lg border-2 ring-2 ring-amber-500/20 flex flex-col items-center justify-center gap-1 ${
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.day?.gan, '일주 천간(기질)')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border-2 ring-2 ring-amber-500/20 flex flex-col items-center justify-center gap-1 ${
                       activeSaju.fourPillars?.day?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       activeSaju.fourPillars?.day?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                       activeSaju.fourPillars?.day?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -961,7 +1614,7 @@ export default function MyeongsimCoachingDashboard({
                       <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.day?.gan}</span>
                       <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.day?.ganKor || activeSaju.fourPillars?.day?.ganElement}</span>
                     </div>
-                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.month?.gan, '월주 천간')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
                       activeSaju.fourPillars?.month?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       activeSaju.fourPillars?.month?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                       activeSaju.fourPillars?.month?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -972,7 +1625,7 @@ export default function MyeongsimCoachingDashboard({
                       <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.month?.gan}</span>
                       <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.month?.ganKor || activeSaju.fourPillars?.month?.ganElement}</span>
                     </div>
-                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.year?.gan, '년주 천간')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
                       activeSaju.fourPillars?.year?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       activeSaju.fourPillars?.year?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                       activeSaju.fourPillars?.year?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -985,7 +1638,7 @@ export default function MyeongsimCoachingDashboard({
                     </div>
 
                     {/* 지지 (지지행) */}
-                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.time?.ji, '시주 지지')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
                       activeSaju.fourPillars?.time?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       activeSaju.fourPillars?.time?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                       activeSaju.fourPillars?.time?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -996,7 +1649,7 @@ export default function MyeongsimCoachingDashboard({
                       <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.time?.ji}</span>
                       <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.time?.jiKor || activeSaju.fourPillars?.time?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.time?.ji] || '동물'})</span>
                     </div>
-                    <div className={`p-2.5 rounded-lg border-2 ring-2 ring-amber-500/20 flex flex-col items-center justify-center gap-1 ${
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.day?.ji, '일주 지지')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border-2 ring-2 ring-amber-500/20 flex flex-col items-center justify-center gap-1 ${
                       activeSaju.fourPillars?.day?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       activeSaju.fourPillars?.day?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                       activeSaju.fourPillars?.day?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -1007,7 +1660,7 @@ export default function MyeongsimCoachingDashboard({
                       <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.day?.ji}</span>
                       <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.day?.jiKor || activeSaju.fourPillars?.day?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.day?.ji] || '동물'})</span>
                     </div>
-                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.month?.ji, '월주 지지')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
                       activeSaju.fourPillars?.month?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       activeSaju.fourPillars?.month?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                       activeSaju.fourPillars?.month?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -1018,7 +1671,7 @@ export default function MyeongsimCoachingDashboard({
                       <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.month?.ji}</span>
                       <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.month?.jiKor || activeSaju.fourPillars?.month?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.month?.ji] || '동물'})</span>
                     </div>
-                    <div className={`p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.year?.ji, '년주 지지')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
                       activeSaju.fourPillars?.year?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       activeSaju.fourPillars?.year?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                       activeSaju.fourPillars?.year?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -1078,14 +1731,28 @@ export default function MyeongsimCoachingDashboard({
                     <line x1="50" y1="50" x2="7" y2="36" stroke="#E6E0D2" strokeWidth="0.5" />
 
                     {/* 실제 데이터 폴리곤 (동적 바인딩 연산) */}
-                    <polygon points={radarPoints} fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" strokeWidth="1.5" />
+                    <polygon points={radarCoords?.pointsStr} fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" strokeWidth="1.5" />
                     
                     {/* 텍스트 축 라벨 */}
-                    <text x="50" y="2" textAnchor="middle" className="text-[5px] font-bold fill-[#8A8473]">비겁 (자비)</text>
-                    <text x="97" y="37" textAnchor="start" className="text-[5px] font-bold fill-green-600">식상 (표현)★</text>
-                    <text x="80" y="94" textAnchor="middle" className="text-[5px] font-bold fill-[#8A8473]">재성 (분별)</text>
-                    <text x="20" y="94" textAnchor="middle" className="text-[5px] font-bold fill-red-500">관성 (통제)⚠️</text>
-                    <text x="3" y="37" textAnchor="end" className="text-[5px] font-bold fill-[#8A8473]">인성 (통찰)</text>
+                    {/* 공망 꼭짓점 마커 오버레이 */}
+                    {sipsinGongmang.self && <circle cx={radarCoords?.pSelf?.x} cy={radarCoords?.pSelf?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
+                    {sipsinGongmang.output && <circle cx={radarCoords?.pOutput?.x} cy={radarCoords?.pOutput?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
+                    {sipsinGongmang.wealth && <circle cx={radarCoords?.pWealth?.x} cy={radarCoords?.pWealth?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
+                    {sipsinGongmang.power && <circle cx={radarCoords?.pPower?.x} cy={radarCoords?.pPower?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
+                    {sipsinGongmang.resource && <circle cx={radarCoords?.pResource?.x} cy={radarCoords?.pResource?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
+
+                    {/* 투명한 클릭 감지 원형 영역 (모바일/웹 터치 편의성 극대화) */}
+                    <circle cx={radarCoords?.pSelf?.x} cy={radarCoords?.pSelf?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('self')} />
+                    <circle cx={radarCoords?.pOutput?.x} cy={radarCoords?.pOutput?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('output')} />
+                    <circle cx={radarCoords?.pWealth?.x} cy={radarCoords?.pWealth?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('wealth')} />
+                    <circle cx={radarCoords?.pPower?.x} cy={radarCoords?.pPower?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('power')} />
+                    <circle cx={radarCoords?.pResource?.x} cy={radarCoords?.pResource?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('resource')} />
+
+                    <text x="50" y="2" textAnchor="middle" onClick={() => handleSipsinRadarClick('self')} className="text-[5px] font-bold fill-[#8A8473] cursor-pointer hover:fill-amber-600">비겁 (자비){sipsinGongmang.self ? '🌌' : ''}</text>
+                    <text x="97" y="37" textAnchor="start" onClick={() => handleSipsinRadarClick('output')} className="text-[5px] font-bold fill-green-600 cursor-pointer hover:fill-amber-600">식상 (표현)★{sipsinGongmang.output ? '🌌' : ''}</text>
+                    <text x="80" y="94" textAnchor="middle" onClick={() => handleSipsinRadarClick('wealth')} className="text-[5px] font-bold fill-[#8A8473] cursor-pointer hover:fill-amber-600">재성 (분별){sipsinGongmang.wealth ? '🌌' : ''}</text>
+                    <text x="20" y="94" textAnchor="middle" onClick={() => handleSipsinRadarClick('power')} className="text-[5px] font-bold fill-red-500 cursor-pointer hover:fill-amber-600">관성 (통제)⚠️{sipsinGongmang.power ? '🌌' : ''}</text>
+                    <text x="3" y="37" textAnchor="end" onClick={() => handleSipsinRadarClick('resource')} className="text-[5px] font-bold fill-[#8A8473] cursor-pointer hover:fill-amber-600">인성 (통찰){sipsinGongmang.resource ? '🌌' : ''}</text>
                   </svg>
                 </div>
                 <div className="flex gap-4 mt-3 text-xs font-medium">
@@ -1133,9 +1800,12 @@ export default function MyeongsimCoachingDashboard({
             </div>
 
             {/* 오른쪽: 내면 심리 갭 점수 원형 도넛 */}
-            <div className="flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-[#EBE7DC] pt-6 md:pt-0 md:pl-8">
-              <h3 className="text-sm font-bold text-[#5C5856] mb-4">자네의 겉과 속 갭(Gap) 점수</h3>
-              <div className="relative w-36 h-36 flex items-center justify-center">
+            <div 
+              onClick={handleGapScoreClick}
+              className="flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-[#EBE7DC] pt-6 md:pt-0 md:pl-8 cursor-pointer group hover:bg-[#FAF9F5] p-4 rounded-2xl transition-all duration-300"
+            >
+              <h3 className="text-sm font-bold text-[#5C5856] mb-4 group-hover:text-amber-700 transition-colors">자네의 겉과 속 갭(Gap) 점수</h3>
+              <div className="relative w-36 h-36 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                   <circle className="text-[#F4F1E9]" strokeWidth="3.5" stroke="currentColor" fill="none" cx="18" cy="18" r="15.915" />
                   <circle className="text-red-500 transition-all duration-1000" 
@@ -1147,12 +1817,12 @@ export default function MyeongsimCoachingDashboard({
                           cx="18" cy="18" r="15.915" />
                 </svg>
                 <div className="absolute text-center">
-                  <span className="text-3xl font-black text-[#2C2A29]">{gapScore}</span>
+                  <span className="text-3xl font-black text-[#2C2A29] group-hover:text-amber-800 transition-colors">{gapScore}</span>
                   <span className="text-xs block text-gray-400 font-bold tracking-tight">갭 점수</span>
                 </div>
               </div>
               <p className="text-xs text-center text-[#6E6A66] leading-relaxed mt-4 max-w-xs font-medium">
-                100점 만점 기준 · 높을수록 피로도와 내면의 갈등이 깊음을 뜻하네. <span className="text-red-500 font-bold">MBCT 자각 명상 완화 기법</span>이 추천되네.
+                100점 만점 기준 · 높을수록 피로도와 내면의 갈등이 깊음을 뜻하네. <span className="text-red-500 font-bold underline group-hover:text-red-600">명심 코칭 솔루션 가이드</span>가 추천되네.
               </p>
             </div>
           </div>
@@ -1269,29 +1939,46 @@ export default function MyeongsimCoachingDashboard({
               {monthlyScores.map((item, idx) => {
                 let barColor = 'bg-amber-400';
                 let textColor = 'text-amber-600';
-                if (item.status === 'success') { barColor = 'bg-emerald-500'; textColor = 'text-emerald-600'; }
-                if (item.status === 'danger') { barColor = 'bg-rose-500'; textColor = 'text-rose-500'; }
+                
+                if (item.isGM) {
+                  barColor = 'bg-gradient-to-t from-purple-500 via-indigo-500 to-purple-600 border border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.3)] animate-pulse';
+                  textColor = 'text-purple-600 font-extrabold';
+                } else if (item.status === 'success') {
+                  barColor = 'bg-emerald-500';
+                  textColor = 'text-emerald-600';
+                } else if (item.status === 'danger') {
+                  barColor = 'bg-rose-500';
+                  textColor = 'text-rose-500';
+                }
 
                 return (
-                  <div key={idx} className="flex flex-col items-center flex-1 min-w-[32px] group">
-                    <span className={`text-xs font-bold ${textColor} mb-1 opacity-90 group-hover:scale-110 transition-transform`}>
+                  <div 
+                    key={idx} 
+                    onClick={() => handleMonthlyBarClick(item)}
+                    className="flex flex-col items-center flex-1 min-w-[32px] group cursor-pointer hover:scale-105 transition-all duration-300"
+                  >
+                    <span className={`text-xs font-bold ${textColor} mb-1 opacity-90 group-hover:scale-110 transition-transform flex items-center gap-0.5`}>
                       {item.score}
+                      {item.isGM && <span className="text-[10px] animate-bounce">🌌</span>}
                     </span>
                     <div 
                       className={`w-full max-w-[18px] ${barColor} rounded-t-sm transition-all duration-1000 ease-out origin-bottom hover:brightness-95`}
                       style={{ height: `${item.score * 1.3}px` }}
                     ></div>
-                    <span className="text-[11px] font-medium text-gray-500 mt-2 whitespace-nowrap">{item.month}</span>
+                    <span className={`text-[11px] font-medium mt-2 whitespace-nowrap ${item.isGM ? 'text-purple-700 font-black' : 'text-gray-500'}`}>
+                      {item.month}
+                    </span>
                   </div>
                 );
               })}
             </div>
 
             {/* 상태 안내 라벨 */}
-            <div className="flex justify-center gap-4 mt-4 text-xs font-semibold text-[#5C5856]">
+            <div className="flex justify-center flex-wrap gap-4 mt-4 text-xs font-semibold text-[#5C5856]">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>올해 타이밍의 달</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-amber-400 rounded-full"></span>보통의 달</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-rose-500 rounded-full"></span>조심해야 하는 달</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-gradient-to-tr from-purple-500 to-indigo-500 rounded-full animate-pulse"></span>공망월(비움의 달) 🌌</span>
             </div>
           </div>
 
@@ -1306,9 +1993,7 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="bg-[#F8F6F0] text-[#5C5856] font-bold border-b border-[#EAE6DB]">
                     <th className="py-3 px-2 border-r border-[#EAE6DB] bg-[#F1EDE2] w-24">년/월</th>
                     {sajuMatrixData.map((col, idx) => (
-                      <th key={idx} className={`py-3 px-3 border-r border-[#EAE6DB] min-w-[100px] ${col.active ? 'ring-2 ring-rose-500 ring-inset bg-rose-50/30' : ''}`}>
-                        {col.date}
-                      </th>
+                      <th key={idx} onClick={() => handleMonthlyCellClick(col)} className={`cursor-pointer hover:bg-rose-50/50 py-3 px-3 border-r border-[#EAE6DB] min-w-[100px] ${col.active ? 'ring-2 ring-rose-500 ring-inset bg-rose-50/30' : ''}`}>{col.date} 🔍</th>
                     ))}
                   </tr>
                 </thead>
@@ -1373,9 +2058,7 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="bg-[#F8F6F0] text-[#5C5856] font-bold border-b border-[#EAE6DB]">
                     <th className="py-3 px-2 border-r border-[#EAE6DB] bg-[#F1EDE2] w-24">구분</th>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <th key={idx} className={`py-3 px-3 border-r border-[#EAE6DB] min-w-[100px] ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/30' : ''}`}>
-                        {col.isActive ? '현재 대운' : `${idx + 1}대운`}
-                      </th>
+                      <th key={idx} onClick={() => handleDaewoonCellClick(col)} className={`cursor-pointer hover:bg-red-50/50 py-3 px-3 border-r border-[#EAE6DB] min-w-[100px] ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/30' : ''}`}>{col.isActive ? '현재 대운' : `${idx + 1}대운`} 🔍</th>
                     ))}
                   </tr>
                 </thead>
@@ -1603,10 +2286,43 @@ export default function MyeongsimCoachingDashboard({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1050] overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-slate-200">
-        {content}
+    <>
+      <div className="fixed inset-0 z-[1050] overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-slate-200">
+          {content}
+        </div>
       </div>
-    </div>
+      
+      {/* 🔮 팝업 치유 모달 */}
+      {activeModalData && (
+        <div className="fixed inset-0 z-[2000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300">
+          <div className="bg-[#FAF9F5] rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-amber-200/50 relative transform transition-all max-h-[85vh] overflow-y-auto text-[#2C2A29]">
+            <button
+              onClick={() => setActiveModalData(null)}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition-colors border border-slate-200 shadow-sm"
+            >
+              <X size={18} />
+            </button>
+            <div className="text-left mb-5 border-b border-amber-100 pb-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-700 text-[10px] font-bold rounded-full uppercase tracking-wider shadow-sm mb-3">
+                {activeModalData.mainIcon} {activeModalData.typeLabel}
+              </span>
+              <h3 className="text-xl font-black text-[#1F1E1D] font-serif tracking-tight">{activeModalData.title}</h3>
+              {activeModalData.subtitle && <p className="text-xs font-semibold text-amber-600 mt-1">{activeModalData.subtitle}</p>}
+            </div>
+            <div>{activeModalData.content}</div>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setActiveModalData(null)}
+                className="px-6 py-2.5 bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 text-white font-bold text-xs rounded-xl shadow-md transition-all duration-200"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </>
   );
 }

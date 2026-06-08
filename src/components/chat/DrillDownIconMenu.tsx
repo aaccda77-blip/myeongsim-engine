@@ -15,6 +15,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Music, X, Globe, Cpu } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { TalentAnalysisModule } from '@/modules/TalentAnalysisModule';
 import TalentReportCard from '@/components/chat/TalentReportCard';
 import HealingMusicPlayerModal from '@/components/chat/HealingMusicPlayerModal'; // [NEW] Refactored Component
@@ -433,15 +434,18 @@ interface DrillDownIconMenuProps {
     userProfile?: any;
     onSelectIntent: (intent: string, prompt: string) => void;
     hideTodayEnergy?: boolean; // [NEW] 챗봇 상담 중 Today Energy 숨기기
+    initialSectionId?: string; // [New] 딥 링크용 초기 섹션 ID
 }
 
 // ============== 메인 컴포넌트 ==============
 export default function DrillDownIconMenu({
     userProfile,
     onSelectIntent,
-    hideTodayEnergy = false
+    hideTodayEnergy = false,
+    initialSectionId
 }: DrillDownIconMenuProps) {
     const { language, setLanguage, t } = useLanguage();
+    const router = useRouter();
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [selectedIcon, setSelectedIcon] = useState<MainIcon | null>(null);
     const [hoveredSubItem, setHoveredSubItem] = useState<string | null>(null);
@@ -493,6 +497,13 @@ export default function DrillDownIconMenu({
     const [showDecodeReport, setShowDecodeReport] = useState(false);
     const [showPremiumReport, setShowPremiumReport] = useState(false);
     const { reportData } = useReportStore();
+
+    // [New] 딥 링크 연동을 위해 initialSectionId가 존재하면 108 자각 new 대시보드를 바로 활성화합니다.
+    useEffect(() => {
+        if (initialSectionId) {
+            setShowHealing108NewReport(true);
+        }
+    }, [initialSectionId]);
 
     const handleDecodeClick = () => {
         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
@@ -1194,6 +1205,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 제로 캡슐 메뉴 — 오늘의 디지털 알약 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => router.push('/zero-capsule')}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(79, 70, 229, 0.2))',
+                        border: '1px solid rgba(59, 130, 246, 0.4)',
+                        boxShadow: '0 4px 15px rgba(59, 130, 246, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>💊</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#60a5fa' }}>제로 캡슐</div>
+                        <div style={styles.neuroTrigger}>오늘의 디지털 알약</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 명심 OS 코칭 메뉴 */}
                 <button
                     style={styles.iconButton}
@@ -1614,6 +1646,7 @@ export default function DrillDownIconMenu({
                 isOpen={showHealing108NewReport}
                 onClose={() => setShowHealing108NewReport(false)}
                 userProfile={userProfile}
+                initialSectionId={initialSectionId}
             />
 
             {/* [NEW] 명심 OS 대시보드 */}

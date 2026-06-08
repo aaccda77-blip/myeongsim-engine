@@ -213,12 +213,12 @@ export function calculateSaju(
             const currentYear = new Date().getFullYear();
 
             for (const dy of daewoonList) {
-                if (dy.getStartYear() <= currentYear && dy.getEndYear() >= currentYear) {
+                if (dy.getGanZhi() && dy.getStartYear() <= currentYear && dy.getEndYear() >= currentYear) {
                     currentDaewoon = `${dy.getGanZhi()} 대운`;
                 }
 
-                // Add first 10 daewoons (limit bounds for safety)
-                if (extractedDaewoonList.length < 10) {
+                // Add first 10 daewoons (limit bounds for safety, exclude empty pre-daewoon)
+                if (dy.getGanZhi() && extractedDaewoonList.length < 10) {
                     extractedDaewoonList.push({
                         startYear: dy.getStartYear(),
                         endYear: dy.getEndYear(),
