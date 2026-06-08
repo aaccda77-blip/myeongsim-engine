@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import { Sparkles, Loader2 } from 'lucide-react'; // [NEW] Icon imports
+import { Sparkles, Loader2, RefreshCw } from 'lucide-react';
+import CandyRitualCanvas from '@/components/coaching/CandyRitualCanvas';
 
 interface PillData {
   id?: string;
@@ -14,6 +15,29 @@ interface PillData {
   shift: string;
   log: string;
   target_date?: string;
+}
+
+// 타이핑 애니메이션 효과를 주는 간단한 컴포넌트
+function TypingText({ text, speed = 25 }: { text: string; speed?: number }) {
+  const [displayedText, setDisplayedText] = useState('');
+
+  useEffect(() => {
+    setDisplayedText('');
+    if (!text) return;
+    
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayedText((prev) => prev + text.charAt(i));
+      i++;
+      if (i >= text.length) {
+        clearInterval(interval);
+      }
+    }, speed);
+
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return <span className="whitespace-pre-line">{displayedText}</span>;
 }
 
 export default function ZeroCapsulePage() {
@@ -133,7 +157,7 @@ export default function ZeroCapsulePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-zinc-100 p-6 flex flex-col justify-between font-sans relative">
+    <div className="min-h-screen bg-[#07090e] text-zinc-100 p-6 flex flex-col justify-between font-sans relative overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -142,11 +166,20 @@ export default function ZeroCapsulePage() {
         .animate-fadeIn {
           animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        .text-glow-yellow {
+          text-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+        }
+        .text-glow-purple {
+          text-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+        }
+        .text-glow-blue {
+          text-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
+        }
       `}} />
 
       {/* 모듈 헤더 */}
       <div className="flex justify-between items-center border-b border-zinc-900 pb-4 text-xs font-mono text-zinc-500 z-10">
-        <button onClick={() => router.push('/')} className="hover:text-zinc-300 transition-all">← BACK_TO_OS</button>
+        <button onClick={() => router.push('/')} className="hover:text-zinc-300 transition-all cursor-pointer">← BACK_TO_OS</button>
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setShowHistory(true)} 
@@ -154,7 +187,7 @@ export default function ZeroCapsulePage() {
           >
             📚 HISTORY
           </button>
-          <div className="text-zinc-500 tracking-widest flex items-center gap-1.5">
+          <div className="text-zinc-500 tracking-widest flex items-center gap-1.5 select-none">
             <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse"></span>
             CAPSULE_ACTIVE
           </div>
@@ -162,91 +195,132 @@ export default function ZeroCapsulePage() {
       </div>
 
       {/* 메인 리추얼 캔버스 */}
-      <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full py-8 z-10">
+      <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full py-6 z-10 space-y-6">
+        
+        {/* 알사탕 애니메이션 캔버스 영역 배치 */}
+        <CandyRitualCanvas phase={phase} flavor={pill.flavor} />
+
         {phase === 'intro' && (
-          <div className="text-center space-y-8 animate-fadeIn">
-            <div className="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-b from-blue-500/20 to-indigo-500/5 border border-blue-500/30 flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(59,130,246,0.25)] animate-pulse">💊</div>
+          <div className="text-center space-y-6 animate-fadeIn">
             <div className="space-y-2">
-              <span className="px-3 py-1 bg-blue-950/50 border border-blue-900/50 rounded-full text-xs font-mono text-blue-400 tracking-wider inline-block">{pill.flavor}</span>
-              {pill.target_date && <span className="text-[10px] text-zinc-600 block mt-1 font-mono">// DATE: {pill.target_date}</span>}
-              <h1 className="text-2xl font-bold tracking-tight text-zinc-200 pt-3">
-                {data ? "오늘의 디지털 명심처방" : "디지털 알약 미처방 상태"}
+              <span className="px-3 py-1 bg-blue-950/50 border border-blue-900/50 rounded-full text-xs font-mono text-blue-400 tracking-wider inline-block">
+                {pill.flavor}
+              </span>
+              {pill.target_date && (
+                <span className="text-[10px] text-zinc-600 block mt-1 font-mono">// COMPILING_DATE: {pill.target_date}</span>
+              )}
+              <h1 className="text-2xl font-bold tracking-tight text-zinc-200 pt-2 font-serif">
+                {data ? "디지털 알사탕 리추얼" : "디지털 알사탕 조제 대기"}
               </h1>
-              <p className="text-sm text-zinc-500 font-mono">
-                {data ? "코딩된 일진 알고리즘 디버깅" : "우측 상단 HISTORY에서 알약을 생성해 주세요"}
+              <p className="text-xs text-zinc-500 font-mono">
+                {data ? "마음의 과열된 하드웨어 시스템 디버그" : "우측 상단 HISTORY에서 새로운 알사탕을 받아보세요"}
               </p>
             </div>
             
             {data ? (
-              <button onClick={() => setPhase('scan')} className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm tracking-wide transition-all active:scale-[0.98] shadow-[0_4px_15px_rgba(59,130,246,0.3)]">
-                알약 복용 및 스캔 시작
+              <button 
+                onClick={() => setPhase('scan')} 
+                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-sm tracking-wide transition-all active:scale-[0.98] shadow-[0_4px_20px_rgba(59,130,246,0.3)] cursor-pointer"
+              >
+                디지털 알사탕 녹여 먹기 (리추얼 시작)
               </button>
             ) : (
-              <button onClick={() => setShowHistory(true)} className="w-full py-4 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-blue-400 font-semibold rounded-xl text-sm tracking-wide transition-all active:scale-[0.98]">
-                📚 과거 복용 이력 / 알약 생성 열기
+              <button 
+                onClick={() => setShowHistory(true)} 
+                className="w-full py-4 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-blue-400 font-semibold rounded-xl text-sm tracking-wide transition-all active:scale-[0.98] cursor-pointer"
+              >
+                📚 과거 복용 기록 / 신규 처방 받기
               </button>
             )}
           </div>
         )}
 
         {phase !== 'intro' && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="grid grid-cols-3 gap-2 font-mono text-[10px] text-center text-zinc-600">
+          <div className="space-y-5 animate-fadeIn">
+            {/* 상단 3단계 네비게이션 탭 */}
+            <div className="grid grid-cols-3 gap-2 font-mono text-[9px] text-center text-zinc-600">
               <button 
                 onClick={() => setPhase('scan')}
-                className={`py-1.5 rounded-md border transition-all ${phase === 'scan' ? 'border-yellow-500/50 text-yellow-500 bg-yellow-500/5' : 'border-zinc-900 hover:text-zinc-400'}`}
+                className={`py-2 rounded-md border transition-all cursor-pointer ${phase === 'scan' ? 'border-yellow-500/50 text-yellow-400 bg-yellow-500/5 font-bold text-glow-yellow' : 'border-zinc-900 hover:text-zinc-400'}`}
               >
-                01_SCAN
+                01_SCAN (스캔)
               </button>
               <button 
                 onClick={() => setPhase('sync')}
-                className={`py-1.5 rounded-md border transition-all ${phase === 'sync' ? 'border-purple-500/50 text-purple-500 bg-purple-500/5' : 'border-zinc-900 hover:text-zinc-400'}`}
+                className={`py-2 rounded-md border transition-all cursor-pointer ${phase === 'sync' ? 'border-purple-500/50 text-purple-400 bg-purple-500/5 font-bold text-glow-purple' : 'border-zinc-900 hover:text-zinc-400'}`}
               >
-                02_SYNC
+                02_SYNC (동기화)
               </button>
               <button 
                 onClick={() => setPhase('shift')}
-                className={`py-1.5 rounded-md border transition-all ${phase === 'shift' ? 'border-blue-400/50 text-blue-400 bg-blue-400/5' : 'border-zinc-900 hover:text-zinc-400'}`}
+                className={`py-2 rounded-md border transition-all cursor-pointer ${phase === 'shift' ? 'border-blue-400/50 text-blue-400 bg-blue-400/5 font-bold text-glow-blue' : 'border-zinc-900 hover:text-zinc-400'}`}
               >
-                03_SHIFT
+                03_SHIFT (시프트)
               </button>
             </div>
 
-            <div className="p-6 bg-zinc-950/80 border border-zinc-900 rounded-2xl shadow-xl min-h-[280px] flex flex-col justify-between">
+            {/* 디버그 텍스트 터미널 콘솔 */}
+            <div className="p-6 bg-zinc-950/80 border border-zinc-900 rounded-2xl shadow-xl min-h-[220px] flex flex-col justify-between backdrop-blur-md">
               <div>
-                <span className="text-[10px] font-mono tracking-widest text-zinc-600 block mb-2">
-                  TARGET_LOG // {phase.toUpperCase()} {pill.target_date ? `// ${pill.target_date}` : ''}
+                <span className="text-[10px] font-mono tracking-widest text-zinc-600 block mb-2 select-none">
+                  MYONGSIM_OS_LOG // {phase.toUpperCase()} {pill.target_date ? `// DATE_${pill.target_date}` : ''}
                 </span>
-                {phase === 'scan' && <span className="text-xs font-semibold text-yellow-500 mb-2 block font-mono">{pill.keyword}</span>}
-                <p className="text-sm sm:text-base text-zinc-300 leading-relaxed tracking-tight whitespace-pre-line">
-                  {phase === 'scan' && pill.scan}
-                  {phase === 'sync' && pill.sync}
-                  {phase === 'shift' && pill.shift}
+                
+                {phase === 'scan' && (
+                  <span className="text-xs font-semibold text-yellow-500 mb-2 block font-mono">
+                    [!] KEYWORD // {pill.keyword}
+                  </span>
+                )}
+                {phase === 'sync' && (
+                  <span className="text-xs font-semibold text-purple-400 mb-2 block font-mono">
+                    [*] SYNC_CONNECTED // 제로포인트 주파수 정렬
+                  </span>
+                )}
+                {phase === 'shift' && (
+                  <span className="text-xs font-semibold text-blue-400 mb-2 block font-mono">
+                    [#] SHIFT_COMPLETE // 본질 스크린 각성
+                  </span>
+                )}
+
+                <p className="text-sm text-zinc-300 leading-relaxed tracking-tight">
+                  {phase === 'scan' && <TypingText text={pill.scan} speed={15} />}
+                  {phase === 'sync' && <TypingText text={pill.sync} speed={15} />}
+                  {phase === 'shift' && <TypingText text={pill.shift} speed={15} />}
                 </p>
               </div>
 
               {phase === 'shift' && (
-                <div className="mt-4 p-4 bg-zinc-900/50 border border-zinc-900 rounded-xl font-mono text-xs text-zinc-500 border-l-2 border-l-blue-400">
-                  <div className="text-[10px] text-zinc-600">MIND_CORE_LOG:</div>
-                  <div className="italic mt-0.5 text-zinc-400">"{pill.log}"</div>
+                <div className="mt-4 p-4 bg-zinc-900/40 border border-zinc-900 rounded-xl font-mono text-[11px] text-zinc-500 border-l-2 border-l-blue-400 animate-fadeIn">
+                  <div className="text-[9px] text-zinc-600 select-none">OPERATOR_FINAL_LOG:</div>
+                  <div className="italic mt-1 text-zinc-400">"{pill.log}"</div>
                 </div>
               )}
             </div>
 
-            <div className="pt-2">
+            {/* 하단 진행 제어 버튼 */}
+            <div className="pt-1">
               {phase === 'scan' && (
-                <button onClick={() => setPhase('sync')} className="w-full py-4 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-yellow-500 text-sm font-medium rounded-xl transition-all active:scale-[0.98]">
-                  다크코드 스캔 완료 ➔ 싱크 단계로
+                <button 
+                  onClick={() => setPhase('sync')} 
+                  className="w-full py-4 bg-zinc-900/80 border border-yellow-500/20 hover:bg-zinc-800/80 text-yellow-500 text-sm font-medium rounded-xl transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(234,179,8,0.05)] cursor-pointer"
+                >
+                  하드웨어 스캔 완료 ➔ 싱크(Sync) 동기화
                 </button>
               )}
               {phase === 'sync' && (
-                <button onClick={() => setPhase('shift')} className="w-full py-4 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-purple-400 text-sm font-medium rounded-xl transition-all active:scale-[0.98]">
-                  뉴럴코드 동기화 완료 ➔ 제로포인트 시프트
+                <button 
+                  onClick={() => setPhase('shift')} 
+                  className="w-full py-4 bg-zinc-900/80 border border-purple-500/20 hover:bg-zinc-800/80 text-purple-400 text-sm font-medium rounded-xl transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(168,85,247,0.05)] cursor-pointer"
+                >
+                  제로포인트 동기화 완료 ➔ 스크린 시프트(Shift)
                 </button>
               )}
               {phase === 'shift' && (
-                <button onClick={() => router.push('/')} className="w-full py-4 bg-zinc-100 hover:bg-white text-black text-sm font-bold rounded-xl transition-all shadow-[0_4px_20px_rgba(255,255,255,0.1)] active:scale-[0.98]">
-                  완전한 제로포인트(0)로 오늘 정산 끝
+                <button 
+                  onClick={() => router.push('/')} 
+                  className="w-full py-4 bg-zinc-100 hover:bg-white text-black text-sm font-bold rounded-xl transition-all shadow-[0_4px_25px_rgba(255,255,255,0.15)] active:scale-[0.98] cursor-pointer"
+                >
+                  제로포인트 복귀 완료 (오늘의 리추얼 정산 끝)
                 </button>
               )}
             </div>
@@ -257,29 +331,29 @@ export default function ZeroCapsulePage() {
       {/* 히스토리 리스트 모달 (생성 기능 통합) */}
       {showHistory && (
         <div className="fixed inset-0 bg-black/80 backdrop-filter backdrop-blur-md flex items-center justify-center p-6 z-50 animate-fadeIn">
-          <div className="bg-[#0b0e14] border border-zinc-900 rounded-2xl w-full max-w-md p-6 max-h-[85vh] flex flex-col justify-between shadow-2xl relative">
+          <div className="bg-[#0b0e14]/95 border border-zinc-900 rounded-2xl w-full max-w-md p-6 max-h-[85vh] flex flex-col justify-between shadow-2xl relative">
             <div>
               <div className="flex justify-between items-center border-b border-zinc-900 pb-3 mb-4">
-                <h2 className="text-base font-bold text-zinc-200 font-mono flex items-center gap-2">
-                  <span>💊</span> CAPSULE_ARCHIVE
+                <h2 className="text-sm font-bold text-zinc-200 font-mono flex items-center gap-2">
+                  <span>🍬</span> CAPSULE_ARCHIVE
                 </h2>
                 <button 
                   onClick={() => setShowHistory(false)} 
-                  className="text-zinc-500 hover:text-zinc-300 font-mono text-xs cursor-pointer border border-zinc-800 px-2 py-1 rounded hover:bg-zinc-900"
+                  className="text-zinc-500 hover:text-zinc-300 font-mono text-xs cursor-pointer border border-zinc-800 px-2 py-1 rounded hover:bg-zinc-900 transition-colors"
                 >
                   CLOSE [X]
                 </button>
               </div>
 
               {/* 알약 AI 생성 보드 */}
-              <div className="mb-5 p-4 bg-zinc-950 border border-zinc-900 rounded-xl text-center space-y-3">
+              <div className="mb-5 p-4 bg-zinc-950/80 border border-zinc-900 rounded-xl text-center space-y-3">
                 <div className="flex items-center justify-center gap-1.5 text-[10px] font-mono text-blue-400">
                   <Sparkles className="w-3.5 h-3.5 text-yellow-500 animate-pulse" />
                   <span>CAPSULE_COMPILER v2.5</span>
                 </div>
                 
                 {isTodayGenerated ? (
-                  <div className="py-2.5 px-3 bg-zinc-900 border border-zinc-800 rounded-xl text-[10px] text-zinc-400 leading-relaxed font-semibold">
+                  <div className="py-2.5 px-3 bg-zinc-900/60 border border-zinc-800/80 rounded-xl text-[10px] text-zinc-400 leading-relaxed font-semibold">
                     ✅ 오늘의 디지털 알약이 이미 처방되었습니다.<br/>
                     <span className="text-zinc-600 font-normal">이미 생성된 거면 다음날 새롭게 생성 가능합니다.</span>
                   </div>
@@ -287,7 +361,7 @@ export default function ZeroCapsulePage() {
                   <button
                     onClick={handleGenerateCapsule}
                     disabled={isGenerating}
-                    className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 text-white font-bold rounded-xl text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-[0_2px_10px_rgba(59,130,246,0.2)]"
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 text-white font-bold rounded-xl text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-[0_2px_10px_rgba(59,130,246,0.2)] cursor-pointer"
                   >
                     {isGenerating ? (
                       <>
@@ -303,8 +377,8 @@ export default function ZeroCapsulePage() {
                   </button>
                 )}
                 
-                <p className="text-[9px] text-zinc-600 leading-relaxed">
-                  ※ 하루에 한 알의 자각 알약만 조제되어 기록됩니다. 중복 컴파일이 차단되어 토큰 폭탄을 예방합니다.
+                <p className="text-[9px] text-zinc-600 leading-relaxed select-none">
+                  ※ 하루에 한 알의 자각 알사탕만 조제되어 기록됩니다. 중복 컴파일이 차단되어 토큰 폭탄을 예방합니다.
                 </p>
               </div>
               
@@ -339,7 +413,7 @@ export default function ZeroCapsulePage() {
       )}
 
       {/* 푸터 시스템 로그 표시 */}
-      <div className="text-center text-[10px] font-mono text-zinc-700 tracking-widest z-10">
+      <div className="text-center text-[9px] font-mono text-zinc-700 tracking-widest z-10 select-none">
         MYONGSIM COCHING OS V2.5 // BY LEE KYUNG-YOON
       </div>
     </div>
