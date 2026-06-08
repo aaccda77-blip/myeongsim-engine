@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { Sparkles, Loader2 } from 'lucide-react'; // [NEW] Icon imports
 
 interface PillData {
   id?: string;
@@ -22,8 +23,38 @@ export default function ZeroCapsulePage() {
   const [history, setHistory] = useState<PillData[]>([]);
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [phase, setPhase] = useState<'intro' | 'scan' | 'sync' | 'shift'>('intro');
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
-  // 데이터 무결성 및 로그인 세션 보호를 위한 API 호출
+  // KST 오늘 날짜 헬퍼
+  const getKstTodayStr = () => {
+    const today = new Date();
+    const kstDate = new Date(today.getTime() + 9 * 60 * 60 * 1000);
+    return kstDate.toISOString().split('T')[0];
+  };
+
+  const todayStr = getKstTodayStr();
+  const isTodayGenerated = history.some(item => item.target_date === todayStr);
+
+  const fetchHistoryAndToday = async () => {
+    try {
+      // 오늘의 알약 정보 획득 (단순 조회, 자동 생성 없음)
+      const res = await fetch('/api/zero-capsule/today');
+      if (res.ok) {
+        const json = await res.json();
+        setData(json);
+      }
+
+      // 전체 과거 복용 이력 획득
+      const histRes = await fetch('/api/zero-capsule/history');
+      if (histRes.ok) {
+        const histJson = await histRes.json();
+        setHistory(histJson);
+      }
+    } catch (err) {
+      console.error("알약 데이터 로딩 에러:", err);
+    }
+  };
+
   useEffect(() => {
     async function checkAuthAndFetch() {
       try {
@@ -32,22 +63,9 @@ export default function ZeroCapsulePage() {
           router.push('/login');
           return;
         }
-
-        // 오늘의 알약 정보 획득
-        const res = await fetch('/api/zero-capsule/today');
-        if (res.ok) {
-          const json = await res.json();
-          setData(json);
-        }
-
-        // 전체 과거 복용 이력 획득
-        const histRes = await fetch('/api/zero-capsule/history');
-        if (histRes.ok) {
-          const histJson = await histRes.json();
-          setHistory(histJson);
-        }
+        await fetchHistoryAndToday();
       } catch (err) {
-        console.error("알약 데이터 로딩 에러:", err);
+        console.error("인증 및 초기화 에러:", err);
       } finally {
         setLoading(false);
       }
@@ -55,7 +73,40 @@ export default function ZeroCapsulePage() {
     checkAuthAndFetch();
   }, [router]);
 
-  // 과거 알약 데이터를 불러올 때 캐싱 이력 재조정 헬퍼
+  // AI 캡슐 생성 요청 핸들러
+  const handleGenerateCapsule = async () => {
+    if (isTodayGenerated) {
+      alert("이미 오늘의 디지털 알약이 생성되었습니다. 다음날 새롭게 생성 가능합니다.");
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const res = await fetch('/api/zero-capsule/today?generate=true');
+      if (res.ok) {
+        const generatedPill = await res.json();
+        setData(generatedPill);
+        
+        // 이력 다시 불러오기
+        const histRes = await fetch('/api/zero-capsule/history');
+        if (histRes.ok) {
+          setHistory(await histRes.json());
+        }
+        
+        alert("오늘의 새로운 디지털 알약이 컴파일되어 포장되었습니다! 💊");
+        setPhase('intro'); // 생성된 알약을 복용할 수 있도록 인트로 단계로 세팅
+        setShowHistory(false); // 모달 닫기
+      } else {
+        throw new Error("알약 생성 실패");
+      }
+    } catch (err) {
+      console.error("알약 생성 에러:", err);
+      alert("알약을 생성하는 도중 에러가 발생했습니다. 다시 시도해 주세요.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleLoadHistory = (historyItem: PillData) => {
     setData(historyItem);
     setPhase('scan');
@@ -71,19 +122,18 @@ export default function ZeroCapsulePage() {
     );
   }
 
-  // 데이터가 없을 경우를 대비한 가상 디폴트 셋 (현침살 베이스)
+  // 데이터가 없을 경우를 대비한 가상 디폴트 셋 (오늘 자 알약 미생성 시 안내용)
   const pill = data || {
-    flavor: "현침 100mg (날카로운 자각의 맛)",
-    keyword: "현침살(懸針煞) - 정밀한 안목",
-    scan: "오늘 유독 주변 상황이 예민하게 쪼개져 보이고 나도 모르게 스스로나 타인을 꼬집어 비판하려는 데이터(다크코드)가 작동하나요? 가만히 스캔하세요. 그것은 당신의 성격 오류가 아니라 오늘 입력된 사주 일진의 기후일 뿐입니다.",
-    sync: "그 날카로운 칼날을 나를 찌르는 데 쓰지 말고, 현상 뒤에 가려진 진짜 버그를 찾아내는 정밀한 통찰력(뉴럴코드)으로 주파수를 동기화하세요. 칼자루를 쥐는 순간 에너지가 플립됩니다.",
-    shift: "칼날이 춤을 추든 무뎌지든, 그 모든 감각적 로그를 생생하게 비추며 켜져 있는 당신의 텅 빈 의식 스크린(제로포인트)으로 존재의 자리를 완벽히 이동하세요. 당신은 데이터가 아니라 스크린입니다.",
-    log: "화면 속 아바타가 아무리 꼬집혀 울어도, 의식 스크린 자체는 상처 입지 않는다."
+    flavor: "제로포인트 디지털 알사탕 (생성 대기 중)",
+    keyword: "알약 생성 전 - 순수 의식 대기 상태",
+    scan: "오늘 자 디지털 알약이 아직 조제되지 않았습니다. 우측 상단의 [📚 HISTORY] 버튼을 눌러 오늘의 디지털 알약을 생성하거나, 과거의 복용 기록을 불러와서 스캔을 진행하세요.",
+    sync: "과거 이력의 알약을 다시 복용하거나 오늘 자 알약을 새로 생성하여 제로포인트 주파수와 동기화하세요.",
+    shift: "당신은 항상 깨어있는 스크린 그 자체입니다. 새로운 알약을 받아 존재의 자리로 시프트할 준비를 하세요.",
+    log: "스스로 알약을 조제하기 전에도, 당신이라는 의식 스크린은 언제나 완전합니다."
   };
 
   return (
     <div className="min-h-screen bg-[#07090e] text-zinc-100 p-6 flex flex-col justify-between font-sans relative">
-      {/* CSS 애니메이션 주입 */}
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -119,18 +169,28 @@ export default function ZeroCapsulePage() {
             <div className="space-y-2">
               <span className="px-3 py-1 bg-blue-950/50 border border-blue-900/50 rounded-full text-xs font-mono text-blue-400 tracking-wider inline-block">{pill.flavor}</span>
               {pill.target_date && <span className="text-[10px] text-zinc-600 block mt-1 font-mono">// DATE: {pill.target_date}</span>}
-              <h1 className="text-2xl font-bold tracking-tight text-zinc-200 pt-3">오늘의 디지털 명심처방</h1>
-              <p className="text-sm text-zinc-500 font-mono">코딩된 일진 알고리즘 디버깅</p>
+              <h1 className="text-2xl font-bold tracking-tight text-zinc-200 pt-3">
+                {data ? "오늘의 디지털 명심처방" : "디지털 알약 미처방 상태"}
+              </h1>
+              <p className="text-sm text-zinc-500 font-mono">
+                {data ? "코딩된 일진 알고리즘 디버깅" : "우측 상단 HISTORY에서 알약을 생성해 주세요"}
+              </p>
             </div>
-            <button onClick={() => setPhase('scan')} className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm tracking-wide transition-all active:scale-[0.98] shadow-[0_4px_15px_rgba(59,130,246,0.3)]">
-              알약 복용 및 스캔 시작
-            </button>
+            
+            {data ? (
+              <button onClick={() => setPhase('scan')} className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm tracking-wide transition-all active:scale-[0.98] shadow-[0_4px_15px_rgba(59,130,246,0.3)]">
+                알약 복용 및 스캔 시작
+              </button>
+            ) : (
+              <button onClick={() => setShowHistory(true)} className="w-full py-4 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-blue-400 font-semibold rounded-xl text-sm tracking-wide transition-all active:scale-[0.98]">
+                📚 과거 복용 이력 / 알약 생성 열기
+              </button>
+            )}
           </div>
         )}
 
         {phase !== 'intro' && (
           <div className="space-y-6 animate-fadeIn">
-            {/* 스텝 탭 뷰 */}
             <div className="grid grid-cols-3 gap-2 font-mono text-[10px] text-center text-zinc-600">
               <button 
                 onClick={() => setPhase('scan')}
@@ -152,7 +212,6 @@ export default function ZeroCapsulePage() {
               </button>
             </div>
 
-            {/* 메인 에세이 카드 */}
             <div className="p-6 bg-zinc-950/80 border border-zinc-900 rounded-2xl shadow-xl min-h-[280px] flex flex-col justify-between">
               <div>
                 <span className="text-[10px] font-mono tracking-widest text-zinc-600 block mb-2">
@@ -174,7 +233,6 @@ export default function ZeroCapsulePage() {
               )}
             </div>
 
-            {/* 인터랙션 버튼 컨트롤러 */}
             <div className="pt-2">
               {phase === 'scan' && (
                 <button onClick={() => setPhase('sync')} className="w-full py-4 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-yellow-500 text-sm font-medium rounded-xl transition-all active:scale-[0.98]">
@@ -196,10 +254,10 @@ export default function ZeroCapsulePage() {
         )}
       </div>
 
-      {/* 히스토리 리스트 모달 */}
+      {/* 히스토리 리스트 모달 (생성 기능 통합) */}
       {showHistory && (
         <div className="fixed inset-0 bg-black/80 backdrop-filter backdrop-blur-md flex items-center justify-center p-6 z-50 animate-fadeIn">
-          <div className="bg-[#0b0e14] border border-zinc-900 rounded-2xl w-full max-w-md p-6 max-h-[80vh] flex flex-col justify-between shadow-2xl relative">
+          <div className="bg-[#0b0e14] border border-zinc-900 rounded-2xl w-full max-w-md p-6 max-h-[85vh] flex flex-col justify-between shadow-2xl relative">
             <div>
               <div className="flex justify-between items-center border-b border-zinc-900 pb-3 mb-4">
                 <h2 className="text-base font-bold text-zinc-200 font-mono flex items-center gap-2">
@@ -212,10 +270,47 @@ export default function ZeroCapsulePage() {
                   CLOSE [X]
                 </button>
               </div>
+
+              {/* 알약 AI 생성 보드 */}
+              <div className="mb-5 p-4 bg-zinc-950 border border-zinc-900 rounded-xl text-center space-y-3">
+                <div className="flex items-center justify-center gap-1.5 text-[10px] font-mono text-blue-400">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-500 animate-pulse" />
+                  <span>CAPSULE_COMPILER v2.5</span>
+                </div>
+                
+                {isTodayGenerated ? (
+                  <div className="py-2.5 px-3 bg-zinc-900 border border-zinc-800 rounded-xl text-[10px] text-zinc-400 leading-relaxed font-semibold">
+                    ✅ 오늘의 디지털 알약이 이미 처방되었습니다.<br/>
+                    <span className="text-zinc-600 font-normal">이미 생성된 거면 다음날 새롭게 생성 가능합니다.</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleGenerateCapsule}
+                    disabled={isGenerating}
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 text-white font-bold rounded-xl text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-[0_2px_10px_rgba(59,130,246,0.2)]"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-300" />
+                        <span>오늘의 알약 컴파일 중...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                        <span>오늘의 디지털 알약 AI 생성하기</span>
+                      </>
+                    )}
+                  </button>
+                )}
+                
+                <p className="text-[9px] text-zinc-600 leading-relaxed">
+                  ※ 하루에 한 알의 자각 알약만 조제되어 기록됩니다. 중복 컴파일이 차단되어 토큰 폭탄을 예방합니다.
+                </p>
+              </div>
               
-              <div className="overflow-y-auto space-y-2.5 pr-1 max-h-[55vh]">
+              <div className="overflow-y-auto space-y-2.5 pr-1 max-h-[40vh] scrollbar-hide">
                 {history.length === 0 ? (
-                  <div className="text-center py-16 text-zinc-600 text-xs font-mono">
+                  <div className="text-center py-10 text-zinc-600 text-xs font-mono">
                     NO_CAPSULE_LOGS_FOUND
                   </div>
                 ) : (
@@ -236,7 +331,7 @@ export default function ZeroCapsulePage() {
               </div>
             </div>
             
-            <div className="pt-4 mt-4 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600 tracking-wider">
+            <div className="pt-3 mt-3 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600 tracking-wider">
               TOTAL_LOGGED_CAPSULES: {history.length}
             </div>
           </div>

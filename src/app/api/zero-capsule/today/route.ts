@@ -36,7 +36,16 @@ export async function GET(request: Request) {
       return NextResponse.json(cachedPill);
     }
 
-    // 3. 캐시가 없다면 유저의 사주 원국 정보 조회
+    // generate 쿼리 파라미터 확인 (버튼 클릭 시에만 생성하기 위함)
+    const { searchParams } = new URL(request.url);
+    const shouldGenerate = searchParams.get('generate') === 'true';
+
+    if (!shouldGenerate) {
+      // 자동 생성 방지: 클라이언트가 명시적으로 생성을 요청하지 않았다면 null 리턴
+      return NextResponse.json(null);
+    }
+
+    // 3. 캐시가 없고 생성 요청이 있다면 유저의 사주 원국 정보 조회
     const { data: dbSaju } = await supabase
       .from('users_saju')
       .select('*')
@@ -84,7 +93,7 @@ export async function GET(request: Request) {
       {
         "flavor": "알약 성분 이름 명칭 (예: 현침 100mg 독설 디버깅 맛)",
         "keyword": "오늘 활성화된 사주적 키워드 (예: 현침살 - 정밀한 안목)",
-        "scan": "사용자가 오늘 무의식적으로 겪을 수 있는 불안, 예민, 화(다크코드)를 뇌과학/심리학적으로 스캔하고 따뜻하게 위로하는 내용 (존댓말로 친근하고 쉽게 서술)",
+        "scan": "사용자가 today 무의식적으로 겪을 수 있는 불안, 예민, 화(다크코드)를 뇌과학/심리학적으로 스캔하고 따뜻하게 위로하는 내용 (존댓말로 친근하고 쉽게 서술)",
         "sync": "그 에너지를 완전히 수용하여 나를 살리는 지혜와 안목(뉴럴코드)으로 뒤집는 실천적 자각 가이드 (존댓말로 친근하고 쉽게 서술)",
         "shift": "생각과 감정이 다 지워진 자리에 남아 생생하게 목격하고 있는 텅 빈 스크린(제로포인트)으로 주파수를 이동시키는 정견의 메시지 (존댓말로 친근하고 쉽게 서술)",
         "log": "오늘의 명심 코어 한 줄 요약 로그 (따옴표로 감싸진 형태)"
