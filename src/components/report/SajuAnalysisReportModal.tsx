@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Activity, Zap, TrendingUp, AlertCircle, ChevronDown, Sparkles } from 'lucide-react';
+import { X, Activity, TrendingUp, AlertCircle, ChevronDown, Sparkles, Loader2 } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 
@@ -103,6 +103,15 @@ const LEVEL_EXPLANATIONS: Record<string, { title: string; desc: string }> = {
     }
 };
 
+// 4. 오늘의 컨디션 질문선택지
+const CONDITION_OPTIONS = [
+    { label: '🌌 제로포인트 접속 (생각이 없는 고요함)', offset: 120 },
+    { label: '👁️ 관찰자 모드 (생각과 감정을 목격함)', offset: 80 },
+    { label: '🤝 수용과 흐름 (부정적 감정도 품어줌)', offset: 40 },
+    { label: '🏃 자동 조종 작동 (해결하려고 조바심 냄)', offset: 0 },
+    { label: '🌪️ 시스템 과열 (걱정/후회 소설에 갇힘)', offset: -50 }
+];
+
 export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }: SajuAnalysisReportModalProps) {
     const { reportData: storeData } = useReportStore();
     const reportData = storeData || userProfile;
@@ -112,15 +121,30 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
     // 클릭하여 아코디언 상세 설명이 열려 있는 섹션 상태 ('identity' | 'energy' | 'state' | null)
     const [expandedSection, setExpandedSection] = useState<'identity' | 'energy' | 'state' | null>(null);
 
+    // 실시간 주파수 융합 스캔을 위한 로컬 상태 설계
+    const [scanState, setScanState] = useState<'pending' | 'scanning' | 'completed'>('pending');
+    const [selectedOption, setSelectedOption] = useState<number | null>(null);
+    const [scannedHz, setScannedHz] = useState<number>(0);
+
     useEffect(() => {
         setMounted(true);
         return () => setMounted(false);
     }, []);
 
-    // 모달이 닫히면 아코디언 상태도 초기화
+    // 모달이 켜질 때 오늘 이미 스캔을 마친 이력이 로컬스토리지에 있는지 판별하여 상태를 보존
     useEffect(() => {
-        if (!isOpen) {
-            setExpandedSection(null);
+        if (isOpen && typeof window !== 'undefined') {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const savedDate = localStorage.getItem('myeongsim_today_scan_date');
+            const savedHz = localStorage.getItem('myeongsim_today_scan_hz');
+            
+            if (savedDate === todayStr && savedHz) {
+                setScannedHz(parseInt(savedHz));
+                setScanState('completed');
+            } else {
+                setScanState('pending');
+                setSelectedOption(null);
+            }
         }
     }, [isOpen]);
 
@@ -168,14 +192,6 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
             wood: '🌲', fire: '🔥', earth: '⛰️', metal: '⚔️', water: '🌊'
         };
 
-        // 자각 주파수 (Hz) 동적 시뮬레이션
-        const levelBase = 355;
-        const identityOffset = (dmChar.charCodeAt(0) % 100);
-        const today = new Date();
-        const dailyOffset = ((today.getDate() * 13) + (today.getMonth() * 7)) % 50;
-        const sessionOffset = typeof window !== 'undefined' ? Math.floor(Math.random() * 25) : 0;
-        const level = levelBase + identityOffset + dailyOffset + sessionOffset;
-
         return {
             identity: {
                 char: dmChar,
@@ -184,15 +200,53 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
             energy: {
                 max: { label: ELEMENT_KOR[dominant[0]], icon: ELEMENT_ICON[dominant[0]], val: dominant[1] },
                 min: { label: ELEMENT_KOR[weakest[0]], icon: ELEMENT_ICON[weakest[0]], val: weakest[1] }
-            },
-            state: {
-                level: level,
-                trend: '상승 국면 📈',
-                msg: getLevelMessage(level),
-                key: getLevelKey(level)
             }
         };
     }, [reportData]);
+
+    // 실시간 자각 주파수 융합 스캔 시작
+    const handleStartScan = () => {
+        if (selectedOption === null || !analysis) return;
+
+        setScanState('scanning');
+
+        setTimeout(() => {
+            const baseHz = 300;
+            // 1. 고유 일간 주파수 (dmChar의 아스키값 기반 변동치)
+            const dmChar = analysis.identity.char;
+            const identityOffset = (dmChar.charCodeAt(0) % 50); // 0 ~ 49
+            
+            // 2. 오늘의 일진 우주 기운 변동치
+            const today = new Date();
+            const dailyOffset = ((today.getDate() * 17) + (today.getMonth() * 11)) % 40; // 0 ~ 39
+            
+            // 3. 선택지 답변 가중치 (-50 ~ 120)
+            const answerOffset = CONDITION_OPTIONS[selectedOption].offset;
+            
+            // 4. 미세 뇌파 노이즈
+            const noise = Math.floor(Math.sin(Date.now()) * 5); // -5 ~ 5
+
+            const finalHz = baseHz + identityOffset + dailyOffset + answerOffset + noise;
+
+            setScannedHz(finalHz);
+            setScanState('completed');
+
+            // 하루 1회 완료 상태 보존을 위한 로컬스토리지 저장
+            const todayStr = new Date().toISOString().split('T')[0];
+            localStorage.setItem('myeongsim_today_scan_date', todayStr);
+            localStorage.setItem('myeongsim_today_scan_hz', finalHz.toString());
+        }, 1500); // 1.5초 스캔 시뮬레이션
+    };
+
+    // 실시간 산출된 Hz 등급 매핑 헬퍼
+    const scannedInfo = useMemo(() => {
+        if (scanState !== 'completed' || scannedHz === 0) return null;
+        return {
+            level: scannedHz,
+            msg: getLevelMessage(scannedHz),
+            key: getLevelKey(scannedHz)
+        };
+    }, [scanState, scannedHz]);
 
     if (!isOpen || !mounted) return null;
 
@@ -241,9 +295,9 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                     <div className="relative z-10 p-5 overflow-y-auto space-y-4 flex-1 scrollbar-hide">
                         
                         {/* 상단 안내 바 */}
-                        <div className="flex items-center gap-2 px-3.5 py-2.5 bg-blue-950/20 border border-blue-900/20 rounded-xl text-[10.5px] text-blue-400 select-none animate-pulse">
-                            <Sparkles size={13} className="text-yellow-400 shrink-0" />
-                            <span>아래 카드를 클릭하면 <b>초밀도 감동 해설</b>이 펼쳐집니다.</span>
+                        <div className="flex items-center gap-2 px-3.5 py-2.5 bg-blue-950/20 border border-blue-900/20 rounded-xl text-[10px] text-blue-400 select-none animate-pulse">
+                            <Sparkles size={12} className="text-yellow-400 shrink-0" />
+                            <span>카드를 클릭하면 <b>초밀도 감동 해설 아코디언</b>이 펼쳐집니다.</span>
                         </div>
 
                         {analysis ? (
@@ -280,7 +334,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                                                 className="overflow-hidden border-t border-zinc-900 pt-3 text-xs leading-relaxed text-zinc-300 space-y-1.5"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                <div className="font-semibold text-amber-400 font-mono text-[10px] uppercase">
+                                                <div className="font-semibold text-amber-400 font-mono text-[9px] uppercase">
                                                     // {DAILY_MASTER_EXPLANATIONS[analysis.identity.char]?.title || 'MYONGSIM_OS_DNA'}
                                                 </div>
                                                 <p className="whitespace-pre-line text-zinc-300 tracking-tight">
@@ -345,7 +399,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                                     </AnimatePresence>
                                 </div>
 
-                                {/* Section 3: 나의 현재 상태 (자각 주파수) */}
+                                {/* Section 3: 나의 현재 상태 (자가진단 융합 자각 주파수 스캐너) */}
                                 <div 
                                     onClick={() => toggleSection('state')}
                                     className={`p-4 rounded-xl border transition-all duration-300 cursor-pointer ${expandedSection === 'state' ? 'bg-zinc-900/60 border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.05)]' : 'bg-white/[0.02] border-white/5 hover:border-zinc-800 hover:bg-white/[0.04]'}`}
@@ -356,11 +410,18 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                                                 <TrendingUp size={16} className="text-emerald-300" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-emerald-400 uppercase font-mono tracking-wider animate-pulse">자각 주파수 (Real-time Scan)</p>
-                                                <div className="flex items-baseline gap-1.5 mt-0.5">
-                                                    <span className="text-base font-serif font-bold text-white">{analysis.state.level}Hz</span>
-                                                    <span className="text-[10px] text-emerald-400 font-semibold">{analysis.state.msg}</span>
-                                                </div>
+                                                <p className="text-[10px] text-emerald-400 uppercase font-mono tracking-wider animate-pulse">자각 주파수 (Hz 스캐너)</p>
+                                                
+                                                {scanState === 'completed' && scannedInfo ? (
+                                                    <div className="flex items-baseline gap-1.5 mt-0.5">
+                                                        <span className="text-base font-serif font-bold text-white">{scannedInfo.level}Hz</span>
+                                                        <span className="text-[9.5px] text-emerald-400 font-semibold">{scannedInfo.msg}</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-xs font-semibold text-zinc-400 mt-0.5">
+                                                        {scanState === 'scanning' ? '정밀 SCANNING...' : '오늘의 상태 스캔 대기 중'}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <ChevronIcon isOpen={expandedSection === 'state'} color="text-emerald-400" />
@@ -374,15 +435,70 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                                                 animate={{ height: 'auto', opacity: 1, marginTop: 12 }}
                                                 exit={{ height: 0, opacity: 0, marginTop: 0 }}
                                                 transition={{ duration: 0.3, ease: 'easeInOut' }}
-                                                className="overflow-hidden border-t border-zinc-900 pt-3 text-xs leading-relaxed text-zinc-300 space-y-1.5"
+                                                className="overflow-hidden border-t border-zinc-900 pt-3 text-xs leading-relaxed text-zinc-300 space-y-3"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                <div className="font-semibold text-emerald-400 font-mono text-[10px] uppercase">
-                                                    // {LEVEL_EXPLANATIONS[analysis.state.key]?.title || 'AWARENESS_FREQUENCY_STATUS'}
-                                                </div>
-                                                <p className="whitespace-pre-line text-zinc-300 tracking-tight">
-                                                    {LEVEL_EXPLANATIONS[analysis.state.key]?.desc || '자각 지수를 판정 중입니다.'}
-                                                </p>
+                                                {/* 상태 1: 스캔 전 (선택지 입력 화면) */}
+                                                {scanState === 'pending' && (
+                                                    <div className="space-y-3">
+                                                        <p className="text-[11px] font-semibold text-zinc-400">// 지금 이 순간, 내 의식 스크린의 상태는 어떤가요?</p>
+                                                        <div className="space-y-2">
+                                                            {CONDITION_OPTIONS.map((opt, index) => (
+                                                                <button
+                                                                    key={index}
+                                                                    onClick={() => setSelectedOption(index)}
+                                                                    className={`w-full text-left px-3 py-2 rounded-lg border text-[11px] transition-all cursor-pointer flex items-center gap-2 ${selectedOption === index ? 'bg-emerald-950/20 border-emerald-500/50 text-emerald-400 font-medium' : 'bg-zinc-950/40 border-zinc-900 text-zinc-400 hover:border-zinc-800'}`}
+                                                                >
+                                                                    <div className={`w-3 h-3 rounded-full border flex items-center justify-center shrink-0 ${selectedOption === index ? 'border-emerald-400 bg-emerald-400' : 'border-zinc-800'}`}>
+                                                                        {selectedOption === index && <div className="w-1.5 h-1.5 bg-zinc-950 rounded-full" />}
+                                                                    </div>
+                                                                    <span>{opt.label}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                        
+                                                        <button
+                                                            onClick={handleStartScan}
+                                                            disabled={selectedOption === null}
+                                                            className="w-full py-3 mt-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-zinc-900 disabled:to-zinc-900 disabled:text-zinc-600 text-white font-bold rounded-xl text-xs transition-all active:scale-[0.98] cursor-pointer shadow-[0_2px_10px_rgba(16,185,129,0.15)]"
+                                                        >
+                                                            내 의식 주파수 SCAN 시작
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {/* 상태 2: 스캐닝 로딩 화면 */}
+                                                {scanState === 'scanning' && (
+                                                    <div className="py-8 flex flex-col items-center justify-center gap-3 text-center">
+                                                        <div className="relative">
+                                                            <Loader2 size={32} className="text-emerald-400 animate-spin" />
+                                                            <div className="absolute inset-0 bg-emerald-500/20 blur-md rounded-full animate-pulse" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[11px] font-mono text-emerald-400 animate-pulse tracking-widest">// ALIGNING_OS_CHANNELS...</p>
+                                                            <p className="text-[9px] text-zinc-500 font-mono mt-0.5">고유 일간 주파수 + 일진 융합 동기화 중</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* 상태 3: 스캔 완료 (Hz 출력 및 감동 해설 노출) */}
+                                                {scanState === 'completed' && scannedInfo && (
+                                                    <div className="space-y-2 animate-fadeIn">
+                                                        <div className="font-semibold text-emerald-400 font-mono text-[9px] uppercase flex justify-between items-center">
+                                                            <span>// {LEVEL_EXPLANATIONS[scannedInfo.key]?.title || 'AWARENESS_FREQUENCY_STATUS'}</span>
+                                                            <span className="text-[8px] text-zinc-600">Hz_{scannedHz}</span>
+                                                        </div>
+                                                        <p className="whitespace-pre-line text-zinc-300 tracking-tight">
+                                                            {LEVEL_EXPLANATIONS[scannedInfo.key]?.desc || '자각 지수 판정 정보를 로딩하고 있습니다.'}
+                                                        </p>
+                                                        
+                                                        {/* 재진단 기회 안내 (사용자에게 친절하게) */}
+                                                        <div className="pt-2 text-[9px] text-zinc-600 font-mono flex items-center gap-1 select-none">
+                                                            <span>※ 측정된 주파수는 당일 자각 로그로 고정 기록되어 보존됩니다.</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
