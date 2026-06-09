@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 import { X, Sparkles, TrendingUp, ShieldAlert, Award } from 'lucide-react';
+import PsychScanDashboard from './PsychScanDashboard';
 
 // ─────────────────────────────────────────────────────────────
 // 천간/지지 오행 및 음양 정보 정의
@@ -495,7 +496,7 @@ export default function MyeongsimCoachingDashboard({
   const { reportData } = useReportStore();
 
   const [activeModalData, setActiveModalData] = React.useState<any | null>(null);
-  const [activeTab, setActiveTab] = React.useState<'dashboard' | 'report'>('dashboard');
+  const [activeTab, setActiveTab] = React.useState<'dashboard' | 'report' | 'psych-scan'>('dashboard');
   const [selectedSection, setSelectedSection] = React.useState<string | null>(null);
   const [sectionContent, setSectionContent] = React.useState<string | null>(null);
   const [isSectionLoading, setIsSectionLoading] = React.useState<boolean>(false);
@@ -1540,6 +1541,16 @@ export default function MyeongsimCoachingDashboard({
           📊 실시간 대시보드
         </button>
         <button
+          onClick={() => setActiveTab('psych-scan')}
+          className={`py-3 px-6 font-bold text-sm tracking-wide transition-all border-b-2 ${
+            activeTab === 'psych-scan'
+              ? 'border-amber-600 text-amber-600'
+              : 'border-transparent text-gray-500 hover:text-slate-800'
+          }`}
+        >
+          🧠 심리데이터스캔 (Scan)
+        </button>
+        <button
           onClick={() => setActiveTab('report')}
           className={`py-3 px-6 font-bold text-sm tracking-wide transition-all border-b-2 ${
             activeTab === 'report'
@@ -2278,6 +2289,11 @@ export default function MyeongsimCoachingDashboard({
             </div>
           </div>
         </div>
+      )}
+
+      {/* 탭 3: 심리데이터스캔 */}
+      {activeTab === 'psych-scan' && (
+        <PsychScanDashboard />
       )}
     </div>
   );

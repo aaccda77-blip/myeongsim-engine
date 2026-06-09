@@ -182,8 +182,9 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
         const entries = Object.entries(elements || {});
         const sorted = entries.sort(([, a], [, b]) => (b as number) - (a as number));
 
-        const dominant = sorted[0];
-        const weakest = sorted[sorted.length - 1];
+        // [Bug Fix] 가드가 없어서 elements가 비어있을 때 dominant와 weakest가 undefined가 되어 dominant[0] 에러가 발생하는 것 차단
+        const dominant = sorted.length > 0 ? sorted[0] : ['metal', 20];
+        const weakest = sorted.length > 0 ? sorted[sorted.length - 1] : ['water', 10];
 
         const ELEMENT_KOR: Record<string, string> = {
             wood: '목(木)', fire: '화(火)', earth: '토(土)', metal: '금(金)', water: '수(水)'
@@ -198,8 +199,8 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                 desc: getDayMasterDesc(dmChar)
             },
             energy: {
-                max: { label: ELEMENT_KOR[dominant[0]], icon: ELEMENT_ICON[dominant[0]], val: dominant[1] },
-                min: { label: ELEMENT_KOR[weakest[0]], icon: ELEMENT_ICON[weakest[0]], val: weakest[1] }
+                max: { label: ELEMENT_KOR[dominant[0]] || '금(金)', icon: ELEMENT_ICON[dominant[0]] || '⚔️', val: dominant[1] },
+                min: { label: ELEMENT_KOR[weakest[0]] || '수(水)', icon: ELEMENT_ICON[weakest[0]] || '🌊', val: weakest[1] }
             }
         };
     }, [reportData]);

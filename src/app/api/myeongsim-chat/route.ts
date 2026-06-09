@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { streamText, tool } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { z } from 'zod';
+import { Solar, Lunar } from 'lunar-javascript';
 
 // 환경 변수 안내 (.env.local에 추가 필요):
 // NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -37,7 +38,6 @@ export async function POST(req: NextRequest) {
                 let sajuString = '계산 불가';
                 if (userData.birth_date && userData.birth_time) {
                     try {
-                        const { Solar, Lunar } = require('lunar-javascript');
                         const [year, month, day] = userData.birth_date.split('-').map(Number);
                         const [hour, minute] = userData.birth_time.split(':').map(Number);
                         
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
                         }
                         
                         const bazi = lunarDate.getEightChar();
-                        sajuString = `${bazi.getYear()} ${bazi.getMonth()} ${bazi.getDay()} ${bazi.getTime()}`;
+                        sajuString = `${bazi.getYearGan()}${bazi.getYearZhi()} ${bazi.getMonthGan()}${bazi.getMonthZhi()} ${bazi.getDayGan()}${bazi.getDayZhi()} ${bazi.getTimeGan()}${bazi.getTimeZhi()}`;
                     } catch (e) {
                         console.error('[Myeongsim Chat] Saju calculation error:', e);
                     }
@@ -103,7 +103,6 @@ export async function POST(req: NextRequest) {
                         calendarType: z.enum(['solar', 'lunar']).default('solar').describe('양력(solar)인지 음력(lunar)인지 여부')
                     }),
                     execute: async ({ year, month, day, hour, minute, calendarType }) => {
-                        const { Solar, Lunar } = require('lunar-javascript');
                         try {
                             let lunarDate;
                             if (calendarType === 'lunar') {
@@ -116,7 +115,7 @@ export async function POST(req: NextRequest) {
                             return {
                                 success: true,
                                 query: `${year}년 ${month}월 ${day}일 ${hour}시 ${minute}분 (${calendarType === 'solar' ? '양력' : '음력'})`,
-                                saju: `${bazi.getYear()} ${bazi.getMonth()} ${bazi.getDay()} ${bazi.getTime()}`,
+                                saju: `${bazi.getYearGan()}${bazi.getYearZhi()} ${bazi.getMonthGan()}${bazi.getMonthZhi()} ${bazi.getDayGan()}${bazi.getDayZhi()} ${bazi.getTimeGan()}${bazi.getTimeZhi()}`,
                                 message: '이 사주 8글자는 천문학적으로 100% 확정된 정답입니다. 이 데이터를 기반으로 코칭을 진행하세요.'
                             };
                         } catch (e: any) {

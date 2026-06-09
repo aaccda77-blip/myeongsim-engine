@@ -61,6 +61,7 @@ import QuestCard from '../coaching/QuestCard';
 import EmotionTagSelector from '../coaching/EmotionTagSelector';
 import Saju3SScenarioModal from '../coaching/Saju3SScenarioModal';
 import { SAJU_3S_SCENARIOS, getScenarioByTag, getTagsBySaju, getDailyTagsBySaju, Saju3SScenario } from '@/data/Saju3SScenarios';
+import { calculateDynamicCoachingTags } from '@/utils/DynamicCoachingScorer';
 import { getTodayDailyPillar } from '@/utils/SajuCalculator';
 import { analyzeDailyHarmony } from '@/modules/DailyJincheonEngine';
 
@@ -202,19 +203,12 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
             return [];
         }
 
-        // [초고도화] 일진(Daily GanZhi)을 계산하여 10개 태그 중 오늘의 에너지(Relation)에 맞는 2개만 필터링
+        // [초고도화] 년/월/일/시주(8자) + 오늘 일진 충/형/합 + 심리 리포트 데이터를 융합한 실시간 스코어링 태그 필터링
         try {
             const todayPillar = getTodayDailyPillar();
-            const harmony = analyzeDailyHarmony(
-                finalHanja,
-                todayPillar.gan, todayPillar.zhi,
-                todayPillar.ganElement, todayPillar.zhiElement
-            );
-            
-            console.log("🎯 [Sync Realtime] Success! Displaying dynamic tags for:", finalHanja, "Relation:", harmony.relation);
-            return getDailyTagsBySaju(finalHanja, harmony.relation);
+            return calculateDynamicCoachingTags(reportData, todayPillar);
         } catch (e) {
-            console.error("Failed to calculate daily harmony for tags:", e);
+            console.error("Failed to calculate dynamic scoring tags:", e);
             return getTagsBySaju(finalHanja).slice(0, 2); // 에러 시 기본 2개 반환
         }
     }, [reportData]);
