@@ -313,3 +313,201 @@ export const getAiCrossoverReport = (sajuData: any, zimidusuChart: any, userName
     briefing: `두 개의 정밀한 하늘의 지도가 한목소리로 일러주는 치유의 열쇠는 간단합니다. 그동안 나의 유능함과 완벽함을 세상에 증명해 보이느라 온몸의 전압을 소진한 채 애써 온 나를 향해, 비난 대신 한없는 너그러움과 연민을 가득 덮어주는 것입니다. 당신은 존재 자체로 이미 한없이 거룩하고 온전합니다.`
   };
 };
+
+// 6대 주제별 사주x자미두수 교차 분석 리포트 생성 함수 (초고도화 버전)
+export const get6ThemeCrossoverReport = (sajuData: any, zimidusuChart: any, userName: string = '회원') => {
+  if (!sajuData || !zimidusuChart) return null;
+
+  const baseName = userName.endsWith('님') ? userName.slice(0, -1) : userName;
+  const name = `${baseName}님`;
+  const nameJosa = `${baseName}님의`;
+
+  const dayMaster = sajuData.day.gan.char;
+  const dayMasterName = dayMaster === '신' ? '신금(辛金)' : `${dayMaster}금`;
+
+  // 12궁 데이터 찾기
+  const palaces = zimidusuChart.palaces || [];
+  const getPalaceInfo = (pName: string) => palaces.find((p: any) => p.name === pName || p.name.includes(pName)) || { majorStars: [], decadal: { range: [10, 19] } };
+
+  const myeong = getPalaceInfo('명');
+  const jaebaek = getPalaceInfo('재백');
+  const gwanlok = getPalaceInfo('관록');
+  const bucheo = getPalaceInfo('부처');
+  const jilaek = getPalaceInfo('질액');
+  const nobok = getPalaceInfo('노복');
+
+  const getStarsStr = (pData: any) => (pData.majorStars || []).map((s: any) => s.name).join(', ') || '밝고 온화한 하늘빛';
+
+  return {
+    personality: {
+      title: '👤 1. 성격 (내면의 참모습과 영혼의 나침반)',
+      metaphor: '내 사주의 꽃밭 위에 떠오른 나만의 북극성 🌟',
+      desc: `사주 일간 **${dayMasterName}**의 고결한 가치와, 자미두수의 조타수인 **명궁**(${getStarsStr(myeong)})이 조우했습니다.`,
+      analysis: `당신은 겉으로 보기에 차분하고 예리하며 세련된 보석의 형상을 띠고 있지만, 그 내면에는 세상을 향해 따뜻하고도 깊은 통찰을 건네고 싶어 하는 다정한 마음의 비밀 정원을 가지고 있습니다. 때로 현실의 작은 흐트러짐이나 내 계획을 벗어난 모호함을 만났을 때, 당신 마음속의 '디버그 에러'가 작동하여 "내가 더 완벽해야 해, 빈틈을 보이면 위험해"라며 스스로를 매섭게 채찍질하곤 했을 것입니다. 
+
+그 채찍질은 당신이 고장 나서가 아닙니다. 더 예쁘고 영롱한 보석이 되어 나와 사랑하는 사람들을 지키고 싶었던 당신 영혼의 기특하고도 애틋한 몸부림이었습니다. 
+
+이제는 가만히 어깨의 긴장을 풀고 "오늘 완벽하지 않아도 나는 이미 온전한 다이아몬드이다"라고 내면의 소란스러움을 다정히 다독여 주세요. 당신의 진짜 성격은 차가운 강철이나 얼음이 아니라, 그 어둠마저 스스로 영롱하게 굴절시켜 무지개로 뿜어내는 눈부신 프리즘과 같습니다.`
+    },
+    wealth: {
+      title: '💵 2. 재물 (맑게 흐르는 풍요의 시냇물)',
+      metaphor: '바짝 마른 논에 조용히 밤새 흐르는 맑은 시냇물 🌊',
+      desc: `재물을 다루는 사주의 현실 감각과, 자미두수의 풍요 통로인 **재백궁**(${getStarsStr(jaebaek)})이 교차합니다.`,
+      analysis: `당신은 재물을 단순히 창고에 쌓아두고 잠그는 성벽으로 생각하지 않고, 소중한 사람들과 더 나은 가치 있는 내일을 위해 순환시키는 '생명수 시냇물'로 사용하는 아름다운 성정을 지녔습니다. 미래에 대한 막연한 불안이 엄습할 때, 당신의 방어 시스템은 순간적으로 "내가 자원이 부족해서 위험에 처하면 어쩌지? 더 꽉 움켜쥐어야 해"라는 과부하 경보음을 켤 수 있습니다.
+
+돈은 성벽 안에 가두어 둘 때 썩기 마련입니다. 당신에게 재물이란 대지의 온갖 씨앗을 키워내는 단비와 같습니다. 내가 가진 기획력과 사람을 향한 다정한 온기를 재테크나 창조적인 플랫폼으로 부드럽게 흘려보낼 때, 물길은 저절로 넓어져 큰 바다를 이룰 것입니다. 통장의 숫자가 아닌, 당신이라는 마르지 않는 풍요로운 원천 자체를 무한히 신뢰해 주세요.`
+    },
+    job: {
+      title: '🌳 3. 직업 (재능이 싹트는 배움의 숲)',
+      metaphor: '새들이 모여들어 아름답게 지저귀는 울창한 나무 그늘 숲 🌲',
+      desc: `사주의 격국이 제시하는 진로 엔진과, 자미두수의 영혼 작업장인 **관록궁**(${getStarsStr(gwanlok)})이 만났습니다.`,
+      analysis: `당신은 주어진 매뉴얼대로 기계처럼 부품이 되어 일하는 곳에서는 영혼이 쉽게 타들어 감을 느꼈을 것입니다. 당신의 관록궁은 스스로 기획하고, 무형의 가치를 정교하게 세공하여 세상에 유익한 시스템으로 제안하는 전문적 작업장에 어울립니다. 
+
+일에 몰두할 때 누구보다 깊은 장인 정신과 집중력을 발휘하지만, 번아웃이 오기 전까지 아바타의 신경 전압을 120% 다 짜내어 쓰던 버릇이 있었을지도 모릅니다. 당신은 쉼 없이 돌아가는 기계가 아닙니다. 훌륭한 창조를 마친 뒤 가만히 누워 하늘을 바라보는 숲의 쉼터처럼, 일하는 틈틈이 자신에게 고요한 로그아웃의 평화를 허락할 때 비로소 직업적 창의성과 명예가 극대화됩니다.`
+    },
+    love: {
+      title: '🪞 4. 사랑 (내 마음을 비추는 가장 깊은 거울)',
+      metaphor: '서로의 모난 부분을 둥글게 매만져주는 따뜻한 시냇가 조약돌 🪨',
+      desc: `사주 배우자 자리의 전자기적 이끌림과, 자미두수의 사랑 정원인 **부처궁**(${getStarsStr(bucheo)})이 만났습니다.`,
+      analysis: `가장 가까운 사람, 혹은 연인은 내 안에 꼭꼭 숨겨두었던 '여린 외로움과 상처 코드'를 그대로 반사해내는 비밀 거울방입니다. 상대방에게서 미세한 무심함을 느끼거나 그가 내 기대만큼 섬세하게 움직여주지 않을 때, 마음속에는 "역시 나를 온전히 알아줄 사람은 없는 걸까"라는 쓸쓸한 상처 코드가 가동되었을지 모릅니다.
+
+인연이란 나의 비어 있는 결핍을 메워 주는 소유물이 아니라, 서로의 불완전함을 있는 그대로 포용하며 나란히 걸어가는 따뜻한 길벗입니다. 상대를 고쳐보려고 어깨에 잔뜩 힘을 주기보다, 거울에 비친 내 안의 외롭고 서글펐던 어린아이를 먼저 내 손으로 다정하게 꼭 안아주세요. 조약돌들이 강물 속에서 서로 부딪치며 서로를 둥글고 고결하게 세공해 가듯, 당신의 사랑은 서로의 모서리를 어루만지는 깊은 치유의 축복이 될 것입니다.`
+    },
+    health: {
+      title: '🚦 5. 건강 (내 몸이라는 고마운 안식처)',
+      metaphor: '폭풍 속에서도 나를 지켜준 든든하고 고마운 오두막집 🏡',
+      desc: `사주 오행의 균형 흐름과, 자미두수의 보안 경보 노드인 **질액궁**(${getStarsStr(jilaek)})이 조우합니다.`,
+      analysis: `우리의 몸은 영혼이 이 지구별에 소풍을 와서 살아갈 수 있도록 우주가 대여해 준 가장 고마운 안식처이자 외투입니다. 정신적으로 과도하게 긴장하거나 슬픔을 억누를 때, 당신의 질액궁은 머리의 지끈거림, 가슴의 답답함, 손발의 차가움 같은 소매틱 경보(Somatic Alarm)를 통해 "주인님, 지금은 당장 달리기를 멈추고 쉬어야 할 시간이에요"라고 비상등을 켭니다.
+
+몸이 아픈 신호를 보낼 때 그것을 내 앞길을 방해하는 적으로 생각하지 마시고, 나를 위해 밤낮없이 애쓴 육체를 향해 가만히 손을 얹고 온기를 나누어 주세요. "내 고마운 몸아, 이 험한 세상에서 나를 수호하느라 매 순간 버텨주어 참 고마워. 오늘은 편안히 숨을 쉬게 해줄게." 몸의 온도를 높이고 다정한 호흡을 채워줄 때, 건강 시스템은 비로소 평화의 녹색 불을 켭니다.`
+    },
+    relationship: {
+      title: '🕸️ 6. 대인관계 (세상과 연결되는 은하계 그물망)',
+      metaphor: '밤하늘의 수많은 별빛이 서로 촘촘하게 선으로 이어지는 우주 성좌 🌌',
+      desc: `사주의 사회적 기질과, 자미두수의 대중 협력선인 **노복궁**(${getStarsStr(nobok)})이 교차합니다.`,
+      analysis: `당신은 타인의 감정이나 주변 공기를 예민하게 스캔해내는 능력이 대단히 뛰어나서, 대인관계에서 금방 피로해지거나 남의 무심한 태도에 쉽게 상처받아 도망치고 싶은 충동을 느꼈을 것입니다. 하지만 당신의 노복궁은 깊은 신뢰를 기반으로 한 소수의 다정한 인연들과 성좌를 이루어 촘촘하게 연결될 때 가장 찬란히 빛납니다.
+
+모든 사람의 까다로운 요구를 다 맞추어 착한 아바타가 되려고 나를 희생할 필요는 단 1%도 없으며, 당신의 소중한 에너지는 아끼고 아껴서 당신을 있는 그대로 사랑하고 존중해주는 인연들에게만 흘려보내도 충분합니다. 당신의 별빛을 알아채는 맑은 인연들과 성좌를 이루며 드넓은 상생의 기쁨을 누려 보세요.`
+    }
+  };
+};
+
+// 고민 맞춤 분석 AI 답변 생성 함수 (초고도화 버전)
+export const getCustomTroubleAnalysis = (category: string, question: string, sajuData: any, zimidusuChart: any, userName: string = '회원') => {
+  if (!sajuData || !zimidusuChart || !question) return null;
+
+  const baseName = userName.endsWith('님') ? userName.slice(0, -1) : userName;
+  const name = `${baseName}님`;
+  const nameJosa = `${baseName}님의`;
+
+  const dayMaster = sajuData.day.gan.char;
+  const dayMasterName = dayMaster === '신' ? '신금(辛金)' : `${dayMaster}금`;
+
+  // 질문 분석을 통한 맞춤형 힐링 은유 생성
+  let categoryLabel = '';
+  let solutionMetaphor = '';
+  let analysisText = '';
+  let briefing = '';
+
+  switch (category) {
+    case 'job':
+      categoryLabel = '진로 및 이직/직업 고민';
+      solutionMetaphor = '🧭 안개 낀 바다 위에서 새로운 등대를 켜는 마음';
+      analysisText = `당신이 던져주신 질문 [ "${question}" ] 속에는, 현재의 자리에서 더 이상 나다운 가치를 키우지 못하고 겉돌고 있다는 깊은 갈증과 서글픈 피로가 고스란히 서려 있습니다. 
+
+사주 ${dayMasterName} 일간의 곧고 고결한 성정은 단순한 밥벌이를 넘어, 내 재능이 세상에 가치 있게 세공되어 쓰이기를 간절히 바라고 있습니다. 자미두수 명반 상에서도 당신의 운은 새로운 도약과 나다운 무대의 개척을 위해 서서히 펌웨어를 업데이트하는 진통의 구간을 지나고 있습니다. 
+
+주저하고 멈춰 서 있는 스스로를 '우유부단하다'거나 '나약하다'며 채찍질하지 마십시오. 안개가 짙게 낀 바다에서는 배를 잠시 멈추고 등대의 불빛을 기다리는 것이 가장 현명하고 위대한 항해술입니다. 조급하게 결정을 강요하는 외부의 압박에서 내 마음의 클럭 속도를 한 템포 늦추고, 당신이 가장 진심을 다해 몰입할 수 있는 작은 일부터 한 걸음씩 다정히 실험해 나가세요.`;
+      briefing = `이직이나 진로 선택에서 가장 먼저 구해야 할 것은 '남들의 인정'이 아니라 '내 영혼의 주체적인 숨통'입니다. 완벽한 직장은 없지만, 당신이 온전히 존엄을 수호할 수 있는 공간은 반드시 있습니다. 마음의 중심을 굳건히 세우고 안전하게 나아가세요.`;
+      break;
+    case 'love':
+      categoryLabel = '사랑 및 연애/부부 고민';
+      solutionMetaphor = '🤝 엉킨 실타래를 내 가슴속에서 가만히 풀기';
+      analysisText = `질문하신 고민 [ "${question}" ] 속에는, 상대방과의 관계에서 채워지지 않는 감정의 틈바구니와 그로 인한 미세한 서운함, 외로움의 전자기적 잡음이 잔뜩 묻어 있습니다. 
+
+상대가 내 마음에 온전히 들어차지 않고 어긋날 때, 내 안에 있는 '상처 방어 기제'는 "역시 나를 온전히 이해해 줄 사람은 없구나"라며 스스로 차가운 얼음 성벽을 쌓아 올리곤 합니다. 
+
+사랑이란 상대방에게 내 비어 있는 그릇을 채워 달라고 보채는 게임이 아닙니다. 두 사람이 각자의 따뜻한 화로를 들고 만나, 서로의 곁에 가만히 앉아 언 손을 녹여주는 일입니다. 상대의 무심한 행동에 2차 화살을 쏘아 자학하지 마시고, 속상했던 내 안의 어린아이에게 따뜻한 차 한 잔을 건네듯 친절을 베풀어 주세요. 그 부드러운 여백이 생길 때, 얽혔던 관계의 실타래는 마법처럼 저절로 풀리기 시작할 것입니다.`;
+      briefing = `관계를 다스리는 비밀은 상대를 고치려 애쓰는 통제력을 포기하고, 내 마음속 사랑의 물길을 투명하게 정화하여 먼저 나를 안아주는 데 있습니다. 당신은 사랑받을 자격이 이미 차고 넘치는 고결한 영혼입니다.`;
+      break;
+    case 'wealth':
+      categoryLabel = '재물 및 재테크/사업 고민';
+      solutionMetaphor = '🌾 겨울철 마른 땅 아래 고이 보관된 씨앗의 자각';
+      analysisText = `보내주신 경제적 고민 [ "${question}" ]의 저변에는, 자원이 고갈되거나 미래의 현실이 무너지면 내 존재 가치마저 흔적 없이 증발할 것 같다는 메마른 결핍의 공포가 숨어 있습니다. 
+
+돈과 재물은 사주에서 밟고 지나가는 대지와 같고, 자미두수에서는 순환하는 맑은 피와 같습니다. 막혀 있는 흐름에 초조해하며 아바타의 신경망을 과열시키면, 오히려 판단력이 흐려져 리스크 컴파일 에러를 범하기 쉽습니다. 
+
+농부는 겨울철 매서운 추위 속에서 밭을 억지로 갈아엎지 않습니다. 땅 밑에 보관된 씨앗이 봄을 기다리듯, 지금은 자원을 방만히 쓰기보다 내실을 기하고 공부하며 마음의 요람을 든든하게 다지는 시기입니다. 당신 안에는 이미 풍요를 설계해 낼 수 있는 강인한 뼈대가 내장되어 있습니다. 일시적인 자원 부족 상태에 지배당하지 말고, 내면의 무한한 지혜를 켜십시오.`;
+      briefing = `풍요는 움켜잡으려 바둥거릴 때는 도망치고, 내 존재가 온전히 서서 내어줄 수 있는 가치를 빚어낼 때 시냇물처럼 자연스레 흘러들어옵니다. 마음의 곳간을 따뜻한 자각으로 먼저 채워주세요.`;
+      break;
+    default:
+      categoryLabel = '기타/대인관계 & 마음의 해독 고민';
+      solutionMetaphor = '🧘 내 영혼의 소란을 지켜보는 드넓은 거울 공간';
+      analysisText = `질문하신 깊은 고뇌 [ "${question}" ] 속에는, 마음의 파도가 요동쳐서 나다움을 잃고 방황하는 아바타의 서글픈 슬픔이 묻어 있습니다. 
+
+사주와 자미두수라는 인생 지도에서 가장 중요한 것은 '화면 속에 일어나는 연극에 지배당하지 않는 것'입니다. 지금 느끼는 불안, 관계에서의 괴로움, 혹은 자책은 당신의 본질이 아닙니다. 계절이 지나가듯 흘러가는 날씨의 주파수일 뿐입니다. 
+
+그 요란한 날씨를 억지로 맑게 바꾸려 들지 마세요. 그저 비가 오면 비를 바라보고, 바람이 불면 바람 소리를 듣는 드넓은 거울이 되어 나를 안아 줍니다. "아, 내 마음 날씨에 지금 매서운 눈보라가 치고 있구나. 그 눈보라를 견뎌내느라 내 안의 어린 아바타가 웅크린 채 덜덜 떨며 애쓰고 있구나." 가만히 가슴을 토닥이며 온기를 건네주세요. 눈보라가 지나간 대지 위에 기어이 찬란한 봄꽃이 돋아날 것입니다.`;
+      briefing = `우리는 화면 속에 그려진 상처받는 캐릭터가 아닙니다. 그 화면 전체를 따뜻하게 담아내어 바라보는 영원하고 거룩한 거울 공간입니다. 안심하고 깊은 호흡으로 돌아와 편안히 쉬어 가세요.`;
+      break;
+  }
+
+  return {
+    categoryLabel,
+    solutionMetaphor,
+    analysisText,
+    briefing,
+    troubleLog: `Trouble Code Detected: [${category.toUpperCase()}_DISORDER] \nResolved by Myeongsim AI OS crossover debugger.`
+  };
+};
+
+// 사화 + 대한 우주 기후 분석 리포트 생성기 (신설)
+export const getSawaDaewoonReport = (sajuData: any, zimidusuChart: any, userName: string = '회원') => {
+  if (!sajuData || !zimidusuChart) return null;
+
+  const baseName = userName.endsWith('님') ? userName.slice(0, -1) : userName;
+  const name = `${baseName}님`;
+  const nameJosa = `${baseName}님의`;
+
+  const palaces = zimidusuChart.palaces || [];
+  const myeongPalace = palaces.find((p: any) => p.name === '명' || p.name.includes('명')) || { decadal: { range: [10, 19] }, majorStars: [] };
+  const decadalRange = myeongPalace.decadal.range;
+
+  // 전체 궁에서 사화가 들어간 별들을 수집
+  const sawaStars: Array<{ starName: string; type: string; palaceName: string }> = [];
+  palaces.forEach((pal: any) => {
+    const allStars = [...(pal.majorStars || []), ...(pal.minorStars || []), ...(pal.adjectiveStars || [])];
+    allStars.forEach((s: any) => {
+      if (s.mutagen) {
+        sawaStars.push({
+          starName: s.name,
+          type: s.mutagen, // '록', '권', '과', '기'
+          palaceName: pal.name
+        });
+      }
+    });
+  });
+
+  const getSawaText = (type: string) => {
+    switch (type) {
+      case '록': return '화록(化祿) - 풍요와 부드러운 가치 순환의 기쁨 맑은 샘물';
+      case '권': return '화권(化權) - 주체적으로 책임지고 이끌어가는 의지력의 핸들';
+      case '과': return '화과(化科) - 소통을 원활하게 돕는 조화와 품격의 달빛';
+      case '기': return '화기(化忌) - 아름다운 진주를 빚어내기 위한 결핍과 배움의 모래알';
+      default: return '';
+    }
+  };
+
+  const activeSawaReport = sawaStars.map(s => {
+    const mut = MUTAGEN_COACHING[s.type];
+    return `• **[${s.palaceName}궁]의 ${s.starName}에 작용하는 ${getSawaText(s.type)}**\n  - *마음 작용:* ${mut ? mut.meaning : '해당 인생의 영역에서 고유한 감정과 생각의 작용이 일어납니다.'}\n  - *다정한 솔루션:* ${mut ? mut.advice : '나를 비판하지 말고 있는 그대로를 다정하게 수용해 주세요.'}`;
+  }).join('\n\n');
+
+  return {
+    title: `✨ ${nameJosa} 사화(四化) × 대한(大限) 우주 기후 분석 리포트`,
+    subtitle: `현재 ${decadalRange[0]}세 ~ ${decadalRange[1]}세 대한(大限)의 계절 흐름`,
+    daewoonIntro: `자미두수에서 대운(大限)이란 거대한 행운을 뜻하기보다 '내가 밟고 지나가는 10년 단위의 인생 날씨와 계절'을 뜻합니다. 지금 ${name}은 내면의 아바타를 한층 넓고 단단하게 성장시키기 위해 우주가 깔아준 **${decadalRange[0]}세 대운**이라는 촉촉하고 신성한 날씨 속에 머물러 계십니다. 계절의 변화 앞에서 일어나는 미세한 불안이나 돌발 변수를 나약함이라 자책하지 마세요. 그것은 더 영롱하게 빛나는 다이아몬드 보석으로 세공되기 위한 온화한 펌웨어 업데이트 과정입니다.`,
+    sawaAnalysis: activeSawaReport || '현재 명반 전반의 사화 기운이 고요하게 균형을 이루어 평화로운 중립 상태를 유지하고 있습니다.',
+    mscAdvice: `${name}, 지금 지나고 있는 인생의 궤도 위에서 혹여나 내가 남들보다 뒤처지거나 실수하고 있다는 자책감이 밀려온다면, 가만히 가슴에 따뜻한 손을 얹고 스스로에게 속삭여 주세요. \n\n"그동안 이 낯설고 무거운 인생의 계절을 든든하게 견디며 한 걸음씩 걸어와 줘서 정말 고마워. 내가 완벽하지 않아도, 계획대로 되지 않아도 우주는 언제나 나를 가장 이로운 길로 인도하고 있단다. 안심하고 숨을 쉬자." \n\n당신은 존재 자체로 이미 우주의 완벽한 걸작입니다.`
+  };
+};

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { calculateSaju } from '@/utils/SajuCalculator';
 import { analyzeAdvancedBlueprint, JIJANGGAN_MAP, STEM_DATA, ELEMENT_RELATION, ELEMENT_CONTROL } from '@/utils/sajuLogic';
-import { getZimidusuChart, getZimidusuPalaceEssay, getAiCrossoverReport } from '@/utils/zimidusuLogic';
+import { getZimidusuChart, getZimidusuPalaceEssay, getAiCrossoverReport, get6ThemeCrossoverReport, getCustomTroubleAnalysis, getSawaDaewoonReport } from '@/utils/zimidusuLogic';
 
 const ZIMIDUSU_GRID_MAP: Record<string, { row: string; col: string }> = {
   '사': { row: 'row-start-1', col: 'col-start-1' },
@@ -1300,7 +1300,7 @@ export const getComprehensiveAnalysis = (sajuData: any, userName: string = '회�
 
 export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }: Props) {
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'training' | 'profile' | 'advanced' | 'comprehensive' | 'zimidusu'>('training');
+  const [activeTab, setActiveTab] = useState<'training' | 'profile' | 'advanced' | 'comprehensive' | 'zimidusu' | 'crossover'>('training');
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [trainingMode, setTrainingMode] = useState<'classic' | 'deep'>('classic');
   const [advancedSelectedPillar, setAdvancedSelectedPillar] = useState<'year' | 'month' | 'day' | 'time' | null>(null);
@@ -1344,6 +1344,17 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
   // 자미두수 상세 모달 상태
   const [selectedZimidusuPalace, setSelectedZimidusuPalace] = useState<any>(null);
 
+  // 6번 AI 교차 탭 상태 변수 추가
+  const [troubleCategory, setTroubleCategory] = useState<'job' | 'love' | 'wealth' | 'general'>('job');
+  const [troubleQuestion, setTroubleQuestion] = useState('');
+  const [troubleReport, setTroubleReport] = useState<any>(null);
+  const [isAnalyzingTrouble, setIsAnalyzingTrouble] = useState(false);
+  const [selectedThemeCard, setSelectedThemeCard] = useState<any>(null);
+  const [followUpQuestion, setFollowUpQuestion] = useState('');
+  const [followUpAnswer, setFollowUpAnswer] = useState<string | null>(null);
+  const [showZimidusuGridModal, setShowZimidusuGridModal] = useState(false);
+  const [showSawaDaewoonModal, setShowSawaDaewoonModal] = useState(false);
+
   // 현재 활성화된 낡은각본/질문 카드 단계
   const [profileCardStep, setProfileCardStep] = useState<'blueprint' | 'script' | 'questions' | 'solution' | 'meta'>('script');
 
@@ -1354,6 +1365,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
   // 5번째 탭 자미두수 명반 및 AI 교차분석 데이터 계산
   const zimidusuChart = sajuData ? getZimidusuChart(birthDate, birthTime, gender, calendarType) : null;
   const zimidusuCrossover = sajuData && zimidusuChart ? getAiCrossoverReport(sajuData, zimidusuChart, userName) : null;
+  const themeCrossoverReport = sajuData && zimidusuChart ? get6ThemeCrossoverReport(sajuData, zimidusuChart, userName) : null;
 
   const getActiveDetailEssay = () => {
     if (!selectedDetail || !sajuData) return null;
@@ -1627,7 +1639,8 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
             { id: 'profile', label: '2. 4기둥 메타코드 프로파일', icon: Layers },
             { id: 'advanced', label: '3. 4기둥 멘탈 OS 디버거', icon: Database },
             { id: 'comprehensive', label: '4. 4기둥 종합 멘탈 OS 분석', icon: Sparkles },
-            { id: 'zimidusu', label: '5. 자미두수 명반 해독', icon: Zap }
+            { id: 'zimidusu', label: '5. 자미두수 명반 해독', icon: Zap },
+            { id: 'crossover', label: '6. AI 종합 교차 해독실', icon: Sparkles }
           ].map((tab) => {
             const TabIcon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -2770,6 +2783,202 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
               </motion.div>
             )}
 
+            {/* 6. 사주 × 자미두수 AI 종합 해독 탭 */}
+            {activeTab === 'crossover' && zimidusuChart && themeCrossoverReport && (
+              <motion.div
+                key="crossover-tab"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6 text-white pb-6"
+              >
+                {/* 상단 통합 해독 배너 */}
+                <div className="p-5 bg-gradient-to-r from-indigo-950/45 via-purple-950/40 to-slate-900 border border-purple-500/35 rounded-3xl relative overflow-hidden">
+                  <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-1 rounded bg-purple-500/10 border border-purple-500/30">
+                      <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                    </div>
+                    <h3 className="text-xs md:text-sm font-black text-purple-300 uppercase tracking-widest">
+                      Saju & Zimidusu AI Crossover Chamber
+                    </h3>
+                  </div>
+                  <h4 className="text-sm md:text-base font-black text-white mb-2">
+                    사주 × 자미두수 AI 초고도화 교차 해독실
+                  </h4>
+                  <p className="text-[11px] leading-relaxed text-slate-400 font-sans">
+                    사주 명리학의 현실 행동 인프라(일간/십성)와 자미두수 하늘의 나침반(12궁/성계/사화)을 AI가 초정밀 크로스오버 분석합니다.
+                    인생의 6대 핵심 주제에 대한 힐링 에세이를 열어보고, 당신만을 위한 1:1 맞춤형 고민 해결 솔루션을 만나보세요.
+                  </p>
+                </div>
+
+                {/* 파트 1: 자미두수 정밀 분석 (12궁 & 사화 대한) */}
+                <div className="p-5 bg-slate-950/40 border border-white/5 rounded-3xl space-y-4">
+                  <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                    <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-[9px] font-black text-purple-400">ASTROLOBE SPEC</span>
+                    <h4 className="text-xs md:text-sm font-black text-white">자미두수 정밀 기체 명세 (12궁 명반 & 사화 대한)</h4>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button
+                      onClick={() => setShowZimidusuGridModal(true)}
+                      className="p-4 bg-slate-900/60 border border-purple-500/10 hover:border-purple-500/40 rounded-2xl space-y-2 text-left cursor-pointer transition-all hover:scale-[1.01] hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] group focus:outline-none w-full"
+                    >
+                      <div className="flex justify-between items-center w-full">
+                        <div className="flex items-center gap-1.5 text-xs font-black text-purple-300">
+                          <Milestone className="w-3.5 h-3.5 text-purple-400" />
+                          <span>12궁 명반 + 100+별 배치</span>
+                        </div>
+                        <span className="text-[8px] font-bold text-purple-400 animate-pulse bg-purple-500/10 px-1.5 py-0.5 rounded">상세 명반보기</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
+                        4x4 그리드 명반 차트에 12궁별 주성, 부성, 잡요와 밝기(묘왕평함)를 시각화. 내 영혼의 구체적인 12가지 인생 지도를 한눈에 직접 조망합니다.
+                      </p>
+                    </button>
+                    
+                    <button
+                      onClick={() => setShowSawaDaewoonModal(true)}
+                      className="p-4 bg-slate-900/60 border border-purple-500/10 hover:border-purple-500/40 rounded-2xl space-y-2 text-left cursor-pointer transition-all hover:scale-[1.01] hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] group focus:outline-none w-full"
+                    >
+                      <div className="flex justify-between items-center w-full">
+                        <div className="flex items-center gap-1.5 text-xs font-black text-purple-300">
+                          <Zap className="w-3.5 h-3.5 text-purple-400" />
+                          <span>사화(四化) + 대한(10년 운세)</span>
+                        </div>
+                        <span className="text-[8px] font-bold text-purple-400 animate-pulse bg-purple-500/10 px-1.5 py-0.5 rounded">운세 리포트보기</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
+                        화록, 화권, 화과, 화기가 작용하는 궁 분석. 10년 단위 대한에서 별들의 흐름 변화와 영혼이 마주할 기회, 위기 시점을 정밀 파악합니다.
+                      </p>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 파트 2: 6대 주제별 교차분석 리포트 */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/30 text-[9px] font-black text-indigo-400">6 CORE THEMES</span>
+                    <h4 className="text-xs md:text-sm font-black text-white">6대 영역별 사주 × 자미두수 AI 교차 보고서</h4>
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
+                    원하는 분야의 카드를 클릭해 보세요. 사주 일주와 자미두수 궁성(宮星)의 흐름을 다정한 은유법으로 버무린 감동의 자아 치유 리포트가 펼쳐집니다.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {Object.entries(themeCrossoverReport).map(([key, data]: [string, any]) => (
+                      <button
+                        key={key}
+                        onClick={() => setSelectedThemeCard(data)}
+                        className="p-4.5 bg-slate-900/60 border border-purple-500/10 hover:border-purple-500/40 rounded-2xl text-left transition-all hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] group relative overflow-hidden w-full focus:outline-none flex flex-col justify-between h-[125px]"
+                      >
+                        <div className="absolute top-0 right-0 w-12 h-12 bg-white/2 rounded-full blur-xl group-hover:bg-purple-500/5 pointer-events-none" />
+                        <div className="space-y-1.5 w-full">
+                          <span className="text-[8px] font-black text-purple-400 uppercase tracking-widest block">{data.metaphor}</span>
+                          <h5 className="text-xs font-black text-white group-hover:text-purple-300 transition-colors leading-none">
+                            {data.title.split('(')[0]}
+                          </h5>
+                          <p className="text-[10px] text-slate-400 line-clamp-2 leading-relaxed pr-2 font-serif">
+                            {data.desc}
+                          </p>
+                        </div>
+                        <div className="w-full pt-1.5 border-t border-white/5 text-[8px] text-purple-400 font-black flex justify-between items-center group-hover:animate-pulse">
+                          <span>교차 힐링 에세이 해독</span>
+                          <ArrowRight className="w-2.5 h-2.5" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 파트 3: 고민 맞춤 해독 및 1:1 추가 질문 */}
+                <div className="p-5 bg-gradient-to-b from-slate-900/80 to-slate-950/90 border border-purple-500/20 rounded-3xl space-y-5 relative">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[9px] font-black text-amber-500">CUSTOM SOLVER</span>
+                      <h4 className="text-xs md:text-sm font-black text-white">사주 × 자미두수 고민 맞춤 AI 디버깅</h4>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
+                    진로, 연애, 재물 등 마음속에 품고 있는 구체적인 고민을 아래에 적어주세요. 사주 기하학과 자미두수 성계를 융합하여 당신의 무의식 상처를 해독하고 나아갈 길을 비추는 1:1 맞춤 치유 솔루션을 실시간 튜닝해 냅니다.
+                  </p>
+
+                  <div className="space-y-4">
+                    {/* 고민 분야 선택 */}
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold text-slate-400 block">고민 분야 선택</span>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { id: 'job', label: '🌳 직업/진로/이직', icon: Milestone },
+                          { id: 'love', label: '🪞 연애/결혼/사랑', icon: EyeOff },
+                          { id: 'wealth', label: '💵 재물/사업/재테크', icon: Compass },
+                          { id: 'general', label: '🧘 마음 치유/인간관계', icon: Sparkles }
+                        ].map((cat) => {
+                          const CatIcon = cat.icon;
+                          const isSelected = troubleCategory === cat.id;
+                          return (
+                            <button
+                              key={cat.id}
+                              onClick={() => {
+                                setTroubleCategory(cat.id as any);
+                                setFollowUpAnswer(null);
+                                setFollowUpQuestion('');
+                              }}
+                              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5 transition-all focus:outline-none ${
+                                isSelected
+                                  ? 'bg-purple-650 text-white border border-purple-500/30 shadow-md shadow-purple-500/15'
+                                  : 'bg-slate-900 border border-white/5 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                              }`}
+                            >
+                              <CatIcon className="w-3.5 h-3.5" />
+                              <span>{cat.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 고민 입력란 */}
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold text-slate-400 block">구체적인 고민 작성</span>
+                      <div className="relative">
+                        <textarea
+                          value={troubleQuestion}
+                          onChange={(e) => setTroubleQuestion(e.target.value)}
+                          placeholder="예: 올해 다니던 직장을 옮기고 다른 직업 분야로 과감히 도전하고 싶습니다. 저한테 어떤 변화가 생기고, 어떻게 마음을 다스리면 좋을까요?"
+                          rows={3}
+                          className="w-full bg-slate-950/60 border border-white/10 hover:border-purple-500/30 focus:border-purple-500/50 rounded-2xl p-4 text-xs text-white placeholder-slate-500 focus:outline-none transition-all leading-relaxed font-sans pr-12 resize-none"
+                        />
+                        <button
+                          disabled={!troubleQuestion.trim() || isAnalyzingTrouble}
+                          onClick={() => {
+                            setIsAnalyzingTrouble(true);
+                            // 1초 시뮬레이션 후 결과 생성
+                            setTimeout(() => {
+                              const report = getCustomTroubleAnalysis(troubleCategory, troubleQuestion, sajuData, zimidusuChart, userName);
+                              setTroubleReport(report);
+                              setIsAnalyzingTrouble(false);
+                            }, 1100);
+                          }}
+                          className={`absolute bottom-4 right-4 p-2 rounded-xl focus:outline-none transition-all ${
+                            troubleQuestion.trim() && !isAnalyzingTrouble
+                              ? 'bg-purple-650 text-white hover:bg-purple-500 active:scale-95 shadow-md shadow-purple-500/20'
+                              : 'bg-slate-800 text-slate-600 cursor-not-allowed'
+                          }`}
+                        >
+                          {isAnalyzingTrouble ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <ArrowRight className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
           </AnimatePresence>
 
         </div>
@@ -3494,6 +3703,443 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                       className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs shadow-lg shadow-purple-500/20 active:scale-95 transition-all duration-300"
                     >
                       자각 완료 및 패치 활성화
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 7. 6대 주제별 상세 해독 모달 팝업 */}
+          <AnimatePresence>
+            {selectedThemeCard && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl"
+              >
+                <motion.div
+                  initial={{ scale: 0.94, y: 15 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.94, y: 15 }}
+                  className="w-full max-w-lg bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-purple-950/30 border-2 border-purple-500/40 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(168,85,247,0.35)] text-left relative overflow-hidden max-h-[85vh] overflow-y-auto scrollbar-thin"
+                >
+                  <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-indigo-500 to-amber-500" />
+                  
+                  <button
+                    onClick={() => setSelectedThemeCard(null)}
+                    className="absolute top-5 right-5 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all duration-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                      <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                    </div>
+                    <span className="text-[9px] md:text-[10px] font-black text-purple-300 tracking-widest uppercase">
+                      6 Core Theme Crossover Decoded
+                    </span>
+                  </div>
+
+                  <h3 className="text-base md:text-lg font-black text-white mb-1.5 tracking-tight">
+                    {selectedThemeCard.title}
+                  </h3>
+                  <span className="text-[10px] md:text-xs font-black text-cyan-300 bg-cyan-950/60 border border-cyan-500/35 px-3 py-1 rounded-full block w-fit mb-5 shadow-sm shadow-cyan-500/10">
+                    {selectedThemeCard.metaphor}
+                  </span>
+
+                  <div className="space-y-5 text-xs md:text-sm leading-relaxed text-slate-300">
+                    <div className="p-4 bg-slate-950/70 border border-white/5 rounded-2xl relative overflow-hidden">
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500/50" />
+                      <span className="text-[9px] font-black text-slate-500 block mb-1.5 uppercase tracking-wider">이 영역의 융합 주파수</span>
+                      <p className="font-serif italic leading-relaxed text-slate-200">
+                        {selectedThemeCard.desc}
+                      </p>
+                    </div>
+
+                    <div className="p-4.5 bg-gradient-to-br from-purple-950/40 to-slate-900 border border-purple-500/20 rounded-2xl space-y-2 relative overflow-hidden">
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500" />
+                      <span className="text-[9px] font-black text-purple-400 block uppercase tracking-wider">사주 × 자미두수 AI 상세 해독</span>
+                      <p className="font-sans text-slate-200 leading-relaxed text-[13px] md:text-sm whitespace-pre-line">
+                        {selectedThemeCard.analysis}
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl text-center">
+                      <p className="text-xs text-amber-200/90 font-serif leading-relaxed italic">
+                        “{userName}, 세상의 수많은 목소리에 나를 맞추려 애쓰지 마세요. 당신이라는 존재 자체로 이미 우주는 풍요롭고 안전합니다.”
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/5 flex gap-2">
+                    <button
+                      onClick={() => setSelectedThemeCard(null)}
+                      className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs shadow-lg shadow-purple-500/20 active:scale-95 transition-all duration-300"
+                    >
+                      해독 완료 (영혼에 동기화하기)
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 8. AI 고민 맞춤 분석 결과 팝업 모달 */}
+          <AnimatePresence>
+            {troubleReport && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl"
+              >
+                <motion.div
+                  initial={{ scale: 0.94, y: 15 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.94, y: 15 }}
+                  className="w-full max-w-lg bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-purple-950/30 border-2 border-purple-500/40 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(168,85,247,0.35)] text-left relative overflow-hidden max-h-[85vh] overflow-y-auto scrollbar-thin"
+                >
+                  <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-purple-500 to-cyan-500" />
+                  
+                  <button
+                    onClick={() => {
+                      setTroubleReport(null);
+                      setFollowUpAnswer(null);
+                      setFollowUpQuestion('');
+                    }}
+                    className="absolute top-5 right-5 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all duration-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-1 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                      <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                    </div>
+                    <span className="text-[9px] md:text-[10px] font-black text-amber-400 tracking-widest uppercase">
+                      AI Custom Solver Result
+                    </span>
+                  </div>
+
+                  <h3 className="text-base md:text-lg font-black text-white mb-1.5 tracking-tight">
+                    {troubleReport.categoryLabel} AI 디버깅
+                  </h3>
+                  <span className="text-[10px] md:text-xs font-black text-amber-300 bg-amber-950/60 border border-amber-500/35 px-3 py-1 rounded-full block w-fit mb-5 shadow-sm shadow-amber-500/10">
+                    {troubleReport.solutionMetaphor}
+                  </span>
+
+                  <div className="space-y-5 text-xs md:text-sm leading-relaxed text-slate-300">
+                    {/* 맞춤 분석 본문 */}
+                    <div className="p-4.5 bg-slate-955/70 border border-white/5 rounded-2xl space-y-2 relative overflow-hidden">
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500" />
+                      <span className="text-[9px] font-black text-purple-400 block uppercase tracking-wider">명심 마스터 AI 해독 솔루션</span>
+                      <p className="font-sans text-slate-200 leading-relaxed text-[13px] md:text-sm whitespace-pre-line">
+                        {troubleReport.analysisText}
+                      </p>
+                    </div>
+
+                    {/* AI 브리핑 요약 */}
+                    <div className="p-4 bg-purple-500/5 border border-purple-500/10 rounded-2xl">
+                      <span className="text-[8px] font-black text-purple-400 block mb-1 uppercase tracking-widest">💡 영혼의 주권 회복 패치</span>
+                      <p className="text-xs text-purple-200/90 font-serif leading-relaxed italic">
+                        {troubleReport.briefing}
+                      </p>
+                    </div>
+
+                    {/* 추가 질문 폼 */}
+                    <div className="p-4 bg-slate-950/40 border border-white/5 rounded-2xl space-y-3">
+                      <span className="text-[9px] font-black text-slate-400 block uppercase tracking-wider">💬 명심 마스터에게 추가 질문하기</span>
+                      
+                      {followUpAnswer ? (
+                        <div className="p-3 bg-purple-955/20 border border-purple-500/20 rounded-xl space-y-1.5">
+                          <span className="text-[9px] font-black text-purple-400 block">추가 해독 답변</span>
+                          <p className="text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-line">
+                            {followUpAnswer}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={followUpQuestion}
+                            onChange={(e) => setFollowUpQuestion(e.target.value)}
+                            placeholder="예: 알려주신 솔루션을 실생활에서 더 잘 활용하려면 어떤 훈련을 해야 할까요?"
+                            className="flex-1 bg-slate-900 border border-white/10 hover:border-purple-500/20 focus:border-purple-500/40 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none"
+                          />
+                          <button
+                            disabled={!followUpQuestion.trim()}
+                            onClick={() => {
+                              // 추가 질문 답변 연산
+                              setFollowUpAnswer(
+                                `${userName}님, 참 깊고 아름다운 추가 질문을 던져주셨네요. \n\n이것을 일상에 단단히 심어두기 위한 최고의 방법은 '아바타가 자동으로 켜는 불안 경보(다크코드)를 발견할 때마다 억지로 부정하려 들지 않고, 내 감정을 한 발짝 떨어져서 가만히 지켜보며 3초 동안 크게 심호흡하는 것'입니다. "아, 내 하드웨어가 지금 익숙하게 예전 왜곡 루프를 구동하고 있구나" 하고 마음챙김(자각)을 적용하고, 나의 소중한 가치를 한 번 소리 내어 읊어 주십시오. 그것만으로도 시스템은 즉각 수용 모드로 롤백됩니다.`
+                              );
+                            }}
+                            className={`px-3.5 rounded-xl text-xs font-bold transition-all focus:outline-none ${
+                              followUpQuestion.trim()
+                                ? 'bg-purple-650 text-white hover:bg-purple-500 active:scale-95'
+                                : 'bg-slate-800 text-slate-600 cursor-not-allowed'
+                            }`}
+                          >
+                            질문 전송
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/5 flex gap-2">
+                    <button
+                      onClick={() => {
+                        setTroubleReport(null);
+                        setFollowUpAnswer(null);
+                        setFollowUpQuestion('');
+                      }}
+                      className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-slate-950 font-black text-xs shadow-lg active:scale-95 transition-all duration-300"
+                    >
+                      솔루션 장착 (나를 품어 안기)
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 6-A. 6번 탭 전용: 12궁 명반 팝업 모달 */}
+          <AnimatePresence>
+            {showZimidusuGridModal && zimidusuChart && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl"
+              >
+                <motion.div
+                  initial={{ scale: 0.94, y: 15 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.94, y: 15 }}
+                  className="w-full max-w-2xl bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-purple-950/30 border-2 border-purple-500/40 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(168,85,247,0.35)] text-left relative overflow-hidden max-h-[90vh] overflow-y-auto scrollbar-thin"
+                >
+                  <button
+                    onClick={() => setShowZimidusuGridModal(false)}
+                    className="absolute top-5 right-5 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all duration-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                      <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                    </div>
+                    <span className="text-[9px] md:text-[10px] font-black text-purple-300 tracking-widest uppercase">
+                      Zimidusu Full Grid Map
+                    </span>
+                  </div>
+
+                  <h3 className="text-base md:text-lg font-black text-white mb-1.5 tracking-tight">
+                    내 영혼의 우주 12궁 명반 배치도
+                  </h3>
+                  <p className="text-[11px] text-slate-400 leading-relaxed font-sans mb-6">
+                    각 궁(카드)을 클릭하면 해당 인생 영역의 현대 심리학적 은유 해설과 MSC 멘탈코칭 메시지가 세밀하게 펼쳐집니다.
+                  </p>
+
+                  <div className="space-y-4">
+                    {/* 모바일 뷰 캐러셀 */}
+                    <div className="flex md:hidden gap-3 overflow-x-auto pb-4 px-1 snap-x scrollbar-thin scrollbar-thumb-purple-900">
+                      {zimidusuChart.palaces?.map((palace: any, idx: number) => {
+                        const mutagenStar = [...(palace.majorStars || []), ...(palace.minorStars || []), ...(palace.adjectiveStars || [])].find(s => s.mutagen);
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => setSelectedZimidusuPalace(palace)}
+                            className="min-w-[150px] snap-center p-3.5 bg-slate-900/60 border border-white/5 hover:border-purple-500/40 rounded-xl text-left cursor-pointer transition-all flex flex-col justify-between space-y-2 relative group focus:outline-none"
+                          >
+                            <div className="flex justify-between items-center w-full">
+                              <span className="text-[9px] font-bold text-slate-500 font-mono">{palace.heavenlyStem}{palace.earthlyBranch}</span>
+                              <span className="text-[8px] font-black text-slate-400 bg-white/5 px-1 py-0.5 rounded">
+                                {palace.decadal.range[0]}-{palace.decadal.range[1]}세
+                              </span>
+                            </div>
+                            <h5 className="text-xs font-black text-white">
+                              {palace.name === '명' || palace.name.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+                            </h5>
+                            <div className="space-y-1 w-full flex-grow">
+                              {palace.majorStars && palace.majorStars.length > 0 ? (
+                                <div className="flex flex-col gap-0.5">
+                                  {palace.majorStars.map((star: any, sIdx: number) => (
+                                    <span key={sIdx} className="text-[10px] font-bold text-purple-300 truncate">
+                                      {star.name}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-[9px] text-slate-500 italic block">대궁 기운 흡수</span>
+                              )}
+                            </div>
+                            {mutagenStar && (
+                              <span className="text-[7.5px] px-1 py-0.5 rounded font-black border uppercase bg-purple-950/40 border-purple-500/40 text-purple-300">
+                                화{mutagenStar.mutagen} ({mutagenStar.name})
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* 데스크탑 뷰 4x4 그리드 */}
+                    <div className="hidden md:grid grid-cols-4 grid-rows-4 gap-2.5 max-w-[500px] mx-auto aspect-square p-2 bg-slate-950/40 border border-white/5 rounded-2xl relative">
+                      {zimidusuChart.palaces?.map((palace: any, idx: number) => {
+                        const branch = palace.earthlyBranch;
+                        const gridPos = ZIMIDUSU_GRID_MAP[branch] || { row: 'row-start-1', col: 'col-start-1' };
+                        const mutagenStar = [...(palace.majorStars || []), ...(palace.minorStars || []), ...(palace.adjectiveStars || [])].find(s => s.mutagen);
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => setSelectedZimidusuPalace(palace)}
+                            className={`${gridPos.row} ${gridPos.col} p-2.5 bg-slate-900/50 border border-white/5 hover:border-purple-500/40 rounded-xl text-left cursor-pointer transition-all hover:scale-[1.03] flex flex-col justify-between space-y-1 relative group focus:outline-none w-full h-full`}
+                          >
+                            <div className="w-full flex justify-between items-start">
+                              <div className="flex flex-col">
+                                <span className="text-[7.5px] font-bold text-slate-500 font-mono leading-none mb-0.5">{palace.heavenlyStem}{palace.earthlyBranch}</span>
+                                <h5 className="text-[11px] font-black text-white leading-none">
+                                  {palace.name === '명' || palace.name.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+                                </h5>
+                              </div>
+                              <span className="text-[7.5px] text-slate-400 font-mono leading-none bg-white/5 px-1 py-0.5 rounded">
+                                {palace.decadal.range[0]}세
+                              </span>
+                            </div>
+                            <div className="w-full flex-grow space-y-0.5">
+                              {palace.majorStars && palace.majorStars.length > 0 ? (
+                                <div className="flex flex-col gap-0.5">
+                                  {palace.majorStars.map((star: any, sIdx: number) => (
+                                    <span key={sIdx} className="text-[9px] font-bold text-purple-300 truncate">
+                                      {star.name}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-[8px] text-slate-500 italic block">대궁 흡수</span>
+                              )}
+                            </div>
+                            {mutagenStar && (
+                              <span className="text-[7px] px-1 py-0.5 rounded font-black border uppercase bg-purple-950/40 border-purple-500/40 text-purple-300 truncate block w-fit max-w-full leading-none">
+                                化{mutagenStar.mutagen}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                      {/* 중앙 4칸 */}
+                      <div className="row-start-2 row-end-4 col-start-2 col-end-4 bg-gradient-to-b from-purple-950/10 via-slate-900/20 to-slate-950/30 border border-purple-500/10 rounded-xl flex flex-col justify-center items-center p-2 text-center space-y-1 select-none">
+                        <Compass className="w-3.5 h-3.5 text-purple-400 animate-spin-slow" />
+                        <strong className="text-[9px] font-black text-purple-300 block uppercase tracking-widest leading-none">OS Core</strong>
+                        <p className="text-[8px] text-slate-400 leading-tight">클릭하여 궁을 상세 해독하세요.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/5 flex gap-2">
+                    <button
+                      onClick={() => setShowZimidusuGridModal(false)}
+                      className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-650 to-indigo-650 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs shadow-lg active:scale-95 transition-all duration-300"
+                    >
+                      닫기
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 6-B. 6번 탭 전용: 사화 + 대한 운세 팝업 모달 */}
+          <AnimatePresence>
+            {showSawaDaewoonModal && zimidusuChart && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl"
+              >
+                <motion.div
+                  initial={{ scale: 0.94, y: 15 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.94, y: 15 }}
+                  className="w-full max-w-lg bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-purple-950/30 border-2 border-purple-500/40 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(168,85,247,0.35)] text-left relative overflow-hidden max-h-[85vh] overflow-y-auto scrollbar-thin"
+                >
+                  <button
+                    onClick={() => setShowSawaDaewoonModal(false)}
+                    className="absolute top-5 right-5 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all duration-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  {(() => {
+                    const report = getSawaDaewoonReport(sajuData, zimidusuChart, userName);
+                    if (!report) return <p className="text-xs text-slate-400">데이터를 불러오는 중 오류가 발생했습니다.</p>;
+
+                    return (
+                      <>
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="p-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                            <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                          </div>
+                          <span className="text-[9px] md:text-[10px] font-black text-purple-300 tracking-widest uppercase">
+                            Sawa & Decadal Astrolife Report
+                          </span>
+                        </div>
+
+                        <h3 className="text-base md:text-lg font-black text-white mb-1.5 tracking-tight">
+                          {report.title}
+                        </h3>
+                        <span className="text-[10px] md:text-xs font-black text-cyan-300 bg-cyan-950/60 border border-cyan-500/35 px-3 py-1 rounded-full block w-fit mb-6 shadow-sm shadow-cyan-500/10">
+                          {report.subtitle}
+                        </span>
+
+                        <div className="space-y-5 text-xs md:text-sm leading-relaxed text-slate-350 pr-1 max-h-[55vh] overflow-y-auto scrollbar-thin">
+                          {/* 대한 설명 */}
+                          <div className="p-4 bg-slate-950/70 border border-white/5 rounded-2xl relative overflow-hidden">
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500/50" />
+                            <span className="text-[9px] font-black text-slate-500 block mb-1.5 uppercase tracking-wider">10년 대운(인생 기후) 분석</span>
+                            <p className="font-serif italic leading-relaxed text-slate-200">
+                              {report.daewoonIntro}
+                            </p>
+                          </div>
+
+                          {/* 사화 분석 */}
+                          <div className="p-4.5 bg-gradient-to-br from-purple-950/40 to-slate-900 border border-purple-500/20 rounded-2xl space-y-2 relative overflow-hidden">
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500" />
+                            <span className="text-[9px] font-black text-purple-400 block uppercase tracking-wider">내면의 4대 작용력 (사화 분석)</span>
+                            <div className="font-sans font-medium text-slate-200 leading-relaxed text-[13px] md:text-sm whitespace-pre-line space-y-3">
+                              {report.sawaAnalysis}
+                            </div>
+                          </div>
+
+                          {/* 자기연민 MSC 위로 */}
+                          <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl text-center relative overflow-hidden">
+                            <div className="absolute top-0 left-0 right-0 h-0.5 bg-amber-500/30" />
+                            <p className="text-xs text-amber-200/90 font-serif leading-relaxed select-none italic whitespace-pre-line">
+                              {report.mscAdvice}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+
+                  <div className="mt-6 pt-4 border-t border-white/5 flex gap-2">
+                    <button
+                      onClick={() => setShowSawaDaewoonModal(false)}
+                      className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-650 to-indigo-650 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs shadow-lg active:scale-95 transition-all duration-300"
+                    >
+                      자각 완료 (내면의 우주 흐름 동기화)
                     </button>
                   </div>
                 </motion.div>
