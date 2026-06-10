@@ -6,6 +6,11 @@ export interface SajuPillar {
     ji: { char: string; hanja: string; color: string; label: string; animal?: string };
 }
 
+export interface DaewoonPillar {
+    age: number; // 시작 만나이
+    ganzhi: string; // '甲子' 등
+}
+
 export interface FourPillarsData {
     year: SajuPillar;
     month: SajuPillar;
@@ -16,6 +21,8 @@ export interface FourPillarsData {
     isYearGongmang: boolean;
     isMonthGongmang: boolean;
     isTimeGongmang: boolean;
+    daewoon: DaewoonPillar[];
+    daewoonStartAge: number;
 }
 
 const HEAVENLY_STEMS = [
@@ -130,6 +137,18 @@ export const calculateSaju = (
     const isMonthGongmang = gongmang.includes(monthZhi);
     const isTimeGongmang = gongmang.includes(timeZhi);
 
+    // 대운 계산
+    const genderVal = gender === 'male' ? 1 : 0;
+    const yun = (bazi as any).getYun(genderVal);
+    const daYunList = yun.getDaYun();
+    const daewoonStartAge = yun.getStartYear() - year; // 시작 대운수
+    const daewoon: DaewoonPillar[] = daYunList.map((d: any) => {
+        return {
+            age: d.getStartYear() - year,
+            ganzhi: d.getGanZhi()
+        };
+    }).filter((d: any) => d.age >= 0);
+
     const result = {
         year: mapPillar(yearGan, yearZhi),
         month: mapPillar(monthGan, monthZhi),
@@ -139,7 +158,9 @@ export const calculateSaju = (
         gongmang,
         isYearGongmang,
         isMonthGongmang,
-        isTimeGongmang
+        isTimeGongmang,
+        daewoon,
+        daewoonStartAge
     };
 
     return result;

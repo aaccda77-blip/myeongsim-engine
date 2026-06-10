@@ -78,7 +78,6 @@ export default function OnboardingFlow() {
                     `${pillars.day?.gan?.char || '?'} (${pillars.day?.gan?.color || '#fff'})`;
 
                 updateUserData({
-                    userName: '',
                     birthDate: formData.birthDate,
                     birthTime: formData.isTimeUnknown ? 'unknown' : formData.birthTime,
                     gender: genderVal,

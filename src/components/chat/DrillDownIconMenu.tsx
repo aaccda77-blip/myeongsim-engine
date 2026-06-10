@@ -56,6 +56,7 @@ const MindResetModal = dynamic(() => import('@/components/coaching/MindResetModa
 const MyeongsimOSDashboard = dynamic(() => import('@/components/os/MyeongsimOSDashboard'), { ssr: false });
 const DecodeReportModal = dynamic(() => import('@/components/coaching/DecodeReportModal'), { ssr: false });
 const PremiumReportModal = dynamic(() => import('@/components/coaching/PremiumReportModal'), { ssr: false });
+const MindSpaceTrainingModal = dynamic(() => import('@/components/coaching/MindSpaceTrainingModal'), { ssr: false });
 const MyeongsimCoachingDashboard = dynamic(() => import('@/components/coaching/MyeongsimCoachingDashboard'), { ssr: false });
 
 
@@ -496,6 +497,7 @@ export default function DrillDownIconMenu({
     const [showMindReset, setShowMindReset] = useState(false); // [NEW] 5D 마음 리셋 디버깅
     const [showDecodeReport, setShowDecodeReport] = useState(false);
     const [showPremiumReport, setShowPremiumReport] = useState(false);
+    const [showMindSpaceTraining, setShowMindSpaceTraining] = useState(false); // [NEW] 마음 공간 넓히기 훈련 모달
     const { reportData } = useReportStore();
 
     // [New] 딥 링크 연동을 위해 initialSectionId가 존재하면 108 자각 new 대시보드를 바로 활성화합니다.
@@ -523,6 +525,16 @@ export default function DrillDownIconMenu({
             return;
         }
         setShowPremiumReport(true);
+    };
+
+    const handleMindSpaceTrainingClick = () => {
+        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+        if (!hasBirthDate) {
+            alert('마음 공간 넓히기 훈련을 시작하기 위해 생년월일을 먼저 입력해주세요.');
+            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+            return;
+        }
+        setShowMindSpaceTraining(true);
     };
 
 
@@ -1142,6 +1154,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 마음 공간 넓히기 훈련 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={handleMindSpaceTrainingClick}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))',
+                        border: '1px solid rgba(168, 85, 247, 0.4)',
+                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🌌</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#c084fc' }}>마음 공간 넓히기</div>
+                        <div style={styles.neuroTrigger}>3단계 메타코드 융합</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 108 자각 메뉴 — 108페이지 초감동 자각 백서 */}
                 <button
                     style={styles.iconButton}
@@ -1718,6 +1751,13 @@ export default function DrillDownIconMenu({
             <PremiumReportModal
                 isOpen={showPremiumReport}
                 onClose={() => setShowPremiumReport(false)}
+                userProfile={userProfile}
+            />
+
+            {/* [NEW] 마음 공간 넓히기 훈련 모달 */}
+            <MindSpaceTrainingModal
+                isOpen={showMindSpaceTraining}
+                onClose={() => setShowMindSpaceTraining(false)}
                 userProfile={userProfile}
             />
         </>

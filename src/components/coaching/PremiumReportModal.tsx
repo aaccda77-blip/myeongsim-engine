@@ -82,7 +82,7 @@ export default function PremiumReportModal({ isOpen, onClose, userProfile }: Pro
   const { reportData: storeReportData } = useReportStore();
 
   const saju = userProfile?.saju || storeReportData?.saju || {};
-  const userName = userProfile?.name || (storeReportData as any)?.name || '이경윤';
+  const userName = userProfile?.userName || (storeReportData as any)?.userName || '회원';
 
   // 한자 파싱 헬퍼 함수
   const getHanzi = (pillar: any, part: 'stem' | 'branch'): string => {

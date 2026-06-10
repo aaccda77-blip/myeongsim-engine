@@ -97,10 +97,10 @@ export const BRANCH_DATA: Record<string, { element: ElementType; polarity: Polar
     'Chuk': { element: 'earth', polarity: '-', name_kor: '축토', season: 'winter' },
 };
 
-const ELEMENT_RELATION: Record<ElementType, ElementType> = {
+export const ELEMENT_RELATION: Record<ElementType, ElementType> = {
     'wood': 'fire', 'fire': 'earth', 'earth': 'metal', 'metal': 'water', 'water': 'wood'
 };
-const ELEMENT_CONTROL: Record<ElementType, ElementType> = {
+export const ELEMENT_CONTROL: Record<ElementType, ElementType> = {
     'wood': 'earth', 'fire': 'metal', 'earth': 'water', 'metal': 'wood', 'water': 'fire'
 };
 
