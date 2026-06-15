@@ -364,9 +364,23 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
                     <span className="text-xs font-bold text-slate-200">코스 B: 108 재귀적 몸 해체</span>
                     <span className="text-[9px] bg-purple-500/10 text-purple-300 px-1.5 py-0.5 rounded-full font-bold">초고도 집중</span>
                   </div>
-                  <p className="text-[10px] text-slate-400 leading-normal">
+                  <p className="text-[10px] text-slate-400 leading-normal mb-3">
                     머리카락부터 우주 공간의 상대성까지, 108가지 실생활 예시에 나를 대입하며 몸이 허상임을 온전히 자각하는 특별 훈련
                   </p>
+                  <div className="space-y-1.5 pt-2.5 border-t border-slate-700/50">
+                    <div className="flex items-start gap-1.5 text-[9px] text-slate-400 leading-relaxed">
+                      <span className="text-purple-400 shrink-0">🪜</span>
+                      <span><strong>108 자각의 계단 구축</strong>: 손톱 깎기부터 우주 무중력 상태까지, 몸이 내가 아님을 자연스레 깨닫는 108가지 재귀 질문 데이터셋을 수록했습니다.</span>
+                    </div>
+                    <div className="flex items-start gap-1.5 text-[9px] text-slate-400 leading-relaxed">
+                      <span className="text-purple-400 shrink-0">🪞</span>
+                      <span><strong>자각도 아우라 피드백</strong>: 단계(1 ➔ 108)가 깊어질수록 뒤편의 요동치던 조명이 가라앉고 맑은 은빛 단색조로 진정되어 마음의 고요를 시각적으로 연출합니다.</span>
+                    </div>
+                    <div className="flex items-start gap-1.5 text-[9px] text-slate-400 leading-relaxed">
+                      <span className="text-purple-400 shrink-0">🏅</span>
+                      <span><strong>12배수 도달 보상</strong>: 12단계 단위마다 축하 배지와 함께 \'조기 자각 리포트 발급\' 기능을 지원하여 성취감과 접근성을 높였습니다.</span>
+                    </div>
+                  </div>
                 </div>
               </button>
             </motion.div>
