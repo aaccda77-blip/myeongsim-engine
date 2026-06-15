@@ -10,6 +10,7 @@ interface PowerbaseDonutProps {
     data: PowerbaseData;
     teamRole: TeamRoleType;
     teamRoleDescription: string;
+    onItemClick?: (category: 'powerbase', itemKey: string, itemLabel: string, itemValue: number) => void;
 }
 
 // 팀 역할 한글 매핑
@@ -32,28 +33,52 @@ const CustomTooltip = ({ active, payload }: any) => {
                 <p className="text-gray-400 text-xs mt-1">
                     비율: <span className="text-white font-mono">{item.value.toFixed(0)}%</span>
                 </p>
+                <p className="text-[10px] text-amber-400/70 mt-1">👆 클릭하면 AI 상세 해설</p>
             </div>
         );
     }
     return null;
 };
 
-export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: PowerbaseDonutProps) {
-    // 파이 차트 데이터 변환
+export default function PowerbaseDonut({ data, teamRole, teamRoleDescription, onItemClick }: PowerbaseDonutProps) {
+    // 파이 차트 데이터 변환 (편차 확대 알고리즘 적용으로 기질 선호도를 역동적으로 시각화)
     const chartData = useMemo(() => {
-        const total = Object.values(data).reduce((sum, val) => sum + val, 0);
+        const values = Object.values(data);
+        const minVal = Math.min(...values);
+        const maxVal = Math.max(...values);
+        
+        // 격차를 확실히 표현하기 위해 최소값보다 약간 낮은 기준값을 빼줌
+        const baseline = minVal - (maxVal - minVal > 5 ? 10 : 2);
+        
+        const adjustedWeights = (Object.entries(data) as [keyof PowerbaseData, number][]).map(([key, value]) => {
+            const weight = Math.max(1, value - baseline);
+            return { key, weight };
+        });
+        
+        const totalWeight = adjustedWeights.reduce((sum, item) => sum + item.weight, 0);
 
         return (Object.entries(data) as [keyof PowerbaseData, number][])
-            .map(([key, value]) => ({
-                name: POWERBASE_LABELS[key],
-                value: Math.round((value / total) * 100),
-                color: POWERBASE_COLORS[key],
-                key,
-            }))
+            .map(([key, value]) => {
+                const matchedWeight = adjustedWeights.find(item => item.key === key)?.weight || 1;
+                const ratio = Math.round((matchedWeight / totalWeight) * 100);
+                return {
+                    name: POWERBASE_LABELS[key],
+                    value: ratio, // 편차 보정 비율 (%)
+                    rawValue: Math.round(value), // 100점 만점 실제 절대 점수
+                    color: POWERBASE_COLORS[key],
+                    key,
+                };
+            })
             .sort((a, b) => b.value - a.value);
     }, [data]);
 
     const topItem = chartData[0];
+
+    // 파이 차트 클릭 핸들러 (실제 100점 만점 절대 점수를 전송하여 AI 해설의 정밀도 향상)
+    const handlePieClick = (entry: any) => {
+        if (!onItemClick || !entry) return;
+        onItemClick('powerbase', entry.key, `조직 기여 기질: ${entry.name}`, entry.rawValue);
+    };
 
     return (
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
@@ -84,6 +109,8 @@ export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: 
                                 isAnimationActive={true}
                                 animationDuration={1200}
                                 animationEasing="ease-out"
+                                onClick={handlePieClick}
+                                style={{ cursor: 'pointer' }}
                             >
                                 {chartData.map((entry, index) => (
                                     <Cell
@@ -99,8 +126,9 @@ export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: 
 
                     {/* Center Label */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-2xl font-bold text-white">{topItem.value}%</span>
-                        <span className="text-[9px] text-gray-400 text-center px-2 leading-tight">
+                        <span className="text-xl font-bold text-white">{topItem.value}%</span>
+                        <span className="text-amber-400 font-mono text-[11px] font-bold">({topItem.rawValue}점)</span>
+                        <span className="text-[9px] text-gray-400 text-center px-2 leading-tight mt-0.5">
                             {topItem.name.split(' ')[0]}
                         </span>
                     </div>
@@ -114,13 +142,16 @@ export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: 
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5 + idx * 0.1 }}
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 cursor-pointer hover:bg-white/5 rounded-lg px-2 py-1 -mx-2 transition-colors"
+                            onClick={() => onItemClick?.('powerbase', item.key, `조직 기여 기질: ${item.name}`, item.rawValue)}
                         >
                             <span
                                 className="w-3 h-3 rounded-sm shrink-0"
                                 style={{ backgroundColor: item.color }}
                             />
-                            <span className="text-xs text-white font-mono w-8">{item.value}%</span>
+                            <span className="text-xs text-white font-mono w-16 text-right shrink-0 mr-1">
+                                {item.value}% ({item.rawValue}점)
+                            </span>
                             <span className="text-xs text-gray-300 truncate">{item.name}</span>
                         </motion.div>
                     ))}
@@ -134,7 +165,10 @@ export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: 
                 transition={{ delay: 1 }}
                 className="mt-6 pt-4 border-t border-white/10"
             >
-                <div className="flex items-center gap-3 bg-gradient-to-r from-amber-500/10 to-transparent rounded-xl p-4 border border-amber-500/20">
+                <div
+                    className="flex items-center gap-3 bg-gradient-to-r from-amber-500/10 to-transparent rounded-xl p-4 border border-amber-500/20 cursor-pointer hover:border-amber-500/40 transition-colors"
+                    onClick={() => onItemClick?.('powerbase', 'teamRole', `팀 역할: ${TEAM_ROLE_KO[teamRole]}`, 85)}
+                >
                     <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
                         <Crown className="w-6 h-6 text-amber-400" />
                     </div>
@@ -148,7 +182,7 @@ export default function PowerbaseDonut({ data, teamRole, teamRoleDescription }: 
 
             {/* Footnote */}
             <p className="text-[10px] text-gray-600 mt-4">
-                * 파워베이스는 당신이 조직에 기여하는 가장 자연스러운 방식입니다.
+                * 각 항목을 클릭하면 AI가 상세히 분석해드립니다.
             </p>
         </div>
     );

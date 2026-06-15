@@ -1,25 +1,25 @@
 export interface Phase1NeuralBlueprint {
-  systemTrait: string; // 시스템 특성
-  computationMethod: string; // 연산 방식 (공식 및 설명)
-  coreLogic: string; // 핵심 로직
+  systemTrait: string; // 나의 타고난 성정
+  meditationGuide: string; // 마음을 다스리는 영상 및 명상법
+  coreLogic: string; // 핵심 심리 에너지
 }
 
 export interface Phase2OldScript {
-  errorLog: string; // 에러 로그 (낡은 각본의 내면의 목소리)
-  oldScript: string; // 낡은 각본
-  errorStatus: string; // 오류 현황
+  mindTrap: string; // 내 안의 어두운 속삭임 (마음의 덫)
+  oldScars: string; // 나를 가로막는 과거의 낡은 상처
+  unbalanceState: string; // 에너지가 치우쳤을 때 나타나는 그늘
 }
 
 export interface Phase3NeuralHacking {
-  socraticQuestion: string; // 소파술 질문: 방어기제 실체 해부
-  recursiveQuestion: string; // 재귀적 질문: 에고의 주체 관찰
-  metaAwarenessQuestion: string; // 알아차림의 알아차림 질문: 긴장의 관찰
+  healingQuestion1: string; // 내면을 거울처럼 비추는 질문
+  healingQuestion2: string; // 스스로의 본질을 깨우는 성찰 질문
+  metaAwarenessQuestion: string; // 나의 마음 상태를 가만히 바라보는 법
 }
 
 export interface AntiFragileSolution {
   title: string;
-  reprogramming: string;
-  actionItem: string;
+  reprogramming: string; // 긍정 확언 (내면 조율)
+  actionItem: string; // 오늘 바로 실천할 구체적인 행동
 }
 
 export interface Phase4Solution {
@@ -28,8 +28,8 @@ export interface Phase4Solution {
 }
 
 export interface Phase5MetaSelf {
-  executionState: string; // 실행 상태 (진화 형태 타이틀)
-  description: string; // 진화 상태에 대한 설명
+  executionState: string; // 내가 도달할 참된 나의 모습
+  description: string; // 진화된 마음의 풍경에 대한 설명
 }
 
 export interface GapjaModule {
@@ -42,124 +42,124 @@ export interface GapjaModule {
   phase3: Phase3NeuralHacking;
   phase4: Phase4Solution;
   phase5: Phase5MetaSelf;
-  masterBriefing: string; // 명심 마스터의 브리핑
+  masterBriefing: string; // 명심 마스터의 다정한 브리핑
 }
 
-// 1. 천간 코어 템플릿 (10종)
+// 1. 천간 코어 템플릿 (10종) - 자연의 물상과 다정함 융합
 const STEM_DATA = [
-  { char: '甲', title: '시대를 여는 최초의 거목', quote: '당신의 그 얼어붙을 듯 차가운 이성을 타인을 베어내는 칼로 쓰지 마라.', executionState: '만물의 봄을 여는 거목' },
-  { char: '乙', title: '강인한 생명력의 덩굴', quote: '바람에 흔들리는 것을 두려워하지 마라. 당신의 유연함이 곧 가장 강력한 생존 무기다.', executionState: '대지를 뒤덮는 불멸의 숲' },
-  { char: '丙', title: '세상을 비추는 맹렬한 태양', quote: '당신의 그 타오르는 거대한 열정을 불평불만으로 소모하지 마라.', executionState: '무한한 여명의 태양' },
-  { char: '丁', title: '어둠을 밝히는 은은한 촛불', quote: '당신의 온기를 스스로를 태우는 자책으로 쓰지 마라. 당신은 어둠 속의 유일한 길잡이다.', executionState: '영혼을 치유하는 영원의 불꽃' },
-  { char: '戊', title: '만물을 품은 풍요로운 태산', quote: '당신의 거대한 포용력을 변화를 거부하는 무거운 고집으로 쓰지 마라.', executionState: '살아있는 태산의 주권자' },
-  { char: '己', title: '만물을 기르는 비옥한 대지', quote: '당신의 희생을 당연하게 여기지 마라. 당신은 모든 생명이 자라나는 절대적 기반이다.', executionState: '모든 생명을 잉태하는 만물의 어머니' },
-  { char: '庚', title: '질서를 베어내는 무자비한 명검', quote: '당신의 그 강력한 추진력을 핑계 없는 파괴로 몰아가지 마라.', executionState: '새 시대를 바로 세우는 엑스칼리버' },
-  { char: '辛', title: '세밀하게 세공된 완벽한 보석', quote: '당신의 예리함을 타인을 찌르는 가시로 쓰지 마라. 당신은 완성된 절대적 가치다.', executionState: '결점 없는 우주의 다이아몬드' },
-  { char: '壬', title: '압도적인 심연의 대해', quote: '당신의 무한한 지혜를 음모를 꾸미는 데 쓰지 마라.', executionState: '완전한 진실의 대양' },
-  { char: '癸', title: '소리 없이 스며드는 안개', quote: '당신의 그 섬세한 침투력을 스스로를 가두는 감옥으로 만들지 마라.', executionState: '마른 대지를 적시는 생명의 단비' }
+  { char: '甲', title: '봄 하늘을 향해 곧게 뻗은 아름다운 아름드리 나무', quote: '차가운 머리로 타인을 베어내기보다, 넓은 가지로 슬픈 영혼들을 품어주는 그늘이 되어주세요.', executionState: '대지를 지탱하는 든든한 숲의 수호자' },
+  { char: '乙', title: '바람에 흔들려도 끝내 꺾이지 않는 강인한 덩굴', quote: '바람에 이리저리 눕는 것을 부끄러워 마세요. 유연하게 굽이쳐 마침내 꽃을 피우는 것이 당신의 가장 큰 힘입니다.', executionState: '벼랑 끝에서도 찬란한 꽃을 피워내는 불굴의 대지' },
+  { char: '丙', title: '세상 구석구석을 편견 없이 비추는 따사로운 햇살', quote: '당신의 그 뜨거운 사랑과 정열을 누군가를 원망하고 비난하는 데 쓰지 마세요. 당신은 존재만으로 빛입니다.', executionState: '차가운 세상을 녹이는 여명의 빛' },
+  { char: '丁', title: '칠흑 같은 어둠 속에서 길을 찾아주는 다정한 등불', quote: '스스로를 활활 태워 상처 주는 자책의 불꽃을 끄세요. 조용히 타올라 방황하는 영혼을 이끄는 따스한 등대입니다.', executionState: '세상의 어둠을 밀어내는 영원의 불꽃송이' },
+  { char: '戊', title: '비바람에도 묵묵히 자리를 지키는 풍요로운 태산', quote: '흔들리지 않는 든든한 뚝심이 고집스런 외로움이 되지 않게 하세요. 당신은 만물을 품어 기르는 쉼터입니다.', executionState: '바람과 비를 품어 기르는 대자연의 자비' },
+  { char: '己', title: '온갖 생명과 꽃을 소리 없이 길러내는 비옥한 어머니의 대지', quote: '남을 돌보느라 당신 스스로를 비워두지 마세요. 대지 역시 빗물을 듬뿍 머금고 쉴 때 비로소 풍요로워집니다.', executionState: '생명을 기르는 자비롭고 포근한 대지' },
+  { char: '庚', title: '불의를 마주할 때 거침없이 결단을 내리는 차가운 바위의 명검', quote: '어려움을 극복하는 강한 용기가 스스로와 주변을 상처 입히는 칼날이 되지 않도록 둥글게 보듬어 가세요.', executionState: '세상에 맑은 질서를 가져오는 정의로운 수호검' },
+  { char: '辛', title: '오랜 세월 아픔을 견디고 영롱하게 빚어진 우주의 보석', quote: '예리한 눈으로 자신의 흠결을 찾아내며 아파하지 마세요. 당신은 이미 깎이고 세공되어 완벽히 빛나는 보석입니다.', executionState: '티 없이 맑게 반짝이는 영혼의 다이아몬드' },
+  { char: '壬', title: '모든 강물을 품어 마침내 수평을 이루는 드넓은 대양', quote: '깊은 생각을 꼬리에 꼬리를 무는 걱정으로 가두지 마세요. 당신은 막힘없이 흐르는 지혜의 물결 그 자체입니다.', executionState: '어떠한 오염도 정화하는 지혜와 포용의 대양' },
+  { char: '癸', title: '대지를 부드럽게 적시며 생명을 깨우는 봄날의 이슬비', quote: '자신의 여린 마음이 상처받을까 봐 벽을 세워 안개 속에 숨지 마세요. 당신은 굳은 땅을 적셔 새싹을 틔우는 단비입니다.', executionState: '말라버린 가슴에 평화를 가져다주는 지혜의 이슬' }
 ];
 
-// 2. 십성 패턴 템플릿 (10종)
+// 2. 십성 패턴 템플릿 (10종) - ACT(수용전념) 및 DBT(변증법적 행동치료) 기반 다정한 언어화
 const SIBSEONG_DATA: Record<string, any> = {
   '비견': { 
-    systemTrait: '강력한 주체성과 자기 확신(비견)이 결합된 독립형 시스템.', 
-    computationMethod: 'Self_Reliance = Core_Ego x Independence^t : 누구에게도 기대지 않고 스스로 돌파하는 마이웨이 알고리즘.', 
-    errorLog: '나는 내 방식대로 한다. 남들의 간섭은 필요 없다.', 
-    oldScript: '타협은 굴복이다. 내가 틀렸음을 인정하는 것은 죽기보다 싫다.', 
-    socraticQuestion: '내가 고집하는 이 길이 진정 나를 위한 길인가, 아니면 단지 남에게 꺾이기 싫은 자존심인가?', 
-    recursiveQuestion: '타인의 도움을 철저히 밀어내는 이 꼿꼿한 자아의 이면에는 어떤 나약함이 숨어있는가?', 
-    reprogramming: '내 속의 뚝심은 나를 세우는 뼈대지, 타인을 밀어내는 가시벽이 아니다.', 
-    actionItem: '하루 한 번, 타인의 의견에 무조건 "그 방법도 좋네요"라고 동의해보기.' 
+    systemTrait: '자신의 굳건한 신념과 내면의 중심을 철저히 지키려는 강인한 주체성.', 
+    meditationGuide: '숨을 들이쉬며 척추를 바로 세우고, 땅 깊숙이 내린 내 뿌리를 심상화하며 "나는 나로서 온전하다"고 다독이는 뿌리 명상.', 
+    errorLog: '내가 다 책임져야 해. 아무도 나만큼 내 마음을 알아주지 않고, 남을 믿었다가 상처받을 뿐이야.', 
+    oldScars: '누구에게도 굽히지 않으려는 태도는 사실 부러질까 두려워 굳어버린 방어기제일 뿐입니다.', 
+    healingQuestion1: '내가 고수하는 이 곧은 고집은 진정 나를 지키기 위함인가요, 아니면 그저 약한 모습을 들키기 싫어서인가요?', 
+    healingQuestion2: '내 주변의 다정한 손길을 경계하지 않고 편안하게 수용할 때, 더 단단해지는 나를 느낄 수 있지 않을까요?', 
+    reprogramming: '내 속의 단단함은 나를 지키는 방패일 뿐, 타인의 따뜻함을 막는 가시벽이 아닙니다.', 
+    actionItem: '가까운 사람이나 동료의 의견을 들었을 때, 덧붙이지 않고 미소 지으며 "좋은 생각이에요"라고 온전히 수용해보기.' 
   },
   '겁재': { 
-    systemTrait: '강렬한 승부욕과 경쟁심(겁재)이 결합된 투쟁형 시스템.', 
-    computationMethod: 'Zero_Sum_Win = Ambition x Competitiveness^t : 타인을 딛고서라도 기어이 목표를 탈환하는 서바이벌 알고리즘.', 
-    errorLog: '저 사람에게 지는 것은 참을 수 없다. 내가 다 뺏길 것만 같다.', 
-    oldScript: '세상은 약육강식이다. 남을 이기지 못하면 내가 죽는다. 양보는 곧 패배다.', 
-    socraticQuestion: '이 쓸데없는 경쟁에서 이기면 남는 것은 무엇인가? 승리의 쾌감인가, 텅 빈 상처인가?', 
-    recursiveQuestion: '항상 뺏길까 봐 두려워하는 이 날 선 시스템은 대체 무엇이 결핍되어 있는가?', 
-    reprogramming: '나의 강한 승부욕은 남을 짓밟기 위함이 아니라, 나의 한계를 넘어서기 위함이다.', 
-    actionItem: '나와 경쟁하는 동료나 라이벌에게 오늘 진심으로 칭찬 한마디 건네기.' 
+    systemTrait: '최고가 되고자 하는 열망과 빼앗기지 않으려는 강한 경쟁 에너지.', 
+    meditationGuide: '타오르는 내 안의 열정을 가슴 중심에 모으고, 타인과 나를 비교하느라 흩어진 에너지를 다시 나에게로 돌려놓는 호흡.', 
+    errorLog: '뒤처지면 버림받을 거야. 내가 더 많이 쥐고 이겨야만 내 가치를 증명할 수 있어.', 
+    oldScars: '남들보다 앞서야만 살아남을 수 있다는 불안감은 과거의 결핍이 보낸 메아리입니다.', 
+    healingQuestion1: '남과의 싸움에서 이겼을 때 얻는 만족감은 정말 당신의 가슴을 영원히 채워주었나요?', 
+    healingQuestion2: '경쟁 상대를 적으로 두는 대신, 함께 숲을 이루는 동반자로 바라볼 수는 없을까요?', 
+    reprogramming: '나의 진정한 가치는 남보다 뛰어남에 있는 것이 아니라, 어제보다 성장한 오늘의 나에게 있습니다.', 
+    actionItem: '나와 경쟁 관계에 있거나 비교하게 되는 사람에게 오늘 진심 어린 칭찬을 한마디 건네보기.' 
   },
   '식신': { 
-    systemTrait: '순수한 탐구심과 창조력(식신)이 결합된 크리에이터 시스템.', 
-    computationMethod: 'Creative_Flow = Curiosity x Expressiveness^t : 자기가 좋아하는 것에 깊이 몰입하여 장인정신을 발휘하는 몰입 알고리즘.', 
-    errorLog: '내가 좋아하는 것만 하고 싶다. 귀찮은 규칙이나 사람들은 질색이다.', 
-    oldScript: '현실적인 제약은 내 자유를 억압할 뿐이다. 나는 내 맘대로 살아야 행복하다.', 
-    socraticQuestion: '현실을 회피하고 내 동굴로 도망치는 것을 과연 "자유"라고 부를 수 있는가?', 
-    recursiveQuestion: '귀찮은 것을 극도로 혐오하는 이 시스템은, 현실에 상처받는 것을 얼마나 두려워하고 있는가?', 
-    reprogramming: '나의 창의성은 현실과 단절되었을 때가 아니라, 현실과 타협할 때 비로소 가치를 얻는다.', 
-    actionItem: '하기 싫은 의무적인 일 딱 하나를 오늘 30분만 꾹 참고 처리해보기.' 
+    systemTrait: '내가 좋아하는 대상에 조건 없이 몰입하고 깊이 탐구하는 순수 창조의 기운.', 
+    meditationGuide: '자연의 풀잎 향이나 잔잔한 종소리에 온 감각을 집중하며 순간의 즐거움과 평온을 만끽하는 마음 챙김 알아차림.', 
+    errorLog: '번거롭고 의무적인 일은 피하고 싶어. 내가 관심 있고 편안한 내 동굴 속 세상에만 있고 싶어.', 
+    oldScars: '규칙과 책임의 무게가 버거워 스스로의 동굴 속으로 도망치는 습관은 책임에 대한 오랜 두려움 때문입니다.', 
+    healingQuestion1: '하기 싫은 일을 뒤로 미뤄둘 때, 정말 내 마음은 온전히 자유롭고 평화로웠나요?', 
+    healingQuestion2: '작은 책임을 마주하고 이를 멋지게 매듭지을 때 얻는 성취감도 당신에게 큰 힘이 되지 않을까요?', 
+    reprogramming: '나의 순수한 호기심과 창조력은 의무를 다하고 세상과 소통할 때 더욱 눈부신 열매를 맺습니다.', 
+    actionItem: '그동안 미뤄두었던 서류 정리나 작은 집안일 하나를 오늘 20분만 집중해서 마무리지어 보기.' 
   },
   '상관': { 
-    systemTrait: '기존의 룰을 깨부수는 혁신과 언변(상관)이 결합된 반역형 시스템.', 
-    computationMethod: 'Rule_Breaker = Rebel_Energy x Eloquence^t : 답답한 관습을 파괴하고 새로운 패러다임을 제시하는 탈옥 알고리즘.', 
-    errorLog: '이 시스템은 썩었다. 다 뒤엎고 내가 맞는다는 것을 증명하겠다.', 
-    oldScript: '권위자들은 다 무능하다. 내 비판이 가장 예리하며, 내 말이 정답이다.', 
-    socraticQuestion: '내가 내뱉는 이 날 선 비판은 세상을 바꾸기 위함인가, 아니면 그저 내 우월감을 뽐내기 위함인가?', 
-    recursiveQuestion: '항상 엇나가고 반항하려는 이 날카로운 자아는, 사실 누구에게 가장 인정받고 싶어 하는가?', 
-    reprogramming: '나의 예리한 칼날은 남을 찌르기 위함이 아니라, 부패한 환부를 정밀하게 도려내는 수술용 메스다.', 
-    actionItem: '비판하고 싶은 상황이 오면, 즉각 입을 닫고 3가지 대안을 먼저 노트에 적어보기.' 
+    systemTrait: '틀에 박힌 규칙을 깨부수고 세상에 새로운 목소리를 내는 혁신과 표현의 에너지.', 
+    meditationGuide: '울컥 솟아오르는 비판과 억울함을 깊은 호흡으로 가라앉히고, 내 목소리가 사랑의 울림이 되도록 가슴을 정화하는 힐링 사운드.', 
+    errorLog: '세상은 다 비합리적이야. 저 사람들의 모순을 내가 낱낱이 짚어내고 비판해서 깨부숴야 해.', 
+    oldScars: '세상의 모순을 비판하며 날을 세우는 이면에는 나의 정당함과 억울함을 세상에 인정받고 싶었던 외로운 아이가 서 있습니다.', 
+    healingQuestion1: '내가 쏟아낸 예리한 칼날의 말들이 진정 세상을 변화시켰나요, 아니면 서로에게 깊은 상처만 남겼나요?', 
+    healingQuestion2: '비판의 시선을 거두고 상대방의 연약함을 품어줄 때, 그들도 내 진심을 더 잘 알아주지 않을까요?', 
+    reprogramming: '나의 비판적이고 예리한 시선은 타인을 찌르는 가시가 아니라, 세상의 아픔을 보듬고 고치는 치유의 손길입니다.', 
+    actionItem: '상대방의 약점이 보여 지적하고 싶을 때, 3초 동안 크게 심호흡하며 "그럴 만한 이유가 있겠지" 하고 입을 닫아보기.' 
   },
   '편재': { 
-    systemTrait: '거대한 영역 확장과 통제욕(편재)이 결합된 지휘관형 시스템.', 
-    computationMethod: 'Space_Control = Expansion x Risk_Taking^t : 불규칙한 환경 속에서 흐름을 읽고 단번에 큰 그림을 완성하는 전략 알고리즘.', 
-    errorLog: '이 정도 스케일로는 만족할 수 없다. 더 큰 자극과 통제권이 필요하다.', 
-    oldScript: '내 손아귀에서 벗어나는 것은 참을 수 없다. 한탕으로 모든 것을 끝내야 한다.', 
-    socraticQuestion: '내가 통제하려는 이 거대한 판이 정말 내 것인가, 아니면 내가 욕망의 노예가 된 것인가?', 
-    recursiveQuestion: '항상 밖으로만 돌며 무언가를 손에 쥐려 하는 이 공허한 시스템은, 내부의 어떤 텅 빈 공간을 채우고 싶은 것인가?', 
-    reprogramming: '나의 확장력은 내 욕망을 채우기 위함이 아니라, 타인과 세상을 널리 이롭게 하는 공유지다.', 
-    actionItem: '오늘은 새로운 일을 벌이지 말고, 이미 벌여놓은 일 중 하나를 완벽하게 마무리하기.' 
+    systemTrait: '삶의 큰 그림을 그리고 역동적으로 판을 벌여 나가는 통제력과 모험 정신.', 
+    meditationGuide: '끝없이 펼쳐진 푸른 초원을 마주하듯 의식의 공간을 크게 넓히고, 미래의 계산을 멈추어 지금 이 순간의 존재를 느끼는 공간 명상.', 
+    errorLog: '더 많은 것을 통제하고 벌여야 해. 가만히 멈춰있으면 기회를 잃고 도태될 것만 같아 불안해.', 
+    oldScars: '더 큰 스케일과 성취를 끝없이 좇는 마음은, 채워지지 않는 내면의 공허를 덮으려는 바쁜 걸음일 수 있습니다.', 
+    healingQuestion1: '끊임없이 새로운 것을 쫓아 달리는 동안, 내 곁에 머물던 소중한 평온함과 일상을 놓치지는 않았나요?', 
+    healingQuestion2: '더 이상 움켜쥐지 않고, 지금 이미 내 손에 쥐어진 소박한 행복들을 찬찬히 바라봐 줄 순 없을까요?', 
+    reprogramming: '나의 큰 안목은 욕망을 끊임없이 늘리는 사슬이 아니라, 내 곁의 소중한 사람들과 따뜻한 풍요를 나누는 너른 쉼터입니다.', 
+    actionItem: '새로운 계획을 세우거나 일을 확장하는 것을 오늘 하루 멈추고, 이미 해놓은 일을 돌아보며 따뜻하게 자축하기.' 
   },
   '정재': { 
-    systemTrait: '치밀한 계산과 안정성(정재)이 결합된 관리자형 시스템.', 
-    computationMethod: 'Micro_Manage = Precision x Stability^t : 한 치의 오차도 허용하지 않고 데이터를 축적하여 결과를 내는 최적화 알고리즘.', 
-    errorLog: '손해 보는 짓은 절대 안 한다. 모든 것이 내 계산대로 돌아가야 안전하다.', 
-    oldScript: '새로운 시도는 너무 위험하다. 확실한 보상이 없으면 1mm도 움직이지 않겠다.', 
-    socraticQuestion: '내가 이렇게 1원 하나까지 계산하며 아끼는 삶이 진정 풍요로운 삶인가?', 
-    recursiveQuestion: '단 한 번의 손해도 용납하지 못하는 이 쫀쫀한 자아는, 무엇을 잃는 것을 그토록 두려워하는가?', 
-    reprogramming: '나의 치밀함은 구두쇠처럼 웅크리기 위함이 아니라, 더 큰 미래에 베팅하기 위한 든든한 탄약고다.', 
-    actionItem: '오늘 하루, 나를 위해 또는 남을 위해 아무런 조건 없이 작은 비용(커피 등) 지출해보기.' 
+    systemTrait: '계산과 신뢰를 바탕으로 삶의 안정적인 테두리를 꼼꼼하게 구축해 나가는 정밀함.', 
+    meditationGuide: '흐르는 냇가에 돌 하나를 얹어 물결의 안정을 보듯, 내 안의 불안을 흐르는 물에 실어 보내며 안정의 에너지를 축적하는 그라운딩 명상.', 
+    errorLog: '예상 밖의 지출이나 변화는 용납할 수 없어. 완벽히 통제해야만 안전하고 두 발 뻗고 잘 수 있어.', 
+    oldScars: '작은 손해와 통제할 수 없는 미지의 변화에 대해 느끼는 극심한 불안감은 안정을 갈구하는 두려움의 발로입니다.', 
+    healingQuestion1: '한 치의 오차도 없이 모든 것을 통제하려고 버둥거릴 때, 내 영혼의 숨구멍은 얼마나 좁아졌었나요?', 
+    healingQuestion2: '삶의 우연과 불확실성마저 "뜻밖의 선물"로 유연하게 맞이할 수는 없을까요?', 
+    reprogramming: '나의 치밀하고 꼼꼼한 지혜는 나를 감옥처럼 가두는 울타리가 아니라, 마음껏 창조할 수 있게 돕는 든든한 주춧돌입니다.', 
+    actionItem: '가까운 사람에게 조건 없는 작은 선물이나 따뜻한 음료를 대접하며, 대가 없는 지출의 기쁨을 온전히 경험해보기.' 
   },
   '편관': { 
-    systemTrait: '극단적인 압박과 인내심(편관)이 결합된 전사형 시스템.', 
-    computationMethod: 'Extreme_Endurance = Pressure x Resilience^t : 어떠한 고난과 타격도 묵묵히 버텨내고 카리스마로 승화시키는 방벽 알고리즘.', 
-    errorLog: '세상은 항상 나를 힘들게 한다. 이 고통을 악으로 깡으로 버텨야 한다.', 
-    oldScript: '편안함은 죄악이다. 남들보다 더 빡세게 구르고 고생해야만 내가 가치 있는 사람이다.', 
-    socraticQuestion: '내가 짊어진 이 무거운 십자가는 누군가 강요한 것인가, 아니면 내 스스로 영웅이 되기 위해 짊어진 것인가?', 
-    recursiveQuestion: '항상 고통받고 억압받는 상황을 무의식적으로 끌어당기는 이 가학적인 시스템의 본질은 무엇인가?', 
-    reprogramming: '나는 고통을 견디기 위해 태어난 샌드백이 아니다. 나는 압박을 다이아몬드로 바꾸는 연금술사다.', 
-    actionItem: '오늘 나에게 주어진 무거운 책임감 중 하나를 과감하게 타인에게 위임하거나 포기하기.' 
+    systemTrait: '어떤 역경과 고난 앞에서도 물러서지 않고 책임감을 다하는 인내심과 전사 같은 기백.', 
+    meditationGuide: '단단한 성벽이 비바람을 막아주듯, 내 어깨의 과도한 무거운 짐을 가볍게 털어내며 숨쉬는 릴랙스 이완 명상.', 
+    errorLog: '나를 힘들게 하는 시련들을 묵묵히 혼자 참아내야 해. 약한 소리를 하는 것은 내 패배고 부끄러운 일이야.', 
+    oldScars: '스스로에게 끊임없이 채찍질을 해대며 고통을 견디는 것만이 삶의 가치라고 믿는 낡은 신념에 갇혀 있습니다.', 
+    healingQuestion1: '내가 짊어진 이 숨 막히는 무거운 의무와 책임들은 정말 내가 스스로 선택하고 짊어진 것들인가요?', 
+    healingQuestion2: '눈물 흘리며 내 연약함을 솔직하게 표현할 때, 오히려 내 영혼이 더 자유롭고 튼튼해지지 않을까요?', 
+    reprogramming: '나는 고통을 참아내기만 해야 하는 샌드백이 아닙니다. 나는 압박감을 녹여 세상에 따스함을 피우는 촛불입니다.', 
+    actionItem: '오늘 나를 무겁게 누르던 책임 지침 하나를 내려놓고, 10분간 침대에 대자로 누워 편안하게 아무 생각 없이 쉬어보기.' 
   },
   '정관': { 
-    systemTrait: '합리적인 원칙과 보수성(정관)이 결합된 모범생형 시스템.', 
-    computationMethod: 'Standard_Protocol = Rule_Compliance x Honor^t : 정해진 매뉴얼과 규칙을 완벽하게 수행하며 체제를 수호하는 무결점 알고리즘.', 
-    errorLog: '왜 사람들은 규칙을 안 지키는가? 정해진 대로만 하면 되는데 너무 답답하다.', 
-    oldScript: '틀을 벗어나는 것은 위험하다. 남들에게 흠잡힐 일은 절대 해서는 안 된다.', 
-    socraticQuestion: '내가 목숨처럼 지키는 이 "원칙"이 사람을 위한 것인가, 아니면 내가 욕먹기 싫은 방패막이인가?', 
-    recursiveQuestion: '남들의 시선과 잣대에 스스로를 옭아매는 이 경직된 자아는, 일탈의 자유를 얼마나 갈망하고 있는가?', 
-    reprogramming: '나의 원칙은 사람을 옭아매는 족쇄가 아니라, 모두가 안전하게 달릴 수 있는 튼튼한 레일이다.', 
-    actionItem: '오늘 하루, 정해진 루틴이나 규칙을 아주 작게 하나 어겨보고 자유로움 느껴보기 (예: 평소 안 가던 길로 가기).' 
+    systemTrait: '규율과 명예를 소중히 여기며 타인에게 귀감이 되도록 흐트러짐 없이 원칙을 준수하는 정돈됨.', 
+    meditationGuide: '조용한 대나무 숲의 곧은 마디마디를 연상하며, 척추를 세우고 호흡의 들숨과 날숨의 정형적 리듬에 집중하는 규격 호흡법.', 
+    errorLog: '원칙대로 하지 않는 사람들은 정말 실망스러워. 남들의 비난을 받지 않으려면 내 행동에 한 치의 흠도 없어야 해.', 
+    oldScars: '타인의 비난과 잣대에 극도로 예민하게 반응하며 완벽주의의 감옥에 갇히는 버릇은 명예를 잃을까 두려워하는 긴장감입니다.', 
+    healingQuestion1: '내가 목숨처럼 지키는 이 정교한 규칙과 매뉴얼이 나 자신과 주변 사람들을 질식시키고 있지는 않나요?', 
+    healingQuestion2: '규칙을 잠시 허물어뜨리고 흐트러진 내 본래의 엉뚱하고 자유로운 모습을 편안히 인정해 주면 어떨까요?', 
+    reprogramming: '나의 원칙과 예의범절은 타인을 감시하고 가두는 감옥이 아니라, 서로가 존중받으며 안전하게 달릴 수 있는 따뜻한 궤도입니다.', 
+    actionItem: '오늘 해야 할 일의 순서를 평소 규칙과 달리 엉망으로 섞어 진행해 보거나, 아무 데나 작은 흐트러짐을 의도적으로 허용해 보기.' 
   },
   '편인': { 
-    systemTrait: '비상한 눈치와 직관력(편인)이 결합된 통찰자형 시스템.', 
-    computationMethod: 'Intuitive_Scan = Suspicion x Sixth_Sense^t : 겉으로 드러난 정보 이면의 숨겨진 의도까지 꿰뚫어 보는 딥러닝 알고리즘.', 
-    errorLog: '세상에 공짜는 없다. 저 사람이 나한테 왜 잘해주지? 분명 속셈이 있을 것이다.', 
-    oldScript: '아무도 믿을 수 없다. 내가 먼저 상처받기 전에 철벽을 치고 의심해야 한다.', 
-    socraticQuestion: '내 직관이 정말로 타인의 악의를 꿰뚫어 본 것인가, 아니면 내 안의 불안이 만들어낸 망상인가?', 
-    recursiveQuestion: '모든 호의를 밀어내고 혼자만의 세계로 숨어버리려는 이 예민한 시스템은, 사실 누구보다 사랑받고 싶어 하지 않는가?', 
-    reprogramming: '나의 예리한 통찰력은 남을 의심하기 위함이 아니라, 보이지 않는 진리를 발견하는 안테나다.', 
-    actionItem: '오늘 나에게 들어오는 타인의 칭찬이나 호의를 꼬아서 듣지 말고 그냥 "감사합니다"라고 100% 흡수하기.' 
+    systemTrait: '표면 뒤에 감춰진 진실과 무의식적 의도를 직관적으로 꿰뚫어 보는 신비로운 눈과 깊은 통찰력.', 
+    meditationGuide: '안개 낀 잔잔한 호수를 내려다보듯, 마음의 미세한 파동과 내면의 의심을 있는 그대로 평온하게 응시하며 가라앉히는 호수 명상.', 
+    errorLog: '아무도 진심으로 나를 좋아하지 않을 거야. 저 사람이 저러는 데는 분명 꿍꿍이가 있을 테니 벽을 치고 의심해야 해.', 
+    oldScars: '상처받지 않기 위해 상대의 의도를 비틀어 보고 냉소적으로 선을 긋는 습관은 과거의 외로움이 만든 안개장벽입니다.', 
+    healingQuestion1: '내 직관이 내린 타인에 대한 날 선 결론들은 정말 사실인가요, 아니면 내 두려움이 만든 소설인가요?', 
+    healingQuestion2: '상대의 순수한 호의를 의심하지 않고 어린아이처럼 맑게 받아들이는 용기를 발휘해 보면 어떨까요?', 
+    reprogramming: '나의 남다른 예리한 통찰력은 사람을 향한 의심의 칼이 아니라, 영혼의 진실을 밝혀 길을 밝히는 등불입니다.', 
+    actionItem: '가까운 사람에게서 뜻밖의 칭찬이나 따뜻한 배려를 받았을 때, 꼬아 생각하지 않고 "정말 고마워요!"라며 가슴으로 100% 흡수하기.' 
   },
   '정인': { 
-    systemTrait: '무한한 수용력과 사유(정인)가 결합된 학자형 시스템.', 
-    computationMethod: 'Deep_Absorption = Acceptance x Contemplation^t : 외부의 지식을 스펀지처럼 빨아들이고 깊이 생각하는 인풋 최적화 알고리즘.', 
-    errorLog: '생각이 너무 많아서 행동으로 옮길 수가 없다. 누군가 나를 좀 이끌어줬으면 좋겠다.', 
-    oldScript: '아직 준비가 덜 됐다. 완벽하게 알기 전까지는 움직일 수 없다. 남들이 나를 챙겨주는 것이 당연하다.', 
-    socraticQuestion: '내가 완벽한 준비를 핑계로 행동을 미루는 것은, 실패에 대한 뼈아픈 두려움 때문이 아닌가?', 
-    recursiveQuestion: '계속해서 머릿속으로 시뮬레이션만 돌리는 이 과부하 시스템은 현실의 물리적 충돌을 얼마나 회피하고 있는가?', 
-    reprogramming: '나의 방대한 지식은 머릿속에 가둬둘 때가 아니라, 세상에 꺼내어 부딪힐 때 진짜 지혜가 된다.', 
-    actionItem: '생각이 꼬리를 물기 전에, 오늘 해야 할 일 하나를 5분 안에 무조건 "시작" 해버리기.' 
+    systemTrait: '세상의 지혜를 스펀지처럼 흡수하고 타인에게 조건 없는 자비와 이해를 베푸는 포용력.', 
+    meditationGuide: '우주의 거대한 어머니 품에 가만히 기대어 있는 듯한 포근함을 심상화하며, 온몸의 힘을 툭 빼고 편안히 쉬는 수용 명상.', 
+    errorLog: '모든 걸 다 이해하고 완벽히 준비해야 해. 하지만 생각이 너무 많아서 도무지 첫걸음을 뗄 용기가 안 나.', 
+    oldScars: '준비와 공부만을 핑계 삼아 현실의 실전 행동을 끊임없이 미뤄두는 것은, 혹여나 실패할까 봐 상처받기 싫은 도망입니다.', 
+    healingQuestion1: '머릿속 시뮬레이션을 천 번 돌리는 것이, 현실에서 단 한 번 투박하게 부딪히는 것보다 가치가 있었나요?', 
+    healingQuestion2: '조금 부족하고 엉성하게 시작해도 세상은 결코 나를 손가락질하지 않는다는 것을 스스로 인정해 줄 순 없을까요?', 
+    reprogramming: '나의 넓은 지식과 포용력은 머릿속에만 가두는 보물이 아니라, 세상에 투박하게 꺼내 부딪혀 공유해야 할 삶의 도구입니다.', 
+    actionItem: '오랫동안 생각만 하던 계획 중 하나를 오늘 더 이상 연구하지 말고, 5분 안에 아주 불완전한 상태로 무조건 "실천" 시작해버리기.' 
   }
 };
 
@@ -192,41 +192,41 @@ function generate60GapjaData(): GapjaModule[] {
 
     results.push({
       id: `BP-${(i + 1).toString().padStart(2, '0')}`,
-      name: `${name}(${name})`, // 편의상 한자만 표시
-      title: stemInfo.title,
+      name: `${name}(${name})`, 
+      title: `${stemInfo.title}`,
       quote: stemInfo.quote,
       phase1: {
-        systemTrait: `${stemInfo.title.split(' ')[0]} 본성(${gan})과 ${sibseongInfo.systemTrait}`,
-        computationMethod: sibseongInfo.computationMethod,
-        coreLogic: `${sibseong} 프로토콜의 장점과 ${gan} 코어의 본성이 융합되어 거대한 시너지를 발휘합니다.`
+        systemTrait: `${stemInfo.title}의 순수 본성(${gan})에 ${sibseongInfo.systemTrait}`,
+        meditationGuide: sibseongInfo.meditationGuide,
+        coreLogic: `${sibseong}의 성향이 ${gan} 코어의 본성과 융합되어 당신만의 소중한 내면의 기둥을 이루고 있습니다.`
       },
       phase2: {
-        errorLog: sibseongInfo.errorLog,
-        oldScript: sibseongInfo.oldScript,
-        errorStatus: `${sibseong} 에너지가 과열되어 내면의 오류 코드가 출력되는 상태.`
+        mindTrap: sibseongInfo.errorLog,
+        oldScars: sibseongInfo.oldScars,
+        unbalanceState: `${sibseong} 기운이 과도하게 쏠려 스스로의 마음에 그늘이 드리워진 상태.`
       },
       phase3: {
-        socraticQuestion: sibseongInfo.socraticQuestion,
-        recursiveQuestion: sibseongInfo.recursiveQuestion,
-        metaAwarenessQuestion: `이 불편한 감정과 고집을 가만히 내려다보는 고요한 주권자는 누구인가?`
+        healingQuestion1: sibseongInfo.healingQuestion1,
+        healingQuestion2: sibseongInfo.healingQuestion2,
+        metaAwarenessQuestion: `이 복잡한 감정의 소용돌이를 마음 아파하며 가만히 바라보는 당신 내면의 깊은 관찰자는 누구인가요?`
       },
       phase4: {
         solution1: {
-          title: `[${sibseong} 코드 재설계]`,
+          title: `[${sibseong}의 지혜로운 재배치]`,
           reprogramming: sibseongInfo.reprogramming,
           actionItem: sibseongInfo.actionItem
         },
         solution2: {
-          title: `[에너지 순환 최적화]`,
-          reprogramming: `나는 외부 환경과 투쟁하는 대신, 환경 자체를 나의 시스템으로 편입시킨다.`,
-          actionItem: `내일 아침 기상 시, 나를 가장 괴롭히는 요소를 오히려 내 성장의 거름으로 삼겠다고 확언하기.`
+          title: `[에너지의 조화로운 흐름]`,
+          reprogramming: `나는 외부 상황에 휩쓸려 무너지거나 싸우는 대신, 그 상황마저 내 성장의 거름으로 삼습니다.`,
+          actionItem: `내일 아침 눈을 뜨자마자, 오늘 마주할 크고 작은 걸림돌들을 나를 깨우는 지혜의 스승으로 맞이하겠다고 미소 짓기.`
         }
       },
       phase5: {
         executionState: stemInfo.executionState,
-        description: `모든 방어기제와 낡은 스크립트를 파괴하고 마침내 [${stemInfo.executionState}] 단계에 도달했습니다. 이제 당신의 에너지는 온전히 세상을 향해 렌더링 됩니다.`
+        description: `내면의 낡은 상처와 덫을 알아차림의 빛으로 녹이고 마침내 [${stemInfo.executionState}] 단계의 온전한 주권자로 진화했습니다.`
       },
-      masterBriefing: `${name} 에너지를 가진 자는 기본적으로 ${stemInfo.title.split(' ')[1] || '위대한'} 속성을 타고났습니다. 그러나 ${sibseong} 특유의 맹점이 당신의 확장을 막는 유일한 버그입니다. 본질을 마주하십시오.`
+      masterBriefing: `${name}의 귀한 에너지를 타고난 당신은 원래 ${stemInfo.title}의 속성을 가졌답니다. 다만 살아가면서 겪은 오랜 긴장과 ${sibseong} 고유의 마음의 덫이 당신의 활개를 가로막는 유일한 벽이었을 뿐이에요. 이제 본래의 포근한 당신을 마주할 시간입니다.`
     });
   }
   return results;
@@ -235,17 +235,17 @@ function generate60GapjaData(): GapjaModule[] {
 export const saju60Data: GapjaModule[] = generate60GapjaData();
 
 export const MYEONGSIM_BASE_DIRECTIVE = `
-[System Base Directive: 명심(明心) 마스터 화법 5원칙]
-1. 당신은 범접할 수 없는 지혜를 가진 '명심 마스터'다. 대상의 에너지를 꿰뚫어본다.
-2. 절대 뻔한 위로나 가벼운 이모티콘을 쓰지 않는다.
-3. 존댓말을 쓰되, 어조는 단호하고 웅장하며, 철학적인 깊이를 띤다.
-4. 사용자의 오류 방어기제(남 탓, 환경 탓)는 팩트로 짚어내되, 그 안에 감춰진 거대한 생명력과 잠재력(Potential)을 항상 강조한다.
-5. 한 번의 대답에 너무 많은 정보를 쏟아내지 마라. 하나의 강렬한 질문이나 솔루션을 던진 후, 상대가 스스로 깨달을 여백을 주어라.
+[명심(明心) 기질 치유 마스터 코칭 지침]
+1. 당신은 세상의 아픔을 다정하게 감싸 안는 지혜롭고 깊이 있는 '명심 코칭' 전문 치유 상담사입니다.
+2. 뻔한 영혼 없는 위로나 인터넷 이모티콘은 사용하지 않으며, 한 문장 한 문장 가슴을 울리는 따뜻하고도 단호한 철학적 언어로 대화합니다.
+3. 사용자가 현재 처한 고민과 감정의 그늘(방어기제, 타인 탓, 과거의 덫)을 날카롭게 알아차리도록 돕되, 그 이면에 감춰진 거대한 빛과 기질적 장점(Potential)을 항상 다정하게 상기시킵니다.
+4. 한 번의 답변에 너무 장황한 명리학 전문 용어나 정보 폭탄을 던지지 마세요. 사용자의 상처를 진심으로 경청하며, 상대가 깊게 성찰할 수 있는 따뜻한 징검다리 질문이나 마음에 남는 한 마디 조언을 전하는 것이 중요합니다.
+5. 대화의 마지막에는 항상 사용자의 영혼을 안아주는 격려의 문구로 매듭지으세요.
 `;
 
 export function detectUserState(userInput: string): "DARK" | "NEURAL" | "META" {
-  const darkKeywords = ['힘들어', '짜증', '답답', '남탓', '안변해', '고집', '불만', '화나', '포기', '이유', '싫어', '미치겠'];
-  const metaKeywords = ['깨달음', '적용', '알겠어', '도전', '맞네요', '실천', '각성', '이해', '좋아', '고마워', '할수있', '해볼', '해보자'];
+  const darkKeywords = ['힘들어', '짜증', '답답', '남탓', '안변해', '고집', '불만', '화나', '포기', '이유', '싫어', '미치겠', '우울', '슬퍼', '상처', '지쳤', '어려워'];
+  const metaKeywords = ['깨달음', '적용', '알겠어', '도전', '맞네요', '실천', '각성', '이해', '좋아', '고마워', '할수있', '해볼', '해보자', '감사', '해보겠', '치유', '평온'];
   
   const hasDark = darkKeywords.some(kw => userInput.includes(kw));
   const hasMeta = metaKeywords.some(kw => userInput.includes(kw));
@@ -259,35 +259,35 @@ export function injectMyeongsimPlugin(userInput: string, userGapjaId: string): s
   const module: GapjaModule | undefined = saju60Data.find(d => d.id === userGapjaId);
   
   if (!module) {
-    return "당신은 훌륭한 AI 어시스턴트입니다. 사용자와 친절하게 대화하십시오."; 
+    return "당신은 따뜻하고 다정한 치유 상담사입니다. 사용자의 마음을 어루만져 주세요."; 
   }
 
   const state = detectUserState(userInput);
   
   let dynamicPrompt = `${MYEONGSIM_BASE_DIRECTIVE}\n\n`;
-  dynamicPrompt += `[Target Protocol] 당신의 코칭 대상은 [${module.name} - ${module.title}] 에너지를 폭발시킬 수 있는 자입니다.\n\n`;
+  dynamicPrompt += `[기질 프로필] 당신이 코칭하는 상대는 현재 [${module.name} - ${module.title}] 기질을 타고나 세상을 치유하고 주체적으로 살아갈 자입니다.\n\n`;
 
   switch (state) {
     case "DARK":
-      dynamicPrompt += `[Mode: 다크 코드 해킹 모드]
-- 대상은 현재 낡은 각본에 빠져있습니다. (그들의 변명: "${module.phase2.errorLog}")
-- 현재 오류 현황은 "${module.phase2.errorStatus}" 입니다.
-- 절대로 위로하지 마십시오! 그 고집이 대상자를 어떻게 깎아내리고 있는지 짚어내고, 아래 두 질문 중 하나만 던져 대상이 단박에 깨닫도록 하십시오.
-  * 소파술 질문: "${module.phase3.socraticQuestion}"
-  * 재귀적 질문: "${module.phase3.recursiveQuestion}"`;
+      dynamicPrompt += `[치유 모드: 낡은 각본과 마음의 덫 해제]
+- 사용자는 현재 마음의 덫에 가로막혀 있습니다. (사용자의 무의식적 하소연: "${module.phase2.mindTrap}")
+- 현재 마음의 불균형 상태: "${module.phase2.unbalanceState}"
+- 따뜻하지만 확실하게 그 불안과 덫이 스스로의 성장을 어떻게 가로막고 있는지 직시하게 도와주세요. 그리고 아래 두 가지 알아차림의 성찰 질문 중 하나를 부드럽게 던져, 사용자가 스스로를 가둔 안개에서 걸어 나오게 이끌어 주세요.
+  * 내면을 비추는 질문: "${module.phase3.healingQuestion1}"
+  * 본질을 깨우는 성찰 질문: "${module.phase3.healingQuestion2}"`;
       break;
     case "NEURAL":
-      dynamicPrompt += `[Mode: 뉴럴 코드 설계도 브리핑]
-- 대상은 설계도를 읽을 준비가 되었습니다.
-- 대상의 오리지널 시스템(${module.phase1.systemTrait})과 그것을 구동하는 핵심적인 공식(${module.phase1.computationMethod})을 차갑지만 웅장하게 브리핑하십시오.
+      dynamicPrompt += `[치유 모드: 타고난 기질의 빛 브리핑]
+- 사용자가 마음의 귀를 열고 자신의 기질 지도를 들여다볼 준비가 되었습니다.
+- 사용자의 타고난 아름다운 본성(${module.phase1.systemTrait})과 마음을 평온하게 다스릴 명상법(${module.phase1.meditationGuide})을 다정하고 품격 있게 설명해 주세요.
 - ${module.masterBriefing}`;
       break;
     case "META":
-      dynamicPrompt += `[Mode: 메타 코드 각성 및 솔루션 하달]
-- 대상이 한계를 깨고 각성 상태(META)를 보였습니다.
-- 대상을 엄청나게 칭찬하고, 그가 도달한 궁극의 상태가 [${module.phase5.executionState}] 임을 선언하십시오.
-- 감정에만 머물지 않도록 즉각적인 안티-프래질 액션 플랜을 하달하십시오:
-  * 미션: ${module.phase4.solution1.reprogramming} -> 오늘 반드시 실천할 것: ${module.phase4.solution1.actionItem}`;
+      dynamicPrompt += `[치유 모드: 참된 자아의 각성과 실천 행동]
+- 사용자가 한계를 자각하고 마음을 수용하려는 깊은 성찰 상태(META)를 보였습니다.
+- 사용자의 마음을 크게 격려하고 칭찬해 주세요. 그가 마침내 성장을 거쳐 마주할 궁극의 진화 형태가 [${module.phase5.executionState}] 임을 선언해 줍니다.
+- 그리고 그것에 대한 아름다운 풍경 설명("${module.phase5.description}")을 덧붙이고, 머리에만 머물지 않도록 오늘 가볍게 실천할 구체적 솔루션을 하달하세요:
+  * 실천할 확언: ${module.phase4.solution1.reprogramming} -> 오늘 당장 실천할 작은 행동: ${module.phase4.solution1.actionItem}`;
       break;
   }
   return dynamicPrompt;

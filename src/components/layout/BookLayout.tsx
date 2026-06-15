@@ -2,11 +2,15 @@
 
 import { useReportStore } from '@/store/useReportStore';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Menu, MessageCircle, User } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Menu, MessageCircle, User, Compass } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic'; // [Deep Tech] Lazy Loading의 핵심
 
 import StageMap from '../coaching/StageMap';
 import ChatInterface from '../chat/ChatInterface';
+
+// Dynamically import MptiPlannerModal for the overlay mode
+const MptiPlannerOverlay = dynamic(() => import('../coaching/MptiPlannerModal'), { ssr: false });
 
 // [New Imports]
 import { supabase } from '@/lib/supabaseClient';
@@ -16,7 +20,20 @@ import { getTargetStepForStage } from '@/utils/StageMapping';
 import { useSearchParams } from 'next/navigation';
 
 export default function BookLayout({ children }: { children: React.ReactNode }) {
-    const { currentStep, totalSteps, nextStep, prevStep } = useReportStore();
+    const { 
+        currentStep, 
+        totalSteps, 
+        nextStep, 
+        prevStep,
+        isPlannerApplied,
+        isPlannerOpen,
+        setPlannerOpen,
+        fptiResultType,
+        fptiAnswers,
+        fptiBirthOhaeng,
+        fptiAvatarCode,
+        reportData
+    } = useReportStore();
     const searchParams = useSearchParams();
 
     // UI State
@@ -137,6 +154,23 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                     <div className="flex items-center gap-2">
                         {/* [Removed] Login/Charge Button hidden by user request */}
 
+                        {/* [NEW] 맞춤 코칭 플래너 적용 시 나타나는 🧭 버튼 */}
+                        {isPlannerApplied && (
+                            <button
+                                className="p-2 hover:bg-white/5 rounded-full relative transition-colors"
+                                onClick={() => {
+                                    setPlannerOpen(!isPlannerOpen);
+                                    if (isChatOpen) setIsChatOpen(false);
+                                }}
+                            >
+                                <Compass className={`w-5 h-5 ${isPlannerOpen ? 'text-[#10b748]' : 'text-gray-400'}`} />
+                                <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                            </button>
+                        )}
+
                         <button
                             className="p-2 hover:bg-white/5 rounded-full relative transition-colors"
                             onClick={() => {
@@ -147,6 +181,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                     return;
                                 }
                                 setIsChatOpen(!isChatOpen);
+                                if (isPlannerOpen) setPlannerOpen(false);
                             }}
                         >
                             <MessageCircle className={`w-5 h-5 ${isChatOpen ? 'text-primary-olive' : 'text-gray-400'}`} />
@@ -184,6 +219,20 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                 currentStage={demoStage}
                                 initialIntent={searchParams.get('intent')} // [New] Pass Intent
                                 initialSectionId={searchParams.get('section')} // [New] Pass Section ID for Deep Linking
+                            />
+                        </div>
+                    )}
+                    {isPlannerOpen && (
+                        <div className="absolute inset-0 z-[55] pt-14 pb-16 bg-deep-slate/95 backdrop-blur-sm">
+                            <MptiPlannerOverlay
+                                isOpen={isPlannerOpen}
+                                onClose={() => setPlannerOpen(false)}
+                                resultType={fptiResultType || 'wood'}
+                                answers={fptiAnswers || {}}
+                                birthOhaeng={fptiBirthOhaeng || {}}
+                                avatarCode={fptiAvatarCode || ''}
+                                userProfile={reportData}
+                                isOverlayMode={true}
                             />
                         </div>
                     )}

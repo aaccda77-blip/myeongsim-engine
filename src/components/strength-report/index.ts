@@ -5,3 +5,5 @@ export { default as TalentProfileBars } from './TalentProfileBars';
 export { default as CooperationProfile } from './CooperationProfile';
 export { default as PowerbaseDonut } from './PowerbaseDonut';
 export { default as SpecificTalentCards } from './SpecificTalentCards';
+export { default as StrengthExplainModal } from './StrengthExplainModal';
+export type { StrengthExplainModalProps } from './StrengthExplainModal';

@@ -2,7 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { Lock, Unlock, CheckCircle, Map, ChevronRight, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import StageAnalysisModal from './StageAnalysisModal';
+import { useReportStore } from '@/store/useReportStore';
+
+
+
 
 interface StageMapProps {
     currentStage: number;
@@ -21,8 +26,25 @@ const STAGES = [
 ];
 
 export default function StageMap({ currentStage, onSelectStage, onClose }: StageMapProps) {
+    const { reportData, currentStep } = useReportStore();
     // [Deep Tech Logic] 진행률 계산 (연결선 높이)
     const [progressHeight, setProgressHeight] = useState(0);
+    const [selectedStage, setSelectedStage] = useState<{ id: number; title: string } | null>(null);
+
+    // [NEW] currentStep으로부터 실제 기획된 코칭 단계를 도출
+    const userRealStage = useMemo(() => {
+        const step = currentStep || 1;
+        if (step >= 13) return 7; // 초월 (13, 14)
+        if (step === 12) return 4; // 행동 (12)
+        if (step >= 10) return 5; // 유지 (10, 11)
+        if (step === 9) return 6; // 확장 (9)
+        if (step >= 7) return 3; // 치유 (7, 8)
+        if (step >= 5) return 2; // 융합 (5, 6)
+        return 1; // 발견 (step 3, 4 및 이전)
+    }, [currentStep]);
+
+
+
 
     useEffect(() => {
         // (현재 스테이지 - 1) / (전체 - 1) * 100
@@ -94,8 +116,11 @@ export default function StageMap({ currentStage, onSelectStage, onClose }: Stage
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: stage.id * 0.05 }}
                                     onClick={() => {
-                                        onSelectStage(stage.id);
-                                        onClose();
+                                        if (!reportData?.birthDate || !reportData?.saju) {
+                                            alert('먼저 생년월일을 입력하고 "만세력 분석하기"를 완료해 주세요! 🔮');
+                                            return;
+                                        }
+                                        setSelectedStage({ id: stage.id, title: stage.title });
                                     }}
                                     className={`w-full flex items-start gap-4 text-left group relative`}
                                     disabled={!isUnlocked} // 실제 앱에서는 잠금
@@ -134,6 +159,21 @@ export default function StageMap({ currentStage, onSelectStage, onClose }: Stage
 
 
             </motion.div>
+
+            {selectedStage && (
+                <StageAnalysisModal
+                    isOpen={!!selectedStage}
+                    stageId={selectedStage.id}
+                    stageTitle={selectedStage.title}
+                    userCurrentStage={userRealStage}
+                    onClose={() => setSelectedStage(null)}
+                    onConfirmMove={(targetId) => {
+                        onSelectStage(targetId);
+                        setSelectedStage(null);
+                        onClose();
+                    }}
+                />
+            )}
         </div>
     );
 }

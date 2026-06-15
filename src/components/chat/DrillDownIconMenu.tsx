@@ -49,6 +49,9 @@ const AwakeningChat = dynamic(() => import('@/components/coaching/AwakeningChat'
 const SajuAnalysisReportModal = dynamic(() => import('@/components/report/SajuAnalysisReportModal'), { ssr: false });
 // [NEW] 사회적기여 — 명심 프리미엄 통합 코칭 리포트
 const SovereignCoachingReport = dynamic(() => import('@/components/coaching/SovereignCoachingReport'), { ssr: false });
+const OhaengContributionModal = dynamic(() => import('@/components/coaching/OhaengContributionModal'), { ssr: false }); // [NEW] 오행 상생공헌 모달 임포트
+const MptiTestModal = dynamic(() => import('@/components/coaching/MptiTestModal'), { ssr: false }); // [NEW] MPTI 성향 검사 모달
+const MptiPlannerModal = dynamic(() => import('@/components/coaching/MptiPlannerModal'), { ssr: false }); // [NEW] MPTI 성향 플래너 모달
 // [NEW] 108 자각 백서 프리미엄 독립 모달 임포트
 const Healing108CoachingReport = dynamic(() => import('@/components/coaching/Healing108CoachingReport'), { ssr: false });
 const Sovereign3SProtocolModal = dynamic(() => import('@/components/coaching/Sovereign3SProtocolModal'), { ssr: false });
@@ -58,6 +61,7 @@ const DecodeReportModal = dynamic(() => import('@/components/coaching/DecodeRepo
 const PremiumReportModal = dynamic(() => import('@/components/coaching/PremiumReportModal'), { ssr: false });
 const MindSpaceTrainingModal = dynamic(() => import('@/components/coaching/MindSpaceTrainingModal'), { ssr: false });
 const MyeongsimCoachingDashboard = dynamic(() => import('@/components/coaching/MyeongsimCoachingDashboard'), { ssr: false });
+const MirrorAwarenessModal = dynamic(() => import('@/components/coaching/MirrorAwarenessModal'), { ssr: false });
 
 
 
@@ -490,6 +494,12 @@ export default function DrillDownIconMenu({
 
     const [showReportModal, setShowReportModal] = useState(false); // [New] Report Modal State
     const [showSovereignReport, setShowSovereignReport] = useState(false); // [NEW] 사회적기여 리포트
+    const [showOhaengContribution, setShowOhaengContribution] = useState(false); // [NEW] 오행 상생공헌 모달 상태
+    const [showMptiTest, setShowMptiTest] = useState(false); // [NEW] MPTI 성향 검사 모달
+    const [showMptiPlanner, setShowMptiPlanner] = useState(false); // [NEW] MPTI 플래너 모달
+    const [mptiResultType, setMptiResultType] = useState<'wood' | 'fire' | 'earth' | 'metal' | 'water'>('wood');
+    const [mptiAnswers, setMptiAnswers] = useState<Record<string, number>>({});
+    const [mptiBirthOhaeng, setMptiBirthOhaeng] = useState<Record<string, number>>({});
     const [showHealing108Report, setShowHealing108Report] = useState(false); // [NEW] 108 자각 증명서
     const [showHealing108NewReport, setShowHealing108NewReport] = useState(false); // [NEW] 108 자각 new 대시보드
     const [showMyeongsimOS, setShowMyeongsimOS] = useState(false); // [NEW] 명심 OS 대시보드
@@ -498,6 +508,7 @@ export default function DrillDownIconMenu({
     const [showDecodeReport, setShowDecodeReport] = useState(false);
     const [showPremiumReport, setShowPremiumReport] = useState(false);
     const [showMindSpaceTraining, setShowMindSpaceTraining] = useState(false); // [NEW] 마음 공간 넓히기 훈련 모달
+    const [showMirrorAwareness, setShowMirrorAwareness] = useState(false); // [NEW] 알아차림의 거울 모달
     const { reportData } = useReportStore();
 
     // [New] 딥 링크 연동을 위해 initialSectionId가 존재하면 108 자각 new 대시보드를 바로 활성화합니다.
@@ -535,6 +546,16 @@ export default function DrillDownIconMenu({
             return;
         }
         setShowMindSpaceTraining(true);
+    };
+
+    const handleMirrorAwarenessClick = () => {
+        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+        if (!hasBirthDate) {
+            alert('자각 코칭을 시작하기 위해 생년월일을 먼저 입력해주세요.');
+            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+            return;
+        }
+        setShowMirrorAwareness(true);
     };
 
 
@@ -997,7 +1018,7 @@ export default function DrillDownIconMenu({
 
                             <h3 className="text-lg font-bold text-white mb-3 text-center">🧬 나의 강점/재능 리포트</h3>
 
-                            <TalentReportCard data={talentReportData} />
+                            <TalentReportCard data={talentReportData} saju={reportData?.saju || userProfile?.saju || {}} />
 
                             <p className="text-xs text-gray-500 mt-4 text-center">
                                 메타코드 기반 핵심 재능 분석
@@ -1091,6 +1112,105 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 명심마스터코어 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => router.push('/master-core')}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.2))',
+                        border: '1px solid rgba(6,182,212,0.4)',
+                        boxShadow: '0 4px 15px rgba(6,182,212,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🔮</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>명심마스터코어</div>
+                        <div style={styles.neuroTrigger}>4대 핵심 기질</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 오행 상생공헌 메뉴 — 상생 공헌 주파수 (Cosmic Legacy) */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasSaju = !!(reportData && reportData.saju);
+                        if (!hasSaju) {
+                            alert("먼저 상단의 '만세력(My Report)' 또는 사주 정보를 입력해 주시면, 당신의 고유한 오행 에너지를 바탕으로 한 맞춤형 상생 공헌 리포트가 활성화됩니다! ✨");
+                            return;
+                        }
+                        setShowOhaengContribution(true);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(20,184,166,0.25), rgba(13,148,136,0.2))',
+                        border: '1px solid rgba(20,184,166,0.4)',
+                        boxShadow: '0 4px 15px rgba(20,184,166,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🌌</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#2dd4bf' }}>오행 상생공헌</div>
+                        <div style={styles.neuroTrigger}>상생 공헌 주파수</div>
+                    </div>
+                </button>
+
+                {/* [NEW] MPTI 성향 검사 메뉴 -> FPTI 성향해독 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowMptiTest(true)}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(16,185,129,0.25), rgba(5,150,105,0.2))',
+                        border: '1px solid rgba(16,185,129,0.4)',
+                        boxShadow: '0 4px 15px rgba(16,185,129,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🧭</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#34d399' }}>FPTI 성향해독</div>
+                        <div style={styles.neuroTrigger}>운명 성향 코드 해독</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 에고싱크(Ego-Sync) 메뉴 — 맞춤 코칭 플래너 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const isApplied = useReportStore.getState().isPlannerApplied;
+                        if (!isApplied) {
+                            alert("먼저 'FPTI 성향해독🧭'을 진행하여 타고난 성향 코드를 해독하십시오. 검사가 완료되면 에고싱크 플래너가 활성화됩니다!");
+                            setShowMptiTest(true);
+                        } else {
+                            useReportStore.getState().setPlannerOpen(true);
+                        }
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(99,102,241,0.2))',
+                        border: '1px solid rgba(139,92,246,0.4)',
+                        boxShadow: '0 4px 15px rgba(139,92,246,0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🌀</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>에고싱크</div>
+                        <div style={styles.neuroTrigger}>맞춤 코칭 플래너</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 소버린 3S 메뉴 — 초고도화 보건 아키텍처 */}
                 <button
                     style={styles.iconButton}
@@ -1151,6 +1271,27 @@ export default function DrillDownIconMenu({
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>심층 리포트</div>
                         <div style={styles.neuroTrigger}>5파트 통합 가이드</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 알아차림의 거울 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={handleMirrorAwarenessClick}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(148, 163, 184, 0.25), rgba(100, 116, 139, 0.2))',
+                        border: '1px solid rgba(148, 163, 184, 0.4)',
+                        boxShadow: '0 4px 15px rgba(148, 163, 184, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🪞</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#e2e8f0' }}>알아차림의 거울</div>
+                        <div style={styles.neuroTrigger}>참나 자각 & 객체 해체</div>
                     </div>
                 </button>
 
@@ -1667,6 +1808,24 @@ export default function DrillDownIconMenu({
                 userProfile={userProfile}
             />
 
+            {/* [NEW] 오행 상생공헌 모달 */}
+            <OhaengContributionModal
+                isOpen={showOhaengContribution}
+                onClose={() => setShowOhaengContribution(false)}
+            />
+
+            {/* [NEW] MPTI 성향 검사 모달 -> FPTI 성향해독 모달 */}
+            <MptiTestModal
+                isOpen={showMptiTest}
+                onClose={() => setShowMptiTest(false)}
+                onApplyPlanner={(resType, ans, birth, avatarCode) => {
+                    useReportStore.getState().setFptiData(resType, ans, birth, avatarCode);
+                    useReportStore.getState().setPlannerOpen(true);
+                    setShowMptiTest(false);
+                }}
+                userProfile={userProfile}
+            />
+
             {/* [NEW] 108 자각 백서 모달 */}
             <Healing108CoachingReport
                 isOpen={showHealing108Report}
@@ -1758,6 +1917,13 @@ export default function DrillDownIconMenu({
             <MindSpaceTrainingModal
                 isOpen={showMindSpaceTraining}
                 onClose={() => setShowMindSpaceTraining(false)}
+                userProfile={userProfile}
+            />
+
+            {/* [NEW] 알아차림의 거울 모달 */}
+            <MirrorAwarenessModal
+                isOpen={showMirrorAwareness}
+                onClose={() => setShowMirrorAwareness(false)}
                 userProfile={userProfile}
             />
         </>

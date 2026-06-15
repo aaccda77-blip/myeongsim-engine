@@ -35,6 +35,13 @@ export async function POST(request: NextRequest) {
         const gongmangList = saju?.gongmang || ['申', '酉'];
         const gongmangStr = gongmangList.join(', ');
 
+        const daewoonStartAge = saju?.daewoonStartAge || 10;
+        const daewoonList = saju?.daewoonList || [];
+        const daewoonString = daewoonList.map((d: any, i: number) => {
+            const startAge = daewoonStartAge + i * 10;
+            return `${startAge}세 대운 시작 (${d.startYear}년~${d.endYear}년) : ${d.ganZhi}`;
+        }).join('\n');
+
         const prompt = `
         You are 'MyeongI Master Mentor', a legendary spiritual counselor and psychotherapist.
         
@@ -70,7 +77,19 @@ export async function POST(request: NextRequest) {
           * Content: How to flow with their 10-year life wave. 
           * Integration: Use MBSR & MBCT to explain how to pause when their energy is dry, observing stress reactions instead of impulsively fighting the timing.
           * Wealth Flow (시기별 재산 흐름): Provide 4 numerical values representing their wealth index at different stages: [현재, 10년 뒤, 20년 뒤, 30년 뒤]. Values must be between 10 and 100. Write a brief description of this trend.
-          * Daewoon Flow (나의 대운 흐름): Generate a structured timeline of 7 major 10-year Daewoon cycles with year, age, Heavenly Stem (stem) and Earthly Branch (branch) in Chinese characters, a score (10-100), label (e.g., "성장기", "황금기"), and is_active (true only for the current age group).
+          * Daewoon Flow (나의 대운 흐름): Generate a structured timeline of 10 major 10-year Daewoon cycles (up to 100 years old). 
+            You MUST build this timeline STRICTLY based on the user's actual computed Daewoon list:
+            [USER DAEWOON LIST]
+            ${daewoonString}
+            
+            Each milestone item in "milestones" must map exactly to these computed cycles:
+            - "year": The start year of the cycle (from the list, e.g. 1990)
+            - "age": The start age of the cycle (e.g. 10, 20, 30, 40, 50, 60, 70...)
+            - "stem": The Heavenly Stem (1 character in Chinese, e.g. 壬)
+            - "branch": The Earthly Branch (1 character in Chinese, e.g. 午)
+            - "score": Energy score (10-100)
+            - "label": "과도기", "준비기", "도약기", "황금기", "안정기", "성숙기", "수확기" 등
+            - "is_active": true only for the cycle covering the user's actual current age group today.
           
         - Part 2: 마인드 디버깅 (Mind Debugging)
           * Content: Restructuring cognitive distortions (CBT) and regulating intense emotional states (DBT) using Saju traits.
@@ -117,15 +136,10 @@ export async function POST(request: NextRequest) {
                     "description": "시기별 재산 흐름에 대한 총평..."
                 },
                 "daewoon_flow": {
-                    "cycle_description": "이경윤님의 대운 주기는 N년 주기로 변하며...",
+                    "cycle_description": "대운 주기 변동에 대한 설명...",
                     "milestones": [
-                        { "year": 1996, "age": 17, "stem": "庚", "branch": "戌", "score": 40, "is_active": false, "label": "과도기" },
-                        { "year": 2006, "age": 27, "stem": "己", "branch": "酉", "score": 60, "is_active": false, "label": "준비기" },
-                        { "year": 2016, "age": 37, "stem": "戊", "branch": "申", "score": 75, "is_active": false, "label": "도약기" },
-                        { "year": 2026, "age": 47, "stem": "丁", "branch": "未", "score": 90, "is_active": true, "label": "황금기" },
-                        { "year": 2036, "age": 57, "stem": "丙", "branch": "午", "score": 65, "is_active": false, "label": "안정기" },
-                        { "year": 2046, "age": 67, "stem": "乙", "branch": "巳", "score": 50, "is_active": false, "label": "성숙기" },
-                        { "year": 2056, "age": 77, "stem": "甲", "branch": "辰", "score": 80, "is_active": false, "label": "수확기" }
+                        { "year": 1990, "age": 10, "stem": "壬", "branch": "午", "score": 40, "is_active": false, "label": "과도기" }
+                        // Construct 10 milestones in this array strictly corresponding to the computed [USER DAEWOON LIST] (10, 20, ..., 100)
                     ]
                 }
             },

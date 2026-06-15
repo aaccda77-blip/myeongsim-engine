@@ -16,12 +16,23 @@ import { ForceFieldData } from '@/types/strength-report';
 
 interface StrengthForceFieldProps {
     data: ForceFieldData;
+    onItemClick?: (category: 'forceField', itemKey: string, itemLabel: string, itemValue: number) => void;
 }
 
 // 커스텀 틱 렌더러
-const CustomTick = ({ payload, x, y, cx, cy }: any) => {
+const CustomTick = ({ payload, x, y, cx, cy, onItemClick, chartData }: any) => {
     const offsetX = (x - cx) * 0.15;
     const offsetY = (y - cy) * 0.15;
+
+    const handleClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!onItemClick || !chartData || !payload) return;
+        const matched = chartData.find((d: any) => d.axis === payload.value);
+        if (matched) {
+            const avgValue = Math.round((matched.outward + matched.inward) / 2);
+            onItemClick('forceField', matched.axis, `본질 에너지: ${matched.axis}`, avgValue);
+        }
+    };
 
     return (
         <text
@@ -30,8 +41,9 @@ const CustomTick = ({ payload, x, y, cx, cy }: any) => {
             fill="#9CA3AF"
             textAnchor="middle"
             dominantBaseline="middle"
-            className="text-[10px] md:text-xs font-medium"
-            style={{ filter: 'drop-shadow(0 0 3px rgba(0,0,0,0.8))' }}
+            className="text-[10px] md:text-xs font-medium hover:fill-amber-400 transition-colors"
+            style={{ filter: 'drop-shadow(0 0 3px rgba(0,0,0,0.8))', cursor: 'pointer' }}
+            onClick={handleClick}
         >
             {payload.value}
         </text>
@@ -39,34 +51,75 @@ const CustomTick = ({ payload, x, y, cx, cy }: any) => {
 };
 
 // 커스텀 툴팁
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload, onItemClick }: any) => {
     if (active && payload && payload.length) {
+        const axisName = payload[0]?.payload?.axis;
+        const outwardValue = payload[0]?.value;
+        const inwardValue = payload[1]?.value;
+
+        const handleTotalClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            if (!onItemClick) return;
+            const avgValue = Math.round((outwardValue + (inwardValue || 0)) / 2);
+            onItemClick('forceField', axisName, `본질 에너지: ${axisName}`, avgValue);
+        };
+
+        const handleOutwardClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            if (!onItemClick) return;
+            onItemClick('forceField', `${axisName}_outward`, `본질 에너지: ${axisName} (외부 표출)`, Math.round(outwardValue));
+        };
+
+        const handleInwardClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            if (!onItemClick || inwardValue === undefined) return;
+            onItemClick('forceField', `${axisName}_inward`, `본질 에너지: ${axisName} (내면 인식)`, Math.round(inwardValue));
+        };
+
         return (
-            <div className="bg-black/90 backdrop-blur-md border border-white/10 rounded-lg p-3 shadow-xl">
-                <p className="text-white font-bold text-sm mb-1">{payload[0]?.payload?.axis}</p>
+            <div 
+                className="bg-black/90 backdrop-blur-md border border-white/10 rounded-lg p-3 shadow-xl cursor-pointer"
+                onClick={handleTotalClick}
+            >
+                <p className="text-white font-bold text-sm mb-1 hover:text-amber-400 hover:underline">{axisName}</p>
                 <div className="space-y-1 text-xs">
-                    <p className="text-orange-400">
-                        외부 표출: <span className="font-mono font-bold">{payload[0]?.value?.toFixed(0)}</span>
+                    <p 
+                        className="text-orange-400 hover:text-orange-300 hover:underline cursor-pointer transition-colors"
+                        onClick={handleOutwardClick}
+                    >
+                        외부 표출: <span className="font-mono font-bold">{outwardValue?.toFixed(0)}</span>
                     </p>
                     {payload[1] && (
-                        <p className="text-blue-400">
-                            내면 인식: <span className="font-mono font-bold">{payload[1]?.value?.toFixed(0)}</span>
+                        <p 
+                            className="text-blue-400 hover:text-blue-300 hover:underline cursor-pointer transition-colors"
+                            onClick={handleInwardClick}
+                        >
+                            내면 인식: <span className="font-mono font-bold">{inwardValue?.toFixed(0)}</span>
                         </p>
                     )}
                 </div>
+                <p className="text-[10px] text-amber-400/70 mt-2">👆 항목 클릭 시 개별 AI 상세 해설</p>
             </div>
         );
     }
     return null;
 };
 
-export default function StrengthForceField({ data }: StrengthForceFieldProps) {
+export default function StrengthForceField({ data, onItemClick }: StrengthForceFieldProps) {
     // 차트 데이터 변환
     const chartData = data.axisLabels.map((label, idx) => ({
         axis: label,
         outward: data.outward[idx],
         inward: data.inward[idx],
     }));
+
+    // 차트 클릭 핸들러
+    const handleChartClick = (chartState: any) => {
+        if (!onItemClick || !chartState?.activePayload?.length) return;
+        const activeData = chartState.activePayload[0].payload;
+        const avgValue = Math.round((activeData.outward + activeData.inward) / 2);
+        onItemClick('forceField', activeData.axis, `본질 에너지: ${activeData.axis}`, avgValue);
+    };
 
     return (
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 relative overflow-hidden">
@@ -82,14 +135,28 @@ export default function StrengthForceField({ data }: StrengthForceFieldProps) {
             </div>
 
             {/* Legend */}
-            <div className="flex justify-center gap-6 mb-4 text-xs">
-                <div className="flex items-center gap-2">
+            <div className="flex justify-center gap-6 mb-4 text-xs relative z-10">
+                <div 
+                    className="flex items-center gap-2 cursor-pointer group hover:bg-white/5 px-2 py-1 rounded transition-colors"
+                    onClick={() => {
+                        if (!onItemClick) return;
+                        const avgOutward = Math.round(data.outward.reduce((a, b) => a + b, 0) / data.outward.length);
+                        onItemClick('forceField', 'outward_total', '전체 외부 표출 에너지 (Outward)', avgOutward);
+                    }}
+                >
                     <span className="w-3 h-0.5 bg-orange-500 rounded-full" />
-                    <span className="text-gray-400">외부 표출 (Outward)</span>
+                    <span className="text-gray-400 group-hover:text-white transition-colors">외부 표출 (Outward)</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div 
+                    className="flex items-center gap-2 cursor-pointer group hover:bg-white/5 px-2 py-1 rounded transition-colors"
+                    onClick={() => {
+                        if (!onItemClick) return;
+                        const avgInward = Math.round(data.inward.reduce((a, b) => a + b, 0) / data.inward.length);
+                        onItemClick('forceField', 'inward_total', '전체 내면 인식 에너지 (Inward)', avgInward);
+                    }}
+                >
                     <span className="w-3 h-0.5 bg-blue-500 rounded-full" />
-                    <span className="text-gray-400">내면 인식 (Inward)</span>
+                    <span className="text-gray-400 group-hover:text-white transition-colors">내면 인식 (Inward)</span>
                 </div>
             </div>
 
@@ -101,7 +168,7 @@ export default function StrengthForceField({ data }: StrengthForceFieldProps) {
                 className="h-[350px] md:h-[400px] relative z-10"
             >
                 <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
+                    <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData} onClick={handleChartClick} style={{ cursor: 'pointer' }}>
                         {/* 배경 그리드 */}
                         <PolarGrid
                             stroke="#374151"
@@ -112,7 +179,7 @@ export default function StrengthForceField({ data }: StrengthForceFieldProps) {
                         {/* 축 라벨 */}
                         <PolarAngleAxis
                             dataKey="axis"
-                            tick={<CustomTick />}
+                            tick={<CustomTick onItemClick={onItemClick} chartData={chartData} />}
                         />
 
                         <PolarRadiusAxis
@@ -148,14 +215,14 @@ export default function StrengthForceField({ data }: StrengthForceFieldProps) {
                             animationEasing="ease-out"
                         />
 
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip onItemClick={onItemClick} />} wrapperStyle={{ pointerEvents: 'auto' }} />
                     </RadarChart>
                 </ResponsiveContainer>
             </motion.div>
 
             {/* Footer Note */}
             <p className="text-center text-xs text-gray-500 mt-4 relative z-10">
-                * 주황선이 파랑선보다 바깥에 있을수록 외향적 에너지가 강합니다
+                * 차트의 각 축을 클릭하면 AI가 상세히 분석해드립니다
             </p>
         </div>
     );

@@ -7,6 +7,7 @@ import { Zap, Users, Target, Wrench, Search, Flame } from 'lucide-react';
 
 interface TalentProfileBarsProps {
     data: TalentProfileData;
+    onItemClick?: (category: 'talentProfile', itemKey: string, itemLabel: string, itemValue: number) => void;
 }
 
 const TALENT_CONFIG = [
@@ -54,7 +55,7 @@ const TALENT_CONFIG = [
     },
 ];
 
-export default function TalentProfileBars({ data }: TalentProfileBarsProps) {
+export default function TalentProfileBars({ data, onItemClick }: TalentProfileBarsProps) {
     // 정렬된 데이터 (높은 순)
     const sortedData = [...TALENT_CONFIG].sort((a, b) => data[b.key] - data[a.key]);
 
@@ -78,20 +79,22 @@ export default function TalentProfileBars({ data }: TalentProfileBarsProps) {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.1 }}
+                            className="cursor-pointer group"
+                            onClick={() => onItemClick?.('talentProfile', config.key, config.label, Math.round(value))}
                         >
                             {/* Label Row */}
                             <div className="flex justify-between items-center mb-1.5">
                                 <div className="flex items-center gap-2">
-                                    <Icon className="w-3.5 h-3.5 text-gray-500" />
-                                    <span className="text-xs text-gray-300 font-medium">{config.label}</span>
+                                    <Icon className="w-3.5 h-3.5 text-gray-500 group-hover:text-amber-400 transition-colors" />
+                                    <span className="text-xs text-gray-300 font-medium group-hover:text-white transition-colors">{config.label}</span>
                                 </div>
-                                <span className="text-xs font-mono text-white bg-white/10 px-2 py-0.5 rounded">
+                                <span className="text-xs font-mono text-white bg-white/10 px-2 py-0.5 rounded group-hover:bg-amber-500/20 group-hover:text-amber-400 transition-all">
                                     {value.toFixed(0)}
                                 </span>
                             </div>
 
                             {/* Progress Bar */}
-                            <div className="h-2.5 w-full bg-black/40 rounded-full overflow-hidden border border-white/5">
+                            <div className="h-2.5 w-full bg-black/40 rounded-full overflow-hidden border border-white/5 group-hover:border-amber-500/30 transition-colors">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${value}%` }}
@@ -113,6 +116,7 @@ export default function TalentProfileBars({ data }: TalentProfileBarsProps) {
                     💡 가장 높은 역량: <span className="text-white font-bold">{sortedData[0].label.split(' / ')[1]}</span> -
                     이 영역에서 당신의 천재성이 발휘됩니다.
                 </p>
+                <p className="text-[10px] text-gray-600 mt-1">👆 각 막대를 클릭하면 AI가 상세히 분석합니다</p>
             </div>
         </div>
     );

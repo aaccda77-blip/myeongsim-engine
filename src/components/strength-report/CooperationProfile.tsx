@@ -7,48 +7,49 @@ import { Building2, Network, Users2, Handshake, User, Shuffle } from 'lucide-rea
 
 interface CooperationProfileProps {
     data: CooperationProfileData;
+    onItemClick?: (category: 'cooperation', itemKey: string, itemLabel: string, itemValue: number) => void;
 }
 
 const COOPERATION_CONFIG = [
     {
         key: 'flexible' as const,
-        label: 'Situationally FLEXIBLE',
+        label: '상황별 유연형 / FLEXIBLE',
         labelKo: '상황에 따라 유연하게',
         icon: Shuffle
     },
     {
         key: 'largeOrganization' as const,
-        label: 'In larger ORGANIZATIONS',
+        label: '대조직 속에서 / ORGANIZATIONS',
         labelKo: '대조직 속에서',
         icon: Building2
     },
     {
         key: 'networks' as const,
-        label: 'In NETWORKS',
+        label: '네트워크 협업 / NETWORKS',
         labelKo: '네트워크를 통해',
         icon: Network
     },
     {
         key: 'communities' as const,
-        label: 'In supportive COMMUNITIES',
+        label: '커뮤니티 소속 / COMMUNITIES',
         labelKo: '커뮤니티 안에서',
         icon: Users2
     },
     {
         key: 'partnership' as const,
-        label: 'PARTNERSHIP with a second person',
+        label: '1:1 파트너십 / PARTNERSHIP',
         labelKo: '1:1 파트너십으로',
         icon: Handshake
     },
     {
         key: 'autonomous' as const,
-        label: 'Autonomous and INDEPENDENT',
+        label: '독립 자율형 / INDEPENDENT',
         labelKo: '자율적이고 독립적으로',
         icon: User
     },
 ];
 
-export default function CooperationProfile({ data }: CooperationProfileProps) {
+export default function CooperationProfile({ data, onItemClick }: CooperationProfileProps) {
     // 정렬된 데이터 (높은 순)
     const sortedData = [...COOPERATION_CONFIG].sort((a, b) => data[b.key] - data[a.key]);
 
@@ -72,14 +73,15 @@ export default function CooperationProfile({ data }: CooperationProfileProps) {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.08 }}
-                            className="flex items-center gap-3"
+                            className="flex items-center gap-3 cursor-pointer group"
+                            onClick={() => onItemClick?.('cooperation', config.key, `협력 스타일: ${config.labelKo}`, Math.round(value))}
                         >
                             {/* Icon */}
-                            <Icon className="w-4 h-4 text-amber-500/70 shrink-0" />
+                            <Icon className="w-4 h-4 text-amber-500/70 shrink-0 group-hover:text-amber-400 transition-colors" />
 
                             {/* Bar Container */}
                             <div className="flex-1">
-                                <div className="h-5 w-full bg-black/30 rounded overflow-hidden border border-white/5 relative">
+                                <div className="h-5 w-full bg-black/30 rounded overflow-hidden border border-white/5 relative group-hover:border-amber-500/30 transition-colors">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${value}%` }}
@@ -98,6 +100,11 @@ export default function CooperationProfile({ data }: CooperationProfileProps) {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Score Badge */}
+                            <span className="text-xs font-mono text-white bg-white/10 px-2 py-0.5 rounded group-hover:bg-amber-500/20 group-hover:text-amber-400 transition-all shrink-0 w-8 text-center">
+                                {value.toFixed(0)}
+                            </span>
                         </motion.div>
                     );
                 })}
@@ -109,6 +116,7 @@ export default function CooperationProfile({ data }: CooperationProfileProps) {
                 <p className="text-sm text-white">
                     "<span className="text-amber-400 font-bold">팀 서포터</span>", 협력적이고 소통 중심적인 프로세스 지향형
                 </p>
+                <p className="text-[10px] text-gray-600 mt-2">👆 각 항목을 클릭하면 AI 상세 해설</p>
             </div>
         </div>
     );

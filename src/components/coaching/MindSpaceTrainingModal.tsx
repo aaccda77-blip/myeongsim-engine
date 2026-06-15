@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { calculateSaju } from '@/utils/SajuCalculator';
 import { analyzeAdvancedBlueprint, JIJANGGAN_MAP, STEM_DATA, ELEMENT_RELATION, ELEMENT_CONTROL } from '@/utils/sajuLogic';
-import { getZimidusuChart, getZimidusuPalaceEssay, getAiCrossoverReport, get6ThemeCrossoverReport, getCustomTroubleAnalysis, getSawaDaewoonReport } from '@/utils/zimidusuLogic';
+import { getZimidusuChart, getZimidusuPalaceEssay, getAiCrossoverReport, get6ThemeCrossoverReport, getCustomTroubleAnalysis, getSawaDaewoonReport, get3ThemeCrossoverValidation } from '@/utils/zimidusuLogic';
 
 const ZIMIDUSU_GRID_MAP: Record<string, { row: string; col: string }> = {
   '사': { row: 'row-start-1', col: 'col-start-1' },
@@ -1300,7 +1300,7 @@ export const getComprehensiveAnalysis = (sajuData: any, userName: string = '회�
 
 export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }: Props) {
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'training' | 'profile' | 'advanced' | 'comprehensive' | 'zimidusu' | 'crossover'>('training');
+  const [activeTab, setActiveTab] = useState<'training' | 'profile' | 'advanced' | 'comprehensive' | 'zimidusu' | 'crossover' | 'validation' | 'reflection'>('training');
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [trainingMode, setTrainingMode] = useState<'classic' | 'deep'>('classic');
   const [advancedSelectedPillar, setAdvancedSelectedPillar] = useState<'year' | 'month' | 'day' | 'time' | null>(null);
@@ -1354,6 +1354,149 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
   const [followUpAnswer, setFollowUpAnswer] = useState<string | null>(null);
   const [showZimidusuGridModal, setShowZimidusuGridModal] = useState(false);
   const [showSawaDaewoonModal, setShowSawaDaewoonModal] = useState(false);
+
+  // 7번 및 8번 탭 상태변수 추가
+  const [selectedValidationCard, setSelectedValidationCard] = useState<any>(null);
+  const [validationReport, setValidationReport] = useState<any>(null);
+  const [isLoadingValidation, setIsLoadingValidation] = useState(false);
+
+  const [destinyReflectionReport, setDestinyReflectionReport] = useState<any>(null);
+  const [isLoadingReflection, setIsLoadingReflection] = useState(false);
+  const [reflectionAlert, setReflectionAlert] = useState<string | null>(null);
+  const [selectedReflectionCard, setSelectedReflectionCard] = useState<any>(null);
+
+  // 사용자 정보별 고유 캐시 키 관리를 위한 헬퍼 함수
+  const getCacheSuffix = () => {
+    return `${userName}_${birthDate}_${birthTime}_${calendarType}`;
+  };
+
+  const getValidationCacheKeys = () => {
+    const suffix = getCacheSuffix();
+    return {
+      lastGenKey: `myeongsim_last_gen_validation_${suffix}`,
+      cachedReportKey: `myeongsim_cached_validation_report_${suffix}`
+    };
+  };
+
+  const getReflectionCacheKeys = () => {
+    const suffix = getCacheSuffix();
+    return {
+      lastGenKey: `myeongsim_last_gen_reflection_${suffix}`,
+      cachedReportKey: `myeongsim_cached_reflection_report_${suffix}`
+    };
+  };
+
+  const fetchValidationReport = async () => {
+    if (!sajuData || !zimidusuChart) return;
+    setIsLoadingValidation(true);
+    try {
+      const res = await fetch('/api/crossover-validation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sajuData,
+          zimidusuChart,
+          userName,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setValidationReport(data);
+        
+        // Save to cache with today's date using unique keys
+        const today = new Date().toISOString().split('T')[0];
+        const keys = getValidationCacheKeys();
+        localStorage.setItem(keys.lastGenKey, today);
+        localStorage.setItem(keys.cachedReportKey, JSON.stringify(data));
+      } else {
+        throw new Error('Failed to fetch validation report');
+      }
+    } catch (err) {
+      console.error("Error fetching validation report from Gemini, falling back to local:", err);
+      const fallback = get3ThemeCrossoverValidation(sajuData, zimidusuChart, userName);
+      setValidationReport(fallback);
+    } finally {
+      setIsLoadingValidation(false);
+    }
+  };
+
+  const fetchDestinyReflectionReport = async () => {
+    if (!sajuData || !zimidusuChart) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const keys = getReflectionCacheKeys();
+    
+    // 로컬스토리지에서 고유 키로 캐시 가져오기
+    const lastGenDate = localStorage.getItem(keys.lastGenKey);
+    if (lastGenDate === today) {
+      const cached = localStorage.getItem(keys.cachedReportKey);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          setDestinyReflectionReport(parsed);
+          setReflectionAlert("💡 오늘은 이미 실시간 분석을 완료하셨습니다. (1일 1회 한정)");
+          return;
+        } catch (e) {
+          console.error("Failed to parse cached destiny reflection", e);
+        }
+      }
+    }
+
+    setIsLoadingReflection(true);
+    setReflectionAlert(null);
+    try {
+      const res = await fetch('/api/destiny-reflection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sajuData,
+          zimidusuChart,
+          userName,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setDestinyReflectionReport(data);
+        localStorage.setItem(keys.lastGenKey, today);
+        localStorage.setItem(keys.cachedReportKey, JSON.stringify(data));
+      } else {
+        throw new Error('Failed to fetch destiny reflection');
+      }
+    } catch (err) {
+      console.error("Error fetching destiny reflection from Gemini, using fallback:", err);
+      // Fallback local logic
+      const baseName = userName.endsWith('님') ? userName.slice(0, -1) : userName;
+      const name = `${baseName}님`;
+      const dayMaster = sajuData.day?.gan?.char || '신';
+      const dayMasterName = dayMaster === '신' ? '신금(辛金)' : `${dayMaster}금`;
+
+      const fallback = {
+        destinyReflection: {
+          title: "🌸 AI 마음 온기 성찰소 (내 인생의 별빛과 대지)",
+          intro: `반갑습니다, ${name}. 이곳은 인생의 거대한 대지와 하늘에 수놓인 별빛 지도를 나란히 포개어 놓고, 당신만을 위한 따뜻한 치유의 이야기를 들려주는 마음 성찰 공간입니다.`,
+          acceptance: {
+            title: "1. 운명의 수락: '나다움'으로 살아가는 길 🌾",
+            content: `"${name}님의 사주와 인생에는 아무런 잘못이 없습니다. 팔자가 꼬인다는 것은 나다운 기질을 억누르며 타인의 옷을 입으려 애썼기 때문이며, 팔자를 편다는 것은 내게 주어진 고유한 흐름과 리듬을 알아채고 온전히 활용하는 것입니다."\n\n당신의 고유한 기질은 흙 속에 숨어 고결하게 빛나는 보석이자, 정밀하게 단련된 원석과 같습니다. 남이 시켜서 하는 일보다 전문 라이선스나 지식을 가꾸어갈 때 가장 맑고 눈부시게 빛납니다. 당신의 예민함과 섬세한 안테나는 시스템의 고장이 아닌, 세상을 치유하고 가장 빛나는 결실을 빚어내기 위해 조율된 우주의 축복입니다.`
+          },
+          harmony: {
+            title: "2. 대지와 별빛의 노래: 사주(흐름) × 자미두수(모습) 🌌",
+            content: `사주명리학이 10년 단위의 대운을 통해 당신이 밟아갈 거대한 인생의 대지(언제 어떤 에너지가 올지)를 조율한다면, 자미두수는 그 하늘 아래 별들의 배치를 통해 구체적인 성정(어떤 방식으로 얼마나)을 보여줍니다.\n\n40대 정해대운(사해충)의 깊은 바다와 같던 사색과 시련을 지나, 2025년 을사년과 2026년 병오년에 자신만의 지식 플랫폼을 아름답게 런칭하는 흐름은 완벽하게 예고된 조화로운 길입니다. 다가오는 50대 무자대운의 찬란한 대전성기와 60대 기축대운의 사상적 거장의 반열까지, 대지와 별빛은 당신을 든든하게 지지하고 있습니다.`
+          },
+          prescription: {
+            title: "3. 오늘의 마음 온기 처방전 💌",
+            content: `손을 가만히 왼쪽 가슴 위에 얹고 따스하게 말해 봅니다. "그동안 세상을 향해 켜놓았던 예리한 안테나를 잠시 거두고, 완벽하려 애쓰던 무거운 책임감을 내려놓아도 괜찮아. 너는 존재 자체로 이미 훌륭하게 빛나고 있으며, 흐르는 모든 계절 속에서 언제나 안전하단다."\n\n오늘 하루는 스스로에게 따뜻한 봄 햇살 같은 다정한 수용의 미소를 건네주세요.`
+          }
+        }
+      };
+      setDestinyReflectionReport(fallback);
+    } finally {
+      setIsLoadingReflection(false);
+    }
+  };
 
   // 현재 활성화된 낡은각본/질문 카드 단계
   const [profileCardStep, setProfileCardStep] = useState<'blueprint' | 'script' | 'questions' | 'solution' | 'meta'>('script');
@@ -1412,6 +1555,93 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
     : null;
 
   const contentBodyRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (activeTab === 'validation' && !validationReport && sajuData && zimidusuChart) {
+      const today = new Date().toISOString().split('T')[0];
+      const keys = getValidationCacheKeys();
+      const lastValDate = localStorage.getItem(keys.lastGenKey);
+      if (lastValDate === today) {
+        const cachedVal = localStorage.getItem(keys.cachedReportKey);
+        if (cachedVal) {
+          try {
+            setValidationReport(JSON.parse(cachedVal));
+            return;
+          } catch (e) {
+            console.error("Error parsing validation cache", e);
+          }
+        }
+      }
+      fetchValidationReport();
+    }
+  }, [activeTab, sajuData, zimidusuChart, validationReport]);
+
+  useEffect(() => {
+    if (activeTab === 'reflection' && !destinyReflectionReport && sajuData && zimidusuChart) {
+      const today = new Date().toISOString().split('T')[0];
+      const keys = getReflectionCacheKeys();
+      const lastRefDate = localStorage.getItem(keys.lastGenKey);
+      if (lastRefDate === today) {
+        const cachedRef = localStorage.getItem(keys.cachedReportKey);
+        if (cachedRef) {
+          try {
+            setDestinyReflectionReport(JSON.parse(cachedRef));
+            setReflectionAlert("💡 오늘은 이미 실시간 분석을 완료하셨습니다. (1일 1회 한정)");
+            return;
+          } catch (e) {
+            console.error("Error parsing reflection cache", e);
+          }
+        }
+      }
+      fetchDestinyReflectionReport();
+    }
+  }, [activeTab, sajuData, zimidusuChart, destinyReflectionReport]);
+
+  // 사용자가 변경되면(이름, 생년월일, 시간, 음양력 등) 현재 리포트 상태를 초기화하고,
+  // 해당 사용자의 고유 캐시가 존재한다면 그 캐시를 바로 복원합니다.
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // 7번 탭 캐시 복원 혹은 초기화
+    const valKeys = getValidationCacheKeys();
+    const lastValDate = localStorage.getItem(valKeys.lastGenKey);
+    if (lastValDate === today) {
+      const cachedVal = localStorage.getItem(valKeys.cachedReportKey);
+      if (cachedVal) {
+        try {
+          setValidationReport(JSON.parse(cachedVal));
+        } catch (e) {
+          setValidationReport(null);
+        }
+      } else {
+        setValidationReport(null);
+      }
+    } else {
+      setValidationReport(null);
+    }
+
+    // 8번 탭 캐시 복원 혹은 초기화
+    const refKeys = getReflectionCacheKeys();
+    const lastRefDate = localStorage.getItem(refKeys.lastGenKey);
+    if (lastRefDate === today) {
+      const cachedRef = localStorage.getItem(refKeys.cachedReportKey);
+      if (cachedRef) {
+        try {
+          setDestinyReflectionReport(JSON.parse(cachedRef));
+          setReflectionAlert("💡 오늘은 이미 실시간 분석을 완료하셨습니다. (1일 1회 한정)");
+        } catch (e) {
+          setDestinyReflectionReport(null);
+          setReflectionAlert(null);
+        }
+      } else {
+        setDestinyReflectionReport(null);
+        setReflectionAlert(null);
+      }
+    } else {
+      setDestinyReflectionReport(null);
+      setReflectionAlert(null);
+    }
+  }, [userName, birthDate, birthTime, calendarType]);
 
   useEffect(() => {
     setMounted(true);
@@ -1640,7 +1870,9 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
             { id: 'advanced', label: '3. 4기둥 멘탈 OS 디버거', icon: Database },
             { id: 'comprehensive', label: '4. 4기둥 종합 멘탈 OS 분석', icon: Sparkles },
             { id: 'zimidusu', label: '5. 자미두수 명반 해독', icon: Zap },
-            { id: 'crossover', label: '6. AI 종합 교차 해독실', icon: Sparkles }
+            { id: 'crossover', label: '6. AI 종합 교차 해독실', icon: Sparkles },
+            { id: 'validation', label: '7. AI 3대 라이프 교차 검증실', icon: ShieldAlert },
+            { id: 'reflection', label: '8. AI 마음 온기 성찰소', icon: Sparkles }
           ].map((tab) => {
             const TabIcon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -2979,6 +3211,286 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
               </motion.div>
             )}
 
+            {/* 7. 사주 × 자미두수 AI 3대 라이프 교차 검증 탭 */}
+            {activeTab === 'validation' && zimidusuChart && (
+              <motion.div
+                key="validation-tab"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6 text-white pb-6"
+              >
+                {/* 상단 통합 검증 안내 배너 */}
+                <div className="p-5 bg-gradient-to-r from-purple-950/45 via-indigo-950/40 to-slate-900 border border-purple-500/35 rounded-3xl relative overflow-hidden">
+                  <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-1 rounded bg-purple-500/10 border border-purple-500/30">
+                      <ShieldAlert className="w-4 h-4 text-purple-400 animate-pulse" />
+                    </div>
+                    <h3 className="text-xs md:text-sm font-black text-purple-300 uppercase tracking-widest">
+                      Saju & Zimidusu Triple Validation Hub
+                    </h3>
+                  </div>
+                  <h4 className="text-sm md:text-base font-black text-white mb-2">
+                    사주 × 자미두수 AI 3대 라이프 교차 검증실 🔮⚖️
+                  </h4>
+                  <p className="text-[11px] leading-relaxed text-slate-400 font-sans">
+                    인생에서 가장 중요한 세 가지 기둥(재물, 결혼, 인생 타이밍)을 사주와 자미두수로 각각 추출하여 정밀 교차 검증합니다.<br />
+                    두 우주적 관점이 가리키는 교차점을 스캔해 더 명확하고 든든한 내비게이션을 선사합니다.
+                  </p>
+                </div>
+
+                {/* 로딩 인디케이터 */}
+                {isLoadingValidation ? (
+                  <div className="py-16 flex flex-col items-center justify-center gap-4 border border-purple-500/20 rounded-3xl bg-slate-950/40 backdrop-blur-md">
+                    <RefreshCw className="w-8 h-8 text-purple-400 animate-spin" />
+                    <div className="text-center">
+                      <p className="text-xs font-black text-purple-200 tracking-wider">Gemini 2.5 Flash가 우주의 데이터를 수집 중입니다...</p>
+                      <p className="text-[10px] text-slate-500 mt-1">사주 하드웨어와 자미두수 지도의 다차원 연결망을 조율하고 있습니다.</p>
+                    </div>
+                  </div>
+                ) : !validationReport ? (
+                  <div className="py-16 flex flex-col items-center justify-center gap-4 border border-purple-500/20 rounded-3xl bg-slate-950/40">
+                    <button
+                      onClick={fetchValidationReport}
+                      className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-xs font-black text-white shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+                    >
+                      🔮 3대 라이프 실시간 교차 검증 시작하기
+                    </button>
+                    <p className="text-[10px] text-slate-500">클릭하시면 실시간으로 우주 해석망을 분석하여 개별화된 보고서를 생성합니다.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {(['wealth', 'marriage', 'timing'] as const).map((key) => {
+                      const card = validationReport[key];
+                      if (!card) return null;
+                      
+                      let icon = "💵";
+                      let cardBg = "from-emerald-950/20 via-slate-900/40 to-slate-950/60 hover:border-emerald-500/40";
+                      let accentColor = "text-emerald-400";
+                      if (key === 'marriage') {
+                        icon = "🪞";
+                        cardBg = "from-pink-950/20 via-slate-900/40 to-slate-950/60 hover:border-pink-500/40";
+                        accentColor = "text-pink-400";
+                      } else if (key === 'timing') {
+                        icon = "🧭";
+                        cardBg = "from-cyan-950/20 via-slate-900/40 to-slate-950/60 hover:border-cyan-500/40";
+                        accentColor = "text-cyan-400";
+                      }
+
+                      return (
+                        <motion.div
+                          key={key}
+                          whileHover={{ scale: 1.02 }}
+                          onClick={() => setSelectedValidationCard({ ...card, key })}
+                          className={`p-5 rounded-2xl bg-gradient-to-br ${cardBg} border border-white/5 cursor-pointer transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[180px] group`}
+                        >
+                          <div>
+                            <div className="flex justify-between items-center mb-3">
+                              <span className="text-2xl">{icon}</span>
+                              <span className={`text-[10px] font-black uppercase tracking-widest ${accentColor} bg-white/5 px-2 py-0.5 rounded-full border border-white/5`}>
+                                Cross-Check
+                              </span>
+                            </div>
+                            <h4 className="text-xs md:text-sm font-black text-white group-hover:text-purple-300 transition-colors mb-1.5">
+                              {card.title ? card.title.split(' (')[0] : ''}
+                            </h4>
+                            <p className="text-[10px] text-slate-400 leading-normal line-clamp-2">
+                              {card.metaphor}
+                            </p>
+                          </div>
+                          <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500">
+                            <span>결론 스캔 완료</span>
+                            <ArrowRight className="w-3.5 h-3.5 text-purple-400 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* 메타 철학 가이드 */}
+                <div className="p-4 bg-slate-900/40 border border-white/5 rounded-2xl text-[10px] text-slate-400 font-sans leading-relaxed flex items-start gap-2.5">
+                  <Info className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-black text-slate-300 block mb-0.5">명심 교차 검증의 지혜 💡</span>
+                    사주와 자미두수가 서로 같은 방향을 비출 때 우리는 깊은 확신을 얻고, 서로 다른 곳을 비출 때 우리는 영혼을 더 넓힐 수 있는 새로운 지혜를 깨닫습니다. 치우치지 않는 마음의 등불을 밝혀보세요.
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* 8. AI 마음 온기 성찰소 탭 */}
+            {activeTab === 'reflection' && zimidusuChart && (
+              <motion.div
+                key="reflection-tab"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6 text-white pb-6"
+              >
+                {/* 상단 성찰소 배너 */}
+                <div className="p-5 bg-gradient-to-r from-indigo-950/45 via-purple-950/40 to-slate-900 border border-purple-500/35 rounded-3xl relative overflow-hidden">
+                  <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-1 rounded bg-purple-500/10 border border-purple-500/30">
+                      <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                    </div>
+                    <h3 className="text-xs md:text-sm font-black text-purple-300 uppercase tracking-widest">
+                      AI Destiny & Mind Warmth Sanctuary
+                    </h3>
+                  </div>
+                  <h4 className="text-sm md:text-base font-black text-white mb-2">
+                    AI 마음 온기 성찰소 (내 인생의 별빛과 대지) 🌸
+                  </h4>
+                  <p className="text-[11px] leading-relaxed text-slate-400 font-sans">
+                    사주팔자에는 잘못이 없습니다. 흘러가는 인생의 대지(사주 흐름)와 내면을 밝혀주는 우주의 별빛(자미두수)을 포개어 놓고,<br />
+                    {userName}님을 위한 아주 친절하고 눈물 나게 감동적인 100% 맞춤형 힐링 에세이를 들려드립니다.
+                  </p>
+                </div>
+
+                {/* 1일 1회 실시간 생성 완료 알림바 */}
+                {reflectionAlert && (
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-300 rounded-xl text-[10px] md:text-xs font-black flex items-center gap-2">
+                    <Info className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>{reflectionAlert}</span>
+                  </div>
+                )}
+
+                {/* 로딩 인디케이터 */}
+                {isLoadingReflection ? (
+                  <div className="py-16 flex flex-col items-center justify-center gap-4 border border-purple-500/20 rounded-3xl bg-slate-950/40 backdrop-blur-md">
+                    <RefreshCw className="w-8 h-8 text-purple-400 animate-spin" />
+                    <div className="text-center">
+                      <p className="text-xs font-black text-purple-200 tracking-wider">Gemini 2.5 Flash가 마음의 온기를 담아 성찰 에세이를 적어내리고 있습니다...</p>
+                      <p className="text-[10px] text-slate-500 mt-1">세상의 모든 어둠 속에서 가장 따뜻하게 수용할 수 있는 은유를 빚고 있습니다.</p>
+                    </div>
+                  </div>
+                ) : !destinyReflectionReport ? (
+                  <div className="py-16 flex flex-col items-center justify-center gap-4 border border-purple-500/20 rounded-3xl bg-slate-950/40">
+                    <button
+                      onClick={fetchDestinyReflectionReport}
+                      className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-xs font-black text-white shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+                    >
+                      🌸 나만을 위한 마음 온기 성찰 분석 시작하기
+                    </button>
+                    <p className="text-[10px] text-slate-500">클릭하시면 실시간으로 우주 데이터를 분석하여 아주 다정한 힐링 가이드를 생성합니다. (하루 1회 제한)</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* 인트로 텍스트 카드 */}
+                    <div className="p-5 rounded-2xl bg-slate-900/30 border border-white/5 text-[11px] leading-relaxed font-sans text-slate-300">
+                      {destinyReflectionReport.destinyReflection?.intro}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* 카드 1: 운명의 수락 */}
+                      {destinyReflectionReport.destinyReflection?.acceptance && (
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          onClick={() => setSelectedReflectionCard({
+                            ...destinyReflectionReport.destinyReflection.acceptance,
+                            tag: 'acceptance'
+                          })}
+                          className="p-5 rounded-2xl bg-gradient-to-br from-amber-950/20 via-slate-900/40 to-slate-950/60 border border-white/5 cursor-pointer transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[180px] group"
+                        >
+                          <div>
+                            <div className="flex justify-between items-center mb-3">
+                              <span className="text-2xl">🌾</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                                Acceptance
+                              </span>
+                            </div>
+                            <h4 className="text-xs md:text-sm font-black text-white group-hover:text-purple-300 transition-colors mb-1.5">
+                              {destinyReflectionReport.destinyReflection.acceptance.title}
+                            </h4>
+                            <p className="text-[10px] text-slate-400 leading-normal line-clamp-3">
+                              {destinyReflectionReport.destinyReflection.acceptance.content}
+                            </p>
+                          </div>
+                          <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500">
+                            <span>다정한 조언 읽기</span>
+                            <ArrowRight className="w-3.5 h-3.5 text-purple-400 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {/* 카드 2: 대지와 별빛 */}
+                      {destinyReflectionReport.destinyReflection?.harmony && (
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          onClick={() => setSelectedReflectionCard({
+                            ...destinyReflectionReport.destinyReflection.harmony,
+                            tag: 'harmony'
+                          })}
+                          className="p-5 rounded-2xl bg-gradient-to-br from-indigo-950/20 via-slate-900/40 to-slate-950/60 border border-white/5 cursor-pointer transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[180px] group"
+                        >
+                          <div>
+                            <div className="flex justify-between items-center mb-3">
+                              <span className="text-2xl">🌌</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                                Harmony
+                              </span>
+                            </div>
+                            <h4 className="text-xs md:text-sm font-black text-white group-hover:text-purple-300 transition-colors mb-1.5">
+                              {destinyReflectionReport.destinyReflection.harmony.title}
+                            </h4>
+                            <p className="text-[10px] text-slate-400 leading-normal line-clamp-3">
+                              {destinyReflectionReport.destinyReflection.harmony.content}
+                            </p>
+                          </div>
+                          <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500">
+                            <span>대지공학 해독 읽기</span>
+                            <ArrowRight className="w-3.5 h-3.5 text-purple-400 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {/* 카드 3: 온기 처방전 */}
+                      {destinyReflectionReport.destinyReflection?.prescription && (
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          onClick={() => setSelectedReflectionCard({
+                            ...destinyReflectionReport.destinyReflection.prescription,
+                            tag: 'prescription'
+                          })}
+                          className="p-5 rounded-2xl bg-gradient-to-br from-rose-950/20 via-slate-900/40 to-slate-950/60 border border-white/5 cursor-pointer transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[180px] group"
+                        >
+                          <div>
+                            <div className="flex justify-between items-center mb-3">
+                              <span className="text-2xl">💌</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest text-rose-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                                Prescription
+                              </span>
+                            </div>
+                            <h4 className="text-xs md:text-sm font-black text-white group-hover:text-purple-300 transition-colors mb-1.5">
+                              {destinyReflectionReport.destinyReflection.prescription.title}
+                            </h4>
+                            <p className="text-[10px] text-slate-400 leading-normal line-clamp-3">
+                              {destinyReflectionReport.destinyReflection.prescription.content}
+                            </p>
+                          </div>
+                          <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500">
+                            <span>치유 처방전 읽기</span>
+                            <ArrowRight className="w-3.5 h-3.5 text-purple-400 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* 왜 종합풀이인가 철학 가이드 */}
+                <div className="p-4 bg-slate-900/40 border border-white/5 rounded-2xl text-[10px] text-slate-400 font-sans leading-relaxed flex items-start gap-2.5">
+                  <Info className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-black text-slate-300 block mb-0.5">내 운명에는 잘못이 없습니다 💡</span>
+                    팔자가 꼬인다는 것은 나의 원래 모양대로 살지 않기 때문이며, 팔자를 핀다는 것은 이 흐름을 이해하고 나침반 삼아 살아가는 것입니다. 사주와 자미두수라는 두 개의 창으로 나의 빛나는 중심을 포착해 보세요.
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
           </AnimatePresence>
 
         </div>
@@ -3788,6 +4300,162 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* 7-2. AI 3대 라이프 교차 검증 상세 모달 팝업 */}
+          <AnimatePresence>
+            {selectedValidationCard && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl"
+              >
+                <motion.div
+                  initial={{ scale: 0.94, y: 15 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.94, y: 15 }}
+                  className="w-full max-w-lg bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-purple-950/30 border-2 border-purple-500/40 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(168,85,247,0.35)] text-left relative overflow-hidden max-h-[85vh] overflow-y-auto scrollbar-thin"
+                >
+                  <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-indigo-500 to-amber-500" />
+                  
+                  <button
+                    onClick={() => setSelectedValidationCard(null)}
+                    className="absolute top-5 right-5 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all duration-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                      <ShieldAlert className="w-4 h-4 text-purple-400 animate-pulse" />
+                    </div>
+                    <span className="text-[9px] md:text-[10px] font-black text-purple-300 tracking-widest uppercase">
+                      Triple Life Validation Decoded
+                    </span>
+                  </div>
+
+                  <h3 className="text-base md:text-lg font-black text-white mb-1 tracking-tight">
+                    {selectedValidationCard.title}
+                  </h3>
+                  <p className="text-[10px] text-purple-400 mb-6 font-serif italic">
+                    {selectedValidationCard.metaphor}
+                  </p>
+
+                  <div className="space-y-5">
+                    {/* 사주의 관점 */}
+                    <div className="p-4 rounded-xl bg-slate-900/60 border border-white/5 text-[11px] leading-relaxed">
+                      <span className="font-black text-amber-400 block mb-1">📅 사주명리학의 입체 분석</span>
+                      <p className="text-slate-300 font-sans">{selectedValidationCard.sajuView}</p>
+                    </div>
+
+                    {/* 자미두수의 관점 */}
+                    <div className="p-4 rounded-xl bg-slate-900/60 border border-white/5 text-[11px] leading-relaxed">
+                      <span className="font-black text-purple-400 block mb-1">🌌 자미두수의 심층 배치</span>
+                      <p className="text-slate-300 font-sans">{selectedValidationCard.zimidusuView}</p>
+                    </div>
+
+                    {/* 교차 검증 최종 결론 */}
+                    <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/20 text-[11px] leading-relaxed">
+                      <span className="font-black text-white block mb-1">⚖️ 교차 검증 최종 결론 (시점 및 전략)</span>
+                      <p className="text-purple-300 font-sans font-black">{selectedValidationCard.conclusion}</p>
+                    </div>
+
+                    {/* 마음챙김 자애 에세이 */}
+                    <div className="p-5 rounded-2xl bg-gradient-to-b from-indigo-950/10 to-purple-950/20 border border-purple-500/20 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-radial-gradient from-purple-500/5 to-transparent pointer-events-none" />
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <Sparkles className="w-3.5 h-3.5 text-purple-300" />
+                        <span className="text-[10px] font-black text-purple-300 uppercase tracking-wider">
+                          Myeongsim Healing Essay
+                        </span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed text-slate-300 font-serif whitespace-pre-wrap">
+                        {selectedValidationCard.healingEssay}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/5 flex justify-end">
+                    <button
+                      onClick={() => setSelectedValidationCard(null)}
+                      className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-[11px] font-black text-slate-300 hover:text-white transition-all duration-300"
+                    >
+                      돌아가기
+                     </button>
+                   </div>
+                 </motion.div>
+               </motion.div>
+             )}
+           </AnimatePresence>
+
+          {/* 8-2. AI 마음 온기 성찰소 상세 모달 팝업 */}
+          <AnimatePresence>
+            {selectedReflectionCard && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl"
+              >
+                <motion.div
+                  initial={{ scale: 0.94, y: 15 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.94, y: 15 }}
+                  className="w-full max-w-lg bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-indigo-950/30 border-2 border-purple-500/40 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(168,85,247,0.35)] text-left relative overflow-hidden max-h-[85vh] overflow-y-auto scrollbar-thin"
+                >
+                  <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-400 via-purple-500 to-rose-500" />
+                  
+                  <button
+                    onClick={() => setSelectedReflectionCard(null)}
+                    className="absolute top-5 right-5 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all duration-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                      <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                    </div>
+                    <span className="text-[9px] md:text-[10px] font-black text-purple-300 tracking-widest uppercase">
+                      Mind Warmth Sanctuary Decoded
+                    </span>
+                  </div>
+
+                  <h3 className="text-base md:text-lg font-black text-white mb-2 tracking-tight">
+                    {selectedReflectionCard.title}
+                  </h3>
+
+                  <div className="space-y-5">
+                    {/* 성찰 콘텐츠 */}
+                    <div className="p-5 rounded-2xl bg-gradient-to-b from-slate-900/80 to-slate-950 border border-white/5 relative overflow-hidden">
+                      <p className="text-[12px] md:text-[13px] leading-relaxed text-slate-200 font-sans whitespace-pre-wrap">
+                        {selectedReflectionCard.content}
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-purple-500/5 border border-purple-500/10 rounded-2xl text-center">
+                      <p className="text-xs text-purple-200/90 font-serif leading-relaxed italic">
+                        “{userName}님, 당신의 어깨 위에 얹혀진 삶의 짐이 무겁더라도, 우주는 당신의 모든 걸음을 응원하며 품어주고 있음을 기억해 주세요.”
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/5 flex justify-end">
+                    <button
+                      onClick={() => setSelectedReflectionCard(null)}
+                      className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-[11px] font-black text-slate-300 hover:text-white transition-all duration-300"
+                    >
+                      성찰 완료 (온기 품기)
+                     </button>
+                   </div>
+                 </motion.div>
+               </motion.div>
+             )}
+           </AnimatePresence>
 
           {/* 8. AI 고민 맞춤 분석 결과 팝업 모달 */}
           <AnimatePresence>

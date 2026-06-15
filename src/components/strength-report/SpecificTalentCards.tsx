@@ -6,6 +6,7 @@ import { Sparkles, Lightbulb, Heart, Zap } from 'lucide-react';
 
 interface SpecificTalentCardsProps {
     talents: string[];
+    onItemClick?: (category: 'specificTalent', itemKey: string, itemLabel: string, itemValue: number) => void;
 }
 
 // 카드별 아이콘과 색상
@@ -14,29 +15,33 @@ const CARD_STYLES = [
         icon: Sparkles,
         gradient: 'from-purple-500/20 to-pink-500/20',
         border: 'border-purple-500/30',
+        hoverBorder: 'hover:border-purple-400/60',
         iconColor: 'text-purple-400'
     },
     {
         icon: Lightbulb,
         gradient: 'from-amber-500/20 to-orange-500/20',
         border: 'border-amber-500/30',
+        hoverBorder: 'hover:border-amber-400/60',
         iconColor: 'text-amber-400'
     },
     {
         icon: Heart,
         gradient: 'from-rose-500/20 to-red-500/20',
         border: 'border-rose-500/30',
+        hoverBorder: 'hover:border-rose-400/60',
         iconColor: 'text-rose-400'
     },
     {
         icon: Zap,
         gradient: 'from-emerald-500/20 to-teal-500/20',
         border: 'border-emerald-500/30',
+        hoverBorder: 'hover:border-emerald-400/60',
         iconColor: 'text-emerald-400'
     },
 ];
 
-export default function SpecificTalentCards({ talents }: SpecificTalentCardsProps) {
+export default function SpecificTalentCards({ talents, onItemClick }: SpecificTalentCardsProps) {
     return (
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
             {/* Header */}
@@ -57,16 +62,18 @@ export default function SpecificTalentCards({ talents }: SpecificTalentCardsProp
                             initial={{ opacity: 0, y: 20, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             transition={{ delay: idx * 0.15 }}
-                            whileHover={{ scale: 1.03, y: -3 }}
+                            whileHover={{ scale: 1.05, y: -5 }}
+                            whileTap={{ scale: 0.97 }}
                             className={`
                                 relative overflow-hidden rounded-xl p-4 
                                 bg-gradient-to-br ${style.gradient}
-                                border ${style.border}
+                                border ${style.border} ${style.hoverBorder}
                                 backdrop-blur-md
-                                cursor-default
-                                transition-shadow duration-300
+                                cursor-pointer
+                                transition-all duration-300
                                 hover:shadow-lg hover:shadow-white/5
                             `}
+                            onClick={() => onItemClick?.('specificTalent', `talent_${idx}`, `핵심 재능: ${talent}`, 80 + idx * 5)}
                         >
                             {/* Decorative Circle */}
                             <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/5 rounded-full blur-xl" />
@@ -83,6 +90,9 @@ export default function SpecificTalentCards({ talents }: SpecificTalentCardsProp
                                     {talent}
                                 </p>
                             </div>
+
+                            {/* Click hint */}
+                            <p className="text-[9px] text-gray-500 mt-2 text-center">클릭하면 상세 해설 👆</p>
                         </motion.div>
                     );
                 })}

@@ -9,6 +9,66 @@ import { calculateSaju } from '@/utils/SajuCalculator';
 import { ZODIAC_TIME_OPTIONS } from '@/constants/saju';
 import { supabase } from '@/lib/supabaseClient'; // [Fix] Use shared singleton client
 
+const calculateSajuMetrics = (pillars: any, isTimeUnknown: boolean) => {
+    const ohaeng = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+    const tenGods = { resource: 0, output: 0, self: 0, power: 0, wealth: 0 };
+
+    const pillarsList = [pillars.year, pillars.month, pillars.day];
+    if (!isTimeUnknown && pillars.time && pillars.time.gan?.char !== '?') {
+        pillarsList.push(pillars.time);
+    }
+
+    const ELEMENT_ORDER = ['목', '화', '토', '금', '수'];
+    const EN_ELEMENTS = ['wood', 'fire', 'earth', 'metal', 'water'];
+
+    pillarsList.forEach(p => {
+        const ganEl = p.gan?.label;
+        const jiEl = p.ji?.label;
+
+        if (ganEl && ELEMENT_ORDER.includes(ganEl)) {
+            const enName = EN_ELEMENTS[ELEMENT_ORDER.indexOf(ganEl)];
+            ohaeng[enName as keyof typeof ohaeng] += 1;
+        }
+        if (jiEl && ELEMENT_ORDER.includes(jiEl)) {
+            const enName = EN_ELEMENTS[ELEMENT_ORDER.indexOf(jiEl)];
+            ohaeng[enName as keyof typeof ohaeng] += 1;
+        }
+    });
+
+    const dmElement = pillars.day?.gan?.label;
+    const dmIndex = ELEMENT_ORDER.indexOf(dmElement);
+
+    if (dmIndex !== -1) {
+        pillarsList.forEach(p => {
+            const checkTenGods = (el: string) => {
+                const idx = ELEMENT_ORDER.indexOf(el);
+                if (idx !== -1) {
+                    const diff = (idx - dmIndex + 5) % 5;
+                    if (diff === 0) tenGods.self += 1;
+                    else if (diff === 1) tenGods.output += 1;
+                    else if (diff === 2) tenGods.wealth += 1;
+                    else if (diff === 3) tenGods.power += 1;
+                    else if (diff === 4) tenGods.resource += 1;
+                }
+            };
+
+            if (p.gan?.label) checkTenGods(p.gan.label);
+            if (p.ji?.label) checkTenGods(p.ji.label);
+        });
+    }
+
+    const total = pillarsList.length * 2;
+    const elements = {
+        wood: Math.round((ohaeng.wood / total) * 100),
+        fire: Math.round((ohaeng.fire / total) * 100),
+        earth: Math.round((ohaeng.earth / total) * 100),
+        metal: Math.round((ohaeng.metal / total) * 100),
+        water: Math.round((ohaeng.water / total) * 100),
+    };
+
+    return { ohaeng, tenGods, elements };
+};
+
 interface ProfileModalProps {
     onClose: () => void;
 }
@@ -48,33 +108,7 @@ export default function ProfileModal({ onClose }: ProfileModalProps) {
             return;
         }
 
-        // 1. Calculate Element Distribution (Real)
-        const counts = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
-        const pillars = [previewPillars.year, previewPillars.month, previewPillars.day, previewPillars.time];
-
-        pillars.forEach(p => {
-            // Gan
-            if (p.gan.label === '목') counts.wood++;
-            if (p.gan.label === '화') counts.fire++;
-            if (p.gan.label === '토') counts.earth++;
-            if (p.gan.label === '금') counts.metal++;
-            if (p.gan.label === '수') counts.water++;
-            // Ji
-            if (p.ji.label === '목') counts.wood++;
-            if (p.ji.label === '화') counts.fire++;
-            if (p.ji.label === '토') counts.earth++;
-            if (p.ji.label === '금') counts.metal++;
-            if (p.ji.label === '수') counts.water++;
-        });
-
-        const total = 8;
-        const newElements = {
-            wood: (counts.wood / total) * 100,
-            fire: (counts.fire / total) * 100,
-            earth: (counts.earth / total) * 100,
-            metal: (counts.metal / total) * 100,
-            water: (counts.water / total) * 100
-        };
+        const metrics = calculateSajuMetrics(previewPillars, birthTime === 'unknown');
 
         // 2. Day Master (Real)
         const dayMaster = previewPillars.dayMaster || `${previewPillars.day.gan.char} (${previewPillars.day.gan.color})`;
@@ -105,7 +139,9 @@ export default function ProfileModal({ onClose }: ProfileModalProps) {
             },
             saju: {
                 ...reportData?.saju,
-                elements: newElements,
+                elements: metrics.elements,
+                ohaeng: metrics.ohaeng,
+                tenGods: metrics.tenGods,
                 dayMaster: dayMaster,
                 dayMasterTrait: "분석 중...",
                 keywords: newKeywords,
