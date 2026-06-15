@@ -318,71 +318,112 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-4 py-3"
+              className="space-y-4 py-2"
             >
-              <div className="text-center mb-4">
+              <div className="text-center mb-2">
                 <p className="text-sm font-semibold text-emerald-300 mb-1">
                   자각의 거울방에 오신 것을 환영합니다.
                 </p>
                 <p className="text-xs text-slate-400">
-                  몸과 마음의 짐을 내려놓고 변치 않는 나를 발견해 보세요.
+                  몸과 마음의 집착을 비워내고 참다운 '주체'를 발견해 보세요.
                 </p>
               </div>
 
-              {/* 코스 선택 카드 1 */}
-              <button
-                onClick={() => setActiveMode('5steps')}
-                className="w-full text-left p-4 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/30 hover:border-emerald-500/40 rounded-2xl transition-all duration-250 cursor-pointer flex gap-3.5 items-center group"
-              >
-                <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all">
-                  <Layers className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-center mb-0.5">
-                    <span className="text-xs font-bold text-slate-200">코스 A: 5단계 자각의 여정</span>
-                    <span className="text-[9px] bg-emerald-500/10 text-emerald-300 px-1.5 py-0.5 rounded-full font-bold">통합 성찰</span>
+              {/* 두 코스 선택 카드 */}
+              <div className="space-y-3">
+                {/* 코스 선택 카드 A */}
+                <button
+                  onClick={() => setActiveMode('5steps')}
+                  className="w-full text-left p-3.5 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/30 hover:border-emerald-500/40 rounded-2xl transition-all duration-250 cursor-pointer flex gap-3.5 items-center group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all shrink-0">
+                    <Layers className="w-5 h-5 text-emerald-400" />
                   </div>
-                  <p className="text-[10px] text-slate-400 leading-normal">
-                    몸, 생각, 감정, 감각의 무거운 짐을 깊게 고백하고 내려놓아 최종적으로 AI 자각 인증서를 수여받는 코스
-                  </p>
-                </div>
-              </button>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-0.5">
+                      <span className="text-xs font-bold text-slate-200">코스 A: 5단계 자각의 여정</span>
+                      <span className="text-[9px] bg-emerald-500/10 text-emerald-300 px-1.5 py-0.5 rounded-full font-bold">통합 성찰</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 leading-normal">
+                      몸, 생각, 감정, 감각의 무거운 짐을 깊게 고백하고 내려놓아 최종적으로 AI 자각 인증서를 수여받는 코스
+                    </p>
+                  </div>
+                </button>
 
-              {/* 코스 선택 카드 2 */}
-              <button
-                onClick={() => {
-                  setActiveMode('108steps');
-                  setStep108(1);
-                }}
-                className="w-full text-left p-4 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/30 hover:border-purple-500/40 rounded-2xl transition-all duration-250 cursor-pointer flex gap-3.5 items-center group"
-              >
-                <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 group-hover:bg-purple-500/20 transition-all">
-                  <Award className="w-5 h-5 text-purple-400 animate-pulse" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-center mb-0.5">
-                    <span className="text-xs font-bold text-slate-200">코스 B: 108 재귀적 몸 해체</span>
-                    <span className="text-[9px] bg-purple-500/10 text-purple-300 px-1.5 py-0.5 rounded-full font-bold">초고도 집중</span>
+                {/* 코스 선택 카드 B */}
+                <button
+                  onClick={() => {
+                    setActiveMode('108steps');
+                    setStep108(1);
+                  }}
+                  className="w-full text-left p-3.5 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/30 hover:border-purple-500/40 rounded-2xl transition-all duration-250 cursor-pointer flex gap-3.5 items-center group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 group-hover:bg-purple-500/20 transition-all shrink-0">
+                    <Award className="w-5 h-5 text-purple-400 animate-pulse" />
                   </div>
-                  <p className="text-[10px] text-slate-400 leading-normal mb-3">
-                    머리카락부터 우주 공간의 상대성까지, 108가지 실생활 예시에 나를 대입하며 몸이 허상임을 온전히 자각하는 특별 훈련
-                  </p>
-                  <div className="space-y-1.5 pt-2.5 border-t border-slate-700/50">
-                    <div className="flex items-start gap-1.5 text-[9px] text-slate-400 leading-relaxed">
-                      <span className="text-purple-400 shrink-0">🪜</span>
-                      <span><strong>108 자각의 계단 구축</strong>: 손톱 깎기부터 우주 무중력 상태까지, 몸이 내가 아님을 자연스레 깨닫는 108가지 재귀 질문 데이터셋을 수록했습니다.</span>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-0.5">
+                      <span className="text-xs font-bold text-slate-200">코스 B: 108 재귀적 몸 해체</span>
+                      <span className="text-[9px] bg-purple-500/10 text-purple-300 px-1.5 py-0.5 rounded-full font-bold">초고도 집중</span>
                     </div>
-                    <div className="flex items-start gap-1.5 text-[9px] text-slate-400 leading-relaxed">
-                      <span className="text-purple-400 shrink-0">🪞</span>
-                      <span><strong>자각도 아우라 피드백</strong>: 단계(1 ➔ 108)가 깊어질수록 뒤편의 요동치던 조명이 가라앉고 맑은 은빛 단색조로 진정되어 마음의 고요를 시각적으로 연출합니다.</span>
+                    <p className="text-[10px] text-slate-400 leading-normal">
+                      머리카락부터 우주 공간의 상대성까지, 108가지 실생활 예시에 나를 대입하며 몸이 허상임을 온전히 자각하는 특별 훈련
+                    </p>
+                  </div>
+                </button>
+              </div>
+
+              {/* [주요 변경 사항 요약 피처 보드] */}
+              <div className="relative bg-gradient-to-br from-slate-950/70 via-slate-900/60 to-purple-950/30 border border-purple-500/20 rounded-[1.8rem] p-4 shadow-xl overflow-hidden">
+                {/* 배경 미세 광원 효과 */}
+                <div className="absolute -right-6 -bottom-6 w-20 h-20 bg-purple-500/10 rounded-full blur-xl pointer-events-none" />
+                
+                <h4 className="text-[11px] font-bold text-purple-300 mb-2.5 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                  <span>108 자각 훈련의 핵심 특징</span>
+                </h4>
+
+                <div className="space-y-3">
+                  {/* 피처 1 */}
+                  <div className="flex gap-2.5 items-start">
+                    <div className="w-6 h-6 rounded-full bg-slate-900 border border-slate-700/50 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                      🪜
                     </div>
-                    <div className="flex items-start gap-1.5 text-[9px] text-slate-400 leading-relaxed">
-                      <span className="text-purple-400 shrink-0">🏅</span>
-                      <span><strong>12배수 도달 보상</strong>: 12단계 단위마다 축하 배지와 함께 \'조기 자각 리포트 발급\' 기능을 지원하여 성취감과 접근성을 높였습니다.</span>
+                    <div>
+                      <h5 className="text-[10.5px] font-bold text-slate-200 leading-tight mb-0.5">108 자각의 계단 구축</h5>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">
+                        손톱 깎기부터 우주 무중력 상태까지, 몸이 내가 아님을 자연스레 깨닫는 108가지 재귀 질문 데이터셋을 수록했습니다.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 피처 2 */}
+                  <div className="flex gap-2.5 items-start">
+                    <div className="w-6 h-6 rounded-full bg-slate-900 border border-slate-700/50 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                      🪞
+                    </div>
+                    <div>
+                      <h5 className="text-[10.5px] font-bold text-slate-200 leading-tight mb-0.5">자각도 아우라 피드백</h5>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">
+                        단계(1 ➔ 108)가 깊어질수록 뒤편의 요동치던 조명이 가라앉고 맑은 은빛 단색조로 진정되어 마음의 고요를 시각적으로 연출합니다.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 피처 3 */}
+                  <div className="flex gap-2.5 items-start">
+                    <div className="w-6 h-6 rounded-full bg-slate-900 border border-slate-700/50 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                      🏅
+                    </div>
+                    <div>
+                      <h5 className="text-[10.5px] font-bold text-slate-200 leading-tight mb-0.5">12배수 도달 보상</h5>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">
+                        12단계 단위마다 축하 배지와 함께 '조기 자각 리포트 발급' 기능을 지원하여 성취감과 접근성을 높였습니다.
+                      </p>
                     </div>
                   </div>
                 </div>
-              </button>
+              </div>
             </motion.div>
           )}
 

@@ -42,11 +42,21 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
     // [New] Auto-open chat if intent exists
     useEffect(() => {
-        const intent = searchParams.get('intent');
-        if (intent) {
+        // [Safety Reset] Next.js useSearchParams가 Hydration 불일치나 캐시로 오작동하는 문제를 방지하기 위해 
+        // 실제 브라우저 window.location.search의 intent 존재 여부도 함께 검증합니다.
+        let hasIntent = false;
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('intent')) {
+                hasIntent = true;
+            }
+        } else {
+            hasIntent = !!searchParams.get('intent');
+        }
+
+        if (hasIntent) {
             setIsChatOpen(true);
         } else {
-            // [Safety Reset] 접속 시 쿼리 파라미터가 없으면 챗 오버레이와 플래너 모달을 닫아 대시보드 홈 화면 노출 보장
             setIsChatOpen(false);
             setPlannerOpen(false);
         }
