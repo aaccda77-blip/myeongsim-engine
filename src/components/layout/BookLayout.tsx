@@ -45,8 +45,12 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
         const intent = searchParams.get('intent');
         if (intent) {
             setIsChatOpen(true);
+        } else {
+            // [Safety Reset] 접속 시 쿼리 파라미터가 없으면 챗 오버레이와 플래너 모달을 닫아 대시보드 홈 화면 노출 보장
+            setIsChatOpen(false);
+            setPlannerOpen(false);
         }
-    }, [searchParams]);
+    }, [searchParams, setPlannerOpen]);
 
     // [Removed] Legacy Auth & Payment State - Replaced by Premium System
     const [user, setUser] = useState<any>(null);
