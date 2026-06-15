@@ -68,7 +68,15 @@ const mockData: CodeData[] = [
 ];
 
 // --- 메인 컴포넌트 ---
-export default function MultiDimensionalBlueprint({ data = mockData }: { data?: CodeData[] }) {
+export default function MultiDimensionalBlueprint({ 
+    data = mockData,
+    showActionButton = true,
+    onActionClick
+}: { 
+    data?: CodeData[];
+    showActionButton?: boolean;
+    onActionClick?: () => void;
+}) {
 
     // 글로벌 뷰어 레벨 (한 번에 다크/뉴럴/메타 상태를 전환)
     const [globalLevel, setGlobalLevel] = useState<BlueprintLevel>('neural');
@@ -157,8 +165,7 @@ export default function MultiDimensionalBlueprint({ data = mockData }: { data?: 
                 <div className="space-y-6">
                     {data.map((item, index) => (
                         <div key={item.id}
-                            onClick={() => handleCardClick(item)}
-                            className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-5 hover:bg-slate-800/60 transition-colors backdrop-blur-md cursor-pointer active:scale-[0.98] transition-transform"
+                            className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-5 backdrop-blur-md"
                             style={{ animationDelay: `${index * 100}ms` }}>
 
                             <h3 className="text-lg font-bold text-slate-200 mb-1">{item.title}</h3>
@@ -215,10 +222,15 @@ export default function MultiDimensionalBlueprint({ data = mockData }: { data?: 
                 </div>
 
                 {/* 하단 액션 버튼 */}
-                <button className="w-full mt-8 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-lg hover:from-indigo-600 hover:to-purple-700 transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] flex justify-center items-center group">
-                    <span>🚀 나의 강점 활용법 코칭받기</span>
-                    <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-                </button>
+                {showActionButton && (
+                    <button 
+                        onClick={onActionClick}
+                        className="w-full mt-8 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-lg hover:from-indigo-600 hover:to-purple-700 transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] flex justify-center items-center group active:scale-95"
+                    >
+                        <span>🚀 나의 강점 활용법 코칭받기</span>
+                        <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                )}
 
                 {/* [MODULE] 오늘의 뉴럴 코드 액션 플랜 */}
                 <DailyNeuralMissionCard data={data} />

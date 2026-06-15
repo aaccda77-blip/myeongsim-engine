@@ -17,7 +17,6 @@ const loadingView = () => (
 );
 
 const CoverView = dynamic(() => import('@/components/pages/CoverView'), { loading: loadingView });
-const ScienceIntroView = dynamic(() => import('@/components/pages/ScienceIntroView'), { loading: loadingView });
 const IdentityView = dynamic(() => import('@/components/pages/IdentityView'), { loading: loadingView });
 const SajuPaljaView = dynamic(() => import('@/components/pages/SajuPaljaView'), { loading: loadingView, ssr: false }); // [Fix] Forced SSR disable for new component
 const RadarChartView = dynamic(() => import('@/components/pages/RadarChartView'), { loading: loadingView });
@@ -45,9 +44,9 @@ function ReportContent() {
 
     // [Guard Logic] 데이터가 없는데 중간 페이지로 진입하면 커버로 보냄
     useEffect(() => {
-        // 1페이지(커버)와 2페이지(인트로)는 데이터 없이도 볼 수 있다고 가정
-        // 3페이지(Identity)부터는 데이터 필수
-        if (currentStep >= 3 && !reportData) {
+        // 1페이지(커버)는 데이터 없이도 볼 수 있다고 가정
+        // 2페이지(SajuPaljaView)부터는 데이터 필수
+        if (currentStep >= 2 && !reportData) {
             // 알림 없이 조용히 보내거나, 토스트 메시지 띄우기
             useReportStore.getState().setStep(1);
         }
@@ -55,19 +54,18 @@ function ReportContent() {
 
     switch (currentStep) {
         case 1: return <CoverView />;
-        case 2: return <ScienceIntroView />;
-        case 3: return <SajuPaljaView />;
-        case 4: return <IdentityView />;
-        case 5: return <RadarChartView />;
-        case 6: return <TalentStatsView />;
-        case 7: return <FlipCardView />;
-        case 8: return <RelationBubbleView />;
-        case 9: return <WealthGaugeView />;
-        case 10: return <LifeWaveView />;
-        case 11: return <TimelineView />;
-        case 12: return <ActionItemsView />;
-        case 13: return <EpilogueView />;
-        case 14: return <NewPageView />;
+        case 2: return <SajuPaljaView />;
+        case 3: return <IdentityView />;
+        case 4: return <RadarChartView />;
+        case 5: return <TalentStatsView />;
+        case 6: return <FlipCardView />;
+        case 7: return <RelationBubbleView />;
+        case 8: return <WealthGaugeView />;
+        case 9: return <LifeWaveView />;
+        case 10: return <TimelineView />;
+        case 11: return <ActionItemsView />;
+        case 12: return <EpilogueView />;
+        case 13: return <NewPageView />;
         default: return <PlaceholderView step={currentStep} />;
     }
 }

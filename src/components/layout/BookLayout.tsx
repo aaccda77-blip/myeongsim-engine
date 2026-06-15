@@ -56,6 +56,14 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
         if (hasIntent) {
             setIsChatOpen(true);
+            // [NEW] 챗창이 자동으로 열린 직후에는 주소창의 intent/section 파라미터를 완전히 지워 
+            // 수동으로 말풍선 버튼을 누르거나 새로고침 시 모달이 다시 오작동하는 현상을 원천 방지합니다.
+            if (typeof window !== 'undefined') {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('intent');
+                url.searchParams.delete('section');
+                window.history.replaceState({}, '', url.pathname);
+            }
         } else {
             setIsChatOpen(false);
             setPlannerOpen(false);
@@ -277,7 +285,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                     )}
                 </AnimatePresence>
 
-                {/* 3. Footer - Progress Bar Only */}
+                {/* 3. Footer - Progress Bar & Page Navigation */}
                 <footer className="absolute bottom-0 left-0 right-0 bg-deep-slate/90 backdrop-blur-lg border-t border-white/5 z-50 pb-[env(safe-area-inset-bottom)]">
                     {/* Progress Bar */}
                     <div className="w-full h-1 bg-gray-800">
@@ -288,6 +296,33 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                             transition={{ duration: 0.5 }}
                         />
                     </div>
+
+                    {/* Page Navigation (Only show if on step >= 2 and reportData exists) */}
+                    {reportData && currentStep >= 2 && (
+                        <div className="flex items-center justify-between px-6 py-3">
+                            <button
+                                onClick={prevStep}
+                                disabled={currentStep === 1}
+                                className="flex items-center gap-2 px-2 py-1 rounded-md text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 transition-all active:scale-95"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                                <span className="text-[10px] font-bold tracking-widest uppercase">Prev</span>
+                            </button>
+
+                            <span className="text-xs font-mono text-gray-500 select-none">
+                                {currentStep} / {totalSteps}
+                            </span>
+
+                            <button
+                                onClick={nextStep}
+                                disabled={currentStep === totalSteps}
+                                className="flex items-center gap-2 px-2 py-1 rounded-md text-primary-olive hover:text-green-400 disabled:opacity-30 transition-all active:scale-95"
+                            >
+                                <span className="text-[10px] font-bold tracking-widest uppercase">Next</span>
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
+                    )}
                 </footer>
             </div>
         </div>

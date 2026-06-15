@@ -5,7 +5,7 @@ import { useReportStore } from '@/store/useReportStore';
 import MultiDimensionalBlueprint from '@/components/chat/MultiDimensionalBlueprint'; // New Module
 
 export default function SajuPaljaView() {
-    const { reportData } = useReportStore();
+    const { reportData, nextStep } = useReportStore();
 
     // In a real scenario, map reportData (Saju Pillars) to the MultiDimensionalBlueprint CodeData format here.
     // For now, we use the fallback/mock inside the component if data is not explicitly shaped yet.
@@ -30,7 +30,10 @@ export default function SajuPaljaView() {
                  * 우리가 방금 만든 '다차원 기질 설계도' 컴포넌트를 이 뷰에 렌더링합니다.
                  * 기존 4개의 기둥 카드 대신 이 통합된 인터랙티브 뷰를 보여줍니다. 
                  */}
-                <MultiDimensionalBlueprint />
+                <MultiDimensionalBlueprint 
+                    showActionButton={true}
+                    onActionClick={nextStep}
+                />
             </motion.div>
         </div>
     );

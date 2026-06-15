@@ -95,6 +95,20 @@ export default function CoverView() {
             if (reportData.birthTime) setBirthTime(reportData.birthTime);
             if (reportData.gender) setGender(reportData.gender);
             if (reportData.meta?.calendarType) setCalendarType(reportData.meta.calendarType);
+
+            // [NEW] 이미 기질 분석 데이터가 있는 경우 입력 폼을 건너뛰고 결과 화면(result)을 바로 보여줍니다.
+            setViewMode('result');
+
+            // [NEW] previewPillars 상태를 복구하여 handleConfirm 내의 가드(!previewPillars)를 무사히 통과하도록 보장합니다.
+            if (reportData.saju?.fourPillars) {
+                setPreviewPillars({
+                    year: reportData.saju.fourPillars.year,
+                    month: reportData.saju.fourPillars.month,
+                    day: reportData.saju.fourPillars.day,
+                    time: reportData.saju.fourPillars.time,
+                    dayMaster: reportData.saju.dayMaster
+                });
+            }
         }
     }, [reportData]);
 
@@ -172,6 +186,14 @@ export default function CoverView() {
                 }
             } as any
         });
+
+        // URL 쿼리 파라미터 세척 (자동 챗 오픈 및 모달 팝업 방지)
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('intent');
+            url.searchParams.delete('section');
+            window.history.replaceState({}, '', url.pathname);
+        }
 
         if (targetRoute === 'onboarding') {
             router.push('/onboarding');
@@ -387,6 +409,7 @@ export default function CoverView() {
 
                             {/* ✨ 새로운 다차원 기질 설계도 (Multi-Dimensional Blueprint) */}
                             <MultiDimensionalBlueprint
+                                showActionButton={false}
                                 data={(() => {
                                     // previewPillars에서 간지(干支) 추출하여 NeuralBlueprintMapper + PillarMetaCodeMap으로 변환
                                     const getPillarCode = (pillar: any, pillarType: 'year' | 'month' | 'day' | 'time', isUnknown: boolean = false): CodeData => {

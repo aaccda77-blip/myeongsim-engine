@@ -514,11 +514,11 @@ export default function DrillDownIconMenu({
     const { reportData } = useReportStore();
 
     // [New] 딥 링크 연동을 위해 initialSectionId가 존재하면 108 자각 new 대시보드를 바로 활성화합니다.
-    useEffect(() => {
-        if (initialSectionId) {
-            setShowHealing108NewReport(true);
-        }
-    }, [initialSectionId]);
+    // useEffect(() => {
+    //     if (initialSectionId) {
+    //         setShowHealing108NewReport(true);
+    //     }
+    // }, [initialSectionId]);
 
     const handleDecodeClick = () => {
         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
@@ -1093,6 +1093,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 알아차림의 거울 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={handleMirrorAwarenessClick}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(148, 163, 184, 0.25), rgba(100, 116, 139, 0.2))',
+                        border: '1px solid rgba(148, 163, 184, 0.4)',
+                        boxShadow: '0 4px 15px rgba(148, 163, 184, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🪞</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#e2e8f0' }}>알아차림의 거울</div>
+                        <div style={styles.neuroTrigger}>참나 자각 & 객체 해체</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 사회적기여 메뉴 — 명심 프리미엄 통합 코칭 리포트 */}
                 <button
                     style={styles.iconButton}
@@ -1273,27 +1294,6 @@ export default function DrillDownIconMenu({
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>심층 리포트</div>
                         <div style={styles.neuroTrigger}>5파트 통합 가이드</div>
-                    </div>
-                </button>
-
-                {/* [NEW] 알아차림의 거울 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={handleMirrorAwarenessClick}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(148, 163, 184, 0.25), rgba(100, 116, 139, 0.2))',
-                        border: '1px solid rgba(148, 163, 184, 0.4)',
-                        boxShadow: '0 4px 15px rgba(148, 163, 184, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🪞</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#e2e8f0' }}>알아차림의 거울</div>
-                        <div style={styles.neuroTrigger}>참나 자각 & 객체 해체</div>
                     </div>
                 </button>
 
