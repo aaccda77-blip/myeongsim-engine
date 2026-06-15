@@ -228,7 +228,6 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                 key={demoStage}
                                 onClose={() => {
                                     setIsChatOpen(false);
-                                    useReportStore.getState().setStep(1); // Return to CoverView
                                 }}
                                 currentStage={demoStage}
                                 initialIntent={searchParams.get('intent')} // [New] Pass Intent

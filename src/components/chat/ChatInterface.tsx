@@ -2561,6 +2561,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             userProfile={reportData}
                             hideTodayEnergy={true}
                             initialSectionId={initialSectionId || undefined}
+                            onCloseChat={onClose}
                             onSelectIntent={(intent, prompt) => {
                                 // [New] Bio-Sync Dashboard View
                                 if (intent === 'bio_sync_dashboard_view') {

@@ -440,6 +440,7 @@ interface DrillDownIconMenuProps {
     onSelectIntent: (intent: string, prompt: string) => void;
     hideTodayEnergy?: boolean; // [NEW] 챗봇 상담 중 Today Energy 숨기기
     initialSectionId?: string; // [New] 딥 링크용 초기 섹션 ID
+    onCloseChat?: () => void; // [NEW] 챗 창 닫기 콜백
 }
 
 // ============== 메인 컴포넌트 ==============
@@ -447,7 +448,8 @@ export default function DrillDownIconMenu({
     userProfile,
     onSelectIntent,
     hideTodayEnergy = false,
-    initialSectionId
+    initialSectionId,
+    onCloseChat
 }: DrillDownIconMenuProps) {
     const { language, setLanguage, t } = useLanguage();
     const router = useRouter();
@@ -1923,7 +1925,12 @@ export default function DrillDownIconMenu({
             {/* [NEW] 알아차림의 거울 모달 */}
             <MirrorAwarenessModal
                 isOpen={showMirrorAwareness}
-                onClose={() => setShowMirrorAwareness(false)}
+                onClose={() => {
+                    setShowMirrorAwareness(false);
+                    if (onCloseChat) {
+                        onCloseChat();
+                    }
+                }}
                 userProfile={userProfile}
             />
         </>
