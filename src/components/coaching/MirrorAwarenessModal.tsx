@@ -267,7 +267,10 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
   const currentStep5Data = step5CourseInfo[step5Course - 1];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+    <div 
+      onClick={onClose}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 bg-slate-950/85 backdrop-blur-md overflow-y-auto cursor-pointer"
+    >
       
       {/* 동적 백그라운드 아우라 광원 (108단계 상태에 따라 가라앉음) */}
       <div 
@@ -289,7 +292,8 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 12 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="relative w-full max-w-[480px] bg-slate-900/90 border border-slate-700/40 rounded-[2.5rem] p-5 shadow-2xl backdrop-blur-2xl overflow-hidden text-slate-100 flex flex-col min-h-[570px] justify-between"
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-[480px] bg-slate-900/95 border border-slate-700/40 rounded-[2.5rem] p-5 shadow-2xl backdrop-blur-2xl overflow-hidden text-slate-100 flex flex-col min-h-[570px] justify-between cursor-default"
       >
         {/* 상단 공통 헤더 */}
         <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-800/40">
@@ -303,10 +307,17 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
             </div>
           </div>
           <button 
-            onClick={onClose}
-            className="p-1.5 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/30 hover:border-slate-600 rounded-full transition-all duration-200 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+            }}
+            className="relative z-50 p-2.5 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/40 hover:border-slate-500 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center min-w-[38px] min-h-[38px] active:scale-95"
+            aria-label="닫기"
           >
-            <X className="w-4 h-4 text-slate-400" />
+            <X className="w-4 h-4 text-slate-300 pointer-events-none" />
           </button>
         </div>
 
