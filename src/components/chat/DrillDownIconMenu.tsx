@@ -49,6 +49,7 @@ const AwakeningChat = dynamic(() => import('@/components/coaching/AwakeningChat'
 const SajuAnalysisReportModal = dynamic(() => import('@/components/report/SajuAnalysisReportModal'), { ssr: false });
 // [NEW] 사회적기여 — 명심 프리미엄 통합 코칭 리포트
 const SovereignCoachingReport = dynamic(() => import('@/components/coaching/SovereignCoachingReport'), { ssr: false });
+const MirrorRoomModal = dynamic(() => import('@/components/coaching/MirrorRoomModal'), { ssr: false });
 const OhaengContributionModal = dynamic(() => import('@/components/coaching/OhaengContributionModal'), { ssr: false }); // [NEW] 오행 상생공헌 모달 임포트
 const MptiTestModal = dynamic(() => import('@/components/coaching/MptiTestModal'), { ssr: false }); // [NEW] MPTI 성향 검사 모달
 const MptiPlannerModal = dynamic(() => import('@/components/coaching/MptiPlannerModal'), { ssr: false }); // [NEW] MPTI 성향 플래너 모달
@@ -505,6 +506,7 @@ export default function DrillDownIconMenu({
     const [showHealing108Report, setShowHealing108Report] = useState(false); // [NEW] 108 자각 증명서
     const [showHealing108NewReport, setShowHealing108NewReport] = useState(false); // [NEW] 108 자각 new 대시보드
     const [showMyeongsimOS, setShowMyeongsimOS] = useState(false); // [NEW] 명심 OS 대시보드
+    const [showMirrorRoom, setShowMirrorRoom] = useState(false); // [NEW] 거울의방 모달 상태
     const [showSovereign3S, setShowSovereign3S] = useState(false); // [NEW] 소버린 3S 셋업프로토콜
     const [showMindReset, setShowMindReset] = useState(false); // [NEW] 5D 마음 리셋 디버깅
     const [showDecodeReport, setShowDecodeReport] = useState(false);
@@ -1105,6 +1107,35 @@ export default function DrillDownIconMenu({
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>사회적기여</div>
                         <div style={styles.neuroTrigger}>통합 코칭 리포트</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 거울의방 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('자각 코칭을 시작하기 위해 생년월일을 먼저 입력해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        setShowMirrorRoom(true);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))',
+                        border: '1px solid rgba(168, 85, 247, 0.4)',
+                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🪞</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#c084fc' }}>거울의방</div>
+                        <div style={styles.neuroTrigger}>참나 자각 & 객체 해체</div>
                     </div>
                 </button>
 
@@ -1781,6 +1812,12 @@ export default function DrillDownIconMenu({
                 isOpen={showSovereignReport}
                 onClose={() => setShowSovereignReport(false)}
                 userProfile={userProfile}
+            />
+
+            {/* [NEW] 거울의방 iframe 모달 */}
+            <MirrorRoomModal
+                isOpen={showMirrorRoom}
+                onClose={() => setShowMirrorRoom(false)}
             />
 
             {/* [NEW] 오행 상생공헌 모달 */}
