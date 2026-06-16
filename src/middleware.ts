@@ -120,7 +120,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // 3. Security Headers
-    response.headers.set('X-Frame-Options', 'DENY');
+    response.headers.set('X-Frame-Options', 'SAMEORIGIN');
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -148,7 +148,7 @@ export async function middleware(request: NextRequest) {
             "img-src 'self' data: https: blob:",
             "connect-src 'self' https://*.supabase.co https://generativelanguage.googleapis.com https://texttospeech.googleapis.com wss://*.supabase.co",
             "media-src 'self' blob:",
-            "frame-ancestors 'none'",
+            "frame-ancestors 'self'",
         ].join('; ')
     );
 
