@@ -90,6 +90,8 @@ export default function ReportPage() {
                 router.push('/login');
             } else {
                 setIsAuthenticated(true);
+                // [NEW] 리포트 페이지 최초 진입 시 항상 1단계(입력 폼)로 시작하도록 단계를 초기화합니다.
+                useReportStore.getState().setStep(1);
             }
             setIsCheckingAuth(false);
         };
