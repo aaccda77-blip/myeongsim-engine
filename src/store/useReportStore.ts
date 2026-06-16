@@ -71,7 +71,7 @@ export const useReportStore = create<ReportStore>()(
         (set, get) => ({
             // Initial States
             currentStep: 1,
-            totalSteps: 13,
+            totalSteps: 14,
             isLoading: false,
             error: null,
             reportData: null, // [Fix] Mock 사용 중단 (실제 데이터 우선)

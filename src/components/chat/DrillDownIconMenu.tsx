@@ -61,7 +61,7 @@ const DecodeReportModal = dynamic(() => import('@/components/coaching/DecodeRepo
 const PremiumReportModal = dynamic(() => import('@/components/coaching/PremiumReportModal'), { ssr: false });
 const MindSpaceTrainingModal = dynamic(() => import('@/components/coaching/MindSpaceTrainingModal'), { ssr: false });
 const MyeongsimCoachingDashboard = dynamic(() => import('@/components/coaching/MyeongsimCoachingDashboard'), { ssr: false });
-const MirrorAwarenessModal = dynamic(() => import('@/components/coaching/MirrorAwarenessModal'), { ssr: false });
+
 
 
 
@@ -510,7 +510,7 @@ export default function DrillDownIconMenu({
     const [showDecodeReport, setShowDecodeReport] = useState(false);
     const [showPremiumReport, setShowPremiumReport] = useState(false);
     const [showMindSpaceTraining, setShowMindSpaceTraining] = useState(false); // [NEW] 마음 공간 넓히기 훈련 모달
-    const [showMirrorAwareness, setShowMirrorAwareness] = useState(false); // [NEW] 알아차림의 거울 모달
+
     const { reportData } = useReportStore();
 
     // [New] 딥 링크 연동을 위해 initialSectionId가 존재하면 108 자각 new 대시보드를 바로 활성화합니다.
@@ -550,15 +550,7 @@ export default function DrillDownIconMenu({
         setShowMindSpaceTraining(true);
     };
 
-    const handleMirrorAwarenessClick = () => {
-        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-        if (!hasBirthDate) {
-            alert('자각 코칭을 시작하기 위해 생년월일을 먼저 입력해주세요.');
-            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-            return;
-        }
-        setShowMirrorAwareness(true);
-    };
+
 
 
 
@@ -1093,26 +1085,7 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 알아차림의 거울 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={handleMirrorAwarenessClick}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(148, 163, 184, 0.25), rgba(100, 116, 139, 0.2))',
-                        border: '1px solid rgba(148, 163, 184, 0.4)',
-                        boxShadow: '0 4px 15px rgba(148, 163, 184, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🪞</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#e2e8f0' }}>알아차림의 거울</div>
-                        <div style={styles.neuroTrigger}>참나 자각 & 객체 해체</div>
-                    </div>
-                </button>
+
 
                 {/* [NEW] 사회적기여 메뉴 — 명심 프리미엄 통합 코칭 리포트 */}
                 <button
@@ -1922,17 +1895,7 @@ export default function DrillDownIconMenu({
                 userProfile={userProfile}
             />
 
-            {/* [NEW] 알아차림의 거울 모달 */}
-            <MirrorAwarenessModal
-                isOpen={showMirrorAwareness}
-                onClose={() => {
-                    setShowMirrorAwareness(false);
-                    if (onCloseChat) {
-                        onCloseChat();
-                    }
-                }}
-                userProfile={userProfile}
-            />
+
         </>
     );
 }
