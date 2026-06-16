@@ -96,9 +96,6 @@ export default function CoverView() {
             if (reportData.gender) setGender(reportData.gender);
             if (reportData.meta?.calendarType) setCalendarType(reportData.meta.calendarType);
 
-            // [NEW] 이미 기질 분석 데이터가 있는 경우 입력 폼을 건너뛰고 결과 화면(result)을 바로 보여줍니다.
-            setViewMode('result');
-
             // [NEW] previewPillars 상태를 복구하여 handleConfirm 내의 가드(!previewPillars)를 무사히 통과하도록 보장합니다.
             if (reportData.saju?.fourPillars) {
                 setPreviewPillars({
