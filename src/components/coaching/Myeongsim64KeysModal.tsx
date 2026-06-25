@@ -1248,9 +1248,9 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                               score: act.score,
                               gate: act.gate,
                               line: act.line,
-                              dark: act.shadowTxt || act.shadow,
-                              neural: `[${act.name}] 기질이 현실 뇌신경 구조에 투사되어 일상 영역에서 ${act.score}점의 조율도 및 적응 패턴을 띄며 작용합니다.`,
-                              meta: act.lightTxt || act.light
+                              dark: act.darkCodeTxt || act.shadowTxt || act.shadow,
+                              neural: act.neuralCodeTxt || `[${act.name}] 기질이 현실 뇌신경 구조에 투사되어 일상 영역에서 ${act.score}점의 조율도 및 적응 패턴을 띄며 작용합니다.`,
+                              meta: act.metaCodeTxt || act.lightTxt || act.light
                             })}
                             className={`bg-[#0b0b18]/60 border border-white/5 hover:border-amber-500/30 p-3 rounded-xl text-left transition-all active:scale-[0.98] shadow-lg flex justify-between items-center w-full ${
                               docentLoading ? 'opacity-60 cursor-not-allowed' : ''
