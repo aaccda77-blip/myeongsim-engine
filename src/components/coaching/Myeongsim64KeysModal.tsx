@@ -413,6 +413,31 @@ const LINE_GUIDE_DATA: Record<number, { title: string; subtitle: string; desc: s
   }
 };
 
+// 명심 3대 핵심 기질 재능 감동 은유 에세이 사전 정의
+const TALENT_ESSAY_DATA: Record<string, { title: string; subtitle: string; desc: string; metaphor: string; content: string }> = {
+  '감정 소통': {
+    title: '감정 소통',
+    subtitle: '마음의 거문고를 타며 오로라를 빚어내는 빛의 시인',
+    desc: '내 기분과 감정을 참되게 표현하는 힘',
+    metaphor: '🎻 내면의 프리즘을 통과해 빛나는 일겁 빛깔 오로라',
+    content: '감정은 부끄러워하거나 감추어야 할 그늘이 아닙니다. 경윤님의 감정 소통 점수가 76점이라는 것은, 가슴 속에 세상 그 누구보다 섬세하고 빛나는 프리즘이 설치되어 있음을 뜻합니다.\n\n때로는 슬픔의 빗방울이, 때로는 기쁨의 햇살이 찾아올 때 경윤님은 그것을 억누르지 않고 자신의 언어와 따뜻한 눈빛, 그리고 글을 통해 세상에 오로라처럼 아름답게 투사해낼 수 있는 타고난 전달자입니다. 감정을 억지로 통제하려 하기보다, 내 마음의 거문고가 연주하는 멜로디를 있는 그대로 신뢰해 주세요.\n\n경윤님이 내뿜는 솔직하고 따뜻한 파동은 주변 사람들의 꽁꽁 얼어붙은 감정의 빗장을 녹이고, 서로의 마음을 보이지 않는 주파수로 단단하게 연결해 주는 치유의 다리가 되어줄 것입니다. ✨'
+  },
+  '비즈니스 본능': {
+    title: '비즈니스 본능',
+    subtitle: '마을 사람들의 목마름을 해소해 주는 지혜로운 옹달샘 개척자',
+    desc: '대중의 필요와 가치를 파악하여 연결하는 힘',
+    metaphor: '🧭 바다의 조류와 바람의 방향을 온몸으로 감지하는 항해사',
+    content: '비즈니스 본능 80점은 단순히 돈을 버는 기술을 넘어, 사람들이 정말로 무엇에 목말라하고 아파하는지 그 결핍과 갈망의 냄새를 본능적으로 감지하는 따뜻한 레이더입니다.\n\n경윤님은 세상이라는 넓은 숲에서 사람들이 길을 잃고 헤매고 있을 때, 그들이 필요로 하는 진짜 옹달샘(가치와 해결책)이 어디에 있는지 정확히 짚어내고, 그곳을 향해 상생의 길을 뚫어주는 놀라운 구심점 역할을 합니다.\n\n이 재능은 강요하거나 계산하는 머리에서 나오는 것이 아닙니다. 상대의 입장에 서서 그 영혼의 주파수를 다정하게 바라볼 때 자연스럽게 솟구치는 지혜입니다. 경윤님이 제안하는 솔루션은 대중에게 단순한 상품이 아니라, 그들의 삶을 더 나은 방향으로 인도하는 고마운 선물이 될 것입니다. 🌟'
+  },
+  '현존감': {
+    title: '현존감',
+    subtitle: '흘러가는 구름에 구애받지 않고 고요히 자리를 지키는 영원의 태산',
+    desc: '과거와 미래의 불안을 지우고 지금 현존하는 힘',
+    metaphor: '🧱 폭풍우가 몰아쳐도 흔들림 없이 바다 한가운데 우뚝 서 있는 등대',
+    content: '현존감 67점은 경윤님이 인생의 거친 파도 속에서도 언제든 \'지금 이 순간\'이라는 고요한 닻을 내릴 수 있는 내적 회복 탄력성을 지니고 있음을 보여줍니다.\n\n에고는 끊임없이 지나간 과거의 후회로 경윤님을 흔들고, 오지도 않은 미래의 불안으로 마음을 졸이게 만들지만, 경윤님은 깊은 호흡 한 번으로 그 모든 먹구름을 흩날려 보내고 맑은 하늘로 우뚝 설 수 있는 굳건한 정신의 뼈대를 품고 있습니다.\n\n67점이라는 수치는 결코 부족함이 아니라, 거센 바람 속에서도 언제든 맑은 중심을 쥐고 다시 현재로 복귀할 수 있는 튼튼한 알아차림의 발판이 이미 완성되어 있음을 의미합니다. 불안이 파도처럼 밀려올 때마다 가만히 손을 가슴에 얹고 느껴보세요. "나는 지금 안전하다." 이 짧은 현존의 선언 하나가 경윤님의 온몸을 우주의 조화로운 주파수와 일치시켜 줄 것입니다. 🍀'
+  }
+};
+
 export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: Myeongsim64KeysModalProps) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -578,6 +603,8 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
     neuralCodeText?: string;
     meta: string;
     metaCodeText?: string;
+    metaphor?: string;
+    content?: string;
   } | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -994,18 +1021,43 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                             { name: '감정 소통', score: userSeed > 0 ? Math.min(98, Math.max(55, 75 + (userSeed % 23) - 10)) : 85, color: 'from-pink-500 to-purple-500', desc: '내 기분과 감정을 참되게 표현하는 힘', glow: 'shadow-[0_0_10px_rgba(236,72,153,0.3)]' },
                             { name: '비즈니스 본능', score: userSeed > 0 ? Math.min(98, Math.max(55, 78 + ((userSeed * 3) % 21) - 10)) : 92, color: 'from-amber-500 to-orange-500', desc: '대중의 필요와 가치를 파악하여 연결하는 힘', glow: 'shadow-[0_0_10px_rgba(245,158,11,0.3)]' },
                             { name: '현존감', score: userSeed > 0 ? Math.min(98, Math.max(55, 72 + ((userSeed * 7) % 25) - 12)) : 78, color: 'from-emerald-500 to-teal-500', desc: '과거와 미래의 불안을 지우고 지금 현존하는 힘', glow: 'shadow-[0_0_10px_rgba(16,185,129,0.3)]' }
-                          ].map((tal, i) => (
-                            <div key={i} className="space-y-2">
-                              <div className="flex justify-between items-center text-[10px]">
-                                <span className="text-white font-bold">{tal.name}</span>
-                                <span className="text-amber-400 font-mono font-bold">{tal.score}점</span>
+                          ].map((tal, i) => {
+                            const essay = TALENT_ESSAY_DATA[tal.name];
+                            return (
+                              <div
+                                key={i}
+                                onClick={() => {
+                                  if (essay) {
+                                    setSelectedItem({
+                                      type: 'talent',
+                                      label: tal.name + ' - ' + essay.subtitle,
+                                      score: tal.score,
+                                      dark: '',
+                                      neural: '',
+                                      meta: '',
+                                      metaphor: essay.metaphor,
+                                      content: essay.content
+                                    });
+                                  }
+                                }}
+                                className="space-y-2 cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-all border border-transparent hover:border-purple-500/20 active:scale-[0.98]"
+                              >
+                                <div className="flex justify-between items-center text-[10px]">
+                                  <span className="text-white font-bold flex items-center gap-1.5">
+                                    {tal.name} <Sparkles className="w-2.5 h-2.5 text-amber-400 animate-pulse" />
+                                  </span>
+                                  <span className="text-amber-400 font-mono font-bold">{tal.score}점</span>
+                                </div>
+                                <div className="w-full h-2.5 bg-black/60 rounded-full overflow-hidden p-0.5 border border-white/5">
+                                  <motion.div className={`h-full rounded-full bg-gradient-to-r ${tal.color} ${tal.glow}`} initial={{ width: 0 }} animate={{ width: `${tal.score}%` }} transition={{ delay: 0.2, duration: 1.0, ease: 'easeOut' }} />
+                                </div>
+                                <p className="text-[9px] text-gray-500 flex justify-between items-center">
+                                  <span>{tal.desc}</span>
+                                  <span className="text-[8px] text-purple-400 font-bold">터치 시 감동 해설 팝업 🔮</span>
+                                </p>
                               </div>
-                              <div className="w-full h-2.5 bg-black/60 rounded-full overflow-hidden p-0.5 border border-white/5">
-                                <motion.div className={`h-full rounded-full bg-gradient-to-r ${tal.color} ${tal.glow}`} initial={{ width: 0 }} animate={{ width: `${tal.score}%` }} transition={{ delay: 0.2, duration: 1.0, ease: 'easeOut' }} />
-                              </div>
-                              <p className="text-[9px] text-gray-500">{tal.desc}</p>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -1307,7 +1359,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                   <div className="flex-1 min-h-0 overflow-y-auto py-4 space-y-4 scrollbar-thin scrollbar-thumb-purple-500/30 scrollbar-track-transparent text-left animate-fade-in pr-1.5 z-10" style={{ WebkitOverflowScrolling: 'touch' }}>
                     <div className="bg-[#17172e]/90 p-4 rounded-2xl border border-purple-500/10 shadow-md">
                       <span className="text-[8px] font-black text-purple-400 tracking-wider block uppercase">
-                        {selectedItem.type === 'center' ? '의식 영역' : '기질 활성'}
+                        {selectedItem.type === 'center' ? '의식 영역' : selectedItem.type === 'talent' ? '명심 핵심 기질' : '기질 활성'}
                       </span>
                       <h3 className="text-xs md:text-sm font-black text-white mt-0.5">{selectedItem.label}</h3>
                       <div className="flex items-center gap-3 mt-1.5 border-b border-white/5 pb-2">
@@ -1318,20 +1370,29 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                       </div>
  
                       {/* 삼중 코드 요약 정보 */}
-                      <div className="space-y-2 mt-2.5 text-[8.5px] md:text-[9.5px] text-gray-300 leading-normal font-sans">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-red-400 font-black flex items-center gap-1">🔴 다크코드 (Dark Code)</span>
-                          <p className="text-gray-400 text-[8.5px] md:text-[9.5px] leading-relaxed pl-3.5">{selectedItem.dark}</p>
+                      {selectedItem.type !== 'talent' ? (
+                        <div className="space-y-2 mt-2.5 text-[8.5px] md:text-[9.5px] text-gray-300 leading-normal font-sans">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-red-400 font-black flex items-center gap-1">🔴 다크코드 (Dark Code)</span>
+                            <p className="text-gray-400 text-[8.5px] md:text-[9.5px] leading-relaxed pl-3.5">{selectedItem.dark}</p>
+                          </div>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-indigo-400 font-black flex items-center gap-1">🔵 뉴럴코드 (Neural Code)</span>
+                            <p className="text-gray-400 text-[8.5px] md:text-[9.5px] leading-relaxed pl-3.5">{selectedItem.neural}</p>
+                          </div>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-amber-400 font-black flex items-center gap-1">✨ 메타코드 (Meta Code)</span>
+                            <p className="text-gray-400 text-[8.5px] md:text-[9.5px] leading-relaxed pl-3.5">{selectedItem.meta}</p>
+                          </div>
                         </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-indigo-400 font-black flex items-center gap-1">🔵 뉴럴코드 (Neural Code)</span>
-                          <p className="text-gray-400 text-[8.5px] md:text-[9.5px] leading-relaxed pl-3.5">{selectedItem.neural}</p>
+                      ) : (
+                        <div className="space-y-2 mt-2.5 text-[9px] md:text-xs text-purple-300 leading-normal font-sans">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-amber-400 font-black flex items-center gap-1">🔮 기질 은유 (Metaphor)</span>
+                            <p className="text-gray-200 font-medium italic pl-3.5">{selectedItem.metaphor}</p>
+                          </div>
                         </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-amber-400 font-black flex items-center gap-1">✨ 메타코드 (Meta Code)</span>
-                          <p className="text-gray-400 text-[8.5px] md:text-[9.5px] leading-relaxed pl-3.5">{selectedItem.meta}</p>
-                        </div>
-                      </div>
+                      )}
                     </div>
  
                     {/* 해설 로딩 */}
@@ -1346,13 +1407,13 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                     )}
  
                     {/* 해설 텍스트 */}
-                    {!docentLoading && docentContent && (
+                    {!docentLoading && (docentContent || selectedItem.content) && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-[11px] md:text-xs text-gray-300 leading-relaxed whitespace-pre-wrap space-y-2.5 pb-12 pr-1"
                       >
-                        {docentContent}
+                        {docentContent || selectedItem.content}
                       </motion.div>
                     )}
                   </div>
