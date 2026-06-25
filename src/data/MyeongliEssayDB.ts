@@ -355,6 +355,20 @@ export const MYEONGLI_ESSAY_DB: Record<string, MyeongliEssay> = {
 세상이 나를 먹여 살리고 보호해 준다는 근원적인 안도감과 신뢰감이며, 나 또한 받은 만큼 다른 사람들을 따뜻하게 기르고 보살펴주는 헌신적인 양육과 교육의 지혜입니다. 누구에게나 모나지 않고 둥글둥글 다정하게 처신하여 예쁨을 받으며, 삶의 안전망 속에서 평화롭게 성장하는 우주의 보살핌입니다.
 
 아늑한 온실 밖으로 나가는 것을 두려워하여 울타리 안에서만 안주하려는 어리광이 생길 수 있습니다. 하지만 당신 마음속 든든히 자리 잡은 우주적 신뢰와 생명 돌봄의 본능은, 삭막한 세상 사람들에게 따뜻한 둥지가 되어주는 위대한 안식처의 힘입니다.`
+    },
+    'void_오행': {
+        title: '오행 (五行)',
+        subtitle: '☯️ 우주를 구성하고 순환하는 다섯 가지 원초적 에너지 기류',
+        essay: `오행은 목(木), 화(火), 토(土), 금(金), 수(水)의 다섯 가지 성질이 서로 생(生)하고 극(剋)하며 끊임없이 변화하는 동양 우주론의 근간입니다. 
+
+이것은 단순히 물질이 아니라 우리 마음속에 흐르는 감정, 행동, 인지 시스템의 다섯 가지 작용 원리입니다. 내 안에 오행의 흐름을 알고 조화롭게 배분하는 것이 마음 디버깅의 첫걸음입니다.`
+    },
+    'void_십성': {
+        title: '십성 (十星)',
+        subtitle: '🧬 사회적 관계와 자아 성향을 투영하는 10가지 프리즘 코드',
+        essay: `십성은 나의 본질인 일간(日干)을 기준으로 다른 글자들이 맺고 있는 관계를 10가지 역할로 규명한 인지심리학적 매트릭스입니다. 
+
+나를 표현하는 힘(식상), 현실적 자산을 모으는 힘(재성), 나를 조율하고 제어하는 힘(관성), 우주를 수용하고 사색하는 힘(인성), 그리고 자아 독립심(비겁)이 그것입니다. 당신의 십성 프로파일은 당신이 사회 속에서 입는 맞춤식 성정 옷입니다.`
     }
 };
 
@@ -371,6 +385,13 @@ export function getMyeongliEssay(termKey: string): MyeongliEssay | null {
     // 괄호 및 안의 내용, 공백 제거 후 소문자 변환
     let cleanKey = termKey.trim().replace(/\s*\(.*\)\s*/g, '').toLowerCase();
     
+    if (cleanKey === '오행') {
+        return MYEONGLI_ESSAY_DB['void_오행'] || null;
+    }
+    if (cleanKey === '십성') {
+        return MYEONGLI_ESSAY_DB['void_십성'] || null;
+    }
+
     // 1. 천간 체크
     const ganMap: Record<string, string> = {
         '甲': 'gan_갑', '갑목': 'gan_갑', '갑': 'gan_갑',
@@ -398,6 +419,18 @@ export function getMyeongliEssay(termKey: string): MyeongliEssay | null {
     };
     if (elementMap[cleanKey]) {
         return MYEONGLI_ESSAY_DB[elementMap[cleanKey]] || null;
+    }
+    
+    // 2-2. 십성 그룹 체크
+    const godGroupMap: Record<string, string> = {
+        '비겁': 'god_비견',
+        '식상': 'god_식신',
+        '재성': 'god_편재',
+        '관성': 'god_편관',
+        '인성': 'god_편인'
+    };
+    if (godGroupMap[cleanKey]) {
+        return MYEONGLI_ESSAY_DB[godGroupMap[cleanKey]] || null;
     }
 
     // 3. 십성 체크

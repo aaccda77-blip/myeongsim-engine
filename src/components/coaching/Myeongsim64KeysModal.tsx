@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Sparkles, ChevronLeft, ChevronRight, BookOpen, Shield, Award, Compass, Eye, Heart, Zap, Globe, Target, Activity } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
+import MyeongliTermModal from '@/components/report/MyeongliTermModal';
 
 interface Myeongsim64KeysModalProps {
   isOpen: boolean;
@@ -449,6 +450,13 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
   const [showConceptHelp, setShowConceptHelp] = useState<string | null>(null);
   const [activeDarkScore, setActiveDarkScore] = useState<number>(75);
   const [activeAwareScore, setActiveAwareScore] = useState<number>(25);
+  const [selectedMyeongliTerm, setSelectedMyeongliTerm] = useState<string | null>(null);
+  const [showMyeongliModal, setShowMyeongliModal] = useState(false);
+
+  const handleMyeongliClick = (term: string) => {
+    setSelectedMyeongliTerm(term);
+    setShowMyeongliModal(true);
+  };
   
   // 타임라인 년도별 분석용 상태들
   const [timelineTab, setTimelineTab] = useState<'wealth' | 'love' | 'work'>('wealth');
@@ -784,7 +792,8 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
+    <>
+      <AnimatePresence>
       <div className="fixed inset-0 z-[9999] flex justify-center items-center bg-black/95 backdrop-blur-lg p-3 md:p-6 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.93, y: 15 }}
@@ -1608,8 +1617,27 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                   <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                                     🧬 {data?.userName || '명심가'}님의 사주 에너지 기질 분석 (왜 {activeDarkScore}%인가?)
                                   </span>
-                                  <p className="text-gray-300 text-[8.5px] leading-relaxed font-sans">
-                                    태어난 생년월일시의 사주 원국에서 <b>오행(목·화·토·금·수)과 십성(비겁·식상·재성·관성·인성)의 불균형적 혹은 강한 쏠림</b>이 발생할 경우, 뇌 신경망은 스트레스 상황에서 쉽게 긴장 상태로 각성하게 됩니다. {data?.userName || '명심가'}님의 고유한 사주 에너지 조합은 외부 환경에 민감하게 반응하여 나를 방어하려는 성향을 지니고 있어, 시스템 디버깅 결과 {activeDarkScore}% 수준의 에고 방어 과부하 지수로 산출된 것입니다. 이는 고정된 성적이 아닌, 알아차림을 통해 즉시 녹아내릴 기질적 무늬입니다.
+                                  <p className="text-gray-300 text-[8.5px] leading-relaxed font-sans select-none">
+                                    태어난 생년월일시의 사주 원국에서{' '}
+                                    <b>
+                                      <span onClick={() => handleMyeongliClick('오행')} className="text-purple-300 font-extrabold underline decoration-dotted decoration-purple-500/60 cursor-pointer hover:text-purple-200 hover:brightness-125 transition-all">오행</span>
+                                      (
+                                      <span onClick={() => handleMyeongliClick('목')} className="text-emerald-400 font-extrabold underline decoration-dotted decoration-emerald-500/60 cursor-pointer hover:text-emerald-300 hover:brightness-125 transition-all">목</span>·
+                                      <span onClick={() => handleMyeongliClick('화')} className="text-red-400 font-extrabold underline decoration-dotted decoration-red-500/60 cursor-pointer hover:text-red-300 hover:brightness-125 transition-all">화</span>·
+                                      <span onClick={() => handleMyeongliClick('토')} className="text-amber-500 font-extrabold underline decoration-dotted decoration-amber-500/60 cursor-pointer hover:text-amber-400 hover:brightness-125 transition-all">토</span>·
+                                      <span onClick={() => handleMyeongliClick('금')} className="text-zinc-300 font-extrabold underline decoration-dotted decoration-zinc-400/60 cursor-pointer hover:text-zinc-200 hover:brightness-125 transition-all">금</span>·
+                                      <span onClick={() => handleMyeongliClick('수')} className="text-blue-400 font-extrabold underline decoration-dotted decoration-blue-500/60 cursor-pointer hover:text-blue-300 hover:brightness-125 transition-all">수</span>
+                                      )과{' '}
+                                      <span onClick={() => handleMyeongliClick('십성')} className="text-purple-300 font-extrabold underline decoration-dotted decoration-purple-500/60 cursor-pointer hover:text-purple-200 hover:brightness-125 transition-all">십성</span>
+                                      (
+                                      <span onClick={() => handleMyeongliClick('비겁')} className="text-sky-300 font-extrabold underline decoration-dotted decoration-sky-500/60 cursor-pointer hover:text-sky-200 hover:brightness-125 transition-all">비겁</span>·
+                                      <span onClick={() => handleMyeongliClick('식상')} className="text-pink-300 font-extrabold underline decoration-dotted decoration-pink-500/60 cursor-pointer hover:text-pink-200 hover:brightness-125 transition-all">식상</span>·
+                                      <span onClick={() => handleMyeongliClick('재성')} className="text-amber-400 font-extrabold underline decoration-dotted decoration-amber-500/60 cursor-pointer hover:text-amber-300 hover:brightness-125 transition-all">재성</span>·
+                                      <span onClick={() => handleMyeongliClick('편관')} className="text-violet-300 font-extrabold underline decoration-dotted decoration-violet-500/60 cursor-pointer hover:text-violet-200 hover:brightness-125 transition-all">관성</span>·
+                                      <span onClick={() => handleMyeongliClick('편인')} className="text-indigo-300 font-extrabold underline decoration-dotted decoration-indigo-500/60 cursor-pointer hover:text-indigo-200 hover:brightness-125 transition-all">인성</span>
+                                      )의 불균형적 혹은 강한 쏠림
+                                    </b>
+                                    이 발생할 경우, 뇌 신경망은 스트레스 상황에서 쉽게 긴장 상태로 각성하게 됩니다. {data?.userName || '명심가'}님의 고유한 사주 에너지 조합은 외부 환경에 민감하게 반응하여 나를 방어하려는 성향을 지니고 있어, 시스템 디버깅 결과 {activeDarkScore}% 수준의 에고 방어 과부하 지수로 산출된 것입니다. 이는 고정된 성적이 아닌, 알아차림을 통해 즉시 녹아내릴 기질적 무늬입니다.
                                   </p>
                                 </div>
                               </div>
@@ -1859,8 +1887,21 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                       {/* 사주 에너지와의 연동 원리 */}
                       <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 space-y-1.5">
                         <span className="text-amber-300 font-extrabold block">🧬 내 사주 분석에 따른 고유 수치 도출</span>
-                        <p className="text-amber-200/90 leading-relaxed text-[8.5px]">
-                          이 수치는 단순한 랜덤 점수가 아닙니다. {data?.userName || '명심가'}님이 태어나신 년·월·일·시의 사주 천간·지지(8글자)에서 오행의 분포와 비겁·식상·재성·관성·인성(십성)의 치우침을 계산하고, 이를 행성 고유의 기하학적 활성 위치(고유 시드값)에 대입하여 산출된 <b>실시간 기질적 밸런스 주파수</b>입니다.
+                        <p className="text-amber-200/90 leading-relaxed text-[8.5px] select-none">
+                          이 수치는 단순한 랜덤 점수가 아닙니다. {data?.userName || '명심가'}님이 태어나신 년·월·일·시의 사주 천간·지지(8글자)에서{' '}
+                          <b>
+                            <span onClick={() => handleMyeongliClick('오행')} className="text-purple-300 font-extrabold underline decoration-dotted decoration-purple-500/60 cursor-pointer hover:text-purple-200 hover:brightness-125 transition-all">오행</span>
+                          </b>
+                          의 분포와{' '}
+                          <b>
+                            <span onClick={() => handleMyeongliClick('비겁')} className="text-sky-300 font-bold underline decoration-dotted decoration-sky-500/60 cursor-pointer hover:text-sky-200 hover:brightness-125 transition-all">비겁</span>·
+                            <span onClick={() => handleMyeongliClick('식상')} className="text-pink-300 font-bold underline decoration-dotted decoration-pink-500/60 cursor-pointer hover:text-pink-200 hover:brightness-125 transition-all">식상</span>·
+                            <span onClick={() => handleMyeongliClick('재성')} className="text-amber-400 font-bold underline decoration-dotted decoration-amber-500/60 cursor-pointer hover:text-amber-300 hover:brightness-125 transition-all">재성</span>·
+                            <span onClick={() => handleMyeongliClick('편관')} className="text-violet-300 font-bold underline decoration-dotted decoration-violet-500/60 cursor-pointer hover:text-violet-200 hover:brightness-125 transition-all">관성</span>·
+                            <span onClick={() => handleMyeongliClick('편인')} className="text-indigo-300 font-bold underline decoration-dotted decoration-indigo-500/60 cursor-pointer hover:text-indigo-200 hover:brightness-125 transition-all">인성</span>
+                            (<span onClick={() => handleMyeongliClick('십성')} className="text-purple-300 font-extrabold underline decoration-dotted decoration-purple-500/60 cursor-pointer hover:text-purple-200 hover:brightness-125 transition-all">십성</span>)
+                          </b>
+                          의 치우침을 계산하고, 이를 행성 고유의 기하학적 활성 위치(고유 시드값)에 대입하여 산출된 <b>실시간 기질적 밸런스 주파수</b>입니다.
                         </p>
                         <p className="text-amber-200/80 leading-relaxed text-[8.5px] mt-1">
                           이 점수가 50%로 수렴되어 평형을 이룬다면, 해당 행성의 기질적 에너지가 현실에서 갈등 없이 완벽하게 조율되어 흐르고 있음을 뜻합니다.
@@ -2014,5 +2055,12 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
         </motion.div>
       </div>
     </AnimatePresence>
+
+    <MyeongliTermModal 
+      isOpen={showMyeongliModal} 
+      onClose={() => setShowMyeongliModal(false)} 
+      term={selectedMyeongliTerm} 
+    />
+    </>
   );
 }
