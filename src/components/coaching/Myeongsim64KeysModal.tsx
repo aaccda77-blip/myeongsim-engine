@@ -447,6 +447,8 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
   const [showExplainHelp, setShowExplainHelp] = useState(false);
   const [showLineHelp, setShowLineHelp] = useState<number | null>(null);
   const [showConceptHelp, setShowConceptHelp] = useState<string | null>(null);
+  const [activeDarkScore, setActiveDarkScore] = useState<number>(75);
+  const [activeAwareScore, setActiveAwareScore] = useState<number>(25);
   
   // 타임라인 년도별 분석용 상태들
   const [timelineTab, setTimelineTab] = useState<'wealth' | 'love' | 'work'>('wealth');
@@ -1153,7 +1155,10 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
 
                             <div className="grid grid-cols-3 gap-2 items-center text-[9px] font-sans pt-1">
                               <button 
-                                onClick={() => setShowConceptHelp('다크코드')}
+                                onClick={() => {
+                                  setActiveDarkScore(100 - act.score);
+                                  setShowConceptHelp('다크코드');
+                                }}
                                 className="bg-red-950/30 border border-red-500/30 hover:border-red-500/60 hover:bg-red-950/50 px-2.5 py-1.5 rounded-xl text-center shadow-inner transition-all active:scale-95 cursor-pointer block w-full"
                               >
                                 <span className="text-red-400 block font-bold">🔴 다크코드 💡</span>
@@ -1167,7 +1172,10 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                 {act.score === 50 ? '완벽한 의식 균형 💡' : act.score > 50 ? '자각 고조 상태 💡' : '에고 방어 과부하 💡'}
                               </button>
                               <button 
-                                onClick={() => setShowConceptHelp('자각 주파수')}
+                                onClick={() => {
+                                  setActiveAwareScore(act.score);
+                                  setShowConceptHelp('자각 주파수');
+                                }}
                                 className="bg-indigo-950/30 border border-indigo-500/30 hover:border-indigo-500/60 hover:bg-indigo-950/50 px-2.5 py-1.5 rounded-xl text-center shadow-inner transition-all active:scale-95 cursor-pointer block w-full"
                               >
                                 <span className="text-indigo-400 block font-bold">🔵 자각 주파수 💡</span>
@@ -1186,7 +1194,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
 
                             <div className="space-y-2.5 text-[9px] text-gray-300 leading-relaxed font-sans">
                               <div>
-                                <span className="text-red-400 font-extrabold flex items-center gap-1">⚡ 무의식 작동 타이밍 (언제 75%까지 치솟나요?)</span>
+                                <span className="text-red-400 font-extrabold flex items-center gap-1">⚡ 무의식 작동 타이밍 (언제 {100 - act.score}%까지 치솟나요?)</span>
                                 <p className="text-gray-400 pl-3.5 mt-0.5">
                                   이 다크코드는 평소엔 잠잠하다가, <b>내 뜻대로 일이 안 풀리거나, 몸이 피로하여 뇌가 비상사태를 느낄 때, 혹은 타인의 눈치와 평가에 위축될 때</b> 나를 보호하려 순간적으로 발동하는 <b>'무의식적 불안 방어막'</b>입니다.
                                 </p>
@@ -1194,7 +1202,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                               <div>
                                 <span className="text-indigo-400 font-extrabold flex items-center gap-1">🧬 타고난 나의 기질 (평상시 자각이 약해 고정된 성적인가요?)</span>
                                 <p className="text-gray-400 pl-3.5 mt-0.5">
-                                  아닙니다! 처음부터 100% 자각(뉴럴코드)으로만 사는 인간은 우주에 없습니다. 이 수치는 태어날 때 부여받은 <b>기질적 취약성(고마운 생존 갑옷)</b>을 보여주며, "내가 또 갑옷을 입고 애쓰는구나" 하고 알아차리고 3초 숨을 고르는 <b>찰나의 자각(25%)</b>을 통해 다크코드는 녹아내리고 본래의 찬란한 자각 상태로 즉시 돌아가게 됩니다.
+                                  아닙니다! 처음부터 100% 자각(뉴럴코드)으로만 사는 인간은 우주에 없습니다. 이 수치는 태어날 때 부여받은 <b>기질적 취약성(고마운 생존 갑옷)</b>을 보여주며, "내가 또 갑옷을 입고 애쓰는구나" 하고 알아차리고 3초 숨을 고르는 <b>찰나의 자각({act.score}%)</b>을 통해 다크코드는 녹아내리고 본래의 찬란한 자각 상태로 즉시 돌아가게 됩니다.
                                 </p>
                               </div>
                             </div>
@@ -1522,7 +1530,21 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
 
                   <div className="flex-1 overflow-y-auto py-3 space-y-3.5 z-10 scrollbar-thin scrollbar-thumb-amber-500/20 scrollbar-track-transparent">
                     {(() => {
-                      const cInfo = CONCEPT_GUIDE_DATA[showConceptHelp];
+                      let cInfo = CONCEPT_GUIDE_DATA[showConceptHelp];
+                      if (cInfo) {
+                        if (showConceptHelp === '다크코드') {
+                          cInfo = {
+                            ...cInfo,
+                            desc: cInfo.desc.replace(/75%/g, `${activeDarkScore}%`)
+                          };
+                        } else if (showConceptHelp === '자각 주파수') {
+                          cInfo = {
+                            ...cInfo,
+                            desc: cInfo.desc.replace(/25%/g, `${activeAwareScore}%`),
+                            action: cInfo.action ? cInfo.action.replace(/25%/g, `${activeAwareScore}%`) : cInfo.action
+                          };
+                        }
+                      }
                       if (!cInfo) return (
                         <div className="text-center py-4 text-xs text-gray-400">
                           준비 중인 개념입니다. ({showConceptHelp})
@@ -1584,10 +1606,10 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                 {/* 사주 기질 분석 연동 해설 */}
                                 <div className="bg-[#140b05]/95 border border-amber-500/30 p-3.5 rounded-2xl shadow-[0_0_15px_rgba(245,158,11,0.1)] space-y-2">
                                   <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                                    🧬 {data?.userName || '명심가'}님의 사주 에너지 기질 분석 (왜 75%인가?)
+                                    🧬 {data?.userName || '명심가'}님의 사주 에너지 기질 분석 (왜 {activeDarkScore}%인가?)
                                   </span>
                                   <p className="text-gray-300 text-[8.5px] leading-relaxed font-sans">
-                                    태어난 생년월일시의 사주 원국에서 <b>오행(목·화·토·금·수)과 십성(비겁·식상·재성·관성·인성)의 불균형적 혹은 강한 쏠림</b>이 발생할 경우, 뇌 신경망은 스트레스 상황에서 쉽게 긴장 상태로 각성하게 됩니다. {data?.userName || '명심가'}님의 고유한 사주 에너지 조합은 외부 환경에 민감하게 반응하여 나를 방어하려는 성향을 지니고 있어, 시스템 디버깅 결과 75% 수준의 에고 방어 과부하 지수로 산출된 것입니다. 이는 고정된 성적이 아닌, 알아차림을 통해 즉시 녹아내릴 기질적 무늬입니다.
+                                    태어난 생년월일시의 사주 원국에서 <b>오행(목·화·토·금·수)과 십성(비겁·식상·재성·관성·인성)의 불균형적 혹은 강한 쏠림</b>이 발생할 경우, 뇌 신경망은 스트레스 상황에서 쉽게 긴장 상태로 각성하게 됩니다. {data?.userName || '명심가'}님의 고유한 사주 에너지 조합은 외부 환경에 민감하게 반응하여 나를 방어하려는 성향을 지니고 있어, 시스템 디버깅 결과 {activeDarkScore}% 수준의 에고 방어 과부하 지수로 산출된 것입니다. 이는 고정된 성적이 아닌, 알아차림을 통해 즉시 녹아내릴 기질적 무늬입니다.
                                   </p>
                                 </div>
                               </div>
