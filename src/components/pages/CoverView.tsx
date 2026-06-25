@@ -8,6 +8,7 @@ import { calculateSaju } from '@/utils/SajuCalculator';
 import { AuthService } from '@/modules/AuthService';
 import MultiDimensionalBlueprint, { type CodeData } from '@/components/chat/MultiDimensionalBlueprint';
 import { PillarMetaCodeMap } from '@/modules/PillarMetaCodeMap';
+import { supabase } from '@/lib/supabaseClient';
 
 import { ZODIAC_TIME_OPTIONS } from '@/constants/saju';
 
@@ -156,6 +157,34 @@ export default function CoverView() {
 
         const metrics = calculateSajuMetrics(previewPillars, birthTime === 'unknown');
         const dayMaster = previewPillars.dayMaster || `${previewPillars.day.gan.char} (${previewPillars.day.gan.color})`;
+
+        // [SYNC-DB] 입력된 명리 생년월일 정보를 Supabase users 테이블에 영구 저장/동기화
+        const saveProfileToDb = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    const { error } = await supabase
+                        .from('users')
+                        .update({
+                            name: name,
+                            birth_date: birthDate,
+                            birth_time: birthTime,
+                            calendar_type: calendarType,
+                            gender: gender
+                        })
+                        .eq('id', session.user.id);
+                    
+                    if (error) {
+                        console.error('Failed to sync profile to users DB table:', error.message);
+                    } else {
+                        console.log('✅ [CoverView] Profile synced to users DB table successfully.');
+                    }
+                }
+            } catch (dbErr) {
+                console.error('Error syncing profile to DB:', dbErr);
+            }
+        };
+        saveProfileToDb();
 
         updateUserData({
             userName: name,

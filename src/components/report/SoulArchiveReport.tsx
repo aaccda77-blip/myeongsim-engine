@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReportStore } from '@/store/useReportStore';
 import { useMyeongsimProfile } from '@/hooks/useMyeongsimProfile';
+import MyeongliTermModal from './MyeongliTermModal';
 import { generateFullReport, findIljuKey, reportToMarkdown } from '@/services/ReportContentGenerator';
 import { SAJU_ILJU, TEN_GODS, TWELVE_STARS, ENERGY_CYCLE, MYUNGSIM_CODES, VOID_THEORY, MYEONGSIM_TRAIT_DESCRIPTIONS } from '@/data/StaticTextDB';
 import { THERAPY_ARCHETYPES } from '@/data/TherapyDB';
@@ -385,6 +386,7 @@ function ErrorState({ error }: { error: string }) {
 // ============== Part 1: The Core ==============
 function CoreSection({ profile, fullReport, iljuData }: { profile: any; fullReport?: any; iljuData?: any }) {
     const fusion = profile?.fusion;
+    const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
 
     return (
         <motion.div
@@ -422,11 +424,21 @@ function CoreSection({ profile, fullReport, iljuData }: { profile: any; fullRepo
                 <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="p-4 bg-black/30 rounded-xl">
                         <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">코어 타입 (Core Type)</p>
-                        <p className="text-2xl font-bold text-purple-400">{fusion?.dayMaster || '분석 중...'}</p>
+                        <p 
+                            onClick={() => setSelectedTerm('gan_' + fusion?.dayMaster)}
+                            className="text-2xl font-bold text-purple-400 border-b border-dashed border-purple-500/60 cursor-help hover:text-purple-300 transition-colors inline-block"
+                        >
+                            {fusion?.dayMaster || '분석 중...'}
+                        </p>
                     </div>
                     <div className="p-4 bg-black/30 rounded-xl">
                         <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">에너지 타입 (Energy Type)</p>
-                        <p className="text-2xl font-bold text-purple-400">{fusion?.dayMasterElement || '분석 중...'}</p>
+                        <p 
+                            onClick={() => setSelectedTerm('elem_' + fusion?.dayMasterElement)}
+                            className="text-2xl font-bold text-purple-400 border-b border-dashed border-purple-500/60 cursor-help hover:text-purple-300 transition-colors inline-block"
+                        >
+                            {fusion?.dayMasterElement || '분석 중...'}
+                        </p>
                     </div>
                 </div>
                 <p className="text-gray-300 leading-relaxed whitespace-pre-line">
@@ -467,6 +479,12 @@ function CoreSection({ profile, fullReport, iljuData }: { profile: any; fullRepo
                 <GateCard title="바이오 엔진" gate={fusion?.bioEngineGate} desc="생체 엔진" color="fuchsia" />
                 <GateCard title="근본 목적" gate={fusion?.rootPurposeGate} desc="뿌리 목적" color="pink" />
             </div>
+
+            <MyeongliTermModal
+                isOpen={!!selectedTerm}
+                onClose={() => setSelectedTerm(null)}
+                term={selectedTerm}
+            />
         </motion.div>
     );
 }
@@ -770,6 +788,7 @@ function TenGodsSection({ iljuKey }: { iljuKey: string }) {
     const myGods = useMemo(() =>
         getDeterministicSubset(TEN_GODS, iljuKey, 2, 200),
         [iljuKey]);
+    const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
 
     return (
         <motion.div
@@ -788,7 +807,12 @@ function TenGodsSection({ iljuKey }: { iljuKey: string }) {
                 {myGods.map((god: any, i: number) => (
                     <div key={i} className="p-5 bg-white/5 rounded-2xl border border-white/10">
                         <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-amber-400 font-bold text-lg">{god.title}</h4>
+                            <h4 
+                                onClick={() => setSelectedTerm('god_' + god.title)}
+                                className="text-amber-400 font-bold text-lg border-b border-dashed border-amber-500/60 cursor-help hover:text-amber-300 transition-colors"
+                            >
+                                {god.title}
+                            </h4>
                             <span className="text-xs px-2 py-1 bg-amber-900/30 rounded text-amber-200">{god.career_tendency}</span>
                         </div>
                         <ul className="space-y-2 mb-4">
@@ -802,6 +826,12 @@ function TenGodsSection({ iljuKey }: { iljuKey: string }) {
                     </div>
                 ))}
             </div>
+
+            <MyeongliTermModal
+                isOpen={!!selectedTerm}
+                onClose={() => setSelectedTerm(null)}
+                term={selectedTerm}
+            />
         </motion.div>
     );
 }
@@ -812,6 +842,7 @@ function TwelveStarsSection({ iljuKey }: { iljuKey: string }) {
     const myStar = useMemo(() =>
         getDeterministicSubset(TWELVE_STARS, iljuKey, 1, 300)[0],
         [iljuKey]);
+    const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
 
     if (!myStar) return null;
 
@@ -832,8 +863,13 @@ function TwelveStarsSection({ iljuKey }: { iljuKey: string }) {
                 <div className="flex items-center gap-4 mb-6">
                     <span className="text-4xl">🌟</span>
                     <div>
-                        <h3 className="text-2xl font-bold text-orange-400">{myStar.title}</h3>
-                        <p className="text-gray-400">{myStar.main_text}</p>
+                        <h3 
+                            onClick={() => setSelectedTerm('star_' + myStar.title)}
+                            className="text-2xl font-bold text-orange-400 border-b border-dashed border-orange-500/60 cursor-help hover:text-orange-300 transition-colors inline-block"
+                        >
+                            {myStar.title}
+                        </h3>
+                        <p className="text-gray-400 mt-1">{myStar.main_text}</p>
                     </div>
                 </div>
 
@@ -852,6 +888,12 @@ function TwelveStarsSection({ iljuKey }: { iljuKey: string }) {
                     </div>
                 </div>
             </div>
+
+            <MyeongliTermModal
+                isOpen={!!selectedTerm}
+                onClose={() => setSelectedTerm(null)}
+                term={selectedTerm}
+            />
         </motion.div>
     );
 }
@@ -973,6 +1015,7 @@ function VoidSection({ iljuKey }: { iljuKey: string }) {
     const myVoid = useMemo(() =>
         getDeterministicSubset(VOID_THEORY, iljuKey, 1, 400)[0],
         [iljuKey]);
+    const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
 
     return (
         <motion.div
@@ -991,7 +1034,12 @@ function VoidSection({ iljuKey }: { iljuKey: string }) {
                 <div className="p-5 bg-white/5 rounded-2xl border border-white/10">
                     <div className="flex items-center gap-3 mb-3">
                         <span className="text-2xl">{myVoid.visual_token || '🕳️'}</span>
-                        <h4 className="text-white font-bold">{myVoid.title || '공망'}</h4>
+                        <h4 
+                            onClick={() => setSelectedTerm('void_공망')}
+                            className="text-white font-bold border-b border-dashed border-white/60 cursor-help hover:text-gray-300 transition-colors"
+                        >
+                            {myVoid.title || '공망'}
+                        </h4>
                     </div>
                     {myVoid.dark_code && (
                         <div className="mb-3 p-3 bg-gray-800/50 rounded-xl">
@@ -1007,6 +1055,12 @@ function VoidSection({ iljuKey }: { iljuKey: string }) {
                     )}
                 </div>
             )}
+
+            <MyeongliTermModal
+                isOpen={!!selectedTerm}
+                onClose={() => setSelectedTerm(null)}
+                term={selectedTerm}
+            />
         </motion.div>
     );
 }

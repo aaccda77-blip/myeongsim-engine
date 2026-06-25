@@ -76,11 +76,12 @@ const DailyBioSyncPanel = dynamic(() => import('../coaching/DailyBioSyncPanel'),
 
 // [Helper] Saju Keywords for Restoration
 const getKeywords = (dm: string) => {
-    if (dm.includes('갑') || dm.includes('을')) return ["성장", "창의성", "유연함"];
-    if (dm.includes('병') || dm.includes('정')) return ["열정", "표현력", "활기"];
-    if (dm.includes('무') || dm.includes('기')) return ["포용력", "신뢰", "안정"];
-    if (dm.includes('경') || dm.includes('신')) return ["결단력", "정확성", "의리"];
-    if (dm.includes('임') || dm.includes('계')) return ["지혜", "유동성", "통찰"];
+    const safeDm = dm || '';
+    if (safeDm.includes('갑') || safeDm.includes('을')) return ["성장", "창의성", "유연함"];
+    if (safeDm.includes('병') || safeDm.includes('정')) return ["열정", "표현력", "활기"];
+    if (safeDm.includes('무') || safeDm.includes('기')) return ["포용력", "신뢰", "안정"];
+    if (safeDm.includes('경') || safeDm.includes('신')) return ["결단력", "정확성", "의리"];
+    if (safeDm.includes('임') || safeDm.includes('계')) return ["지혜", "유동성", "통찰"];
     return ["다재다능", "밸런스"];
 };
 
@@ -2432,14 +2433,14 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                             )}
 
                                             {/* [Neural Hacking Report Card] (PSST/Demonstration UI) */}
-                                            {msg.content.includes('[NEURAL_REPORT:BP54]') && (
+                                            {msg.content?.includes('[NEURAL_REPORT:BP54]') && (
                                                 <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[85%] mt-4 mb-6 animate-fade-in-up">
                                                     <NeuralHackingReportCard archetypeId="BP-54" />
                                                 </div>
                                             )}
 
                                             {/* [Neural Architecture Blueprint] (PSST/Demonstration UI) */}
-                                            {msg.content.includes('[NEURAL_ARCHITECTURE]') && (
+                                            {msg.content?.includes('[NEURAL_ARCHITECTURE]') && (
                                                 <div className="pl-4 md:pl-12 pr-4 w-full max-w-[95%] md:max-w-[85%] mt-4 mb-6 animate-fade-in-up">
                                                     <NeuralArchitectureBlueprint />
                                                 </div>

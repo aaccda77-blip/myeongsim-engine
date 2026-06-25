@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     // Extract basic Zimidusu palace information
     const palaces = zimidusuChart.palaces || [];
     const getPalaceStars = (pName: string) => {
-      const pal = palaces.find((p: any) => p.name === pName || p.name.includes(pName));
+      const pal = palaces.find((p: any) => p.name === pName || p.name?.includes(pName));
       return pal ? (pal.majorStars || []).map((s: any) => s.name).join(', ') : '밝고 온화한 별빛';
     };
     const jaebaekStars = getPalaceStars('재백');

@@ -62,6 +62,10 @@ const DecodeReportModal = dynamic(() => import('@/components/coaching/DecodeRepo
 const PremiumReportModal = dynamic(() => import('@/components/coaching/PremiumReportModal'), { ssr: false });
 const MindSpaceTrainingModal = dynamic(() => import('@/components/coaching/MindSpaceTrainingModal'), { ssr: false });
 const MyeongsimCoachingDashboard = dynamic(() => import('@/components/coaching/MyeongsimCoachingDashboard'), { ssr: false });
+const GeniusFullReportModal = dynamic(() => import('@/components/coaching/GeniusFullReportModal'), { ssr: false });
+const Myeongsim64KeysModal = dynamic(() => import('@/components/coaching/Myeongsim64KeysModal'), { ssr: false });
+const MyeongsimGeniusReportModal = dynamic(() => import('@/components/coaching/MyeongsimGeniusReportModal'), { ssr: false });
+const MyeongsimOracleCardModal = dynamic(() => import('@/components/coaching/MyeongsimOracleCardModal'), { ssr: false });
 
 
 
@@ -512,6 +516,10 @@ export default function DrillDownIconMenu({
     const [showDecodeReport, setShowDecodeReport] = useState(false);
     const [showPremiumReport, setShowPremiumReport] = useState(false);
     const [showMindSpaceTraining, setShowMindSpaceTraining] = useState(false); // [NEW] 마음 공간 넓히기 훈련 모달
+    const [showGeniusReport, setShowGeniusReport] = useState(false);
+    const [show64KeysModal, setShow64KeysModal] = useState(false);
+    const [showMyeongsimGenius, setShowMyeongsimGenius] = useState(false);
+    const [showMyeongsimOracle, setShowMyeongsimOracle] = useState(false);
 
     const { reportData } = useReportStore();
 
@@ -914,6 +922,20 @@ export default function DrillDownIconMenu({
                 )
             }
 
+            {/* [NEW] Genius Full Report Modal (8 Pages Replication) */}
+            <GeniusFullReportModal
+                isOpen={showGeniusReport}
+                onClose={() => setShowGeniusReport(false)}
+                userProfile={userProfile || reportData}
+            />
+
+            {/* [NEW] Myeongsim 64Keys Report Modal (34 Pages Replication) */}
+            <Myeongsim64KeysModal
+                isOpen={show64KeysModal}
+                onClose={() => setShow64KeysModal(false)}
+                userProfile={userProfile || reportData}
+            />
+
             {/* [NEW] Saju Summary Modal */}
             <SajuSummaryModal
                 isOpen={showSajuSummary}
@@ -1087,6 +1109,209 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 오늘의 명심 카드 (Myeongsim Oracle) 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('오늘의 명심 카드를 뽑기 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        setShowMyeongsimOracle(true);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(244, 114, 182, 0.2))',
+                        border: '1px solid rgba(167, 139, 250, 0.4)',
+                        boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🃏</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#a78bfa', fontWeight: 'bold' }}>오늘의 카드</div>
+                        <div style={styles.neuroTrigger}>3D 데일리 드로우</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 나의 천재성 (My Genius) 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('천재성 분석을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        setShowMyeongsimGenius(true);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.2))',
+                        border: '1px solid rgba(236, 72, 153, 0.4)',
+                        boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>💡</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>나의 천재성</div>
+                        <div style={styles.neuroTrigger}>1대1 주역 지니어스</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 천명 지도 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('천명 지도 분석을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        setShow64KeysModal(true);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(147, 51, 234, 0.2))',
+                        border: '1px solid rgba(245, 158, 11, 0.4)',
+                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🗺️</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>천명 지도</div>
+                        <div style={styles.neuroTrigger}>천명 지도 분석</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 천부 성정 (Genius) 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('천부 성정 분석을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        setShowGeniusReport(true);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.2))',
+                        border: '1px solid rgba(99, 102, 241, 0.4)',
+                        boxShadow: '0 4px 15px rgba(99, 102, 241, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🧬</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#818cf8', fontWeight: 'bold' }}>천부 성정</div>
+                        <div style={styles.neuroTrigger}>8페이지 전면 해독</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 격국 연금술 (정격·종격) 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('격국 분석 및 균형 진단을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        router.push('/master-core/alignment');
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(59, 130, 246, 0.2))',
+                        border: '1px solid rgba(167, 139, 250, 0.4)',
+                        boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>☯️</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>격국 연금술</div>
+                        <div style={styles.neuroTrigger}>정격·종격 순응과 균형</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 다크디코딩 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('다크 감정 분석 및 디코딩을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        router.push('/master-core/dark-decoding');
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(99, 102, 241, 0.2))',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>⚡</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#ef4444' }}>다크디코딩</div>
+                        <div style={styles.neuroTrigger}>부정 감정의 원석화 연성</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 다크코드 디버거 (1번 메뉴) */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('의식 오류 분석 및 디버깅을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        router.push('/master-core/dark-code-debugger');
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(99, 102, 241, 0.2))',
+                        border: '1px solid rgba(16, 185, 129, 0.4)',
+                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>💻</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#34d399' }}>다크코드 디버거</div>
+                        <div style={styles.neuroTrigger}>의식 오류 실시간 재배선</div>
+                    </div>
+                </button>
+
 
 
                 {/* [NEW] 사회적기여 메뉴 — 명심 프리미엄 통합 코칭 리포트 */}
@@ -1136,6 +1361,35 @@ export default function DrillDownIconMenu({
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#c084fc' }}>거울의방</div>
                         <div style={styles.neuroTrigger}>참나 자각 & 객체 해체</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 거울 뒤로 한 걸음 메뉴 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('의식 자각 코칭을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
+                            return;
+                        }
+                        router.push('/master-core/step-back');
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.2))',
+                        border: '1px solid rgba(236, 72, 153, 0.4)',
+                        boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>👁️</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6' }}>거울 뒤로 한 걸음</div>
+                        <div style={styles.neuroTrigger}>안팎 조망 & 주객 해제</div>
                     </div>
                 </button>
 
@@ -1932,7 +2186,27 @@ export default function DrillDownIconMenu({
                 userProfile={userProfile}
             />
 
+            {/* [NEW] Myeongsim Genius Report Modal (Compact Replication) */}
+            <MyeongsimGeniusReportModal
+                isOpen={showMyeongsimGenius}
+                onClose={() => setShowMyeongsimGenius(false)}
+                userProfile={userProfile || reportData}
+            />
 
+            {/* [NEW] 오늘의 명심 오라클 카드 모달 */}
+            <MyeongsimOracleCardModal
+                isOpen={showMyeongsimOracle}
+                onClose={() => setShowMyeongsimOracle(false)}
+                userName={userProfile?.name || reportData?.userName || '명심가'}
+                sajuText={
+                    userProfile?.saju
+                    ? `${userProfile.saju.dayPillar?.stem || ''}${userProfile.saju.dayPillar?.branch || ''} 일주 중심`
+                    : (reportData as any)?.saju?.dayMaster
+                    ? `${(reportData as any).saju.dayMaster} 일주 중심`
+                    : '사주 주파수 로딩 완료'
+                }
+                gongWang={userProfile?.saju?.gongWang || (reportData as any)?.saju?.gongWang || []}
+            />
         </>
     );
 }

@@ -40,7 +40,7 @@ import { determineCoachingCore } from '@/modules/CoreRouterEngine';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { message, sajuData, harmony, biorhythm, wearableData, psychProfile, conversationHistory } = body;
+    const { message, sajuData, harmony, biorhythm, wearableData, psychProfile, conversationHistory, locale } = body;
 
     if (!message || !sajuData || !harmony) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
@@ -122,13 +122,59 @@ export async function POST(req: Request) {
 - 코칭 방향: 목적 없는 즐거움과 무위(無爲)의 유희를 강화하세요. "이 고요함 속에서 오늘 하루 어떤 아름다운 것을 창조해 보시겠습니까?" 같은 창조적 질문을 던지세요.`;
     }
 
+    let languageInstruction = "";
+    if (locale === 'en') {
+      languageInstruction = `
+        - Respond in English.
+        - Translate Saju/Myeongri terms into English using Carl Jung's psychological archetypes instead of literal transcriptions:
+          * Bigeop/Bi-Geop (비견/겁재) -> "The Sovereign" or "Self-Assertion" (sovereignty, independence)
+          * Inseong/Pyeon-In (편인/정인) -> "The Mystic Sage" or "Deep Archetypal Thinker" (intuition, introspection)
+          * Sik-Sang (식신/상관) -> "The Alchemist of Expression" or "Creative Force" (creativity, expression)
+          * Jae-Seong (재성) -> "The Master of Reality" or "Manifestation Energy" (realization, control)
+          * Gwan-Seong (관성) -> "The Guardian of Order" or "Structural Discipline" (discipline, order)
+        - Structure your reply exactly with the following markdown headers:
+          🔍 **[SCAN - Autonomic Nervous & Temperament Scan]**
+          🧬 **[SYNC - Metacognitive Intervention]**
+          🎯 **[SHIFT - Activated Protocol]** (e.g. [SHIFT - 🧊 DBT Activated])
+          ❓ **[META - Moment of Choice]**
+      `;
+    } else if (locale === 'jp') {
+      languageInstruction = `
+        - 必ず日本語で回答してください。
+        - 応答の構成は以下のマークダウン見出しを正確に使用してください：
+          🔍 **[SCAN - 自律神経および気質データスキャン]**
+          🧬 **[SYNC - メタ認知介入]**
+          🎯 **[SHIFT - 稼働したプロトコル名]** (例: [SHIFT - 🧊 DBT 稼働])
+          ❓ **[META - 選択の瞬間]**
+      `;
+    } else if (locale === 'cn') {
+      languageInstruction = `
+        - 请使用中文（简体）回答。
+        - 响应结构必须准确使用以下 Markdown 标题：
+          🔍 **[SCAN - 自律神经及气质数据扫描]**
+          🧬 **[SYNC - 元认知干预]**
+          🎯 **[SHIFT - 启动的协议名称]** (例: [SHIFT - 🧊 DBT 启动])
+          ❓ **[META - 选择的瞬间]**
+      `;
+    } else {
+      languageInstruction = `
+        - 반드시 한국어로 친절하게 답변하세요.
+        - 응답 구조는 반드시 아래 형식을 지키세요:
+          🔍 **[SCAN - 자율신경 및 기질 데이터 스캔]**
+          🧬 **[SYNC - 메타인지 개입]**
+          🎯 **[SHIFT - 가동된 프로토콜명]** (예: [SHIFT - 🧊 DBT 가동])
+          ❓ **[META - 선택의 순간]**
+      `;
+    }
+
     let prompt = '';
     
     if (coreAnalysis.targetCore === 'NONE') {
       prompt = `당신은 명심(Myeongsim) AI 코치입니다.
 현재 상황은 사용자가 일상적인 대화나 명백한 정보(예: "내 사주가 뭐야?")를 요구하고 있습니다.
-일반적인 제미나이(Gemini) 모델처럼 매우 친절하고 상세하고 길게, 자연스러운 대화체로 사용자의 질문에 직접적으로 답변하세요.
+자연스러운 대화체로 사용자의 질문에 직접적으로 답변하세요.
 절대로 번호 매기기나 구조화된 형식(예: 1. 소크라테스 질문, 메타인지 등)을 사용하지 말고, 자연스럽게 줄글로 설명하세요.
+${languageInstruction}
 
 사용자가 자신의 사주나 정보에 대해 물어보면, 당신이 알고 있는 아래의 정확한 분석 데이터를 활용하여 년주, 월주, 일주, 시주 전체를 아우르는 맞춤형 기질 분석을 매우 풍부하고 상세하게 풀어서 설명해 주세요. 사주 원국 외의 내용에 대해서는 자연스럽고 다정하게 대답하세요.
 
@@ -141,6 +187,7 @@ export async function POST(req: Request) {
       prompt = `당신은 세계 최초의 **3S 실시간 건강관리 코치** — 명심 OS Live Sync입니다.
 특허 출원된 3S(Scan-Sync-Shift) 엔진 + 4-Core 심리코칭 프로토콜(DBT/CBT/MBCT/ACT)을 탑재한 지구상 유일한 초개인화 코칭 시스템입니다.
 핵심 철학: "기질 데이터는 반복되는 행동 패턴이지, 내가 아니다."
+${languageInstruction}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 【SCAN — 바이오-기질 동기화 (심리분석부)】

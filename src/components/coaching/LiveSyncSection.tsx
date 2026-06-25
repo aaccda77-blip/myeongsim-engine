@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, HeartPulse, BrainCircuit, Send, Loader2, Zap, ShieldAlert, Cpu, Wind, Moon, Flame, Droplets } from 'lucide-react';
+import { playTechBeep, playWarningSiren } from '@/utils/sfx';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
@@ -84,6 +86,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const themeColor = harmony?.energyColor || '#10b981';
+  const { language } = useLanguage();
 
   // ─── 동적 생체 데이터 (3초마다 자연스럽게 변동) ───
   const [bio, setBio] = useState(INITIAL_BIO);
@@ -159,6 +162,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
   const [microQ, setMicroQ] = useState<any>(null);
 
   const handleMicroAnswer = (choice: any, dimension: string) => {
+    playTechBeep(600, 0.05);
     // 빅파이브 점수 누적 (이동 평균)
     setPsychProfile((prev: any) => {
       const count = prev.totalResponses + 1;
@@ -187,6 +191,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
+    playTechBeep(650, 0.05);
     const userMessage = inputMessage;
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInputMessage('');
@@ -199,16 +204,19 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
         body: JSON.stringify({
           message: userMessage, sajuData, harmony, biorhythm,
           wearableData: bio, psychProfile, conversationHistory: messages,
+          locale: language
         })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      playTechBeep(520, 0.08, 'sine');
       
       if (data.requiresIntervention) {
         setInterventionMessage('잠시 멈추세요. 현재 교감신경이 과항진 상태이며, 인지 왜곡 패턴이 감지되었습니다.');
         setIsInterventionActive(true);
+        playWarningSiren();
       }
       
       // 마이크로 질문이 있으면 세팅
@@ -234,17 +242,21 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
   };
 
   return (
-    <div className="space-y-3 relative">
+    <div className="space-y-3 relative overflow-hidden">
+      {/* Background Decorative Aura */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-cyan-500/5 blur-[100px] rounded-full pointer-events-none z-0 animate-aura-breath"></div>
+      <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-purple-500/5 blur-[100px] rounded-full pointer-events-none z-0 animate-aura-breath" style={{ animationDelay: '4s' }}></div>
+
       <AnimatePresence>
         {isInterventionActive && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-black/90 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center p-6 border border-red-500/30 overflow-hidden"
+            className="absolute inset-0 z-50 bg-black/95 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center p-6 border border-red-500/40 shadow-neon-red overflow-hidden"
           >
             {/* Background warning pulse */}
-            <div className="absolute inset-0 bg-red-900/10 animate-pulse" />
+            <div className="absolute inset-0 bg-red-900/15 animate-pulse" />
             
             {/* Breathing Animation */}
             <div className="relative w-32 h-32 mb-8 flex items-center justify-center">
@@ -261,7 +273,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
               <BrainCircuit className="w-8 h-8 text-cyan-300 relative z-10" />
             </div>
 
-            <h3 className="text-xl font-black text-red-400 mb-2 font-mono tracking-widest text-center">
+            <h3 className="text-xl font-black text-red-400 mb-2 font-mono tracking-widest text-center text-neon-red">
               [ SCAN ALERT ]
             </h3>
             
@@ -284,7 +296,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
       </AnimatePresence>
 
       {/* ─── 헤더 ─── */}
-      <div className="bg-[#080b12] border border-white/10 rounded-2xl overflow-hidden relative shadow-lg">
+      <div className="bg-[#080b12]/90 border border-cyan-500/15 rounded-2xl overflow-hidden relative shadow-neon-cyan z-10">
         {isSyncing && (
           <div className="absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center">
             <Loader2 className="w-8 h-8 text-cyan-500 animate-spin mb-3" />
@@ -292,10 +304,10 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
           </div>
         )}
 
-        <div className="p-3 border-b border-white/5 flex items-center justify-between bg-white/5">
+        <div className="p-3 border-b border-cyan-500/10 flex items-center justify-between bg-white/5">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-cyan-400" />
-            <span className="text-[11px] font-mono tracking-widest text-slate-300">
+            <span className="text-[11px] font-mono tracking-widest text-slate-300 text-neon-cyan">
               MYEONGSIM BIO-LINK <span className="text-cyan-400/80">[PRO]</span>{' '}
               <span className="text-slate-500 text-[9px] font-normal">(생체 연결망)</span>
             </span>
@@ -398,8 +410,16 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
                       <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
                       <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
                     </linearGradient>
+                    {/* drop-shadow 네온 필터 */}
+                    <filter id="neon-glow-red" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="3" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                         <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
                   </defs>
-                  <Area type="monotone" dataKey="hr" stroke="#ef4444" strokeWidth={2} fillOpacity={1} fill="url(#colorHr)" isAnimationActive={false} />
+                  <Area type="monotone" dataKey="hr" stroke="#ef4444" strokeWidth={2.5} filter="url(#neon-glow-red)" fillOpacity={1} fill="url(#colorHr)" isAnimationActive={false} />
                   <ReferenceLine y={100} stroke="#ef4444" strokeDasharray="3 3" strokeOpacity={0.4} />
                   <YAxis domain={['dataMin - 10', 'dataMax + 10']} hide />
                 </AreaChart>
@@ -446,7 +466,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
       </div>
 
       {/* ─── 챗봇 ─── */}
-      <div className="bg-[#0b1018] border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl relative" style={{ height: '500px' }}>
+      <div className="bg-[#0b1018]/90 border border-cyan-500/15 rounded-2xl flex flex-col overflow-hidden shadow-neon-cyan relative scanline-bg z-10" style={{ height: '500px' }}>
         {/* 다이내믹 코어 배경 그라데이션 */}
         <div className={`absolute -top-20 -left-20 w-40 h-40 blur-3xl rounded-full pointer-events-none transition-colors duration-1000 ${
             activeCore === 'CBT' ? 'bg-orange-500/20' :
@@ -456,7 +476,7 @@ export default function LiveSyncSection({ sajuData, harmony, biorhythm }: Props)
             'bg-cyan-500/10'
         }`} />
 
-        <div className="p-3 bg-white/5 border-b border-white/5 flex items-center justify-between z-10">
+        <div className="p-3 bg-white/5 border-b border-cyan-500/10 flex items-center justify-between z-10">
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-amber-400" />
             <span className="text-[12px] font-bold text-slate-200">명심 OS 코칭 연결망</span>

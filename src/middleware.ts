@@ -142,13 +142,13 @@ export async function middleware(request: NextRequest) {
         'Content-Security-Policy',
         [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://cdn.tailwindcss.com https://unpkg.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com",
             "img-src 'self' data: https: blob:",
             "connect-src 'self' https://*.supabase.co https://generativelanguage.googleapis.com https://texttospeech.googleapis.com wss://*.supabase.co",
             "media-src 'self' blob:",
-            "frame-ancestors 'self'",
+            "frame-ancestors 'self' https://vercel.live https://*.vercel.live https://*.vercel.app",
         ].join('; ')
     );
 

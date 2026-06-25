@@ -9,7 +9,8 @@ interface ConsciousnessCardProps {
 
 export default function ConsciousnessCard({ level, advice }: ConsciousnessCardProps) {
     // Determine color/icon based on level (Simple heuristic)
-    const isLowLevel = level.includes('1') || level.includes('2') || level.includes('3');
+    const safeLevel = level || '';
+    const isLowLevel = safeLevel.includes('1') || safeLevel.includes('2') || safeLevel.includes('3');
     const borderColor = isLowLevel ? 'border-red-500/50' : 'border-emerald-500/50';
     const bgColor = isLowLevel ? 'from-red-950/80' : 'from-emerald-950/80';
     const icon = isLowLevel ? <AlertTriangle className="w-5 h-5 text-red-400" /> : <Zap className="w-5 h-5 text-emerald-400" />;

@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     };
     const pillarName = pillarNames[pillarId] || '종합 에너지';
 
-    const modelName = process.env.GEMINI_MODEL === 'gemini-2.5-flash' ? 'gemini-1.5-flash' : (process.env.GEMINI_MODEL || 'gemini-1.5-flash');
+    const modelName = process.env.GEMINI_MODEL === 'gemini-2.5-flash' ? 'gemini-2.5-flash' : (process.env.GEMINI_MODEL || 'gemini-2.5-flash');
     const model = google.getGenerativeModel({
       model: modelName,
       safetySettings: [

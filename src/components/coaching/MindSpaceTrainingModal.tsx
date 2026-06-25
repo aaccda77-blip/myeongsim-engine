@@ -2882,7 +2882,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                               </span>
                             </div>
                             <h5 className="text-sm font-black text-white flex items-center gap-1">
-                              {palace.name === '명' || palace.name.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+                              {palace.name === '명' || palace.name?.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
                             </h5>
                           </div>
 
@@ -2945,7 +2945,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                             <div className="flex flex-col">
                               <span className="text-[8px] font-bold text-slate-500 font-mono leading-none mb-0.5">{palace.heavenlyStem}{palace.earthlyBranch}</span>
                               <h5 className="text-xs font-black text-white leading-none">
-                                {palace.name === '명' || palace.name.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+                                {palace.name === '명' || palace.name?.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
                               </h5>
                             </div>
                             <span className="text-[8px] text-slate-400 font-mono leading-none bg-white/5 px-1 py-0.5 rounded">
@@ -4635,7 +4635,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                               </span>
                             </div>
                             <h5 className="text-xs font-black text-white">
-                              {palace.name === '명' || palace.name.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+                              {palace.name === '명' || palace.name?.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
                             </h5>
                             <div className="space-y-1 w-full flex-grow">
                               {palace.majorStars && palace.majorStars.length > 0 ? (
@@ -4677,7 +4677,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                               <div className="flex flex-col">
                                 <span className="text-[7.5px] font-bold text-slate-500 font-mono leading-none mb-0.5">{palace.heavenlyStem}{palace.earthlyBranch}</span>
                                 <h5 className="text-[11px] font-black text-white leading-none">
-                                  {palace.name === '명' || palace.name.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+                                  {palace.name === '명' || palace.name?.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
                                 </h5>
                               </div>
                               <span className="text-[7.5px] text-slate-400 font-mono leading-none bg-white/5 px-1 py-0.5 rounded">

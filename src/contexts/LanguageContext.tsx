@@ -39,11 +39,26 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     // Default to 'kr'
     const [language, setLanguage] = useState<Language>('kr');
 
-    // Load from localStorage on mount
+    // Load from localStorage or browser language on mount
     useEffect(() => {
         const savedLang = localStorage.getItem('myeongsim_language') as Language;
         if (savedLang && locales[savedLang]) {
             setLanguage(savedLang);
+            return;
+        }
+
+        // Detect browser language if no preference saved
+        if (typeof navigator !== 'undefined') {
+            const browserLang = navigator.language.split('-')[0].toLowerCase();
+            if (browserLang === 'ko') {
+                setLanguage('kr');
+            } else if (browserLang === 'ja') {
+                setLanguage('jp');
+            } else if (browserLang === 'zh') {
+                setLanguage('cn');
+            } else {
+                setLanguage('en'); // Default to English for global users
+            }
         }
     }, []);
 

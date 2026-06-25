@@ -160,7 +160,7 @@ export class MemoryService {
 
         try {
             const conversationText = messages.map(m => `${m.role}: ${m.content}`).join('\n');
-            const summaryModel = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const summaryModel = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
             const prompt = `
             Summarize the following consultation conversation into one key insight or user fact for long-term memory.

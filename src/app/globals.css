@@ -131,3 +131,68 @@ html, body {
   will-change: transform, scroll-position;
   -webkit-overflow-scrolling: touch;
 }
+
+/* ==============================================================
+   🔮 초프리미엄 네온 에스테틱 및 애니메이션 패치
+   ============================================================== */
+
+@utility shadow-neon-violet {
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.25), inset 0 0 8px rgba(168, 85, 247, 0.1);
+}
+
+@utility shadow-neon-cyan {
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.25), inset 0 0 8px rgba(6, 182, 212, 0.1);
+}
+
+@utility shadow-neon-red {
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.25), inset 0 0 8px rgba(239, 68, 68, 0.1);
+}
+
+@utility text-neon-cyan {
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+}
+
+@utility text-neon-violet {
+  text-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+}
+
+@utility text-neon-red {
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+/* 배경 오라 숨쉬기 애니메이션 */
+@keyframes aura-breath {
+  0%, 100% {
+    transform: translate(-50%, -10%) scale(1);
+    opacity: 0.05;
+  }
+  50% {
+    transform: translate(-50%, -5%) scale(1.12);
+    opacity: 0.085;
+  }
+}
+
+.animate-aura-breath {
+  animation: aura-breath 8s ease-in-out infinite;
+}
+
+/* 테크니컬 스캔라인 효과 */
+.scanline-bg {
+  position: relative;
+}
+.scanline-bg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.15;
+}

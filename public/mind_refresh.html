@@ -333,7 +333,7 @@
                     <i data-lucide="compass" class="w-4 h-4"></i>
                     공간적 상대성 성찰 (몸)
                 </span>
-                <span id="course-b-step-indicator" class="text-xs font-mono text-zinc-500">93 / 108</span>
+                <span id="course-b-step-indicator" class="text-xs font-mono text-zinc-500">1 / 108</span>
             </div>
 
             <!-- Progress Bar -->
@@ -373,7 +373,7 @@
                 <div class="text-center pt-2">
                     <button onclick="issueEarlyReport('body')" class="text-xs text-violet-400 hover:text-violet-300 font-medium underline flex items-center justify-center gap-1 mx-auto transition">
                         <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                        <span id="early-report-link-text">93단계 기준 조기 자각리포트 발급</span>
+                        <span id="early-report-link-text">1단계 기준 조기 자각리포트 발급</span>
                     </button>
                 </div>
             </div>
@@ -406,7 +406,7 @@
                     <i data-lucide="brain" class="w-4 h-4"></i>
                     인지적 인과성 성찰 (생각)
                 </span>
-                <span id="course-c-step-indicator" class="text-xs font-mono text-zinc-500">93 / 108</span>
+                <span id="course-c-step-indicator" class="text-xs font-mono text-zinc-500">1 / 108</span>
             </div>
 
             <!-- Progress Bar -->
@@ -446,7 +446,7 @@
                 <div class="text-center pt-2">
                     <button onclick="issueEarlyReport('thought')" class="text-xs text-amber-400 hover:text-amber-300 font-medium underline flex items-center justify-center gap-1 mx-auto transition">
                         <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                        <span id="early-report-link-text-c">93단계 기준 조기 자각리포트 발급</span>
+                        <span id="early-report-link-text-c">1단계 기준 조기 자각리포트 발급</span>
                     </button>
                 </div>
             </div>
@@ -479,7 +479,7 @@
                     <i data-lucide="heart" class="w-4 h-4"></i>
                     동요하는 정동 성찰 (감정)
                 </span>
-                <span id="course-d-step-indicator" class="text-xs font-mono text-zinc-500">93 / 108</span>
+                <span id="course-d-step-indicator" class="text-xs font-mono text-zinc-500">1 / 108</span>
             </div>
 
             <!-- Progress Bar -->
@@ -519,7 +519,7 @@
                 <div class="text-center pt-2">
                     <button onclick="issueEarlyReport('emotion')" class="text-xs text-rose-400 hover:text-rose-300 font-medium underline flex items-center justify-center gap-1 mx-auto transition">
                         <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                        <span id="early-report-link-text-d">93단계 기준 조기 자각리포트 발급</span>
+                        <span id="early-report-link-text-d">1단계 기준 조기 자각리포트 발급</span>
                     </button>
                 </div>
             </div>
@@ -552,7 +552,7 @@
                     <i data-lucide="fingerprint" class="w-4 h-4"></i>
                     조건화된 정각 성찰 (느낌)
                 </span>
-                <span id="course-e-step-indicator" class="text-xs font-mono text-zinc-500">93 / 108</span>
+                <span id="course-e-step-indicator" class="text-xs font-mono text-zinc-500">1 / 108</span>
             </div>
 
             <!-- Progress Bar -->
@@ -592,7 +592,7 @@
                 <div class="text-center pt-2">
                     <button onclick="issueEarlyReport('sensation')" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium underline flex items-center justify-center gap-1 mx-auto transition">
                         <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                        <span id="early-report-link-text-e">93단계 기준 조기 자각리포트 발급</span>
+                        <span id="early-report-link-text-e">1단계 기준 조기 자각리포트 발급</span>
                     </button>
                 </div>
             </div>
@@ -677,86 +677,146 @@
                     </div>
 
                     <div class="space-y-4">
-                        <button onclick="generateKoan()" class="w-full py-3.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/20">
-                            <i data-lucide="award" class="w-4 h-4"></i>
-                            <span>평생의 맞춤 화두 벼리기</span>
+                        <button onclick="generateKoan()" id="koan-btn" class="w-full bg-gradient-to-r from-violet-950 to-zinc-900 hover:from-violet-900 hover:to-zinc-800 text-violet-100 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-violet-900/30">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-violet-400"></i>
+                            <span>✨ 맞춤 화두 연성 및 가사 수수</span>
+                        </button>
+
+                        <div id="koan-result" class="hidden bg-zinc-950/80 p-4 rounded-xl border border-violet-950/40 space-y-3 text-xs">
+                            <div class="border-b border-zinc-800 pb-1.5 flex justify-between items-center">
+                                <span class="text-[10px] font-bold text-violet-400 tracking-wider">나를 관통할 화두:</span>
+                                <button onclick="copyKoan()" class="text-[10px] text-zinc-500 hover:text-zinc-300 flex items-center gap-1">
+                                    <i data-lucide="clipboard" class="w-3 h-3"></i> ✨ 화두 마음 복사
+                                </button>
+                            </div>
+                            <p id="koan-result-text" class="text-violet-200 leading-relaxed serif-font font-bold text-center py-2 text-sm italic border-b border-zinc-900"></p>
+                            <div class="pt-1 text-[11px] text-zinc-400 space-y-1">
+                                <span class="font-semibold text-zinc-300">선사의 지혜 해설:</span>
+                                <p id="koan-result-desc" class="leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 마음 연못 (MIND POND) -->
+        <section id="content-pond" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-zinc-950 p-4 rounded-2xl border border-zinc-800 flex flex-col space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-violet-500 animate-ping"></span>
+                            <span class="text-sm font-semibold text-zinc-300">내 마음의 연못</span>
+                        </div>
+                        <button onclick="clearPond()" class="text-xs text-zinc-500 hover:text-zinc-300 flex items-center gap-1">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 연못 비우기
                         </button>
                     </div>
-                </div>
-            </div>
-            
-            <!-- 화두 결과 출력 영역 -->
-            <div id="koan-result-box" class="hidden bg-zinc-950 border border-zinc-850 p-5 rounded-2xl max-w-2xl mx-auto space-y-3.5 text-center animate-pulse">
-                <span class="text-[10px] text-amber-500 font-bold uppercase tracking-wider">Master's Koan</span>
-                <h4 id="koan-question" class="text-base font-extrabold text-zinc-150 serif-font italic leading-relaxed"></h4>
-                <p id="koan-comment" class="text-xs text-zinc-400 leading-relaxed font-mono"></p>
-                <div class="pt-1">
-                    <span class="text-[9px] text-zinc-550 block font-semibold">이 화두를 마음에 품고, 번뇌가 일어날 때마다 이를 가만히 들이대십시오.</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- 5. 마음 연못 (POND / 번뇌 연소 용광로) -->
-        <section id="content-pond" class="tab-content hidden space-y-6 max-w-xl mx-auto">
-            <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800 space-y-2 text-center">
-                <span class="text-xs text-rose-400 font-bold uppercase tracking-widest">Altar of Void</span>
-                <h2 class="text-2xl font-bold text-zinc-200 serif-font">🔥 번뇌 연소 용광로 (The Void Furnace)</h2>
-                <p class="text-xs text-zinc-400 leading-relaxed">
-                    가지고 계신 집착, 불안, 또는 번뇌의 언어를 텍스트로 적어 용광로에 던져 넣으십시오.
-                    참나의 뜨거운 불꽃 속에서 번뇌가 흔적도 없이 연소되는 특수 시각 효과가 가동됩니다.
-                </p>
-            </div>
-
-            <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-5">
-                <div class="space-y-2">
-                    <label class="text-[11px] text-zinc-550 font-bold block">소멸시킬 번뇌의 언어</label>
-                    <input type="text" id="pond-input" placeholder="예: 미래에 대한 막연한 두려움, 나를 미워하는 감정..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3.5 text-xs text-zinc-200 focus:outline-none focus:border-rose-700 placeholder-zinc-655 transition">
-                </div>
-
-                <!-- Furnace visual frame -->
-                <div class="relative bg-zinc-900/60 rounded-xl border border-zinc-850 h-32 flex flex-col items-center justify-center overflow-hidden">
-                    <!-- 용광로 실시간 파동 아우라 배경 -->
-                    <div id="furnace-fire" class="absolute inset-0 bg-gradient-to-t from-rose-950/20 to-transparent opacity-30 transition-all duration-500"></div>
                     
-                    <div id="furnace-text" class="text-xs text-zinc-500 italic z-10 font-mono transition-all duration-700">용광로가 대기 중입니다.</div>
+                    <div class="relative w-full aspect-[16/10] rounded-xl overflow-hidden ripple-canvas border border-zinc-900 flex items-center justify-center cursor-crosshair">
+                        <canvas id="pondCanvas" class="absolute inset-0 w-full h-full"></canvas>
+                        <div id="pondInstructions" class="pointer-events-none text-center p-6 space-y-2 z-10 select-none transition-opacity duration-500">
+                            <p class="text-lg text-violet-100/90 serif-font">화면을 가볍게 탭해 보세요</p>
+                            <p class="text-xs text-zinc-500 max-w-sm">탭할 때마다 분별망상(물결)이 일어납니다.<br>가만히 응시하며 내버려두면 마음은 자연스레 투명해집니다.</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs text-zinc-500">
+                        <span>💡 연못에 부는 모든 바람과 물결은 물 자체의 신비한 춤사위입니다.</span>
+                        <span id="waveCount">일어난 망상: 0개</span>
+                    </div>
                 </div>
 
-                <button onclick="burnAffliction()" class="w-full py-3.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-rose-950/20">
-                    <i data-lucide="flame" class="w-4 h-4"></i>
-                    <span>참나의 불꽃으로 번뇌 소멸</span>
-                </button>
+                <div class="space-y-6">
+                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4">
+                        <h3 class="text-lg font-bold text-violet-400 serif-font flex items-center gap-2">
+                            <i data-lucide="waves" class="w-5 h-5"></i>
+                            흙탕물의 비유
+                        </h3>
+                        <p class="text-xs text-zinc-400 leading-relaxed">
+                            우리는 삶이 복잡해질 때 생각을 더 보태 흙탕물을 억지로 저으려 합니다. 명심코칭의 가장 큰 원칙은 단지 가만히 비춰보는 것입니다.
+                        </p>
+                        <blockquote class="border-l-2 border-violet-800 pl-3 py-1 my-2 text-[11px] italic text-zinc-400 leading-relaxed">
+                            "가만히 두면 저절로 투명하게 가라앉아 밤하늘의 밝은 달을 온전하게 비추는 법이다."
+                        </blockquote>
+                    </div>
+
+                    <div class="bg-violet-950/20 border border-violet-900/30 p-5 rounded-2xl space-y-3">
+                        <h4 class="text-sm font-semibold text-violet-300">💡 맑은 연못 관조법</h4>
+                        <ol class="text-xs text-zinc-400 space-y-2 list-decimal list-inside leading-relaxed">
+                            <li>연못을 두드려 마음껏 요동치게 만듭니다.</li>
+                            <li>손을 떼고 고요히 10초간 호흡을 가다듬으며 화면을 관조합니다.</li>
+                            <li>잔물결이 잦아들고 텅 빈 본바탕이 복원되는 순간을 생생하게 경험합니다.</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- 6. 명심 선문답 (CHAT) -->
-        <section id="content-chat" class="tab-content hidden space-y-6 max-w-xl mx-auto">
-            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-2 text-center">
-                <span class="text-xs text-violet-400 font-bold uppercase tracking-widest">Zen Chat</span>
-                <h2 class="text-2xl font-bold text-zinc-200 serif-font">💬 명심 선문답 (Zen Dialogues)</h2>
-                <p class="text-xs text-zinc-400 leading-relaxed">
-                    AI 마스터 선사와의 1:1 대화를 통해 개념의 틀을 즉각 타파하고 본래면목을 확인합니다.
-                </p>
+        <!-- 6. 명심 선문답 (CHATBOT) -->
+        <section id="content-chat" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h2 class="text-xl font-bold text-violet-400 serif-font flex items-center gap-2">
+                            <i data-lucide="message-square" class="w-5 h-5"></i>
+                            명심코칭 AI 선문답
+                        </h2>
+                        <p class="text-xs text-zinc-400">
+                            명심코칭 마스터의 깊은 성찰로 마음의 아픔을 직견해 고뇌를 근원부터 조율합니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 px-3 py-1 bg-zinc-950 border border-zinc-800 rounded-lg text-[11px] text-zinc-400">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>실시간 대화 통로 연결 완료</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex flex-col h-[450px] justify-between">
-                <!-- 대화 스크롤 영역 -->
-                <div id="chat-messages" class="flex-grow overflow-y-auto p-2 space-y-3 text-xs">
-                    <div class="flex gap-2 items-start">
-                        <div class="p-1.5 bg-violet-950/40 text-violet-400 rounded-lg border border-violet-900/30">
-                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <div class="bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800 max-w-[80%] text-zinc-300 leading-relaxed">
-                            본래 한 물건도 없거늘, 어느 곳에 먼지가 앉으리오. 그대가 들고 온 번뇌는 어디서 일어난 파도인가?
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800 space-y-3">
+                        <h4 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">추천 선문답</h4>
+                        <div class="flex flex-col gap-2">
+                            <button onclick="setFastQuestion('살아가면서 마주하는 끊임없는 불안은 어떻게 이겨내야 합니까?')" class="text-left text-xs bg-zinc-900 hover:bg-zinc-850 p-2.5 rounded-lg border border-zinc-800/80 hover:border-zinc-700 text-zinc-300 leading-relaxed transition">
+                                💬 삶의 고통과 불안
+                            </button>
+                            <button onclick="setFastQuestion('내 아픈 이 육체 감각에 집착하는 나로부터 어떻게 벗어납니까?')" class="text-left text-xs bg-zinc-900 hover:bg-zinc-850 p-2.5 rounded-lg border border-zinc-800/80 hover:border-zinc-700 text-zinc-300 leading-relaxed transition">
+                                💬 몸뚱아리 자아 집착
+                            </button>
+                            <button onclick="setFastQuestion('명상을 할 때 자꾸 불쑥 올라오는 잡념에 매번 휘둘려 괴롭습니다.')" class="text-left text-xs bg-zinc-900 hover:bg-zinc-850 p-2.5 rounded-lg border border-zinc-800/80 hover:border-zinc-700 text-zinc-300 leading-relaxed transition">
+                                💬 생각에 속아 흔들릴 때
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 입력 바 -->
-                <div class="mt-3 flex gap-2">
-                    <input type="text" id="chat-input" placeholder="선사에게 묻고 싶은 번뇌나 생각..." class="flex-grow bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-200 focus:outline-none focus:border-violet-750 placeholder-zinc-550 transition" onkeydown="if(event.key === 'Enter') sendChatMessage()">
-                    <button onclick="sendChatMessage()" class="p-3 bg-violet-600 hover:bg-violet-500 text-white rounded-xl transition flex items-center justify-center">
-                        <i data-lucide="send" class="w-4 h-4"></i>
-                    </button>
+                <div class="lg:col-span-3 bg-zinc-950 border border-zinc-800 rounded-2xl flex flex-col overflow-hidden h-[500px]">
+                    <div class="bg-zinc-900 px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-violet-400"></i>
+                            <span class="text-xs font-semibold text-zinc-300">명심코칭 마스터 선사 대화망</span>
+                        </div>
+                        <button onclick="clearChat()" class="text-[11px] text-zinc-500 hover:text-zinc-300">정화</button>
+                    </div>
+
+                    <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm scroll-smooth">
+                        <div class="flex gap-3 max-w-[85%]">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-violet-900/30 border border-violet-800/30 flex items-center justify-center text-violet-400 font-bold text-xs serif-font">禪</div>
+                            <div class="bg-zinc-900 p-3 rounded-2xl rounded-tl-none border border-zinc-800/60 space-y-1">
+                                <p class="text-xs text-zinc-300 leading-relaxed">반갑습니다. 명심코칭 마음공부방에 들어오셨습니다.</p>
+                                <p class="text-xs text-zinc-400 leading-relaxed">현실에서 그대를 단단히 묶고 있는 가상 망상의 매듭은 무엇입니까? 편하게 털어놓으십시오.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-zinc-900 border-t border-zinc-800 flex gap-2 items-center">
+                        <input type="text" id="chat-input" onkeypress="handleKeyPress(event)" placeholder="고통과 본래 성품에 대해 무엇이든 말씀하십시오..." class="flex-grow bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-zinc-100 focus:outline-none focus:border-violet-700">
+                        <button onclick="sendChatMessage()" id="chat-submit-btn" class="bg-violet-800 hover:bg-violet-700 text-violet-100 px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                            <span>전송</span>
+                            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -764,63 +824,17 @@
     </main>
 
     <!-- 푸터 -->
-    <footer class="border-t border-zinc-850 bg-zinc-950/40 py-6 text-center text-[10px] text-zinc-500 mt-12">
-        <div class="max-w-6xl mx-auto px-4">
-            © 2026 명심코칭: 알아차림의 거울. All rights reserved.
-        </div>
+    <footer class="border-t border-zinc-900 bg-zinc-950 py-4 px-4 text-center space-y-1 shrink-0">
+        <p class="text-[10px] text-zinc-500">© 2026 명심코칭 Myeongshim Coaching. All Rights Reserved.</p>
+        <p class="text-[9px] text-zinc-600">명심코칭 본래면목과 비이원적 각성을 놀이의 문법으로 성찰하는 통합 구도 시뮬레이터입니다.</p>
     </footer>
 
-    <!-- JavaScript logic -->
+    <!-- 자바스크립트 통합 로직 -->
     <script>
-        // Lucide Icons 초기화
-        lucide.createIcons();
-
-        // 탭 제어 시스템
-        function switchTab(tabId) {
-            // 모든 콘텐츠 숨기기
-            document.querySelectorAll('.tab-content').forEach(section => {
-                section.classList.add('hidden');
-                section.classList.remove('block');
-            });
-            // 모든 탭 버튼 비활성화
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-violet-950/40', 'text-violet-300', 'border', 'border-violet-800/50');
-                btn.classList.add('text-zinc-400', 'hover:text-zinc-200', 'hover:bg-zinc-800/50');
-            });
-
-            // 선택한 탭 활성화
-            const activeSection = document.getElementById('content-' + tabId);
-            if (activeSection) {
-                activeSection.classList.remove('hidden');
-                activeSection.classList.add('block');
-            }
-
-            const activeBtn = document.getElementById('tab-' + tabId);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-zinc-400', 'hover:text-zinc-200', 'hover:bg-zinc-800/50');
-                activeBtn.classList.add('bg-violet-950/40', 'text-violet-300', 'border', 'border-violet-800/50');
-            }
-        }
-
         // ==========================================
         // 108 코스별 질문 생성 데이터 엔진
         // ==========================================
         const courseTemplates = {
-            consciousness: {
-                title: "의식(識) 해체",
-                ranges: [
-                    { max: 12, q: "눈앞에 보이는 '{part}'을(를) 분별하여 아는 성품은 대상과 분리되어 있습니까, 아니면 대상과 하나의 흐름입니까?", i: "{part}을(를) 인식하는 순간, 인식하는 주체와 대상은 자각이라는 한 캔버스 위에 그려진 하나의 그림입니다." },
-                    { max: 36, q: "내가 내면에서 자각하는 '{part}'에 대한 앎은 고정된 실체입니까, 아니면 인지 작용이 빚어낸 찰나의 스냅샷입니까?", i: "앎과 알아차림 역시 고정된 아(我)가 아닙니다. 모든 분별은 텅 빈 자각의 바다 위에서 일어나는 물방울일 뿐입니다." },
-                    { max: 72, q: "무엇인가를 감지하는 '{part}' 주체는 어디에 존재합니까? 찾아보려 할 때 그 주체가 실제로 만져집니까?", i: "아는 주체를 찾으려 하면 아무것도 찾을 수 없습니다. 오직 찾을 수 없는 그 '텅 빔' 자체가 참다운 앎의 본질입니다." },
-                    { max: 108, q: "우주 전체를 주관과 객관으로 쪼개어 인식하는 '{part}' 마음마저도, 본래 하나인 자각의 빛이 스스로를 비추는 반사광 아닙니까?", i: "안과 밖, 나와 남의 분별이 본래 없습니다. 오직 시작도 끝도 없는 순수 자각(참나)만이 홀로 빛나고 있습니다." }
-                ],
-                parts: [
-                    "스마트폰 화면", "지나가는 사람", "주변의 백색소음", "컴퓨터 마우스", "방 안의 벽지", "책상 모서리", "창밖의 가로수", "입고 있는 옷의 색상", "스피커 소리", "방 안의 냄새", "형광등의 빛", "키보드의 촉감",
-                    "내 이름이라는 개념", "어제 먹은 메뉴의 기억", "익숙한 모국어의 단어", "상대방의 목소리 톤", "아름답다거나 추하다는 판단", "좋고 싫은 이분법적 선호", "옳고 그름의 도덕적 잣대", "어렵다거나 쉽다는 계산", "시간이 늦었다는 조바심", "성공과 실패의 이분법", "나와 너의 경계선", "나의 나이와 성별 정보",
-                    "지켜보는 주관이라는 생각", "느끼는 자가 있다는 믿음", "생각하는 주체로서의 에고", "관찰자라는 은밀한 정체성", "기억을 소유하고 있다는 느낌", "선택을 내리는 의사결정자", "이 몸의 주인이라는 에고", "행위를 하는 행위자", "자각을 시도하는 주체", "이 상황을 통제하려는 의지", "과거를 후회하는 주체", "미래를 걱정하는 주체",
-                    "우주의 근원에 대한 탐구", "생과 사의 이분법적 경계", "시간의 흐름에 대한 자각", "공간의 무한함에 대한 판단", "인과율에 대한 마음의 격자", "주체와 객체의 분리감", "참나와 현상의 이분법", "자각하는 나와 자각되는 대상", "우주적 인과 법칙의 신뢰", "절대적인 진리에 대한 고집", "의식의 안과 밖이라는 한계", "자아의 근원적 고독"
-                ]
-            },
             body: {
                 title: "몸(色) 해체",
                 ranges: [
@@ -894,448 +908,1187 @@
             const question = range.q.replace(/{part}/g, part);
             const insight = range.i.replace(/{part}/g, part);
 
-            return { q: `[${step}단계] ${question}`, i: insight };
-        }
-
-        // 각 코스 상태값 (1~108)
-        let courseAStep = 93;
-        let courseBStep = 93;
-        let courseCStep = 93;
-        let courseDStep = 93;
-        let courseEStep = 93;
-
-        // 오디오 합성 비프음 함수
-        function playBeepSound(freq = 600, dur = 0.05) {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + dur);
-            } catch (e) {}
-        }
-
-        // UI 갱신 함수들
-        function updateCourseA() {
-            const data = getQuestionAndInsight('consciousness', courseAStep);
-            document.getElementById('course-a-step-indicator').innerText = `${courseAStep} / 108`;
-            document.getElementById('course-a-progress').style.width = `${(courseAStep / 108) * 100}%`;
-            document.getElementById('course-a-question').innerText = data.q;
-            document.getElementById('course-a-insight').innerText = data.i;
-            document.getElementById('course-a-input').value = localStorage.getItem(`course-a-ans-${courseAStep}`) || '';
-            document.getElementById('early-report-link-text-a').innerText = `${courseAStep}단계 기준 조기 자각리포트 발급`;
-            updateBadges('badge-a', courseAStep);
-        }
-
-        function updateCourseB() {
-            const data = getQuestionAndInsight('body', courseBStep);
-            document.getElementById('course-b-step-indicator').innerText = `${courseBStep} / 108`;
-            document.getElementById('course-b-progress').style.width = `${(courseBStep / 108) * 100}%`;
-            document.getElementById('course-b-question').innerText = data.q;
-            document.getElementById('course-b-insight').innerText = data.i;
-            document.getElementById('course-b-input').value = localStorage.getItem(`course-b-ans-${courseBStep}`) || '';
-            document.getElementById('early-report-link-text').innerText = `${courseBStep}단계 기준 조기 자각리포트 발급`;
-            updateBadges('badge', courseBStep);
-        }
-
-        function updateCourseC() {
-            const data = getQuestionAndInsight('thought', courseCStep);
-            document.getElementById('course-c-step-indicator').innerText = `${courseCStep} / 108`;
-            document.getElementById('course-c-progress').style.width = `${(courseCStep / 108) * 100}%`;
-            document.getElementById('course-c-question').innerText = data.q;
-            document.getElementById('course-c-insight').innerText = data.i;
-            document.getElementById('course-c-input').value = localStorage.getItem(`course-c-ans-${courseCStep}`) || '';
-            document.getElementById('early-report-link-text-c').innerText = `${courseCStep}단계 기준 조기 자각리포트 발급`;
-            updateBadges('badge-c', courseCStep);
-        }
-
-        function updateCourseD() {
-            const data = getQuestionAndInsight('emotion', courseDStep);
-            document.getElementById('course-d-step-indicator').innerText = `${courseDStep} / 108`;
-            document.getElementById('course-d-progress').style.width = `${(courseDStep / 108) * 100}%`;
-            document.getElementById('course-d-question').innerText = data.q;
-            document.getElementById('course-d-insight').innerText = data.i;
-            document.getElementById('course-d-input').value = localStorage.getItem(`course-d-ans-${courseDStep}`) || '';
-            document.getElementById('early-report-link-text-d').innerText = `${courseDStep}단계 기준 조기 자각리포트 발급`;
-            updateBadges('badge-d', courseDStep);
-        }
-
-        function updateCourseE() {
-            const data = getQuestionAndInsight('sensation', courseEStep);
-            document.getElementById('course-e-step-indicator').innerText = `${courseEStep} / 108`;
-            document.getElementById('course-e-progress').style.width = `${(courseEStep / 108) * 100}%`;
-            document.getElementById('course-e-question').innerText = data.q;
-            document.getElementById('course-e-insight').innerText = data.i;
-            document.getElementById('course-e-input').value = localStorage.getItem(`course-e-ans-${courseEStep}`) || '';
-            document.getElementById('early-report-link-text-e').innerText = `${courseEStep}단계 기준 조기 자각리포트 발급`;
-            updateBadges('badge-e', courseEStep);
-        }
-
-        function updateBadges(prefix, step) {
-            const b12 = document.getElementById(`${prefix}-12`);
-            const b36 = document.getElementById(`${prefix}-36`);
-            const b72 = document.getElementById(`${prefix}-72`);
-            const b108 = document.getElementById(`${prefix}-108`);
-
-            if (b12) b12.style.opacity = step >= 12 ? '1' : '0.4';
-            if (b36) b36.style.opacity = step >= 36 ? '1' : '0.4';
-            if (b72) b72.style.opacity = step >= 72 ? '1' : '0.4';
-            if (b108) b108.style.opacity = step >= 108 ? '1' : '0.4';
+            return { q: `Q.${step} ${question}`, i: insight };
         }
 
         // ==========================================
-        // 다음/이전 버튼 액션
+        // 토스트 알림 제어 시스템
         // ==========================================
-        function nextCourseAStep() {
-            const ans = document.getElementById('course-a-input').value.trim();
-            localStorage.setItem(`course-a-ans-${courseAStep}`, ans);
+        function showToast(msg) {
+            const toast = document.getElementById('toast-box');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.innerText = msg;
+            toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+
+        // ==========================================
+        // 대메뉴 탭 전환 제어
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
             
-            playBeepSound(650, 0.04);
-            if (courseAStep < 108) {
-                courseAStep++;
-                updateCourseA();
-            } else {
-                issueEarlyReport('all');
+            // Course Mapping Adaptations
+            let targetContentId = `content-${tabId}`;
+            if (tabId === 'course-a') targetContentId = 'content-course-a';
+            if (tabId === 'course-b') targetContentId = 'content-course-b';
+            if (tabId === 'course-c') targetContentId = 'content-course-c';
+            if (tabId === 'course-d') targetContentId = 'content-course-d';
+            if (tabId === 'course-e') targetContentId = 'content-course-e';
+            
+            document.getElementById(targetContentId).classList.remove('hidden');
+            document.getElementById(targetContentId).classList.add('block');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-violet-950/40', 'text-violet-300', 'border', 'border-violet-800/50');
+                btn.classList.add('text-zinc-400', 'hover:text-zinc-200', 'hover:bg-zinc-800/50');
+            });
+
+            // Adjust Header button highlighting
+            let targetTabBtnId = `tab-${tabId}`;
+            const activeBtn = document.getElementById(targetTabBtnId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-zinc-400', 'hover:text-zinc-200', 'hover:bg-zinc-800/50');
+                activeBtn.classList.add('bg-violet-950/40', 'text-violet-300', 'border', 'border-violet-800/50');
             }
+
+            if (tabId === 'pond') {
+                initPond();
+            } else {
+                if (pondAnimationFrameId) cancelAnimationFrame(pondAnimationFrameId);
+            }
+
+            // Sync visual auric backgrounds based on tab
+            const aura = document.getElementById('dynamic-aura');
+            if (tabId === 'course-b') {
+                updateAuraForStepB();
+            } else if (tabId === 'course-c') {
+                updateAuraForStepC();
+            } else if (tabId === 'course-d') {
+                updateAuraForStepD();
+            } else if (tabId === 'course-e') {
+                updateAuraForStepE();
+            } else if (tabId === 'course-a') {
+                aura.className = "aura-turbulent";
+                aura.style.opacity = "0.15";
+            } else {
+                aura.className = "aura-tranquil";
+                aura.style.opacity = "0.08";
+            }
+        }
+
+        // ==========================================
+        // 마음 연못 관조 장치 (Canvas Ripple)
+        // ==========================================
+        let pondCanvas, pondCtx;
+        let pondRipples = [];
+        let pondWaveCount = 0;
+        let pondAnimationFrameId;
+
+        class PondRipple {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 2;
+                this.maxRadius = Math.random() * 80 + 100;
+                this.opacity = 1;
+                this.speed = Math.random() * 1.5 + 1.2;
+            }
+            update() {
+                this.radius += this.speed;
+                this.opacity = 1 - (this.radius / this.maxRadius);
+            }
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(139, 92, 246, ${this.opacity * 0.4})`;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+        }
+
+        function initPond() {
+            pondCanvas = document.getElementById('pondCanvas');
+            if (!pondCanvas) return;
+            pondCtx = pondCanvas.getContext('2d');
+            
+            const rect = pondCanvas.parentElement.getBoundingClientRect();
+            pondCanvas.width = rect.width;
+            pondCanvas.height = rect.height;
+
+            pondCanvas.addEventListener('mousedown', handlePondClick);
+            pondCanvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handlePondClick(e.touches[0]);
+            }, { passive: false });
+
+            if (pondAnimationFrameId) cancelAnimationFrame(pondAnimationFrameId);
+            animatePond();
+        }
+
+        function handlePondClick(e) {
+            const rect = pondCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            pondRipples.push(new PondRipple(x, y));
+            pondWaveCount++;
+            document.getElementById('waveCount').innerText = `일어난 망상: ${pondWaveCount}개`;
+            
+            const inst = document.getElementById('pondInstructions');
+            if (inst) inst.style.opacity = '0';
+        }
+
+        function clearPond() {
+            pondRipples = [];
+            pondWaveCount = 0;
+            document.getElementById('waveCount').innerText = `일어난 망상: 0개`;
+            const inst = document.getElementById('pondInstructions');
+            if (inst) inst.style.opacity = '1';
+        }
+
+        function animatePond() {
+            pondCtx.clearRect(0, 0, pondCanvas.width, pondCanvas.height);
+            
+            pondCtx.strokeStyle = 'rgba(255, 255, 255, 0.01)';
+            pondCtx.lineWidth = 0.5;
+            for(let i=0; i<pondCanvas.width; i+=40) {
+                pondCtx.beginPath();
+                pondCtx.moveTo(i, 0);
+                pondCtx.lineTo(i, pondCanvas.height);
+                pondCtx.stroke();
+            }
+            for(let j=0; j<pondCanvas.height; j+=40) {
+                pondCtx.beginPath();
+                pondCtx.moveTo(0, j);
+                pondCtx.lineTo(pondCanvas.width, j);
+                pondCtx.stroke();
+            }
+
+            for (let i = pondRipples.length - 1; i >= 0; i--) {
+                pondRipples[i].update();
+                pondRipples[i].draw(pondCtx);
+                if (pondRipples[i].opacity <= 0) {
+                    pondRipples.splice(i, 1);
+                }
+            }
+
+            if (pondRipples.length === 0 && pondWaveCount > 2) {
+                pondCtx.fillStyle = "rgba(139, 92, 246, 0.06)";
+                pondCtx.font = "italic 13px 'Noto Serif KR'";
+                pondCtx.textBaseline = "middle";
+                pondCtx.textAlign = "center";
+                pondCtx.fillText("파도가 걷히니 오직 투명한 바탕뿐이네 (명심)", pondCanvas.width/2, pondCanvas.height/2 + 50);
+            }
+
+            pondAnimationFrameId = requestAnimationFrame(animatePond);
+        }
+
+        // ==========================================
+        // 감각 자각 명상 관문 논리
+        // ==========================================
+        function triggerSensation(type) {
+            const portal = document.getElementById('sensation-portal');
+            const pTitle = document.getElementById('portal-title');
+            const pDesc = document.getElementById('portal-desc');
+            const pIcon = document.getElementById('portal-icon');
+            const pZen = document.getElementById('portal-zen');
+
+            portal.classList.remove('hidden');
+            
+            switch (type) {
+                case 'sight':
+                    pTitle.innerText = "시각 자각: 보는 주체로의 정렬";
+                    pDesc.innerText = "사물이 알아차려지고 보이고 있을 뿐입니다. '안에서 보는 나'와 '바깥의 보이는 것'이 원래 따로 갈라져 있었습니까? 오직 명확한 앎(각) 한 바탕만이 빛나고 있습니다.";
+                    pZen.innerText = '"보는 성품이 뚜렷하므로 보는 자라는 그림자가 생기는 것이다. 보되, 봄에 매달리지 말라."';
+                    pIcon.setAttribute('data-lucide', 'eye');
+                    break;
+                case 'sound':
+                    pTitle.innerText = "청각 자각: 들음의 침묵";
+                    pDesc.innerText = "귓가에 들리는 모든 소리를 소유하려 하지 마십시오. 들림 그 자체가 존재할 뿐, 그 안쪽에 지키고 앉아 지휘하는 별도의 고정 자아는 본래 실재하지 않습니다.";
+                    pZen.innerText = '"들리고 있는 이 사실 하나만이 고요히 밝을 뿐이다."';
+                    pIcon.setAttribute('data-lucide', 'ear');
+                    break;
+                case 'touch':
+                    pTitle.innerText = "촉각 자각: 몸자아 집착 타파";
+                    pDesc.innerText = "몸에서 일어나는 강한 쑤심, 아픔, 닿는 느낌은 자각의 대상일 뿐입니다. 몸은 그대가 느끼는 객체이며, 그것을 알고 있는 텅 빈 관조가 참다운 당신입니다.";
+                    pZen.innerText = '"몸뚱아리의 감각은 인연따라 일어나는 물거품이다. 앎은 영원히 고통스럽지 않다."';
+                    pIcon.setAttribute('data-lucide', 'fingerprint');
+                    break;
+                case 'thought':
+                    pTitle.innerText = "생각 자각: 물거품의 소멸";
+                    pDesc.innerText = "생각은 맑은 연못에 비구름이 끼는 격입니다. 그 구름은 일시적인 현상이며 실체가 없습니다. 생각이 일어나는 즉시 붙잡지 마십시오. 저절로 스러집니다.";
+                    pZen.innerText = '"생각에 속지 않으면 생각은 즉시 맑은 연못의 평온한 물이 된다."';
+                    pIcon.setAttribute('data-lucide', 'brain');
+                    break;
+            }
+            lucide.createIcons();
+            portal.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function closeSensationPortal() {
+            document.getElementById('sensation-portal').classList.add('hidden');
+        }
+
+        // ==========================================
+        // 통일 API 전송 엔진 (Gemini 2.5 Flash / Exponential Backoff)
+        // ==========================================
+        const apiKey = ""; // runtime resolving placeholder
+
+        async function callGemini(userQuery, systemPrompt, responseSchema = null) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    maxOutputTokens: 350
+                }
+            };
+
+            if (responseSchema) {
+                payload.generationConfig.responseMimeType = "application/json";
+                payload.generationConfig.responseSchema = responseSchema;
+            }
+
+            let retries = 5;
+            let delay = 1000;
+
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        return responseSchema ? JSON.parse(text) : text;
+                    } else {
+                        throw new Error("Invalid response format");
+                    }
+                } catch (error) {
+                    if (i === retries - 1) {
+                        throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2; // Exponential Backoff
+                }
+            }
+        }
+
+        // ==========================================
+        // 명심 연금술 기능 (번뇌 용광로 & 화두 연성)
+        // ==========================================
+        async function smeltWorry() {
+            const worryInput = document.getElementById('worry-input');
+            const worryText = worryInput.value.trim();
+            if (!worryText) return;
+
+            const worryBtn = document.getElementById('worry-btn');
+            const resultDiv = document.getElementById('worry-result');
+            const resultText = document.getElementById('worry-result-text');
+
+            worryInput.classList.add('burning-effect');
+            worryBtn.disabled = true;
+            worryBtn.innerHTML = `<span>🔥 번뇌 소각 및 명심 연성 중...</span>`;
+
+            const systemPrompt = `
+                당신은 "명심코칭"의 거룩한 연금술 마스터입니다.
+                사용자가 현실 속의 두려움, 나이듦, 성공의 집착, 아픔 등의 고민을 호소할 때, 
+                그것은 한낱 실재하지 않는 가상의 그림자이고, 자각하는 자리는 영원히 투명함을 깨치도록 돕는 
+                명심코칭 특유의 준엄하면서도 자비로운 1~2문장의 성찰 처방전을 작성해 주십시오. 
+                '경허' 등 고인의 이름을 제외하고 전적으로 명심코칭의 비이원적 입장에서 서술하십시오.
+            `;
+
+            try {
+                const response = await callGemini(worryText, systemPrompt);
+                
+                setTimeout(() => {
+                    worryInput.classList.remove('burning-effect');
+                    worryInput.value = ''; // Melted
+                    worryBtn.disabled = false;
+                    worryBtn.innerHTML = `
+                        <i data-lucide="flame" class="w-4 h-4 text-red-500"></i>
+                        <span>✨ 번뇌 완전 용융</span>
+                    `;
+                    lucide.createIcons();
+
+                    resultDiv.classList.remove('hidden');
+                    resultText.innerText = response;
+                    resultDiv.scrollIntoView({ behavior: 'smooth' });
+                    showToast('✨ 세속의 번뇌가 맑은 물로 복원되었습니다.');
+                }, 1500);
+
+            } catch (error) {
+                worryInput.classList.remove('burning-effect');
+                worryBtn.disabled = false;
+                worryBtn.innerHTML = `<span>소각 실패 - 재전송</span>`;
+                showToast('❌ 혼탁이 극심해 용융하지 못했습니다. 다시 시도하십시오.');
+            }
+        }
+
+        let selectedKoanCat = '';
+
+        function selectKoanCategory(category, element) {
+            selectedKoanCat = category;
+            
+            document.querySelectorAll('.koan-cat-btn').forEach(btn => {
+                btn.classList.remove('border-violet-600', 'text-violet-300', 'bg-violet-950/20');
+                btn.classList.add('border-zinc-800/80', 'text-zinc-400', 'bg-zinc-950');
+            });
+            
+            element.classList.remove('border-zinc-800/80', 'text-zinc-400', 'bg-zinc-950');
+            element.classList.add('border-violet-600', 'text-violet-300', 'bg-violet-950/20');
+        }
+
+        async function generateKoan() {
+            if (!selectedKoanCat) {
+                showToast('💡 자각하고자 하는 영적 한계를 먼저 선택해 주십시오.');
+                return;
+            }
+
+            const koanBtn = document.getElementById('koan-btn');
+            const resultDiv = document.getElementById('koan-result');
+            const resultText = document.getElementById('koan-result-text');
+            const resultDesc = document.getElementById('koan-result-desc');
+
+            koanBtn.disabled = true;
+            koanBtn.innerHTML = `<span>💎 벼루에서 화두를 벼려내는 중...</span>`;
+
+            const query = `내가 봉착한 영적 장애는 [${selectedKoanCat}] 입니다. 명심코칭의 거울을 깨는 법문으로 화두와 해설을 지어주십시오.`;
+            
+            const systemPrompt = `
+                당신은 "명심코칭"의 거장 마스터입니다. 
+                사용자가 선택한 세속의 한계 장벽에 대해, 관념을 일거에 격파할 1줄짜리 기묘하고 예리한 "명심코칭 화두(Koan)"를 지어주십시오.
+                그리고 그 아래에 명심코칭의 근본 원리(물과 거품, 유신견의 환상성, 미장된 참자아)를 통렬하게 관통하여 마음을 편히 내려놓게 할 3~4문장의 "해설"을 주십시오.
+
+                반드시 JSON 포맷으로만 응답해야 합니다:
+                {
+                    "koan": "날카로운 명심 화두 1줄",
+                    "description": "명심코칭 강의 맥락을 녹인 숭고하고 간결한 직관적 해설"
+                }
+            `;
+
+            const responseSchema = {
+                type: "OBJECT",
+                properties: {
+                    koan: { type: "STRING" },
+                    description: { type: "STRING" }
+                },
+                required: ["koan", "description"]
+            };
+
+            try {
+                const response = await callGemini(query, systemPrompt, responseSchema);
+                
+                koanBtn.disabled = false;
+                koanBtn.innerHTML = `
+                    <i data-lucide="sparkles" class="w-4 h-4 text-violet-400"></i>
+                    <span>✨ 맞춤 화두 연성 및 가사 수수</span>
+                `;
+                lucide.createIcons();
+
+                resultDiv.classList.remove('hidden');
+                resultText.innerText = response.koan;
+                resultDesc.innerText = response.description;
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+                showToast('✨ 새로운 명심 화두가 연성되어 전수되었습니다.');
+
+            } catch (error) {
+                koanBtn.disabled = false;
+                koanBtn.innerHTML = `<span>오류 발생 - 재도전</span>`;
+                showToast('❌ 화두 가공 중 무명의 간섭이 발생했습니다. 다시 벼리십시오.');
+            }
+        }
+
+        function copyKoan() {
+            const koanText = document.getElementById('koan-result-text').innerText;
+            if (!koanText) return;
+            
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = koanText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+            
+            showToast("✨ 화두가 그대의 가슴과 스마트폰 클립보드에 복사되었습니다.");
+        }
+
+
+        // ==========================================
+        // 🌟 코스 A: 5단계 자각의 여정 로직
+        // ==========================================
+        const courseASteps = [
+            {
+                title: "1단계: 몸(Body) 자각",
+                question: "당신의 몸뚱아리는 당신이 안전하게 머무는 집인가요, 아니면 언젠가 흩어질 물질의 거품인가요?",
+                insight: "매일 섭취하는 음식으로 만들어진 이 몸뚱아리는 끊임없이 세포가 바뀌며 죽어갑니다. 실체도 없고 머무르지도 않는 육체를 정말 나라고 부를 수 있습니까?"
+            },
+            {
+                title: "2단계: 생각(Thought) 자각",
+                question: "하루 수만 번씩 피어나는 불쑥 스쳐가는 잡념들을 당신이 직접 계획하고 통제하여 발명했습니까?",
+                insight: "생각은 뇌의 미세한 자극과 무의식이 결합해 저절로 일어나는 구름입니다. 통제할 수도 없는 그 구름들의 무리가 과연 진짜 당신이 맞습니까?"
+            },
+            {
+                title: "3단계: 감정(Emotion) 자각",
+                question: "소외감, 억울함, 불안감이 습격할 때 그것은 본바탕의 바다입니까, 표면에 부는 사나운 바람입니까?",
+                insight: "바람이 잦아들면 파도는 물로 돌아갑니다. 그 어떤 격정적인 감정도 자각의 바다 위를 일시적으로 흔들 뿐, 바다 본래의 투명함은 결코 파괴하지 못합니다."
+            },
+            {
+                title: "4단계: 감각(Sensation) 자각",
+                question: "뺨을 스치는 차가운 겨울바람을 자각할 때, 바람(객체)과 뺨(주체)은 과연 나누어져 있습니까?",
+                insight: "경험의 한가운데에는 오직 하나의 거대한 '자각하는 사건'이 흐를 뿐입니다. 안과 밖, 주관과 객관은 단지 생각이 지어낸 인위적인 경계일 뿐입니다."
+            },
+            {
+                title: "5단계: 본래면목(True Self) 각성",
+                question: "이 모든 변화를 한 치의 오차도 없이 지켜보고 있는 '그 텅 빈 앎' 자체는 모양이 있으며 나이가 먹습니까?",
+                insight: "보이는 것은 나이가 들고 병들지만, 그것을 흔들림 없이 비추고 있는 텅 빈 주체(참나)는 영원히 고요하고 깨끗합니다. 이제 당신의 참 자성을 깊이 고백하십시오."
+            }
+        ];
+
+        let courseACurrentIdx = 0;
+        let courseAAnswers = [];
+
+        function renderCourseAStep() {
+            const step = courseASteps[courseACurrentIdx];
+            document.getElementById('course-a-step-indicator').innerText = `${courseACurrentIdx + 1} / 5 단계`;
+            document.getElementById('course-a-progress').style.width = `${(courseACurrentIdx + 1) * 20}%`;
+            document.getElementById('course-a-title-badge').innerText = step.title;
+            document.getElementById('course-a-question').innerText = step.question;
+            document.getElementById('course-a-insight').innerText = step.insight;
+
+            // Retain written answer if any
+            document.getElementById('course-a-input').value = courseAAnswers[courseACurrentIdx] || '';
+
+            // Render navigation buttons adaptively
+            const prevBtn = document.getElementById('course-a-prev-btn');
+            if (courseACurrentIdx === 0) {
+                prevBtn.innerText = "코스 선택으로";
+            } else {
+                prevBtn.innerText = "이전 단계";
+            }
+
+            const nextBtn = document.getElementById('course-a-next-btn');
+            if (courseACurrentIdx === 4) {
+                nextBtn.innerHTML = `<span>대각성 인증서 발급</span><i data-lucide="award" class="w-3.5 h-3.5"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>자각 기록 (다음)</span><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>`;
+            }
+            lucide.createIcons();
         }
 
         function prevCourseAStep() {
-            playBeepSound(550, 0.04);
-            if (courseAStep > 1) {
-                courseAStep--;
-                updateCourseA();
-            }
-        }
-
-        function nextCourseBStep() {
-            const ans = document.getElementById('course-b-input').value.trim();
-            localStorage.setItem(`course-b-ans-${courseBStep}`, ans);
-            playBeepSound(680, 0.04);
-            if (courseBStep < 108) {
-                courseBStep++;
-                updateCourseB();
+            if (courseACurrentIdx === 0) {
+                switchTab('intro');
             } else {
-                issueEarlyReport('body');
-            }
-        }
-        function prevCourseBStep() {
-            playBeepSound(550, 0.04);
-            if (courseBStep > 1) {
-                courseBStep--;
-                updateCourseB();
+                // Save current answer
+                courseAAnswers[courseACurrentIdx] = document.getElementById('course-a-input').value.trim();
+                courseACurrentIdx--;
+                renderCourseAStep();
             }
         }
 
-        function nextCourseCStep() {
-            const ans = document.getElementById('course-c-input').value.trim();
-            localStorage.setItem(`course-c-ans-${courseCStep}`, ans);
-            playBeepSound(700, 0.04);
-            if (courseCStep < 108) {
-                courseCStep++;
-                updateCourseC();
+        async function nextCourseAStep() {
+            const currentVal = document.getElementById('course-a-input').value.trim();
+            if (!currentVal && courseACurrentIdx === 4) {
+                showToast("💡 대각성 성찰 고백을 성실하게 작성해 주셔야 인증서가 연성됩니다.");
+                return;
+            }
+
+            courseAAnswers[courseACurrentIdx] = currentVal;
+
+            if (courseACurrentIdx < 4) {
+                courseACurrentIdx++;
+                renderCourseAStep();
+                showToast(`✨ ${courseACurrentIdx}단계 자각이 완료되었습니다.`);
             } else {
-                issueEarlyReport('thought');
-            }
-        }
-        function prevCourseCStep() {
-            playBeepSound(550, 0.04);
-            if (courseCStep > 1) {
-                courseCStep--;
-                updateCourseC();
+                // Finalize Journey and Call Gemini for Certificate
+                await issueTrueSelfCertificate();
             }
         }
 
-        function nextCourseDStep() {
-            const ans = document.getElementById('course-d-input').value.trim();
-            localStorage.setItem(`course-d-ans-${courseDStep}`, ans);
-            playBeepSound(720, 0.04);
-            if (courseDStep < 108) {
-                courseDStep++;
-                updateCourseD();
-            } else {
-                issueEarlyReport('emotion');
-            }
-        }
-        function prevCourseDStep() {
-            playBeepSound(550, 0.04);
-            if (courseDStep > 1) {
-                courseDStep--;
-                updateCourseD();
-            }
-        }
-
-        function nextCourseEStep() {
-            const ans = document.getElementById('course-e-input').value.trim();
-            localStorage.setItem(`course-e-ans-${courseEStep}`, ans);
-            playBeepSound(740, 0.04);
-            if (courseEStep < 108) {
-                courseEStep++;
-                updateCourseE();
-            } else {
-                issueEarlyReport('sensation');
-            }
-        }
-        function prevCourseEStep() {
-            playBeepSound(550, 0.04);
-            if (courseEStep > 1) {
-                courseEStep--;
-                updateCourseE();
-            }
-        }
-
-        // ==========================================
-        // 리포트/인증서 발급 및 복사 기능
-        // ==========================================
-        function issueEarlyReport(type) {
-            playBeepSound(880, 0.15);
+        async function issueTrueSelfCertificate() {
             const modal = document.getElementById('report-modal');
             const title = document.getElementById('modal-header-title');
             const body = document.getElementById('modal-body-content');
 
+            title.innerText = "✨ 본래면목 대각성 심사 중";
+            body.innerHTML = `
+                <div class="text-center py-8 space-y-3">
+                    <div class="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p class="text-xs text-zinc-400">그대가 남긴 5단계 자각의 자국을 맑은 눈으로 관조하고 있습니다...</p>
+                </div>
+            `;
             modal.classList.remove('hidden');
 
-            let reportHtml = "";
-            if (type === 'all') {
-                title.innerText = "🏆 명심코칭 108 의식 해체 자각 인증서";
-                reportHtml = `
-                    <div class="text-center space-y-4">
-                        <div class="inline-block p-4 bg-emerald-950/20 text-emerald-400 rounded-full border border-emerald-500/20 mb-2">
-                            👑
+            const queryPayload = JSON.stringify({
+                bodyConfession: courseAAnswers[0],
+                thoughtConfession: courseAAnswers[1],
+                emotionConfession: courseAAnswers[2],
+                sensationConfession: courseAAnswers[3],
+                ultimateInsight: courseAAnswers[4]
+            });
+
+            const systemPrompt = `
+                당신은 오직 비이원적 본래면목을 전수하는 "명심코칭"의 거룩한 마스터 대선사입니다.
+                사용자가 제출한 5가지 성찰 일지(육체, 생각, 감정, 감각, 최종 참나)를 읽고, 그대의 거울을 맑게 닦아 다음과 같은 양식으로 장엄한 대각성 법명과 총평을 하사하십시오.
+                말투는 지극히 숭고하고 자비로운 선가(禪家)의 격조 높은 어조를 유지하십시오.
+
+                반드시 다음과 같은 JSON 스키마를 철저하게 준수하여 하나의 구조화된 데이터로 리턴해야 합니다.
+                {
+                    "wisdomName": "아름다운 선가적 풍류가 깃든 한자 법명 (예: 여시(如实现), 심월(心月), 무경(無境))",
+                    "auraRating": "자각 수준 백분율 지수 (예: 99.4%)",
+                    "auraColor": "맑은 은빛 단색조",
+                    "assessment": "사용자의 5단계 고백 일지를 깊이 관조하고 내리는 뼈 때리면서도 영혼을 울리는 3-4문장 분량의 자비로운 해방의 총평",
+                    "gatha": "이 영적 해방을 축하하는 아름다운 4행짜리 깨달음의 게송 (한글로 아름다운 시)"
+                }
+            `;
+
+            const responseSchema = {
+                type: "OBJECT",
+                properties: {
+                    wisdomName: { type: "STRING" },
+                    auraRating: { type: "STRING" },
+                    auraColor: { type: "STRING" },
+                    assessment: { type: "STRING" },
+                    gatha: { type: "STRING" }
+                },
+                required: ["wisdomName", "auraRating", "auraColor", "assessment", "gatha"]
+            };
+
+            try {
+                const response = await callGemini(queryPayload, systemPrompt, responseSchema);
+                
+                title.innerText = "👑 명심코칭: 본래면목 대각성 인증서";
+                body.innerHTML = `
+                    <div class="space-y-5 text-center py-4">
+                        <div class="inline-block p-4 bg-zinc-950 rounded-full border border-violet-500/30 animate-pulse">
+                            <i data-lucide="award" class="w-12 h-12 text-violet-400"></i>
                         </div>
-                        <h4 class="text-base font-bold text-zinc-150 serif-font">순수 자각 인증서 (Certificate of Pure Awareness)</h4>
-                        <div class="border border-zinc-800 p-4 rounded-xl text-left bg-zinc-950/40 space-y-2 text-xs leading-relaxed text-zinc-300">
-                            <strong>■ 수여 번호:</strong> MYEONGSIM-CERT-2026-A
-                            <br><strong>■ 진행 단계:</strong> 108 의식 해체 (완수)
-                            <br><strong>■ 자각 종합 소견:</strong> 주관과 객관, 아는 자와 알아차려지는 대상의 경계를 허물고, 온 우주가 텅 빈 자각의 바다임일 깊이 통찰하여 '순수 의식(참나)'에 완착하였음을 공식 증명합니다.
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-violet-400 uppercase tracking-widest">Myeongshim Master License</span>
+                            <h4 class="text-xl font-bold text-zinc-100 serif-font">대각성 법명: <span class="text-amber-300 font-extrabold">${response.wisdomName}</span></h4>
+                            <p class="text-xs text-zinc-500">자각 아우라: <span class="text-emerald-400 font-mono font-bold">${response.auraRating}</span> (${response.auraColor})</p>
                         </div>
-                        <p class="text-[10px] text-zinc-550 leading-relaxed">
-                            이 인증서는 우주 자성의 공함 속에서 스스로에 대한 전면적 수용(DBT)과 흘러보내기(ACT)를 성공적으로 이룬 당신에게 부여됩니다.
+                        
+                        <div class="bg-zinc-950/60 p-4 rounded-xl border border-zinc-800 text-left space-y-3">
+                            <span class="text-[10px] font-bold text-violet-400 block border-b border-zinc-900 pb-1">✨ 마스터의 거울 총평:</span>
+                            <p class="text-xs text-zinc-300 leading-relaxed font-serif">${response.assessment}</p>
+                        </div>
+
+                        <div class="bg-zinc-950/60 p-4 rounded-xl border border-amber-900/30 text-center relative overflow-hidden">
+                            <div class="absolute -top-6 -right-6 w-16 h-16 bg-amber-900/10 rounded-full blur-xl"></div>
+                            <span class="text-[10px] font-bold text-amber-500 block mb-2 serif-font">🔮 대각성 수수 게송 (Gatha)</span>
+                            <p class="text-xs text-amber-100 leading-relaxed font-semibold italic whitespace-pre-line serif-font">${response.gatha}</p>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+                showToast("✨ 명심코칭 자각 인증서가 완벽히 연성되었습니다.");
+            } catch (error) {
+                title.innerText = "오류 발생";
+                body.innerHTML = `<p class="text-xs text-red-400 py-6 text-center">자각의 파도를 완전히 닦아내지 못했습니다. 마음을 가다듬고 다시 전수받으십시오.</p>`;
+                showToast("❌ 인증서 연성 실패");
+            }
+        }
+
+
+        // ==========================================
+        // 🌟 코스 B: 108 재귀적 몸 해체 로직
+        // ==========================================
+        const anchorQuestions = {
+            1: {
+                question: "Q.1 잘려나간 손톱 조각은 당신인가요, 아니면 한낱 단백질 껍데기인가요?",
+                insight: "우리는 몸에 붙어있는 것은 '나'라고 여겨 귀하게 관리하지만, 깎여서 쓰레기통에 들어간 손톱은 미련 없이 버립니다. 당신의 참나가 물질의 경계에 따라 변합니까?"
+            },
+            12: {
+                question: "Q.12 내 의지와 아무 상관없이 스스로 뛰고 멈추는 심장은 나의 소유물인가요?",
+                insight: "당신이 깊은 잠에 빠져 아무 생각을 하지 않아도 심장은 혼자 움직입니다. 심장은 단지 자각의 대상일 뿐, '내가' 심장을 뛰게 하는 것이 아닙니다."
+            },
+            36: {
+                question: "Q.36 거울 속에 비춰지는 저 육신의 눈동자는 나를 보고 있는 주체인가요?",
+                insight: "거울 속 피사체는 스스로 인지 능력이 없는 기하학적 형태일 뿐입니다. 진짜 당신은 거울 밖에서 거울 전체를 온전히 껴안고 지켜보는 자각입니다."
+            },
+            72: {
+                question: "Q.72 베개 머리 위에 무심코 탈락한 한 가닥 머리카락은 언제부터 당신이 아니게 된 것인가요?",
+                insight: "머리에 접착되어 있을 때나 분리되었을 때나 우주적 성품은 똑같습니다. 단지 생각의 접착제가 그것을 나라고 구속해 놓았을 뿐입니다."
+            },
+            93: {
+                question: "Q.93 빠르게 회전하는 놀이기구에서 온 세상이 돌 때, 도는 것은 세상인가요 내 전정기관인가요?",
+                insight: "귓속 림프액이 흔들려 일어나는 회전적 착각. 온 우주가 도는 혼란 속에서도 '놀이기구를 타고 있구나' 하며 중심을 잡으려 눈을 감는 당신의 참나는 흔들리지 않는 축입니다."
+            },
+            108: {
+                question: "Q.108 우주 공간 무중력 상태에서 아래위가 소멸할 때, 내 몸뚱아리는 우주 안의 입자인가요 허공 자체인가요?",
+                insight: "중력이라는 일시적 밧줄이 풀리는 순간, 안팎의 분별 장벽이 소멸합니다. 온 몸이 그대로 무한 진공 속의 일렁임일 뿐이며, 이를 아는 거울만이 우주를 머금습니다."
+            }
+        };
+
+        let courseBCurrentStep = 1; // default starts at 1 according to screen image 2
+        let courseBProgress = 1;
+        let courseBAnswers = {};
+
+        async function loadAIDeconstructionInsight(type, step, questionText, fallbackText, elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+
+            // 로딩 표시: 기존 Fallback 끝에 반짝이 추가
+            el.innerHTML = `${fallbackText} <span class="animate-pulse text-violet-400 font-bold ml-1">... ✨ (AI 성찰 벼리는 중)</span>`;
+
+            const courseNameMap = {
+                body: '몸',
+                thought: '생각',
+                emotion: '감정',
+                sensation: '느낌'
+            };
+
+            const systemPrompt = `당신은 우주와 생명의 본질을 탐구하는 비이원적 명상 마스터이자 다정한 과학 교육자입니다.
+구도자가 [${courseNameMap[type]} 해체] Q.${step} 단계 성찰 질문에 직면해 있습니다.
+
+이 질문에 대해 초보자도 "아, 그렇구나!" 하고 무릎을 치며 가슴으로 깊이 이해할 수 있도록, 
+현실적이고 과학적인 근거(예: 생리학적 작용, 물리 법칙, 우주 순환, 뇌 과학, 화학 반응 등)를 따뜻하고 감동적인 은유/비유법을 섞어 친절하고 상세하게 설명하는 답변을 지어주십시오.
+
+[규칙]
+1. 딱딱한 지식 나열이 아닌, 마음의 위로와 영적 해방감을 주는 다정하고 시적인 톤앤매너로 서술해 주세요.
+2. 2-3문장(약 120자 내외)으로 작성하여 가독성을 높여 주세요.
+3. "💡 " 같은 아이콘은 붙이지 말고 순수 텍스트로만 대답하세요.`;
+
+            try {
+                const aiInsight = await callGemini(questionText, systemPrompt);
+                if (aiInsight && aiInsight.trim()) {
+                    el.style.opacity = 0;
+                    setTimeout(() => {
+                        el.innerText = aiInsight.trim();
+                        el.style.transition = 'opacity 0.5s ease';
+                        el.style.opacity = 1;
+                    }, 150);
+                } else {
+                    el.innerText = fallbackText;
+                }
+            } catch (error) {
+                console.error("AI Insight load error:", error);
+                el.innerText = fallbackText;
+            }
+        }
+
+        function renderCourseBStep() {
+            const activeStep = courseBCurrentStep;
+            document.getElementById('course-b-step-indicator').innerText = `${activeStep} / 108`;
+            document.getElementById('course-b-progress').style.width = `${(courseBProgress / 108) * 100}%`;
+            document.getElementById('early-report-link-text').innerText = `${activeStep}단계 기준 조기 자각리포트 발급`;
+
+            const qData = getQuestionAndInsight('body', activeStep);
+
+            document.getElementById('course-b-question').innerText = qData.q;
+            document.getElementById('course-b-input').value = courseBAnswers[activeStep] || '';
+
+            // Handle badge highlights based on Progress count
+            const b12 = document.getElementById('badge-12');
+            const b36 = document.getElementById('badge-36');
+            const b72 = document.getElementById('badge-72');
+            const b108 = document.getElementById('badge-108');
+
+            b12.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseBProgress >= 12 ? 'border-violet-600/50 bg-violet-950/10 text-violet-100 opacity-100' : 'opacity-40'}`;
+            b36.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseBProgress >= 36 ? 'border-violet-600/50 bg-violet-950/10 text-violet-100 opacity-100' : 'opacity-40'}`;
+            b72.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseBProgress >= 72 ? 'border-violet-600/50 bg-violet-950/10 text-violet-100 opacity-100' : 'opacity-40'}`;
+            b108.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseBProgress >= 108 ? 'border-violet-600/50 bg-violet-950/10 text-violet-100 opacity-100' : 'opacity-40'}`;
+
+            updateAuraForStepB();
+            
+            // 실시간 AI 과학적/은유적 자각 피드백 비동기 주입
+            loadAIDeconstructionInsight('body', activeStep, qData.q, qData.i, 'course-b-insight');
+        }
+
+        function updateAuraForStepB() {
+            const aura = document.getElementById('dynamic-aura');
+            const ratio = courseBProgress / 108;
+            
+            if (ratio < 0.3) {
+                aura.className = "aura-turbulent";
+                aura.style.opacity = "0.18";
+            } else if (ratio < 0.8) {
+                aura.style.background = `radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, rgba(100, 116, 139, 0.3) 50%, rgba(8, 9, 10, 0) 100%)`;
+                aura.style.opacity = "0.12";
+            } else {
+                aura.className = "aura-tranquil";
+                aura.style.opacity = "0.08";
+            }
+        }
+
+        function prevCourseBStep() {
+            courseBAnswers[courseBCurrentStep] = document.getElementById('course-b-input').value.trim();
+            if (courseBProgress > 1) {
+                courseBProgress--;
+                courseBCurrentStep = courseBCurrentStep === 1 ? 108 : courseBCurrentStep - 1;
+                renderCourseBStep();
+            } else {
+                switchTab('intro');
+            }
+        }
+
+        function nextCourseBStep() {
+            courseBAnswers[courseBCurrentStep] = document.getElementById('course-b-input').value.trim();
+            if (courseBProgress < 108) {
+                courseBProgress++;
+                courseBCurrentStep = (courseBCurrentStep % 108) + 1;
+                if (courseBProgress % 12 === 0) {
+                    showToast(`🏆 축하합니다! ${courseBProgress}단계 몸 해체 배지를 획득하셨습니다.`);
+                }
+                renderCourseBStep();
+            } else {
+                showToast("🎉 108 재귀적 몸 해체 관문을 완수하셨습니다! 참나 자각이 증명되었습니다.");
+            }
+        }
+
+
+        // ==========================================
+        // 🌟 코스 C: 108 재귀적 생각 해체 로직
+        // ==========================================
+        const anchorQuestionsC = {
+            1: {
+                question: "Q.1 스쳐 지나간 1초 전의 생각은 지금 어디로 사라졌나요?",
+                insight: "구름이 걷히면 하늘만 남듯, 한 생각은 자취 없이 스러집니다. 흘러가 버린 환상의 이미지를 붙잡고 '진짜 내 생각'이라며 괴로워하고 계시진 않습니까?"
+            },
+            12: {
+                question: "Q.12 당신이 깊은 잠에 빠졌을 때, '나'라는 번뇌는 존재했나요?",
+                insight: "숙면 상태에서는 어떠한 불안도 괴롭힘도 없었습니다. 잠에서 깨어난 뒤 뇌에 점등된 '나'라는 자기 중심적 사념은 인위적인 습관적 반응에 불과합니다."
+            },
+            36: {
+                question: "Q.36 머릿속으로 상상 속의 레몬을 깨물 때 고이는 침은 생각의 작용인가요 실재인가요?",
+                insight: "생각은 육체의 생리적 항상성 반응마저 조작하는 가상 비디오테이프와 같습니다. 불안이라는 가상 이미지에 속아 현실의 몸을 혹사하지 마십시오."
+            },
+            72: {
+                question: "Q.72 잊고 싶지만 호련히 떠오르는 고통스러운 과거 기억은 당신 뇌의 전류 신호입니까, 참나입니까?",
+                insight: "기억은 뇌라는 유기체 하드웨어에 각인된 미세한 전자 신호의 흔적일 뿐입니다. 이미 지나가고 없는 가짜 환영에 묶여 지금 이 순간의 맑은 거울을 흐리지 마십시오."
+            },
+            93: {
+                question: "Q.93 '공부를 덜 했다'는 자책과 '깨달아야 한다'는 거대한 갈망 중 어느 것이 더 허망합니까?",
+                insight: "깨달으려 하고, 도달하려 하고, 공부하려는 그 갈망(거울)마저 쉴 때 비로소 being(존재 자체)이 드러납니다. 쥐려는 손을 펼칠 때 허공 전체를 얻게 됩니다."
+            },
+            108: {
+                question: "Q.108 말과 생각이 완전히 끊어진 침묵(言語道斷) 속에서, '아무것도 없음'을 비추는 주체는 누구입니까?",
+                insight: "일체의 분별과 언어가 사라진 텅 빈 정막 속에서도 성성하게 살아 작동하는 '쎦(각)'이 있습니다. 이것이 그대의 늙지 않고 다치지 않는 본래면목입니다."
+            }
+        };
+
+        let courseCCurrentStep = 1; 
+        let courseCProgress = 1;
+        let courseCAnswers = {};
+
+        function renderCourseCStep() {
+            const activeStep = courseCCurrentStep;
+            document.getElementById('course-c-step-indicator').innerText = `${activeStep} / 108`;
+            document.getElementById('course-c-progress').style.width = `${(courseCProgress / 108) * 100}%`;
+            document.getElementById('early-report-link-text-c').innerText = `${activeStep}단계 기준 조기 자각리포트 발급`;
+
+            const qData = getQuestionAndInsight('thought', activeStep);
+
+            document.getElementById('course-c-question').innerText = qData.q;
+            document.getElementById('course-c-input').value = courseCAnswers[activeStep] || '';
+
+            const b12 = document.getElementById('badge-c-12');
+            const b36 = document.getElementById('badge-c-36');
+            const b72 = document.getElementById('badge-c-72');
+            const b108 = document.getElementById('badge-c-108');
+
+            b12.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseCProgress >= 12 ? 'border-amber-600/50 bg-amber-950/10 text-amber-100 opacity-100' : 'opacity-40'}`;
+            b36.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseCProgress >= 36 ? 'border-amber-600/50 bg-amber-950/10 text-amber-100 opacity-100' : 'opacity-40'}`;
+            b72.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseCProgress >= 72 ? 'border-amber-600/50 bg-amber-950/10 text-amber-100 opacity-100' : 'opacity-40'}`;
+            b108.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseCProgress >= 108 ? 'border-amber-600/50 bg-amber-950/10 text-amber-100 opacity-100' : 'opacity-40'}`;
+
+            updateAuraForStepC();
+            
+            // 실시간 AI 과학적/은유적 자각 피드백 비동기 주입
+            loadAIDeconstructionInsight('thought', activeStep, qData.q, qData.i, 'course-c-insight');
+        }
+
+        function updateAuraForStepC() {
+            const aura = document.getElementById('dynamic-aura');
+            const ratio = courseCProgress / 108;
+            
+            if (ratio < 0.3) {
+                aura.style.background = `radial-gradient(circle, rgba(245, 158, 11, 0.6) 0%, rgba(220, 38, 38, 0.3) 50%, rgba(8, 9, 10, 0) 100%)`;
+                aura.style.opacity = "0.18";
+            } else if (ratio < 0.8) {
+                aura.style.background = `radial-gradient(circle, rgba(217, 119, 6, 0.4) 0%, rgba(100, 116, 139, 0.3) 60%, rgba(8, 9, 10, 0) 100%)`;
+                aura.style.opacity = "0.12";
+            } else {
+                aura.className = "aura-tranquil";
+                aura.style.opacity = "0.08";
+            }
+        }
+
+        function prevCourseCStep() {
+            courseCAnswers[courseCCurrentStep] = document.getElementById('course-c-input').value.trim();
+            if (courseCProgress > 1) {
+                courseCProgress--;
+                courseCCurrentStep = courseCCurrentStep === 1 ? 108 : courseCCurrentStep - 1;
+                renderCourseCStep();
+            } else {
+                switchTab('intro');
+            }
+        }
+
+        function nextCourseCStep() {
+            courseCAnswers[courseCCurrentStep] = document.getElementById('course-c-input').value.trim();
+            if (courseCProgress < 108) {
+                courseCProgress++;
+                courseCCurrentStep = (courseCCurrentStep % 108) + 1;
+                if (courseCProgress % 12 === 0) {
+                    showToast(`🏆 축하합니다! ${courseCProgress}단계 생각 해체 배지를 획득하셨습니다.`);
+                }
+                renderCourseCStep();
+            } else {
+                showToast("🎉 108 생각 해체 관문을 무사히 마쳤습니다! 생각에서 완전히 초탈하셨습니다.");
+            }
+        }
+
+
+        // ==========================================
+        // 🌟 코스 D: 108 재귀적 감정 해체 로직
+        // ==========================================
+        const anchorQuestionsD = {
+            1: {
+                question: "Q.1 슬픈 영화를 보며 가슴 미어지게 흘리는 눈물은 당신 영혼의 슬픔인가요, 호르몬이 자극한 눈물샘의 즙인가요?",
+                insight: "영화는 빛과 그림자가 스크린에 투사된 자극일 뿐입니다. 안구의 습도를 조절하는 생리적 안구 삼출물이 흘러내릴 뿐인데, 그대는 그것을 '나의 서러운 눈물'이라고 최면을 걸고 있지 않습니까?"
+            },
+            12: {
+                question: "Q.12 억울함에 온몸이 부르르 떨리며 솟구쳐 오르는 분노는 당신 마음의 심장이 뜨거워진 것인가요, 부신피질 자극 호르몬의 장난인가요?",
+                insight: "화는 인연 조건에 반응해 위장이 수축하고 혈관이 수축하는 신체의 일시적 경련 반응일 뿐입니다. 그 폭풍 같은 떨림을 알아차리는 그대 본래의 자성(覺)은 단 1도도 뜨거워진 적이 없습니다."
+            },
+            36: {
+                question: "Q.36 고독하고 쓸쓸한 깊은 밤에 엄습하는 묵직한 고립감은 실제 세상에 동반자가 없어서인가요, 생각이 가둔 외딴방인가요?",
+                insight: "고독은 타인의 부재가 아니라, 뇌가 기억을 뒤적여 지어낸 가상의 결핍 상태입니다. 온 세상을 비추고 있는 텅 빈 방(覺)에는 소외를 가둘 벽도 타인이라는 경계도 본래 없습니다."
+            },
+            72: {
+                question: "Q.72 누군가에게 상처를 주고 가슴을 짓누르는 깊은 자책감은 원래 존재했습니까, 기억의 유령이 주는 회초리입니까?",
+                insight: "자책은 흘러가버린 과거의 잔상에 자아(Ego)가 스스로 내리는 정죄 게임입니다. 맑은 거울은 비춘 대상을 가두지 않듯, 지나간 인연은 자각의 허공에 흔적을 남기지 않습니다."
+            },
+            93: {
+                question: "Q.93 파국을 상상하며 가슴이 답답하고 맥박이 요동칠 때, 가쁘게 뛰는 것은 그대의 참나인가요 허깨비 자아인가요?",
+                insight: "맥박을 뛰게 하고 호흡을 가쁘게 하여 공포를 가중시키는 것은 생물학적 생존 본능의 반사일 뿐입니다. 쿵쾅거리는 소리를 조용히 지켜보는 그대의 본질은 고요한 정적의 심연입니다."
+            },
+            108: {
+                question: "Q.108 모든 감정이 물결처럼 일어났다 거품처럼 스러진 이 고요함 속에서, 감정의 영원한 실체가 없음을 증득하셨습니까?",
+                insight: "낙동강의 물결도 물이고 물거품도 물이듯, 기쁘고 슬프고 성내던 모든 정동은 자성 바다의 미세한 일렁임이었습니다. 파도가 잦아든 고요한 바다에서 그대는 본래 한 번도 다친 적 없는 참나입니다."
+            }
+        };
+
+        let courseDCurrentStep = 1; 
+        let courseDProgress = 1;
+        let courseDAnswers = {};
+
+        function renderCourseDStep() {
+            const activeStep = courseDCurrentStep;
+            document.getElementById('course-d-step-indicator').innerText = `${activeStep} / 108`;
+            document.getElementById('course-d-progress').style.width = `${(courseDProgress / 108) * 100}%`;
+            document.getElementById('early-report-link-text-d').innerText = `${activeStep}단계 기준 조기 자각리포트 발급`;
+
+            const qData = getQuestionAndInsight('emotion', activeStep);
+
+            document.getElementById('course-d-question').innerText = qData.q;
+            document.getElementById('course-d-input').value = courseDAnswers[activeStep] || '';
+
+            const b12 = document.getElementById('badge-d-12');
+            const b36 = document.getElementById('badge-d-36');
+            const b72 = document.getElementById('badge-d-72');
+            const b108 = document.getElementById('badge-d-108');
+
+            b12.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseDProgress >= 12 ? 'border-rose-600/50 bg-rose-950/10 text-rose-100 opacity-100' : 'opacity-40'}`;
+            b36.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseDProgress >= 36 ? 'border-rose-600/50 bg-rose-950/10 text-rose-100 opacity-100' : 'opacity-40'}`;
+            b72.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseDProgress >= 72 ? 'border-rose-600/50 bg-rose-950/10 text-rose-100 opacity-100' : 'opacity-40'}`;
+            b108.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseDProgress >= 108 ? 'border-rose-600/50 bg-rose-950/10 text-rose-100 opacity-100' : 'opacity-40'}`;
+
+            updateAuraForStepD();
+            
+            // 실시간 AI 과학적/은유적 자각 피드백 비동기 주입
+            loadAIDeconstructionInsight('emotion', activeStep, qData.q, qData.i, 'course-d-insight');
+        }
+
+        function updateAuraForStepD() {
+            const aura = document.getElementById('dynamic-aura');
+            const ratio = courseDProgress / 108;
+            
+            if (ratio < 0.3) {
+                aura.style.background = `radial-gradient(circle, rgba(244, 63, 94, 0.6) 0%, rgba(136, 19, 55, 0.3) 50%, rgba(8, 9, 10, 0) 100%)`;
+                aura.style.opacity = "0.18";
+            } else if (ratio < 0.8) {
+                aura.style.background = `radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, rgba(100, 116, 139, 0.3) 60%, rgba(8, 9, 10, 0) 100%)`;
+                aura.style.opacity = "0.12";
+            } else {
+                aura.className = "aura-tranquil";
+                aura.style.opacity = "0.08";
+            }
+        }
+
+        function prevCourseDStep() {
+            courseDAnswers[courseDCurrentStep] = document.getElementById('course-d-input').value.trim();
+            if (courseDProgress > 1) {
+                courseDProgress--;
+                courseDCurrentStep = courseDCurrentStep === 1 ? 108 : courseDCurrentStep - 1;
+                renderCourseDStep();
+            } else {
+                switchTab('intro');
+            }
+        }
+
+        function nextCourseDStep() {
+            courseDAnswers[courseDCurrentStep] = document.getElementById('course-d-input').value.trim();
+            if (courseDProgress < 108) {
+                courseDProgress++;
+                courseDCurrentStep = (courseDCurrentStep % 108) + 1;
+                if (courseDProgress % 12 === 0) {
+                    showToast(`🏆 축하합니다! ${courseDProgress}단계 감정 해체 배지를 획득하셨습니다.`);
+                }
+                renderCourseDStep();
+            } else {
+                showToast("🎉 108 감정 해체 관문을 무사히 마쳤습니다! 모든 노여움과 기쁨에서 초연해졌습니다.");
+            }
+        }
+
+
+        // ==========================================
+        // 🌟 [새로 추가됨] 코스 E: 108 재귀적 느낌 해체 로직
+        // ==========================================
+        const anchorQuestionsE = {
+            1: {
+                question: "Q.1 모기 물린 자리의 극심한 가려움은 당신을 공격하는 적입니까, 그저 통점 신경이 보내는 뇌의 전기 펄스입니까?",
+                insight: "가려움 자체는 신경 말단이 전송하는 전기적 마찰음일 뿐입니다. 여기에 '나를 귀찮게 가두는 괴로움'이라는 꼬리표를 강박적으로 부착해 분노하고 긁는 것은 자아(Ego)가 지어낸 과장된 드라마입니다."
+            },
+            12: {
+                question: "Q.12 들숨과 날숨의 코끝에 감도는 그 시원하고 따스한 감각은 외부 공기의 성질인가요, 자각 위의 가상 물결인가요?",
+                insight: "호흡은 스스로 흐릅니다. 콧구멍의 차가움, 목구멍의 아릿한 느낌들이 생생하게 알아차려지고 있을 뿐, 그 감촉들 자체가 그대라는 독립적인 실체를 나타내지 못합니다."
+            },
+            36: {
+                question: "Q.36 뜨거운 잔을 쥘 때 마주하는 강렬한 열감은 컵의 온전한 형상인가요, 뇌 피질 속에 조각된 한 장의 뇌 매핑 가상지도인가요?",
+                insight: "열 전달은 분자 에너지의 활성 상태일 뿐이며, 당신이 느끼는 '뜨거움'은 뇌가 경고용으로 합성해낸 디지털 지도입니다. 일체의 감촉은 자각의 전시장 위에 비치는 홀로그램입니다."
+            },
+            72: {
+                question: "Q.72 다리가 심하게 저려 찌릿거릴 때 생기는 그 성가신 느낌은 실체적 질병인가요, 단지 일시적인 신경 회로의 정체 신호인가요?",
+                insight: "눌려 있던 뉴런이 풀리며 전기 신호가 폭포처럼 쏟아지는 평범한 자연 현상입니다. 이를 '불쾌하다'고 저항하는 생각의 꼬리만 놓아버리면, 찌릿함은 그저 춤추는 허공의 불꽃놀이가 됩니다."
+            },
+            93: {
+                question: "Q.93 부드러운 물에 몸을 담갔을 때 밀려오는 그 아늑하고 락(樂)적인 느낌은 영혼을 채우는 평화인가요, 피부 수용체의 단순한 전기 신호입니까?",
+                insight: "편안한 쾌감(락) 역시 인연이 부는 조건에 의해 일시적으로 떠올랐다 스러지는 그림자입니다. 기분 좋은 감촉을 더 소유하려는 미세한 움켜짐을 해제할 때, 비로소 변치 않는 성품의 침묵이 밝아집니다."
+            },
+            108: {
+                question: "Q.108 모든 고(苦)적, 낙(樂)적, 무덤덤한 사(捨)적 느낌이 완전히 잦아든 텅 빈 허공에서, 그대는 대체 무엇을 알아차립니까?",
+                insight: "일체의 느낌이 소멸한 정막 속에서도, '지금 느낌이 다 가라앉아 정밀하구나'라고 성성하게 지켜보고 있는 '텅 빈 앎(각)'이 있습니다. 이 앎이 오고가는 일절 감촉(느낌)에 한 번도 물들지 않는 진짜 그대의 얼굴입니다."
+            }
+        };
+
+        let courseECurrentStep = 1; // default starts at 1 as well for design uniformity
+        let courseEProgress = 1;
+        let courseEAnswers = {};
+
+        function renderCourseEStep() {
+            const activeStep = courseECurrentStep;
+            document.getElementById('course-e-step-indicator').innerText = `${activeStep} / 108`;
+            document.getElementById('course-e-progress').style.width = `${(courseEProgress / 108) * 100}%`;
+            document.getElementById('early-report-link-text-e').innerText = `${activeStep}단계 기준 조기 자각리포트 발급`;
+
+            const qData = getQuestionAndInsight('sensation', activeStep);
+
+            document.getElementById('course-e-question').innerText = qData.q;
+            document.getElementById('course-e-input').value = courseEAnswers[activeStep] || '';
+
+            const b12 = document.getElementById('badge-e-12');
+            const b36 = document.getElementById('badge-e-36');
+            const b72 = document.getElementById('badge-e-72');
+            const b108 = document.getElementById('badge-e-108');
+
+            b12.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseEProgress >= 12 ? 'border-indigo-600/50 bg-indigo-950/10 text-indigo-100 opacity-100' : 'opacity-40'}`;
+            b36.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseEProgress >= 36 ? 'border-indigo-600/50 bg-indigo-950/10 text-indigo-100 opacity-100' : 'opacity-40'}`;
+            b72.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseEProgress >= 72 ? 'border-indigo-600/50 bg-indigo-950/10 text-indigo-100 opacity-100' : 'opacity-40'}`;
+            b108.className = `bg-zinc-900/30 p-2.5 border border-zinc-850 rounded-xl text-center space-y-1 transition ${courseEProgress >= 108 ? 'border-indigo-600/50 bg-indigo-950/10 text-indigo-100 opacity-100' : 'opacity-40'}`;
+
+            updateAuraForStepE();
+            
+            // 실시간 AI 과학적/은유적 자각 피드백 비동기 주입
+            loadAIDeconstructionInsight('sensation', activeStep, qData.q, qData.i, 'course-e-insight');
+        }
+
+        // 108 느낌 해체용 아우라 피드백 제어
+        function updateAuraForStepE() {
+            const aura = document.getElementById('dynamic-aura');
+            const ratio = courseEProgress / 108;
+            
+            if (ratio < 0.3) {
+                // Highly active indigo turbulent aura
+                aura.style.background = `radial-gradient(circle, rgba(99, 102, 241, 0.6) 0%, rgba(67, 56, 202, 0.3) 50%, rgba(8, 9, 10, 0) 100%)`;
+                aura.style.opacity = "0.18";
+            } else if (ratio < 0.8) {
+                // Indigo-blue transitional calm aura
+                aura.style.background = `radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, rgba(100, 116, 139, 0.3) 60%, rgba(8, 9, 10, 0) 100%)`;
+                aura.style.opacity = "0.12";
+            } else {
+                // Serene Silver state
+                aura.className = "aura-tranquil";
+                aura.style.opacity = "0.08";
+            }
+        }
+
+        function prevCourseEStep() {
+            courseEAnswers[courseECurrentStep] = document.getElementById('course-e-input').value.trim();
+            if (courseEProgress > 1) {
+                courseEProgress--;
+                courseECurrentStep = courseECurrentStep === 1 ? 108 : courseECurrentStep - 1;
+                renderCourseEStep();
+            } else {
+                switchTab('intro');
+            }
+        }
+
+        function nextCourseEStep() {
+            courseEAnswers[courseECurrentStep] = document.getElementById('course-e-input').value.trim();
+            if (courseEProgress < 108) {
+                courseEProgress++;
+                courseECurrentStep = (courseECurrentStep % 108) + 1;
+                if (courseEProgress % 12 === 0) {
+                    showToast(`🏆 축하합니다! ${courseEProgress}단계 느낌 해체 배지를 획득하셨습니다.`);
+                }
+                renderCourseEStep();
+            } else {
+                showToast("🎉 108 느낌 해체 관문을 무사히 마쳤습니다! 일체 고통과 즐거움의 감촉에서 의연해졌습니다.");
+            }
+        }
+
+
+        // ==========================================
+        // 조기 자각리포트 발급 (LLM Integration 통합형)
+        // ==========================================
+        async function issueEarlyReport(courseType) {
+            const modal = document.getElementById('report-modal');
+            const title = document.getElementById('modal-header-title');
+            const body = document.getElementById('modal-body-content');
+
+            let currentStepNum = 1;
+            let currentAns = "";
+
+            if (courseType === 'body') {
+                currentStepNum = courseBCurrentStep;
+                currentAns = document.getElementById('course-b-input').value.trim();
+            } else if (courseType === 'thought') {
+                currentStepNum = courseCCurrentStep;
+                currentAns = document.getElementById('course-c-input').value.trim();
+            } else if (courseType === 'emotion') {
+                currentStepNum = courseDCurrentStep;
+                currentAns = document.getElementById('course-d-input').value.trim();
+            } else if (courseType === 'sensation') {
+                currentStepNum = courseECurrentStep;
+                currentAns = document.getElementById('course-e-input').value.trim();
+            }
+
+            if (!currentAns) currentAns = "(작성한 성찰 없음 - 침묵의 상태)";
+
+            title.innerText = `🔮 실시간 조기 자각 리포트 연성 (${getCourseLabel(courseType)})`;
+            body.innerHTML = `
+                <div class="text-center py-8 space-y-3">
+                    <div class="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p class="text-xs text-zinc-400">${currentStepNum}단계 자각 상태를 정밀 진단하고 있습니다...</p>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+
+            const systemPrompt = `
+                당신은 "명심코칭"의 거울 마스터입니다. 
+                구도자가 108 재귀적 해체 단계 중 [${getCourseLabel(courseType)} 해체] Q.${currentStepNum} 단계 질문에 대해 고백한 짧은 자각 메모를 읽고,
+                그가 대상화된 에고의 장벽을 부수고 참나(앎의 자리)로 향하는 길에 대해 명심코칭 관점의 직견 총평과 조언, 
+                그리고 앞으로 성찰할 1줄짜리 명심 화두를 하사하는 "자각 진단 리포트"를 품격 있고 자비롭게 작성해 주십시오.
+            `;
+
+            const query = `
+                [현재 진행 단계]: Q.${currentStepNum}
+                [작성한 자각 고백]: "${currentAns}"
+            `;
+
+            try {
+                const report = await callGemini(query, systemPrompt);
+                
+                title.innerText = `🔮 Q.${currentStepNum}단계 자각 리포트 (${getCourseLabel(courseType)})`;
+                body.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="border-b border-zinc-800 pb-2 flex justify-between items-center text-xs">
+                            <span class="text-zinc-500 font-mono">진단 완료일: 2026-06-16</span>
+                            <span class="text-emerald-400 font-bold">자각 순도 우수</span>
+                        </div>
+                        <div class="bg-zinc-950/80 p-4 rounded-xl border border-zinc-850 space-y-2">
+                            <span class="text-[10px] font-bold text-violet-400 uppercase tracking-widest block font-sans">Diagnosis & Guidance</span>
+                            <p class="text-xs text-zinc-300 leading-relaxed whitespace-pre-line font-serif">${report}</p>
+                        </div>
+                        <p class="text-[10px] text-zinc-500 text-center leading-relaxed">
+                            "눈앞에 온 우주가 요동치더라도 흔들리지 않는 굳건한 축은 오직 그대 내부의 앎입니다."
                         </p>
                     </div>
                 `;
-            } else {
-                const names = { consciousness: "의식 해체", body: "몸 해체", thought: "생각 해체", emotion: "감정 해체", sensation: "느낌 해체" };
-                const currentSteps = { consciousness: courseAStep, body: courseBStep, thought: courseCStep, emotion: courseDStep, sensation: courseEStep };
-                const selectedName = names[type] || "오온 해체";
-                const activeStep = currentSteps[type] || 93;
-
-                title.innerText = `🧬 AI 마스터 ${selectedName} 조기 자각 진단서`;
-                reportHtml = `
-                    <div class="space-y-4">
-                        <h4 class="text-sm font-bold text-violet-400 serif-font">${selectedName} 단계적 진단 요약</h4>
-                        <div class="border border-zinc-850 p-4 rounded-xl bg-zinc-950/40 space-y-3 text-xs leading-relaxed text-zinc-300">
-                            <p><strong>■ 총 진행 단계:</strong> ${activeStep} / 108단계</p>
-                            <p><strong>■ 의식 맑음도 지수:</strong> ${Math.floor(60 + (activeStep / 108) * 40)}%</p>
-                            <p><strong>■ AI 마스터 특수 처방전:</strong></p>
-                            <p class="text-zinc-250 italic">
-                                "당신의 자각은 현재 ${activeStep}단계의 객체 해체를 지나고 있습니다. 집착의 매트릭스 알고리즘이 약화되고 있으며, 번뇌가 나를 해치지 못하는 맑은 현존의 상태가 확인되었습니다. 배수가 될 때마다 🥉🥈🥇👑 배지가 깨어나니, 본래면목을 찾는 여정을 멈추지 마십시오."
-                            </p>
-                        </div>
-                    </div>
-                `;
+            } catch (error) {
+                title.innerText = "진단 오류";
+                body.innerHTML = `<p class="text-xs text-red-400 py-6 text-center">자각의 진동이 너무 잦아 진단서를 발행하지 못했습니다. 조용히 재전송하십시오.</p>`;
             }
-
-            body.innerHTML = reportHtml;
         }
 
+        function getCourseLabel(type) {
+            if (type === 'body') return '몸';
+            if (type === 'thought') return '생각';
+            if (type === 'emotion') return '감정';
+            if (type === 'sensation') return '느낌';
+            return '';
+        }
+
+        // ==========================================
+        // 모달 및 기타 유틸리티
+        // ==========================================
         function closeReportModal() {
             document.getElementById('report-modal').classList.add('hidden');
         }
 
         function copyModalContent() {
-            const content = document.getElementById('modal-body-content').innerText;
-            navigator.clipboard.writeText(content).then(() => {
-                showToast("인증서 및 리포트가 클립보드에 안전하게 복사되었습니다!");
-            });
-        }
+            const bodyText = document.getElementById('modal-body-content').innerText;
+            if (!bodyText) return;
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast-box');
-            const message = document.getElementById('toast-message');
-            message.innerText = msg;
-            toast.className = "fixed bottom-5 right-5 bg-violet-900/90 text-zinc-100 px-4 py-3 rounded-2xl border border-violet-500/30 text-xs font-bold shadow-lg z-50 flex items-center gap-2 transform translate-y-0 opacity-100 transition-all duration-300";
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = bodyText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
             
-            playBeepSound(900, 0.05);
-
-            setTimeout(() => {
-                toast.className = "fixed bottom-5 right-5 bg-violet-900/90 text-zinc-100 px-4 py-3 rounded-2xl border border-violet-500/30 text-xs font-bold shadow-lg z-50 flex items-center gap-2 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300";
-            }, 3000);
+            showToast("✨ 리포트 원문이 스마트폰 클립보드에 무사히 소장되었습니다.");
         }
 
-        // 용광로 번뇌 연소 기능
-        function burnAffliction() {
-            const input = document.getElementById('pond-input');
-            const val = input.value.trim();
-            if (!val) {
-                showToast("소멸시킬 번뇌의 언어를 입력해 주세요.");
-                return;
+        // ==========================================
+        // 초기화 및 구동
+        // ==========================================
+        window.onload = function() {
+            lucide.createIcons();
+            initPond();
+            renderCourseAStep();
+            renderCourseBStep();
+            renderCourseCStep();
+            renderCourseDStep();
+            renderCourseEStep();
+        };
+
+        window.onresize = function() {
+            if (pondCanvas) {
+                const rect = pondCanvas.parentElement.getBoundingClientRect();
+                pondCanvas.width = rect.width;
+                pondCanvas.height = rect.height;
             }
-
-            playBeepSound(300, 0.1);
-            
-            const fire = document.getElementById('furnace-fire');
-            const text = document.getElementById('furnace-text');
-
-            text.innerText = `"${val}" 번뇌 연소 중...`;
-            text.className = "text-xs text-rose-400 font-bold z-10 font-mono animate-pulse";
-            fire.className = "absolute inset-0 bg-rose-600/40 opacity-80 transition-all duration-1000";
-
-            setTimeout(() => {
-                playBeepSound(100, 0.2); // 소멸음
-                text.innerText = "참나의 진공(眞空) 속에 번뇌가 흔적도 없이 사라졌습니다.";
-                text.className = "text-xs text-emerald-400 font-bold z-10 font-mono transition-all duration-700";
-                fire.className = "absolute inset-0 bg-emerald-950/10 opacity-30 transition-all duration-1000";
-                input.value = "";
-                
-                showToast("번뇌가 완전히 연소되었습니다. 본래 한 물건도 없습니다.");
-            }, 1800);
         }
-
-        let selectedKoanCat = "";
-        function selectKoanCategory(cat, btn) {
-            selectedKoanCat = cat;
-            playBeepSound(600, 0.03);
-            
-            document.querySelectorAll('.koan-cat-btn').forEach(b => {
-                b.classList.remove('border-amber-700/60', 'text-amber-400', 'bg-amber-950/20');
-                b.classList.add('border-zinc-800/80', 'text-zinc-400', 'bg-zinc-950');
-            });
-            
-            btn.classList.remove('border-zinc-800/80', 'text-zinc-400', 'bg-zinc-950');
-            btn.classList.add('border-amber-700/60', 'text-amber-400', 'bg-amber-950/20');
-        }
-
-        function generateKoan() {
-            if (!selectedKoanCat) {
-                showToast("화두 제조용 관문 영역을 먼저 선택해 주세요!");
-                return;
-            }
-
-            playBeepSound(750, 0.1);
-            
-            const box = document.getElementById('koan-result-box');
-            const q = document.getElementById('koan-question');
-            const c = document.getElementById('koan-comment');
-
-            box.classList.remove('hidden');
-            box.classList.add('animate-pulse');
-            q.innerText = "AI 마스터가 화두를 벼리는 중...";
-            c.innerText = "";
-
-            setTimeout(() => {
-                playBeepSound(528, 0.3); // 타종 소리 시뮬레이션
-                
-                const koans = {
-                    "늙음과 죽음, 노사 소멸의 공포": [
-                        { q: "태어나기 전 너의 원래 얼굴(본래면목)은 무엇인가?", c: "죽음을 두려워하는 것은 이 몸이 나라는 착각 때문이다. 몸이 없던 100년 전에 너는 어디에 있었느냐?" },
-                        { q: "이 몸이 다 타버리고 한 줌의 재가 되었을 때, '아는 자'는 어디로 가는가?", c: "소멸되는 것은 물질의 조합일 뿐, 아는 성품은 오고 감이 없다. 그 자리를 가만히 지켜보라." }
-                    ],
-                    "세속의 성공, 질투, 물질 집착": [
-                        { q: "온 천하의 재물을 다 얻고도 들이마신 숨을 내쉬지 못하면 그것이 무슨 소용이 있겠는가?", c: "들이쉬고 내쉬는 찰나의 호흡 사이에 우주 전체가 담겨 있다. 붙잡으려 하는 손을 펴라." },
-                        { q: "성공하려는 자와 실패를 걱정하는 자, 그 두 생각을 지켜보는 주체는 성공했는가 실패했는가?", c: "E고는 끊임없이 비교의 감옥을 짓는다. 관찰하는 주관은 아무런 빚도, 흠도 없이 고요하다." }
-                    ],
-                    "끝없는 인간갈등과 외로움, 소외": [
-                        { q: "상대방이 나를 욕할 때, 그 소리를 듣고 불쾌해하는 놈의 정체는 무엇인가?", c: "소리는 허공을 치고 사라진다. 내 안의 에고가 반응하지 않으면 소리는 아무런 상처도 남길 수 없다." },
-                        { q: "우주에 홀로 남겨졌을 때, 외로움을 느끼는 자와 그 외로움을 감지하는 자는 같은 자인가?", c: "외로움은 생각의 잔상이다. 감지하는 자는 우주 전체를 품고 있으므로 고독할 수 없다." }
-                    ],
-                    "명상을 아무리 해도 제자리인 권태": [
-                        { q: "깨달음을 얻으려는 그 생각 자체가 가장 거대한 망상임을 아는가?", c: "얻을 깨달음이 따로 없다. 본래 완전함을 믿지 못하고 밖에서 찾으려 하니 권태에 빠지는 것이다." },
-                        { q: "명상이 잘 안 된다고 좌절하는 놈은 누구이며, 명상이 잘 된다고 기뻐하는 놈은 누구인가?", c: "상태의 오고 감에 휘둘리지 말고, 잘 되고 안 됨을 알아차리는 텅 빈 자각 자체로 머무르라." }
-                    ]
-                };
-
-                const list = koans[selectedKoanCat];
-                const selected = list[Math.floor(Math.random() * list.length)];
-
-                q.innerText = `"${selected.q}"`;
-                c.innerText = selected.c;
-                box.classList.remove('animate-pulse');
-                
-                showToast("AI 마스터 선사의 화두가 완성되었습니다.");
-            }, 1200);
-        }
-
-        // 선문답 채팅 처리
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const val = input.value.trim();
-            if (!val) return;
-
-            playBeepSound(650, 0.05);
-
-            const container = document.getElementById('chat-messages');
-
-            // 내 말풍선 추가
-            const myMsg = document.createElement('div');
-            myMsg.className = "flex justify-end";
-            myMsg.innerHTML = `
-                <div class="bg-violet-600/90 text-white p-3 rounded-2xl border border-violet-500/30 max-w-[80%] leading-relaxed font-mono">
-                    ${val}
-                </div>
-            `;
-            container.appendChild(myMsg);
-            input.value = "";
-
-            // 스크롤 탑
-            container.scrollTop = container.scrollHeight;
-
-            // 선사의 답변 시뮬레이션
-            setTimeout(() => {
-                playBeepSound(780, 0.06);
-
-                const answers = [
-                    "그 생각이 일어나는 자리는 원래 텅 비어 있다. 구름에 집착하느라 푸른 하늘 자체를 보지 못하는구나.",
-                    "그 서글픔이 일어날 때, 그 서글픔과 한 몸이 되는가, 아니면 가만히 관조하는가?",
-                    "내가 부족하다는 그 신념은 뇌가 만들어낸 신호일 뿐이다. 그 신호의 기원은 어디인가?",
-                    "파도가 일어난다고 바다가 부서지더냐. 번뇌의 파도 밑 고요한 심연으로 즉시 침잠하라.",
-                    "인정과 성공의 노예가 되어 자신을 짓누르는 그 무거운 에고를 기꺼이 수용하고 내려놓으라."
-                ];
-
-                const masterAnswer = answers[Math.floor(Math.random() * answers.length)];
-
-                const masterMsg = document.createElement('div');
-                masterMsg.className = "flex gap-2 items-start";
-                masterMsg.innerHTML = `
-                    <div class="p-1.5 bg-violet-950/40 text-violet-400 rounded-lg border border-violet-900/30">
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                    </div>
-                    <div class="bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800 max-w-[80%] text-zinc-300 leading-relaxed font-mono">
-                        ${masterAnswer}
-                    </div>
-                `;
-                container.appendChild(masterMsg);
-                lucide.createIcons(); // 아이콘 렌더링 동기화
-                container.scrollTop = container.scrollHeight;
-            }, 800);
-        }
-
-        // 초기 로드 시 코스 상태값 업데이트
-        updateCourseA();
-        updateCourseB();
-        updateCourseC();
-        updateCourseD();
-        updateCourseE();
-
-        // 3D 실시간 조명 아우라 색상 자동 순환 효과 (자각도 상승 피드백 시뮬레이션)
-        let auraState = 'turbulent';
-        setInterval(() => {
-            const aura = document.getElementById('dynamic-aura');
-            if (!aura) return;
-
-            // 모든 코스 합계 진행도가 일정 이상이면 은빛 아우라로 점점 정화됨
-            const totalProgress = courseAStep + courseBStep + courseCStep + courseDStep + courseEStep;
-            if (totalProgress >= 465 && auraState === 'turbulent') {
-                auraState = 'tranquil';
-                aura.className = 'aura-tranquil';
-                showToast("의식의 높은 자각으로 인해 실시간 아우라가 Tranquil Silver(은빛 정정 상태)로 정화되었습니다! ✨");
-            }
-        }, 3000);
     </script>
 </body>
 </html>

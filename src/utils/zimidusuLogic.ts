@@ -282,7 +282,7 @@ export const getAiCrossoverReport = (sajuData: any, zimidusuChart: any, userName
   
   // 2. 자미두수 요인 분석 (명궁 찾기)
   const palaces = zimidusuChart.palaces || [];
-  const myeongPalace = palaces.find((p: any) => p.name === '명' || p.name.includes('명'));
+  const myeongPalace = palaces.find((p: any) => p.name === '명' || p.name?.includes('명'));
   const myeongStars = myeongPalace ? (myeongPalace.majorStars || []).map((s: any) => s.name) : [];
 
   let crossEssay = '';
@@ -327,7 +327,7 @@ export const get6ThemeCrossoverReport = (sajuData: any, zimidusuChart: any, user
 
   // 12궁 데이터 찾기
   const palaces = zimidusuChart.palaces || [];
-  const getPalaceInfo = (pName: string) => palaces.find((p: any) => p.name === pName || p.name.includes(pName)) || { majorStars: [], decadal: { range: [10, 19] } };
+  const getPalaceInfo = (pName: string) => palaces.find((p: any) => p.name === pName || p.name?.includes(pName)) || { majorStars: [], decadal: { range: [10, 19] } };
 
   const myeong = getPalaceInfo('명');
   const jaebaek = getPalaceInfo('재백');
@@ -470,7 +470,7 @@ export const getSawaDaewoonReport = (sajuData: any, zimidusuChart: any, userName
   const nameJosa = `${baseName}님의`;
 
   const palaces = zimidusuChart.palaces || [];
-  const myeongPalace = palaces.find((p: any) => p.name === '명' || p.name.includes('명')) || { decadal: { range: [10, 19] }, majorStars: [] };
+  const myeongPalace = palaces.find((p: any) => p.name === '명' || p.name?.includes('명')) || { decadal: { range: [10, 19] }, majorStars: [] };
   const decadalRange = myeongPalace.decadal.range;
 
   // 전체 궁에서 사화가 들어간 별들을 수집
@@ -525,7 +525,7 @@ export const get3ThemeCrossoverValidation = (sajuData: any, zimidusuChart: any, 
 
   const palaces = zimidusuChart.palaces || [];
   const getPalaceStars = (pName: string) => {
-    const pal = palaces.find((p: any) => p.name === pName || p.name.includes(pName));
+    const pal = palaces.find((p: any) => p.name === pName || p.name?.includes(pName));
     return pal ? (pal.majorStars || []).map((s: any) => s.name).join(', ') : '밝고 온화한 별빛';
   };
 

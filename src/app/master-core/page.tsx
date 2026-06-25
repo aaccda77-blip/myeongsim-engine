@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useReportStore } from '@/store/useReportStore';
-import { Sparkles, ArrowRight, X, Loader2, Heart } from 'lucide-react';
+import { Sparkles, ArrowRight, X, Loader2, Heart, Home } from 'lucide-react';
 
 interface ModuleType {
   key: string;
@@ -37,6 +37,16 @@ const modules: ModuleType[] = [
     gradient: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
     color: '#60a5fa',
     path: '/master-core/value'
+  },
+  {
+    key: 'step-back',
+    title: '거울 뒤로 한 걸음 (안팎 조망)',
+    subtitle: '주객의 경계를 허무는 의식 자각',
+    desc: '육체적 통증과 생각의 연결고리를 끊고, 나와 온 세상을 동시에 바라보는 깊은 평온을 누립니다.',
+    icon: '👁️',
+    gradient: 'from-violet-500/20 to-fuchsia-500/10 border-violet-500/30 text-violet-400',
+    color: '#a855f7',
+    path: '/master-core/step-back'
   },
   {
     key: 'matrix',
@@ -173,8 +183,19 @@ export default function MasterCoreLandingPage() {
 
       {/* Main Container */}
       <main className="relative z-10 flex flex-col min-h-screen px-5 py-10 justify-between">
+        {/* Navigation Bar (Home back button) */}
+        <div className="w-full flex justify-start mb-2">
+          <button 
+            onClick={() => router.push('/')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 hover:border-white/20 text-gray-400 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider backdrop-blur-md active:scale-95"
+          >
+            <Home size={12} />
+            <span>메인화면으로 이동</span>
+          </button>
+        </div>
+
         {/* Upper Header Section */}
-        <div className="w-full text-center mt-4">
+        <div className="w-full text-center mt-2">
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

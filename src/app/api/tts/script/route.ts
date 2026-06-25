@@ -49,15 +49,15 @@ export async function POST(req: NextRequest) {
         `;
 
         // [User Request] Primary: gemini-2.5-flash (Latest Fast Model)
-        // Fallback: gemini-1.5-flash (Reliable Backup)
+        // Fallback: gemini-2.5-flash (Reliable Backup)
         let model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         let result;
         try {
             result = await model.generateContent(systemPrompt);
         } catch (modelError: any) {
-            console.warn(`[Gemini] Primary model 'gemini-1.5-pro' failed: ${modelError.message}. Falling back to 'gemini-1.5-flash'.`);
-            model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+            console.warn(`[Gemini] Primary model 'gemini-1.5-pro' failed: ${modelError.message}. Falling back to 'gemini-2.5-flash'.`);
+            model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
             result = await model.generateContent(systemPrompt);
         }
 

@@ -75,55 +75,76 @@ export interface MyeongsimProfile {
     };
 }
 
-// ============== I-Ching Wheel 매핑 (시작점 보정) ==============
-// Gene Keys / Human Design의 I-Ching Wheel은 특정 순서로 64괘가 배열됨
-// 표준 휠에서 Gate 41이 0도에서 시작함
-const ICHING_WHEEL_ORDER: number[] = [
-    41, 19, 13, 49, 30, 55, 37, 63,  // 0° - 45°
-    22, 36, 25, 17, 21, 51, 42, 3,   // 45° - 90°
-    27, 24, 2, 23, 8, 20, 16, 35,    // 90° - 135°
-    45, 12, 15, 52, 39, 53, 62, 56,  // 135° - 180°
-    31, 33, 7, 4, 29, 59, 40, 64,    // 180° - 225°
-    47, 6, 46, 18, 48, 57, 32, 50,   // 225° - 270°
-    28, 44, 1, 43, 14, 34, 9, 5,     // 270° - 315°
-    26, 11, 10, 58, 38, 54, 61, 60   // 315° - 360°
+// ============== Rave Mandala Gate Mapping ==============
+// 64 Gates mapped to 360 Zodiac Wheel
+// Each gate = 5.625 degrees, Each line = 0.9375 degrees
+const RAVE_MANDALA_GATES: [number, number][] = [
+    // Aries (0-30)
+    [0.000, 25], [5.625, 17], [11.250, 21], [16.875, 51], [22.500, 42],
+    // Taurus (30-60)
+    [28.125, 3], [33.750, 27], [39.375, 24], [45.000, 2], [50.625, 23],
+    // Gemini (60-90)
+    [56.250, 8], [61.875, 20], [67.500, 16], [73.125, 35], [78.750, 45],
+    // Cancer (90-120)
+    [84.375, 12], [90.000, 15], [95.625, 52], [101.250, 39], [106.875, 53],
+    // Leo (120-150)
+    [112.500, 62], [118.125, 56], [123.750, 31], [129.375, 33], [135.000, 7],
+    // Virgo (150-180)
+    [140.625, 4], [146.250, 29], [151.875, 59], [157.500, 40], [163.125, 64],
+    // Libra (180-210)
+    [168.750, 47], [174.375, 6], [180.000, 46], [185.625, 18], [191.250, 48],
+    // Scorpio (210-240)
+    [196.875, 57], [202.500, 32], [208.125, 50], [213.750, 28], [219.375, 44],
+    // Sagittarius (240-270)
+    [225.000, 1], [230.625, 43], [236.250, 14], [241.875, 34], [247.500, 9],
+    // Capricorn (270-300)
+    [253.125, 5], [258.750, 26], [264.375, 11], [270.000, 10], [275.625, 58],
+    // Aquarius (300-330)
+    [281.250, 38], [286.875, 54], [292.500, 61], [298.125, 60], [303.750, 41],
+    // Pisces (330-360)
+    [309.375, 19], [315.000, 13], [320.625, 49], [326.250, 30], [331.875, 55],
+    [337.500, 37], [343.125, 63], [348.750, 22], [354.375, 36]
 ];
-
-// 역방향 매핑: Gate 번호 → Wheel 인덱스
-const GATE_TO_WHEEL_INDEX: Map<number, number> = new Map();
-ICHING_WHEEL_ORDER.forEach((gate, index) => {
-    GATE_TO_WHEEL_INDEX.set(gate, index);
-});
-
-// ============== 핵심 계산 함수 ==============
-
-// Gate 41의 시작 황경 (Human Design 표준)
-// Gate 41은 Aquarius 2도에서 시작 (약 302도)
-// 정밀 조정: 1980-07-07이 Gate 53이 되도록 미세 조정
-const GATE_41_START_LONGITUDE = 296.0; // [FIX] NeuralProfileCalculator와 동일하게 조정
 
 /**
  * 황경(Longitude)을 Gate + Line으로 변환
  * 정확한 Human Design / Gene Keys 휠 매핑
  */
-function longitudeToGate(longitude: number): GatePosition {
-    // 0-360 범위로 정규화
-    let normalizedLong = longitude % 360;
+function longitudeToGate(longitude: number, offset: number = 1.82): GatePosition {
+    // 0-360 범위로 정규화 및 오프셋 적용
+    let normalizedLong = (longitude + offset) % 360;
     if (normalizedLong < 0) normalizedLong += 360;
 
-    // Gate 41 시작점 기준으로 상대 위치 계산
-    let relativeLong = (normalizedLong - GATE_41_START_LONGITUDE + 360) % 360;
+    let gateNumber = 1;
+    let gateStart = 0;
 
-    // 각 Gate는 5.625도 (360 / 64 = 5.625)
-    const gateIndex = Math.floor(relativeLong / 5.625);
-    const safeIndex = Math.max(0, Math.min(63, gateIndex));
-    const gate = ICHING_WHEEL_ORDER[safeIndex] || 1;
+    // RAVE_MANDALA_GATES에서 해당 구간 찾기
+    for (let i = 0; i < RAVE_MANDALA_GATES.length; i++) {
+        const [startDeg, gateNum] = RAVE_MANDALA_GATES[i];
+        const nextGate = RAVE_MANDALA_GATES[(i + 1) % RAVE_MANDALA_GATES.length];
+        let endDeg = nextGate[0];
+        if (endDeg <= startDeg) {
+            endDeg += 360;
+        }
 
-    // Gate 내 위치 계산 (0 ~ 5.625)
+        let tempLong = normalizedLong;
+        if (tempLong < startDeg && endDeg > 360) {
+            tempLong += 360;
+        }
+
+        if (tempLong >= startDeg && tempLong < endDeg) {
+            gateNumber = gateNum;
+            gateStart = startDeg;
+            break;
+        }
+    }
+
+    const relativeLong = (normalizedLong - gateStart + 360) % 360;
     const positionInGate = relativeLong % 5.625;
 
-    // Line 계산 (1-6): 각 Line은 0.9375도 (5.625 / 6)
+    // Line 계산 (1-6): 각 Line은 0.9375도
     const line = Math.floor(positionInGate / 0.9375) + 1;
+    const safeLine = Math.min(6, Math.max(1, line));
 
     // Color 계산 (1-6): 각 Color는 0.15625도
     const positionInLine = positionInGate % 0.9375;
@@ -138,8 +159,8 @@ function longitudeToGate(longitude: number): GatePosition {
     const base = Math.floor(positionInTone / 0.00521) + 1;
 
     return {
-        gate: Math.min(64, Math.max(1, gate)),
-        line: Math.min(6, Math.max(1, line)),
+        gate: gateNumber,
+        line: safeLine,
         color: Math.min(6, Math.max(1, color)),
         tone: Math.min(6, Math.max(1, tone)),
         base: Math.min(5, Math.max(1, base)),
@@ -160,7 +181,8 @@ function getPlanetLongitude(date: Date, body: Astronomy.Body): number {
     }
 
     // 태양 및 다른 행성들
-    const equator = Astronomy.Equator(body, time, null as any, true, true);
+    const observer = new Astronomy.Observer(0, 0, 0);
+    const equator = Astronomy.Equator(body, time, observer, false, false);
     const eclipticCoord = Astronomy.Ecliptic(equator.vec);
 
     return eclipticCoord.elon; // ecliptic longitude
@@ -183,7 +205,7 @@ function getNorthNodeLongitude(date: Date): number {
 
     // 달의 승교점 (간략화된 계산)
     // 실제로는 더 복잡한 계산이 필요하지만, 근사값 사용
-    const T = (time.ut - 2451545.0) / 36525.0;
+    const T = time.ut / 36525.0;
     let node = 125.0445 - 1934.136261 * T + 0.0020708 * T * T;
     node = node % 360;
     if (node < 0) node += 360;
@@ -220,17 +242,32 @@ function calculateAllPlanets(date: Date): PlanetaryActivation {
 }
 
 /**
- * 무의식(Design) 날짜 계산 (태양이 88도 이전 위치)
- * 대략 88-89일 전
+ * 무의식(Design) 날짜 계산 (태양이 정확히 88도 이전 위치)
  */
 function calculateDesignDate(birthDate: Date): Date {
-    // 태양은 하루에 약 0.9856도 이동
-    // 88도 / 0.9856 ≈ 89.3일
-    const designDate = new Date(birthDate);
+    const birthSunLong = getPlanetLongitude(birthDate, Astronomy.Body.Sun);
+    let targetLongitude = (birthSunLong - 88 + 360) % 360;
+    
+    // 시작은 대략 88일 전
+    let designDate = new Date(birthDate);
     designDate.setDate(designDate.getDate() - 88);
-
-    // 더 정밀한 계산: 태양이 정확히 88도 이전일 때
-    // (추후 정밀도 개선 가능)
+    
+    // 이분법 또는 단순 뉴턴 보정으로 태양 위치 역추적 (최대 15회 반복)
+    for (let i = 0; i < 15; i++) {
+        const currentSun = getPlanetLongitude(designDate, Astronomy.Body.Sun);
+        let diff = targetLongitude - currentSun;
+        if (diff > 180) diff -= 360;
+        else if (diff < -180) diff += 360;
+        
+        if (Math.abs(diff) < 0.0001) {
+            break;
+        }
+        
+        // 태양은 하루에 약 0.9856도 움직이므로, diff도를 가기 위해 필요한 시간(일)을 더해줌
+        const daysDiff = diff / 0.9856;
+        designDate = new Date(designDate.getTime() + daysDiff * 24 * 60 * 60 * 1000);
+    }
+    
     return designDate;
 }
 
@@ -249,24 +286,6 @@ export function calculateMyeongsimProfile(
     // 2. 의식/무의식 행성 위치 계산
     const conscious = calculateAllPlanets(birthDate);
     const unconscious = calculateAllPlanets(designDate);
-
-    // [OVERRIDE] 1980-07-07 13:40 (사용자 요청 보정)
-    // 53.1, 54.1, 51.3, 57.3 요청
-    const isTargetDate =
-        birthDate.getFullYear() === 1980 &&
-        birthDate.getMonth() === 6 && // 0-indexed (7월)
-        birthDate.getDate() === 7;
-    // 시간 체크는 유연하게 (API에서 분 단위까지 넘어오므로)
-    // birthDate.getHours() === 13 && birthDate.getMinutes() === 40;
-
-    if (isTargetDate) {
-        // 강제 주입
-        conscious.sun = { ...conscious.sun, gate: 53, line: 1 };
-        conscious.earth = { ...conscious.earth, gate: 54, line: 1 };
-        unconscious.sun = { ...unconscious.sun, gate: 51, line: 3 };
-        unconscious.earth = { ...unconscious.earth, gate: 57, line: 3 };
-    }
-
     // 3. 시퀀스 매핑
     return {
         conscious,

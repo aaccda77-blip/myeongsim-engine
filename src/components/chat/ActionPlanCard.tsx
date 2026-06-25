@@ -91,8 +91,8 @@ const ActionPlanCard: React.FC<ActionPlanCardProps> = ({ plan }) => {
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-2">
-                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${step.time.includes('아침') ? 'bg-orange-900/40 text-orange-300' :
-                                                step.time.includes('저녁') ? 'bg-indigo-900/40 text-indigo-300' :
+                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${step.time?.includes('아침') ? 'bg-orange-900/40 text-orange-300' :
+                                                step.time?.includes('저녁') ? 'bg-indigo-900/40 text-indigo-300' :
                                                     'bg-gray-700 text-gray-300'
                                                 }`}>
                                                 {step.time}

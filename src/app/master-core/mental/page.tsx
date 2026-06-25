@@ -75,24 +75,27 @@ export default function MentalCoreSimulator() {
 
     // State Indicator Colors
     const stateColors = {
-        DARK_MODE: 'text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)] border-red-500/50 bg-red-950/20',
-        NEURAL_HACKING: 'text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] border-blue-500/50 bg-blue-950/20',
-        META_SELF: 'text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)] border-emerald-500/50 bg-emerald-950/20',
-        IDLE: 'text-gray-500 border-gray-700/50 bg-gray-900/20'
+        DARK_MODE: 'text-red-400 border-red-500/30 bg-red-950/40 shadow-neon-red text-neon-red',
+        NEURAL_HACKING: 'text-cyan-400 border-cyan-500/30 bg-cyan-950/40 shadow-neon-cyan text-neon-cyan',
+        META_SELF: 'text-emerald-400 border-emerald-500/30 bg-emerald-950/40 shadow-[0_0_15px_rgba(16,185,129,0.25)]',
+        IDLE: 'text-gray-400 border-gray-800 bg-gray-900/40'
     };
 
     return (
         <div className="flex flex-col h-screen bg-[#070A12] text-gray-200 font-sans mx-auto border-x border-gray-800/50 shadow-2xl relative overflow-hidden">
+            {/* Background Decorative Aura */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none z-0 animate-aura-breath"></div>
+            <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-indigo-500/5 blur-[100px] rounded-full pointer-events-none z-0 animate-aura-breath" style={{ animationDelay: '4s' }}></div>
             {/* Background Grid */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:30px_30px] z-0"></div>
 
             {/* --- Top Header & Config --- */}
-            <header className="relative z-10 flex flex-col gap-3 p-4 border-b border-[#a855f7]/40 bg-black/40 backdrop-blur-md">
+            <header className="relative z-10 flex flex-col gap-3 p-4 border-b border-[#a855f7]/20 bg-black/50 backdrop-blur-md shadow-neon-violet/10">
                 <div className="flex justify-between items-center max-w-5xl mx-auto w-full">
                     <div className="flex items-center gap-2">
                         <span className="text-xl">🧬</span>
                         <div>
-                            <h1 className="text-sm font-bold text-purple-300">명심 64 코어 라운지</h1>
+                            <h1 className="text-sm font-bold text-purple-300 text-neon-violet">명심 64 코어 라운지</h1>
                             <p className="text-[10px] text-purple-500/70 font-mono">Mental OS Simulator v1.0</p>
                         </div>
                     </div>
@@ -115,7 +118,7 @@ export default function MentalCoreSimulator() {
                                 onClick={() => setSelectedCodeId(module.id)}
                                 className={`flex flex-col items-center px-4 py-2 rounded-xl text-xs whitespace-nowrap transition-all border ${
                                     selectedCodeId === module.id 
-                                    ? 'bg-purple-900/40 border-purple-500/50 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.2)]' 
+                                    ? 'bg-purple-900/40 border-purple-500/50 text-purple-300 shadow-neon-violet text-neon-violet' 
                                     : 'bg-gray-900/30 border-gray-800 text-gray-500 hover:text-gray-300'
                                 }`}
                                 title={module.name}

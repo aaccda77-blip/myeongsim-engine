@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Activity, TrendingUp, AlertCircle, ChevronDown, Sparkles, Loader2 } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
+import MyeongliTermModal from './MyeongliTermModal';
 
 interface SajuAnalysisReportModalProps {
     isOpen: boolean;
@@ -120,6 +121,14 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
     
     // 클릭하여 아코디언 상세 설명이 열려 있는 섹션 상태 ('identity' | 'energy' | 'state' | null)
     const [expandedSection, setExpandedSection] = useState<'identity' | 'energy' | 'state' | null>(null);
+
+    // 명리학 용어 팝업 모달 상태
+    const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
+
+    const handleTermClick = (e: React.MouseEvent, term: string) => {
+        e.stopPropagation(); // 아코디언 열림 방지
+        setSelectedTerm(term);
+    };
 
     // 실시간 주파수 융합 스캔을 위한 로컬 상태 설계
     const [scanState, setScanState] = useState<'pending' | 'scanning' | 'completed'>('pending');
@@ -310,14 +319,20 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                                 >
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-700/20 to-amber-900/20 border border-amber-500/30 flex items-center justify-center text-lg font-bold relative shrink-0">
+                                            <div 
+                                                onClick={(e) => handleTermClick(e, 'gan_' + analysis.identity.char)}
+                                                className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-700/20 to-amber-900/20 border border-amber-500/30 flex items-center justify-center text-lg font-bold relative shrink-0 hover:border-amber-400 hover:scale-105 transition-all cursor-help"
+                                            >
                                                 <span className="relative z-10 text-amber-300">{analysis.identity.char}</span>
                                                 <div className="absolute inset-0 bg-amber-500/10 blur-sm rounded-full" />
                                             </div>
                                             <div>
                                                 <p className="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">나의 에너지 프로필</p>
                                                 <p className="text-sm font-bold text-zinc-200">
-                                                    본질: <span className="text-amber-400">&apos;{analysis.identity.desc}&apos;</span>
+                                                    본질: <span 
+                                                        onClick={(e) => handleTermClick(e, 'gan_' + analysis.identity.char)}
+                                                        className="text-amber-400 border-b border-dashed border-amber-500/60 cursor-help hover:text-amber-300 transition-colors"
+                                                    >&apos;{analysis.identity.desc}&apos;</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -359,9 +374,15 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                                             <div>
                                                 <p className="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">에너지 균형 스캔</p>
                                                 <div className="flex gap-2 text-xs font-semibold text-zinc-300 mt-0.5">
-                                                    <span>강: <span className="text-amber-200">{analysis.energy.max.icon}{analysis.energy.max.label}</span></span>
+                                                    <span>강: <span 
+                                                        onClick={(e) => handleTermClick(e, 'elem_' + analysis.energy.max.label)}
+                                                        className="text-amber-200 border-b border-dashed border-amber-400/60 cursor-help hover:text-amber-100 transition-colors"
+                                                    >{analysis.energy.max.icon}{analysis.energy.max.label}</span></span>
                                                     <span className="text-zinc-700">|</span>
-                                                    <span>약: <span className="text-blue-300">{analysis.energy.min.icon}{analysis.energy.min.label}</span></span>
+                                                    <span>약: <span 
+                                                        onClick={(e) => handleTermClick(e, 'elem_' + analysis.energy.min.label)}
+                                                        className="text-blue-300 border-b border-dashed border-blue-400/60 cursor-help hover:text-blue-200 transition-colors"
+                                                    >{analysis.energy.min.icon}{analysis.energy.min.label}</span></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -520,6 +541,13 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
 
                 </motion.div>
             </motion.div>
+
+            {/* 명리학 용어 상세 설명 모달 */}
+            <MyeongliTermModal
+                isOpen={!!selectedTerm}
+                onClose={() => setSelectedTerm(null)}
+                term={selectedTerm}
+            />
         </React.Fragment>
     );
 
