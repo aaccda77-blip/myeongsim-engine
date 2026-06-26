@@ -1836,78 +1836,139 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                   </div>
 
                   <div className="flex-1 overflow-y-auto py-3 space-y-3.5 z-10 scrollbar-thin scrollbar-thumb-amber-500/20 scrollbar-track-transparent text-left" style={{ WebkitOverflowScrolling: 'touch' }}>
-                    <div className="bg-amber-950/20 border border-amber-500/20 p-3.5 rounded-xl">
-                      <span className="text-[8px] text-gray-500 block leading-none mb-1 font-mono uppercase">CURRENT STATUS</span>
-                      <h4 className="text-xs font-black text-white leading-tight">
-                        {selectedBalanceAct.label} 기질의 의식 밸런스
-                      </h4>
-                      <p className="text-[9.5px] text-amber-400 font-semibold mt-1">
-                        현재 상태: {selectedBalanceAct.score === 50 ? '⚖️ 완벽한 의식 균형 (50% vs 50%)' : selectedBalanceAct.score > 50 ? `🔵 자각 고조 상태 (자각 ${selectedBalanceAct.score}% vs 다크 ${100 - selectedBalanceAct.score}%)` : `🔴 에고 방어 과부하 (다크 ${100 - selectedBalanceAct.score}% vs 자각 ${selectedBalanceAct.score}%)`}
-                      </p>
-                    </div>
+                    {(() => {
+                      const score = selectedBalanceAct.score;
+                      const darkScore = 100 - score;
+                      const awareScore = score;
+                      
+                      const gan = data?.saju?.fourPillars?.day?.gan || '';
+                      const elementMap: Record<string, string> = {
+                        '갑': '목', '을': '목',
+                        '병': '화', '정': '화',
+                        '무': '토', '기': '토',
+                        '경': '금', '신': '금',
+                        '임': '수', '계': '수'
+                      };
+                      const dayMaster = gan ? `${gan}${elementMap[gan] || ''}` : '신금';
+                      
+                      const isPerfect = score === 50;
+                      const isAware = score > 50;
+                      const isEgo = score < 50;
 
-                    <div className="space-y-3.5 text-[9px] text-gray-300 leading-relaxed font-sans">
-                      {/* 의식 저울의 판정 기준 */}
-                      <div className="bg-black/40 p-3 rounded-xl border border-white/5 space-y-2.5">
-                        <span className="text-white font-extrabold block">📊 의식 저울의 3대 판정 기준</span>
-                        
-                        <div className="space-y-1">
-                          <span className="text-amber-300 font-bold block">1. 완벽한 의식 균형 (50:50)</span>
-                          <p className="text-gray-400 pl-2">
-                            생존 불안을 조율하는 에고(다크코드 50%)와 본질을 지각하는 참나(자각 주파수 50%)가 완벽한 평형을 이룬 황금 비율 상태입니다. 자기 방어에 매몰되지도 않고, 지나치게 이상만을 쫓지도 않는 가장 조화로운 지점입니다.
-                          </p>
-                        </div>
+                      return (
+                        <>
+                          {/* 현재 기질 밸런스 상태 요약 카드 */}
+                          <div className="bg-amber-950/20 border border-amber-500/20 p-3.5 rounded-xl">
+                            <span className="text-[8px] text-gray-500 block leading-none mb-1 font-mono uppercase">CURRENT STATUS</span>
+                            <h4 className="text-xs font-black text-white leading-tight">
+                              {selectedBalanceAct.label} 기질의 의식 밸런
+                            </h4>
+                            <p className="text-[9.5px] text-amber-400 font-semibold mt-1">
+                              현재 상태: {isPerfect ? '⚖️ 완벽한 의식 균형 (50% vs 50%)' : isAware ? `🔵 자각 고조 상태 (자각 ${awareScore}% vs 다크 ${darkScore}%)` : `🔴 에고 방어 과부하 (다크 ${darkScore}% vs 자각 ${awareScore}%)`}
+                            </p>
+                          </div>
 
-                        <div className="space-y-1">
-                          <span className="text-indigo-300 font-bold block">2. 자각 고조 상태 (자각 &gt; 50%)</span>
-                          <p className="text-gray-400 pl-2">
-                            자각 주파수가 더 우세하게 작동하여 내면의 유연성과 수용도가 매우 깊어진 상태입니다. 외부 자극이나 위기에도 뇌가 긴장하지 않고, 침착하고 명석한 의식(뉴럴코드/메타코드)으로 대처해 나갈 수 있습니다.
-                          </p>
-                        </div>
+                          <div className="space-y-3.5 text-[9px] text-gray-300 leading-relaxed font-sans">
+                            
+                            {/* 🧬 실시간 주파수 밸런스 맞춤 분석 카드 */}
+                            <div className="bg-gradient-to-r from-purple-950/20 to-indigo-950/20 border border-indigo-500/30 p-3.5 rounded-xl space-y-2">
+                              <span className="text-purple-300 font-extrabold flex items-center gap-1">🧬 실시간 주파수 밸런스 맞춤 분석</span>
+                              <p className="text-gray-200 text-[8.5px] leading-relaxed break-keep">
+                                {isPerfect && (
+                                  `✨ ${dayMaster} 일간이신 ${data?.userName || '명심가'}님의 [${selectedBalanceAct.label}] 기질은 현재 완벽한 의식 균형(50:50)을 이루고 있습니다. 이는 생존을 위한 현실적인 긴장감(에고)과 본질을 지각하는 참나(자각)가 조화롭게 평형을 이루어, 해당 기질의 본연의 에너지인 [${selectedBalanceAct.keyword || '타고난 고유 성정'}]가 아무런 왜곡이나 갈등 없이 현실 세계에 가장 아름답고 투명하게 발현되고 있음을 뜻합니다.`
+                                )}
+                                {isAware && (
+                                  `🔵 ${dayMaster} 일간이신 ${data?.userName || '명심가'}님의 [${selectedBalanceAct.label}] 기질은 현재 자각 주파수(${awareScore}%)가 에고 방어망(${darkScore}%)보다 우세하게 작동하고 있는 '자각 고조 상태'입니다. 불안이나 긴장에 의식이 휩쓸리지 않고, [${selectedBalanceAct.keyword || '타고난 고유 성정'}]의 지혜를 유연하게 현실 소통과 창조로 녹여낼 수 있는 아주 정돈된 신경망 밸런스입니다.`
+                                )}
+                                {isEgo && (
+                                  `🔴 ${dayMaster} 일간이신 ${data?.userName || '명심가'}님의 [${selectedBalanceAct.label}] 기질은 현재 에고 방어망(${darkScore}%)이 자각 주파수(${awareScore}%)를 앞서 있는 '에고 방어 과부하 상태'입니다. 이는 일시적인 긴장감, 조급증 혹은 거절에 대한 두려움으로 인해 뇌의 편도체가 경보 시스템을 켠 상태입니다. 
 
-                        <div className="space-y-1">
-                          <span className="text-red-300 font-bold block">3. 에고 방어 과부하 (다크 &gt; 50%)</span>
-                          <p className="text-gray-400 pl-2">
-                            불안, 긴장, 거절의 두려움 등으로 인해 다크코드가 비상 경보(75% 수준)를 발동한 상태입니다. 이는 영구적인 결함이 아니며, 뇌가 스스로를 위기에서 보호하기 위해 서투른 방어막(갑옷)을 임시로 씌운 고마운 상태를 뜻합니다.
-                          </p>
-                        </div>
-                      </div>
+하지만 이것은 결코 기질적인 결함이 아닙니다. ${dayMaster} 일간 특유의 세심하고 깊은 내면 에너지가 외부 충격에 상처받지 않도록, 에고가 스스로를 지키기 위해 고마운 '생존 갑옷(방어막)'을 덧씌운 상태입니다.`
+                                )}
+                              </p>
+                              {isEgo && (
+                                <div className="border-t border-white/5 pt-2 mt-1">
+                                  <span className="text-amber-400 font-bold block text-[8px]">💡 자각 재배선 처방 가이드</span>
+                                  <p className="text-gray-300 text-[8.2px] leading-normal mt-0.5 break-keep">
+                                    "아하, 내 에고가 나를 지키려고 이렇게 애쓰고 있구나" 하고 내면의 긴장을 따뜻하게 알아차리고 3초 숨을 고르는 찰나의 순간, 이성적 관조를 담당하는 전전두엽이 개입합니다. ${awareScore}%의 가벼운 자각(알아차림)만 보태져도 ${darkScore}%의 단단한 다크코드 갑옷은 순식간에 녹아내려 고조된 자각 상태로 나아가게 됩니다.
+                                  </p>
+                                </div>
+                              )}
+                            </div>
 
-                      {/* 뇌과학적 작동 메커니즘 */}
-                      <div className="bg-[#0b0b18]/60 p-3 rounded-xl border border-white/5 space-y-1.5">
-                        <span className="text-white font-extrabold block">🧠 뇌과학적 작동 메커니즘</span>
-                        <p className="text-gray-400 leading-relaxed text-[8.5px]">
-                          인간의 뇌는 위험을 느낄 때 가장 원초적인 부위인 <b>편도체(Amygdala)</b>를 즉각 활성화하여 생존 방어 본능(다크코드)을 가동합니다. 이에 대항하여 우리가 "지금 마음이 긴장해 있구나"라고 가만히 인지하는 순간, 이성적 관조를 담당하는 <b>전전두엽(Prefrontal Cortex)</b>이 개입하여 편도체의 흥분을 누르고 부교감신경계를 안정시킵니다.
-                        </p>
-                        <p className="text-gray-400 leading-relaxed text-[8.5px] mt-1">
-                          이때 25%의 알아차림만 보태져도 신경망은 물리적인 재배선 과정(신경가소성)을 거쳐 75%의 다크코드를 순식간에 녹여내고, 50%의 평형 상태를 넘어 고도의 고조 상태로 나아갈 수 있습니다.
-                        </p>
-                      </div>
+                            {/* 의식 저울의 판정 기준 */}
+                            <div className="bg-black/40 p-3 rounded-xl border border-white/5 space-y-2.5">
+                              <span className="text-white font-extrabold block">📊 의식 저울의 3대 판정 기준</span>
+                              
+                              <div className={`space-y-1 p-2 rounded-lg border transition-all ${isPerfect ? 'border-amber-500/30 bg-amber-500/5 opacity-100' : 'border-transparent opacity-40'}`}>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-amber-300 font-bold block">1. 완벽한 의식 균형 (50:50)</span>
+                                  {isPerfect && <span className="text-[7.5px] bg-amber-500/20 text-amber-300 font-black px-1.5 py-0.5 rounded">현재 상태</span>}
+                                </div>
+                                <p className="text-gray-400 pl-1 leading-normal text-[8.2px] break-keep">
+                                  생존 불안을 조율하는 에고(다크코드 50%)와 본질을 지각하는 참나(자각 주파수 50%)가 완벽한 평형을 이룬 황금 비율 상태입니다. 자기 방어에 매몰되지도 않고, 지나치게 이상만을 쫓지도 않는 가장 조화로운 지점입니다.
+                                </p>
+                              </div>
 
-                      {/* 사주 에너지와의 연동 원리 */}
-                      <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 space-y-1.5">
-                        <span className="text-amber-300 font-extrabold block">🧬 내 사주 분석에 따른 고유 수치 도출</span>
-                        <p className="text-amber-200/90 leading-relaxed text-[8.5px] select-none">
-                          이 수치는 단순한 랜덤 점수가 아닙니다. {data?.userName || '명심가'}님이 태어나신 년·월·일·시의 사주 천간·지지(8글자)에서{' '}
-                          <b>
-                            <span onClick={() => handleMyeongliClick('오행')} className="text-purple-300 font-extrabold underline decoration-dotted decoration-purple-500/60 cursor-pointer hover:text-purple-200 hover:brightness-125 transition-all">오행</span>
-                          </b>
-                          의 분포와{' '}
-                          <b>
-                            <span onClick={() => handleMyeongliClick('비겁')} className="text-sky-300 font-bold underline decoration-dotted decoration-sky-500/60 cursor-pointer hover:text-sky-200 hover:brightness-125 transition-all">비겁</span>·
-                            <span onClick={() => handleMyeongliClick('식상')} className="text-pink-300 font-bold underline decoration-dotted decoration-pink-500/60 cursor-pointer hover:text-pink-200 hover:brightness-125 transition-all">식상</span>·
-                            <span onClick={() => handleMyeongliClick('재성')} className="text-amber-400 font-bold underline decoration-dotted decoration-amber-500/60 cursor-pointer hover:text-amber-300 hover:brightness-125 transition-all">재성</span>·
-                            <span onClick={() => handleMyeongliClick('편관')} className="text-violet-300 font-bold underline decoration-dotted decoration-violet-500/60 cursor-pointer hover:text-violet-200 hover:brightness-125 transition-all">관성</span>·
-                            <span onClick={() => handleMyeongliClick('편인')} className="text-indigo-300 font-bold underline decoration-dotted decoration-indigo-500/60 cursor-pointer hover:text-indigo-200 hover:brightness-125 transition-all">인성</span>
-                            (<span onClick={() => handleMyeongliClick('십성')} className="text-purple-300 font-extrabold underline decoration-dotted decoration-purple-500/60 cursor-pointer hover:text-purple-200 hover:brightness-125 transition-all">십성</span>)
-                          </b>
-                          의 치우침을 계산하고, 이를 행성 고유의 기하학적 활성 위치(고유 시드값)에 대입하여 산출된 <b>실시간 기질적 밸런스 주파수</b>입니다.
-                        </p>
-                        <p className="text-amber-200/80 leading-relaxed text-[8.5px] mt-1">
-                          이 점수가 50%로 수렴되어 평형을 이룬다면, 해당 행성의 기질적 에너지가 현실에서 갈등 없이 완벽하게 조율되어 흐르고 있음을 뜻합니다.
-                        </p>
-                      </div>
-                    </div>
+                              <div className={`space-y-1 p-2 rounded-lg border transition-all ${isAware ? 'border-indigo-500/30 bg-indigo-500/5 opacity-100' : 'border-transparent opacity-40'}`}>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-indigo-300 font-bold block">2. 자각 고조 상태 (자각 &gt; 50%)</span>
+                                  {isAware && <span className="text-[7.5px] bg-indigo-500/20 text-indigo-300 font-black px-1.5 py-0.5 rounded">현재 상태</span>}
+                                </div>
+                                <p className="text-gray-400 pl-1 leading-normal text-[8.2px] break-keep">
+                                  자각 주파수가 더 우세하게 작동하여 내면의 유연성과 수용도가 매우 깊어진 상태입니다. 외부 자극이나 위기에도 뇌가 긴장하지 않고, 침착하고 명석한 의식(뉴럴코드/메타코드)으로 대처해 나갈 수 있습니다.
+                                </p>
+                              </div>
+
+                              <div className={`space-y-1 p-2 rounded-lg border transition-all ${isEgo ? 'border-red-500/30 bg-red-500/5 opacity-100' : 'border-transparent opacity-40'}`}>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-red-300 font-bold block">3. 에고 방어 과부하 (다크 &gt; 50%)</span>
+                                  {isEgo && <span className="text-[7.5px] bg-red-500/20 text-red-300 font-black px-1.5 py-0.5 rounded">현재 상태</span>}
+                                </div>
+                                <p className="text-gray-400 pl-1 leading-normal text-[8.2px] break-keep">
+                                  불안, 긴장, 거절의 두려움 등으로 인해 다크코드가 비상 경보({darkScore}% 수준)를 발동한 상태입니다. 이는 영구적인 결함이 아니며, 뇌가 스스로를 위기에서 보호하기 위해 서투른 방어막(갑옷)을 임시로 씌운 고마운 상태를 뜻합니다.
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* 뇌과학적 작동 메커니즘 */}
+                            <div className="bg-[#0b0b18]/60 p-3 rounded-xl border border-white/5 space-y-1.5">
+                              <span className="text-white font-extrabold block">🧠 뇌과학적 작동 메커니즘</span>
+                              <p className="text-gray-400 leading-relaxed text-[8.5px] break-keep">
+                                인간의 뇌는 위험을 느낄 때 가장 원초적인 부위인 <b>편도체(Amygdala)</b>를 즉각 활성화하여 생존 방어 본능(다크코드)을 가동합니다. 이에 대항하여 우리가 "지금 마음이 긴장해 있구나"라고 가만히 인지하는 순간, 이성적 관조를 담당하는 <b>전전두엽(Prefrontal Cortex)</b>이 개입하여 편도체의 흥분을 누르고 부교감신경계를 안정시킵니다.
+                              </p>
+                              <p className="text-gray-400 leading-relaxed text-[8.5px] mt-1 break-keep">
+                                이때 {awareScore}%의 알아차림만 보태져도 신경망은 물리적인 재배선 과정(신경가소성)을 거쳐 {darkScore}%의 다크코드를 순식간에 녹여내고, 50%의 평형 상태를 넘어 고도의 고조 상태로 나아갈 수 있습니다.
+                              </p>
+                            </div>
+
+                            {/* 사주 에너지와의 연동 원리 */}
+                            <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 space-y-1.5">
+                              <span className="text-amber-300 font-extrabold block">🧬 내 사주 분석에 따른 고유 수치 도출</span>
+                              <p className="text-amber-200/90 leading-relaxed text-[8.5px] select-none break-keep">
+                                이 수치는 단순한 랜덤 점수가 아닙니다. {data?.userName || '명심가'}님이 태어나신 년·월·일·시의 사주 천간·지지(8글자)에서{' '}
+                                <b>
+                                  <span onClick={() => handleMyeongliClick('오행')} className="text-purple-300 font-extrabold underline decoration-dotted decoration-purple-500/60 cursor-pointer hover:text-purple-200 hover:brightness-125 transition-all">오행</span>
+                                </b>
+                                의 분포와{' '}
+                                <b>
+                                  <span onClick={() => handleMyeongliClick('비겁')} className="text-sky-300 font-bold underline decoration-dotted decoration-sky-500/60 cursor-pointer hover:text-sky-200 hover:brightness-125 transition-all">비겁</span>·
+                                  <span onClick={() => handleMyeongliClick('식상')} className="text-pink-300 font-bold underline decoration-dotted decoration-pink-500/60 cursor-pointer hover:text-pink-200 hover:brightness-125 transition-all">식상</span>·
+                                  <span onClick={() => handleMyeongliClick('재성')} className="text-amber-400 font-bold underline decoration-dotted decoration-amber-500/60 cursor-pointer hover:text-amber-300 hover:brightness-125 transition-all">재성</span>·
+                                  <span onClick={() => handleMyeongliClick('편관')} className="text-violet-300 font-bold underline decoration-dotted decoration-violet-500/60 cursor-pointer hover:text-violet-200 hover:brightness-125 transition-all">관성</span>·
+                                  <span onClick={() => handleMyeongliClick('편인')} className="text-indigo-300 font-bold underline decoration-dotted decoration-indigo-500/60 cursor-pointer hover:text-indigo-200 hover:brightness-125 transition-all">인성</span>
+                                  (<span onClick={() => handleMyeongliClick('십성')} className="text-purple-300 font-extrabold underline decoration-dotted decoration-purple-500/60 cursor-pointer hover:text-purple-200 hover:brightness-125 transition-all">십성</span>)
+                                </b>
+                                의 치우침을 계산하고, 이를 행성 고유의 기하학적 활성 위치(고유 시드값)에 대입하여 산출된 <b>실시간 기질적 밸런스 주파수</b>입니다.
+                              </p>
+                              <p className="text-amber-200/80 leading-relaxed text-[8.5px] mt-1 break-keep">
+                                이 점수가 50%로 수렴되어 평형을 이룬다면, 해당 행성의 기질적 에너지가 현실에서 갈등 없이 완벽하게 조율되어 흐르고 있음을 뜻합니다.
+                              </p>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
 
                   <div className="pt-2 shrink-0 z-10">
