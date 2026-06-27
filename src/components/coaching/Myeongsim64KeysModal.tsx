@@ -1361,7 +1361,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 15 }}
                   transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-                  className="w-full max-w-md h-[90vh] md:h-[85vh] bg-[#020205] border border-purple-500/30 rounded-[32px] shadow-[0_0_60px_rgba(168,85,247,0.3)] flex flex-col relative overflow-hidden text-left p-5 text-white"
+                  className="w-full max-w-md h-[85vh] max-h-[85dvh] bg-[#020205] border border-purple-500/30 rounded-[32px] shadow-[0_0_60px_rgba(168,85,247,0.3)] flex flex-col relative overflow-hidden text-left p-5 text-white"
                 >
                   <div className="absolute top-[-20%] left-[-20%] w-[350px] h-[350px] bg-gradient-to-tr from-purple-600/10 to-indigo-600/5 rounded-full blur-[100px] pointer-events-none" />
                   <div className="flex justify-between items-center border-b border-white/5 pb-3 shrink-0 z-10">

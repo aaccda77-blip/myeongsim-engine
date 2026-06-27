@@ -65,7 +65,7 @@ export async function POST(request: Request) {
    - "파도를 억지로 잠재우려고 애쓰기보다 깊고 거대한 바다 그 자체가 되는 것", 혹은 "불안과 생각이라는 먹구름을 없애려 애쓰지 않고, 그 먹구름이 마음껏 지나갈 수 있도록 허용하는 드넓고 투명한 하늘 그 자체가 되는 것"과 같은 시적 은유로 본연의 평화를 전달하십시오.
 
 5. **글의 형태와 분량**:
-   - 약 800~1000자 분량으로 깊고 감동적인 대화체로 서술하십시오. 모바일 화면에서 답답함 없이 부드럽게 읽히도록 적절한 행간(줄바꿈)을 자주 사용해주시고, 마크다운 볼드(**)나 은은한 이모티콘을 활용하십시오.
+   - 약 700~900자 분량으로 깊고 감동적인 대화체로 서술하십시오. 모바일 화면에서 답답함 없이 부드럽게 읽히도록 적절한 행간(줄바꿈)을 자주 사용해주시고, 마크다운 볼드(**)나 은은한 이모티콘을 활용하십시오.
    - **가장 중요한 규칙**: 한글 토큰 제한으로 문장이 중간에 잘려 끝나는 일이 절대 없어야 합니다. 약속된 분량 내에서 반드시 문장이 도중에 끊기지 않고 마지막 단락의 마침표와 온전한 축복의 마무리 멘트(예: "당신의 여정을 늘 응원하고 축복합니다.")로 완전히 마무리를 짓고 끝마쳐주십시오.`;
 
     const prompt = `
@@ -82,15 +82,12 @@ ${ragText}
 
 위의 삼중 에너지 코드 정보와 [64Keys Blue I-Ching 원본 참조 데이터]를 바탕으로, 오직 **${userName || '명심가'}**님만을 위한 세상에 단 하나뿐인 명심코칭 AI 도슨트 해설을 정성스럽게 작성해 주세요.`;
 
-    const model = genAI.getGenerativeModel({ 
-      model: modelName,
-      systemInstruction: systemPrompt 
-    });
+    const model = genAI.getGenerativeModel({ model: modelName });
     
     const result = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      contents: [{ role: 'user', parts: [{ text: systemPrompt + '\n\n' + prompt }] }],
       generationConfig: {
-        maxOutputTokens: 2500,
+        maxOutputTokens: 3500,
         temperature: 0.75,
       }
     });
