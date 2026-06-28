@@ -445,6 +445,8 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [docentLoading, setDocentLoading] = useState(false);
   const [docentContent, setDocentContent] = useState<string | null>(null);
+  const [docentCooldown, setDocentCooldown] = useState(0); // 쿨다운 남은 초
+  const lastDocentCallRef = useRef<number>(0); // 마지막 API 호출 타임스탬프
   const [showExplainHelp, setShowExplainHelp] = useState(false);
   const [showLineHelp, setShowLineHelp] = useState<number | null>(null);
   const [showConceptHelp, setShowConceptHelp] = useState<string | null>(null);
@@ -718,7 +720,9 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
     }
   }, [isOpen, userProfile]);
 
-  // 2. AI 도슨트 해설 호출 (캐시 우선 및 중복 요청 방지)
+  // 2. AI 도슨트 해설 호출 (캐시 우선 + 쿨다운 보안 + 중복 요청 방지)
+  const DOCENT_COOLDOWN_SEC = 30; // 30초 쿨다운
+
   const handleDocentRequest = async (item: any) => {
     if (!item || !data) return;
     
@@ -728,12 +732,31 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
     // 캐시 키 정의
     const cacheKey = `${item.type}::${item.label}`;
 
-    // [보안] 캐시에 있는 경우 API 재요청 없이 즉시 반환
+    // [보안] 캐시에 있는 경우 API 재요청 없이 즉시 반환 (쿨다운 면제)
     if (interpretCacheRef.current[cacheKey]) {
       setSelectedItem(item);
       setDocentContent(interpretCacheRef.current[cacheKey]);
       return;
     }
+
+    // [보안] 30초 쿨다운 — 새 API 호출 간 최소 간격 강제
+    const now = Date.now();
+    const elapsed = (now - lastDocentCallRef.current) / 1000;
+    if (lastDocentCallRef.current > 0 && elapsed < DOCENT_COOLDOWN_SEC) {
+      const remaining = Math.ceil(DOCENT_COOLDOWN_SEC - elapsed);
+      setDocentCooldown(remaining);
+      setSelectedItem(item);
+      setDocentContent(`🛡️ AI 도슨트 보호 모드\n\n에너지 과부하를 방지하기 위해 ${remaining}초 후에 다시 해설을 요청해 주세요.\n\n잠시 호흡을 가다듬으며, 방금 읽은 해설을 마음속에서 되새겨 보는 시간을 가져보세요. ✨`);
+      // 카운트다운 타이머
+      const timer = setInterval(() => {
+        setDocentCooldown(prev => {
+          if (prev <= 1) { clearInterval(timer); return 0; }
+          return prev - 1;
+        });
+      }, 1000);
+      return;
+    }
+    lastDocentCallRef.current = now;
 
     setSelectedItem(item);
     setDocentLoading(true);
