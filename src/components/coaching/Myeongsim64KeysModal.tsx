@@ -720,8 +720,32 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
     }
   }, [isOpen, userProfile]);
 
-  // 2. AI 도슨트 해설 호출 (캐시 우선 + 쿨다운 보안 + 중복 요청 방지)
+  // 2. AI 도슨트 해설 호출 (하루 1회 캐시 + 쿨다운 보안 + 중복 요청 방지)
   const DOCENT_COOLDOWN_SEC = 30; // 30초 쿨다운
+
+  // localStorage 기반 하루 1회 캐시 헬퍼
+  const getTodayKey = () => new Date().toISOString().slice(0, 10); // "2026-06-29"
+
+  const getDailyCache = (cacheKey: string): string | null => {
+    try {
+      const stored = localStorage.getItem(`docent::${cacheKey}`);
+      if (!stored) return null;
+      const parsed = JSON.parse(stored);
+      if (parsed.date === getTodayKey()) return parsed.content;
+      // 날짜가 다르면 만료된 캐시 삭제
+      localStorage.removeItem(`docent::${cacheKey}`);
+      return null;
+    } catch { return null; }
+  };
+
+  const setDailyCache = (cacheKey: string, content: string) => {
+    try {
+      localStorage.setItem(`docent::${cacheKey}`, JSON.stringify({
+        date: getTodayKey(),
+        content
+      }));
+    } catch { /* localStorage 용량 초과 시 무시 */ }
+  };
 
   const handleDocentRequest = async (item: any) => {
     if (!item || !data) return;
@@ -732,10 +756,19 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
     // 캐시 키 정의
     const cacheKey = `${item.type}::${item.label}`;
 
-    // [보안] 캐시에 있는 경우 API 재요청 없이 즉시 반환 (쿨다운 면제)
+    // [캐시] 1) 메모리 캐시 확인 (가장 빠름)
     if (interpretCacheRef.current[cacheKey]) {
       setSelectedItem(item);
       setDocentContent(interpretCacheRef.current[cacheKey]);
+      return;
+    }
+
+    // [캐시] 2) localStorage 하루 캐시 확인 (같은 날이면 API 호출 안 함)
+    const dailyCached = getDailyCache(cacheKey);
+    if (dailyCached) {
+      interpretCacheRef.current[cacheKey] = dailyCached; // 메모리에도 올림
+      setSelectedItem(item);
+      setDocentContent(dailyCached);
       return;
     }
 
@@ -789,6 +822,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
         const result = await res.json();
         if (result.success && result.interpretation) {
           interpretCacheRef.current[cacheKey] = result.interpretation;
+          setDailyCache(cacheKey, result.interpretation); // localStorage에 하루 캐시 저장
           setDocentContent(result.interpretation);
         } else {
           throw new Error(result.error || '해설 응답 오류');
