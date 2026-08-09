@@ -520,6 +520,7 @@ export default function DrillDownIconMenu({
     const [show64KeysModal, setShow64KeysModal] = useState(false);
     const [showMyeongsimGenius, setShowMyeongsimGenius] = useState(false);
     const [showMyeongsimOracle, setShowMyeongsimOracle] = useState(false);
+    const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
 
@@ -1063,6 +1064,30 @@ export default function DrillDownIconMenu({
                     </div>
                 )
             }
+
+            {/* [NEW] 4대 전문 카테고리 (IA) 탭 바 */}
+            <div className="flex items-center gap-1.5 mb-2 px-3 overflow-x-auto pb-1 scrollbar-none text-[11px] font-bold">
+                {[
+                    { id: 'all', label: '전체', icon: '✨' },
+                    { id: 'psych', label: '명심 자각 & 심리', icon: '🧠' },
+                    { id: 'business', label: '비즈니스 & 자본', icon: '💼' },
+                    { id: 'bio', label: '바이오 & 바이오하킹', icon: '🩺' },
+                    { id: 'ai', label: 'AI & 의식 연구', icon: '🔬' },
+                ].map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveCategoryTab(tab.id as any)}
+                        className={`px-3 py-1 rounded-xl whitespace-nowrap transition-all flex items-center gap-1 border ${
+                            activeCategoryTab === tab.id
+                                ? 'bg-amber-400/20 text-amber-300 border-amber-400/50 shadow-[0_0_12px_rgba(251,191,36,0.25)] scale-105 font-extrabold'
+                                : 'bg-slate-900/60 text-gray-400 border-white/10 hover:text-white hover:bg-white/5 font-medium'
+                        }`}
+                    >
+                        <span>{tab.icon}</span>
+                        <span>{tab.label}</span>
+                    </button>
+                ))}
+            </div>
 
             {/* 메인 아이콘 바 */}
             <div style={styles.container}>
