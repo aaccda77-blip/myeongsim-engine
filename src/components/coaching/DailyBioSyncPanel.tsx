@@ -1018,30 +1018,7 @@ export default function DailyBioSyncPanel() {
                 )}
               </AnimatePresence>
 
-              {/* AI 코치 연결 CTA */}
-              {harmony && (
-                <div className="mt-5 pt-4 border-t border-white/[0.06]">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => { window.location.href = '/master-core'; }}
-                    className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl font-bold text-sm tracking-wide relative overflow-hidden"
-                    style={{
-                      background: `linear-gradient(135deg, ${energyColor}38, ${energyColor}18)`,
-                      border: `1px solid ${energyColor}55`,
-                      color: '#fff',
-                      boxShadow: `0 4px 24px ${energyColor}22`,
-                    }}
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>{harmony.userDayMaster} 일간 맞춤 AI 코치와 지금 대화하기</span>
-                    <span className="text-lg">{harmony.energyEmoji}</span>
-                  </motion.button>
-                  <p className="text-center text-[9px] text-slate-600 font-mono mt-2">
-                    {harmony.userDayMaster} × {harmony.todayGan}{harmony.todayZhi} 코칭코드가 AI에 자동 주입됩니다
-                  </p>
-                </div>
-              )}
+
             </div>
           </motion.div>
         )}
