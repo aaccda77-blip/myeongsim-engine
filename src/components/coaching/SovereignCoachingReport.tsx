@@ -276,8 +276,8 @@ interface IlganCoaching {
 const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     '辛': {
         ilganLabel: '辛金(신금, 음금) — 완성된 보석·예리한 칼날',
-        identity: '이미 완성되어 예리하고 섬세한 보석입니다. 극한의 순도와 완벽주의를 지향하며, 주변의 탁기를 견디지 못하는 고결한 주권자(Sovereign)의 본질을 지닙니다.',
-        coreIssue: '금(金)이 과잉된 구조. 서버의 냉각 시스템이 과부하된 상태를 의미합니다. 보석이 너무 많아 서로를 긁어내고 있는 쟁재·숙살의 기운이 극에 달합니다.',
+        identity: '이미 완성되어 예리하고 섬세한 보석의 결을 지녔습니다. 높은 순도와 완벽주의를 지향하며, 주체적이고 독립적인 시선으로 세상을 관조하는 본질을 지닙니다.',
+        coreIssue: '금(金) 기운 과잉 패턴 검출: 내면의 판단 로직과 표준화 요구가 과도해진 상태입니다. 강한 원석(庚金)과 보석(辛金)이 부딪쳐 서로를 긁어내듯, 과도한 기준 설정으로 인한 타인과의 마찰 및 인지적 경직성에 대한 자각적 조율이 필요합니다.',
         cafeResult: 'Final[수] = 74.0점 🏆 만장일치 WINNER — 심층 센서(水)가 핵심 드라이브',
         primaryDrive: '🔮 심층 센서 (Deep Sensor, 水)',
         confidence: '98%',
@@ -1797,16 +1797,17 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             📊 오행 분포 (FIVE ELEMENTS DISTRIBUTION)
                                         </p>
                                         {Object.entries(sajuInfo.ohaeng).map(([key, val]) => {
-                                            const pct = Math.round(((val as number) / ohaengTotal) * 100);
+                                            const rawPct = ohaengTotal > 0 ? ((val as number) / ohaengTotal) * 100 : 0;
+                                            const formattedPct = Number.isInteger(rawPct) ? `${rawPct}%` : `${rawPct.toFixed(1)}%`;
                                             return (
                                                 <div key={key}>
                                                     <div className="flex justify-between text-[10px] mb-1">
                                                         <span className="text-gray-300">{OHAENG_LABELS[key]}</span>
-                                                        <span className="text-gray-400">{pct}%</span>
+                                                        <span className="text-gray-400 font-mono font-bold">{formattedPct}</span>
                                                     </div>
                                                     <div className="h-1.5 w-full rounded-full overflow-hidden bg-white/5">
                                                         <div className="h-full rounded-full transition-all duration-700"
-                                                            style={{ width: `${pct}%`, background: OHAENG_COLORS[key] || '#666' }} />
+                                                            style={{ width: `${rawPct}%`, background: OHAENG_COLORS[key] || '#666' }} />
                                                     </div>
                                                 </div>
                                             );
