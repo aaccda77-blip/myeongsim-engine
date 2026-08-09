@@ -124,40 +124,42 @@ export default function LoginModal({ onClose }: LoginModalProps) {
                                 >
                                     {/* Pricing Table */}
                                     <div className="grid gap-2">
-                                        {/* 1. Decoy */}
-                                        <div className="flex justify-between items-center p-2 rounded bg-gray-800 border border-gray-700 opacity-80">
+                                        {/* 1. 890원 대화 3회 충전 */}
+                                        <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900 border border-amber-500/30">
                                             <div>
-                                                <div className="text-gray-400 text-xs line-through">5,000원</div>
-                                                <div className="text-white font-bold">맛보기권 (30분)</div>
+                                                <div className="text-gray-400 text-xs line-through">8,900원</div>
+                                                <div className="text-amber-300 font-bold">대화 3회 즉시 충전</div>
+                                                <div className="text-[10px] text-gray-400">890원 초마이크로 충전</div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-indigo-400 font-bold">3,900원</div>
+                                                <div className="text-amber-400 font-black text-lg">890원</div>
                                             </div>
                                         </div>
 
-                                        {/* 2. Anchor (BEST) */}
-                                        <div className="relative flex justify-between items-center p-3 rounded bg-indigo-900/30 border border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
-                                            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-bounce">
-                                                ★ BEST
-                                            </div>
+                                        {/* 2. 1,900원 대화 10회 충전 */}
+                                        <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900 border border-amber-500/30">
                                             <div>
-                                                <div className="text-gray-400 text-xs line-through">30,000원</div>
-                                                <div className="text-white font-bold text-lg">자유이용권 (24시간)</div>
-                                                <div className="text-[10px] text-indigo-300">시간은 48배, 가격은 단 2.5배!</div>
+                                                <div className="text-gray-400 text-xs line-through">19,000원</div>
+                                                <div className="text-amber-300 font-bold">대화 10회 충전</div>
+                                                <div className="text-[10px] text-gray-400">가성비 마이크로 충전</div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-[#FAE300] font-black text-xl">9,900원</div>
+                                                <div className="text-amber-400 font-black text-lg">1,900원</div>
                                             </div>
                                         </div>
 
-                                        {/* 3. VIP */}
-                                        <div className="flex justify-between items-center p-2 rounded bg-gray-800 border border-gray-700">
+                                        {/* 3. 3,900원 마스터코어 */}
+                                        <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950 border border-amber-500/50 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 bg-amber-500 text-black text-[9px] font-black px-2 py-0.5 rounded-bl-lg">
+                                                특허출원중 86% OFF
+                                            </div>
                                             <div>
-                                                <div className="text-gray-400 text-xs line-through">100,000원</div>
-                                                <div className="text-white font-bold">VIP 주간권 (7일)</div>
+                                                <div className="text-gray-400 text-xs line-through">29,000원</div>
+                                                <div className="text-amber-300 font-bold text-sm">특허출원중 명심 마스터코어</div>
+                                                <div className="text-[10px] text-amber-200/80">단발성 1회 정밀 해독</div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-purple-400 font-bold">49,000원</div>
+                                                <div className="text-amber-400 font-black text-lg">3,900원</div>
                                             </div>
                                         </div>
                                     </div>

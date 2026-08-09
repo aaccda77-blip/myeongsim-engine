@@ -468,6 +468,8 @@ export async function POST(request: Request) {
       saju: {
         fourPillars: pillars,
         gongWang: gongWangList,
+        daewoonList: saju.daewoonList || [],
+        currentDaewoon: saju.currentDaewoon || '',
       },
     });
   } catch (error: any) {

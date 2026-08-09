@@ -1,25 +1,12 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Lock, Sparkles, Gift, ChevronRight, Crown, Unlock, CheckCircle2, RefreshCw } from 'lucide-react';
 
-// [MODULE] 3단계 셀프 코칭 모달 (lazy load — 기존 시스템 영향 0)
-const NeuralCodeCoachingModal = dynamic(() => import('@/components/coaching/NeuralCodeCoachingModal'), { ssr: false });
-
-// [MODULE] 오늘의 뉴럴 코드 액션 플랜 (lazy load)
 const DailyNeuralMissionCard = dynamic(() => import('@/components/coaching/DailyNeuralMissionCard'), { ssr: false });
-
-// [MODULE] 월간 명심 리포트 (lazy load)
 const MonthlyMindReport = dynamic(() => import('@/components/coaching/MonthlyMindReport'), { ssr: false });
+const MicroPassModal = dynamic(() => import('@/components/coaching/MicroPassModal').then(m => m.MicroPassModal || m.default), { ssr: false });
+const GeniusExplainModal = dynamic(() => import('@/components/coaching/GeniusExplainModal'), { ssr: false });
 
-/**
- * [모듈식 UI] 다차원 마음 설계도 컴포넌트 (Multi-Dimensional Blueprint View)
- *
- * 특장점:
- * 1. 기존 챗봇/AI 로직과 분리된 순수 View Component 입니다.
- * 2. 다크 코드(⚠️), 뉴럴 코드(✨), 메타 코드(👑) 3단계 상태를 토글할 수 있습니다.
- * 3. FlutterFlow/앱 이식 시 참고할 수 있도록 Tailwind CSS로 패럴랙스, 그라데이션, 글래스모피즘 효과를 적용했습니다.
- */
-
-// --- 타입 정의 ---
 export type BlueprintLevel = 'dark' | 'neural' | 'meta';
 
 export interface CodeData {
@@ -31,22 +18,21 @@ export interface CodeData {
     metaCode: { name: string; desc: string };
 }
 
-// --- 하드코딩된 예시 데이터 (실제 연동 시 props로 주입) ---
 const mockData: CodeData[] = [
     {
         id: 'vision',
         title: "🚀 지향점 (Future Vision)",
-        subtitle: "척박한 땅에서도 결국 꽃을 피우는 끈기",
-        darkCode: { name: "[생존 강박]", desc: "미래가 불안하여 쉴 새 없이 일만 하거나, 결과가 당장 나오지 않으면 초조해하는 상태." },
-        neuralCode: { name: "[사막의 꽃]", desc: "어떤 악조건에서도 유연하게 적응하며, 결국에는 실속과 결과를 만들어내는 끈기의 아이콘." },
+        subtitle: "자신을 엄격히 관리하며 목표를 달성하는 의지",
+        darkCode: { name: "[생존 강박]", desc: "미래가 불안하여 쉴 새 없이 일만 하거나, 결과가 당장 나오지 않으면 초조해하는 무의식 상태." },
+        neuralCode: { name: "철두철미한 원칙주의자", desc: "자신을 엄격히 관리하며 목표를 달성하는 굳건한 의지와 추진력." },
         metaCode: { name: "[생태계 건축가]", desc: "나 혼자 살아남는 것을 넘어, 죽어있는 땅을 개척하여 모두가 살 수 있는 옥토로 바꾸는 위대한 결실." },
     },
     {
         id: 'identity',
         title: "👤 핵심 자아 (Core Identity)",
-        subtitle: "냉철한 이성과 뜨거운 열정의 완벽한 밸런스",
+        subtitle: "끊임없이 배우고 성장하려는 욕구가 강한 리더",
         darkCode: { name: "[예민한 면도날]", desc: "완벽주의에 갇혀 자신과 타인을 날카롭게 비판하거나, 작은 실수에도 밤잠을 설치는 상태." },
-        neuralCode: { name: "[세련된 엘리트]", desc: "감정에 휘둘리지 않는 냉철함과 목표를 향한 열정을 동시에 발휘하여, 품격 있게 리드하는 모습." },
+        neuralCode: { name: "지적 탐구자", desc: "끊임없이 배우고 성장하려는 욕구가 강하며, 지식으로 리더십을 발휘하는 학자형 리더." },
         metaCode: { name: "[고귀한 권위]", desc: "힘으로 누르지 않아도 저절로 고개가 숙여지는 인격적 권위를 완성하여, 세상의 기준이 되는 존재." },
     },
     {
@@ -67,28 +53,37 @@ const mockData: CodeData[] = [
     }
 ];
 
-// --- 메인 컴포넌트 ---
 export default function MultiDimensionalBlueprint({ 
     data = mockData,
     showActionButton = true,
-    onActionClick
+    onActionClick,
+    userName = '명심가',
+    saju,
+    locale = 'ko'
 }: { 
     data?: CodeData[];
     showActionButton?: boolean;
     onActionClick?: () => void;
+    userName?: string;
+    saju?: any;
+    locale?: string;
 }) {
-
-    // 글로벌 뷰어 레벨 (한 번에 다크/뉴럴/메타 상태를 전환)
     const [globalLevel, setGlobalLevel] = useState<BlueprintLevel>('neural');
+    
+    // 탭별 인플레이스(In-Place) 해독 해제 상태 관리
+    const [unlockedLevels, setUnlockedLevels] = useState<Record<BlueprintLevel, boolean>>({
+        dark: false,
+        neural: false,
+        meta: false,
+    });
 
-    // [MODULE] 코칭 모달 상태
-    const [coachingOpen, setCoachingOpen] = useState(false);
-    const [coachingData, setCoachingData] = useState<any>(null);
+    const [microPassOpen, setMicroPassOpen] = useState(false);
+    const [explainModalOpen, setExplainModalOpen] = useState(false);
+    const [selectedIndicator, setSelectedIndicator] = useState<{ name: string; score: string } | null>(null);
 
-    // 햅틱 피드백 트리거 (웹 환경용 진동 처리)
     const triggerHaptic = () => {
         if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
-            window.navigator.vibrate(50); // 50ms 짧은 진동
+            window.navigator.vibrate(60);
         }
     };
 
@@ -97,30 +92,43 @@ export default function MultiDimensionalBlueprint({
         setGlobalLevel(level);
     };
 
-    // [MODULE] 카드 클릭 → 코칭 모달 열기
+    // 지질 카드 클릭 시 1:1 생년월일 맞춤 감동 에세이 모달 오픈!
     const handleCardClick = (item: CodeData) => {
         triggerHaptic();
-        // item.id에서 간지 추출 (id는 내부적으로 "을미", "신사" 등 갑자 코드를 유지)
-        const ganChar = item.id.length >= 2 ? item.id[0] : '';
-        const jiChar = item.id.length >= 2 ? item.id[1] : '';
-        // 타이틀에서 이모지 뒤 라벨 추출 (예: "🚀 지향점 (Future Vision)" → "🚀 지향점")
-        const pillarLabel = item.title.replace(/\s*\(.*?\)\s*$/, '').trim();
-
-        setCoachingData({
-            pillarLabel,
-            ganChar,
-            jiChar,
-            darkCode: { ...item.darkCode, body_symptom: '' },
-            neuralCode: { ...item.neuralCode, action: '' },
-            metaCode: item.metaCode,
+        const activeCodeName = globalLevel === 'dark' ? item.darkCode.name : globalLevel === 'neural' ? item.neuralCode.name : item.metaCode.name;
+        setSelectedIndicator({
+            name: item.title,
+            score: `${activeCodeName} (${globalLevel.toUpperCase()} 주파수)`
         });
-        setCoachingOpen(true);
+        setExplainModalOpen(true);
     };
 
-    return (
-        <div className="w-full max-w-2xl mx-auto p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl shadow-2xl overflow-hidden relative border border-slate-700">
+    // 다른 메뉴나 모달로 이동하지 않고 바로 그 자리에서 기존 컨텐츠 70% 블러를 해제 및 100% 해독 출력!
+    const handleInPlaceUnlock = () => {
+        triggerHaptic();
+        setUnlockedLevels(prev => ({
+            ...prev,
+            [globalLevel]: true
+        }));
+    };
 
-            {/* 배경 파티클 요소 (CSS 그라데이션) */}
+    const handleFullPassClick = () => {
+        triggerHaptic();
+        setMicroPassOpen(true);
+    };
+
+    // 현재 탭이 해독 완료되었는지 확인
+    const isCurrentTabUnlocked = unlockedLevels[globalLevel];
+
+    // 맛보기 30% 공개 카드 (1st & 2nd)
+    const freePreviewCards = data.slice(0, 2);
+    // 70% 정밀 해독 카드 (3rd & 4th)
+    const blurCards = data.slice(2);
+
+    return (
+        <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl shadow-2xl overflow-hidden relative border border-slate-700">
+
+            {/* 배경 파티클 요소 */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
                 <div className="absolute top-[-20%] left-[-10%] w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
                 <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
@@ -129,117 +137,279 @@ export default function MultiDimensionalBlueprint({
 
             <div className="relative z-10">
                 {/* 헤더 타이틀 */}
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400 mb-2">
+                <div className="text-center mb-8">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-amber-200 to-purple-400 mb-1 font-serif">
                         나의 기질 설계도
                     </h2>
-                    <p className="text-slate-400 text-sm tracking-widest">MULTI-DIMENSIONAL BLUEPRINT</p>
+                    <p className="text-slate-400 text-xs tracking-widest uppercase font-mono">MULTI-DIMENSIONAL BLUEPRINT</p>
                 </div>
 
                 {/* 차원 선택 컨트롤러 (Haptic Toggle) */}
-                <div className="flex justify-center space-x-2 mb-8 bg-slate-800/50 p-1.5 rounded-full border border-slate-700/50 backdrop-blur-sm">
+                <div className="flex justify-center space-x-2 mb-6 bg-slate-800/60 p-1.5 rounded-full border border-slate-700/60 backdrop-blur-sm shadow-inner">
                     <button
                         onClick={() => handleLevelChange('dark')}
-                        className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 w-1/3 flex items-center justify-center space-x-2
-                            ${globalLevel === 'dark' ? 'bg-rose-900/80 text-rose-200 shadow-[0_0_15px_rgba(225,29,72,0.3)]' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/50'}`}
+                        className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 w-1/3 flex items-center justify-center space-x-1.5 relative
+                            ${globalLevel === 'dark' ? 'bg-rose-900/80 text-rose-200 shadow-[0_0_15px_rgba(225,29,72,0.4)] ring-1 ring-rose-500/50' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'}`}
                     >
                         <span>⚠️</span> <span>Dark</span>
+                        {unlockedLevels.dark && <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-emerald-400" />}
                     </button>
                     <button
                         onClick={() => handleLevelChange('neural')}
-                        className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 w-1/3 flex items-center justify-center space-x-2
-                            ${globalLevel === 'neural' ? 'bg-blue-900/80 text-blue-200 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/50'}`}
+                        className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 w-1/3 flex items-center justify-center space-x-1.5 relative
+                            ${globalLevel === 'neural' ? 'bg-blue-900/80 text-blue-200 shadow-[0_0_15px_rgba(59,130,246,0.4)] ring-1 ring-blue-500/50' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'}`}
                     >
                         <span>✨</span> <span>Neural</span>
+                        {unlockedLevels.neural && <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-emerald-400" />}
                     </button>
                     <button
                         onClick={() => handleLevelChange('meta')}
-                        className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 w-1/3 flex items-center justify-center space-x-2
-                            ${globalLevel === 'meta' ? 'bg-amber-700/80 text-amber-100 shadow-[0_0_15px_rgba(217,119,6,0.3)]' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/50'}`}
+                        className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 w-1/3 flex items-center justify-center space-x-1.5 relative
+                            ${globalLevel === 'meta' ? 'bg-amber-700/80 text-amber-100 shadow-[0_0_15px_rgba(217,119,6,0.4)] ring-1 ring-amber-500/50' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'}`}
                     >
                         <span>👑</span> <span>Meta</span>
+                        {unlockedLevels.meta && <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-emerald-400" />}
                     </button>
                 </div>
 
-                {/* 코드 리스트 렌더링 (다차원 뷰어) */}
-                <div className="space-y-6">
-                    {data.map((item, index) => (
-                        <div key={item.id}
-                            className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-5 backdrop-blur-md"
-                            style={{ animationDelay: `${index * 100}ms` }}>
+                {/* ==========================================
+                    1. [무료 맛보기 30%] 영역 (1st & 2nd 카드)
+                    ========================================== */}
+                <div className="space-y-4 mb-6">
+                    <div className="flex items-center justify-between px-1">
+                        <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                            <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+                                🔓 기질 핵심 30% 무료 열람 중
+                            </span>
+                        </div>
+                        {isCurrentTabUnlocked && (
+                            <span className="text-[10px] font-black text-amber-300 bg-amber-400/20 border border-amber-400/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3 text-amber-400" /> {globalLevel.toUpperCase()} 해독 완료
+                            </span>
+                        )}
+                    </div>
 
-                            <h3 className="text-lg font-bold text-slate-200 mb-1">{item.title}</h3>
-                            <p className="text-slate-400 text-sm mb-4 leading-relaxed font-medium">"{item.subtitle}"</p>
+                    {freePreviewCards.map((item) => (
+                        <div 
+                            key={item.id} 
+                            onClick={() => handleCardClick(item)}
+                            className="group bg-slate-800/50 hover:bg-slate-800/80 border border-slate-700/60 hover:border-amber-400/50 rounded-2xl p-5 backdrop-blur-md shadow-lg transition-all duration-200 cursor-pointer relative overflow-hidden"
+                        >
+                            <div className="flex items-center justify-between mb-1">
+                                <h3 className="text-base sm:text-lg font-bold text-slate-100 group-hover:text-amber-200 transition-colors">{item.title}</h3>
+                            </div>
+                            <p className="text-slate-400 text-xs sm:text-sm mb-3 font-medium">"{item.subtitle}"</p>
 
-                            {/* 상태별 동적 컴포넌트 */}
-                            <div className="transform transition-all duration-500 ease-in-out">
+                            <div className="transform transition-all duration-300">
                                 {globalLevel === 'dark' && (
-                                    <div className="bg-rose-950/30 border-l-4 border-rose-500 p-4 rounded-r-lg">
-                                        <p className="font-bold text-rose-300 mb-2">{item.darkCode.name}</p>
-                                        <p className="text-rose-100/70 text-sm leading-relaxed">{item.darkCode.desc}</p>
+                                    <div className="bg-rose-950/40 border-l-4 border-rose-500 p-3.5 rounded-r-xl">
+                                        <p className="font-bold text-rose-300 text-xs sm:text-sm mb-1">{item.darkCode.name}</p>
+                                        <p className="text-rose-100/80 text-xs sm:text-sm leading-relaxed">{item.darkCode.desc}</p>
                                     </div>
                                 )}
                                 {globalLevel === 'neural' && (
-                                    <div className="bg-blue-950/30 border-l-4 border-blue-400 p-4 rounded-r-lg">
-                                        <p className="font-bold text-blue-300 mb-2">{item.neuralCode.name}</p>
-                                        <p className="text-blue-100/70 text-sm leading-relaxed">{item.neuralCode.desc}</p>
+                                    <div className="bg-blue-950/40 border-l-4 border-blue-400 p-3.5 rounded-r-xl">
+                                        <p className="font-bold text-blue-300 text-xs sm:text-sm mb-1">{item.neuralCode.name}</p>
+                                        <p className="text-blue-100/80 text-xs sm:text-sm leading-relaxed">{item.neuralCode.desc}</p>
                                     </div>
                                 )}
                                 {globalLevel === 'meta' && (
-                                    <div className="bg-amber-900/20 border-l-4 border-amber-500 p-4 rounded-r-lg relative overflow-hidden">
-                                        {/* 메타코드 반짝임 효과 */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/5 to-transparent skew-x-12 translate-x-[-150%] animate-[shimmer_3s_infinite]"></div>
-                                        <p className="font-bold text-amber-400 mb-2 relative z-10">{item.metaCode.name}</p>
-                                        <p className="text-amber-100/80 text-sm leading-relaxed relative z-10">{item.metaCode.desc}</p>
+                                    <div className="bg-amber-900/30 border-l-4 border-amber-500 p-3.5 rounded-r-xl relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/10 to-transparent skew-x-12 translate-x-[-150%] animate-[shimmer_3s_infinite]" />
+                                        <p className="font-bold text-amber-400 text-xs sm:text-sm mb-1 relative z-10">{item.metaCode.name}</p>
+                                        <p className="text-amber-100/90 text-xs sm:text-sm leading-relaxed relative z-10">{item.metaCode.desc}</p>
                                     </div>
                                 )}
+                            </div>
+
+                            <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] text-amber-300 font-bold group-hover:text-amber-200 transition-colors">
+                                <span className="flex items-center gap-1.5">
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                    클릭하여 생년월일 맞춤 상세 감동 에세이 보기
+                                </span>
+                                <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
                             </div>
                         </div>
                     ))}
                 </div>
 
-                {/* 코치의 노트 (Coach's Note) */}
-                <div className="mt-10 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 p-6 rounded-2xl border border-indigo-500/20">
-                    <div className="flex items-center mb-3">
-                        <span className="text-indigo-400 mr-2 text-xl">💡</span>
-                        <h4 className="font-bold text-indigo-200">Coach's Note (그림자를 다루는 아름다운 연금술)</h4>
+                {/* ==========================================
+                    2. [70% 정밀 해독 파트] 영역 (잠금 VS 인플레이스 해제)
+                    ========================================== */}
+                <div className="relative rounded-3xl border border-amber-500/30 overflow-hidden shadow-2xl my-6">
+                    
+                    {/* 해독 영역 컨텐츠 (해제 시 blur 제거 및 100% 선명하게 그대로 출력) */}
+                    <div className={`transition-all duration-700 p-5 space-y-4 bg-slate-950/80 ${
+                        isCurrentTabUnlocked 
+                            ? 'filter-none opacity-100 select-text pointer-events-auto' 
+                            : 'filter blur-md opacity-40 select-none pointer-events-none'
+                    }`}>
+                        {blurCards.map((item) => (
+                            <div 
+                                key={item.id}
+                                onClick={() => isCurrentTabUnlocked && handleCardClick(item)}
+                                className={`bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 shadow-md transition-all duration-200 ${
+                                    isCurrentTabUnlocked ? 'cursor-pointer hover:bg-slate-800/80 hover:border-amber-400/50 group' : ''
+                                }`}
+                            >
+                                <div className="flex items-center justify-between mb-1">
+                                    <h3 className="text-base sm:text-lg font-bold text-slate-100 group-hover:text-amber-200 transition-colors">{item.title}</h3>
+                                </div>
+                                <p className="text-slate-400 text-xs sm:text-sm mb-3 font-medium">"{item.subtitle}"</p>
+                                
+                                {globalLevel === 'dark' && (
+                                    <div className="bg-rose-950/40 border-l-4 border-rose-500 p-3.5 rounded-r-xl">
+                                        <p className="font-bold text-rose-300 text-xs sm:text-sm mb-1">{item.darkCode.name}</p>
+                                        <p className="text-rose-100/90 text-xs sm:text-sm leading-relaxed">{item.darkCode.desc}</p>
+                                    </div>
+                                )}
+                                {globalLevel === 'neural' && (
+                                    <div className="bg-blue-950/40 border-l-4 border-blue-400 p-3.5 rounded-r-xl">
+                                        <p className="font-bold text-blue-300 text-xs sm:text-sm mb-1">{item.neuralCode.name}</p>
+                                        <p className="text-blue-100/80 text-xs sm:text-sm leading-relaxed">{item.neuralCode.desc}</p>
+                                    </div>
+                                )}
+                                {globalLevel === 'meta' && (
+                                    <div className="bg-amber-900/30 border-l-4 border-amber-500 p-3.5 rounded-r-xl">
+                                        <p className="font-bold text-amber-400 text-xs sm:text-sm mb-1">{item.metaCode.name}</p>
+                                        <p className="text-amber-100/90 text-xs sm:text-sm leading-relaxed">{item.metaCode.desc}</p>
+                                    </div>
+                                )}
+
+                                {isCurrentTabUnlocked && (
+                                    <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] text-amber-300 font-bold group-hover:text-amber-200 transition-colors">
+                                        <span className="flex items-center gap-1.5">
+                                            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                            클릭하여 3단계 주파수 연금술 체험
+                                        </span>
+                                        <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+
+                        {/* Coach Note: 기존 컨텐츠 그대로 선명하게 출력 */}
+                        <div className="bg-gradient-to-br from-indigo-900/40 via-purple-900/40 to-slate-900 border border-indigo-500/40 p-5 rounded-2xl text-left">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="text-indigo-400 text-lg">💡</span>
+                                <h4 className="font-bold text-indigo-200 text-sm sm:text-base">Coach's Note (제로포인트 각성 연금술)</h4>
+                            </div>
+                            <p className="text-slate-200 text-xs sm:text-sm leading-relaxed mb-2.5">
+                                가슴 속 ⚠️ <strong>[{globalLevel.toUpperCase()} 코드]</strong>의 억압을 도려내려 애쓰지 마세요. 내면에 드리운 고통이야말로 가장 눈부신 창조의 밑거름입니다.
+                            </p>
+                            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                                내 예민함과 불안조차 나를 보호하기 위한 초기 설정이었음을 온전히 <strong>승인(Accept)</strong>할 때, 비로소 진정한 주체로서 나답게 타오르는 거대한 원동력이 깨어납니다.
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-3">
-                        주의: 이 분석은 당신을 억지로 깎아내거나 인위적으로 개조하려는 차가운 지침이 아닙니다. 내면의 날씨를 포근히 품고 내 삶의 방향타를 맑게 쥐기 위한 <strong>'존엄한 관점의 대전환'</strong>을 향한 따뜻한 초대입니다.
-                    </p>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-3">
-                        시스템의 역설은, 가슴속 ⚠️ <strong>[다크 코드(그림자)]</strong>를 억지로 도려내어 삭제하거나 부정하려 할수록, 온 신경계가 아프게 울부짖으며 충돌과 오류(Error)를 더 자주 일으킨다는 점입니다.
-                    </p>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-3">
-                        그림자는 없애고 정복해야 할 가여운 적이 아니며, 그렇다고 그 차가운 어둠에 끌려다니며 나 자신과 맹목적으로 동일시해야 할 감옥도 아닙니다.
-                    </p>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-3 font-semibold text-indigo-200">
-                        오히려 내면에 드리운 어두운 그림자야말로, 진정한 인생의 주체(Subject)로 당당히 서기 위해 늘 펼쳐져 있는 <strong>'가장 눈부시고 고귀한 창조의 밑거름이자 재료'</strong>입니다.
-                    </p>
-                    <p className="text-slate-300 text-sm leading-relaxed">
-                        나의 예민함, 고집, 불안조차 <strong>"나를 보호하기 위해 작동하던 신성한 초기 설정(Default)"</strong>이었음을 있는 그대로 온전히 <strong>승인(Accept)</strong>하고, 이 그림자를 찬란한 삶을 빚어낼 위대한 연료로 변환하여 귀하게 써 내려갈 때, 비로소 강력한 ✨ <strong>[뉴럴 코드]</strong>의 활성화와 함께 진정한 나로서 살아갈 수 있는 거대한 우주적 원동력이 깨어납니다.
-                    </p>
+
+                    {/* 잠금 상태일 때만 표시되는 오버레이 & 핀포인트 락 해제 버튼 */}
+                    {!isCurrentTabUnlocked && (
+                        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/90 to-slate-950 flex flex-col items-center justify-center p-6 text-center z-20 backdrop-blur-sm animate-in fade-in duration-300">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 p-0.5 shadow-[0_0_20px_rgba(252,211,77,0.5)] mb-3 animate-pulse">
+                                <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center">
+                                    <Lock className="w-5 h-5 text-amber-400" />
+                                </div>
+                            </div>
+
+                            <span className="text-[11px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full mb-2">
+                                🔒 핵심 70% 정밀 해독 파트 잠금
+                            </span>
+
+                            <h4 className="text-base sm:text-lg font-black text-white mb-1 font-serif">
+                                {globalLevel === 'dark' && '⚠️ 무의식 인지 오류 & 생존 억압 70% 해독'}
+                                {globalLevel === 'neural' && '✨ 뇌신경 재설계 & 파워베이스 70% 해독'}
+                                {globalLevel === 'meta' && '👑 3단계 제로포인트 각성 솔루션 70% 해독'}
+                            </h4>
+                            
+                            <p className="text-xs text-slate-300 mb-5 max-w-sm leading-relaxed">
+                                클릭 시 다른 메뉴로 이동하지 않고 <strong>이 자리에서 즉시 100% 전체 해독</strong>되어 출력됩니다.
+                            </p>
+
+                            {/* 👉 황금빛 글로우 핀포인트 락 해제 버튼 (클릭 시 인플레이스 해제) */}
+                            <button
+                                onClick={handleInPlaceUnlock}
+                                className="w-full max-w-md py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-sm sm:text-base hover:brightness-110 active:scale-95 transition-all shadow-[0_0_25px_rgba(252,211,77,0.6)] flex items-center justify-center gap-2 animate-pulse"
+                            >
+                                <span>
+                                    {globalLevel === 'dark' && '👉 [ 🔓 890원에 이 자리에서 즉시 해독 출력하기 ]'}
+                                    {globalLevel === 'dark' && '👉 [ 🔓 890원에 70% 정밀 해독 이 자리에서 출력하기 ]'}
+                                    {globalLevel === 'neural' && '👉 [ 🔓 890원에 70% 정밀 해독 이 자리에서 출력하기 ]'}
+                                    {globalLevel === 'meta' && '👉 [ 🔓 3,900원에 명심 마스터코어 정밀 해독 이 자리에서 출력하기 ]'}
+                                </span>
+                            </button>
+                        </div>
+                    )}
                 </div>
 
-                {/* 하단 액션 버튼 */}
+                {/* ==========================================
+                    3. [특허 출원 한정 이벤트] 3,900원 명심 마스터코어 정밀 해독 배너 (무제한 ALL-PASS 무효화)
+                    ========================================== */}
+                <div 
+                    onClick={handleFullPassClick}
+                    className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950/80 via-amber-900/60 to-indigo-950/90 border border-amber-400/50 p-4 shadow-xl cursor-pointer hover:border-amber-300 transition-all mb-6 text-left"
+                >
+                    <div className="flex items-center justify-between z-10 relative">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center shrink-0">
+                                <Crown className="w-5 h-5 text-amber-300" />
+                            </div>
+                            <div className="text-left">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-black text-amber-300">📜 특허출원중 한정특가 명심 마스터코어</span>
+                                    <span className="bg-amber-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded">86% OFF</span>
+                                </div>
+                                <p className="text-[10px] text-amber-100/90 mt-0.5">
+                                    특허출원중 번호: 제 10-2025-0166877 호 (출원인: 이경윤) | 심리 및 생체데이터 기반 스트레스 관리 솔루션
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                            <span className="text-xs sm:text-sm font-black text-white flex items-center gap-0.5 font-mono">
+                                3,900원 <ChevronRight className="w-4 h-4 text-amber-300 group-hover:translate-x-1 transition-transform" />
+                            </span>
+                            <span className="text-[9px] text-gray-400 line-through block">29,000원</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 하단 기본 코칭받기 버튼 (Show Action Button) */}
                 {showActionButton && (
                     <button 
                         onClick={onActionClick}
-                        className="w-full mt-8 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-lg hover:from-indigo-600 hover:to-purple-700 transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] flex justify-center items-center group active:scale-95"
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm sm:text-base hover:from-indigo-600 hover:to-purple-700 transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] flex justify-center items-center group active:scale-95 mb-4"
                     >
                         <span>🚀 나의 강점 활용법 코칭받기</span>
-                        <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                        <svg className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                     </button>
                 )}
 
-                {/* [MODULE] 오늘의 뉴럴 코드 액션 플랜 */}
+                {/* [MODULE] 액션 플랜 & 리포트 */}
                 <DailyNeuralMissionCard data={data} />
-
-                {/* [MODULE] 월간 명심 리포트 */}
                 <MonthlyMindReport />
             </div>
 
-            {/* Tailwind CSS for Custom Animations in this file scope if global not available */}
+            {/* 풀패스 모달 연동 */}
+            <MicroPassModal
+                isOpen={microPassOpen}
+                onClose={() => setMicroPassOpen(false)}
+            />
+
+            {/* 지질 카드 클릭 시 1:1 생년월일 맞춤 감동 에세이 코칭 모달 */}
+            {selectedIndicator && (
+                <GeniusExplainModal
+                    isOpen={explainModalOpen}
+                    onClose={() => setExplainModalOpen(false)}
+                    userName={userName}
+                    saju={saju}
+                    indicatorName={selectedIndicator.name}
+                    score={selectedIndicator.score}
+                    locale={locale}
+                />
+            )}
+
             <style jsx>{`
                 @keyframes blob {
                     0% { transform: translate(0px, 0px) scale(1); }
@@ -260,13 +430,7 @@ export default function MultiDimensionalBlueprint({
                     100% { transform: translateX(150%); }
                 }
             `}</style>
-
-            {/* [MODULE] 3단계 셀프 코칭 모달 */}
-            <NeuralCodeCoachingModal
-                isOpen={coachingOpen}
-                onClose={() => setCoachingOpen(false)}
-                data={coachingData}
-            />
         </div>
     );
 }
+

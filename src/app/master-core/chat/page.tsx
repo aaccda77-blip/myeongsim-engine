@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useReportStore } from '@/store/useReportStore';
 import { saju60Data, detectUserState, GapjaModule } from '@/modules/saju60Modules';
 import { ArrowLeft, Send, Sparkles, User, HelpCircle, Compass, Sparkle } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 type SystemState = 'DARK' | 'NEURAL' | 'META' | 'IDLE';
 
@@ -361,6 +362,7 @@ export default function MasterCoreChatRoom() {
             )}
           </AnimatePresence>
           <div ref={messagesEndRef} />
+          <Footer />
         </div>
       </main>
 

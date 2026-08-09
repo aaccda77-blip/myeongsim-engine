@@ -19,7 +19,7 @@ import SocialDnaMap from './SocialDnaMap';
 import SocialAntiPatternAnalysis from './SocialAntiPatternAnalysis';
 import SajuArchitectureFlow from './SajuArchitectureFlow';
 import SajuEnergyNodeMap from './SajuEnergyNodeMap';
-import TripleCoreAnalysis from './TripleCoreAnalysis';
+import TripleCoreAnalysis, { calculateTenGodsFromOhaeng } from './TripleCoreAnalysis';
 import SelfCoaching100 from './SelfCoaching100';
 
 // ─────────────────────────────────────────────
@@ -1674,8 +1674,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: '100%' }}
                         transition={{ type: 'spring', stiffness: 280, damping: 32 }}
-                        className="fixed inset-x-0 bottom-0 z-[90] flex flex-col"
-                        style={{ maxHeight: '100dvh', top: 0 }}
+                        className="fixed inset-x-0 bottom-0 z-[90] flex flex-col md:max-w-4xl lg:max-w-5xl xl:max-w-6xl md:mx-auto md:top-4 md:bottom-4 md:rounded-3xl shadow-2xl overflow-hidden"
+                        style={{ maxHeight: '100dvh' }}
                     >
                         <div
                             ref={scrollRef}
@@ -2242,6 +2242,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             userName={sajuInfo.name}
                                             ohaeng={sajuInfo.ohaeng}
                                             monthPillar={sajuInfo.monthPillar}
+                                             tenGods={calculateTenGodsFromOhaeng(sajuInfo.ohaeng, sajuInfo.dayStem)}
                                         />
                                     </div>
                                 </section>
@@ -2253,13 +2254,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         <SajuEnergyNodeMap
                                             dayStem={sajuInfo.dayStem}
                                             userName={sajuInfo.name}
-                                            tenGods={sajuInfo.ohaeng ? {
-                                                resource: sajuInfo.ohaeng.water ?? 0,
-                                                self:     sajuInfo.ohaeng.wood  ?? 0,
-                                                output:   sajuInfo.ohaeng.fire  ?? 0,
-                                                wealth:   sajuInfo.ohaeng.earth ?? 0,
-                                                power:    sajuInfo.ohaeng.metal ?? 0,
-                                            } : undefined}
+                                            tenGods={calculateTenGodsFromOhaeng(sajuInfo.ohaeng, sajuInfo.dayStem)}
                                         />
                                     </div>
                                 </section>

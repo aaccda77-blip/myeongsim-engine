@@ -1,0 +1,259 @@
+﻿
+src\app\api\chat\route.ts:57:    if (!userId || userId.includes('-0000-')) {
+src\app\api\chat\route.ts:88:    if (!userId || userId.includes('-0000-')) return '';
+src\app\api\chat\route.ts:154:        if (keywords.some(kw => fullText.includes(kw))) {
+src\app\api\chat\route.ts:205:        if (typeof currentMessageContent === 'string' && currentMessageContent.includes('
+[INTENT:ms_')) {
+src\app\api\chat\route.ts:310:                                .filter((m: any) => m.name.includes("embedding"))
+src\app\api\chat\route.ts:348:                            content: `Debug Write Test ${new Date().toISOString()} (Emb: 
+${embeddingResult.includes('Success') ? 'Real' : 'Fake'})`,
+src\app\api\chat\route.ts:417:        const isNaturalCommTrigger = currentMessageContent.includes('관계 전략') || currentMe
+ssageContent.includes('대화법 알려줘');
+src\app\api\chat\route.ts:444:            const isFemale = ['여', '여자', '여성'].includes(targetGenderRaw);
+src\app\api\chat\route.ts:448:            const isRoleplay = currentMessageContent.includes('롤플레잉') || currentMessageCo
+ntent.includes('시뮬레이션') || currentMessageContent.includes('연습') || currentMessageContent.includes('빙의');
+src\app\api\chat\route.ts:495:        if (lottoMatch || currentMessageContent.includes('로또 번호 추천')) {
+src\app\api\chat\route.ts:514:            if (subCommandKeywords.includes(targetLocation)) {
+src\app\api\chat\route.ts:517:            } else if (subCommandKeywords.some(k => targetWeather.includes(k))) {
+src\app\api\chat\route.ts:518:                subCommand = subCommandKeywords.find(k => targetWeather.includes(k)) || "
+";
+src\app\api\chat\route.ts:532:            const isFemale = ['여', '여자', '여성'].includes(targetGenderRaw);
+src\app\api\chat\route.ts:598:        if (foodMatch || currentMessageContent.includes('소울 푸드 추천')) {
+src\app\api\chat\route.ts:623:            const uGender: 'male' | 'female' = ['여', '여자', '여성'].includes(uGenderRaw) ? '
+female' : 'male';
+src\app\api\chat\route.ts:647:                    const pGender: 'male' | 'female' = ['여', '여자', '여성'].includes(pGender
+Raw) ? 'female' : 'male';
+src\app\api\chat\route.ts:870:        const isCrisisLiteral = crisisWords.some(word => currentMessageContent.includes(w
+ord));
+src\app\api\chat\route.ts:1123:                const safeTime = (effectiveBirthTime && effectiveBirthTime.includes(':')
+) ? effectiveBirthTime : '12:00';
+src\app\api\chat\route.ts:1361:        const isDeepCoachingRequested = currentMessageContent.includes('[INTENT:ms_deep_
+socratic]');
+src\app\api\chat\route.ts:1365:        if (currentMessageContent.includes('ms_3d_') || currentMessageContent.includes('
+ms_64_') || currentMessageContent.includes('NEURAL_ENGINEERING')) {
+src\app\api\chat\route.ts:1370:            if (currentMessageContent.includes('ms_64_')) {
+src\app\api\chat\route.ts:1467:${coachingStyle.includes('조용하고') ? '- 깊이 있고 사려 깊은 대화 톤 유지' : ''}
+src\app\api\chat\route.ts:1468:${coachingStyle.includes('활발하고') ? '- 에너지 있고 격려하는 톤 사용' : ''}
+src\app\api\chat\route.ts:1469:${coachingStyle.includes('논리적') ? '- 구체적인 근거와 단계별 해결책 제시' : ''}
+src\app\api\chat\route.ts:1470:${coachingStyle.includes('감정 공감') ? '- 먼저 감정을 인정하고, 충분히 공감한 후 조언' : ''}
+src\app\api\chat\route.ts:1471:${coachingStyle.includes('안심') ? '- 부드럽고 안정감 있는 어조 유지' : ''}
+src\app\api\chat\route.ts:1472:${coachingStyle.includes('새로운 관점') ? '- 창의적이고 신선한 관점 제시' : ''}
+src\app\api\chat\route.ts:1533:        if (ragContext.includes(":::3_STEP_DECODER:::")) {
+src\app\api\chat\route.ts:1573:        if (typeof currentMessageContent === 'string' && currentMessageContent.includes(
+'# System Prompt for 명심 AI 코치 (Myeongsim Coaching)')) {
+src\app\api\chat\route.ts:1767:            const isSpecialSession = userId?.startsWith('facility') || clientSystemPromp
+t.includes('MASTERMIND') || clientSystemPrompt.includes('DISCUSSION');
+src\app\api\chat\route.ts:1788:        const isMastermindSession = userId?.includes('mastermind') || clientSystemPrompt
+?.includes('MASTERMIND');
+src\app\api\chat\route.ts:1829:            const isLunarMatch = currentMessageContent.includes('음력');
+src\app\api\chat\route.ts:1833:            for(const [k, v] of Object.entries(timeMap)) { if(currentMessageContent.incl
+udes(k)) _time = v; }
+src\app\api\chat\route.ts:1910:                    const isSpecialSession = userId?.startsWith('facility') || finalSyst
+emPrompt.includes('MASTERMIND') || finalSystemPrompt.includes('DISCUSSION');
+src\app\api\coaching\psych-scan\route.ts:183:    if (mbti.includes('NF')) dmnHyperactivity += 5;
+src\app\api\coaching\psych-scan\route.ts:190:    if (mbti.includes('S') && mbti.includes('J')) experientialAvoidance +=
+ 10;
+src\app\api\coaching\psych-scan\route.ts:208:    if (mbti.startsWith('I') && mbti.includes('T')) socialIsolation += 5;
+src\app\api\crossover-validation\route.ts:34:      const pal = palaces.find((p: any) => p.name === pName || p.name.incl
+udes(pName));
+src\app\api\destiny-reflection\route.ts:88:      const pal = palaces.find((p: any) => p.name === pName || p.name.includ
+es(pName));
+src\app\api\live-sync\route.ts:59:    } else if (neural.pillars && !neural.pillars.includes('DATA_MISSING')) {
+src\app\api\trouble-analysis\route.ts:35:      const pal = palaces.find((p: any) => p.name === pName || p.name.includes
+(pName));
+src\app\api\tts\supertone\route.ts:171:        if (msg.includes('Could not load the default credentials')) {
+src\data\HealthKnowledgeDB.ts:412:            if (question.includes(tag)) score += 5;
+src\data\HealthKnowledgeDB.ts:415:        if (question.includes(CATEGORY_LABELS[item.category])) score += 3;
+src\data\HealthKnowledgeDB.ts:417:        if (item.question.includes(question) || question.includes(item.question)) sco
+re += 10;
+src\data\Saju3SScenarios.ts:317:        (s) => s.stem === stemChar || s.title.includes(stemChar) || s.id === stemChar
+src\data\Saju3SScenarios.ts:337:    return Object.values(SAJU_3S_SCENARIOS).find((scenario) => scenario.tags.includes(t
+ag));
+src\data\TherapyDB.ts:356:                o => archetype.related_ohaeng.includes(o)
+src\data\TherapyDB.ts:364:                g => archetype.related_gene_keys.includes(g)
+src\data\TherapyDB.ts:376:            if (typeMapping[profile.userType]?.includes(archetype.therapy_type)) {
+src\hooks\useSpeechRecognition.ts:85:                if (e.message && e.message.includes('already started')) {
+src\hooks\useVoice.ts:121:            const korVoice = voices.find(v => v.lang.includes('ko'));
+src\lib\security.ts:37:    if (process.env.GOOGLE_AI_API_KEY?.includes('YOUR_') ||
+src\lib\security.ts:38:        process.env.GOOGLE_AI_API_KEY?.includes('REPLACE_')) {
+src\lib\security.ts:76:    if (errorString.includes('api key') || errorString.includes('credentials')) {
+src\lib\security.ts:80:    if (errorString.includes('rate limit') || errorString.includes('quota')) {
+src\lib\security.ts:84:    if (errorString.includes('network') || errorString.includes('timeout')) {
+src\lib\security.ts:101:            if (key.toLowerCase().includes('key') ||
+src\lib\security.ts:102:                key.toLowerCase().includes('secret') ||
+src\lib\security.ts:103:                key.toLowerCase().includes('password') ||
+src\lib\security.ts:104:                key.toLowerCase().includes('token')) {
+src\modules\CafeAlgorithmModule.ts:167:  if (['巳', '午', '未'].includes(month) && (day === '辛' || day === '庚')) {
+src\modules\CafeAlgorithmModule.ts:178:  if (['亥', '子', '丑'].includes(month) && (day === '辛' || day === '庚')) {
+src\modules\CommunicationEngineModule.ts:90:        if (['갑', '을', '병', '정'].includes(dayMaster)) {
+src\modules\CommunicationEngineModule.ts:100:        else if (['무', '기'].includes(dayMaster)) {
+src\modules\CommunicationEngineModule.ts:110:        else if (['경', '신', '임', '계'].includes(dayMaster)) {
+src\modules\ConsciousnessOSEngine.ts:62:        const darkScore = darkKeywords.filter(kw => message.includes(kw)).lengt
+h;
+src\modules\ConsciousnessOSEngine.ts:63:        const neuralScore = neuralKeywords.filter(kw => message.includes(kw)).l
+ength;
+src\modules\ConsciousnessOSEngine.ts:64:        const metaScore = metaKeywords.filter(kw => message.includes(kw)).lengt
+h;
+src\modules\ConsciousnessOSEngine.ts:86:        const lowScore = lowKeywords.filter(kw => message.includes(kw)).length;
+src\modules\ConsciousnessOSEngine.ts:87:        const midScore = midKeywords.filter(kw => message.includes(kw)).length;
+src\modules\ConsciousnessOSEngine.ts:88:        const highScore = highKeywords.filter(kw => message.includes(kw)).lengt
+h;
+src\modules\ConsciousnessOSEngine.ts:108:        const inScore = inKeywords.filter(kw => message.includes(kw)).length;
+src\modules\ConsciousnessOSEngine.ts:109:        const outScore = outKeywords.filter(kw => message.includes(kw)).length
+;
+src\modules\CoreRouterEngine.ts:35:        if (normalizedText.includes(keyword)) {
+src\modules\CoreRouterEngine.ts:53:    const isInfoQuery = message.includes('?') || message.includes('뭐야') || message.i
+ncludes('어때') || message.includes('알려줘') || message.includes('어떻게');
+src\modules\CrisisInterventionModule.ts:28:            if (dm.includes('경') || dm.includes('신')) {
+src\modules\CrisisInterventionModule.ts:33:            else if (dm.includes('임') || dm.includes('계')) {
+src\modules\CrisisInterventionModule.ts:38:            else if (dm.includes('갑') || dm.includes('을')) {
+src\modules\CrisisInterventionModule.ts:43:            else if (dm.includes('병') || dm.includes('정')) {
+src\modules\CrisisInterventionModule.ts:48:            else if (dm.includes('무') || dm.includes('기')) {
+src\modules\DrillDownProtocol.ts:1200:    if (selfCoachingIntents.includes(intent) || intent.startsWith('assess_') || i
+ntent.startsWith('deep_') || intent.startsWith('ms_') || intent.startsWith('NAV_') || intent.startsWith('saju_')) {
+src\modules\FrequencyDetector.ts:73:        if (normalizedText.includes(keyword)) {
+src\modules\FrequencyDetector.ts:146:        matchedKeywords = DARK_CODE_KEYWORDS.filter(k => fullContext.includes(k));
+src\modules\FrequencyDetector.ts:150:        matchedKeywords = META_CODE_KEYWORDS.filter(k => fullContext.includes(k));
+src\modules\FrequencyDetector.ts:154:        matchedKeywords = NEURAL_CODE_KEYWORDS.filter(k => fullContext.includes(k)
+);
+src\modules\FrequencyDetector.ts:223:    return crisisKeywords.some(k => text.includes(k));
+src\modules\GongmangEngine.ts:61:    isTodayGongmang = gongmangBranches.includes(todayBranch) || gongmangHan.includes(t
+odayBranch);
+src\modules\InterruptQuestionModule.ts:63:            if (inputText.includes(keyword)) {
+src\modules\LifeResurrectorModule.ts:54:        const defeatHits = this.DEFEAT_KEYWORDS.filter(k => msg.includes(k));
+src\modules\LifeResurrectorModule.ts:55:        const fearHits = this.FEAR_KEYWORDS.filter(k => msg.includes(k));
+src\modules\LifeResurrectorModule.ts:56:        const stuckHits = this.STUCK_KEYWORDS.filter(k => msg.includes(k));
+src\modules\LottoAdvancedAnalytics.ts:139:            if (!keys.includes(fill)) keys.push(fill);
+src\modules\LottoChaosModule.ts:16:        if (fireDays.includes(dm)) {
+src\modules\LottoChaosModule.ts:18:        } else if (waterDays.includes(dm)) {
+src\modules\LottoEngineModule.ts:45:            const remaining = allNum.filter(n => !seedPool.includes(n)).sort(() => 
+Math.random() - 0.5);
+src\modules\LottoEngineModuleV2.ts:81:            const rP = priority.filter(n => !seedPool.includes(n));
+src\modules\LottoEngineModuleV2.ts:82:            const rO = allNum.filter(n => !seedPool.includes(n) && !rP.includes(n
+)).sort(() => Math.random() - 0.5);
+src\modules\LottoEngineModuleV2.ts:171:            const hotCount = comb.filter(n => LottoStatisticsDB.HOT_NUMBERS.incl
+udes(n)).length;
+src\modules\LottoEngineModuleV2.ts:172:            const coldCount = comb.filter(n => LottoStatisticsDB.COLD_NUMBERS.in
+cludes(n)).length;
+src\modules\LottoStatisticsDB.ts:80:            if (comb.includes(a) && comb.includes(b)) count++;
+src\modules\LottoStatisticsDB.ts:112:        return comb.filter(n => this.PRIMES.includes(n)).length;
+src\modules\mental64Router.ts:33:  let darkScore = darkKeywords.filter(k => input.includes(k)).length;
+src\modules\mental64Router.ts:34:  let neuralScore = neuralKeywords.filter(k => input.includes(k)).length;
+src\modules\mental64Router.ts:35:  let metaScore = metaKeywords.filter(k => input.includes(k)).length;
+src\modules\mental64Router.ts:51:  const core = validMentalModules.find(b => b.id === moduleId || b.name.includes(modul
+eId));
+src\modules\MindflowIChingEngine.ts:52:        const hasHighEnergyGods = sajuData.sipsin?.includes('편관') ||
+src\modules\MindflowIChingEngine.ts:53:            sajuData.sipsin?.includes('상관');
+src\modules\MindflowIChingEngine.ts:203:            if (zVector.includes('In')) { // 수렴형
+src\modules\MindflowIChingEngine.ts:204:                if (yFreq.includes('Low')) {
+src\modules\MindflowIChingEngine.ts:211:                } else if (yFreq.includes('Mid')) {
+src\modules\MindflowIChingEngine.ts:223:                if (yFreq.includes('Low')) { // *참고: 발산형의 Low Freq는 분노로 표현됨 (에너
+지 방향 주의)
+src\modules\MindflowIChingEngine.ts:233:                } else if (yFreq.includes('Mid')) {
+src\modules\MindflowIChingEngine.ts:600:                } else if (userQuestion.includes("어제")) {
+src\modules\MindflowIChingEngine.ts:603:                } else if (userQuestion.includes("그저께") || userQuestion.include
+s("그제")) {
+src\modules\MindflowIChingEngine.ts:613:                if (intent === 'bio_care_nutri_archive' && !dateMatch && !userQ
+uestion.includes("어제")) {
+src\modules\NeuroscienceModule.ts:74:            if (positiveKeywords.some(k => msg.content.includes(k))) {
+src\modules\PatentProtocols.ts:186:    const hasDietKeyword = dietKeywords.some(keyword => basePrompt.includes(keyword)
+);
+src\modules\PersonalityProfiler.ts:193:        if (lowerText.includes(k)) emotionWords++;
+src\modules\PersonalityProfiler.ts:197:        if (lowerText.includes(k)) logicWords++;
+src\modules\PersonalityProfiler.ts:201:        if (lowerText.includes(k)) introvertSignals++;
+src\modules\PersonalityProfiler.ts:205:        if (lowerText.includes(k)) extrovertSignals++;
+src\modules\PersonalityProfiler.ts:287:            ['openness', 'conscientiousness', 'extraversion', 'agreeableness', '
+neuroticism'].includes(q.targetTrait)
+src\modules\PersonalityProfiler.ts:311:        if (lowerResponse.includes(keyword.toLowerCase())) {
+src\modules\PersonalityProfiler.ts:319:            if (response.trim() === opt || response.includes(opt)) {
+src\modules\PersonalityProfiler.ts:326:    if (['ei', 'sn', 'tf', 'jp'].includes(question.targetTrait)) {
+src\modules\PersonalityProfiler.ts:342:    if (['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neur
+oticism'].includes(question.targetTrait)) {
+src\modules\PersonalityProfiler.ts:373:    if (parts.includes('?')) {
+src\modules\PromptEngine.ts:101:            if (m.role === 'user' && BURNOUT_KEYWORDS.some(k => m.content.includes(k)))
+ count++;
+src\modules\PsychologicalSafetyModule.ts:47:        if (this.CRISIS_KEYWORDS.some(k => currentLower.includes(k))) {
+src\modules\PsychologicalSafetyModule.ts:71:                prev.length > 5 && (currentLower.includes(prev) || prev.inc
+ludes(currentLower))
+src\modules\PsychologicalSafetyModule.ts:89:        if (this.DEPENDENCY_KEYWORDS.some(k => currentLower.includes(k))) {
+src\modules\QuestionModule.ts:38:            if (group.codes.includes(code)) {
+src\modules\saju60Modules.ts:250:  const hasDark = darkKeywords.some(kw => userInput.includes(kw));
+src\modules\saju60Modules.ts:251:  const hasMeta = metaKeywords.some(kw => userInput.includes(kw));
+src\modules\SajuPerspectiveRotator.ts:123:            if (mapping.keywords.some(kw => lowerMsg.includes(kw))) {
+src\modules\SajuPerspectiveRotator.ts:125:                if (this.recentPillars.includes(mapping.primaryPillar)) {
+src\modules\SajuPerspectiveRotator.ts:136:        const available = allPillars.filter(p => !this.recentPillars.includes
+(p));
+src\modules\SecurityMiddleware.ts:61:        if (HONEYPOT_ROUTES.some(r => path.includes(r))) {
+src\modules\SelfCoachingModule.ts:445:        if (intent.startsWith('ms_x_') && (intent.includes('dev') || intent.inclu
+des('quantum') || intent.includes('alchemy'))) {
+src\modules\SelfCoachingModule.ts:680:            if (monthBranch && voidBranches.includes(monthBranch)) {
+src\modules\SelfCoachingModule.ts:683:            } else if (yearBranch && voidBranches.includes(yearBranch)) {
+src\modules\SelfCoachingModule.ts:686:            } else if (hourBranch && voidBranches.includes(hourBranch)) {
+src\modules\SelfCoachingModule.ts:689:            } else if (voidBranches.includes(dayBranch)) {
+src\modules\SelfCoachingModule.ts:1074:        if (woods.includes(dayMasterChar)) { // 목: 성장 욕구
+src\modules\SelfCoachingModule.ts:1076:        } else if (fires.includes(dayMasterChar)) { // 화: 발산 욕구
+src\modules\SelfCoachingModule.ts:1078:        } else if (earths.includes(dayMasterChar)) { // 토: 수용/안정 욕구
+src\modules\SelfCoachingModule.ts:1080:        } else if (metals.includes(dayMasterChar)) { // 금: 원칙/결단 욕구
+src\modules\SelfCoachingModule.ts:1082:        } else if (waters.includes(dayMasterChar)) { // 수: 유연/지혜 욕구
+src\modules\SentimentTracker.ts:37:            if (this.BURNOUT_KEYWORDS.some(k => content.includes(k))) {
+src\modules\SocraticCoachingModule.ts:88:            if (message.includes(kw)) matchCount++;
+src\modules\ZenProtocol.ts:195:        if (lowerText.includes(keyword)) {
+src\modules\MemoryModules\MindGraphModule.ts:14:        const found = concepts.filter(c => message.includes(c));
+src\modules\MemoryModules\ShadowTrackerModule.ts:17:            if (message.includes(keyword)) {
+src\modules\Security\PromptFirewall.ts:60:            if (lowerMsg.includes(keyword)) {
+src\services\PromptEngine.ts:884:      if (m.role === 'user' && BURNOUT_KEYWORDS.some(k => m.content.includes(k))) coun
+t++;
+src\services\ReportContentGenerator.ts:78:        if (value.hanja === hanjaSearch || value.hanja?.includes(hanjaSearch)
+) {
+src\services\ReportContentGenerator.ts:86:        v.name?.startsWith(hangeulGan) || v.title?.includes(hangeulGan)
+src\services\StartupCoachingEngine.ts:100:            if (type.ideal_powerbase.includes(topPowerbase)) {
+src\services\StartupCoachingEngine.ts:150:            businessType.recommended_formulas.includes(f.id)
+src\services\myeongshim\MyeongshimEngine.ts:92:            if (dayMaster.includes('화')) {
+src\services\myeongshim\MyeongshimEngine.ts:94:            } else if (dayMaster.includes('수')) {
+src\services\myeongshim\MyeongshimEngine.ts:156:        if (state.ur_body <= 4 || state.symptoms.includes('sick') || st
+ate.symptoms.includes('hangover')) {
+src\utils\DynamicCoachingScorer.ts:141:                if (tag.includes('완벽주의') || tag.includes('자기검열') || tag.includes
+('통제') || tag.includes('경직')) {
+src\utils\DynamicCoachingScorer.ts:150:                if (tag.includes('번아웃') || tag.includes('충동') || tag.includes('과
+열') || tag.includes('아드레날린')) {
+src\utils\DynamicCoachingScorer.ts:159:                if (tag.includes('단열막') || tag.includes('고립') || tag.includes('마
+비')) {
+src\utils\DynamicCoachingScorer.ts:185:            if (ZHI_HYUNG_MAP[userZhi]?.includes(todayZhi) || ZHI_HYUNG_MAP[toda
+yZhi]?.includes(userZhi)) {
+src\utils\DynamicCoachingScorer.ts:194:                if (tag.includes('신경증적') || tag.includes('과각성') || tag.includes(
+'불안') || tag.includes('방어기제')) {
+src\utils\DynamicCoachingScorer.ts:203:                if (tag.includes('타인평가') || tag.includes('기준선') || tag.includes(
+'통제')) {
+src\utils\DynamicCoachingScorer.ts:227:                if (psychTextContext.includes(kw.toLowerCase())) {
+src\utils\emotionAnalyzer.ts:9:    if (positiveKeywords.some(k => t.includes(k))) return 'positive';
+src\utils\emotionAnalyzer.ts:13:    if (negativeKeywords.some(k => t.includes(k))) return 'negative';
+src\utils\emotionAnalyzer.ts:17:    if (anxiousKeywords.some(k => t.includes(k))) return 'anxious';
+src\utils\emotionAnalyzer.ts:21:    if (angryKeywords.some(k => t.includes(k))) return 'angry';
+src\utils\questionGenerator.ts:135:    } else if (soul.climate.message.includes('난로') || soul.climate.message.includes(
+'용광로')) {
+src\utils\SajuCalculator.ts:136:    const isYearGongmang = gongmang.includes(yearZhi);
+src\utils\SajuCalculator.ts:137:    const isMonthGongmang = gongmang.includes(monthZhi);
+src\utils\SajuCalculator.ts:138:    const isTimeGongmang = gongmang.includes(timeZhi);
+src\utils\sajuLogic.ts:115:    if (['geon_rok', 'je_wang', 'gwan_dae'].includes(code)) return 'strong';
+src\utils\sajuLogic.ts:116:    if (['byung', 'sa', 'myo', 'jeol'].includes(code)) return 'weak';
+src\utils\sajuLogic.ts:117:    if (['myo'].includes(code)) return 'storage';
+src\utils\sajuLogic.ts:197:        if (rule.pair.every(p => branches.includes(p))) {
+src\utils\sajuLogic.ts:231:    if (modalProfileCode.includes('jae')) roleType = 'wealth';
+src\utils\sajuLogic.ts:232:    else if (modalProfileCode.includes('gwan')) roleType = 'career';
+src\utils\sajuLogic.ts:233:    else if (modalProfileCode.includes('in')) roleType = 'study';
+src\utils\sajuLogic.ts:242:        if (c.pair.every(p => branches.includes(p))) {
+src\utils\sajuLogic.ts:302:    if (climateMsg && !climateMsg.includes('평이하게')) {
+src\utils\sajuLogic.ts:318:    const isVoidEntry = voids.includes(monthBranch);
+src\utils\sajuLogic.ts:329:    } else if (climMsg.includes('가속기') || climMsg.includes('용광로')) {
+src\utils\ScoreCalculator.ts:101:    return targetCodes.some(code => myCodes.includes(code));
+src\utils\ScoreCalculator.ts:106:    return targetCodes.filter(code => myCodes.includes(code)).length;
+src\utils\zimidusuLogic.ts:285:  const myeongPalace = palaces.find((p: any) => p.name === '명' || p.name.includes('명'));
+src\utils\zimidusuLogic.ts:293:    if (myeongStars.includes('자미') || myeongStars.includes('천부')) {
+src\utils\zimidusuLogic.ts:295:    } else if (myeongStars.includes('태음') || myeongStars.includes('천동')) {
+src\utils\zimidusuLogic.ts:330:  const getPalaceInfo = (pName: string) => palaces.find((p: any) => p.name === pName || 
+p.name.includes(pName)) || { majorStars: [], decadal: { range: [10, 19] } };
+src\utils\zimidusuLogic.ts:473:  const myeongPalace = palaces.find((p: any) => p.name === '명' || p.name.includes('명')) 
+|| { decadal: { range: [10, 19] }, majorStars: [] };
+src\utils\zimidusuLogic.ts:528:    const pal = palaces.find((p: any) => p.name === pName || p.name.includes(pName));
+
+

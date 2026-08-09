@@ -6,6 +6,7 @@ import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 import { X, Sparkles, TrendingUp, ShieldAlert, Award } from 'lucide-react';
 import PsychScanDashboard from './PsychScanDashboard';
+import MyeongsimPhilosophyModal from './MyeongsimPhilosophyModal';
 
 // ─────────────────────────────────────────────────────────────
 // 천간/지지 오행 및 음양 정보 정의
@@ -501,6 +502,9 @@ export default function MyeongsimCoachingDashboard({
   const [sectionContent, setSectionContent] = React.useState<string | null>(null);
   const [isSectionLoading, setIsSectionLoading] = React.useState<boolean>(false);
   const [fetchingCache, setFetchingCache] = React.useState<boolean>(false);
+  const [isPhilosophyOpen, setIsPhilosophyOpen] = React.useState<boolean>(false);
+
+  const currentUserName = userProfile?.userName || userProfile?.name || (reportData as any)?.userName || '이경윤';
 
   // 특정 섹션 클릭 시 수파베이스/로컬 캐시 확인
   
@@ -589,8 +593,8 @@ export default function MyeongsimCoachingDashboard({
       type: 'daewoon',
       typeLabel: '🌊 10년 주기 대운(大運) 해석',
       mainIcon: '🌊',
-      title: `${col.age}세 시작되는 새로운 챕터`,
-      subtitle: `${col.gan}${col.ji} 대운의 파도 타기`,
+      title: `${col.age}세 시작되는 새로운 챕터 (${col.isActive ? '현재 진행 대운 📍' : '대운 흐름'})`,
+      subtitle: `${col.gan}${col.ji} (${col.tSip}/${col.zSip}) · 12운성(${col.un}) · 12신살(${col.sin})`,
       content: (
         <div className="space-y-4 font-sans text-left">
           <p className="text-xs text-slate-500 leading-relaxed font-medium">대운은 10년마다 바뀌는 당신 삶의 거대한 무대 배경이자 계절입니다.</p>
@@ -609,6 +613,238 @@ export default function MyeongsimCoachingDashboard({
         </div>
       )
     });
+  };
+
+  // ── [핵심] 초보자 맞춤형 용어 메타포(은유) 클릭 핸들러 ──
+  const handleTermDetailClick = (term: string, category: string, colData?: any) => {
+    const sipsinMetaphors: Record<string, { emoji: string; metaphorTitle: string; easyDesc: string; coachingTip: string }> = {
+      '비견': {
+        emoji: '🛡️',
+        metaphorTitle: '어깨를 나란히 하고 바람을 함께 맞는 평생의 전우',
+        easyDesc: '비견(比肩)은 말 그대로 "어깨를 견주는 동반자"입니다. 남에게 굽히지 않는 당당한 자존심이자 나를 지켜주는 내면의 단단한 뼈대입니다.',
+        coachingTip: '스스로의 주권을 세우되, 너무 혼자 짊어지려 하지 말고 전우들에게 마음의 짐을 나눠보세요.'
+      },
+      '겁재': {
+        emoji: '⚡',
+        metaphorTitle: '내 승부욕을 광속으로 불태우는 거대한 야망의 엔진',
+        easyDesc: '겁재(劫財)는 나보다 뛰어난 라이벌을 만나 내 안의 잠자는 잠재력을 대폭발시키는 강력한 에너지를 뜻합니다.',
+        coachingTip: '경쟁 상대를 미워하기보다, 내 성장의 징검다리로 삼아 담대하게 앞으로 나아가세요.'
+      },
+      '식신': {
+        emoji: '🍱',
+        metaphorTitle: '마르지 않는 영혼의 뷔페와 맑게 샘솟는 오아시스',
+        easyDesc: '식신(食神)은 타고난 먹을 복과 표현력입니다. 좋아하는 연구나 기술을 깊이 있게 다듬어 나만의 작품을 완성하는 평화로운 선물입니다.',
+        coachingTip: '나의 소박한 재능과 조용한 몰입 속에서 세상과 나를 치유하는 기쁨을 누리세요.'
+      },
+      '상관': {
+        emoji: '🎨',
+        metaphorTitle: '낡은 관습을 깨부수는 혁신가 아티스트의 영감',
+        easyDesc: '상관(傷官)은 억압적인 규칙이나 불합리한 틀에 당당히 질문을 던지고, 거침없이 나를 표현하는 자유로운 예술가의 기류입니다.',
+        coachingTip: '나의 비판적 영감을 상처 주는 언어가 아닌, 세상을 바꾸는 아름다운 창작물로 승화시켜 보세요.'
+      },
+      '편재': {
+        emoji: '💎',
+        metaphorTitle: '광활한 대륙을 누비며 거대한 기회를 포착하는 영혼의 무역왕',
+        easyDesc: '편재(偏財)는 작은 잔돈에 연연하지 않고 큰 판을 읽고 기회를 잡아채는 거대한 스케일의 사업가적 재물운입니다.',
+        coachingTip: '원대한 비전을 향해 가되, 방심하여 너무 큰 리스크를 떠안지 않도록 치밀한 안전장치를 마련하세요.'
+      },
+      '정재': {
+        emoji: '🪙',
+        metaphorTitle: '매달 차곡차곡 정직하게 쌓이는 황금 적금통장',
+        easyDesc: '정재(正財)는 내 땀방울과 성실함에 비례하여 꼬박꼬박 내 수중에 쌓이는 정직하고 든든한 현실적 자산입니다.',
+        coachingTip: '꾸준함이 바로 당신의 가장 위대한 재능입니다. 작지만 확실한 결실들을 소중히 다듬어가세요.'
+      },
+      '편관': {
+        emoji: '🛡️',
+        metaphorTitle: '내 무의식 속 엄격한 경호원이자 혹독한 영혼의 교관',
+        easyDesc: '편관(偏官)은 나를 끊임없이 단련시켜 세상의 거친 비바람 속에서도 무너지지 않는 군주로 키워내는 혹독하지만 든든한 수호 기운입니다.',
+        coachingTip: '스스로를 지나치게 채찍질하거나 압박하지 마시고, "너는 이미 충분히 잘하고 있어!"라며 따뜻하게 안아주세요.'
+      },
+      '정관': {
+        emoji: '🏛️',
+        metaphorTitle: '명예와 신뢰를 보증해 주는 국가 기관의 든든한 보증서',
+        easyDesc: '정관(正官)은 사회적 시스템과 원칙을 잘 지켜 남들로부터 깊은 신뢰와 명예를 얻어내는 유연하고 안정된 지도자의 기운입니다.',
+        coachingTip: '타인의 시선이나 규칙에 나를 가두기보다, 그 안에서 나만의 주권을 당당히 세워보세요.'
+      },
+      '편인': {
+        emoji: '🔮',
+        metaphorTitle: '우주의 비밀 소스코드를 단번에 꿰뚫는 메타 통찰력',
+        easyDesc: '편인(偏印)은 남들이 보지 못하는 사건 너머의 진실과 영적인 메커니즘을 한눈에 알아차리는 도사 같은 비범한 직관력입니다.',
+        coachingTip: '혼자만의 생각에 갇혀 고독해지지 말고, 그 깊은 통찰력을 세상 사람들과 따뜻하게 공유해보세요.'
+      },
+      '정인': {
+        emoji: '📚',
+        metaphorTitle: '조건 없이 나를 다정하게 품어주는 우주 어머니의 수호 패스',
+        easyDesc: '정인(正印)은 학문과 수용성의 기운으로, 어디를 가나 스승과 타인으로부터 무한한 사랑과 보살핌을 받는 힐링 패스입니다.',
+        coachingTip: '배움과 사랑을 스펀지처럼 빨아들이되, 지식을 머리에만 두지 않고 세상을 향해 실천해보세요.'
+      }
+    };
+
+    const unseongMetaphors: Record<string, { emoji: string; metaphorTitle: string; easyDesc: string; coachingTip: string }> = {
+      '목욕': {
+        emoji: '🛀',
+        metaphorTitle: '아기가 묵은 때를 씻고 세상의 모든 조명을 받는 반짝이는 스타!',
+        easyDesc: '목욕(沐浴)은 갓 태어난 아기가 깨끗이 씻고 온몸으로 당당하게 매력을 발산하여 사람들의 이목을 사로잡는 화려한 인기의 계절입니다.',
+        coachingTip: '나의 가치와 매력을 세상에 마음껏 보여주되, 사소한 유혹이나 기복에 흔들리지 않도록 중심을 잡으세요.'
+      },
+      '장생': {
+        emoji: '🌱',
+        metaphorTitle: '새싹이 대지를 뚫고 나와 온 우주의 사랑과 축복을 받는 순간',
+        easyDesc: '장생(長生)은 무한한 가능성과 순수한 호기심으로 가득 차, 조력자들의 열렬한 응원 속에서 새로운 인생을 싹트우는 환희의 기운입니다.',
+        coachingTip: '두려움 없이 새로운 도전을 시작하세요. 주변의 귀인들이 당신의 손을 잡아줄 것입니다.'
+      },
+      '관대': {
+        emoji: '🎓',
+        metaphorTitle: '어엿한 관복을 입고 세상이라는 큰 무대로 출격하는 청년의 패기',
+        easyDesc: '관대(冠帶)는 성인식을 치르고 어엿한 주권자로서 당당히 유니폼을 입어 세상과 마주하는 자신감 만점의 계절입니다.',
+        coachingTip: '조금 서툴러도 괜찮습니다. 당신의 풋풋한 패기와 열정으로 세상을 놀라게 해보세요.'
+      },
+      '건록': {
+        emoji: '👑',
+        metaphorTitle: '스스로의 힘으로 벼슬을 꿰차고 가문을 일으키는 완성된 실력자',
+        easyDesc: '건록(建祿)은 내 분야에서 검증된 실력과 전문성을 갖추어 경제적·사회적으로 우뚝 서는 든든한 전성기입니다.',
+        coachingTip: '당신의 실력과 노력을 온전히 믿으세요. 결실의 열매가 무르익고 있습니다.'
+      },
+      '제왕': {
+        emoji: '⚡',
+        metaphorTitle: '왕좌의 최정상에 올라 만인을 호령하는 파워의 극치',
+        easyDesc: '제왕(帝王)은 주파수와 리더십이 최고조로 폭발하는 순간입니다. 강인한 추진력으로 집단을 이끄는 절정의 시기입니다.',
+        coachingTip: '정상에 섰을 때일수록 아랫사람을 다정하게 품어주는 넉넉함과 겸손함으로 덕을 쌓으세요.'
+      },
+      '쇠': {
+        emoji: '🧘',
+        metaphorTitle: '정상을 거쳐 여유로운 관조와 노련함으로 사람들을 중재하는 베테랑',
+        easyDesc: '쇠(衰)는 정점의 과열된 열기를 식히고, 은은한 지혜와 산전수전 겪은 풍부한 노하우로 판을 이끄는 안정의 계절입니다.',
+        coachingTip: '전면에 서서 싸우기보다, 뒤에서 지혜로운 조언자나 기획자로 힘을 발휘하면 대길합니다.'
+      },
+      '병': {
+        emoji: '🎨',
+        metaphorTitle: '신체는 쉬어가되 영혼의 예리한 감수성과 직관이 깊어지는 시인',
+        easyDesc: '병(病)은 육체적 활동보다 내면의 공감 능력과 예술적 감수성이 맑아지는 시기입니다. 타인의 아픔을 어루만집니다.',
+        coachingTip: '지친 몸과 마음을 온전히 쉬어주고, 음악·미술·글쓰기 등 감성적인 리추얼로 영혼을 충전하세요.'
+      },
+      '사': {
+        emoji: '🌌',
+        metaphorTitle: '고요한 정적 속에서 학문과 깊은 무의식을 몰입 연구하는 시간',
+        easyDesc: '사(死)는 겉의 어수선한 움직임을 멈추고, 오직 하나의 지식이나 학문에 깊이 빠져들어 마스터가 되는 집약의 시기입니다.',
+        coachingTip: '외부 활동을 줄이고 내실을 다지며 전문 자격증이나 깊은 공부에 몰입해보세요.'
+      },
+      '묘': {
+        emoji: '📦',
+        metaphorTitle: '보물상자에 귀한 재물과 지혜를 차곡차곡 담아 지키는 저장고',
+        easyDesc: '묘(墓)는 헛돈을 쓰지 않고 보석 같은 자산과 내공을 차곡차곡 상자에 쌓아 안전하게 영구 저장하는 알뜰한 기운입니다.',
+        coachingTip: '실속을 차리기 아주 좋은 시기입니다. 불필요한 지출을 막고 알짜배기 자산을 다지세요.'
+      },
+      '절': {
+        emoji: '🕊️',
+        metaphorTitle: '과거의 모든 묵은 기운이 완전히 소멸하고 새로운 혁신이 싹트는 제로포인트',
+        easyDesc: '절(絶)은 인연이나 묵은 짐이 싹 정돈되고, 완전한 비움(Void) 속에서 무한한 신세계가 솟아나는 반전의 계절입니다.',
+        coachingTip: '과거에 얽매이지 말고 미련 없이 미련을 털어내세요. 이제 완전히 새로운 챕터가 열립니다.'
+      },
+      '태': {
+        emoji: '🥚',
+        metaphorTitle: '엄마 품속에서 장차 일어날 위대한 가능성의 씨앗이 움트는 설렘',
+        easyDesc: '태(胎)는 아직 겉으로 드러나지 않았지만, 내면에서 파릇파릇한 아이디어와 비전이 퐁퐁 샘솟는 기획의 순간입니다.',
+        coachingTip: '원대한 아이디어와 비전을 차곡차곡 메모하며 미래의 대반전을 즐겁게 준비하세요.'
+      },
+      '양': {
+        emoji: '🍼',
+        metaphorTitle: '하늘의 따뜻한 보살핌을 받으며 장차 거목이 될 기초 체력을 키우는 시간',
+        easyDesc: '양(養)은 평온한 보살핌 속에서 에너지와 안도감을 듬뿍 받으며 조용히 실력을 기르는 차분한 양육기입니다.',
+        coachingTip: '조급해하지 마시고 맛있는 음식을 먹으며 푹 쉬고 기초를 단단히 다지세요.'
+      }
+    };
+
+    const cleanTerm = (term || '').replace(/\([가-힣]+\)/g, '').trim();
+    const ganJiMeta = SAJU_TRANSLATION_MAP[cleanTerm] || SAJU_TRANSLATION_MAP[term] || null;
+
+    if (sipsinMetaphors[cleanTerm]) {
+      const info = sipsinMetaphors[cleanTerm];
+      setActiveModalData({
+        type: 'term_metaphor',
+        typeLabel: `📖 친절한 용어 풀이 (${category})`,
+        mainIcon: info.emoji,
+        title: `${info.emoji} ${cleanTerm} - ${info.metaphorTitle}`,
+        subtitle: `${category} 용어 메타포`,
+        content: (
+          <div className="space-y-4 font-sans text-left">
+            <div className="bg-slate-900/90 border border-amber-500/30 p-5 rounded-2xl shadow-xl space-y-2">
+              <span className="block font-black text-amber-400 text-xs">💡 초보자를 위한 1초 쉬운 메타포 (은유)</span>
+              <p className="text-amber-200 text-sm leading-relaxed font-serif font-black">
+                "{info.metaphorTitle}"
+              </p>
+              <p className="text-slate-300 text-xs leading-relaxed pt-1 font-medium">
+                {info.easyDesc}
+              </p>
+            </div>
+            <div className="bg-indigo-950/60 border border-indigo-500/30 p-4 rounded-xl space-y-1">
+              <span className="block font-bold text-indigo-300 text-xs">🌿 명심 코칭 행동 꿀팁</span>
+              <p className="text-slate-200 text-xs leading-relaxed italic font-medium">
+                "{info.coachingTip}"
+              </p>
+            </div>
+          </div>
+        )
+      });
+      return;
+    }
+
+    if (unseongMetaphors[cleanTerm]) {
+      const info = unseongMetaphors[cleanTerm];
+      setActiveModalData({
+        type: 'term_metaphor',
+        typeLabel: `📖 친절한 12운성 용어 풀이 (${category})`,
+        mainIcon: info.emoji,
+        title: `${info.emoji} ${cleanTerm} - ${info.metaphorTitle}`,
+        subtitle: `${category} 에너지 수레바퀴`,
+        content: (
+          <div className="space-y-4 font-sans text-left">
+            <div className="bg-slate-900/90 border border-rose-500/30 p-5 rounded-2xl shadow-xl space-y-2">
+              <span className="block font-black text-rose-400 text-xs">💡 초보자를 위한 1초 쉬운 메타포 (은유)</span>
+              <p className="text-rose-200 text-sm leading-relaxed font-serif font-black">
+                "{info.metaphorTitle}"
+              </p>
+              <p className="text-slate-300 text-xs leading-relaxed pt-1 font-medium">
+                {info.easyDesc}
+              </p>
+            </div>
+            <div className="bg-indigo-950/60 border border-indigo-500/30 p-4 rounded-xl space-y-1">
+              <span className="block font-bold text-indigo-300 text-xs">🌿 명심 코칭 행동 꿀팁</span>
+              <p className="text-slate-200 text-xs leading-relaxed italic font-medium">
+                "{info.coachingTip}"
+              </p>
+            </div>
+          </div>
+        )
+      });
+      return;
+    }
+
+    if (ganJiMeta) {
+      setActiveModalData({
+        type: 'term_metaphor',
+        typeLabel: `✨ 글자 주파수 풀이 (${category})`,
+        mainIcon: '🔮',
+        title: `${term} (${ganJiMeta.title})`,
+        subtitle: '타고난 우주 원소의 상징',
+        content: (
+          <div className="space-y-4 font-sans text-left">
+            <div className="bg-slate-900/90 border border-amber-500/30 p-5 rounded-2xl shadow-xl space-y-2">
+              <span className="block font-bold text-amber-400 text-xs">🔮 이 글자가 품은 기질 상징</span>
+              <p className="text-slate-200 text-sm leading-relaxed font-medium">{ganJiMeta.desc}</p>
+            </div>
+            <div className="bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-1">
+              <span className="block font-bold text-amber-300 text-xs">✉️ 나를 다독이는 마음 편지</span>
+              <p className="text-slate-300 text-xs leading-relaxed italic font-medium">"{ganJiMeta.advice}"</p>
+            </div>
+          </div>
+        )
+      });
+      return;
+    }
+
+    // 기본 대운 전체 모달로 폴백
+    handleDaewoonCellClick(colData || {});
   };
 
 
@@ -1255,7 +1491,7 @@ export default function MyeongsimCoachingDashboard({
           {/* 1:1 맞춤형 족집게 진단 */}
           <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-inner-sm space-y-4">
             <div className="border-b border-purple-100 pb-3">
-              <span className="block text-xs font-bold text-purple-800 mb-1">🔍 1:1 사주 맞춤형 족집게 진단</span>
+              <span className="block text-xs font-bold text-purple-800 mb-1">🔍 1:1 사주 맞춤형 족집게 디코딩</span>
               <p className="text-sm text-slate-700 leading-relaxed">
                 자네의 <strong>{dayGan}{dayJi} 일주</strong> 기류에 비추어 볼 때, 이 {item.month}은 지지 <strong>{item.ji}({animal})</strong>과 결합하여 <strong>{monthSipsin}</strong>의 에너지 작용이 공망을 겪게 되네. 이는 평소보다 재물이나 일적인 성취에 집착할수록 밑 빠진 독에 물을 붓듯 허무함을 느끼기 쉽다는 뜻이라네.
               </p>
@@ -1501,61 +1737,69 @@ export default function MyeongsimCoachingDashboard({
 
   // ── 모달 렌더링 ──
   const content = (
-    <div className="w-full max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8 font-sans antialiased text-slate-800">
+    <div className="w-full max-w-4xl mx-auto py-6 sm:py-10 px-3 sm:px-6 lg:px-8 font-sans antialiased text-slate-100">
       
       {/* 닫기 버튼 (모달 전용) */}
       {onClose && (
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end mb-3 sm:mb-4">
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-500 flex items-center justify-center transition-all border border-slate-200"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-800 hover:bg-rose-950/80 text-slate-400 hover:text-rose-400 flex items-center justify-center transition-all border border-slate-700 shadow-md"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
       )}
 
       {/* 헤더 */}
-      <div className="max-w-4xl mx-auto mb-6 text-center">
-        <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-600 text-xs font-bold rounded-full mb-3 shadow-sm">
-          <Sparkles size={12} className="animate-spin-slow" /> Myeongsim OS V4 Dashboard
+      <div className="max-w-4xl mx-auto mb-6 sm:mb-8 text-center px-2 space-y-3">
+        <div className="flex flex-wrap justify-center items-center gap-2">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black rounded-full shadow-md uppercase tracking-wider">
+            <Sparkles size={13} className="animate-spin-slow text-amber-400" /> MYEONGSIM OS V4.0 DEEP DIAGNOSTIC
+          </div>
+          <button
+            onClick={() => setIsPhilosophyOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs rounded-full shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-105 transition-all cursor-pointer"
+          >
+            ✨ 🏛️ 명심코칭 5대 핵심 가치 & 비전 팝업 보기
+          </button>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1F1E1D] font-serif tracking-tight">
-          명심코칭 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-yellow-600">프리미엄 리포트 new</span>
+        <h1 className="text-2xl sm:text-4xl font-black text-white font-serif tracking-tight break-keep">
+          명심코칭 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 inline-block">프리미엄 리포트 360°</span>
         </h1>
-        <p className="text-sm text-[#7A7571] mt-2 font-medium">
-          동양 사주 역학 메커니즘과 서양 인지 심리학 알고리즘의 유기적 동적 바인딩
+        <p className="text-xs sm:text-sm text-slate-400 mt-2 font-medium break-keep leading-relaxed">
+          동양 사주 역학 메커니즘 ✕ 3세대 명심 코칭(CBT·ACT·DBT) 융합 디코딩
         </p>
       </div>
 
-      {/* 탭 네비게이션 */}
-      <div className="flex justify-center border-b border-[#EBE7DC] mb-8 gap-4">
+      {/* 탭 네비게이션 (모바일 가로 스크롤 & 줄바꿈 완벽 방지) */}
+      <div className="flex border-b border-slate-800 mb-6 sm:mb-8 gap-2 overflow-x-auto scrollbar-none pb-1.5 -mx-2 px-2 justify-start sm:justify-center items-center">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`py-3 px-6 font-bold text-sm tracking-wide transition-all border-b-2 ${
+          className={`py-2.5 sm:py-3 px-4 sm:px-6 font-extrabold text-xs sm:text-sm tracking-wide transition-all border-b-2 whitespace-nowrap shrink-0 rounded-t-xl ${
             activeTab === 'dashboard'
-              ? 'border-amber-600 text-amber-600'
-              : 'border-transparent text-gray-500 hover:text-slate-800'
+              ? 'border-amber-400 text-amber-300 bg-amber-500/10 shadow-lg'
+              : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
           }`}
         >
           📊 실시간 대시보드
         </button>
         <button
           onClick={() => setActiveTab('psych-scan')}
-          className={`py-3 px-6 font-bold text-sm tracking-wide transition-all border-b-2 ${
+          className={`py-2.5 sm:py-3 px-4 sm:px-6 font-extrabold text-xs sm:text-sm tracking-wide transition-all border-b-2 whitespace-nowrap shrink-0 rounded-t-xl ${
             activeTab === 'psych-scan'
-              ? 'border-amber-600 text-amber-600'
-              : 'border-transparent text-gray-500 hover:text-slate-800'
+              ? 'border-amber-400 text-amber-300 bg-amber-500/10 shadow-lg'
+              : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
           }`}
         >
           🧠 심리데이터스캔 (Scan)
         </button>
         <button
           onClick={() => setActiveTab('report')}
-          className={`py-3 px-6 font-bold text-sm tracking-wide transition-all border-b-2 ${
+          className={`py-2.5 sm:py-3 px-4 sm:px-6 font-extrabold text-xs sm:text-sm tracking-wide transition-all border-b-2 whitespace-nowrap shrink-0 rounded-t-xl ${
             activeTab === 'report'
-              ? 'border-amber-600 text-amber-600'
-              : 'border-transparent text-gray-500 hover:text-slate-800'
+              ? 'border-amber-400 text-amber-300 bg-amber-500/10 shadow-lg'
+              : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
           }`}
         >
           📖 108자각 상세 백서 (108p)
@@ -1568,155 +1812,170 @@ export default function MyeongsimCoachingDashboard({
           {/* ==========================================
               1. 운명 DNA 프로필 & 십성 레이다 차트 컴포넌트
               ========================================== */}
-          <div className="w-full bg-[#FAF9F5] p-6 rounded-3xl border border-[#EBE7DC] shadow-sm mb-8">
-            <div className="text-center mb-6">
+          <div className="w-full bg-[#111827] text-slate-100 p-5 sm:p-8 rounded-3xl border border-amber-500/30 shadow-2xl mb-8 relative overflow-hidden">
+            {/* 은은한 앰버/골드 광원 효과 */}
+            <div className="absolute -top-20 -right-20 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-yellow-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="text-center mb-6 sm:mb-8 relative z-10">
               <span 
                 onClick={handleSSRClick}
-                className="cursor-pointer inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-500 to-yellow-600 text-white text-xs font-bold rounded-full shadow-sm animate-pulse hover:brightness-110 transition-all"
+                className="cursor-pointer inline-flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 text-xs font-black rounded-full shadow-lg animate-pulse hover:brightness-110 transition-all uppercase tracking-wider"
               >
                 {ssrBadge}
               </span>
-              <h2 className="text-xl sm:text-2xl font-bold text-[#2C2A29] mt-3 font-serif">운명 프로필 & 십성 분석</h2>
+              <h2 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-400 mt-3 font-serif tracking-tight">
+                운명 프로필 & 십성 강점 디코딩
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium break-keep">
+                8자 성도(星圖) 구조분석과 5대 십신 에너지를 정밀 측정합니다.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 relative z-10">
               {/* 초고도화 명국성도 & 격국 카드 */}
-              <div className="bg-white p-6 rounded-2xl border border-[#EAE6DB] flex flex-col justify-between shadow-inner-sm gap-6">
+              <div className="bg-slate-900/90 p-5 sm:p-7 rounded-2xl border border-slate-800 flex flex-col justify-between shadow-xl gap-6 min-w-0 overflow-hidden">
                 
-                {/* 1. 명국성도 (命局星圖) 2행 4열 그리드 (우에서 좌로 년->월->일->시 배치) */}
+                {/* 1. 명국성도 (命局星圖) 2행 4열 그리드 */}
                 <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[10px] font-black text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded uppercase tracking-widest">
+                  <div className="flex flex-wrap sm:flex-nowrap justify-between items-center gap-2 mb-4 pb-3 border-b border-slate-800">
+                    <span className="text-xs font-black text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full uppercase tracking-widest shrink-0">
                       命局星圖 (명국성도)
                     </span>
-                    <span className="text-xs font-serif text-[#7A7571] font-bold">
-                      {premiumSajuInfo.name}님께 새겨진 여덟 글자 운명
+                    <span className="text-xs font-serif text-slate-300 font-extrabold break-keep whitespace-nowrap">
+                      {premiumSajuInfo.name}님의 타고난 여덟 글자
                     </span>
                   </div>
                   
                   {/* 8칸 그리드 (우에서 좌로 년->월->일->시 배치) */}
-                  <div className="grid grid-cols-4 gap-2 text-center text-xs font-bold font-sans">
+                  <div className="grid grid-cols-4 gap-1.5 sm:gap-2 text-center text-xs font-bold font-sans w-full min-w-0">
                     {/* 헤더 */}
-                    <div className="text-gray-400 text-[10px]">시주(時)</div>
-                    <div className="text-amber-800 text-[10px]">일주(日)★</div>
-                    <div className="text-gray-400 text-[10px]">월주(月)</div>
-                    <div className="text-gray-400 text-[10px]">년주(年)</div>
+                    <div className="text-slate-400 text-[10px] sm:text-xs font-extrabold truncate py-1">시주 (時)</div>
+                    <div className="text-amber-400 text-[10px] sm:text-xs font-black truncate py-1">일주 (日)★</div>
+                    <div className="text-slate-400 text-[10px] sm:text-xs font-extrabold truncate py-1">월주 (月)</div>
+                    <div className="text-slate-400 text-[10px] sm:text-xs font-extrabold truncate py-1">년주 (年)</div>
 
                     {/* 천간 (천간행) */}
-                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.time?.gan, '시주 천간')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
-                      activeSaju.fourPillars?.time?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      activeSaju.fourPillars?.time?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      activeSaju.fourPillars?.time?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      activeSaju.fourPillars?.time?.ganElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
-                      activeSaju.fourPillars?.time?.ganElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                      'bg-slate-50 text-slate-500 border-slate-200'
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.time?.gan, '시주 천간')} className={`cursor-pointer hover:scale-105 transition-all px-1 py-2 sm:px-2 sm:py-3 rounded-xl border flex flex-col items-center justify-center gap-1 min-w-0 overflow-hidden ${
+                      activeSaju.fourPillars?.time?.ganElement === '목' ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40' :
+                      activeSaju.fourPillars?.time?.ganElement === '화' ? 'bg-rose-950/50 text-rose-300 border-rose-500/40' :
+                      activeSaju.fourPillars?.time?.ganElement === '토' ? 'bg-amber-950/50 text-amber-300 border-amber-500/40' :
+                      activeSaju.fourPillars?.time?.ganElement === '금' ? 'bg-slate-800/80 text-slate-200 border-slate-600/40' :
+                      activeSaju.fourPillars?.time?.ganElement === '수' ? 'bg-blue-950/50 text-blue-300 border-blue-500/40' :
+                      'bg-slate-800 text-slate-400 border-slate-700'
                     }`}>
-                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.time?.gan}</span>
-                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.time?.ganKor || activeSaju.fourPillars?.time?.ganElement}</span>
+                      <span className="text-lg sm:text-2xl font-black font-serif">{activeSaju.fourPillars?.time?.gan}</span>
+                      <span className="text-[9px] sm:text-[10px] font-bold px-1 py-0.5 rounded bg-black/40 border border-white/10 truncate max-w-full">{activeSaju.fourPillars?.time?.ganKor || activeSaju.fourPillars?.time?.ganElement}</span>
                     </div>
-                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.day?.gan, '일주 천간(기질)')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border-2 ring-2 ring-amber-500/20 flex flex-col items-center justify-center gap-1 ${
-                      activeSaju.fourPillars?.day?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      activeSaju.fourPillars?.day?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      activeSaju.fourPillars?.day?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      activeSaju.fourPillars?.day?.ganElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
-                      activeSaju.fourPillars?.day?.ganElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                      'bg-slate-50 text-slate-500 border-slate-200'
+
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.day?.gan, '일주 천간(기질)')} className={`cursor-pointer hover:scale-105 transition-all px-1 py-2 sm:px-2 sm:py-3 rounded-xl border-2 ring-2 ring-amber-400/30 flex flex-col items-center justify-center gap-1 min-w-0 overflow-hidden ${
+                      activeSaju.fourPillars?.day?.ganElement === '목' ? 'bg-emerald-950/80 text-emerald-300 border-emerald-400' :
+                      activeSaju.fourPillars?.day?.ganElement === '화' ? 'bg-rose-950/80 text-rose-300 border-rose-400' :
+                      activeSaju.fourPillars?.day?.ganElement === '토' ? 'bg-amber-950/80 text-amber-300 border-amber-400' :
+                      activeSaju.fourPillars?.day?.ganElement === '금' ? 'bg-slate-800 text-slate-100 border-amber-400' :
+                      activeSaju.fourPillars?.day?.ganElement === '수' ? 'bg-blue-950/80 text-blue-300 border-blue-400' :
+                      'bg-slate-800 text-slate-300 border-amber-400'
                     }`}>
-                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.day?.gan}</span>
-                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.day?.ganKor || activeSaju.fourPillars?.day?.ganElement}</span>
+                      <span className="text-lg sm:text-2xl font-black font-serif text-amber-300">{activeSaju.fourPillars?.day?.gan}</span>
+                      <span className="text-[9px] sm:text-[10px] font-black px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/40 truncate max-w-full">{activeSaju.fourPillars?.day?.ganKor || activeSaju.fourPillars?.day?.ganElement}</span>
                     </div>
-                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.month?.gan, '월주 천간')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
-                      activeSaju.fourPillars?.month?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      activeSaju.fourPillars?.month?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      activeSaju.fourPillars?.month?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      activeSaju.fourPillars?.month?.ganElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
-                      activeSaju.fourPillars?.month?.ganElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                      'bg-slate-50 text-slate-500 border-slate-200'
+
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.month?.gan, '월주 천간')} className={`cursor-pointer hover:scale-105 transition-all px-1 py-2 sm:px-2 sm:py-3 rounded-xl border flex flex-col items-center justify-center gap-1 min-w-0 overflow-hidden ${
+                      activeSaju.fourPillars?.month?.ganElement === '목' ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40' :
+                      activeSaju.fourPillars?.month?.ganElement === '화' ? 'bg-rose-950/50 text-rose-300 border-rose-500/40' :
+                      activeSaju.fourPillars?.month?.ganElement === '토' ? 'bg-amber-950/50 text-amber-300 border-amber-500/40' :
+                      activeSaju.fourPillars?.month?.ganElement === '금' ? 'bg-slate-800/80 text-slate-200 border-slate-600/40' :
+                      activeSaju.fourPillars?.month?.ganElement === '수' ? 'bg-blue-950/50 text-blue-300 border-blue-500/40' :
+                      'bg-slate-800 text-slate-400 border-slate-700'
                     }`}>
-                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.month?.gan}</span>
-                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.month?.ganKor || activeSaju.fourPillars?.month?.ganElement}</span>
+                      <span className="text-lg sm:text-2xl font-black font-serif">{activeSaju.fourPillars?.month?.gan}</span>
+                      <span className="text-[9px] sm:text-[10px] font-bold px-1 py-0.5 rounded bg-black/40 border border-white/10 truncate max-w-full">{activeSaju.fourPillars?.month?.ganKor || activeSaju.fourPillars?.month?.ganElement}</span>
                     </div>
-                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.year?.gan, '년주 천간')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
-                      activeSaju.fourPillars?.year?.ganElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      activeSaju.fourPillars?.year?.ganElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      activeSaju.fourPillars?.year?.ganElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      activeSaju.fourPillars?.year?.ganElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
-                      activeSaju.fourPillars?.year?.ganElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                      'bg-slate-50 text-slate-500 border-slate-200'
+
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.year?.gan, '년주 천간')} className={`cursor-pointer hover:scale-105 transition-all px-1 py-2 sm:px-2 sm:py-3 rounded-xl border flex flex-col items-center justify-center gap-1 min-w-0 overflow-hidden ${
+                      activeSaju.fourPillars?.year?.ganElement === '목' ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40' :
+                      activeSaju.fourPillars?.year?.ganElement === '화' ? 'bg-rose-950/50 text-rose-300 border-rose-500/40' :
+                      activeSaju.fourPillars?.year?.ganElement === '토' ? 'bg-amber-950/50 text-amber-300 border-amber-500/40' :
+                      activeSaju.fourPillars?.year?.ganElement === '금' ? 'bg-slate-800/80 text-slate-200 border-slate-600/40' :
+                      activeSaju.fourPillars?.year?.ganElement === '수' ? 'bg-blue-950/50 text-blue-300 border-blue-500/40' :
+                      'bg-slate-800 text-slate-400 border-slate-700'
                     }`}>
-                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.year?.gan}</span>
-                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.year?.ganKor || activeSaju.fourPillars?.year?.ganElement}</span>
+                      <span className="text-lg sm:text-2xl font-black font-serif">{activeSaju.fourPillars?.year?.gan}</span>
+                      <span className="text-[9px] sm:text-[10px] font-bold px-1 py-0.5 rounded bg-black/40 border border-white/10 truncate max-w-full">{activeSaju.fourPillars?.year?.ganKor || activeSaju.fourPillars?.year?.ganElement}</span>
                     </div>
 
                     {/* 지지 (지지행) */}
-                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.time?.ji, '시주 지지')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
-                      activeSaju.fourPillars?.time?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      activeSaju.fourPillars?.time?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      activeSaju.fourPillars?.time?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      activeSaju.fourPillars?.time?.jiElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
-                      activeSaju.fourPillars?.time?.jiElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                      'bg-slate-50 text-slate-500 border-slate-200'
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.time?.ji, '시주 지지')} className={`cursor-pointer hover:scale-105 transition-all px-1 py-2 sm:px-2 sm:py-3 rounded-xl border flex flex-col items-center justify-center gap-1 min-w-0 overflow-hidden ${
+                      activeSaju.fourPillars?.time?.jiElement === '목' ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40' :
+                      activeSaju.fourPillars?.time?.jiElement === '화' ? 'bg-rose-950/50 text-rose-300 border-rose-500/40' :
+                      activeSaju.fourPillars?.time?.jiElement === '토' ? 'bg-amber-950/50 text-amber-300 border-amber-500/40' :
+                      activeSaju.fourPillars?.time?.jiElement === '금' ? 'bg-slate-800/80 text-slate-200 border-slate-600/40' :
+                      activeSaju.fourPillars?.time?.jiElement === '수' ? 'bg-blue-950/50 text-blue-300 border-blue-500/40' :
+                      'bg-slate-800 text-slate-400 border-slate-700'
                     }`}>
-                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.time?.ji}</span>
-                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.time?.jiKor || activeSaju.fourPillars?.time?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.time?.ji] || '동물'})</span>
+                      <span className="text-lg sm:text-2xl font-black font-serif">{activeSaju.fourPillars?.time?.ji}</span>
+                      <span className="text-[9px] sm:text-[10px] font-bold px-1 py-0.5 rounded bg-black/40 border border-white/10 truncate max-w-full">{activeSaju.fourPillars?.time?.jiKor || activeSaju.fourPillars?.time?.jiElement}</span>
                     </div>
-                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.day?.ji, '일주 지지')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border-2 ring-2 ring-amber-500/20 flex flex-col items-center justify-center gap-1 ${
-                      activeSaju.fourPillars?.day?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      activeSaju.fourPillars?.day?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      activeSaju.fourPillars?.day?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      activeSaju.fourPillars?.day?.jiElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
-                      activeSaju.fourPillars?.day?.jiElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                      'bg-slate-50 text-slate-500 border-slate-200'
+
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.day?.ji, '일주 지지')} className={`cursor-pointer hover:scale-105 transition-all px-1 py-2 sm:px-2 sm:py-3 rounded-xl border-2 ring-2 ring-amber-400/30 flex flex-col items-center justify-center gap-1 min-w-0 overflow-hidden ${
+                      activeSaju.fourPillars?.day?.jiElement === '목' ? 'bg-emerald-950/80 text-emerald-300 border-emerald-400' :
+                      activeSaju.fourPillars?.day?.jiElement === '화' ? 'bg-rose-950/80 text-rose-300 border-rose-400' :
+                      activeSaju.fourPillars?.day?.jiElement === '토' ? 'bg-amber-950/80 text-amber-300 border-amber-400' :
+                      activeSaju.fourPillars?.day?.jiElement === '금' ? 'bg-slate-800 text-slate-100 border-amber-400' :
+                      activeSaju.fourPillars?.day?.jiElement === '수' ? 'bg-blue-950/80 text-blue-300 border-blue-400' :
+                      'bg-slate-800 text-slate-300 border-amber-400'
                     }`}>
-                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.day?.ji}</span>
-                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.day?.jiKor || activeSaju.fourPillars?.day?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.day?.ji] || '동물'})</span>
+                      <span className="text-lg sm:text-2xl font-black font-serif text-amber-300">{activeSaju.fourPillars?.day?.ji}</span>
+                      <span className="text-[9px] sm:text-[10px] font-black px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/40 truncate max-w-full">{activeSaju.fourPillars?.day?.jiKor || activeSaju.fourPillars?.day?.jiElement}</span>
                     </div>
-                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.month?.ji, '월주 지지')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
-                      activeSaju.fourPillars?.month?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      activeSaju.fourPillars?.month?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      activeSaju.fourPillars?.month?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      activeSaju.fourPillars?.month?.jiElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
-                      activeSaju.fourPillars?.month?.jiElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                      'bg-slate-50 text-slate-500 border-slate-200'
+
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.month?.ji, '월주 지지')} className={`cursor-pointer hover:scale-105 transition-all px-1 py-2 sm:px-2 sm:py-3 rounded-xl border flex flex-col items-center justify-center gap-1 min-w-0 overflow-hidden ${
+                      activeSaju.fourPillars?.month?.jiElement === '목' ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40' :
+                      activeSaju.fourPillars?.month?.jiElement === '화' ? 'bg-rose-950/50 text-rose-300 border-rose-500/40' :
+                      activeSaju.fourPillars?.month?.jiElement === '토' ? 'bg-amber-950/50 text-amber-300 border-amber-500/40' :
+                      activeSaju.fourPillars?.month?.jiElement === '금' ? 'bg-slate-800/80 text-slate-200 border-slate-600/40' :
+                      activeSaju.fourPillars?.month?.jiElement === '수' ? 'bg-blue-950/50 text-blue-300 border-blue-500/40' :
+                      'bg-slate-800 text-slate-400 border-slate-700'
                     }`}>
-                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.month?.ji}</span>
-                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.month?.jiKor || activeSaju.fourPillars?.month?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.month?.ji] || '동물'})</span>
+                      <span className="text-lg sm:text-2xl font-black font-serif">{activeSaju.fourPillars?.month?.ji}</span>
+                      <span className="text-[9px] sm:text-[10px] font-bold px-1 py-0.5 rounded bg-black/40 border border-white/10 truncate max-w-full">{activeSaju.fourPillars?.month?.jiKor || activeSaju.fourPillars?.month?.jiElement}</span>
                     </div>
-                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.year?.ji, '년주 지지')} className={`cursor-pointer hover:bg-amber-50/50 hover:ring-2 hover:ring-amber-400 transition-all p-2.5 rounded-lg border flex flex-col items-center justify-center gap-1 ${
-                      activeSaju.fourPillars?.year?.jiElement === '목' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      activeSaju.fourPillars?.year?.jiElement === '화' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      activeSaju.fourPillars?.year?.jiElement === '토' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      activeSaju.fourPillars?.year?.jiElement === '금' ? 'bg-slate-100 text-slate-700 border-slate-300' :
-                      activeSaju.fourPillars?.year?.jiElement === '수' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                      'bg-slate-50 text-slate-500 border-slate-200'
+
+                    <div onClick={() => handleSajuCellClick(activeSaju.fourPillars?.year?.ji, '년주 지지')} className={`cursor-pointer hover:scale-105 transition-all px-1 py-2 sm:px-2 sm:py-3 rounded-xl border flex flex-col items-center justify-center gap-1 min-w-0 overflow-hidden ${
+                      activeSaju.fourPillars?.year?.jiElement === '목' ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40' :
+                      activeSaju.fourPillars?.year?.jiElement === '화' ? 'bg-rose-950/50 text-rose-300 border-rose-500/40' :
+                      activeSaju.fourPillars?.year?.jiElement === '토' ? 'bg-amber-950/50 text-amber-300 border-amber-500/40' :
+                      activeSaju.fourPillars?.year?.jiElement === '금' ? 'bg-slate-800/80 text-slate-200 border-slate-600/40' :
+                      activeSaju.fourPillars?.year?.jiElement === '수' ? 'bg-blue-950/50 text-blue-300 border-blue-500/40' :
+                      'bg-slate-800 text-slate-400 border-slate-700'
                     }`}>
-                      <span className="text-lg font-black font-serif">{activeSaju.fourPillars?.year?.ji}</span>
-                      <span className="text-[9px] opacity-80">{activeSaju.fourPillars?.year?.jiKor || activeSaju.fourPillars?.year?.jiElement}({ANIMAL_MAP[activeSaju.fourPillars?.year?.ji] || '동물'})</span>
+                      <span className="text-lg sm:text-2xl font-black font-serif">{activeSaju.fourPillars?.year?.ji}</span>
+                      <span className="text-[9px] sm:text-[10px] font-bold px-1 py-0.5 rounded bg-black/40 border border-white/10 truncate max-w-full">{activeSaju.fourPillars?.year?.jiKor || activeSaju.fourPillars?.year?.jiElement}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* 2. 격국 / 출현 확률 분석 */}
-                <div className="bg-[#FFFDF9] border border-amber-200/50 p-4 rounded-xl text-left">
-                  <div className="flex justify-between items-start mb-1.5 gap-2">
+                <div className="bg-slate-950/60 border border-amber-500/20 p-4.5 rounded-xl text-left min-w-0 overflow-hidden">
+                  <div className="flex justify-between items-start mb-2 gap-2">
                     <div>
-                      <h4 className="text-sm font-bold text-amber-900 font-serif">{premiumSajuInfo.title}</h4>
-                      <p className="text-[10px] text-gray-400 mt-0.5">이 조합의 출현 확률: {premiumSajuInfo.probability}%</p>
+                      <h4 className="text-base sm:text-lg font-black text-amber-300 font-serif leading-snug break-keep">{premiumSajuInfo.title}</h4>
+                      <p className="text-[11px] text-slate-400 font-mono mt-0.5">이 조합의 출현 확률: {premiumSajuInfo.probability}%</p>
                     </div>
                     {premiumSajuInfo.probability <= 6 && (
-                      <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-300 animate-pulse whitespace-nowrap">
+                      <span className="bg-amber-500/20 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/40 animate-pulse whitespace-nowrap shrink-0">
                         ⚡ 극희소 조합
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-[#5C5856] leading-relaxed mb-3">{premiumSajuInfo.description}</p>
+                  <p className="text-xs text-slate-300 leading-relaxed mb-3.5 break-keep font-medium">{premiumSajuInfo.description}</p>
                   
                   {/* 동적 십신 배지 3선 */}
                   <div className="flex flex-wrap gap-1.5">
                     {premiumBadges.map((badge, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-1 text-[10px] font-bold text-[#5C5856] bg-white border border-[#EAE6DB] px-2 py-1 rounded-md shadow-sm">
+                      <span key={idx} className="inline-flex items-center gap-1.5 text-[10px] font-extrabold text-amber-200 bg-amber-950/40 border border-amber-500/30 px-2.5 py-1 rounded-md shadow-sm whitespace-nowrap shrink-0">
                         <span>{badge.emoji}</span>
-                        <span>{badge.name} ({badge.key})</span>
+                        <span className="whitespace-nowrap">{badge.name} ({badge.key})</span>
                       </span>
                     ))}
                   </div>
@@ -1724,59 +1983,60 @@ export default function MyeongsimCoachingDashboard({
 
               </div>
 
-              {/* 오각형 레이다 차트 (네이티브 SVG 동적 좌표 연산) */}
-              <div className="bg-white p-6 rounded-2xl border border-[#EAE6DB] flex flex-col items-center justify-center shadow-inner-sm">
-                <h4 className="text-sm font-bold text-[#5C5856] mb-2">자네의 십성(十星) 강점 분포도</h4>
-                <div className="relative w-48 h-48">
-                  <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
+              {/* 오각형 레이다 차트 (네이티브 SVG 동적 좌표 연산 & 텍스트 오버플로우 방지) */}
+              <div className="bg-slate-900/90 p-5 sm:p-7 rounded-2xl border border-slate-800 flex flex-col items-center justify-center shadow-xl min-w-0 overflow-hidden relative">
+                <h4 className="text-sm font-black text-slate-200 mb-3 flex items-center gap-1.5">
+                  <Sparkles size={14} className="text-amber-400" /> 자네의 십성(十星) 강점 분포도
+                </h4>
+                <div className="relative w-full max-w-[280px] aspect-square flex items-center justify-center my-2">
+                  <svg viewBox="-30 -15 160 130" className="w-full h-full">
                     {/* 배경 가이드 라인 오각형 */}
-                    <polygon points="50,5 93,36 76,88 24,88 7,36" fill="none" stroke="#E6E0D2" strokeWidth="0.5" />
-                    <polygon points="50,20 82,43 70,80 30,80 18,43" fill="none" stroke="#E6E0D2" strokeWidth="0.5" strokeDasharray="2" />
-                    <polygon points="50,35 71,50 63,71 37,71 29,50" fill="none" stroke="#E6E0D2" strokeWidth="0.5" />
+                    <polygon points="50,5 93,36 76,88 24,88 7,36" fill="none" stroke="#334155" strokeWidth="0.8" />
+                    <polygon points="50,20 82,43 70,80 30,80 18,43" fill="none" stroke="#334155" strokeWidth="0.8" strokeDasharray="2" />
+                    <polygon points="50,35 71,50 63,71 37,71 29,50" fill="none" stroke="#334155" strokeWidth="0.8" />
                     
                     {/* 축 라인 */}
-                    <line x1="50" y1="50" x2="50" y2="5" stroke="#E6E0D2" strokeWidth="0.5" />
-                    <line x1="50" y1="50" x2="93" y2="36" stroke="#E6E0D2" strokeWidth="0.5" />
-                    <line x1="50" y1="50" x2="76" y2="88" stroke="#E6E0D2" strokeWidth="0.5" />
-                    <line x1="50" y1="50" x2="24" y2="88" stroke="#E6E0D2" strokeWidth="0.5" />
-                    <line x1="50" y1="50" x2="7" y2="36" stroke="#E6E0D2" strokeWidth="0.5" />
+                    <line x1="50" y1="50" x2="50" y2="5" stroke="#334155" strokeWidth="0.8" />
+                    <line x1="50" y1="50" x2="93" y2="36" stroke="#334155" strokeWidth="0.8" />
+                    <line x1="50" y1="50" x2="76" y2="88" stroke="#334155" strokeWidth="0.8" />
+                    <line x1="50" y1="50" x2="24" y2="88" stroke="#334155" strokeWidth="0.8" />
+                    <line x1="50" y1="50" x2="7" y2="36" stroke="#334155" strokeWidth="0.8" />
 
                     {/* 실제 데이터 폴리곤 (동적 바인딩 연산) */}
-                    <polygon points={radarCoords?.pointsStr} fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" strokeWidth="1.5" />
+                    <polygon points={radarCoords?.pointsStr} fill="rgba(245, 158, 11, 0.25)" stroke="#F59E0B" strokeWidth="2" />
                     
-                    {/* 텍스트 축 라벨 */}
-                    {/* 공망 꼭짓점 마커 오버레이 */}
+                    {/* 텍스트 축 라벨 (안전 여백 박스 안으로 정렬) */}
                     {sipsinGongmang.self && <circle cx={radarCoords?.pSelf?.x} cy={radarCoords?.pSelf?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
                     {sipsinGongmang.output && <circle cx={radarCoords?.pOutput?.x} cy={radarCoords?.pOutput?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
                     {sipsinGongmang.wealth && <circle cx={radarCoords?.pWealth?.x} cy={radarCoords?.pWealth?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
                     {sipsinGongmang.power && <circle cx={radarCoords?.pPower?.x} cy={radarCoords?.pPower?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
                     {sipsinGongmang.resource && <circle cx={radarCoords?.pResource?.x} cy={radarCoords?.pResource?.y} r="3" fill="none" stroke="#A78BFA" strokeWidth="1" className="animate-pulse" />}
 
-                    {/* 투명한 클릭 감지 원형 영역 (모바일/웹 터치 편의성 극대화) */}
+                    {/* 투명한 클릭 감지 원형 영역 */}
                     <circle cx={radarCoords?.pSelf?.x} cy={radarCoords?.pSelf?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('self')} />
                     <circle cx={radarCoords?.pOutput?.x} cy={radarCoords?.pOutput?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('output')} />
                     <circle cx={radarCoords?.pWealth?.x} cy={radarCoords?.pWealth?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('wealth')} />
                     <circle cx={radarCoords?.pPower?.x} cy={radarCoords?.pPower?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('power')} />
                     <circle cx={radarCoords?.pResource?.x} cy={radarCoords?.pResource?.y} r="6" fill="transparent" className="cursor-pointer" onClick={() => handleSipsinRadarClick('resource')} />
 
-                    <text x="50" y="2" textAnchor="middle" onClick={() => handleSipsinRadarClick('self')} className="text-[5px] font-bold fill-[#8A8473] cursor-pointer hover:fill-amber-600">비겁 (자비){sipsinGongmang.self ? '🌌' : ''}</text>
-                    <text x="97" y="37" textAnchor="start" onClick={() => handleSipsinRadarClick('output')} className="text-[5px] font-bold fill-green-600 cursor-pointer hover:fill-amber-600">식상 (표현)★{sipsinGongmang.output ? '🌌' : ''}</text>
-                    <text x="80" y="94" textAnchor="middle" onClick={() => handleSipsinRadarClick('wealth')} className="text-[5px] font-bold fill-[#8A8473] cursor-pointer hover:fill-amber-600">재성 (분별){sipsinGongmang.wealth ? '🌌' : ''}</text>
-                    <text x="20" y="94" textAnchor="middle" onClick={() => handleSipsinRadarClick('power')} className="text-[5px] font-bold fill-red-500 cursor-pointer hover:fill-amber-600">관성 (통제)⚠️{sipsinGongmang.power ? '🌌' : ''}</text>
-                    <text x="3" y="37" textAnchor="end" onClick={() => handleSipsinRadarClick('resource')} className="text-[5px] font-bold fill-[#8A8473] cursor-pointer hover:fill-amber-600">인성 (통찰){sipsinGongmang.resource ? '🌌' : ''}</text>
+                    <text x="50" y="-1" textAnchor="middle" onClick={() => handleSipsinRadarClick('self')} className="text-[6px] font-black fill-amber-300 cursor-pointer hover:fill-amber-400">비겁 (자비){sipsinGongmang.self ? '🌌' : ''}</text>
+                    <text x="96" y="37" textAnchor="start" onClick={() => handleSipsinRadarClick('output')} className="text-[6px] font-black fill-emerald-400 cursor-pointer hover:fill-emerald-300">식상 (표현)★{sipsinGongmang.output ? '🌌' : ''}</text>
+                    <text x="76" y="96" textAnchor="middle" onClick={() => handleSipsinRadarClick('wealth')} className="text-[6px] font-black fill-amber-300 cursor-pointer hover:fill-amber-400">재성 (분별){sipsinGongmang.wealth ? '🌌' : ''}</text>
+                    <text x="24" y="96" textAnchor="middle" onClick={() => handleSipsinRadarClick('power')} className="text-[6px] font-black fill-rose-400 cursor-pointer hover:fill-rose-300">관성 (통제)⚠️{sipsinGongmang.power ? '🌌' : ''}</text>
+                    <text x="4" y="37" textAnchor="end" onClick={() => handleSipsinRadarClick('resource')} className="text-[6px] font-black fill-cyan-400 cursor-pointer hover:fill-cyan-300">인성 (통찰){sipsinGongmang.resource ? '🌌' : ''}</text>
                   </svg>
                 </div>
-                <div className="flex gap-4 mt-3 text-xs font-medium">
-                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-amber-500 rounded-full"></span>내면 상태</span>
-                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-red-500 rounded-full"></span>주의 요망</span>
+                <div className="flex gap-4 mt-3 text-xs font-semibold text-slate-300">
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-amber-500 rounded-full shadow-sm"></span>내면 상태</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-rose-500 rounded-full shadow-sm"></span>주의 요망</span>
                 </div>
               </div>
             </div>
             
-            {/* 긴급 진단 안내문 배너 */}
-            <div className="mt-4 bg-[#FFF9F0] border border-[#F5E3C3] p-4 rounded-xl">
-              <p className="text-sm text-[#876229] leading-relaxed font-medium">
-                ⚠️ <span className="font-bold">기질 디버깅 조언:</span> 자네의 기질에 비추어볼 때, 외부적 통제(관성)가 들어올 때 스트레스 지수가 치솟을 수 있네. 겉마음의 포용력과 내적 자각의 조율이 꼭 필요하네.
+            {/* 긴급 디코딩 안내문 배너 */}
+            <div className="mt-6 bg-amber-950/40 border border-amber-500/30 p-4 rounded-xl relative z-10">
+              <p className="text-xs sm:text-sm text-amber-200 leading-relaxed font-medium">
+                ⚠️ <span className="font-bold text-amber-400">기질 디버깅 조언:</span> 자네의 기질에 비추어볼 때, 외부적 통제(관성)가 들어올 때 스트레스 지수가 치솟을 수 있네. 겉마음의 포용력과 내적 자각의 조율이 꼭 필요하네.
               </p>
             </div>
           </div>
@@ -2011,13 +2271,17 @@ export default function MyeongsimCoachingDashboard({
                 <tbody className="text-[#2C2A29] font-medium">
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">천간십성</td>
-                    {sajuMatrixData.map((col, idx) => <td key={idx} className={`border-r border-[#EAE6DB] ${col.active ? 'bg-rose-50/20 font-bold' : ''}`}>{col.tSip}</td>)}
+                    {sajuMatrixData.map((col, idx) => (
+                      <td key={idx} onClick={() => handleTermDetailClick(col.tSip, '천간십성', col)} className={`cursor-pointer hover:bg-amber-100/50 hover:scale-105 transition-all border-r border-[#EAE6DB] ${col.active ? 'bg-rose-50/20 font-bold' : ''}`}>
+                        <span className="underline decoration-amber-400/60 decoration-dashed underline-offset-4">{col.tSip} 💡</span>
+                      </td>
+                    ))}
                   </tr>
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">천간(天干)</td>
                     {sajuMatrixData.map((col, idx) => (
-                      <td key={idx} className="border-r border-[#EAE6DB] p-1.5">
-                        <div className={`w-9 h-9 mx-auto flex items-center justify-center rounded-md text-base font-black ${col.tGanBg}`}>
+                      <td key={idx} onClick={() => handleTermDetailClick(col.gan, '천간', col)} className="cursor-pointer hover:scale-105 transition-all border-r border-[#EAE6DB] p-1.5">
+                        <div className={`w-9 h-9 mx-auto flex items-center justify-center rounded-md text-base font-black shadow-sm ${col.tGanBg}`}>
                           {col.gan}
                         </div>
                       </td>
@@ -2026,8 +2290,8 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">지지(地支)</td>
                     {sajuMatrixData.map((col, idx) => (
-                      <td key={idx} className="border-r border-[#EAE6DB] p-1.5">
-                        <div className={`w-9 h-9 mx-auto flex items-center justify-center rounded-md text-base font-black ${col.zziBg}`}>
+                      <td key={idx} onClick={() => handleTermDetailClick(col.ji, '지지', col)} className="cursor-pointer hover:scale-105 transition-all border-r border-[#EAE6DB] p-1.5">
+                        <div className={`w-9 h-9 mx-auto flex items-center justify-center rounded-md text-base font-black shadow-sm ${col.zziBg}`}>
                           {col.ji}
                         </div>
                       </td>
@@ -2035,16 +2299,24 @@ export default function MyeongsimCoachingDashboard({
                   </tr>
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">지지십성</td>
-                    {sajuMatrixData.map((col, idx) => <td key={idx} className="border-r border-[#EAE6DB]">{col.zSip}</td>)}
+                    {sajuMatrixData.map((col, idx) => (
+                      <td key={idx} onClick={() => handleTermDetailClick(col.zSip, '지지십성', col)} className="cursor-pointer hover:bg-emerald-100/50 hover:scale-105 transition-all border-r border-[#EAE6DB]">
+                        <span className="underline decoration-emerald-400/60 decoration-dashed underline-offset-4">{col.zSip} 💡</span>
+                      </td>
+                    ))}
                   </tr>
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">12운성</td>
-                    {sajuMatrixData.map((col, idx) => <td key={idx} className="border-r border-[#EAE6DB] text-gray-600">{col.un}</td>)}
+                    {sajuMatrixData.map((col, idx) => (
+                      <td key={idx} onClick={() => handleTermDetailClick(col.un, '12운성', col)} className="cursor-pointer hover:bg-purple-100/50 hover:scale-105 transition-all border-r border-[#EAE6DB] text-purple-900 font-bold">
+                        <span className="underline decoration-purple-400/60 decoration-dashed underline-offset-4">{col.un} 💡</span>
+                      </td>
+                    ))}
                   </tr>
                   <tr>
                     <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">12신살</td>
                     {sajuMatrixData.map((col, idx) => (
-                      <td key={idx} className="border-r border-[#EAE6DB] text-xs px-2 text-[#7A5B35] font-semibold whitespace-pre-line">
+                      <td key={idx} onClick={() => handleTermDetailClick(col.sin, '12신살', col)} className="cursor-pointer hover:bg-amber-100/50 hover:scale-105 transition-all border-r border-[#EAE6DB] text-xs px-2 text-[#7A5B35] font-semibold whitespace-pre-line">
                         {col.sin}
                       </td>
                     ))}
@@ -2069,7 +2341,7 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="bg-[#F8F6F0] text-[#5C5856] font-bold border-b border-[#EAE6DB]">
                     <th className="py-3 px-2 border-r border-[#EAE6DB] bg-[#F1EDE2] w-24">구분</th>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <th key={idx} onClick={() => handleDaewoonCellClick(col)} className={`cursor-pointer hover:bg-red-50/50 py-3 px-3 border-r border-[#EAE6DB] min-w-[100px] ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/30' : ''}`}>{col.isActive ? '현재 대운' : `${idx + 1}대운`} 🔍</th>
+                      <th key={idx} onClick={() => handleTermDetailClick(col.isActive ? '현재 대운' : `${idx + 1}대운`, '대운 구분', col)} className={`cursor-pointer hover:bg-red-100/60 transition-all hover:scale-105 py-3 px-3 border-r border-[#EAE6DB] min-w-[100px] ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/30 font-black' : ''}`}>{col.isActive ? '현재 대운' : `${idx + 1}대운`} 🔍</th>
                     ))}
                   </tr>
                 </thead>
@@ -2077,7 +2349,7 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">년도</td>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <td key={idx} className={`border-r border-[#EAE6DB] font-semibold text-gray-500 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                      <td key={idx} onClick={() => handleTermDetailClick(`${col.year}년`, '대운 시작년도', col)} className={`cursor-pointer hover:bg-amber-100/50 transition-all hover:scale-105 border-r border-[#EAE6DB] font-semibold text-gray-500 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
                         {col.year}
                       </td>
                     ))}
@@ -2085,7 +2357,7 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">나이*¹</td>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <td key={idx} className={`border-r border-[#EAE6DB] text-xs text-gray-600 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                      <td key={idx} onClick={() => handleTermDetailClick(`${col.age}세`, '대운 나이구간', col)} className={`cursor-pointer hover:bg-amber-100/50 transition-all hover:scale-105 border-r border-[#EAE6DB] text-xs text-gray-600 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
                         {col.age}세
                       </td>
                     ))}
@@ -2093,16 +2365,16 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">천간십성</td>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <td key={idx} className={`border-r border-[#EAE6DB] text-amber-800 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
-                        {col.tSip}
+                      <td key={idx} onClick={() => handleTermDetailClick(col.tSip, '천간십성', col)} className={`cursor-pointer hover:bg-amber-100/60 hover:scale-105 transition-all border-r border-[#EAE6DB] text-amber-800 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
+                        <span className="underline decoration-amber-400/60 decoration-dashed underline-offset-4">{col.tSip} 💡</span>
                       </td>
                     ))}
                   </tr>
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">천간(天干)</td>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <td key={idx} className={`border-r border-[#EAE6DB] p-1.5 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
-                        <div className={`w-9 h-9 mx-auto flex flex-col items-center justify-center rounded-md text-base font-black ${col.tGanBg}`}>
+                      <td key={idx} onClick={() => handleTermDetailClick(col.gan, '천간', col)} className={`cursor-pointer hover:scale-105 transition-all border-r border-[#EAE6DB] p-1.5 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                        <div className={`w-9 h-9 mx-auto flex flex-col items-center justify-center rounded-md text-base font-black shadow-sm ${col.tGanBg}`}>
                           <span>{col.gan}</span>
                         </div>
                       </td>
@@ -2111,8 +2383,8 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">지지(地支)</td>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <td key={idx} className={`border-r border-[#EAE6DB] p-1.5 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
-                        <div className={`w-9 h-9 mx-auto flex flex-col items-center justify-center rounded-md text-base font-black ${col.zziBg}`}>
+                      <td key={idx} onClick={() => handleTermDetailClick(col.ji, '지지', col)} className={`cursor-pointer hover:scale-105 transition-all border-r border-[#EAE6DB] p-1.5 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                        <div className={`w-9 h-9 mx-auto flex flex-col items-center justify-center rounded-md text-base font-black shadow-sm ${col.zziBg}`}>
                           <span>{col.ji}</span>
                         </div>
                       </td>
@@ -2121,23 +2393,23 @@ export default function MyeongsimCoachingDashboard({
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">지지십성</td>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <td key={idx} className={`border-r border-[#EAE6DB] text-emerald-800 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
-                        {col.zSip}
+                      <td key={idx} onClick={() => handleTermDetailClick(col.zSip, '지지십성', col)} className={`cursor-pointer hover:bg-emerald-100/60 hover:scale-105 transition-all border-r border-[#EAE6DB] text-emerald-800 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
+                        <span className="underline decoration-emerald-400/60 decoration-dashed underline-offset-4">{col.zSip} 💡</span>
                       </td>
                     ))}
                   </tr>
                   <tr className="border-b border-[#EAE6DB]">
                     <td className="py-2.5 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">12운성</td>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <td key={idx} className={`border-r border-[#EAE6DB] text-gray-600 ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
-                        {col.un}
+                      <td key={idx} onClick={() => handleTermDetailClick(col.un, '12운성', col)} className={`cursor-pointer hover:bg-purple-100/60 hover:scale-105 transition-all border-r border-[#EAE6DB] text-purple-900 font-bold ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10' : ''}`}>
+                        <span className="underline decoration-purple-400/60 decoration-dashed underline-offset-4">{col.un} 💡</span>
                       </td>
                     ))}
                   </tr>
                   <tr>
                     <td className="py-3 bg-[#F8F6F0] font-bold border-r border-[#EAE6DB]">12신살</td>
                     {daewoonTableData.map((col: any, idx: number) => (
-                      <td key={idx} className={`border-r border-[#EAE6DB] text-xs px-2 text-[#7A5B35] font-semibold whitespace-pre-line ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
+                      <td key={idx} onClick={() => handleTermDetailClick(col.sin, '12신살', col)} className={`cursor-pointer hover:bg-amber-100/50 hover:scale-105 transition-all border-r border-[#EAE6DB] text-xs px-2 text-[#7A5B35] font-semibold whitespace-pre-line ${col.isActive ? 'ring-4 ring-red-500 ring-inset bg-red-50/10 font-bold' : ''}`}>
                         {col.sin}
                       </td>
                     ))}
@@ -2303,34 +2575,34 @@ export default function MyeongsimCoachingDashboard({
 
   return (
     <>
-      <div className="fixed inset-0 z-[1050] overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-slate-200">
+      <div className="fixed inset-0 z-[1050] overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+        <div className="bg-[#0F172A] rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-[0_0_80px_rgba(245,158,11,0.15)] relative border border-amber-500/30 text-slate-100 p-1 sm:p-3">
           {content}
         </div>
       </div>
       
-      {/* 🔮 팝업 치유 모달 */}
+      {/* 🔮 팝업 치유 모달 (하이콘트라스트 다크 디자인) */}
       {activeModalData && (
-        <div className="fixed inset-0 z-[2000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300">
-          <div className="bg-[#FAF9F5] rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-amber-200/50 relative transform transition-all max-h-[85vh] overflow-y-auto text-[#2C2A29]">
+        <div className="fixed inset-0 z-[2000] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300">
+          <div className="bg-[#0F172A] rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-amber-500/40 relative transform transition-all max-h-[85vh] overflow-y-auto text-slate-100">
             <button
               onClick={() => setActiveModalData(null)}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition-colors border border-slate-200 shadow-sm"
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-300 flex items-center justify-center transition-colors border border-slate-700 shadow-md"
             >
               <X size={18} />
             </button>
-            <div className="text-left mb-5 border-b border-amber-100 pb-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-700 text-[10px] font-bold rounded-full uppercase tracking-wider shadow-sm mb-3">
+            <div className="text-left mb-5 border-b border-slate-800 pb-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-extrabold rounded-full uppercase tracking-wider shadow-sm mb-3">
                 {activeModalData.mainIcon} {activeModalData.typeLabel}
               </span>
-              <h3 className="text-xl font-black text-[#1F1E1D] font-serif tracking-tight">{activeModalData.title}</h3>
-              {activeModalData.subtitle && <p className="text-xs font-semibold text-amber-600 mt-1">{activeModalData.subtitle}</p>}
+              <h3 className="text-lg sm:text-xl font-black text-amber-300 font-serif tracking-tight leading-snug break-keep">{activeModalData.title}</h3>
+              {activeModalData.subtitle && <p className="text-xs font-bold text-amber-400/90 mt-1.5 leading-relaxed">{activeModalData.subtitle}</p>}
             </div>
-            <div>{activeModalData.content}</div>
+            <div className="text-slate-200">{activeModalData.content}</div>
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveModalData(null)}
-                className="px-6 py-2.5 bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 text-white font-bold text-xs rounded-xl shadow-md transition-all duration-200"
+                className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-600 hover:brightness-110 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all duration-200"
               >
                 확인
               </button>
@@ -2339,6 +2611,12 @@ export default function MyeongsimCoachingDashboard({
         </div>
       )}
 
+      {/* 🏛️ 명심코칭 5대 핵심 가치 & 비전 팝업 모달 */}
+      <MyeongsimPhilosophyModal
+        isOpen={isPhilosophyOpen}
+        onClose={() => setIsPhilosophyOpen(false)}
+        userName={currentUserName}
+      />
     </>
   );
 }

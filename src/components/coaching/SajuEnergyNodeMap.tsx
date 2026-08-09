@@ -163,11 +163,11 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
   const strongestKey = (Object.keys(pcts) as (keyof TenGods)[]).reduce((a, b) => pcts[a] > pcts[b] ? a : b);
   const weakestKey   = (Object.keys(pcts) as (keyof TenGods)[]).reduce((a, b) => pcts[a] < pcts[b] ? a : b);
 
-  // SVG 사이즈
-  const SVG_SIZE = 260;
+  // SVG 사이즈 & 여백 확장 (클리핑 방지)
+  const SVG_SIZE = 300;
   const CX = SVG_SIZE / 2;
   const CY = SVG_SIZE / 2;
-  const R = 90;
+  const R = 85;
   const pentagons = getPentagonPoints(CX, CY, R);
 
   const selectedMeta = selectedNode ? NODE_META.find(n => n.key === selectedNode) : null;
@@ -182,17 +182,17 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
             <p className="text-[10px] font-mono text-purple-400 tracking-widest uppercase mb-1">
               MYEONGSIM · NEURAL BEHAVIOR STATS
             </p>
-            <h3 className="text-lg font-extrabold text-white">
-              {userName}의 5대 행동 스탯 (육각형 능력치)
+            <h3 className="text-lg font-extrabold text-white break-keep">
+              {userName}의 5대 행동 스탯 (오각형 능력치)
             </h3>
-            <p className="text-[11px] text-slate-400 mt-1.5 break-keep leading-relaxed max-w-sm">
-              * 게임 캐릭터의 육각형 스탯처럼, 당신의 뇌가 정보를 처리하는 비율을 나타냅니다. 
-              <strong>크게 튀어나온 영역이 당신의 '특화 무기'</strong>입니다. 노드를 탭해보세요.
+            <p className="text-[11px] text-slate-400 mt-1.5 break-keep leading-relaxed max-w-sm font-normal">
+              * 게임 캐릭터의 능력치 스탯처럼, 당신의 뇌가 정보를 처리하는 5대 에너지 비율을 나타냅니다. 
+              <strong className="text-purple-300"> 크게 튀어나온 영역이 당신의 '특화 무기'</strong>입니다. 노드를 탭해보세요.
             </p>
           </div>
           <button
             onClick={() => setShowFlowGuide(!showFlowGuide)}
-            className="px-3 py-1.5 rounded-lg text-[10px] font-bold border border-purple-500/40 text-purple-300 bg-purple-900/20 hover:bg-purple-900/40 transition-all"
+            className="px-3 py-1.5 rounded-lg text-[10px] font-bold border border-purple-500/40 text-purple-300 bg-purple-900/20 hover:bg-purple-900/40 transition-all shrink-0 ml-2"
           >
             {showFlowGuide ? '지도 보기' : '흐름 가이드'}
           </button>
@@ -203,9 +203,9 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
           {/* ── 왼쪽: SVG 에너지 맵 ── */}
-          <div className="flex flex-col items-center">
-            <div className="relative">
-              <svg width={SVG_SIZE} height={SVG_SIZE} className="overflow-visible drop-shadow-2xl">
+          <div className="flex flex-col items-center w-full">
+            <div className="relative flex flex-col items-center w-full">
+              <svg viewBox="0 0 300 300" className="w-full max-w-[280px] sm:max-w-[320px] h-auto overflow-visible drop-shadow-2xl">
                 {/* 배경 동심원 그리드 */}
                 {[0.25, 0.5, 0.75, 1].map((f, i) => (
                   <polygon
@@ -312,8 +312,8 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                 <text x={CX} y={CY + 10} textAnchor="middle" fontSize={7} fill="#64748b">일간</text>
               </svg>
 
-              {/* 강점/취약 배지 */}
-              <div className="flex justify-center gap-2 mt-3">
+              {/* 강점/취약 배지 (잘림 방지 flex-wrap) */}
+              <div className="flex flex-wrap justify-center gap-2 mt-4 w-full px-2">
                 {[
                   { key: strongestKey, label: '최강 에너지', icon: '✨' },
                   { key: weakestKey,   label: '취약 에너지', icon: '⚠️' },
@@ -323,7 +323,7 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                     <button
                       key={key}
                       onClick={() => setSelectedNode(key)}
-                      className="px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all hover:scale-105"
+                      className="px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all hover:scale-105 shrink-0"
                       style={{ color: m.color, borderColor: `${m.color}50`, backgroundColor: m.bgColor }}
                     >
                       {icon} {label}: {m.kor}({pcts[key]}%)

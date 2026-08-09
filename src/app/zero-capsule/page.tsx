@@ -149,11 +149,11 @@ export default function ZeroCapsulePage() {
   // 데이터가 없을 경우를 대비한 가상 디폴트 셋 (오늘 자 알약 미생성 시 안내용)
   const pill = data || {
     flavor: "제로포인트 디지털 알사탕 (생성 대기 중)",
-    keyword: "알약 생성 전 - 순수 의식 대기 상태",
-    scan: "오늘 자 디지털 알약이 아직 조제되지 않았습니다. 우측 상단의 [📚 HISTORY] 버튼을 눌러 오늘의 디지털 알약을 생성하거나, 과거의 복용 기록을 불러와서 스캔을 진행하세요.",
-    sync: "과거 이력의 알약을 다시 복용하거나 오늘 자 알약을 새로 생성하여 제로포인트 주파수와 동기화하세요.",
-    shift: "당신은 항상 깨어있는 스크린 그 자체입니다. 새로운 알약을 받아 존재의 자리로 시프트할 준비를 하세요.",
-    log: "스스로 알약을 조제하기 전에도, 당신이라는 의식 스크린은 언제나 완전합니다."
+    keyword: "알사탕 생성 전 - 순수 의식 대기 상태",
+    scan: "오늘 자 디지털 알사탕이 아직 컴파일되지 않았습니다. 우측 상단의 [📚 HISTORY] 버튼을 눌러 오늘의 디지털 알사탕을 발급받거나, 과거의 자각 기록을 불러와서 스캔을 진행하세요.",
+    sync: "과거 이력의 알사탕을 다시 자각하거나 오늘 자 알사탕을 새로 생성하여 제로포인트 주파수와 동기화하세요.",
+    shift: "당신은 항상 깨어있는 스크린 그 자체입니다. 새로운 명심 주파수를 받아 존재의 자리로 시프트할 준비를 하세요.",
+    log: "스스로 알사탕을 컴파일하기 전에도, 당신이라는 의식 스크린은 언제나 완전합니다."
   };
 
   return (
@@ -210,7 +210,7 @@ export default function ZeroCapsulePage() {
                 <span className="text-[10px] text-zinc-600 block mt-1 font-mono">// COMPILING_DATE: {pill.target_date}</span>
               )}
               <h1 className="text-2xl font-bold tracking-tight text-zinc-200 pt-2 font-serif">
-                {data ? "디지털 알사탕 리추얼" : "디지털 알사탕 조제 대기"}
+                {data ? "디지털 알사탕 리추얼" : "디지털 알사탕 컴파일 대기"}
               </h1>
               <p className="text-xs text-zinc-500 font-mono">
                 {data ? "마음의 과열된 하드웨어 시스템 디버그" : "우측 상단 HISTORY에서 새로운 알사탕을 받아보세요"}
@@ -229,7 +229,7 @@ export default function ZeroCapsulePage() {
                 onClick={() => setShowHistory(true)} 
                 className="w-full py-4 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-blue-400 font-semibold rounded-xl text-sm tracking-wide transition-all active:scale-[0.98] cursor-pointer"
               >
-                📚 과거 복용 기록 / 신규 처방 받기
+                📚 과거 자각 이력 / 신규 솔루션 발급
               </button>
             )}
           </div>
@@ -354,7 +354,7 @@ export default function ZeroCapsulePage() {
                 
                 {isTodayGenerated ? (
                   <div className="py-2.5 px-3 bg-zinc-900/60 border border-zinc-800/80 rounded-xl text-[10px] text-zinc-400 leading-relaxed font-semibold">
-                    ✅ 오늘의 디지털 알약이 이미 처방되었습니다.<br/>
+                    ✅ 오늘의 디지털 알사탕이 이미 발급되었습니다.<br/>
                     <span className="text-zinc-600 font-normal">이미 생성된 거면 다음날 새롭게 생성 가능합니다.</span>
                   </div>
                 ) : (

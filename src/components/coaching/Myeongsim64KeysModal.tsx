@@ -6,6 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Sparkles, ChevronLeft, ChevronRight, BookOpen, Shield, Award, Compass, Eye, Heart, Zap, Globe, Target, Activity } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
 import MyeongliTermModal from '@/components/report/MyeongliTermModal';
+import MicroPassModal from './MicroPassModal';
+import DailyScanWidget from './DailyScanWidget';
+import TeaserBlurPaywall from './TeaserBlurPaywall';
+import PaymentCard from '@/components/chat/PaymentCard';
 
 interface Myeongsim64KeysModalProps {
   isOpen: boolean;
@@ -352,15 +356,15 @@ const CONCEPT_GUIDE_DATA: Record<string, { title: string; subtitle: string; desc
     desc: '모든 가짜 위선과 껍데기가 불타 없어진 뒤, 내 영혼 밑바닥에 남아 있는 위대하고 순수한 의식의 참모습이자 용광로입니다.',
     action: '가짜 명성과 타인의 기준에 속지 마십시오. 당신의 삶에서 영원히 불타오를 진짜 내면의 불꽃을 응시하십시오.'
   },
-  '1ST HALF (~ 2032년)': {
-    title: '1ST HALF (~ 2032년) : 갈등 수용과 자각 축적기',
+  '1ST HALF': {
+    title: '1ST HALF : 갈등 수용과 자각 축적기',
     subtitle: '겨울의 차가운 대지 아래서 묵묵히 뿌리 뻗는 고독한 씨앗의 시간',
     metaphor: '🌱 눈보라 속에서 대지 깊숙이 뻗어나가는 굳건한 뿌리',
     desc: '세상의 거친 파도와 관계의 소용돌이 속에서 부딪치고 깨어지며, 스스로를 둘러싼 단단한 에고의 껍질을 부수고 영혼의 뿌리를 내리는 시기입니다. 겉보기에는 갈등과 시련처럼 느껴지는 일상의 모든 아픔들은, 사실 당신이라는 아름다운 그릇을 더 크고 단단하게 빚어내기 위해 대자연이 준비한 신비로운 진흙탕의 축복이자 거름입니다.',
     action: '외부의 거센 충동에 무의식적으로 튕겨 나가는 대신, 3초간 가만히 숨을 고르며 마음의 일렁임을 고요히 안아주세요. "나를 지켜주느라 참 애썼구나"라며 스스로를 따뜻하게 품어줄 때, 비로소 진짜 자각(주파수 관점 재배선)의 주파수가 켜집니다.'
   },
-  '2ND HALF (2032년 ~)': {
-    title: '2ND HALF (2032년 ~) : 자비 반조와 천명 만개기',
+  '2ND HALF': {
+    title: '2ND HALF : 자비 반조와 천명 만개기',
     subtitle: '어두운 밤바다를 묵묵히 비춰 배들의 길을 잡아주는 황금빛 등대의 지혜',
     metaphor: '⚓ 밤바다를 수놓는 찬란한 등대의 황금빛 아우라와 우주의 숲',
     desc: '인생의 혹독한 겨울과 벼랑 끝 같았던 중대한 전환점을 기어이 통과한 뒤, 마침내 내면 깊은 심연에서 건져 올린 순수한 자각의 빛으로 세상 사람들의 어두운 아픔을 어루만지고 치유하는 성숙의 시기입니다. 내가 먼저 아파 보았기에 상처받은 타인의 고통을 아무런 편견 없이 자비롭게 안아줄 수 있는 거대한 하늘의 가슴이 활짝 열립니다.',
@@ -463,6 +467,8 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
   // 타임라인 년도별 분석용 상태들
   const [timelineTab, setTimelineTab] = useState<'wealth' | 'love' | 'work'>('wealth');
   const [selectedYear, setSelectedYear] = useState<number>(2026);
+  const [showYearDetailModal, setShowYearDetailModal] = useState<boolean>(false);
+  const [showMicroPassModal, setShowMicroPassModal] = useState<boolean>(false);
   const [showTimelineChart, setShowTimelineChart] = useState(false);
   const [selectedBalanceAct, setSelectedBalanceAct] = useState<any>(null);
   const [selectedFrequencyDetail, setSelectedFrequencyDetail] = useState<string | null>(null);
@@ -489,6 +495,104 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
     return seed;
   }, [data]);
 
+  // 사용자의 생년월일 기준 실제 사주 대운(교운기) 전환점 연도 계산
+  const turningYear = useMemo(() => {
+    const daewoonList = data?.saju?.daewoonList;
+    
+    let currentAge = 30;
+    let birthYear = 1996;
+    if (data?.birthDate) {
+      try {
+        birthYear = new Date(data.birthDate).getFullYear();
+        const currentYear = new Date().getFullYear();
+        currentAge = currentYear - birthYear;
+      } catch {}
+    }
+
+    // 만 38세 기준으로 분기 (젊은 층은 만 30세 타겟, 중장년층은 만 50세 타겟)
+    const ageTargetOffset = currentAge < 38 ? 30 : 50;
+
+    if (!daewoonList || daewoonList.length === 0) {
+      if (!data?.birthDate) return 2032;
+      return birthYear + ageTargetOffset;
+    }
+
+    try {
+      const targetYear = birthYear + ageTargetOffset;
+
+      // 타겟 연도와 가장 가까운 실제 대운(교운기) 시작 연도를 검색
+      let bestYear = daewoonList[0].startYear;
+      let minDiff = Math.abs(bestYear - targetYear);
+
+      for (const dw of daewoonList) {
+        const diff = Math.abs(dw.startYear - targetYear);
+        if (diff < minDiff) {
+          minDiff = diff;
+          bestYear = dw.startYear;
+        }
+      }
+      return bestYear;
+    } catch {
+      const idx = currentAge < 38 ? 3 : 5;
+      return daewoonList[idx]?.startYear || (birthYear + ageTargetOffset);
+    }
+  }, [data]);
+
+  // 선택 연도의 상세 운세 감동 해설을 동적 생성
+  const getYearDetailAnalyses = (yr: number, activeInfo: any) => {
+    if (!activeInfo) return { wealthTxt: '', loveTxt: '', workTxt: '' };
+    
+    const dayGan = data?.saju?.fourPillars?.day?.gan || '신';
+    const elementMap: Record<string, string> = { '갑': '목', '을': '목', '병': '화', '정': '화', '무': '토', '기': '토', '경': '금', '신': '금', '임': '수', '계': '수' };
+    const myElement = elementMap[dayGan] || '금';
+    
+    // 오행별 은유적 묘사
+    const elementMetaphor: Record<string, string> = {
+      '목': '🌳 푸른 숲을 향해 뻗어나가는 굳건한 한 그루의 소나무',
+      '화': '🔥 어두운 세상을 환히 밝히는 따뜻한 모닥불과 태양',
+      '토': '⛰️ 흔들림 없이 수많은 생명을 안아주는 웅장한 대지',
+      '금': '💎 오랜 압력을 이겨내고 스스로를 완성한 눈부신 다이아몬드',
+      '수': '🌊 좁은 골짜기를 지나 마침내 대해로 유연하게 흘러가는 생명수'
+    };
+    
+    const myMetaphor = elementMetaphor[myElement] || '💎 눈부신 원석';
+
+    // 재운(Wealth) 비유
+    const wealthScore = activeInfo.wealth;
+    let wealthTxt = '';
+    if (wealthScore < 50) {
+      wealthTxt = `내 영혼의 기름진 대지(${myElement})에 비축해 둔 씨앗들이 겨울 눈보라를 견디며 땅속 깊이 묵묵히 뿌리를 밀어 넣는 소중한 적립의 철학적 겨울입니다. 당장은 수확이 눈에 띄지 않더라도, 이는 곧 다가올 거대한 재정적 번영의 그릇을 단단하게 넓히기 위해 내실의 창고를 비우고 재정비하는 고귀한 우주적 안식기입니다. 수치에 연연하기보다 흙 속에 조용히 숨 쉬는 생명력과 가능성을 응시해 주세요.`;
+    } else if (wealthScore < 75) {
+      wealthTxt = `따스한 봄비와 온화한 햇살이 메마른 영토 위에 부드럽게 스며들어, 당신이 인내로 가꾸어 온 주체적 성장의 싹이 대지 껍질을 뚫고 연록색 고유의 이파리를 힘차게 내미는 희망찬 자립의 계절입니다. 맑은 기운 흐름 속에서 재정적 자립도가 점진적이고 윤택한 우상향 흐름을 타기 시작하여, 흔들리지 않는 나만의 견고한 경제적 안전 기틀이 훌륭하게 축적되어 갑니다.`;
+    } else {
+      wealthTxt = `마침내 풍성하게 물결치는 황금빛 이삭들이 벌판을 가득 채우고, 오랜 훈련을 통해 쌓인 자각의 지혜가 거대한 재정적 번영과 결실로 환하게 폭발하는 눈부신 추수의 대풍년기입니다. ${myMetaphor} 본연의 맑은 창조성이 세상과 온전히 맞물리며, 억지로 소유하려 집착하지 않아도 필요한 풍요와 자원이 마르지 않는 영원의 샘물처럼 아름답게 순환하는 기적을 낳습니다.`;
+    }
+
+    // 연애/관계(Love) 비유
+    const loveScore = activeInfo.love;
+    let loveTxt = '';
+    if (loveScore < 50) {
+      loveTxt = `외부 관계의 시끄러운 소음과 먼지를 후후 털어내고, 오직 나 자신의 참된 영혼을 비추는 맑고 외로운 고요의 호숫가를 응시하는 치유의 밤입니다. 겉보기에는 고독하고 외로운 동굴 같지만, 밖으로 흩어지던 애정 결핍의 시선을 내면으로 돌려 나 자신을 가장 극진하고 따뜻하게 안아주는 '참된 자비와 상생'의 기초 뼈대를 세우는 신비로운 영혼의 충전 기간입니다.`;
+    } else if (loveScore < 75) {
+      loveTxt = `맑은 유리거울 위에 서로의 진실을 투명하게 비추어 보듯, 에고의 불필요한 위선과 방어 경계를 허물고 상대방과 진실하고 성숙한 소통을 조율해 가는 다정하고 유연한 보정기입니다. 따뜻한 자각의 주파수가 활성화되어 주변 인맥들과 오해 없이 조화롭게 신뢰를 쌓아가는 든든한 상생의 평화 네트워크가 완성됩니다.`;
+    } else {
+      loveTxt = `억지로 마음을 갈구하거나 증명하지 않아도, 온전하게 빛나는 당신 고유의 아름다운 영혼 아우라에 공명하여 인생의 소중한 귀인과 평생을 함께할 영혼의 동반자가 붉은 꽃길을 밟듯 자연스럽게 당신의 마당으로 찾아오는 인연 만개의 황금기입니다. 조건 없는 순수한 참사랑과 가슴 따뜻한 영적 연대가 온 사방으로 황금빛 파동을 일으킵니다.`;
+    }
+
+    // 사업/일(Work) 비유
+    const workScore = activeInfo.work;
+    let workTxt = '';
+    if (workScore < 50) {
+      workTxt = `낡고 무거운 구조의 댐을 뚫고 지나가기 위해, 고요한 밤의 연구소처럼 나만의 독립적 비즈니스 설계도를 정밀하게 구상하고 조립해 가는 단단한 준비의 기초기입니다. 조급하게 열매를 탐하기보다는, 나다움을 훌륭하게 무기로 제련하기 위해 실력과 숙련도를 묵묵히 쌓으십시오. 이것은 곧 하늘을 뚫고 비상하기 전 활주로를 힘차게 달리는 축복의 시작점입니다.`;
+    } else if (workScore < 75) {
+      workTxt = `수많은 시행착오라는 보물 상자를 밟고 가며, 내게 진짜 맞물리는 천명 비즈니스의 아키타입이 무엇인지 정교하고 유연하게 베타 테스트해 가는 실험과 숙련의 계절입니다. 겪는 모든 보정의 시행착오는 좌절이 아닌 최적의 정답 지점을 고정해 주는 소중한 길잡이가 되며, 이때 벼려진 내공이 거대한 상생 사업을 이끌어 줍니다.`;
+    } else {
+      workTxt = `당신이 일생을 거쳐 벼려 온 본질적인 솔루션과 가치 철학이 대중과 사회의 절실한 목마름과 조우하며, 큰 사회적 평판과 기적적인 비상의 도약을 선물 받는 축복의 절정기입니다. 억지 노동과 투쟁이 아닌, 존재 자체로 세상의 문제를 부드럽게 해결해 주는 문제 해결사의 리더로서 명예와 찬란한 번영이 세상에 널리 방사됩니다.`;
+    }
+
+    return { wealthTxt, loveTxt, workTxt };
+  };
+
   // 타임라인 데이터 연동
   const timelineData = useMemo(() => {
     if (!data) return [];
@@ -509,48 +613,101 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
       }
     }
 
-    const isFirstHalf = showConceptHelp === '1ST HALF (~ 2032년)';
-    const startYear = isFirstHalf ? 2026 : 2032;
-    const endYear = isFirstHalf ? 2032 : 2038;
+    // 1. 사주 오행 수집 및 십성 산출
+    const SAJU_CHARS_MAP: Record<string, string> = {
+      '갑': '목', '을': '목', '병': '화', '정': '화', '무': '토', '기': '토', '경': '금', '신': '금', '임': '수', '계': '수',
+      '자': '수', '축': '토', '인': '목', '묘': '목', '진': '토', '사': '화', '오': '화', '미': '토', '유': '금', '술': '토', '해': '수'
+    };
+
+    const dayGan = pillars.day?.ganKor || '신';
+    const dayMasterElement = SAJU_CHARS_MAP[dayGan] || '금';
+
+    // 생극 십성 맵 정의
+    const GENERATE_MAP: Record<string, string> = { '목': '화', '화': '토', '토': '금', '금': '수', '수': '목' };
+    const CONTROL_MAP: Record<string, string> = { '목': '토', '토': '수', '수': '화', '화': '금', '금': '목' };
+
+    const generatedByMaster = GENERATE_MAP[dayMasterElement] || '수';
+    const controlledByMaster = CONTROL_MAP[dayMasterElement] || '목';
+    const gwanElement = Object.keys(CONTROL_MAP).find((k) => CONTROL_MAP[k] === dayMasterElement) || '화';
+    const inElement = Object.keys(GENERATE_MAP).find((k) => GENERATE_MAP[k] === dayMasterElement) || '토';
+
+    const elementCounts: Record<string, number> = { '목': 0, '화': 0, '토': 0, '금': 0, '수': 0 };
+    for (const ch of allChars) {
+      const el = SAJU_CHARS_MAP[ch];
+      if (el) {
+        elementCounts[el] += 1;
+      }
+    }
+
+    const bigeop = elementCounts[dayMasterElement] || 0;
+    const sigsang = elementCounts[generatedByMaster] || 0;
+    const jaeseong = elementCounts[controlledByMaster] || 0;
+    const gwanseong = elementCounts[gwanElement] || 0;
+    const inseong = elementCounts[inElement] || 0;
+
+    // 사주 오행 분포 기반 맞춤형 Base 점수 산출
+    const gender = data.inputInfo?.gender || 'male';
+    const baseWealth = 32 + jaeseong * 7 + sigsang * 3 + (seed % 4);
+    const baseLove = 34 + (gender === 'female' ? gwanseong * 8 : jaeseong * 8) + bigeop * 2 + (seed % 4);
+    const baseWork = 30 + gwanseong * 6 + sigsang * 4 + inseong * 2 + (seed % 4);
+
+    const isFirstHalf = showConceptHelp?.includes('1ST HALF');
+    const startYear = isFirstHalf ? turningYear - 6 : turningYear;
+    const endYear = isFirstHalf ? turningYear : turningYear + 6;
     const years: number[] = [];
     for (let y = startYear; y <= endYear; y++) {
       years.push(y);
     }
 
-    return years.map((yr) => {
-      // 1. 사주 오행/십성 기반의 고유 난수 시드 성분
-      const rawSeedVal = (seed % 15); // 0 ~ 14
-      
-      let wealth = 50;
-      let love = 50;
-      let work = 50;
+    // 60갑자 세운 천간/지지 오행 맵 (2024 甲辰년 ~ 2035 乙卯년)
+    const YEAR_GANJI_ELEMENTS: Record<number, { ganEl: string; jiEl: string; name: string }> = {
+      2024: { ganEl: '목', jiEl: '토', name: '갑진' },
+      2025: { ganEl: '목', jiEl: '화', name: '을사' },
+      2026: { ganEl: '화', jiEl: '화', name: '병오' },
+      2027: { ganEl: '화', jiEl: '토', name: '정미' },
+      2028: { ganEl: '토', jiEl: '금', name: '무신' },
+      2029: { ganEl: '토', jiEl: '금', name: '기유' },
+      2030: { ganEl: '금', jiEl: '토', name: '경술' },
+      2031: { ganEl: '금', jiEl: '수', name: '신해' },
+      2032: { ganEl: '수', jiEl: '수', name: '임자' },
+      2033: { ganEl: '수', jiEl: '토', name: '계축' },
+      2034: { ganEl: '목', jiEl: '목', name: '갑인' },
+      2035: { ganEl: '목', jiEl: '목', name: '을묘' }
+    };
 
-      if (yr <= 2032) {
-        // 1ST HALF: 갈등 수용과 자각 축적기 (점진적 자립 및 극복 단계)
-        // 2019~2026 수급자 시기를 지나 올해(2026) 수급자가 끝나면서 바닥을 다지고 점차 올라가는 트렌드
-        const progressRatio = (yr - 2026) / 6; // 0 (2026) ~ 1 (2032)
-        
-        // 재운: 2026년에는 35~40점대 바닥 -> 2032년 직전에는 65~70점대로 상승
-        wealth = Math.round(38 + progressRatio * 28 + (rawSeedVal % 7) - 3);
-        
-        // 연애: 고독한 내공 수련기이므로 40~60점대에서 굴곡
-        love = Math.round(42 + progressRatio * 18 + ((seed * yr) % 11) - 5);
-        
-        // 사업: 시스템을 정비하고 기반을 다지는 시기이므로 36~68점대 상승
-        work = Math.round(36 + progressRatio * 32 + ((seed + yr) % 9) - 4);
-      } else {
-        // 2ND HALF: 자비 반조와 천명 만개기 (2032년 이후 본격적인 폭발적 우상향 및 풍요)
-        const progressRatio = (yr - 2032) / 6; // 0 (2032) ~ 1 (2038)
-        
-        // 재운: 2032년에 78점으로 점프하여 2038년에는 95점대 극대화
-        wealth = Math.round(76 + progressRatio * 16 + (rawSeedVal % 7));
-        
-        // 연애: 내면이 넓어지고 귀인이 다가오는 만개기이므로 75~92점
-        love = Math.round(74 + progressRatio * 14 + ((seed * yr) % 9));
-        
-        // 사업: 천명 브랜드와 영향력이 확장되는 타이밍이므로 78~96점
-        work = Math.round(77 + progressRatio * 15 + ((seed + yr) % 7));
-      }
+    return years.map((yr) => {
+      // 해당 연도 세운 오행 추출
+      const yearInfo = YEAR_GANJI_ELEMENTS[yr] || { ganEl: (yr % 2 === 0 ? '목' : '화'), jiEl: '토', name: `${yr}년` };
+      const { ganEl, jiEl } = yearInfo;
+
+      // 생극 십성 관계에 따른 파동 계산
+      // 재운: 내가 극하는 오행(재성)이나 나를 생하는 오행(인성)이 세운에 올 때 재정적 결실 파동 상승
+      let wealthMod = 0;
+      if (ganEl === controlledByMaster || jiEl === controlledByMaster) wealthMod += 18; // 재성 세운: 대폭 상승
+      if (ganEl === inElement || jiEl === inElement) wealthMod += 12; // 인성 세운: 안정적 보존
+      if (ganEl === dayMasterElement || jiEl === dayMasterElement) wealthMod -= 8; // 비겁 세운: 경쟁/지출
+      if (ganEl === generatedByMaster || jiEl === generatedByMaster) wealthMod += 8; // 식상 세운: 투자/발상
+
+      // 연애/관계운: 관성(여성) 또는 재성(남성) 및 합/생 관계
+      let loveMod = 0;
+      const targetLoveEl = gender === 'female' ? gwanElement : controlledByMaster;
+      if (ganEl === targetLoveEl || jiEl === targetLoveEl) loveMod += 20; // 배우자/연인운 직격 만개
+      if (ganEl === inElement || jiEl === inElement) loveMod += 10;
+      if (ganEl === generatedByMaster || jiEl === generatedByMaster) loveMod += 6;
+
+      // 사업/직장운: 관성(직장/평판) & 식상(사업/기술) & 인성(계약/문서)
+      let workMod = 0;
+      if (ganEl === gwanElement || jiEl === gwanElement) workMod += 22; // 관성: 승진/명예/승승장구
+      if (ganEl === generatedByMaster || jiEl === generatedByMaster) workMod += 15; // 식상: 신규 비즈니스 창출
+      if (ganEl === inElement || jiEl === inElement) workMod += 12; // 인성: 라이선스/계약 성사
+
+      // 주기적 인파동 삼합/충 파동 삼각함수 파동 추가 (단조로운 직선 사멸)
+      const wavePhase = Math.sin((yr - turningYear) * 1.35 + (seed % 5));
+      const cosPhase = Math.cos((yr - turningYear) * 1.1 + (seed % 7));
+
+      let wealth = Math.round(baseWealth + wealthMod + wavePhase * 16 + (seed % 7) - 3);
+      let love = Math.round(baseLove + loveMod + cosPhase * 18 + ((seed * yr) % 9) - 4);
+      let work = Math.round(baseWork + workMod + wavePhase * 14 + cosPhase * 8 + ((seed + yr) % 7) - 2);
 
       // 25~98 사이로 clamp
       wealth = Math.min(98, Math.max(25, wealth));
@@ -558,31 +715,90 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
       work = Math.min(98, Math.max(25, work));
 
       let comment = '';
+      const dayGan = data?.saju?.fourPillars?.day?.gan || '신';
+      const dayJi = data?.saju?.fourPillars?.day?.ji || '사';
+      const myGanJi = dayGan + dayJi;
+      const elementMap: Record<string, string> = { '갑': '목', '을': '목', '병': '화', '정': '화', '무': '토', '기': '토', '경': '금', '신': '금', '임': '수', '계': '수' };
+      const myElement = elementMap[dayGan] || '금';
+
+      // Seed를 활용한 동적 변형 패턴 (0 ~ 2)
+      const patternIdx = (seed + yr) % 3;
+
       if (timelineTab === 'wealth') {
-        if (yr === 2026) {
-          comment = `2026년은 2019년부터 이어온 오랜 수급자 자격(기초생활수급자/주거급여수급자)이 만료되는 운명적 터닝포인트입니다. 당장은 재정적 바닥을 다지는 듯 보이지만, 지원 제도의 종료는 자립과 큰 재물적 풍요를 향해 내딛는 위대한 자립의 첫걸음입니다. 바닥에서 점진적으로 우상향하기 시작하는 대운의 전환점입니다.`;
-        } else if (yr > 2026 && yr < 2032) {
-          comment = `${yr}년은 과도기적 갈등을 수용하며 독자적인 재정 내실을 다지는 시기입니다. 서두르지 않고 자각의 주파수를 차분히 적립해 가며 자립도를 꾸준히 높여가는 것이 가장 좋습니다.`;
-        } else if (yr === 2032) {
-          comment = `2032년은 대운의 문이 본격적으로 열리는 만개의 시작점입니다. 1ST HALF 동안 고군분투하며 쌓아 올린 자각의 씨앗이 마침내 강력한 재물적 결실과 기적적인 풍요로 폭발하여 점수대가 70점대 후반 이상으로 대폭 도약합니다.`;
+        if (yr === turningYear - 6) {
+          const wealthPatterns = [
+            `${turningYear - 6}년은 ${myGanJi} 일주 본연의 ${myElement} 기운이 새로운 변화를 맞이하며, 과거의 제한적 경제 패턴을 깨뜨리고 일어서는 운명적 자립의 첫걸음입니다. 일시적인 정비를 거쳐 재정적 독립도가 점진적으로 우상향하기 시작하는 대전환점입니다.`,
+            `${turningYear - 6}년은 ${data.userName || '명심가'}님의 재물운 흐름에서 낡은 껍질이 벗겨지는 터닝포인트입니다. 당장은 재정적 재구성을 거치는 과정이지만, 이는 곧 주체적인 풍요를 향해 내딛는 위대한 자립의 기초가 될 것입니다.`,
+            `${turningYear - 6}년은 무의식적 긴장을 풀고 현실적인 재물 흐름을 내 주체적 힘으로 쥐기 시작하는 해입니다. ${myElement}의 안정적인 토대 위에 자력으로 재정적 번영을 개척하기 시작하는 귀한 도약대입니다.`
+          ];
+          comment = wealthPatterns[patternIdx];
+        } else if (yr > turningYear - 6 && yr < turningYear) {
+          const midPatterns = [
+            `${yr}년은 과도기적 갈등을 수용하며 ${myElement}의 내실을 다져 독립적인 경제 구조를 확립하는 시기입니다. 뇌신경의 조급함을 다스리고 차분히 자각 주파수를 적립하십시오.`,
+            `${yr}년은 ${data.userName || '명심가'}님의 가치 창조력이 실질적 자원으로 축적되는 단계입니다. 외부 요동에 흔들리지 않고 재정적 자립도를 차분히 높여가는 것이 유리합니다.`,
+            `${yr}년은 사주 오행의 균형 속에서 불필요한 지출을 통제하고 나만의 번영 에너지를 차곡차곡 모아가는 성찰과 적립의 황금 과도기입니다.`
+          ];
+          comment = midPatterns[patternIdx];
+        } else if (yr === turningYear) {
+          const peakPatterns = [
+            `${turningYear}년은 대운의 문이 본격적으로 열리며 ${myGanJi}의 잠재 재물력이 폭발하는 시기입니다. 1ST HALF 동안 성실히 쌓아온 자각의 씨앗이 마침내 강력한 재정적 번영과 결실로 극대화됩니다.`,
+            `${turningYear}년은 주역 주파수가 70점대 후반 이상으로 뛰어오르며, ${data.userName || '명심가'}님의 인생 후반기 번영이 강력한 자석처럼 재물과 기회를 끌어당기기 시작하는 해입니다.`,
+            `${turningYear}년은 물질적 제약의 고리를 완전히 끊고 넓고 윤택한 ${myElement}의 대지로 진입하는 만개의 기점입니다. 자립의 훈련이 끝나고 풍요가 순리대로 안착합니다.`
+          ];
+          comment = peakPatterns[patternIdx];
         } else {
-          comment = `${yr}년은 천명 만개기의 절정으로, 재성(財星)의 우주 주파수가 80~90점대 수준으로 극대화됩니다. 기적 같은 풍요와 재산 번영이 자연스럽게 당신의 삶으로 찾아옵니다.`;
+          const latePatterns = [
+            `${yr}년은 천명 만개기의 절정으로, 재성의 우주 주파수가 80~90점대 수준으로 극대화됩니다. 기적 같은 풍요와 재산의 상생 번영이 자연스럽게 찾아옵니다.`,
+            `${yr}년은 ${data.userName || '명심가'}님의 영적 성장이 실제 물질적 안정으로 투사되어, 애쓰지 않아도 원하는 자원과 재정이 원활히 순환되는 시기입니다.`,
+            `${yr}년은 ${myGanJi} 특유의 뚝심과 지혜가 번영의 열매를 풍성하게 맺는 해입니다. 평화로운 축복 속에서 주변에 재정적 나눔과 상생을 실천하게 됩니다.`
+          ];
+          comment = latePatterns[patternIdx];
         }
       } else if (timelineTab === 'love') {
-        if (yr <= 2026) {
-          comment = `2026년은 주변의 불필요한 인맥을 정리하고 오직 내면의 상처를 보듬으며 홀로서기를 완성하는 시기입니다. 겉보기엔 외롭지만, 나를 참되게 사랑하는 진짜 사랑의 토대가 닦입니다.`;
-        } else if (yr > 2026 && yr < 2032) {
-          comment = `${yr}년은 내면의 맑은 거울을 통해 인간관계의 경계를 정비하고 조율하는 시기입니다. 성숙한 소통 방식을 연습하며 인격적 깊이를 쌓아가게 됩니다.`;
+        if (yr <= turningYear - 6) {
+          const loveEarly = [
+            `${turningYear - 6}년은 주변의 불필요한 인맥 관계를 건강하게 정비하고 오직 내면의 ${myElement} 기운을 보듬으며 홀로서기를 완성하는 시기입니다. 나를 참되게 사랑하는 토대가 단단해집니다.`,
+            `${turningYear - 6}년은 에고의 눈치와 긴장을 내려놓고 깊은 고요를 회복하는 시기입니다. 외면의 관심보다 내 가슴속 깊은 영혼의 알아차림과 먼저 연애하듯 소통하십시오.`,
+            `${turningYear - 6}년은 관계의 군더더기를 털어내고 순백의 도화지 상태를 회복하는 해입니다. ${myGanJi}의 본연의 매력이 내실을 다져가는 중요한 시점입니다.`
+          ];
+          comment = loveEarly[patternIdx];
+        } else if (yr > turningYear - 6 && yr < turningYear) {
+          const loveMid = [
+            `${yr}년은 내면의 맑은 거울을 통해 인간관계의 경계를 정비하고 조율하는 시기입니다. 성숙한 소통 방식을 연습하며 타인과의 주파수 조율 능력을 키웁니다.`,
+            `${yr}년은 ${data.userName || '명심가'}님의 따뜻한 공감 능력이 영적인 성장을 거쳐 주변 사람들에게 잔잔한 신뢰의 물결로 다가가는 해입니다.`,
+            `${yr}년은 무조건적인 끌림보다 서로의 가치관과 인생의 지향점을 묵묵히 공유할 수 있는 깊이 있는 연대를 실험하는 과도기입니다.`
+          ];
+          comment = loveMid[patternIdx];
         } else {
-          comment = `${yr}년은 만개한 당신의 아우라에 이끌려 소중한 귀인들이 모여드는 해입니다. 편견 없는 순수한 조건 없는 사랑과 깊은 영혼의 교감을 나눌 인연의 끈이 활성화됩니다.`;
+          const loveLate = [
+            `${yr}년은 만개한 당신의 아우라에 이끌려 소중한 귀인과 영혼의 동반자가 자연스럽게 찾아오는 해입니다. 조건 없는 참사랑과 깊은 감정적 공명이 열립니다.`,
+            `${yr}년은 ${myGanJi}의 매력 주파수가 극대화되어, 굳이 애써 구걸하지 않아도 내면의 풍요에 공명하는 아름다운 인연들이 자연스레 맺어지는 축복의 해입니다.`,
+            `${yr}년은 ${data.userName || '명심가'}님을 아끼고 지지해주는 끈끈한 네트워크와 소울 파트너십이 활성화되어, 가슴 따뜻한 인생 후반기의 황금기를 보냅니다.`
+          ];
+          comment = loveLate[patternIdx];
         }
       } else {
-        if (yr <= 2026) {
-          comment = `2026년은 기존의 낡은 구조를 깨트리고 새로운 진로의 기틀을 마련하는 해입니다. 수급자 만료 시점과 맞물려 내면의 자립 의지가 생동하여 독립적인 일의 첫 단추를 꿰게 됩니다.`;
-        } else if (yr > 2026 && yr < 2032) {
-          comment = `${yr}년은 시행착오(경험적 모험)를 밟아가며 내게 진짜 맞는 사업/직장 모델이 무엇인지 베타 테스트하는 기간입니다. 실수들은 고귀한 교정의 길잡이가 됩니다.`;
+        if (yr <= turningYear - 6) {
+          const workEarly = [
+            `${turningYear - 6}년은 기존의 낡은 구조를 깨트리고 독립적인 진로의 새로운 기틀을 마련하는 해입니다. 내실 있는 자립 의지가 생동하여 일의 소중한 첫 단추를 꿰게 됩니다.`,
+            `${turningYear - 6}년은 ${myGanJi} 특유의 독창성을 바탕으로 나만의 독자적인 가치 창조 모델을 설계하는 해입니다. 무리하기보다 기초 체력과 시스템을 세우는 데 집중하십시오.`,
+            `${turningYear - 6}년은 환경의 불확실성을 기회로 바꾸는 ${myElement}의 유연한 대처 능력이 빛나는 시기입니다. 주체적인 일의 싹이 비옥한 흙 속에서 움틉니다.`
+          ];
+          comment = workEarly[patternIdx];
+        } else if (yr > turningYear - 6 && yr < turningYear) {
+          const workMid = [
+            `${yr}년은 다양한 시행착오(경험적 모험)를 밟아가며 나에게 진짜 맞는 비즈니스/직업 아키타입이 무엇인지 정교하게 보정해나가는 귀한 실험 기간입니다.`,
+            `${yr}년은 자각의 지혜를 바탕으로 무모한 도전을 삼가고 내공과 기술력을 점진적으로 숙련시키는 단계입니다. 축적된 실력이 미래의 큰 번영을 약속합니다.`,
+            `${yr}년은 ${data.userName || '명심가'}님의 일에서 독창적인 정체성이 서서히 뿌리를 내리는 해입니다. 조급한 성과 대신 나만의 브랜드를 차분히 키워내십시오.`
+          ];
+          comment = workMid[patternIdx];
         } else {
-          comment = `${yr}년은 천명 비즈니스 모델이 시장과 대중에게 널리 알려지며 영향력이 극대화되는 시기입니다. 억지 노력 없이도 내 가치와 해법이 자연스레 명성을 낳는 비상의 해입니다.`;
+          const workLate = [
+            `${yr}년은 당신의 고유한 천명 비즈니스 모델이 세상에 널리 알려지며 영향력이 극대화되는 황금기입니다. 억지 노력 없이도 내 솔루션이 명성을 낳습니다.`,
+            `${yr}년은 ${myGanJi}의 전문적인 천재성이 빛을 발해, 공동체와 사회 내에서 리더이자 지혜로운 길잡이로서 우뚝 서는 영광과 번영의 해입니다.`,
+            `${yr}년은 ${data.userName || '명심가'}님이 지닌 본질적인 비즈니스 주파수가 세상의 가려운 곳을 긁어주며, 큰 공헌과 함께 사회적 명예를 획득하는 비상의 해입니다.`
+          ];
+          comment = workLate[patternIdx];
         }
       }
 
@@ -593,15 +809,15 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
   // 타임라인 팝업 오픈 시 선택 연도 자동 정돈
   useEffect(() => {
     if (showConceptHelp) {
-      if (showConceptHelp === '1ST HALF (~ 2032년)') {
-        setSelectedYear(2026);
+      if (showConceptHelp.includes('1ST HALF')) {
+        setSelectedYear(turningYear - 6);
         setShowTimelineChart(false);
-      } else if (showConceptHelp === '2ND HALF (2032년 ~)') {
-        setSelectedYear(2032);
+      } else if (showConceptHelp.includes('2ND HALF')) {
+        setSelectedYear(turningYear);
         setShowTimelineChart(false);
       }
     }
-  }, [showConceptHelp]);
+  }, [showConceptHelp, turningYear]);
 
   const [selectedItem, setSelectedItem] = useState<{
     type: string;
@@ -779,7 +995,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
       const remaining = Math.ceil(DOCENT_COOLDOWN_SEC - elapsed);
       setDocentCooldown(remaining);
       setSelectedItem(item);
-      setDocentContent(`🛡️ AI 도슨트 보호 모드\n\n에너지 과부하를 방지하기 위해 ${remaining}초 후에 다시 해설을 요청해 주세요.\n\n잠시 호흡을 가다듬으며, 방금 읽은 해설을 마음속에서 되새겨 보는 시간을 가져보세요. ✨`);
+      setDocentContent(`🛡️ 명심 AI 코치 보호 모드\n\n에너지 과부하를 방지하기 위해 ${remaining}초 후에 다시 해설을 요청해 주세요.\n\n잠시 호흡을 가다듬으며, 방금 읽은 해설을 마음속에서 되새겨 보는 시간을 가져보세요. ✨`);
       // 카운트다운 타이머
       const timer = setInterval(() => {
         setDocentCooldown(prev => {
@@ -851,37 +1067,58 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
   return (
     <>
       <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] flex justify-center items-center bg-black/95 backdrop-blur-lg p-3 md:p-6 overflow-hidden">
+      <div className="fixed inset-0 z-[9999] flex justify-center items-center bg-black/95 backdrop-blur-lg p-2 sm:p-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.93, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.93, y: 15 }}
-          className="w-full max-w-lg h-[95vh] bg-[#020205] border border-purple-500/20 rounded-[36px] shadow-[0_0_50px_rgba(168,85,247,0.15)] flex flex-col relative overflow-hidden text-left"
+          className="w-full max-w-lg h-[94dvh] sm:h-[88vh] max-h-[96dvh] sm:max-h-[900px] bg-[#020205] border border-purple-500/20 rounded-[28px] sm:rounded-[36px] shadow-[0_0_50px_rgba(168,85,247,0.15)] flex flex-col relative overflow-hidden text-left"
         >
           <div className="absolute top-[-20%] left-[-20%] w-[450px] h-[450px] bg-gradient-to-tr from-purple-600/10 to-indigo-600/5 rounded-full blur-[120px] pointer-events-none nebula-glow-1" />
           <div className="absolute bottom-[-20%] right-[-20%] w-[450px] h-[450px] bg-gradient-to-bl from-pink-600/5 to-amber-500/10 rounded-full blur-[120px] pointer-events-none nebula-glow-2" />
 
-          <header className="px-6 py-4.5 border-b border-white/5 flex items-center justify-between z-10 bg-black/50 backdrop-blur-xl shrink-0">
-            <div className="flex items-center gap-2.5">
-              <span className="text-2xl animate-pulse">🌌</span>
-              <div>
-                <h2 className="text-sm font-black text-white tracking-widest flex items-center gap-2">
-                  명심 주역의식지도 <span className="text-[9px] bg-gradient-to-r from-amber-400 to-amber-600 text-black px-2 py-0.5 rounded-full font-extrabold shadow-[0_0_15px_rgba(245,158,11,0.4)]">Premium Edition</span>
-                </h2>
-                <p className="text-[8px] text-purple-300/80 mt-0.5 leading-none">명심코칭 주파수 관점 재배선 및 하늘의 성정 주역코드 해독</p>
+          {/* 럭셔리 헤더 - 정밀 슬림 피팅 및 특허 뱃지 탑재 */}
+          <header className="px-3 sm:px-3.5 py-2.5 sm:py-3 border-b border-amber-500/20 flex items-center justify-between z-10 bg-gradient-to-r from-slate-950 via-purple-950/90 to-slate-950 backdrop-blur-xl shrink-0 select-none shadow-2xl">
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-hidden min-w-0">
+              <span className="text-base sm:text-lg shrink-0 p-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">🌌</span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 whitespace-nowrap">
+                  <h2 className="text-xs sm:text-sm font-black text-white tracking-tight truncate">
+                    의식지도 정밀 리포트
+                  </h2>
+                  <span className="text-[8px] sm:text-[8.5px] bg-gradient-to-r from-amber-400 to-amber-600 text-black px-1.5 py-0.5 rounded-full font-black shadow shrink-0">
+                    Premium
+                  </span>
+                </div>
+                <p className="text-[7.5px] sm:text-[8.5px] text-amber-300 font-mono mt-0.5 truncate">
+                  🏛️ 특허출원중 제10-2025-0166877호
+                </p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="p-1.5 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-all active:scale-95"
-            >
-              <X size={16} />
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0 ml-1">
+              <button
+                onClick={() => setShowMicroPassModal(true)}
+                className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-[9.5px] sm:text-[10px] shadow-[0_0_15px_rgba(245,158,11,0.35)] transition-all active:scale-95 flex items-center gap-1 cursor-pointer whitespace-nowrap border border-amber-400/40"
+              >
+                <Zap size={10} className="text-amber-300 animate-pulse fill-amber-300" />
+                <span>⚡ 890원 처방 ➔</span>
+              </button>
+              <button
+                onClick={onClose}
+                className="p-1 sm:p-1.5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition-all active:scale-95 border border-white/10"
+              >
+                <X size={15} />
+              </button>
+            </div>
           </header>
 
           {!loading && data && (
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
+              {/* 스크롤 패딩 모바일 터치 스무스 및 dvh 호흡 최적화 */}
+              <div 
+                className="flex-1 overflow-y-auto px-3.5 sm:px-4 pt-3.5 sm:pt-5 pb-5 sm:pb-4 space-y-3.5 sm:space-y-4 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent"
+                style={{ WebkitOverflowScrolling: 'touch' }}
+              >
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentPage}
@@ -892,92 +1129,130 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                     className="h-full flex flex-col space-y-4"
                   >
                     {currentPage === 1 && (
-                      <div className="flex-1 flex flex-col justify-between py-6">
-                        <div className="space-y-4 text-center">
-                          <span className="text-4xl animate-pulse block">🗺️</span>
-                          <h1 className="text-lg font-extrabold bg-gradient-to-r from-purple-300 via-amber-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                            명심 주역의식지도 정밀 진단서
+                      <div className="flex-1 flex flex-col justify-between py-4 select-none">
+                        <div className="space-y-3 text-center">
+                          <div className="relative inline-block">
+                            <span className="text-5xl animate-pulse block">🗺️</span>
+                            <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-xl animate-ping opacity-50" />
+                          </div>
+                          <h1 className="text-lg sm:text-xl font-black bg-gradient-to-r from-amber-200 via-purple-200 to-indigo-100 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-tight">
+                            동양학·심리 과학 융합 의식지도 정밀 진단서
                           </h1>
-                          <p className="text-[10px] text-purple-300 font-mono tracking-widest uppercase">MYEONGSIM CONSCIOUSNESS REPORT</p>
+                          <p className="text-[9.5px] text-amber-300 font-mono tracking-widest uppercase font-bold">MYEONGSIM CONSCIOUSNESS REPORT</p>
                         </div>
-                        <div className="bg-black/50 border border-white/10 rounded-2xl p-5 space-y-3.5 shadow-2xl backdrop-blur-md">
-                          <h3 className="text-xs font-extrabold text-white border-b border-white/5 pb-2 text-center flex items-center justify-center gap-1.5">
-                            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> 수검자 명심 프로필
+
+                        {/* 24K 럭셔리 수검자 명심 프로필 카드 */}
+                        <div className="bg-gradient-to-br from-amber-950/40 via-slate-950 to-purple-950/40 border border-amber-400/40 rounded-3xl p-5 space-y-4 shadow-[0_0_30px_rgba(245,158,11,0.2)] backdrop-blur-xl relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                          <h3 className="text-xs font-black text-amber-300 border-b border-amber-500/20 pb-2 text-center flex items-center justify-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" /> ✨ 수검자 명심 프로필
                           </h3>
-                          <div className="grid grid-cols-2 gap-2.5 text-[10px]">
-                            <div className="bg-white/5 p-2.5 rounded-xl border border-white/5">
-                              <span className="text-purple-400 block text-[8px]">이름</span>
-                              <span className="text-white font-bold">{data.userName}님</span>
+                          <div className="grid grid-cols-2 gap-2.5 text-[11px]">
+                            <div className="bg-slate-900/80 p-3 rounded-2xl border border-white/10">
+                              <span className="text-purple-300 block text-[9px] font-bold">이름</span>
+                              <span className="text-white font-extrabold">{data.userName}님</span>
                             </div>
-                            <div className="bg-white/5 p-2.5 rounded-xl border border-white/5">
-                              <span className="text-amber-400 block text-[8px]">명심 유형</span>
-                              <span className="text-amber-400 font-bold">{data.typology.typeName}</span>
+                            <div className="bg-slate-900/80 p-3 rounded-2xl border border-amber-500/20">
+                              <span className="text-amber-400 block text-[9px] font-bold">명심 유형</span>
+                              <span className="text-amber-300 font-extrabold">{data.typology.typeName}</span>
                             </div>
-                            <div className="bg-white/5 p-2.5 rounded-xl border border-white/5 col-span-2">
-                              <span className="text-gray-500 block text-[8px]">출생 일시</span>
-                              <span className="text-white font-bold">{new Date(data.birthDate).toLocaleDateString('ko-KR')} ({data.birthTime})</span>
+                            <div className="bg-slate-900/80 p-3 rounded-2xl border border-white/10 col-span-2">
+                              <span className="text-gray-400 block text-[9px] font-bold">출생 일시</span>
+                              <span className="text-white font-extrabold">{new Date(data.birthDate).toLocaleDateString('ko-KR')} ({data.birthTime})</span>
                             </div>
-                            <div className="bg-white/5 p-2.5 rounded-xl border border-white/5 col-span-2">
-                              <span className="text-gray-500 block text-[8px]">사주 주파수</span>
-                              <span className="text-[#c084fc] font-bold">
+                            <div className="bg-slate-900/80 p-3 rounded-2xl border border-amber-500/30 col-span-2">
+                              <span className="text-amber-300 font-bold block text-[9px]">동양학·심리 8차원 주파수</span>
+                              <span className="text-purple-200 font-mono font-extrabold tracking-wide text-xs">
                                 {data.saju.fourPillars.year.gan}{data.saju.fourPillars.year.ji} / {data.saju.fourPillars.month.gan}{data.saju.fourPillars.month.ji} / {data.saju.fourPillars.day.gan}{data.saju.fourPillars.day.ji} / {data.saju.fourPillars.time.gan}{data.saju.fourPillars.time.ji}
                               </span>
                             </div>
                           </div>
                         </div>
-                        <div className="text-center text-[9px] text-gray-600">
+
+                        <div className="text-center text-[9.5px] text-gray-500 font-mono">
                           © 명심코칭 Co. All Rights Reserved.
                         </div>
                       </div>
                     )}
                     {currentPage === 2 && (
-                      <div className="space-y-4">
+                      <div className="space-y-4 select-none">
                         <div className="text-center">
-                          <h3 className="text-xs font-bold text-white">명심 기질 26대 지표 매트릭스</h3>
-                          <p className="text-[9px] text-gray-400 mt-1">26대 기질 활성 주역코드의 분포를 나타내는 입체 격자 도표입니다.</p>
+                          <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-purple-200 to-indigo-100">
+                            명심 기질 26대 지표 매트릭스
+                          </h3>
+                          <p className="text-[9.5px] text-amber-300 font-mono mt-0.5 font-bold">26대 기질 활성 주역코드의 입체 격자 도표입니다.</p>
                         </div>
-                        <div className="bg-black/50 border border-white/10 rounded-2xl p-4 shadow-xl">
+
+                        {/* 26개 격자 24K 코스믹 럭셔리 그리드 */}
+                        <div className="bg-gradient-to-br from-slate-950 via-purple-950/40 to-slate-950 border border-amber-500/30 rounded-3xl p-3.5 shadow-2xl backdrop-blur-xl">
                           <div className="grid grid-cols-4 gap-2">
-                            {data.activations.map((act: any, idx: number) => (
-                              <motion.button
-                                key={act.id}
-                                onClick={() => setCurrentPage(14 + idx)}
-                                whileHover={{ scale: 1.08, rotateY: 12, rotateX: -6, z: 20 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="bg-[#12122b]/60 border border-white/10 hover:border-amber-400/50 hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] p-2.5 rounded-xl text-center transition-all cursor-pointer flex flex-col justify-between h-[65px]"
-                              >
-                                <span className="text-[7.5px] text-purple-400 font-extrabold block truncate leading-none mb-1">{act.label.split(' [')[0]}</span>
-                                <span className="text-xs font-extrabold text-amber-400 block leading-none">{act.gate}</span>
-                                <span className="text-[7px] text-gray-400 block leading-none mt-0.5">{act.line}효</span>
-                              </motion.button>
-                            ))}
+                            {data.activations.map((act: any, idx: number) => {
+                              const labelText = act.label ? act.label.split(' [')[0] : '';
+                              return (
+                                <motion.button
+                                  key={act.id || idx}
+                                  onClick={() => setCurrentPage(14 + idx)}
+                                  whileHover={{ scale: 1.05, y: -2 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  className="bg-gradient-to-br from-slate-900/90 to-purple-950/80 border border-amber-400/30 hover:border-amber-300 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] p-2 rounded-2xl text-center transition-all cursor-pointer flex flex-col justify-between h-[72px] sm:h-[78px] active:scale-95 group relative overflow-hidden"
+                                >
+                                  {/* 2줄 텍스트 짤림 방지 수술 (line-clamp-2) */}
+                                  <span className="text-[8.5px] sm:text-[9.5px] text-purple-200 group-hover:text-amber-200 font-extrabold block leading-tight line-clamp-2 h-[22px] flex items-center justify-center break-keep">
+                                    {labelText}
+                                  </span>
+                                  <span className="text-xs sm:text-sm font-black text-amber-300 group-hover:text-amber-200 block font-mono">
+                                    {act.gate}
+                                  </span>
+                                  <span className="text-[8px] sm:text-[8.5px] text-gray-400 font-bold block bg-black/40 px-1.5 py-0.5 rounded-md border border-white/5">
+                                    {act.line}효
+                                  </span>
+                                </motion.button>
+                              );
+                            })}
                           </div>
                         </div>
-                        <div className="bg-amber-500/10 border border-amber-500/20 p-3.5 rounded-xl text-[10px] text-amber-200 leading-relaxed">
-                          💡 <b>원하시는 기질 격자 칸</b>을 누르시면, 해당 명심주역코드에 대한 상세 도표 페이지로 즉시 입체 점프합니다!
+
+                        {/* 안내 문구 카드 */}
+                        <div className="bg-gradient-to-r from-amber-950/60 to-purple-950/60 border border-amber-400/40 p-3.5 rounded-2xl text-[10.5px] text-amber-200 leading-relaxed shadow-lg flex items-center gap-2">
+                          <span className="text-base shrink-0">💡</span>
+                          <span><b>원하시는 기질 격자 칸</b>을 누르시면, 해당 명심 파동 코드에 대한 상세 도표 페이지로 즉시 입체 점프합니다!</span>
                         </div>
                       </div>
                     )}
                     {currentPage === 3 && (
-                      <div className="space-y-4 flex-1 flex flex-col justify-between py-2">
+                      <div className="space-y-4 flex-1 flex flex-col justify-between py-2 select-none">
                         <div className="text-center">
-                          <h3 className="text-xs font-bold text-white">의식 주파수 유형 및 명심 조합</h3>
-                          <p className="text-[9px] text-gray-400 mt-1">타고난 에너지의 형태와 사회적 관계망의 구조입니다.</p>
+                          <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-purple-200 to-indigo-100">
+                            의식 주파수 유형 및 명심 조합
+                          </h3>
+                          <p className="text-[9.5px] text-amber-300 font-mono mt-0.5 font-bold">타고난 에너지의 형태와 사회적 관계망의 주파수 구조입니다.</p>
                         </div>
-                        <div className="space-y-4">
-                          <div className="bg-[#12122b]/50 border border-purple-500/20 rounded-2xl p-4 shadow-[0_0_15px_rgba(168,85,247,0.05)] border-l-4 border-l-purple-500">
-                            <span className="text-[8px] text-purple-400 font-bold block uppercase tracking-wider">에너지 형태 (Type)</span>
-                            <span className="text-xs font-bold text-white mt-0.5 block">{data.typology.typeName}</span>
-                            <p className="text-[10px] text-gray-400 mt-1.5 leading-relaxed">{data.typology.typeDesc}</p>
+                        <div className="space-y-3.5">
+                          <div className="bg-gradient-to-br from-purple-950/60 to-slate-950 border border-purple-500/40 rounded-3xl p-4.5 shadow-[0_0_20px_rgba(168,85,247,0.15)] border-l-4 border-l-purple-400 relative overflow-hidden">
+                            <span className="text-[8.5px] text-purple-300 font-mono font-bold uppercase tracking-wider block">에너지 형태 (Type)</span>
+                            <span className="text-sm font-black text-white mt-1 block">{data.typology.typeName}</span>
+                            <p className="text-[11px] text-gray-300 mt-2 leading-relaxed">{data.typology.typeDesc}</p>
                           </div>
-                          <div className="bg-[#1e130b]/40 border border-amber-500/20 rounded-2xl p-4 shadow-[0_0_15px_rgba(245,158,11,0.05)] border-l-4 border-l-amber-500">
-                            <span className="text-[8px] text-amber-400 font-bold block tracking-wider">명심 조합</span>
-                            <span className="text-xs font-bold text-white mt-0.5 block">{data.typology.profileName}</span>
-                            <p className="text-[10px] text-gray-400 mt-1.5 leading-relaxed">{data.typology.profileDesc}</p>
+                          <div className="bg-gradient-to-br from-amber-950/60 to-slate-950 border border-amber-500/40 rounded-3xl p-4.5 shadow-[0_0_20px_rgba(245,158,11,0.15)] border-l-4 border-l-amber-400 relative overflow-hidden">
+                            <span className="text-[8.5px] text-amber-300 font-mono font-bold uppercase tracking-wider block">명심 주파수 조합</span>
+                            <span className="text-sm font-black text-white mt-1 block">{data.typology.profileName}</span>
+                            <p className="text-[11px] text-gray-300 mt-2 leading-relaxed">{data.typology.profileDesc}</p>
                           </div>
                         </div>
-                        <div className="bg-black/30 border border-white/5 rounded-xl p-3 text-[10px] text-gray-500">
-                          📌 <b>명심 도슨트 팁</b>: 유형은 나의 동력 엔진의 특성이고, 프로필은 나의 옷과 같은 사회적 아키타입입니다.
+
+                        {/* 🔒 890원 1:1 심층 코칭 직통 버튼 마운트 */}
+                        <button
+                          onClick={() => {
+                            setShowMicroPassModal(true);
+                          }}
+                          className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] border border-amber-300/40"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                          <span>🔮 내 유형 파동으로 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                        </button>
+
+                        <div className="bg-slate-900/80 border border-white/10 rounded-2xl p-3 text-[10px] text-gray-400 leading-relaxed">
+                          📌 <b>명심 AI 코치 팁</b>: 유형은 나의 동력 엔진의 특성이고, 프로필은 나의 옷과 같은 사회적 아키타입입니다.
                         </div>
                       </div>
                     )}
@@ -1001,77 +1276,146 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                               </button>
                             </div>
                           </div>
-                          <div className={`flex flex-col items-center justify-center p-5 bg-black/50 border ${theme.border} ${theme.glow} rounded-3xl relative transition-all`}>
-                            <div className="relative w-28 h-28 flex items-center justify-center animate-ring-pulse">
+                          {/* 👑 스위스 명품 시계 톱니 오라(Horology Dial) 24K 게이지 카드 */}
+                          <div className="flex flex-col items-center justify-center p-5 bg-gradient-to-br from-slate-950 via-[#0b081c] to-slate-950 border border-amber-500/30 shadow-[0_0_35px_rgba(168,85,247,0.2)] rounded-[32px] relative transition-all overflow-hidden backdrop-blur-xl">
+                            <div className="absolute top-0 right-0 w-28 h-28 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                            <div className="relative w-32 h-32 flex items-center justify-center animate-ring-pulse">
                               <svg className="w-full h-full transform -rotate-90">
-                                <circle cx="56" cy="56" r="48" className="stroke-gray-900/60" strokeWidth="7" fill="transparent" />
-                                <motion.circle cx="56" cy="56" r="48" className={`transition-all duration-1000 ${theme.circle}`} strokeWidth="7" fill="transparent" strokeDasharray={2 * Math.PI * 48} initial={{ strokeDashoffset: 2 * Math.PI * 48 }} animate={{ strokeDashoffset: 2 * Math.PI * 48 * (1 - center.score / 100) }} transition={{ delay: 0.1, duration: 1.2, ease: 'easeOut' }} strokeLinecap="round" />
+                                <circle cx="64" cy="64" r="54" className="stroke-slate-900/80" strokeWidth="8" fill="transparent" />
+                                <motion.circle 
+                                  cx="64" cy="64" r="54" 
+                                  className={`transition-all duration-1000 ${theme.circle}`} 
+                                  strokeWidth="8" 
+                                  fill="transparent" 
+                                  strokeDasharray={2 * Math.PI * 54} 
+                                  initial={{ strokeDashoffset: 2 * Math.PI * 54 }} 
+                                  animate={{ strokeDashoffset: 2 * Math.PI * 54 * (1 - center.score / 100) }} 
+                                  transition={{ delay: 0.1, duration: 1.2, ease: 'easeOut' }} 
+                                  strokeLinecap="round" 
+                                />
                               </svg>
                               <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                                <span className="text-lg font-extrabold text-white">{center.score}점</span>
-                                <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full mt-0.5 ${isDefined ? 'bg-purple-500/20 text-[#c084fc]' : 'bg-gray-800 text-gray-500'}`}>{isDefined ? '고정형 주파수' : '수용형 주파수'}</span>
+                                <span className="text-2xl font-black font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-white to-amber-400 drop-shadow-[0_0_10px_rgba(245,158,11,0.4)]">
+                                  {center.score}점
+                                </span>
+                                <span className={`text-[8.5px] font-black px-2 py-0.5 rounded-full mt-1 border ${isDefined ? 'bg-purple-500/20 border-purple-400/40 text-purple-200' : 'bg-sky-500/20 border-sky-400/40 text-sky-200'}`}>
+                                  {isDefined ? '고정형 주파수' : '수용형 주파수'}
+                                </span>
                               </div>
                             </div>
-                            <p className="text-[10px] text-gray-400 mt-4 text-center px-2 leading-relaxed">{center.desc}</p>
+                            <p className="text-[10.5px] text-gray-300 mt-4 text-center px-3 leading-relaxed font-sans font-medium">
+                              {center.desc}
+                            </p>
                           </div>
-                          <div className="grid grid-cols-2 gap-2 text-[9px] text-center font-sans">
+
+                          <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-slate-950 p-2.5 space-y-2 shadow-lg">
+                            <div className="relative p-2 rounded-xl bg-black/40 border border-white/5">
+                              <p className="text-[8px] text-gray-400 leading-relaxed blur-[2.5px] select-none">
+                                해당 파동은 무의식 편도체 방어막과 맞물려 있으며, 1:1 심층 처방을 통해 에고의 불안을 해소하고 본래의 자각 상태로 즉시 재배선하는 솔루션을 포함합니다.
+                              </p>
+                              <div className="absolute inset-0 bg-slate-950/60 flex items-center justify-center">
+                                <button
+                                  onClick={() => setShowMicroPassModal(true)}
+                                  className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 text-white font-black text-[9px] shadow transition-all active:scale-95 flex items-center gap-1 cursor-pointer border border-amber-300/40"
+                                >
+                                  <span>🔒 890원 처방 락 해제 ➔</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            <button
+                              disabled={docentLoading}
+                              onClick={() => handleDocentRequest({
+                                type: 'center',
+                                label: center.name,
+                                score: center.score,
+                                dark: center.shadow || '외부 조건에 자극받아 무의식적인 에고 반응 및 불안이 형성되는 파동입니다.',
+                                neural: `${center.name}의 주파수가 일상 뇌신경 회로 속에서 ${center.score}점의 현실 조율 상태를 지니며 작동하고 있습니다.`,
+                                meta: center.potential || '우주의 진동 주파수와 정렬되어 나만의 참된 지혜와 영감을 발산하는 근본 성정입니다.'
+                              })}
+                              className={`bg-[#0b0b18]/80 border border-amber-500/20 hover:border-amber-500/40 p-2.5 rounded-xl text-left transition-all active:scale-[0.98] shadow flex justify-between items-center w-full ${
+                                docentLoading ? 'opacity-60 cursor-not-allowed' : ''
+                              }`}
+                            >
+                              <span className="text-amber-300 text-[9.5px] font-bold">🔮 자각 패치 주파수 관점 재배선 상세 풀이</span>
+                              <span className="text-[8px] text-purple-300 font-semibold">{docentLoading ? '조회 중...' : '터치 시 팝업 💡'}</span>
+                            </button>
+                          </div>
+
+                          {/* 4대 주파수 상태 필터 버튼 */}
+                          <div className="grid grid-cols-2 gap-2 text-[9.5px] text-center font-sans">
                             <button
                               type="button"
                               onClick={() => setSelectedFrequencyDetail('미약 주파수')}
-                              className={`p-2 rounded-xl border text-center transition-all active:scale-95 cursor-pointer block w-full ${center.score < 30 ? 'text-gray-200 border-white/20 bg-white/5 font-extrabold shadow-[0_0_8px_rgba(255,255,255,0.05)]' : 'text-gray-600 border-white/5 opacity-40'}`}
+                              className={`p-2.5 rounded-2xl border text-center transition-all active:scale-95 cursor-pointer block w-full ${center.score < 30 ? 'text-amber-200 border-amber-400/50 bg-amber-500/20 font-black shadow-[0_0_12px_rgba(245,158,11,0.2)]' : 'text-gray-400 border-white/10 bg-slate-900/60 font-bold hover:text-white'}`}
                             >
                               <span>미약 주파수 (0~29점) 💡</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => setSelectedFrequencyDetail('수용형 주파수')}
-                              className={`p-2 rounded-xl border text-center transition-all active:scale-95 cursor-pointer block w-full ${center.score >= 30 && center.score < 60 ? 'text-sky-300 border-sky-500/30 bg-sky-500/10 font-extrabold shadow-[0_0_8px_rgba(14,165,233,0.1)]' : 'text-gray-600 border-white/5 opacity-40'}`}
+                              className={`p-2.5 rounded-2xl border text-center transition-all active:scale-95 cursor-pointer block w-full ${center.score >= 30 && center.score < 60 ? 'text-sky-200 border-sky-400/50 bg-sky-500/20 font-black shadow-[0_0_12px_rgba(14,165,233,0.2)]' : 'text-gray-400 border-white/10 bg-slate-900/60 font-bold hover:text-white'}`}
                             >
                               <span>수용형 주파수 (30~59점) 💡</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => setSelectedFrequencyDetail('고정형 주파수')}
-                              className={`p-2 rounded-xl border text-center transition-all active:scale-95 cursor-pointer block w-full ${center.score >= 60 && center.score < 86 ? 'text-purple-300 border-purple-500/30 bg-purple-500/10 font-extrabold shadow-[0_0_8px_rgba(168,85,247,0.1)]' : 'text-gray-600 border-white/5 opacity-40'}`}
+                              className={`p-2.5 rounded-2xl border text-center transition-all active:scale-95 cursor-pointer block w-full ${center.score >= 60 && center.score < 86 ? 'text-purple-200 border-purple-400/50 bg-purple-500/20 font-black shadow-[0_0_12px_rgba(168,85,247,0.2)]' : 'text-gray-400 border-white/10 bg-slate-900/60 font-bold hover:text-white'}`}
                             >
                               <span>고정형 주파수 (60~85점) 💡</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => setSelectedFrequencyDetail('극대화 주파수')}
-                              className={`p-2 rounded-xl border text-center transition-all active:scale-95 cursor-pointer block w-full ${center.score >= 86 ? 'text-amber-300 border-amber-500/30 bg-amber-500/10 font-extrabold shadow-[0_0_8px_rgba(245,158,11,0.2)]' : 'text-gray-600 border-white/5 opacity-40'}`}
+                              className={`p-2.5 rounded-2xl border text-center transition-all active:scale-95 cursor-pointer block w-full ${center.score >= 86 ? 'text-emerald-200 border-emerald-400/50 bg-emerald-500/20 font-black shadow-[0_0_12px_rgba(16,185,129,0.2)]' : 'text-gray-400 border-white/10 bg-slate-900/60 font-bold hover:text-white'}`}
                             >
                               <span>극대화 주파수 (86~100점) 💡</span>
                             </button>
                           </div>
+
+                          {/* 24K 럭셔리 3,900원 AI 코치 해설 CTA 카드 */}
                           <button
                             disabled={docentLoading}
                             onClick={() => handleDocentRequest({
                               type: 'center',
                               label: center.name,
                               score: center.score,
-                              dark: center.shadow,
-                              neural: `${center.name}의 주파수가 현실적인 일상 뇌신경 회로 속에서 ${center.score}점의 현실 조율 상태를 지니며 작동하고 있습니다.`,
-                              meta: center.potential
+                              dark: center.shadow || '외부 조건에 자극받아 무의식적인 에고 반응 및 불안이 형성되는 파동입니다.',
+                              neural: `${center.name}의 주파수가 일상 뇌신경 회로 속에서 ${center.score}점의 현실 조율 상태를 지니며 작동하고 있습니다.`,
+                              meta: center.potential || '우주의 진동 주파수와 정렬되어 나만의 참된 지혜와 영감을 발산하는 근본 성정입니다.'
                             })}
-                            className="bg-black/40 border border-white/5 hover:border-purple-500/30 p-3.5 rounded-2xl space-y-2.5 text-left transition-all active:scale-[0.98] shadow-lg w-full"
+                            className="bg-gradient-to-br from-amber-950/40 via-slate-950 to-purple-950/40 border border-amber-400/40 hover:border-amber-300 p-4 rounded-3xl space-y-3 text-left transition-all active:scale-[0.98] shadow-[0_0_25px_rgba(245,158,11,0.2)] w-full group relative overflow-hidden"
                           >
-                            <div className="flex justify-between items-center text-[10px]">
-                              <span className="text-purple-300 font-bold flex items-center gap-1">🔮 주파수 관점 재배선 AI 도슨트 해설</span>
-                              <span className="text-gray-500 text-[8px]">{docentLoading ? '조회 중...' : '터치 시 팝업'}</span>
+                            <div className="flex justify-between items-center text-[10.5px]">
+                              <span className="text-amber-300 font-extrabold flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" /> 🔮 주파수 재배선 명심 AI 코치 해설
+                              </span>
+                              <span className="shrink-0 flex items-center gap-1">
+                                <span className="line-through text-gray-500 text-[9px]">29,000원</span>
+                                <span className="bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-black text-[9.5px] px-2 py-0.5 rounded-full shadow">
+                                  특허출원중 한시적 3,900원 ➔
+                                </span>
+                              </span>
                             </div>
-                            <div className="space-y-2.5 text-[9px] text-gray-300 leading-normal">
+                            <div className="space-y-2 text-[9.5px] text-gray-300 leading-relaxed border-t border-white/10 pt-2.5">
                               <div>
-                                <span className="text-red-400 font-bold flex items-center gap-1">🔴 다크코드 (에고 에러)</span>
-                                <p className="text-gray-400 mt-0.5">{center.shadow}</p>
+                                <span className="text-rose-400 font-bold flex items-center gap-1">🔴 다크코드 (에고 에러)</span>
+                                <p className="text-gray-300 mt-0.5 leading-snug">
+                                  {center.shadow || '외부 자극에 반응하여 생성되는 에고 무의식의 정체 파동입니다.'}
+                                </p>
                               </div>
                               <div>
-                                <span className="text-indigo-400 font-bold flex items-center gap-1">🔵 뉴럴코드 (신경 재배선)</span>
-                                <p className="text-gray-400 mt-0.5">{center.neuralCode}</p>
+                                <span className="text-sky-300 font-bold flex items-center gap-1">🔵 뉴럴코드 (신경 재배선)</span>
+                                <p className="text-gray-300 mt-0.5 leading-snug">
+                                  {center.neuralCode || `${center.name} 주파수를 일상 뇌신경망에서 조화롭게 재배선해냅니다.`}
+                                </p>
                               </div>
                               <div>
-                                <span className="text-amber-400 font-bold flex items-center gap-1">✨ 메타코드 (우주 싱크)</span>
-                                <p className="text-gray-400 mt-0.5">{center.potential}</p>
+                                <span className="text-amber-300 font-bold flex items-center gap-1">✨ 메타코드 (우주 싱크)</span>
+                                <p className="text-gray-300 mt-0.5 leading-snug">
+                                  {center.potential || '우주의 무한한 창조 에너지와 온전히 정렬되는 각성 파동입니다.'}
+                                </p>
                               </div>
                             </div>
                           </button>
@@ -1079,16 +1423,24 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                       );
                     })()}
                     {currentPage === 13 && (
-                      <div className="space-y-4">
+                      <div className="space-y-4 flex-1 flex flex-col justify-between py-1 select-none">
+                        {/* 스위스 타이포그래피 럭셔리 타이틀 */}
                         <div className="text-center">
-                          <span className="text-[9px] text-amber-500 font-bold tracking-widest uppercase block">TALENTS PAGE</span>
-                          <h3 className="text-xs font-bold text-white mt-1">명심 3대 핵심 기질 재능 대비표</h3>
+                          <span className="text-[9.5px] text-amber-300 font-mono font-bold tracking-widest uppercase block">
+                            TALENTS PAGE 13 / 40
+                          </span>
+                          <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-purple-200 to-indigo-100 mt-0.5 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                            명심 3대 핵심 기질 재능 대비표
+                          </h3>
+                          <p className="text-[9.5px] text-amber-300/90 font-mono mt-0.5 font-bold">타고난 3대 천부 에너지의 현실 발현 파동 지수입니다.</p>
                         </div>
-                        <div className="space-y-4 bg-black/40 border border-white/10 rounded-3xl p-5 shadow-2xl">
+
+                        {/* 3대 핵심 재능 24K 코스믹 카드 */}
+                        <div className="space-y-3 bg-gradient-to-br from-slate-950 via-[#0b081c] to-slate-950 border border-amber-500/30 rounded-3xl p-4.5 shadow-[0_0_35px_rgba(168,85,247,0.2)] backdrop-blur-xl">
                           {[
-                            { name: '감정 소통', score: userSeed > 0 ? Math.min(98, Math.max(55, 75 + (userSeed % 23) - 10)) : 85, color: 'from-pink-500 to-purple-500', desc: '내 기분과 감정을 참되게 표현하는 힘', glow: 'shadow-[0_0_10px_rgba(236,72,153,0.3)]' },
-                            { name: '비즈니스 본능', score: userSeed > 0 ? Math.min(98, Math.max(55, 78 + ((userSeed * 3) % 21) - 10)) : 92, color: 'from-amber-500 to-orange-500', desc: '대중의 필요와 가치를 파악하여 연결하는 힘', glow: 'shadow-[0_0_10px_rgba(245,158,11,0.3)]' },
-                            { name: '현존감', score: userSeed > 0 ? Math.min(98, Math.max(55, 72 + ((userSeed * 7) % 25) - 12)) : 78, color: 'from-emerald-500 to-teal-500', desc: '과거와 미래의 불안을 지우고 지금 현존하는 힘', glow: 'shadow-[0_0_10px_rgba(16,185,129,0.3)]' }
+                            { name: '감정 소통', score: userSeed > 0 ? Math.min(98, Math.max(55, 75 + (userSeed % 23) - 10)) : 87, color: 'from-pink-500 via-purple-500 to-indigo-500', desc: '내 기분과 감정을 참되게 표현하는 힘', glow: 'shadow-[0_0_15px_rgba(236,72,153,0.4)]' },
+                            { name: '비즈니스 본능', score: userSeed > 0 ? Math.min(98, Math.max(55, 78 + ((userSeed * 3) % 21) - 10)) : 86, color: 'from-amber-400 via-amber-500 to-orange-500', desc: '대중의 필요와 가치를 파악하여 연결하는 힘', glow: 'shadow-[0_0_15px_rgba(245,158,11,0.4)]' },
+                            { name: '현존감', score: userSeed > 0 ? Math.min(98, Math.max(55, 72 + ((userSeed * 7) % 25) - 12)) : 65, color: 'from-emerald-400 via-teal-500 to-cyan-500', desc: '과거와 미래의 불안을 지우고 지금 현존하는 힘', glow: 'shadow-[0_0_15px_rgba(16,185,129,0.4)]' }
                           ].map((tal, i) => {
                             const essay = TALENT_ESSAY_DATA[tal.name];
                             return (
@@ -1108,24 +1460,47 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                     });
                                   }
                                 }}
-                                className="space-y-2 cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-all border border-transparent hover:border-purple-500/20 active:scale-[0.98]"
+                                className="space-y-2 cursor-pointer hover:bg-white/5 p-3 rounded-2xl transition-all border border-white/5 hover:border-amber-400/40 active:scale-[0.98] group bg-black/40"
                               >
-                                <div className="flex justify-between items-center text-[10px]">
-                                  <span className="text-white font-bold flex items-center gap-1.5">
-                                    {tal.name} <Sparkles className="w-2.5 h-2.5 text-amber-400 animate-pulse" />
+                                <div className="flex justify-between items-center text-xs">
+                                  <span className="text-white font-extrabold flex items-center gap-1.5 group-hover:text-amber-300 transition-colors">
+                                    {tal.name} <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
                                   </span>
-                                  <span className="text-amber-400 font-mono font-bold">{tal.score}점</span>
+                                  <span className="text-amber-300 font-mono font-black text-sm">{tal.score}점</span>
                                 </div>
-                                <div className="w-full h-2.5 bg-black/60 rounded-full overflow-hidden p-0.5 border border-white/5">
-                                  <motion.div className={`h-full rounded-full bg-gradient-to-r ${tal.color} ${tal.glow}`} initial={{ width: 0 }} animate={{ width: `${tal.score}%` }} transition={{ delay: 0.2, duration: 1.0, ease: 'easeOut' }} />
+                                <div className="w-full h-3 bg-black/80 rounded-full overflow-hidden p-0.5 border border-white/10 shadow-inner">
+                                  <motion.div 
+                                    className={`h-full rounded-full bg-gradient-to-r ${tal.color} ${tal.glow}`} 
+                                    initial={{ width: 0 }} 
+                                    animate={{ width: `${tal.score}%` }} 
+                                    transition={{ delay: 0.2, duration: 1.0, ease: 'easeOut' }} 
+                                  />
                                 </div>
-                                <p className="text-[9px] text-gray-500 flex justify-between items-center">
+                                <p className="text-[10px] text-gray-400 flex justify-between items-center pt-0.5">
                                   <span>{tal.desc}</span>
-                                  <span className="text-[8px] text-purple-400 font-bold">터치 시 감동 해설 팝업 🔮</span>
+                                  <span className="text-[9px] text-amber-300 font-bold group-hover:underline">터치 시 감동 해설 팝업 🔮</span>
                                 </p>
                               </div>
                             );
                           })}
+                        </div>
+
+                        {/* 🏛️ 3대 핵심 재능 융합 시너지 분석 & 890원 코칭 버튼 */}
+                        <div className="space-y-2.5">
+                          <div className="bg-slate-900/90 border border-amber-500/30 p-3.5 rounded-2xl text-[10px] text-gray-300 leading-relaxed shadow-lg">
+                            <span className="text-amber-300 font-extrabold block text-xs mb-1">🏛️ 3대 천부 재능 융합 파동 시너지</span>
+                            <p className="text-gray-300 leading-relaxed">
+                              {data?.userName || '명심가'}님의 3대 천부 기질은 <b>[감정 소통]</b>의 공감 파동과 <b>[비즈니스 본능]</b>의 자원 확장 파워가 결합하여, 세상 사람들의 마음을 따뜻하게 열고 실질적인 부와 결실로 실체화하는 강력한 리더십 융합을 이루고 있습니다.
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => setShowMicroPassModal(true)}
+                            className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] border border-amber-300/40"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                            <span>🔮 3대 천부 재능으로 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                          </button>
                         </div>
                       </div>
                     )}
@@ -1337,56 +1712,71 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                       );
                     })()}
                     {currentPage === 40 && (
-                      <div className="space-y-4 flex-1 flex flex-col justify-between py-2">
+                      <div className="space-y-4 flex-1 flex flex-col justify-between py-1 select-none">
+                        {/* 스위스 타이포그래피 럭셔리 타이틀 */}
                         <div className="text-center">
-                          <span className="text-[9px] text-[#c084fc] font-bold tracking-widest uppercase block">TIMELINE PAGE</span>
-                          <h3 className="text-xs font-bold text-white mt-1">인생 명심 라이프 주기 타임라인</h3>
+                          <span className="text-[9.5px] text-purple-300 font-mono font-bold tracking-widest uppercase block">
+                            TIMELINE PAGE 40 / 40
+                          </span>
+                          <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-purple-200 to-indigo-100 mt-0.5 drop-shadow-[0_0_12px_rgba(168,85,247,0.3)]">
+                            인생 명심 라이프 주기 타임라인
+                          </h3>
                         </div>
 
-                        {/* 타임라인 도표 */}
-                        <div className="bg-black/50 border border-white/10 rounded-2xl p-4 shadow-xl">
-                          <div className="relative border-l border-purple-500/40 pl-4 space-y-4 text-[10px]">
+                        {/* 24K 코스믹 타임라인 도표 */}
+                        <div className="bg-gradient-to-br from-slate-950 via-[#0b081c] to-slate-950 border border-purple-500/30 rounded-3xl p-4.5 shadow-[0_0_35px_rgba(168,85,247,0.2)] backdrop-blur-xl">
+                          <div className="relative border-l-2 border-purple-500/50 pl-4 space-y-4 text-[10.5px]">
                             {/* 전반기 */}
                             <div 
-                              onClick={() => setShowConceptHelp('1ST HALF (~ 2032년)')}
-                              className="relative bg-white/[0.03] hover:bg-purple-950/20 border border-white/5 hover:border-purple-500/30 p-4.5 rounded-2xl cursor-pointer transition-all active:scale-[0.98] hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] group"
+                              onClick={() => setShowConceptHelp(`1ST HALF (~ ${turningYear}년)`)}
+                              className="relative bg-black/40 hover:bg-purple-950/30 border border-white/10 hover:border-purple-400/50 p-4 rounded-2xl cursor-pointer transition-all active:scale-[0.98] hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] group"
                             >
-                              <span className="absolute -left-[21.5px] top-6 w-3.5 h-3.5 bg-purple-500 rounded-full border-2 border-[#0a0a1a] group-hover:scale-125 transition-transform duration-300" />
+                              <span className="absolute -left-[22.5px] top-6 w-3.5 h-3.5 bg-purple-400 rounded-full border-2 border-slate-950 group-hover:scale-125 transition-transform duration-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
                               <div className="flex justify-between items-center">
-                                <span className="text-[8px] text-purple-400 font-bold font-mono uppercase tracking-wider">1ST HALF (~ 2032년) • 터치 시 팝업 💡</span>
-                                <span className="text-[9px] text-purple-300 group-hover:translate-x-0.5 transition-transform">자세히 보기 →</span>
+                                <span className="text-[8.5px] text-purple-300 font-bold font-mono uppercase tracking-wider">1ST HALF (~ {turningYear}년) • 터치 시 팝업 💡</span>
+                                <span className="text-[9.5px] text-purple-300 group-hover:translate-x-0.5 transition-transform font-bold">자세히 보기 →</span>
                               </div>
-                              <h4 className="text-white font-extrabold mt-1 group-hover:text-purple-300 transition-colors text-xs">갈등 수용과 자각 축적기</h4>
-                              <p className="text-[9px] text-gray-400 mt-1.5 leading-relaxed break-keep font-sans">
+                              <h4 className="text-white font-extrabold mt-1 group-hover:text-purple-200 transition-colors text-xs">갈등 수용과 자각 축적기</h4>
+                              <p className="text-[9.5px] text-gray-300 mt-1.5 leading-relaxed break-keep font-sans">
                                 거친 파도 속에서 에고의 껍질을 부수고 영혼의 뿌리를 내리는 훈련기입니다. 마주하는 모든 시련은 당신이라는 그릇을 크고 웅장하게 빚어내기 위한 숨겨진 축복의 거름입니다.
                               </p>
                             </div>
 
                             {/* 후반기 */}
                             <div 
-                              onClick={() => setShowConceptHelp('2ND HALF (2032년 ~)')}
-                              className="relative bg-white/[0.03] hover:bg-amber-950/20 border border-white/5 hover:border-amber-500/30 p-4.5 rounded-2xl cursor-pointer transition-all active:scale-[0.98] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] group"
+                              onClick={() => setShowConceptHelp(`2ND HALF (${turningYear}년 ~)`)}
+                              className="relative bg-black/40 hover:bg-amber-950/30 border border-white/10 hover:border-amber-400/50 p-4 rounded-2xl cursor-pointer transition-all active:scale-[0.98] hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] group"
                             >
-                              <span className="absolute -left-[21.5px] top-6 w-3.5 h-3.5 bg-amber-500 rounded-full border-2 border-[#0a0a1a] group-hover:scale-125 transition-transform duration-300" />
+                              <span className="absolute -left-[22.5px] top-6 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-slate-950 group-hover:scale-125 transition-transform duration-300 shadow-[0_0_10px_rgba(245,158,11,0.8)]" />
                               <div className="flex justify-between items-center">
-                                <span className="text-[8px] text-amber-400 font-bold font-mono uppercase tracking-wider">2ND HALF (2032년 ~) • 터치 시 팝업 💡</span>
-                                <span className="text-[9px] text-amber-300 group-hover:translate-x-0.5 transition-transform">자세히 보기 →</span>
+                                <span className="text-[8.5px] text-amber-300 font-bold font-mono uppercase tracking-wider">2ND HALF ({turningYear}년 ~) • 터치 시 팝업 💡</span>
+                                <span className="text-[9.5px] text-amber-300 group-hover:translate-x-0.5 transition-transform font-bold">자세히 보기 →</span>
                               </div>
-                              <h4 className="text-white font-extrabold mt-1 group-hover:text-amber-300 transition-colors text-xs">자비 반조와 천명 만개기</h4>
-                              <p className="text-[9px] text-gray-400 mt-1.5 leading-relaxed break-keep font-sans">
+                              <h4 className="text-white font-extrabold mt-1 group-hover:text-amber-200 transition-colors text-xs">자비 반조와 천명 만개기</h4>
+                              <p className="text-[9.5px] text-gray-300 mt-1.5 leading-relaxed break-keep font-sans">
                                 혹독한 겨울 끝에 깊은 지혜의 빛을 건져 올려, 세상의 어두운 길을 밝혀주는 영혼의 등대로 부활하는 축복과 번영, 만개의 황금기입니다.
                               </p>
                             </div>
                           </div>
                         </div>
 
-                        {/* 철학 명언 카드 */}
-                        <div className="bg-[#12122b]/50 border border-white/5 rounded-xl p-4 text-center">
-                          <p className="text-[10px] text-purple-200 italic leading-relaxed">
-                            "인생의 굴곡과 방황은 에너지가 약해서가 아닙니다.<br />
-                            더욱 크고 깊은 빛의 주파수를 피워내기 위한<br />
-                            우주적 충전기이자, 성찰의 밤일 뿐입니다."
-                          </p>
+                        {/* 🏛️ 철학 명언 & 890원 AI 코칭 결제 전환 버튼 */}
+                        <div className="space-y-2.5">
+                          <div className="bg-gradient-to-r from-purple-950/40 via-slate-900 to-indigo-950/40 border border-purple-500/30 rounded-2xl p-3.5 text-center shadow-lg">
+                            <p className="text-[10.5px] text-purple-200 italic leading-relaxed font-serif">
+                              "인생의 굴곡과 방황은 에너지가 약해서가 아닙니다.<br />
+                              더욱 크고 깊은 빛의 주파수를 피워내기 위한<br />
+                              우주적 충전기이자, 성찰의 밤일 뿐입니다."
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => setShowMicroPassModal(true)}
+                            className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] border border-amber-300/40"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                            <span>🔮 인생 라이프 주기 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                          </button>
                         </div>
                       </div>
                     )}
@@ -1394,17 +1784,28 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                 </AnimatePresence>
               </div>
 
-              <div className="px-5 py-4 border-t border-white/5 bg-black/40 flex items-center justify-between shrink-0">
-                <button onClick={prevPage} disabled={currentPage === 1} className="flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white disabled:opacity-20 transition-all active:scale-95 text-[10px] font-bold">
-                  <ChevronLeft size={14} /> Previous
+              {/* 👑 스위스 명품 장인정신 24K 네비게이션 툴바 */}
+              <div className="px-5 py-3.5 border-t border-amber-500/20 bg-gradient-to-r from-slate-950 via-[#0a0718] to-slate-950 flex items-center justify-between shrink-0 select-none shadow-2xl backdrop-blur-xl">
+                <button 
+                  onClick={prevPage} 
+                  disabled={currentPage === 1} 
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900/90 border border-white/10 hover:border-amber-400/40 rounded-2xl text-gray-300 hover:text-white disabled:opacity-20 transition-all active:scale-95 text-[10.5px] font-black cursor-pointer shadow"
+                >
+                  <ChevronLeft size={14} className="text-amber-400" /> Previous
                 </button>
-                <div className="text-center font-mono text-[10px] text-gray-400 flex items-center gap-2">
-                  <span className="font-extrabold text-amber-400">{currentPage}</span>
-                  <span className="text-gray-600">/</span>
-                  <span>{totalPages}</span>
+
+                <div className="text-center font-mono text-xs flex items-center gap-2 px-3 py-1 bg-black/60 border border-amber-500/20 rounded-full shadow-inner">
+                  <span className="font-black text-amber-300">{currentPage}</span>
+                  <span className="text-gray-600 text-[10px]">/</span>
+                  <span className="text-gray-400 font-bold">{totalPages}</span>
                 </div>
-                <button onClick={nextPage} disabled={currentPage === totalPages} className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-amber-600 to-amber-800 text-white rounded-xl disabled:opacity-20 transition-all active:scale-95 text-[10px] font-bold shadow-lg shadow-amber-900/20">
-                  Next <ChevronRight size={14} />
+
+                <button 
+                  onClick={nextPage} 
+                  disabled={currentPage === totalPages} 
+                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-black rounded-2xl disabled:opacity-20 transition-all active:scale-95 text-[10.5px] cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.3)] border border-amber-300/40"
+                >
+                  Next <ChevronRight size={14} className="stroke-[3]" />
                 </button>
               </div>
             </div>
@@ -1424,7 +1825,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                   <div className="flex justify-between items-center border-b border-white/5 pb-3 shrink-0 z-10">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-                      <span className="text-xs font-bold text-white">천명 도슨트 감동 해설</span>
+                      <span className="text-xs font-bold text-white">명심 AI 코치 상세코칭</span>
                     </div>
                     <button onClick={() => setSelectedItem(null)} className="p-1.5 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors">
                       <X size={16} />
@@ -1596,9 +1997,22 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
 
                   <div className="flex-1 overflow-y-auto py-3 space-y-3.5 z-10 scrollbar-thin scrollbar-thumb-amber-500/20 scrollbar-track-transparent">
                     {(() => {
-                      let cInfo = CONCEPT_GUIDE_DATA[showConceptHelp];
+                      let key = showConceptHelp;
+                      if (showConceptHelp?.includes('1ST HALF')) key = '1ST HALF';
+                      if (showConceptHelp?.includes('2ND HALF')) key = '2ND HALF';
+                      let cInfo = CONCEPT_GUIDE_DATA[key];
                       if (cInfo) {
-                        if (showConceptHelp === '다크코드') {
+                        if (key === '1ST HALF') {
+                          cInfo = {
+                            ...cInfo,
+                            title: `1ST HALF (~ ${turningYear}년) : 갈등 수용과 자각 축적기`,
+                          };
+                        } else if (key === '2ND HALF') {
+                          cInfo = {
+                            ...cInfo,
+                            title: `2ND HALF (${turningYear}년 ~) : 자비 반조와 천명 만개기`,
+                          };
+                        } else if (showConceptHelp === '다크코드') {
                           cInfo = {
                             ...cInfo,
                             desc: cInfo.desc.replace(/75%/g, `${activeDarkScore}%`)
@@ -1698,7 +2112,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                   </p>
                                 </div>
                               </div>
-                            ) : (showConceptHelp === '1ST HALF (~ 2032년)' || showConceptHelp === '2ND HALF (2032년 ~)') ? (
+                            ) : (showConceptHelp?.includes('1ST HALF') || showConceptHelp?.includes('2ND HALF')) ? (
                               <div className="space-y-3.5">
                                 <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
                                   <span className="text-white font-extrabold block">🌱 은유적 비유</span>
@@ -1795,7 +2209,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                           const color = timelineTab === 'wealth' ? '#F59E0B' : timelineTab === 'love' ? '#EC4899' : '#0EA5E9';
 
                                           return (
-                                            <g key={d.year} className="cursor-pointer" onClick={() => setSelectedYear(d.year)}>
+                                            <g key={d.year} className="cursor-pointer" onClick={() => { setSelectedYear(d.year); setShowYearDetailModal(true); }}>
                                               <circle cx={x} cy={y} r={isSelected ? 5.5 : 3.5} fill={isSelected ? '#FFFFFF' : color} stroke={color} strokeWidth={isSelected ? 3 : 1} className="transition-all" />
                                               <text x={x} y="107" fill={isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.3)'} fontSize="7" fontWeight={isSelected ? 'bold' : 'normal'} textAnchor="middle" className="font-mono">
                                                 {d.year}
@@ -1856,10 +2270,20 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                     })()}
                   </div>
 
-                  <div className="pt-2 shrink-0 z-10">
+                  <div className="pt-2 shrink-0 z-10 space-y-2">
+                    <button
+                      onClick={() => {
+                        setShowConceptHelp(null);
+                        setShowMicroPassModal(true);
+                      }}
+                      className="w-full py-2.5 px-3 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] border border-amber-300/40"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                      <span>🔮 내 라이프 주기로 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                    </button>
                     <button
                       onClick={() => setShowConceptHelp(null)}
-                      className="w-full py-2 bg-gradient-to-r from-amber-700 to-indigo-900 hover:from-amber-600 hover:to-indigo-800 text-white font-bold text-xs rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-1"
+                      className="w-full py-2 bg-gradient-to-r from-slate-900 to-indigo-950 hover:from-slate-800 hover:to-indigo-900 text-amber-200 border border-amber-500/30 font-bold text-xs rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-1 cursor-pointer shadow"
                     >
                       <span>자각 완료</span>
                       <span>↩️</span>
@@ -2174,10 +2598,165 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
       </div>
     </AnimatePresence>
 
+    {/* 📊 연도별 3대 운세 상세 감동 분석 모달 팝업 */}
+    {typeof window !== 'undefined' && createPortal(
+      <AnimatePresence>
+        {showYearDetailModal && (
+          <div className="fixed inset-0 z-[30000] flex justify-center items-center bg-black/85 backdrop-blur-sm p-4 overflow-hidden">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+              className="w-full max-w-sm max-h-[85vh] bg-[#06060c] border border-amber-500/40 rounded-[28px] shadow-[0_0_40px_rgba(245,158,11,0.25)] flex flex-col relative overflow-hidden text-left p-5 text-white"
+            >
+              {/* 은은한 네온 성운 효과 */}
+              <div className="absolute top-[-10%] left-[-15%] w-[250px] h-[250px] bg-amber-500/5 rounded-full blur-[80px] pointer-events-none" />
+              
+              {/* 상단 헤더 */}
+              <div className="flex justify-between items-center border-b border-white/5 pb-3 shrink-0 z-10">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <Sparkles className="w-4 h-4 text-amber-400 animate-pulse shrink-0" />
+                  <span className="text-[11px] font-black text-amber-200 truncate">
+                    🌌 {selectedYear}년 {data?.userName || '명심가'}님 사주 맞춤 오행 분석
+                  </span>
+                </div>
+                <button 
+                  onClick={() => setShowYearDetailModal(false)} 
+                  className="p-1 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors shrink-0"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
+              {/* 사주 원국 명시 뱃지 */}
+              <div className="bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-xl my-2 shrink-0 flex items-center gap-1.5">
+                <span className="text-xs">🧬</span>
+                <p className="text-[8.5px] text-amber-300 font-bold truncate">
+                  {data?.userName || '명심가'}님의 생년월일 사주 원국({data?.saju?.fourPillars?.day?.gan || '신'}금 일간) & {selectedYear}년 세운 결합
+                </p>
+              </div>
+
+              {/* 스크롤 설명 본문 */}
+              <div className="flex-1 overflow-y-auto py-2 space-y-4 z-10 scrollbar-thin scrollbar-thumb-amber-500/20 scrollbar-track-transparent">
+                {(() => {
+                  const activeInfo = timelineData.find(d => d.year === selectedYear);
+                  if (!activeInfo) return <p className="text-xs text-gray-400">데이터가 없습니다.</p>;
+                  const analyses = getYearDetailAnalyses(selectedYear, activeInfo);
+
+                  return (
+                    <div className="space-y-4 font-sans">
+                      {/* 1. 3대 지표 점수 현황 */}
+                      <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-3.5 space-y-2.5">
+                        <span className="text-[9.5px] font-extrabold text-amber-400/90 block">📊 {selectedYear}년 3대 기운 주파수</span>
+                        <div className="space-y-2 text-[9px]">
+                          {/* 재물 */}
+                          <div className="space-y-1">
+                            <div className="flex justify-between font-bold text-gray-300">
+                              <span>💰 재물 주파수</span>
+                              <span className="text-amber-400">{activeInfo.wealth}점</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                              <div className="h-full bg-amber-500 rounded-full" style={{ width: `${activeInfo.wealth}%` }} />
+                            </div>
+                          </div>
+                          {/* 연애 */}
+                          <div className="space-y-1">
+                            <div className="flex justify-between font-bold text-gray-300">
+                              <span>❤️ 연애·인연 주파수</span>
+                              <span className="text-pink-400">{activeInfo.love}점</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                              <div className="h-full bg-pink-500 rounded-full" style={{ width: `${activeInfo.love}%` }} />
+                            </div>
+                          </div>
+                          {/* 사업 */}
+                          <div className="space-y-1">
+                            <div className="flex justify-between font-bold text-gray-300">
+                              <span>💼 사업·직업 주파수</span>
+                              <span className="text-sky-400">{activeInfo.work}점</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                              <div className="h-full bg-sky-500 rounded-full" style={{ width: `${activeInfo.work}%` }} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 2. 오행 비유법 해설 목록 */}
+                      <div className="space-y-3.5 text-[9px] leading-relaxed">
+                        {/* 재물 상세 */}
+                        <div className="bg-[#120b05]/95 border border-amber-500/20 p-3.5 rounded-2xl space-y-1.5">
+                          <span className="text-amber-400 font-extrabold flex items-center gap-1">
+                            💰 재정적 풍요와 상생의 기류
+                          </span>
+                          <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
+                            {analyses.wealthTxt}
+                          </p>
+                        </div>
+
+                        {/* 연애 상세 */}
+                        <div className="bg-[#160610]/95 border border-pink-500/20 p-3.5 rounded-2xl space-y-1.5">
+                          <span className="text-pink-400 font-extrabold flex items-center gap-1">
+                            ❤️ 관계와 우주적 인연의 등불
+                          </span>
+                          <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
+                            {analyses.loveTxt}
+                          </p>
+                        </div>
+
+                        {/* 사업 상세 */}
+                        <div className="bg-[#060c16]/95 border border-sky-500/20 p-3.5 rounded-2xl space-y-1.5">
+                          <span className="text-sky-400 font-extrabold flex items-center gap-1">
+                            💼 천명 비즈니스와 영향력의 확장
+                          </span>
+                          <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
+                            {analyses.workTxt}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* 하단 890원 AI 코칭 CTA & 닫기 */}
+              <div className="pt-2 shrink-0 z-10 border-t border-white/5 space-y-2">
+                <button
+                  onClick={() => {
+                    setShowYearDetailModal(false);
+                    setShowMicroPassModal(true);
+                  }}
+                  className="w-full py-2.5 px-3 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] border border-amber-300/40"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                  <span>🔮 {selectedYear}년 사주 맞춤 1:1 심층 AI 코칭 (🔒 890원) ➔</span>
+                </button>
+                <button
+                  onClick={() => setShowYearDetailModal(false)}
+                  className="w-full py-2 bg-gradient-to-r from-slate-900 to-indigo-950 hover:from-slate-800 hover:to-indigo-900 text-amber-200 border border-amber-500/30 font-bold text-xs rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-1 cursor-pointer shadow"
+                >
+                  <span>우주 자각 완료</span>
+                  <span>✨</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>,
+      document.body
+    )}
+
     <MyeongliTermModal 
       isOpen={showMyeongliModal} 
       onClose={() => setShowMyeongliModal(false)} 
       term={selectedMyeongliTerm} 
+    />
+
+    <MicroPassModal
+      isOpen={showMicroPassModal}
+      onClose={() => setShowMicroPassModal(false)}
+      userSajuData={data}
     />
     </>
   );

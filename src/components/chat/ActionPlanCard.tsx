@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Check, Clock, Sparkles, ChevronDown, ChevronUp, Calendar, Target } from 'lucide-react';
+import { Check, Clock, Sparkles, ChevronDown, ChevronUp, Calendar, Target, Award } from 'lucide-react';
 import { AccountabilityService } from '@/modules/AccountabilityService';
+import confetti from 'canvas-confetti';
 
 interface MissionStep {
     day: string; // "1일차"
@@ -27,9 +28,17 @@ const ActionPlanCard: React.FC<ActionPlanCardProps> = ({ plan }) => {
     };
 
     const toggleComplete = (idx: number) => {
-        setCompletedSteps(prev =>
-            prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
-        );
+        setCompletedSteps(prev => {
+            const isCurrentlyCompleted = prev.includes(idx);
+            if (!isCurrentlyCompleted) {
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+            }
+            return isCurrentlyCompleted ? prev.filter(i => i !== idx) : [...prev, idx];
+        });
     };
 
     if (!plan || plan.length === 0) return null;

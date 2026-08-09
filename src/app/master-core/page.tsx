@@ -17,15 +17,17 @@ interface ModuleType {
   path: string;
 }
 
-const modules: ModuleType[] = [
+const modules = [
   {
     key: 'mental',
     title: '지친 마음 위로하기 (마음 다독임)',
     subtitle: '64코어 기반 내면 심리 치유',
     desc: '64가지 내면의 지도에서 지금 나를 흔들리게 하는 불안을 해소하고 평온을 찾습니다.',
     icon: '🌸',
-    gradient: 'from-pink-500/20 to-rose-500/10 border-pink-500/30 text-pink-400',
-    color: '#f472b6',
+    titleGradient: 'text-transparent bg-clip-text bg-gradient-to-r from-pink-200 via-rose-300 to-pink-400',
+    borderStyle: 'border-pink-500/40',
+    iconBg: 'bg-pink-500/20 border-pink-500/40 text-pink-300 shadow-[0_0_15px_rgba(244,114,182,0.3)]',
+    badgeStyle: 'bg-pink-500/20 text-pink-300 border border-pink-500/40',
     path: '/master-core/mental'
   },
   {
@@ -34,8 +36,10 @@ const modules: ModuleType[] = [
     subtitle: '상생과 공헌의 방향성 발견',
     desc: '내 재능이 세상과 만나 어떻게 아름다운 열매를 맺을 수 있는지 그 길을 발견합니다.',
     icon: '🌏',
-    gradient: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
-    color: '#60a5fa',
+    titleGradient: 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-teal-300 to-blue-400',
+    borderStyle: 'border-cyan-500/40',
+    iconBg: 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)]',
+    badgeStyle: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40',
     path: '/master-core/value'
   },
   {
@@ -44,8 +48,10 @@ const modules: ModuleType[] = [
     subtitle: '주객의 경계를 허무는 의식 자각',
     desc: '육체적 통증과 생각의 연결고리를 끊고, 나와 온 세상을 동시에 바라보는 깊은 평온을 누립니다.',
     icon: '👁️',
-    gradient: 'from-violet-500/20 to-fuchsia-500/10 border-violet-500/30 text-violet-400',
-    color: '#a855f7',
+    titleGradient: 'text-transparent bg-clip-text bg-gradient-to-r from-violet-200 via-purple-300 to-fuchsia-400',
+    borderStyle: 'border-violet-500/40',
+    iconBg: 'bg-violet-500/20 border-violet-500/40 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.3)]',
+    badgeStyle: 'bg-violet-500/20 text-violet-300 border border-violet-500/40',
     path: '/master-core/step-back'
   },
   {
@@ -54,8 +60,10 @@ const modules: ModuleType[] = [
     subtitle: '고정관념을 뛰어넘는 의식 확장',
     desc: '고정관념의 틀에서 벗어나 4차원의 넓은 시선으로 인생의 문제를 훌쩍 뛰어넘습니다.',
     icon: '🌌',
-    gradient: 'from-purple-500/20 to-indigo-500/10 border-purple-500/30 text-purple-400',
-    color: '#c084fc',
+    titleGradient: 'text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-indigo-300 to-purple-400',
+    borderStyle: 'border-purple-500/40',
+    iconBg: 'bg-purple-500/20 border-purple-500/40 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)]',
+    badgeStyle: 'bg-purple-500/20 text-purple-300 border border-purple-500/40',
     path: '/master-core/matrix'
   },
   {
@@ -64,8 +72,10 @@ const modules: ModuleType[] = [
     subtitle: '감정과 생체 에너지의 흐름 튜닝',
     desc: '내 안의 여러 감정과 에너지가 서로 부딪히지 않고 부드럽게 흐르도록 균형을 잡아줍니다.',
     icon: '⚙️',
-    gradient: 'from-amber-500/20 to-orange-500/10 border-amber-500/30 text-amber-400',
-    color: '#fbbf24',
+    titleGradient: 'text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-orange-400',
+    borderStyle: 'border-amber-500/40',
+    iconBg: 'bg-amber-500/20 border-amber-500/40 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)]',
+    badgeStyle: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
     path: '/master-core/cafe'
   }
 ];
@@ -225,31 +235,37 @@ export default function MasterCoreLandingPage() {
           </motion.p>
         </div>
 
-        {/* 5 Cards Layout */}
-        <div className="flex-1 flex flex-col justify-center gap-4 w-full max-w-md mx-auto my-6">
+        {/* 5 Cards Layout (UX/UI 3D Glassmorphism & High-Contrast Overhaul) */}
+        <div className="flex-1 flex flex-col justify-center gap-4.5 w-full max-w-md mx-auto my-6">
           {modules.map((mod, idx) => (
             <motion.button
               key={mod.key}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1, duration: 0.5 }}
-              whileHover={{ scale: 1.015 }}
-              whileTap={{ scale: 0.985 }}
-              onClick={() => handleModuleClick(mod)}
-              className={`relative overflow-hidden rounded-2xl border text-left p-5 flex items-center gap-4 bg-[#0F1424]/40 hover:bg-[#141A30]/60 backdrop-blur-md transition-all duration-300 border-white/5 hover:border-white/15`}
+              whileHover={{ scale: 1.02, x: 4 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleModuleClick(mod as any)}
+              className={`relative overflow-hidden rounded-3xl border text-left p-5 flex items-center gap-4 bg-slate-950/80 hover:bg-slate-900/95 backdrop-blur-xl transition-all duration-300 ${mod.borderStyle} shadow-[0_4px_25px_rgba(0,0,0,0.5)] hover:shadow-[0_0_35px_rgba(245,158,11,0.2)] group cursor-pointer`}
             >
-              {/* Outer Glow Effect on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-1000"></div>
+              {/* Shimmer Light Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
               
-              <div className="text-3xl flex-shrink-0 select-none bg-white/5 p-3 rounded-xl border border-white/5">
+              <div className={`text-3xl flex-shrink-0 select-none p-3.5 rounded-2xl border ${mod.iconBg} group-hover:scale-110 transition-transform duration-300`}>
                 {mod.icon}
               </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-indigo-300 font-mono tracking-wide uppercase opacity-75">{mod.subtitle}</span>
-                <h3 className="text-base font-extrabold text-white mt-0.5 tracking-tight">{mod.title}</h3>
-                <p className="text-[11px] text-gray-400 leading-normal mt-1 break-keep truncate-2-lines">{mod.desc}</p>
+              <div className="flex-1 min-w-0 space-y-1">
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase font-mono tracking-wider ${mod.badgeStyle}`}>
+                  {mod.subtitle}
+                </span>
+                <h3 className={`text-base font-black tracking-tight ${mod.titleGradient}`}>
+                  {mod.title}
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed break-keep font-medium opacity-90">
+                  {mod.desc}
+                </p>
               </div>
-              <div className="flex-shrink-0 text-white/40">
+              <div className="flex-shrink-0 p-2.5 rounded-full bg-white/5 border border-white/10 text-slate-400 group-hover:text-amber-300 group-hover:translate-x-1 group-hover:bg-amber-500/20 group-hover:border-amber-500/40 transition-all duration-300 shadow-md">
                 <ArrowRight size={18} />
               </div>
             </motion.button>

@@ -252,6 +252,8 @@ export function analyzeDailyHarmony(
   };
 }
 
+export const getDailyHarmony = analyzeDailyHarmony;
+
 /**
  * 바이오리듬 계산 (신체: 23일, 감정: 28일, 지성: 33일 주기)
  */

@@ -163,7 +163,7 @@ export default function GeniusReportModal({ isOpen, onClose, userProfile }: Geni
             <span className="text-2xl p-2 bg-indigo-500/10 border border-indigo-500/30 rounded-xl">🧬</span>
             <div>
               <h2 className="text-lg font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-purple-200">
-                천부 성정 (Genius) 리포트
+                명심 천부 성정 리포트
               </h2>
               <p className="text-[10px] text-indigo-300 font-semibold font-mono tracking-wider uppercase">
                 Myeongsim OS / Traditional Saju & Cognitive Science Sync
@@ -247,7 +247,7 @@ export default function GeniusReportModal({ isOpen, onClose, userProfile }: Geni
                   <div className="bg-indigo-900/30 border border-indigo-500/30 rounded-2xl p-4 flex gap-3">
                     <div className="text-xl flex-shrink-0">💡</div>
                     <div>
-                      <h4 className="text-xs font-extrabold text-indigo-200 mb-1">{HELP_DETAILS[activeTab].title} 도슨트 가이드</h4>
+                      <h4 className="text-xs font-extrabold text-indigo-200 mb-1">{HELP_DETAILS[activeTab].title} 명심 AI 코치 가이드</h4>
                       <p className="text-[11px] text-indigo-300/90 leading-relaxed break-keep">
                         {HELP_DETAILS[activeTab].desc}
                       </p>
@@ -491,7 +491,7 @@ export default function GeniusReportModal({ isOpen, onClose, userProfile }: Geni
                 }}
                 className="flex-[2] py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-extrabold shadow-lg shadow-indigo-500/25 transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95"
               >
-                <span>{showHelp ? '해설 도슨트 끄기' : '초보자 해설 도슨트'}</span>
+                <span>{showHelp ? '명심 AI 코치 끄기' : '명심 AI 코치 가이드'}</span>
                 <BookOpen size={14} />
               </button>
             </footer>

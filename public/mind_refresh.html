@@ -112,15 +112,26 @@
     </div>
 
     <!-- 네비게이션 헤더 -->
-    <header class="border-b border-zinc-800 bg-zinc-950/60 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+    <header class="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-3">
                 <div class="p-1.5 bg-violet-950/50 rounded-lg border border-violet-900/40">
                     <i data-lucide="sparkles" class="w-5 h-5 text-violet-400"></i>
                 </div>
                 <div>
-                    <h1 class="text-sm font-bold tracking-wider text-zinc-200 serif-font">명심코칭 <span class="font-normal text-zinc-500">| 알아차림의 거울</span></h1>
+                    <h1 class="text-sm font-bold tracking-wider text-zinc-200 serif-font flex items-center gap-2">
+                        명심코칭 <span class="font-normal text-zinc-500">| 알아차림의 거울</span>
+                        <span class="text-[10px] text-amber-300 font-mono bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/30">📜 3세대 심리의학 융합</span>
+                    </h1>
                 </div>
+            </div>
+
+            {/* 432Hz Audio Toggle & Science Badges */}
+            <div class="flex items-center gap-2">
+                <button id="bgm-btn" onclick="toggle432HzAudio()" class="px-3 py-1 rounded-xl text-xs font-bold bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 transition flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="music" class="w-3.5 h-3.5"></i>
+                    <span id="bgm-txt">🎵 432Hz 힐링음</span>
+                </button>
             </div>
             
             <nav class="flex flex-wrap gap-1.5 justify-center">
@@ -130,9 +141,9 @@
                 <button onclick="switchTab('course-c')" id="tab-course-c" class="tab-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition">108 생각 해체</button>
                 <button onclick="switchTab('course-d')" id="tab-course-d" class="tab-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition">108 감정 해체</button>
                 <button onclick="switchTab('course-e')" id="tab-course-e" class="tab-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition">108 느낌 해체</button>
-                <button onclick="switchTab('alchemy')" id="tab-alchemy" class="tab-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition">명심 연금술</button>
+                <button onclick="switchTab('alchemy')" id="tab-alchemy" class="tab-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition">뉴럴 바이오 밸런싱</button>
                 <button onclick="switchTab('pond')" id="tab-pond" class="tab-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition">마음 연못</button>
-                <button onclick="switchTab('chat')" id="tab-chat" class="tab-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition">명심 선문답</button>
+                <button onclick="switchTab('chat')" id="tab-chat" class="tab-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition">1:1 메타인지 솔루션</button>
             </nav>
         </div>
     </header>
@@ -148,7 +159,7 @@
                 </div>
                 <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-100 serif-font tracking-tight">자각의 거울방에 오신 것을 환영합니다.</h2>
                 <p class="text-zinc-400 text-xs md:text-sm leading-relaxed">
-                    몸, 생각, 감정, 그리고 감촉적 느낌의 집착을 통째로 해체하여 본래의 맑은 주체(참나)를 발견해 보세요.
+                    몸, 생각, 감정, 그리고 감촉적 느낌의 집착을 통째로 해체하여 본래의 맑은 메타인지 관찰자(Meta-Cognitive Self)를 발견해 보세요.
                 </p>
             </div>
 
@@ -166,7 +177,7 @@
                                 <span class="text-[9px] bg-emerald-900/30 text-emerald-400 px-1.5 py-0.5 rounded font-bold border border-emerald-800/30 whitespace-nowrap">통합 자각</span>
                             </div>
                             <p class="text-[10px] text-zinc-400 leading-relaxed">
-                                몸, 생각, 감정, 감각의 무거운 짐을 깊게 고백하고 내려놓아 AI 자각 인증서를 수여받는 코스
+                                몸, 생각, 감정, 감각의 무거운 짐을 깊게 고백하고 내려놓아 AI 메타인지 자각 인증서를 수여받는 코스
                             </p>
                         </div>
                     </div>
@@ -181,10 +192,10 @@
                         <div class="space-y-1">
                             <div class="flex items-center justify-between gap-2">
                                 <h3 class="font-bold text-zinc-100 text-xs serif-font group-hover:text-violet-300 transition">코스 B: 108 몸 해체</h3>
-                                <span class="text-[9px] bg-violet-900/30 text-violet-400 px-1.5 py-0.5 rounded font-bold border border-violet-800/30 whitespace-nowrap">몸뚱이 타파</span>
+                                <span class="text-[9px] bg-violet-900/30 text-violet-400 px-1.5 py-0.5 rounded font-bold border border-violet-800/30 whitespace-nowrap">신체 실체성 탈융합</span>
                             </div>
                             <p class="text-[10px] text-zinc-400 leading-relaxed">
-                                머리카락부터 우주 공간의 상대성까지, 108가지 실생활 예시에 나를 대입하며 몸이 허상임을 자각하는 특별 훈련
+                                머리카락부터 우주 공간의 상대성까지, 108가지 실생활 예시에 나를 대입하며 몸이 뇌 일루전 객체(Neural Illusion)임을 자각하는 특별 훈련
                             </p>
                         </div>
                     </div>
@@ -199,10 +210,10 @@
                         <div class="space-y-1">
                             <div class="flex items-center justify-between gap-2">
                                 <h3 class="font-bold text-zinc-100 text-xs serif-font group-hover:text-violet-300 transition">코스 C: 108 생각 해체</h3>
-                                <span class="text-[9px] bg-amber-900/30 text-amber-400 px-1.5 py-0.5 rounded font-bold border border-amber-800/30 whitespace-nowrap">망상 타파</span>
+                                <span class="text-[9px] bg-amber-900/30 text-amber-400 px-1.5 py-0.5 rounded font-bold border border-amber-800/30 whitespace-nowrap">인지 왜곡 탈융합</span>
                             </div>
                             <p class="text-[10px] text-zinc-400 leading-relaxed">
-                                나라는 신념부터 우주의 인과성까지, 108가지 생각의 환상을 벗겨내며 생각이 원래 내 것이 아님을 자각하는 고강도 집중
+                                나라는 신념부터 우주의 인과성까지, 108가지 자동적 사고 소음을 벗겨내며 생각이 원래 내 것이 아님을 자각하는 고강도 집중
                             </p>
                         </div>
                     </div>
@@ -217,10 +228,10 @@
                         <div class="space-y-1">
                             <div class="flex items-center justify-between gap-2">
                                 <h3 class="font-bold text-zinc-100 text-xs serif-font group-hover:text-violet-300 transition">코스 D: 108 감정 해체</h3>
-                                <span class="text-[9px] bg-rose-900/30 text-rose-400 px-1.5 py-0.5 rounded font-bold border border-rose-800/30 whitespace-nowrap">정동 타파</span>
+                                <span class="text-[9px] bg-rose-900/30 text-rose-400 px-1.5 py-0.5 rounded font-bold border border-rose-800/30 whitespace-nowrap">감정 요동 탈융합</span>
                             </div>
                             <p class="text-[10px] text-zinc-400 leading-relaxed">
-                                슬픔과 분노, 기쁨의 요동침까지 일어나는 모든 마음의 파도가 본래 맑은 바다(자성)의 묘용일 뿐임을 자각하는 감정 관조
+                                슬픔과 분노, 기쁨의 요동침까지 일어나는 모든 마음의 파도가 메타인지 본래 회로의 뇌 신경가소성 반응일 뿐임을 자각하는 감정 관조
                             </p>
                         </div>
                     </div>
@@ -2067,6 +2078,58 @@
             document.body.removeChild(tempTextArea);
             
             showToast("✨ 리포트 원문이 스마트폰 클립보드에 무사히 소장되었습니다.");
+        }
+
+        // ==========================================
+        // Web Audio API 432Hz 힐링 명상음 합성기
+        // ==========================================
+        let audioCtx = null;
+        let osc = null;
+        let is432Playing = false;
+
+        function toggle432HzAudio() {
+            const btn = document.getElementById('bgm-btn');
+            const txt = document.getElementById('bgm-txt');
+
+            if (is432Playing) {
+                if (osc) {
+                    try { osc.stop(); } catch(e){}
+                    osc = null;
+                }
+                if (audioCtx) {
+                    try { audioCtx.close(); } catch(e){}
+                    audioCtx = null;
+                }
+                is432Playing = false;
+                if (btn) btn.className = "px-3 py-1 rounded-xl text-xs font-bold bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 transition flex items-center gap-1.5 cursor-pointer";
+                if (txt) txt.innerText = "🎵 432Hz 힐링음";
+                showToast("🎵 432Hz 명상 음원이 정지되었습니다.");
+                return;
+            }
+
+            try {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContextClass();
+                
+                osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(432, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                is432Playing = true;
+                if (btn) btn.className = "px-3 py-1 rounded-xl text-xs font-black bg-amber-400 text-slate-950 border border-amber-300 transition flex items-center gap-1.5 cursor-pointer animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.5)]";
+                if (txt) txt.innerText = "🎵 432Hz 켜짐";
+                showToast("✨ 432Hz 순수 평온 명상음이 실시간 합성 재생됩니다.");
+            } catch (e) {
+                console.error('[432Hz Error]', e);
+                showToast("⚠️ 브라우저 오디오 오리진 문제로 재생할 수 없습니다.");
+            }
         }
 
         // ==========================================

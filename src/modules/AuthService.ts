@@ -98,16 +98,14 @@ export class AuthService {
                 };
             }
 
-            // 3. If new user, create account
+            // 3. If new user, create account (Wait for Admin Approval)
             const { data: newUser, error: insertError } = await supabase
                 .from('users')
                 .insert({
                     phone_hash: phoneHash,
                     deep_scan_completed: false,
                     membership_tier: tier,
-                    expires_at: tier === 'PASS'
-                        ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24시간
-                        : null // [Revert] Wait for Admin Approval
+                    expires_at: null // Must be approved by Admin or Payment Gateway
                 })
                 .select()
                 .single();
@@ -152,17 +150,14 @@ export class AuthService {
 
             const phoneHash = await this.hashPhoneNumber(cleanPhone);
 
-            // Update or Create the user record
+            // Update or Create the user record (Wait for Admin Approval)
             const { error } = await supabase
                 .from('users')
                 .upsert({
                     id: userId, // Ensure we link to the Auth ID
                     phone_hash: phoneHash,
                     membership_tier: tier,
-                    // [Revert] Wait for Admin Approval
-                    expires_at: tier === 'PASS'
-                        ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-                        : null
+                    expires_at: null // Must be approved by Admin or Payment Gateway
                 })
                 .select();
 
@@ -187,18 +182,18 @@ export class AuthService {
      */
     static async loginWithGoogle() {
         try {
-            const isDevelopment = process.env.NODE_ENV === 'development';
-            const redirectUrl = isDevelopment
-                ? 'http://localhost:3000/auth/callback'
-                : 'https://myeongsim-report.vercel.app/auth/callback';
+            const redirectUrl = typeof window !== 'undefined'
+                ? `${window.location.origin}/auth/callback`
+                : (process.env.NODE_ENV === 'development'
+                    ? 'http://localhost:3000/auth/callback'
+                    : 'https://myeongsimcoaching.com/auth/callback');
 
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
                     redirectTo: redirectUrl,
                     queryParams: {
-                        access_type: 'offline',
-                        prompt: 'consent',
+                        prompt: 'select_account',
                     },
                 },
             });

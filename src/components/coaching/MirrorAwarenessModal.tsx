@@ -303,7 +303,7 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
               <h2 className="text-base font-bold bg-gradient-to-r from-slate-200 via-emerald-200 to-purple-200 bg-clip-text text-transparent">
                 알아차림의 거울
               </h2>
-              <p className="text-[10px] text-slate-400">참나 자각 & 객체 해체</p>
+              <p className="text-[10px] text-slate-400">메타인지 관찰자 자각 & 객체 탈융합</p>
             </div>
           </div>
           <button 
@@ -336,7 +336,7 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
                   자각의 거울방에 오신 것을 환영합니다.
                 </p>
                 <p className="text-xs text-slate-400">
-                  몸과 마음의 집착을 비워내고 참다운 '주체'를 발견해 보세요.
+                  몸과 마음의 집착을 비워내고 참다운 메타인지 관찰자(Meta-Cognitive Self)를 발견해 보세요.
                 </p>
               </div>
 
@@ -356,7 +356,7 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
                       <span className="text-[9px] bg-emerald-500/10 text-emerald-300 px-1.5 py-0.5 rounded-full font-bold">통합 성찰</span>
                     </div>
                     <p className="text-[10px] text-slate-400 leading-normal">
-                      몸, 생각, 감정, 감각의 무거운 짐을 깊게 고백하고 내려놓아 최종적으로 AI 자각 인증서를 수여받는 코스
+                      몸, 생각, 감정, 감각의 무거운 짐을 깊게 고백하고 내려놓아 최종적으로 AI 메타인지 자각 인증서를 수여받는 코스
                     </p>
                   </div>
                 </button>
@@ -378,7 +378,7 @@ export default function MirrorAwarenessModal({ isOpen, onClose, userProfile }: M
                       <span className="text-[9px] bg-purple-500/10 text-purple-300 px-1.5 py-0.5 rounded-full font-bold">초고도 집중</span>
                     </div>
                     <p className="text-[10px] text-slate-400 leading-normal">
-                      머리카락부터 우주 공간의 상대성까지, 108가지 실생활 예시에 나를 대입하며 몸이 허상임을 온전히 자각하는 특별 훈련
+                      머리카락부터 우주 공간의 상대성까지, 108가지 실생활 예시에 나를 대입하며 몸이 뇌 일루전 객체(Neural Illusion)임을 자각하는 특별 훈련
                     </p>
                   </div>
                 </button>

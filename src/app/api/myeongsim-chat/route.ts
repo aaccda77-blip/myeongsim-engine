@@ -1,157 +1,204 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { streamText, tool } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { z } from 'zod';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Solar, Lunar } from 'lunar-javascript';
-
-// 환경 변수 안내 (.env.local에 추가 필요):
-// NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-// SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-// GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
+import { optionalAuth } from '@/lib/auth';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const google = createGoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || '',
-});
-
 export async function POST(req: NextRequest) {
     try {
-        const { messages, userId } = await req.json();
+        const { messages, userId: clientUserId, sessionId, sajuData: clientSajuData } = await req.json();
 
-        // 기본 명심코칭 시스템 프롬프트 (데이터 오류/미입력 시 대체용 Fallback)
-        let systemInstruction = `너는 사주 명리와 현대 심리학, 뇌과학을 결합한 '명심코칭'의 AI 코치야. 뻔한 위로가 아닌 현실적이고 뾰족한 맞춤형 코칭을 제공해.`;
+        // [SECURITY] Server-side Auth Check
+        const authResult = await optionalAuth(req);
+        // If authenticated, trust server's userId. Otherwise, fallback to client's (guest) id.
+        const effectiveUserId = authResult.userId || clientUserId;
 
-        // 1. Supabase에서 유저 데이터 조회
-        if (userId) {
-            const { data: userData, error } = await supabase
-                .from('user_onboarding_data')
-                .select('*')
-                .eq('id', userId)
-                .single();
+        const apiKey = process.env.GEMINI_API_KEY || 
+                       process.env.GOOGLE_GENERATIVE_AI_API_KEY || 
+                       process.env.GOOGLE_GEMINI_API_KEY || 
+                       process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
 
-            if (!error && userData) {
-                // 2. 사주(만세력) 명식 정확한 계산 (lunar-javascript 활용)
-                let sajuString = '계산 불가';
-                if (userData.birth_date && userData.birth_time) {
-                    try {
-                        const [year, month, day] = userData.birth_date.split('-').map(Number);
-                        const [hour, minute] = userData.birth_time.split(':').map(Number);
-                        
-                        let lunarDate;
-                        if (userData.calendar_type === 'lunar') {
-                            lunarDate = Lunar.fromYmdHms(year, month, day, hour, minute, 0);
-                        } else {
-                            const solarDate = Solar.fromYmdHms(year, month, day, hour, minute, 0);
-                            lunarDate = solarDate.getLunar();
-                        }
-                        
-                        const bazi = lunarDate.getEightChar();
-                        sajuString = `${bazi.getYearGan()}${bazi.getYearZhi()} ${bazi.getMonthGan()}${bazi.getMonthZhi()} ${bazi.getDayGan()}${bazi.getDayZhi()} ${bazi.getTimeGan()}${bazi.getTimeZhi()}`;
-                    } catch (e) {
-                        console.error('[Myeongsim Chat] Saju calculation error:', e);
-                    }
-                }
-
-                // 3. 동적 시스템 지시문(System Instruction) 생성
-                const birthDate = userData.birth_date || '알 수 없음';
-                const birthTime = userData.birth_time || '알 수 없음';
-                const energyLevel = userData.energy_level !== null && userData.energy_level !== undefined ? userData.energy_level : '알 수 없음';
-                const sleepQuality = userData.sleep_quality !== null && userData.sleep_quality !== undefined ? userData.sleep_quality : '알 수 없음';
-                const currentStressors = (userData.current_stressors && Array.isArray(userData.current_stressors))
-                    ? userData.current_stressors.join(', ')
-                    : '없음';
-                const personality16 = userData.personality_16 || '미입력';
-                const enneagram = userData.enneagram || '미입력';
-
-                systemInstruction = `너는 사주 명리와 현대 심리학, 뇌과학을 결합한 '명심코칭'의 AI 코치야. 
-현재 사용자의 데이터: 
-[생년월일/시간: ${birthDate} ${birthTime}], 
-[100% 확정된 사주 명식(Neural Code): ${sajuString}],
-[에너지 레벨: ${energyLevel}%], 
-[수면 질: ${sleepQuality}/5], 
-[스트레스: ${currentStressors}], 
-[16가지 성격유형: ${personality16}], 
-[애니어그램: ${enneagram}]. 
-
-중요: 위 [100% 확정된 사주 명식(Neural Code)]은 시스템이 명리학 만세력 알고리즘을 통해 천문학적으로 계산해 확정한 완벽한 정답 데이터야. 너는 절대 생년월일로 사주를 다시 계산하거나 자체 추론하려 하지 말고(환각 금지), 이 제공된 8글자 명식(${sajuString})을 사실로 완전히 픽스한 상태에서, 이 명식이 가진 십성/음양오행적 심리 특성을 사용자의 후성유전학적 상태(스트레스 등)와 결합하여 현실적이고 뾰족한 맞춤형 코칭을 제공해.
-
-[사주-지식 융합 답변 설계 알고리즘 (CRITICAL INSTRUCTION)]
-사용자가 물어본 질문이 인생/마음/사주 고민이 아닌 일반적인 기술 지식(예: 코딩, 개발 오류, 과학, 역사, 외국어 번역 등)이나 일상 정보(예: 요리 레시피, 날씨, 점심 메뉴 등)일 경우, 너는 반드시 아래의 투-트랙(Two-Track) 융합 방식으로 응답해야 한다.
-
-1. 트랙 A (지식 채널 - 약 80~85% 분량 비중):
-- 사용자가 물어본 질문에 대해 인공지능으로서 가진 온전하고 상세한 전문 지식을 100% 왜곡 없이 정확하게 설명하고 정답 코드를 제공한다. 정보를 임의로 축소하거나 생략하지 마라.
-2. 트랙 B (명리 융합 채널 - 약 15~20% 분량 비중):
-- 답변의 가장 마지막 문단(혹은 적절하고 자연스러운 문맥의 위치)에 사용자의 사주 정보(${sajuString})와 심리 지표를 활용하여 따뜻하고 지혜로운 피드백을 1~2문장 덧붙인다.
-- 이 지식을 실행하거나 고민을 해결할 때, 사용자의 사주 특성상 빠지기 쉬운 인지적 에러(예: Overthinking, 완벽주의 강박, 감정 번아웃 등)를 짚어주고, 이를 조율할 명심코칭의 마음 디버깅 알고리즘(예: 회광반조, 저항수용, 본질경청 등)을 행동 지침으로 안내한다.
-
-[융합 답변 Few-Shot 예제]
-- 사용자의 질문: "파이썬으로 리스트를 정렬하는 법 알려줘"
-- 인공지능 답변:
-"파이썬에서 리스트를 정렬하려면 sort() 메소드나 sorted() 함수를 사용할 수 있습니다. sort()는 원본 리스트를 직접 변경하고, sorted()는 정렬된 새로운 리스트를 반환합니다. (여기에 일반 지식 코드 예제와 동작 설명 100% 성실하고 완벽하게 서술)
-...
-참, 당신은 정교한 정리를 사랑하는 금(金) 성향의 능숙한 기술자(정재격)이시니 이 완벽한 정렬 문법에서 깊은 편안함을 느끼실 거예요. 다만, 완벽하게 코드를 눈으로만 설계하려고 생각에 갇히지 마시고 1분 안에 일단 코드를 돌려보는 '1분 실행 프로토콜'을 바로 마운트해 보세요! 💻🧭"`;
-            } else {
-                console.warn('[Myeongsim Chat] User onboarding data not found or error fetching:', error?.message);
-            }
-        } else {
-            console.warn('[Myeongsim Chat] No userId provided in request body. Using fallback prompt.');
+        if (!apiKey) {
+            console.error('[Myeongsim Chat] API Key missing');
+            return new Response(JSON.stringify({ error: 'Gemini API 키가 설정되지 않았습니다.' }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
-        // 3. 제미나이 API 연동 및 스트리밍 (Vercel AI SDK)
-        const result = await streamText({
-            model: google('gemini-2.5-flash') as any, // 필요시 gemini-2.5-pro 로 변경
-            system: systemInstruction,
-            messages: messages,
-            maxSteps: 3, // 도구 호출을 위해 maxSteps 추가
-            tools: {
-                calculateSaju: tool({
-                    description: '특정 생년월일시의 사주(만세력) 8글자를 계산합니다. 사용자가 채팅창에서 특정 벼생년월일이나 사주를 물어보면 절대 직접 유추하지 말고 반드시 이 도구를 호출하여 정확한 8글자 명식을 얻은 후 그 결과를 신뢰하여 답변하세요.',
-                    parameters: z.object({
-                        year: z.number().int().describe('태어난 연도 (예: 1980)'),
-                        month: z.number().int().describe('태어난 월 (1-12)'),
-                        day: z.number().int().describe('태어난 일 (1-31)'),
-                        hour: z.number().int().describe('태어난 시간 (0-23, 모르면 12)'),
-                        minute: z.number().int().describe('태어난 분 (0-59, 모르면 0)'),
-                        calendarType: z.enum(['solar', 'lunar']).default('solar').describe('양력(solar)인지 음력(lunar)인지 여부')
-                    }),
-                    execute: async ({ year, month, day, hour, minute, calendarType }) => {
-                        try {
-                            let lunarDate;
-                            if (calendarType === 'lunar') {
-                                lunarDate = Lunar.fromYmdHms(year, month, day, hour, minute, 0);
-                            } else {
-                                const solarDate = Solar.fromYmdHms(year, month, day, hour, minute, 0);
-                                lunarDate = solarDate.getLunar();
-                            }
-                            const bazi = lunarDate.getEightChar();
-                            return {
-                                success: true,
-                                query: `${year}년 ${month}월 ${day}일 ${hour}시 ${minute}분 (${calendarType === 'solar' ? '양력' : '음력'})`,
-                                saju: `${bazi.getYearGan()}${bazi.getYearZhi()} ${bazi.getMonthGan()}${bazi.getMonthZhi()} ${bazi.getDayGan()}${bazi.getDayZhi()} ${bazi.getTimeGan()}${bazi.getTimeZhi()}`,
-                                message: '이 사주 8글자는 천문학적으로 100% 확정된 정답입니다. 이 데이터를 기반으로 코칭을 진행하세요.'
-                            };
-                        } catch (e: any) {
-                            return { success: false, error: e.message };
-                        }
-                    },
-                }),
-            },
+        // 1. 유저 데이터 병합 (Supabase DB + 클라이언트 전달 sajuData)
+        let dbUserData: any = null;
+        if (effectiveUserId && !effectiveUserId.startsWith('guest-')) {
+            try {
+                const { data, error } = await supabase
+                    .from('user_onboarding_data')
+                    .select('*')
+                    .eq('id', effectiveUserId)
+                    .single();
+                if (!error && data) dbUserData = data;
+            } catch (err) {
+                console.error('[Myeongsim Chat] User data fetch error:', err);
+            }
+        }
+
+        const userName = clientSajuData?.userName || dbUserData?.name || '명심가';
+        const birthDate = clientSajuData?.birthDate || dbUserData?.birth_date || '';
+        const birthTime = clientSajuData?.birthTime || dbUserData?.birth_time || '12:00';
+        const calendarType = clientSajuData?.calendarType || dbUserData?.calendar_type || 'solar';
+        const gender = clientSajuData?.gender || dbUserData?.gender || 'female';
+        const energyLevel = dbUserData?.energy_level ?? '80';
+        const sleepQuality = dbUserData?.sleep_quality ?? '4';
+        const currentStressors = Array.isArray(dbUserData?.current_stressors) ? dbUserData.current_stressors.join(', ') : '없음';
+
+        let sajuString = '계산 불가';
+        let dayStem = clientSajuData?.dayMaster || '辛';
+
+        if (birthDate) {
+            try {
+                const cleanDate = birthDate.includes('T') ? birthDate.split('T')[0] : birthDate;
+                const dateParts = cleanDate.split('-').map(Number);
+                if (dateParts.length === 3 && !isNaN(dateParts[0])) {
+                    const [year, month, day] = dateParts;
+                    const timeParts = (birthTime || '12:00').split(':').map(Number);
+                    const hour = timeParts[0] || 12;
+                    const minute = timeParts[1] || 0;
+
+                    let lunarDate;
+                    if (calendarType === 'lunar') {
+                        lunarDate = Lunar.fromYmdHms(year, month, day, hour, minute, 0);
+                    } else {
+                        const solarDate = Solar.fromYmdHms(year, month, day, hour, minute, 0);
+                        lunarDate = solarDate.getLunar();
+                    }
+                    const bazi = lunarDate.getEightChar();
+                    dayStem = bazi.getDayGan();
+                    sajuString = `${bazi.getYearGan()}${bazi.getYearZhi()} ${bazi.getMonthGan()}${bazi.getMonthZhi()} ${bazi.getDayGan()}${bazi.getDayZhi()} ${bazi.getTimeGan()}${bazi.getTimeZhi()}`;
+                }
+            } catch (e) {
+                console.error('[Myeongsim Chat] Saju calculation error:', e);
+            }
+        }
+
+        const currentYear = new Date().getFullYear();
+        const currentGanzhi = '丙午年 (병오년)';
+
+        const systemInstruction = `너는 특허출원중(제10-2025-0166877호) 명심 AI 코치야. 동양 사주 명리와 현대 인지뇌과학, 관조심리학(알아차림의 알아차림 = 제로포인트 메타코드 순수 영점 자각), 그리고 [명심 3S 코칭 프로토콜: 1. Scan(스캔) ➔ 2. Sync(싱크) ➔ 3. Shift(시프트)]을 융합하여 수검자의 영혼을 안아주는 세계 최고의 웰니스 코치다.
+
+[★ 실시간 적용 중인 3세대 임상심리학 8대 과학적 도구 (Clinical Protocols)]
+당신은 동양 명리와 함께 아래 8가지 3세대 임상심리학 과학적 도구를 실시간으로 가동하여 코칭하십시오:
+1. MBCT (마음챙김 인지치료): 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point 스캔)
+2. CBT (인지행동치료): 자동적 사고(부정적 스키마/다크코드) 식별 및 현실적 뇌회로 재구성
+3. ACT (수용전념치료): 생각을 사실과 분리하는 '인지 탈융합(Cognitive Defusion)' 및 가치 행동
+4. DBT (변증법적 행동치료): 극단적 감정 폭주 차단, 중용의 지혜 및 현명한 마음(Wise Mind) 조율
+5. MBSR (마음챙김 스트레스 감세): 자율신경계 밸런싱 및 뇌 신경가소성(Neuroplasticity) 재배선
+6. IFS/IFT (내면가족체계): 불안과 완벽주의를 나를 지켜주려던 '생존 보호자(Protector)'로 자비롭게 수용
+7. MSC (마음챙김 자기자비): 자기 비판을 멈추고 온전한 수용과 영혼의 다정한 온기 주입
+8. IFP (통합 자각 심리치료): 사주 에너지 흐름과 대뇌피질 역량의 1:1 싱크로 재배선
+
+[★ 현재 시점 및 세운(歲運) 시간 좌표 - 필수 기준!]
+- 현재 연도: ${currentYear}년
+- 올해 세운(歲運): ${currentGanzhi}
+
+[수검자 확정 정보 (사주 및 생년월일 데이터 100% 동기화 완료)]
+- 이름: ${userName}
+- 생년월일/시간: ${birthDate || '연동 완료'} (${calendarType}) ${birthTime}
+- 성별: ${gender === 'female' || gender === '여' || gender === '여자' ? '여성' : '남성'}
+- 사주 8글자 명식 (Neural Code): ${sajuString}
+- 일간(본인 기운): ${dayStem} (일간 특성 반영)
+- 에너지 레벨: ${energyLevel}%
+- 수면 질: ${sleepQuality}/5
+- 현재 스트레스 요인: ${currentStressors}
+
+[★ 절대적 시간 좌표 및 코칭 대화 명령 지침 - 필독!]
+1. **현재 연도는 무조건 ${currentYear}년이며, 올해의 세운은 ${currentGanzhi}입니다.** 과거 연도(2024년 갑진년, 2025년 을사년 등)를 현재라고 잘못 말하는 환각(Hallucination) 오류를 절대로 범하지 마십시오!
+2. 수검자의 생년월일, 성별, 사주 팔자 8글자(${sajuString})와 일간(${dayStem})은 이미 위 [수검자 확정 정보]에 100% 연동되어 완벽하게 주어졌습니다. **수검자에게 다시 생년월일, 생시, 성별을 물어보는 행위를 절대로 하지 마십시오!**
+3. 수검자가 "사업운 어때?", "올해 운세 알려줘", "내 재물운 어때?" 등 질문하면, 무조건 **${currentYear}년 ${currentGanzhi}**의 기운 흐름과 3세대 임상심리학 과학적 도구(ACT 인지탈융합, CBT 재구성, IFS 내면수용, MBCT 자각 등)를 활용하여 즉시 명쾌하고 뾰족하게 코칭을 답변하십시오.
+4. 마크다운 **강조**와 친절한 존댓말(~해요, ~랍니다)을 사용하여 실시간으로 함께 호흡하는 멘토 톤앤매너를 유지하라.
+`;
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+        const model = genAI.getGenerativeModel({
+            model: modelName,
+            systemInstruction,
         });
 
-        // 스트리밍 결과 반환
-        return result.toTextStreamResponse();
+        // Vercel AI SDK format -> Google Gemini format
+        const formattedHistory = messages.slice(0, -1).map((m: any) => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content || '' }],
+        }));
+
+        const lastUserMessage = messages.length > 0 ? messages[messages.length - 1].content : '';
+
+        const chat = model.startChat({
+            history: formattedHistory,
+        });
+
+        const streamResult = await chat.sendMessageStream(lastUserMessage);
+
+        const encoder = new TextEncoder();
+        let fullAiText = '';
+
+        const customStream = new ReadableStream({
+            async start(controller) {
+                try {
+                    for await (const chunk of streamResult.stream) {
+                        const chunkText = chunk.text();
+                        fullAiText += chunkText;
+                        controller.enqueue(encoder.encode(`0:${JSON.stringify(chunkText)}\n`));
+                    }
+
+                    // 로그인된 사용자만 대화 내역 저장
+                    if (effectiveUserId && !effectiveUserId.startsWith('guest-')) {
+                        try {
+                            if (lastUserMessage) {
+                                await supabase.from('myeongsim_chat_logs').insert({
+                                    user_id: effectiveUserId,
+                                    session_id: sessionId || null,
+                                    role: 'user',
+                                    content: lastUserMessage
+                                });
+                            }
+                            if (fullAiText) {
+                                await supabase.from('myeongsim_chat_logs').insert({
+                                    user_id: effectiveUserId,
+                                    session_id: sessionId || null,
+                                    role: 'assistant',
+                                    content: fullAiText
+                                });
+                            }
+                        } catch (err) {
+                            console.error('[Myeongsim Chat] History save error:', err);
+                        }
+                    }
+                    controller.close();
+                } catch (err: any) {
+                    console.error('[Myeongsim Chat] Stream error:', err);
+                    controller.error(err);
+                }
+            }
+        });
+
+        return new Response(customStream, {
+            headers: {
+                'Content-Type': 'text/plain; charset=utf-8',
+                'X-Vercel-AI-Data-Stream': 'v1',
+            }
+        });
 
     } catch (error: any) {
         console.error('[Myeongsim Chat] API Error:', error);
         return new Response(JSON.stringify({
-            error: error.message || '인공지능 응답을 불러오는 중 오류가 발생했습니다.'
+            error: error.message || '명심 AI 챗봇 연결 중 오류가 발생했습니다.'
         }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
     }
 }
+

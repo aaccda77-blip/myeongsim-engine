@@ -79,16 +79,50 @@ function parseExplanation(text: string): ParsedSection[] {
   return sections;
 }
 
-// ─── 사주 기둥 변환 ────────────────────────────────────
-function extractSajuPillars(reportData: ReturnType<typeof useReportStore.getState>['reportData']): string {
-  if (!reportData?.saju?.fourPillars) return '';
+// ─── 사주 기둥 안전 추출 함수 ────────────────────────────────────
+function safeExtractPillarChar(val: any): string {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object') {
+    return val.hangeul || val.hanja || val.kan || val.name || val.value || '';
+  }
+  return String(val);
+}
 
-  const { year, month, day, time } = reportData.saju.fourPillars;
-  const pillars = [year, month, day, time];
+function extractSajuPillars(reportData: any): string {
+  if (!reportData) return '';
 
-  return pillars
-    .map((p) => `${p.gan}${p.ji}`)
-    .join(' ');
+  // 1. 사주 사주기둥 객체가 존재하는 경우
+  if (reportData.saju?.fourPillars) {
+    try {
+      const { year, month, day, time } = reportData.saju.fourPillars;
+      const pillars = [year, month, day, time].filter(Boolean);
+
+      const formatted = pillars.map((p: any) => {
+        if (typeof p === 'string') return p;
+        const gan = safeExtractPillarChar(p.gan || p.heavenlyStem);
+        const ji = safeExtractPillarChar(p.ji || p.earthlyBranch);
+        return `${gan}${ji}`.trim();
+      }).filter(Boolean);
+
+      if (formatted.length > 0) {
+        return formatted.join(' ');
+      }
+    } catch (e) {
+      console.error('[extractSajuPillars Error]', e);
+    }
+  }
+
+  // 2. 사주 기둥 문자열이나 birthDate가 존재하는 경우
+  if (reportData.saju?.dayMaster) {
+    return `일간: ${reportData.saju.dayMaster} (${reportData.saju.dayMasterTrait || ''})`;
+  }
+
+  if (reportData.birthDate) {
+    return `생년월일: ${reportData.birthDate} ${reportData.birthTime || ''}`.trim();
+  }
+
+  return '사주 기본 기질 데이터 분석';
 }
 
 // ─── 로딩 스피너 ──────────────────────────────────────

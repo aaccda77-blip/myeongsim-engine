@@ -1,6 +1,5 @@
-// Server Component — metadata는 서버 컴포넌트에서만 export 가능
-// 클라이언트 로직(userId 주입)은 MyeongsimChatWrapper에 위임
 import MyeongsimChatWrapper from '@/components/chat/MyeongsimChatWrapper';
+import Footer from '@/components/Footer';
 
 export const metadata = {
     title: '나만의 명심코칭 AI',
@@ -9,10 +8,16 @@ export const metadata = {
 
 export default function MyeongsimChatPage() {
     return (
-        <main className="min-h-screen bg-[#0d131a] flex flex-col items-center justify-center p-4">
-            {/* MyeongsimChatWrapper: 실제 로그인 userId 자동 주입 (기존 MyeongsimChat 변경 없음) */}
+        <main className="min-h-screen bg-[#0d131a] flex flex-col items-center justify-start p-4 py-8 overflow-y-auto">
+            {/* MyeongsimChatWrapper: 실제 로그인 userId 자동 주입 */}
             <MyeongsimChatWrapper />
+            
+            {/* 하단 푸터 (회사 정보 및 고객센터) */}
+            <div className="w-full max-w-2xl mt-8 pb-12">
+                <Footer />
+            </div>
         </main>
     );
 }
+
 

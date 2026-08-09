@@ -7,6 +7,7 @@ import PaymentCard from '@/components/chat/PaymentCard';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation'; // Added for logout
 import PhoneAuthModal from './PhoneAuthModal';
+import Footer from '@/components/Footer';
 
 export default function PaymentLockOverlay({ onRefresh, userId }: { onRefresh: () => Promise<boolean>, userId?: string }) {
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -88,10 +89,14 @@ export default function PaymentLockOverlay({ onRefresh, userId }: { onRefresh: (
                 </button>
             </div>
 
-            <p className="py-6 text-[10px] text-gray-600">
-                입금 후 승인까지 최대 10분이 소요될 수 있습니다.<br />
-                문의 사항은 하단 '관리자와 대화'를 이용해주세요.
+            <p className="py-4 text-[10px] text-emerald-400/80 font-bold">
+                ⚡ 3초 자동 결제 완료 시 즉시 서비스가 오픈됩니다.
             </p>
+
+            {/* SajuKid Benchmark Legal Business Footer */}
+            <div className="w-full mt-4">
+                <Footer />
+            </div>
 
             {/* Phone Auth Modal for Registration */}
             <PhoneAuthModal

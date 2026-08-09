@@ -5,11 +5,13 @@ import { X, Activity, TrendingUp, AlertCircle, ChevronDown, Sparkles, Loader2 } 
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 import MyeongliTermModal from './MyeongliTermModal';
+import PaymentCard from '../chat/PaymentCard';
 
 interface SajuAnalysisReportModalProps {
     isOpen: boolean;
     onClose: () => void;
     userProfile?: any | null;
+    onOpenCoaching?: () => void;
 }
 
 // 1. 10대 일간(본질) 초밀도 감동 힐링 해설 데이터셋
@@ -113,7 +115,21 @@ const CONDITION_OPTIONS = [
     { label: '🌪️ 시스템 과열 (걱정/후회 소설에 갇힘)', offset: -50 }
 ];
 
-export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }: SajuAnalysisReportModalProps) {
+// 5. 격국 및 2026 우주 기류 해설 헬퍼
+const GYEOKGUK_MAP: Record<string, { title: string; desc: string; solution: string }> = {
+    '甲': { title: '식신제살격 (식신/선구자형)', desc: '거대한 원칙과 추진력으로 세상을 바르게 일으켜 세우는 개척자적 본질', solution: '내 고집을 밀어붙이기보다 유연하게 타인의 소리를 품을 때 리더십이 만개합니다.' },
+    '乙': { title: '인수쌍전격 (친화/지혜형)', desc: '척박한 바위에서도 끈질기게 꽃을 피워내는 부드럽고 지혜로운 유대 에너지', solution: '타인에게 기대기보다 나 자신의 자립심을 신뢰할 때 위대한 결실을 맺습니다.' },
+    '丙': { title: '태양편재격 (열정/비전형)', desc: '온 세상을 밝게 비추며 세상을 이끄는 차별 없는 뜨거운 직관과 포용력', solution: '열정이 과열되어 번아웃되지 않도록 밤의 고요한 이완을 부드럽게 받아들이세요.' },
+    '丁': { title: '정인관성격 (배려/위로형)', desc: '어둠 속을 고요히 밝혀 타인의 아픔을 어루만져 주는 따뜻한 촛불 에너지', solution: '스스로의 몸을 녹여 빛내기보다 내 안의 쉼터를 먼저 온화하게 덥혀주세요.' },
+    '戊': { title: '신왕재성격 (포용/신뢰형)', desc: '모진 풍파에도 제자리를 묵묵히 지키는 든든한 큰 산 같은 중용의 미덕', solution: '무거운 생각을 혼자 품지 말고 바람에 날려 보내듯 마음을 포맷해 보세요.' },
+    '己': { title: '기토탁희격 (수용/성장형)', desc: '만물의 씨앗을 품어 커다란 숲으로 키워내는 어머니 같은 묵묵한 헌신', solution: '가슴속에 고인 눈물과 응어리를 밖으로 솔직하게 털어놓을 때 평화가 깃듭니다.' },
+    '庚': { title: '양금성기격 (정의/단단함)', desc: '거짓 없는 솔직함과 타협 없는 곧은 결을 지닌 강인한 원석과 바위', solution: '나와 세상을 칼로 자르듯 평가하지 말고, 원초적 단단함 자체를 사랑해 주세요.' },
+    '辛': { title: '수기유통격 (예리/보석형)', desc: '흙 속의 아픔을 견디고 마침내 영롱하게 빛나는 세공된 다이아몬드 본질', solution: '나를 찌르는 날카로운 완벽주의 칼날을 거두고, 투명한 내 빛을 그대로 안아주세요.' },
+    '壬': { title: '임수통해격 (자유/지혜형)', desc: '모든 물줄기를 다 안아주는 깊고 거대한 바다처럼 막힘없는 유연함', solution: '무거운 감정의 깊은 동굴에 침잠하지 말고 시선을 넓은 의식으로 올려보세요.' },
+    '癸': { title: '계수윤하격 (단비/감수성)', desc: '메마른 대지를 소리 없이 다정하게 적셔주는 촉촉한 봄비 같은 맑은 영혼', solution: '타인의 감정에 물들어 눈물짓지 말고, 맑은 거울처럼 성성하게 깨어나세요.' }
+};
+
+export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile, onOpenCoaching }: SajuAnalysisReportModalProps) {
     const { reportData: storeData } = useReportStore();
     const reportData = storeData || userProfile;
 
@@ -124,6 +140,87 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
 
     // 명리학 용어 팝업 모달 상태
     const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+    // 🔮 [수술] 사용자 생년월일(사주 오행) + 오늘 날짜(Daily Date Seed) 연동 동적 5대 에너지 점수 연산
+    const dynamicEnergyScores = useMemo(() => {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        let seed = 0;
+        for (let i = 0; i < todayStr.length; i++) {
+            seed = (seed * 31 + todayStr.charCodeAt(i)) % 10007;
+        }
+
+        const ohaeng = reportData?.saju?.ohaeng || reportData?.saju?.elements;
+        const woodVal = typeof ohaeng?.wood === 'number' ? ohaeng.wood : 20;
+        const fireVal = typeof ohaeng?.fire === 'number' ? ohaeng.fire : 20;
+        const earthVal = typeof ohaeng?.earth === 'number' ? ohaeng.earth : 20;
+        const metalVal = typeof ohaeng?.metal === 'number' ? ohaeng.metal : 20;
+        const waterVal = typeof ohaeng?.water === 'number' ? ohaeng.water : 20;
+
+        const relation = Math.min(99, Math.max(55, 68 + (woodVal % 16) + (seed % 13) - 5));
+        const vision = Math.min(99, Math.max(55, 70 + (fireVal % 16) + ((seed * 3) % 13) - 5));
+        const resource = Math.min(99, Math.max(55, 67 + (earthVal % 16) + ((seed * 7) % 13) - 5));
+        const bio = Math.min(99, Math.max(55, 63 + (metalVal % 16) + ((seed * 11) % 13) - 5));
+        const meta = Math.min(99, Math.max(55, 74 + (waterVal % 16) + ((seed * 13) % 13) - 5));
+        const total = Math.round((relation + vision + resource + bio + meta) / 5);
+
+        return { relation, vision, resource, bio, meta, total, todayStr };
+    }, [reportData]);
+
+    // 🎨 [동적 수호아이템 연산] 생년월일 + 오늘 일진(Daily Saju Ganji & Biorhythm) 기반 동적 연산
+    const dynamicGuardianItems = useMemo(() => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const birthDate = reportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || '1990-01-01';
+        const dayStem = reportData?.saju?.dayMasterChar || userProfile?.saju?.dayMasterChar || '甲';
+        
+        // 생년월일 + 오늘 날짜 + 일간 결합 고유 시드
+        const seedKey = `${birthDate}_${todayStr}_${dayStem}`;
+        let seed = 0;
+        for (let i = 0; i < seedKey.length; i++) {
+            seed = (seed * 33 + seedKey.charCodeAt(i)) % 99991;
+        }
+
+        const colors = [
+            { name: '클래식 네이비', colorClass: 'text-indigo-300' },
+            { name: '에메랄드 포레스트', colorClass: 'text-emerald-300' },
+            { name: '골든 앰버', colorClass: 'text-amber-300' },
+            { name: '크림슨 로즈', colorClass: 'text-rose-300' },
+            { name: '코발트 틸', colorClass: 'text-cyan-300' },
+            { name: '티리언 퍼플', colorClass: 'text-purple-300' },
+            { name: '딥 오션 블루', colorClass: 'text-blue-300' },
+            { name: '선셋 오렌지', colorClass: 'text-orange-300' },
+            { name: '루비 레드', colorClass: 'text-pink-300' },
+            { name: '플래티넘 실버', colorClass: 'text-slate-200' },
+        ];
+
+        const numbers = ['3', '7', '8', '11', '24', '36', '58', '77', '88', '99'];
+
+        const items = [
+            '손목시계',
+            '원목 오일 디퓨저',
+            '천연 쿼츠 원석',
+            '실크 스카프',
+            '432Hz 이어버드',
+            '은반지',
+            '아로마 롤온',
+            '가죽 다이어리',
+            '텀블러',
+            '황동 열쇠고리',
+            '민트 오가닉 티',
+            '블루라이트 차단안경'
+        ];
+
+        const selectedColor = colors[seed % colors.length];
+        const selectedNumber = numbers[(seed * 7) % numbers.length];
+        const selectedItem = items[(seed * 13) % items.length];
+
+        return {
+            color: selectedColor.name,
+            colorClass: selectedColor.colorClass,
+            number: selectedNumber,
+            item: selectedItem,
+        };
+    }, [reportData, userProfile]);
 
     const handleTermClick = (e: React.MouseEvent, term: string) => {
         e.stopPropagation(); // 아코디언 열림 방지
@@ -161,39 +258,90 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
         setExpandedSection(prev => prev === section ? null : section);
     };
 
+    // 🔮 [수술] 사용자 실제 생년월일 기반 사주 4주 팔자 동적 연산 메모
     const analysis = useMemo(() => {
         let sajuData = reportData?.saju || reportData?.sajuData || reportData?.saju_data;
         
-        if (!sajuData && userProfile) {
-            const rawDate = userProfile.birthDate || userProfile.birth_date;
-            const rawTime = userProfile.birthTime || userProfile.birth_time || '12:00';
-            if (rawDate) {
-                try {
-                    const sajuResult = calculateSaju(rawDate, rawTime, 'solar', userProfile.gender || 'male');
-                    if (sajuResult.success) {
-                        const stats = calculateSajuStats(sajuResult.fourPillars, sajuResult.dayMasterChar);
-                        sajuData = {
-                            dayMaster: sajuResult.dayMasterChar,
-                            elements: stats.ohaeng
-                        };
-                    }
-                } catch (e) {
-                    console.error("SajuAnalysisReportModal fallback error", e);
+        // 1. 생년월일/시간/성별 정보 다각도 추출
+        const rawDate = reportData?.birthDate || userProfile?.birthDate || userProfile?.birth_date || userProfile?.user_metadata?.saju_data?.date || userProfile?.user_metadata?.birth_date;
+        const rawTime = reportData?.birthTime || userProfile?.birthTime || userProfile?.birth_time || userProfile?.user_metadata?.saju_data?.time || '12:00';
+        const gender = reportData?.gender || userProfile?.gender || userProfile?.user_metadata?.saju_data?.gender || 'male';
+        const calendarType = reportData?.meta?.calendarType || userProfile?.calendar_type || userProfile?.user_metadata?.saju_data?.calendar_type || 'solar';
+
+        let calculatedPillars: any = sajuData?.fourPillars || null;
+        let calculatedElements = sajuData?.elements || sajuData?.ohaeng || null;
+        let calculatedDayMaster = sajuData?.dayMaster || sajuData?.dayMasterChar || null;
+
+        // 2. 생년월일이 있을 경우 SajuEngine으로 실시간 정밀 연산
+        if (rawDate) {
+            try {
+                const sajuResult = calculateSaju(rawDate, rawTime, calendarType, gender);
+                if (sajuResult && sajuResult.success) {
+                    calculatedPillars = sajuResult.fourPillars;
+                    calculatedDayMaster = sajuResult.dayMasterChar;
+                    const stats = calculateSajuStats(sajuResult.fourPillars, sajuResult.dayMasterChar);
+                    calculatedElements = stats.ohaeng;
                 }
+            } catch (e) {
+                console.error("SajuAnalysisReportModal saju calc error", e);
             }
         }
 
-        if (!sajuData) return null;
+        const elements = calculatedElements || { wood: 20, fire: 20, earth: 20, metal: 20, water: 20 };
+        const dmChar = typeof calculatedDayMaster === 'string' ? calculatedDayMaster.charAt(0) : (calculatedDayMaster as any)?.char || '辛';
 
-        const { dayMaster, elements } = sajuData;
-        const dmChar = typeof dayMaster === 'string' ? dayMaster.charAt(0) : (dayMaster as any)?.char || '?';
+        // 3. 4주 팔자 정규화 헬퍼
+        const GAN_KOR_MAP: Record<string, string> = { '甲': '갑', '乙': '을', '丙': '병', '丁': '정', '戊': '무', '己': '기', '庚': '경', '辛': '신', '壬': '임', '癸': '계' };
+        const JI_KOR_MAP: Record<string, string> = { '子': '자', '丑': '축', '寅': '인', '卯': '묘', '辰': '진', '巳': '사', '午': '오', '未': '미', '申': '신', '酉': '유', '戌': '술', '亥': '해' };
+        const GAN_ELEMENT_MAP: Record<string, string> = { '甲': '목', '乙': '목', '丙': '화', '丁': '화', '戊': '토', '己': '토', '庚': '금', '辛': '금', '壬': '수', '癸': '수' };
+        const JI_ELEMENT_MAP: Record<string, string> = { '子': '수', '丑': '토', '寅': '목', '卯': '목', '辰': '토', '巳': '화', '午': '화', '未': '토', '申': '금', '酉': '금', '戌': '토', '亥': '수' };
 
-        const entries = Object.entries(elements || {});
-        const sorted = entries.sort(([, a], [, b]) => (b as number) - (a as number));
+        const normPillar = (p: any, fallbackGan: string, fallbackJi: string) => {
+            if (!p) {
+                return {
+                    gan: fallbackGan,
+                    ji: fallbackJi,
+                    ganKor: GAN_KOR_MAP[fallbackGan] || fallbackGan,
+                    jiKor: JI_KOR_MAP[fallbackJi] || fallbackJi,
+                    ganElement: GAN_ELEMENT_MAP[fallbackGan] || '금',
+                    jiElement: JI_ELEMENT_MAP[fallbackJi] || '화'
+                };
+            }
+            const gan = typeof p.gan === 'object' ? p.gan.char : (p.gan || p.ganKor || fallbackGan);
+            const ji = typeof p.ji === 'object' ? p.ji.char : (p.ji || p.jiKor || fallbackJi);
+            const ganKor = p.ganKor || GAN_KOR_MAP[gan] || gan;
+            const jiKor = p.jiKor || JI_KOR_MAP[ji] || ji;
+            const ganElement = p.ganElement || GAN_ELEMENT_MAP[gan] || '금';
+            const jiElement = p.jiElement || JI_ELEMENT_MAP[ji] || '화';
+            return { gan, ji, ganKor, jiKor, ganElement, jiElement };
+        };
 
-        // [Bug Fix] 가드가 없어서 elements가 비어있을 때 dominant와 weakest가 undefined가 되어 dominant[0] 에러가 발생하는 것 차단
-        const dominant = sorted.length > 0 ? sorted[0] : ['metal', 20];
-        const weakest = sorted.length > 0 ? sorted[sorted.length - 1] : ['water', 10];
+        const year = normPillar(calculatedPillars?.year, '庚', '申');
+        const month = normPillar(calculatedPillars?.month, '癸', '未');
+        const day = normPillar(calculatedPillars?.day, dmChar, '巳');
+        const time = normPillar(calculatedPillars?.time, '乙', '未');
+
+        // 사용자 실제 4주 팔자의 8자 성도 요소 직접 집계 (100% 사용자 맞춤 오행 강약)
+        const elementCounts: Record<string, number> = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+        const ELEM_ENG_MAP: Record<string, string> = { '목': 'wood', '화': 'fire', '토': 'earth', '금': 'metal', '수': 'water' };
+        
+        [year.ganElement, year.jiElement, month.ganElement, month.jiElement, day.ganElement, day.jiElement, time.ganElement, time.jiElement].forEach((elem, idx) => {
+            const eng = ELEM_ENG_MAP[elem];
+            if (eng) {
+                // 월지(Index 3)는 계절의 령을 받으므로 2.0 가중치 부여
+                elementCounts[eng] += (idx === 3 ? 2 : 1);
+            }
+        });
+
+        const entries = Object.entries(elementCounts);
+        const sorted = entries.sort(([k1, v1], [k2, v2]) => {
+            if (v2 !== v1) return v2 - v1;
+            const seedOffset = (rawDate ? rawDate.charCodeAt(0) : 65) % 5;
+            return (k1.charCodeAt(0) + seedOffset) - (k2.charCodeAt(0) + seedOffset);
+        });
+
+        const dominant = sorted[0];
+        const weakest = sorted[sorted.length - 1];
 
         const ELEMENT_KOR: Record<string, string> = {
             wood: '목(木)', fire: '화(火)', earth: '토(土)', metal: '금(金)', water: '수(水)'
@@ -202,17 +350,28 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
             wood: '🌲', fire: '🔥', earth: '⛰️', metal: '⚔️', water: '🌊'
         };
 
+        const getDayMasterDesc = (char: string) => {
+            const item = DAILY_MASTER_EXPLANATIONS[char] || 
+                         DAILY_MASTER_EXPLANATIONS[GAN_KOR_MAP[char]] || 
+                         DAILY_MASTER_EXPLANATIONS['辛'];
+            return item ? item.desc : '당신의 본질은 깊고 고귀한 의식의 빛입니다.';
+        };
+
+        const gyeokguk = GYEOKGUK_MAP[dmChar] || GYEOKGUK_MAP['辛'];
+
         return {
+            fourPillars: { year, month, day, time },
             identity: {
                 char: dmChar,
-                desc: getDayMasterDesc(dmChar)
+                desc: getDayMasterDesc(dmChar),
+                gyeokguk
             },
             energy: {
                 max: { label: ELEMENT_KOR[dominant[0]] || '금(金)', icon: ELEMENT_ICON[dominant[0]] || '⚔️', val: dominant[1] },
                 min: { label: ELEMENT_KOR[weakest[0]] || '수(水)', icon: ELEMENT_ICON[weakest[0]] || '🌊', val: weakest[1] }
             }
         };
-    }, [reportData]);
+    }, [reportData, userProfile]);
 
     // 실시간 자각 주파수 융합 스캔 시작
     const handleStartScan = () => {
@@ -258,6 +417,19 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
         };
     }, [scanState, scannedHz]);
 
+    // 오늘의 사용자 맞춤 기본 자각 주파수 (Hz)
+    const defaultHzInfo = useMemo(() => {
+        if (!analysis) return { hz: 432, msg: '432Hz · 코어 동기화 파동' };
+        const dmChar = analysis.identity.char;
+        const today = new Date();
+        const todaySeed = (today.getFullYear() * 1000 + (today.getMonth() + 1) * 50 + today.getDate());
+        const baseHz = 400 + (dmChar.charCodeAt(0) % 150) + (todaySeed % 80);
+        return {
+            hz: baseHz,
+            msg: `${baseHz}Hz · ${dmChar}本質 코어 맞춤 주파수`
+        };
+    }, [analysis]);
+
     if (!isOpen || !mounted) return null;
 
     const modalContent = (
@@ -286,17 +458,27 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                         <div className="absolute top-[-40%] left-[-40%] w-[180%] h-[180%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08)_0%,transparent_50%)] animate-slow-spin" />
                     </div>
 
-                    {/* 상단 헤더 */}
-                    <div className="relative z-10 p-5 border-b border-zinc-900 flex justify-between items-center bg-white/[0.02] select-none">
-                        <div>
-                            <h2 className="text-lg font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#F4E2D8] via-[#BA9F8F] to-[#F4E2D8]"
-                                style={{ textShadow: '0 2px 10px rgba(186,159,143,0.2)' }}
-                            >
-                                인지행동 프로필 리포트
-                            </h2>
-                            <p className="text-[9px] text-zinc-500 tracking-widest uppercase mt-0.5 font-mono">Core Dynamics Analysis</p>
+                    {/* 상단 헤더 - 24K 골드 & 옵시디언 럭셔리 Glassmorphism */}
+                    <div className="relative z-10 p-5 border-b border-amber-500/20 flex justify-between items-center bg-gradient-to-r from-slate-950 via-purple-950/80 to-slate-950 backdrop-blur-xl select-none shadow-2xl">
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <span className="text-2xl p-2.5 rounded-2xl bg-gradient-to-br from-amber-500/20 via-purple-500/10 to-indigo-500/20 border border-amber-400/40 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)] block">
+                                    🧠
+                                </span>
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full animate-ping opacity-75" />
+                            </div>
+                            <div>
+                                <h2 className="text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-purple-200 to-indigo-100 tracking-tight">
+                                    인지행동 프로필 리포트
+                                </h2>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-400/30">
+                                        🏛️ 특허출원중 제10-2025-0166877호
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors cursor-pointer border border-zinc-800 p-1 rounded-lg hover:bg-zinc-900">
+                        <button onClick={onClose} className="text-gray-400 hover:text-white transition-all cursor-pointer border border-white/10 p-2 rounded-2xl hover:bg-white/10 active:scale-90">
                             <X size={18} />
                         </button>
                     </div>
@@ -304,14 +486,245 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                     {/* 메인 콘텐츠 스크롤 영역 */}
                     <div className="relative z-10 p-5 overflow-y-auto space-y-4 flex-1 scrollbar-hide">
                         
-                        {/* 상단 안내 바 */}
-                        <div className="flex items-center gap-2 px-3.5 py-2.5 bg-blue-950/20 border border-blue-900/20 rounded-xl text-[10px] text-blue-400 select-none animate-pulse">
-                            <Sparkles size={12} className="text-yellow-400 shrink-0" />
-                            <span>카드를 클릭하면 <b>초밀도 감동 해설 아코디언</b>이 펼쳐집니다.</span>
+                        {/* 🏛️ 대한민국 특허출원중 24K 럭셔리 엠보싱 골드 메달 카드 */}
+                        <div className="p-4 bg-gradient-to-r from-amber-950/70 via-slate-950 to-indigo-950/70 border border-amber-400/40 rounded-2xl shadow-[0_0_25px_rgba(245,158,11,0.2)] relative overflow-hidden group">
+                            <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-black text-amber-300 flex items-center gap-2">
+                                    <span className="text-sm">🏛️</span>
+                                    <span>대한민국 특허출원중 기술 검증</span>
+                                </span>
+                                <span className="bg-amber-500/20 text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-400/40 font-mono text-[10px] font-bold">
+                                    제 10-2025-0166877 호
+                                </span>
+                            </div>
+                            <p className="text-[11px] text-gray-200 font-semibold leading-relaxed">
+                                <strong className="text-amber-300">발명 명칭:</strong> 심리 및 생체데이터 기반 스트레스 관리 솔루션 제공장치 및 방법 (3세대 CBT/ACT 뇌신경가소성 교정 알고리즘)
+                            </p>
                         </div>
 
+                        {/* 상단 안내 바 */}
                         {analysis ? (
                             <>
+                                {/* 🌟 [수술 1] 360° 영혼 마스터 해설 대형 헤더 카드 */}
+                                <div className="p-5 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 border border-amber-500/40 rounded-2xl shadow-2xl space-y-3 relative overflow-hidden">
+                                    <div className="absolute -top-10 -right-10 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                                    <div className="flex justify-between items-start border-b border-white/10 pb-3">
+                                        <div>
+                                            <span className="text-[10px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                MASTER SOUL PORTRAIT
+                                            </span>
+                                            <h3 className="text-base sm:text-lg font-black text-white font-serif mt-1.5 leading-snug">
+                                                {userProfile?.name || (storeData as any)?.name || '소중한 내담자'}님의 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500">본질 에너지 디코딩</span>
+                                            </h3>
+                                        </div>
+                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center font-serif text-xl font-black text-slate-950 shadow-lg">
+                                            {analysis.identity.char}
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-slate-200 leading-relaxed font-serif tracking-tight">
+                                        {analysis.identity.desc}
+                                    </p>
+                                </div>
+                                {/* 📊 [수술] 사용자 생년월일 + 오늘 날짜 동기화 5대 생체 & 심리 에너지 활성도 게이지 카드 */}
+                                <div 
+                                    onClick={() => setExpandedSection(expandedSection === 'energy' ? null : 'energy')}
+                                    className="p-4 bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950/80 border border-amber-400/30 rounded-2xl shadow-xl space-y-3 cursor-pointer transition-all hover:border-amber-300 select-none group"
+                                >
+                                    <div className="flex justify-between items-center border-b border-white/10 pb-2 flex-wrap gap-1">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-300 to-indigo-300">
+                                                📊 5대 생체 & 심리 에너지 활성도
+                                            </span>
+                                            <span className="text-[10px] text-amber-300 font-normal underline group-hover:text-amber-200">
+                                                {expandedSection === 'energy' ? '▲ 접기' : '▼ 터치하여 상세 해설'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-[9px] font-mono text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
+                                                📅 매일 자동 갱신
+                                            </span>
+                                            <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/40">
+                                                종합 {dynamicEnergyScores.total}점 / 100점
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2.5">
+                                        {/* 관계 연대 */}
+                                        <div>
+                                            <div className="flex justify-between text-[11px] font-extrabold mb-1">
+                                                <span className="text-pink-300 flex items-center gap-1">💕 관계 연대 (소통)</span>
+                                                <span className="font-mono text-pink-400">{dynamicEnergyScores.relation}%</span>
+                                            </div>
+                                            <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                                                <div className="h-full bg-gradient-to-r from-pink-500 to-rose-400 rounded-full transition-all duration-500" style={{ width: `${dynamicEnergyScores.relation}%` }} />
+                                            </div>
+                                        </div>
+                                        {/* 비전 성취 */}
+                                        <div>
+                                            <div className="flex justify-between text-[11px] font-extrabold mb-1">
+                                                <span className="text-amber-300 flex items-center gap-1">🔥 비전 성취 (목표)</span>
+                                                <span className="font-mono text-amber-400">{dynamicEnergyScores.vision}%</span>
+                                            </div>
+                                            <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                                                <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-500" style={{ width: `${dynamicEnergyScores.vision}%` }} />
+                                            </div>
+                                        </div>
+                                        {/* 자원 확장 */}
+                                        <div>
+                                            <div className="flex justify-between text-[11px] font-extrabold mb-1">
+                                                <span className="text-yellow-300 flex items-center gap-1">💰 자원 확장 (결실)</span>
+                                                <span className="font-mono text-yellow-400">{dynamicEnergyScores.resource}%</span>
+                                            </div>
+                                            <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                                                <div className="h-full bg-gradient-to-r from-yellow-500 to-amber-300 rounded-full transition-all duration-500" style={{ width: `${dynamicEnergyScores.resource}%` }} />
+                                            </div>
+                                        </div>
+                                        {/* 생체 밸런스 */}
+                                        <div>
+                                            <div className="flex justify-between text-[11px] font-extrabold mb-1">
+                                                <span className="text-emerald-300 flex items-center gap-1">🔋 생체 밸런스 (건강)</span>
+                                                <span className="font-mono text-emerald-400">{dynamicEnergyScores.bio}%</span>
+                                            </div>
+                                            <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                                                <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style={{ width: `${dynamicEnergyScores.bio}%` }} />
+                                            </div>
+                                        </div>
+                                        {/* 지성 메타인지 */}
+                                        <div>
+                                            <div className="flex justify-between text-[11px] font-extrabold mb-1">
+                                                <span className="text-purple-300 flex items-center gap-1">🧠 지성 메타인지 (학업)</span>
+                                                <span className="font-mono text-purple-400">{dynamicEnergyScores.meta}%</span>
+                                            </div>
+                                            <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                                                <div className="h-full bg-gradient-to-r from-purple-500 to-indigo-400 rounded-full transition-all duration-500" style={{ width: `${dynamicEnergyScores.meta}%` }} />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* 🌌 [수술 2] 동서양 융합 주파수 8차원 원국 메트릭스 카드 (동적 연동) */}
+                                    {(() => {
+                                        const fp = analysis?.fourPillars || {
+                                            time: { gan: '乙', ji: '未', ganKor: '을', jiKor: '미', ganElement: '목', jiElement: '토' },
+                                            day: { gan: '辛', ji: '巳', ganKor: '신', jiKor: '사', ganElement: '금', jiElement: '화' },
+                                            month: { gan: '癸', ji: '未', ganKor: '계', jiKor: '미', ganElement: '수', jiElement: '토' },
+                                            year: { gan: '庚', ji: '申', ganKor: '경', jiKor: '신', ganElement: '금', jiElement: '금' }
+                                        };
+
+                                        const getBadgeStyle = (elem?: string) => {
+                                            if (elem === '목') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+                                            if (elem === '화') return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+                                            if (elem === '토') return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+                                            if (elem === '금') return 'bg-slate-800 text-slate-100 border-slate-600/40';
+                                            if (elem === '수') return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
+                                            return 'bg-slate-800 text-gray-300 border-white/10';
+                                        };
+
+                                        return (
+                                            <div className="p-4 bg-slate-900/90 border border-indigo-500/30 rounded-2xl shadow-xl space-y-3">
+                                                <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                                                    <span className="text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 flex items-center gap-1.5">
+                                                        <span>🌌</span> 동서양 융합 주파수 8차원 메트릭스
+                                                    </span>
+                                                    <span className="text-[9px] font-mono text-indigo-400">8-DIMENSIONAL MATRIX</span>
+                                                </div>
+                                                
+                                                <div className="grid grid-cols-4 gap-1.5 text-center text-xs">
+                                                    {/* 의식 차원 (시주) */}
+                                                    <div className="p-2 bg-slate-950 rounded-xl border border-white/5">
+                                                        <p className="text-[9px] text-gray-400 font-bold mb-1">의식 차원</p>
+                                                        <div className={`py-1 rounded font-black border ${getBadgeStyle(fp.time.ganElement)}`}>{fp.time.gan} ({fp.time.ganKor})</div>
+                                                        <div className={`py-1 rounded font-black border mt-1 ${getBadgeStyle(fp.time.jiElement)}`}>{fp.time.ji} ({fp.time.jiKor})</div>
+                                                    </div>
+                                                    {/* 본질 차원 (일주) */}
+                                                    <div className="p-2 bg-slate-950 rounded-xl border border-amber-500/30 shadow">
+                                                        <p className="text-[9px] text-amber-300 font-black mb-1">본질 차원 ★</p>
+                                                        <div className={`py-1 rounded font-black border ${getBadgeStyle(fp.day.ganElement)}`}>{fp.day.gan} ({fp.day.ganKor})</div>
+                                                        <div className={`py-1 rounded font-black border mt-1 ${getBadgeStyle(fp.day.jiElement)}`}>{fp.day.ji} ({fp.day.jiKor})</div>
+                                                    </div>
+                                                    {/* 유대 차원 (월주) */}
+                                                    <div className="p-2 bg-slate-950 rounded-xl border border-white/5">
+                                                        <p className="text-[9px] text-gray-400 font-bold mb-1">유대 차원</p>
+                                                        <div className={`py-1 rounded font-black border ${getBadgeStyle(fp.month.ganElement)}`}>{fp.month.gan} ({fp.month.ganKor})</div>
+                                                        <div className={`py-1 rounded font-black border mt-1 ${getBadgeStyle(fp.month.jiElement)}`}>{fp.month.ji} ({fp.month.jiKor})</div>
+                                                    </div>
+                                                    {/* 환경 차원 (년주) */}
+                                                    <div className="p-2 bg-slate-950 rounded-xl border border-white/5">
+                                                        <p className="text-[9px] text-gray-400 font-bold mb-1">환경 차원</p>
+                                                        <div className={`py-1 rounded font-black border ${getBadgeStyle(fp.year.ganElement)}`}>{fp.year.gan} ({fp.year.ganKor})</div>
+                                                        <div className={`py-1 rounded font-black border mt-1 ${getBadgeStyle(fp.year.jiElement)}`}>{fp.year.ji} ({fp.year.jiKor})</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
+
+                                    {/* 3개 스마트 보정 아이템 지표 (생년월일 + 일진 동적 연산) */}
+                                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/10">
+                                        <div className="bg-slate-950/80 p-2 rounded-xl text-center border border-white/5">
+                                            <p className="text-[9px] text-gray-400 font-bold">🎨 수호 컬러</p>
+                                            <p className={`text-[11px] font-black ${dynamicGuardianItems.colorClass} mt-0.5`}>
+                                                {dynamicGuardianItems.color}
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-950/80 p-2 rounded-xl text-center border border-white/5">
+                                            <p className="text-[9px] text-gray-400 font-bold">🔢 조율 넘버</p>
+                                            <p className="text-[11px] font-black text-amber-300 mt-0.5">
+                                                {dynamicGuardianItems.number}
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-950/80 p-2 rounded-xl text-center border border-white/5">
+                                            <p className="text-[9px] text-gray-400 font-bold">🎁 생체 아이템</p>
+                                            <p className="text-[11px] font-black text-purple-300 mt-0.5">
+                                                {dynamicGuardianItems.item}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* 📜 [초밀도 아코디언 해설 & 890원 AI 코칭 직통 딥링크] */}
+                                    <AnimatePresence>
+                                        {expandedSection === 'energy' && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="pt-3 border-t border-amber-500/30 space-y-3 overflow-hidden"
+                                            >
+                                                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-2 text-left">
+                                                    <p className="text-xs font-black text-amber-300 flex items-center gap-1">
+                                                        <span>📜</span> 오늘({dynamicEnergyScores.todayStr}) 5대 생체 & 심리 에너지 바이오 해설
+                                                    </p>
+                                                    <div className="text-[11px] text-gray-200 space-y-1.5 leading-relaxed">
+                                                        <p>• <strong className="text-pink-300">💕 관계 연대({dynamicEnergyScores.relation}%):</strong> 타인과의 수용 및 공감 파동이 양호하여 원만한 관계를 유지합니다.</p>
+                                                        <p>• <strong className="text-amber-300">🔥 비전 성취({dynamicEnergyScores.vision}%):</strong> 목표 추진력과 의지 도파민 회로가 매우 활발히 다듬어져 있습니다.</p>
+                                                        <p>• <strong className="text-yellow-300">💰 자원 확장({dynamicEnergyScores.resource}%):</strong> 실질적 결실과 성과를 창출하는 내적 안정성이 돋보입니다.</p>
+                                                        <p>• <strong className="text-emerald-300">🔋 생체 밸런스({dynamicEnergyScores.bio}%):</strong> 에너지 파동 소비가 지속되고 있어 뇌의 피로 관리가 필요합니다.</p>
+                                                        <p>• <strong className="text-purple-300">🧠 지성 메타인지({dynamicEnergyScores.meta}%):</strong> 스스로의 감정을 관찰하는 전두엽 모니터링 능력이 탁월합니다.</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* 🔮 아코디언 내부 1:1 심층 AI 코칭 890원 직통 버튼 */}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (onOpenCoaching) {
+                                                            onClose();
+                                                            onOpenCoaching();
+                                                        } else {
+                                                            setShowPaymentModal(true);
+                                                        }
+                                                    }}
+                                                    className="w-full py-3 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                                                >
+                                                    <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                                                    <span>🔮 내 5대 에너지 파동으로 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
                                 {/* Section 1: 나의 에너지 프로필 (본질 일간) */}
                                 <div 
                                     onClick={() => toggleSection('identity')}
@@ -439,9 +852,14 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                                                         <span className="text-base font-serif font-bold text-white">{scannedInfo.level}Hz</span>
                                                         <span className="text-[9.5px] text-emerald-400 font-semibold">{scannedInfo.msg}</span>
                                                     </div>
+                                                ) : scanState === 'scanning' ? (
+                                                    <div className="text-xs font-semibold text-emerald-400 mt-0.5 animate-pulse">
+                                                        ⚡ 정밀 SCANNING...
+                                                    </div>
                                                 ) : (
-                                                    <div className="text-xs font-semibold text-zinc-400 mt-0.5">
-                                                        {scanState === 'scanning' ? '정밀 SCANNING...' : '오늘의 상태 스캔 대기 중'}
+                                                    <div className="flex items-baseline gap-1.5 mt-0.5">
+                                                        <span className="text-sm font-serif font-bold text-emerald-300">{defaultHzInfo.hz}Hz</span>
+                                                        <span className="text-[9.5px] text-emerald-400/90 font-semibold">{defaultHzInfo.msg}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -525,6 +943,43 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
                                         )}
                                     </AnimatePresence>
                                 </div>
+
+                                 {/* 🔮 [신규] 8자 십신 격국 & 2026년 우주 기류 해설 카드 */}
+                                 <div className="p-4 bg-slate-900/90 border border-purple-500/30 rounded-2xl shadow-xl space-y-3">
+                                     <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                                         <span className="text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-amber-300 flex items-center gap-1.5">
+                                             <span>🔮</span> 십신 격국 & 2026 우주 기류 분석
+                                         </span>
+                                         <span className="text-[9px] font-mono text-purple-400">COSMIC FLOW</span>
+                                     </div>
+                                     <div className="space-y-2 text-xs text-slate-200">
+                                         <div className="p-3 bg-slate-950/80 rounded-xl border border-white/5 space-y-1">
+                                             <p className="text-[10px] font-black text-amber-300 font-mono">🏆 {analysis.identity.gyeokguk.title}</p>
+                                             <p className="text-slate-300 leading-relaxed text-xs">{analysis.identity.gyeokguk.desc}</p>
+                                             <p className="text-amber-200/90 text-[11px] pt-1 border-t border-white/5 mt-1 font-medium">💡 솔루션: {analysis.identity.gyeokguk.solution}</p>
+                                         </div>
+                                         <div className="p-3 bg-purple-950/30 rounded-xl border border-purple-500/20 space-y-1">
+                                             <p className="text-[10px] font-black text-purple-300 font-mono">🐎 2026년 丙午년 화(火) 주파수 기류</p>
+                                             <p className="text-slate-300 leading-relaxed text-[11px]">
+                                                 2026년은 강렬한 화(火) 에너지가 세상을 주도하는 대전환의 해입니다. {analysis.identity.char} 일간의 본질을 가진 당신에게 이 기류는 묵은 무의식의 껍질을 깨고 당신의 진가를 세상 밖으로 드러내는 강력한 촉매제입니다.
+                                             </p>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 {/* 🌸 [신규] 평생 소장용 나만의 영혼 주파수 확언문 카드 */}
+                                 <div className="p-5 bg-gradient-to-r from-slate-950 via-amber-950/40 to-slate-950 border border-amber-500/40 rounded-2xl shadow-2xl text-center space-y-2 relative overflow-hidden">
+                                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.05)_0%,transparent_70%)]" />
+                                     <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-3 py-0.5 rounded-full inline-block">
+                                         SOUL FREQUENCY MANTRA
+                                     </span>
+                                     <h4 className="text-sm font-black text-amber-200 font-serif pt-1">
+                                         &quot;나는 온전히 깨어있는 빛이며, 세상의 모진 풍파 속에서도 결코 흔들리지 않는 자유 그 자체이다.&quot;
+                                     </h4>
+                                     <p className="text-[10px] text-slate-400 font-medium">
+                                         매일 아침 눈을 뜨고 이 확언을 가만히 낭송하면 뇌의 불안 파동(DMN)이 즉시 이완됩니다.
+                                     </p>
+                                 </div>
                             </>
                         ) : (
                             <EmptyState />
@@ -532,15 +987,59 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile }
 
                     </div>
 
-                    {/* 하단 푸터 */}
-                    <div className="relative z-10 p-4 border-t border-zinc-900 bg-[#06080d] text-center select-none">
-                        <p className="text-[9px] text-zinc-600">
-                            * 이 리포트는 &apos;명심코칭 워크북&apos; 작성을 위해 제공됩니다.
+                    {/* 하단 푸터 및 890원 AI 코치 심층 상담 딥링크 */}
+                    <div className="relative z-10 p-4 border-t border-white/10 bg-slate-950 text-center select-none space-y-3">
+                        <button 
+                            onClick={() => {
+                                if (onOpenCoaching) {
+                                    onClose();
+                                    onOpenCoaching();
+                                } else {
+                                    setShowPaymentModal(true);
+                                }
+                            }}
+                            className="w-full py-3.5 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl hover:shadow-amber-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                        >
+                            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                            <span>🔮 1:1 다각도 심층 명심 AI 코칭 받기 (🔒 890원) ➔</span>
+                        </button>
+                        <p className="text-[9.5px] text-gray-500 font-medium">
+                            * 본 리포트는 3세대 CBT 인지재구성 특허출원중(제10-2025-0166877호) 알고리즘으로 작성되었습니다.
                         </p>
                     </div>
 
                 </motion.div>
             </motion.div>
+
+            {/* 💳 890원 1:1 심층 AI 코칭 결제 및 상담 딥링크 모달 */}
+            {showPaymentModal && (
+                <div className="fixed inset-0 z-[10000] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
+                    <div className="relative w-full max-w-md bg-slate-950 border border-amber-500/40 rounded-3xl p-4 shadow-2xl space-y-3 text-left">
+                        <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                            <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
+                                <Sparkles className="w-4 h-4 text-amber-400" />
+                                <span>📜 [특허출원중 82% OFF] 시중가 <span className="line-through text-gray-400">5,000원</span> ➔ 890원</span>
+                            </div>
+                            <button 
+                                onClick={() => setShowPaymentModal(false)}
+                                className="text-gray-400 hover:text-white p-1 cursor-pointer"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        <PaymentCard
+                            onDetailedReport={() => {
+                                setShowPaymentModal(false);
+                                onClose();
+                                if (typeof window !== 'undefined') {
+                                    window.location.href = '/myeongsim-chat';
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* 명리학 용어 상세 설명 모달 */}
             <MyeongliTermModal

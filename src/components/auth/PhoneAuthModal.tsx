@@ -87,15 +87,15 @@ export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, select
             }
 
             if (user) {
-                // [FIX] Tier별 한글 설명 매핑
+                // [FIX] Tier별 한글 설명 매핑 (VIP 제거 -> 단발성 충전권 이름으로 개정)
                 const tierNames: Record<string, string> = {
-                    'TRIAL_30M': '💎 맛보기 30분 3,900원',
-                    'TRIAL': '💎 맛보기 30분 3,900원',
-                    'PASS_24H': '⭐ 자유이용권 24시간',
-                    'PASS': '⭐ 자유이용권 24시간',
-                    'VIP_7D': '👑 VIP 7일권',
-                    'VIP': '👑 VIP 7일권',
-                    'FREE': '무료 체험'
+                    'TRIAL_30M': '💬 890원 대화 3회 충전',
+                    'TRIAL': '💬 890원 대화 3회 충전',
+                    'PASS_24H': '🔬 1,900원 오행 리포트',
+                    'PASS': '🔬 1,900원 오행 리포트',
+                    'VIP_7D': '🔮 3,900원 마스터코어',
+                    'VIP': '🔮 3,900원 마스터코어',
+                    'FREE': '기본 무료 대화'
                 };
 
                 let successMsg = '로그인되었습니다.';

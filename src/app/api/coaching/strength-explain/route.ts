@@ -4,11 +4,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const categoryLabelMap: Record<string, string> = {
-  forceField: '역장(Force Field) 분석',
-  talentProfile: '재능 프로필',
-  cooperation: '협력 역량',
-  powerbase: '파워베이스',
-  specificTalent: '세부 재능',
+  forceField: '본질 에너지 포스필드 (Force Field)',
+  talentProfile: '업무 & 행동 역량 프로필',
+  cooperation: '협력 & 파트너십 시너지',
+  powerbase: '조직 파워베이스 & 기여도',
+  specificTalent: '핵심 특수 강점 슈퍼파워',
+  total360: '세계 최고 360° 통합 다각도 통찰',
 };
 
 export async function POST(req: NextRequest) {
@@ -22,42 +23,82 @@ export async function POST(req: NextRequest) {
       sajuPillars,
     } = await req.json();
 
-    if (!category || !itemLabel || itemValue === undefined) {
+    if (!category || !itemLabel) {
       return NextResponse.json(
-        { error: '필수 파라미터가 누락되었습니다 (category, itemLabel, itemValue).' },
+        { error: '필수 파라미터가 누락되었습니다 (category, itemLabel).' },
         { status: 400 }
       );
     }
 
     const categoryName = categoryLabelMap[category] || category;
 
+    // [Fix] sajuPillars가 [object Object]로 파싱되는 현상을 완벽 방어
+    let sajuText = '';
+    if (typeof sajuPillars === 'string' && !sajuPillars.includes('[object Object]')) {
+      sajuText = sajuPillars;
+    } else if (sajuPillars && typeof sajuPillars === 'object') {
+      try {
+        const parts = Object.values(sajuPillars).map((p: any) => {
+          if (typeof p === 'string') return p;
+          if (typeof p === 'object' && p !== null) {
+            const g = typeof p.gan === 'object' ? (p.gan.hangeul || p.gan.hanja || '') : (p.gan || '');
+            const j = typeof p.ji === 'object' ? (p.ji.hangeul || p.ji.hanja || '') : (p.ji || '');
+            return `${g}${j}`;
+          }
+          return '';
+        }).filter(Boolean);
+        sajuText = parts.join(' ');
+      } catch (e) {
+        sajuText = '';
+      }
+    }
+
+    if (!sajuText || sajuText.includes('[object Object]')) {
+      sajuText = userName ? `${userName}님의 타고난 생년월일 사주 명리 기질 원국` : '타고난 생년월일 사주 명리 기질 원국';
+    }
+
     const model = genAI.getGenerativeModel({
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     });
 
-    const prompt = `당신은 '명심코칭' 전문 사주명리 상담사입니다.
-사용자 이름: ${userName || '익명'}
-사주 원국 4주: ${sajuPillars ? JSON.stringify(sajuPillars) : '미입력'}
+    const isTotalReport = category === 'total360' || itemKey === 'total360';
+
+    const prompt = isTotalReport
+      ? `당신은 세계 최고 수준의 '3세대 최신 심리 과학적 도구 & 사주명리학 융합 웰니스 Master AI 코치'입니다.
+사용자 이름: ${userName || '명심가'}
+분석 대상 사주 기질 원국: ${sajuText}
+
+[요청 사항]
+${userName}님의 강점/재능 전체 데이터를 다각도(360도)로 통합 분석하여, 사용자가 삶과 일터에서 최고의 성과와 마음의 평온을 동시에 얻을 수 있는 '세계 최고 360° 강점 심층 통찰 총평'을 작성해 주세요.
+
+절대로 데이터 연동 에러 메시지(예: [object Object])나 사주 미입력에 관한 사과문을 포함하지 마시고, 바로 밝고 품격 있는 명심 코칭 톤으로 답변을 시작하세요.
+
+아래 5가지 파트로 구분하여 깊이 있고 격조 높게 작성해 주세요:
+1. 🌟 360° 핵심 강점 총평 (본질 에너지의 근원과 독보적 강점)
+2. 🌿 뇌신경 & 기질 융합 역량 (업무, 협력, 조직에서의 발현 방식)
+3. 🔍 스트레스 방어 & 인지 탈융합 (주의해야 할 다크코드 및 회복 탄력성)
+4. 💡 300% 성과 가속 스케일업 로드맵 (가장 잘 어울리는 역할과 파트너십)
+5. ✨ 1분 제로포인트 영점 성찰 앵커 (오늘 바로 실천할 1분 행동 지침)
+
+격려와 영감을 주는 다정한 톤으로, 깊은 통찰과 실용적인 지침을 제공해 주세요.`
+      : `당신은 세계 최고 수준의 '3세대 최신 심리 과학적 도구 & 사주명리학 융합 웰니스 Master AI 코치'입니다.
+사용자 이름: ${userName || '명심가'}
+분석 대상 사주 기질 원국: ${sajuText}
 
 분석 대상:
 - 카테고리: ${categoryName}
 - 항목: ${itemLabel}
-- 점수: ${itemValue}/100
+- 점수/수치: ${itemValue}/100
 
-위 항목에 대해 아래 형식으로 초보자도 이해할 수 있도록 상세히, 은유법과 비유법을 사용하여, 감동적이고 다정하게 설명해주세요:
+위 항목에 대해 다각도(360도)로 깊이 있게 분석하여, 초보자도 한눈에 이해하고 무릎을 칠 수 있도록 다정하고 직관적으로 설명해 주세요:
 
-[특별 가이드]
-- 만약 분석 카테고리가 '파워베이스' 또는 '조직 기여'와 관련되어 있다면, 해당 항목(예: 지속가능성 유지, 구조와 체계 구축 등)이 회사나 모임 등의 사회 조직 속에서 실제로 어떻게 발현되는 강점인지 사주 십성(비겁, 식상, 재성, 관성, 인성) 기운의 뜻과 연결하여 아주 쉽게 풀어 설명해 주세요.
-- 초보자가 사주나 십성을 전혀 모르더라도 "아, 내가 그래서 모임이나 일터에서 이런 행동을 하고 이 역할을 잘 해냈구나!" 하고 무릎을 치며 소름 돋아 할 만한 삶의 팁을 자연물이나 구체적 역할에 비유해서 다정하게 짚어주세요.
+1. 🌟 360° 다각도 역량 진단 (이 강점이 의미하는 핵심 가치와 뇌신경-기질의 결합)
+2. 🌿 직무 & 커리어 발현 비유 (자연물이나 사회적 역할에 비유한 쉬운 설명)
+3. 🔍 300% 레버리지 가속 스위치 (이 재능을 3배 더 효과적으로 활용하는 노하우)
+4. 💡 인지 왜곡(다크코드) 예방 (과유불급일 때 주의할 점과 멘탈 밸런싱)
+5. ✨ 1분 실천 성찰 앵커 (오늘 바로 삶에 적용할 한 줄 훈련법)
 
-1. 🌟 한 줄 요약 (이 항목이 당신에게 의미하는 것)
-2. 🌿 은유적 해석 (자연이나 일상의 비유로 쉽게 설명)
-3. 🔍 상세 분석 (이 점수가 의미하는 구체적 내용, 3-4문장)
-4. 💡 실천 조언 (일상에서 이 에너지를 활용하는 구체적 방법 2가지)
-5. ✨ 명심 한마디 (한 줄 명언 형식의 격려)
-
-각 섹션은 줄바꿈으로 구분하고, 초보자가 사주를 전혀 몰라도 이해할 수 있도록 쉬운 말로 작성하세요.
-절대로 어려운 한자어나 전문용어를 날것으로 사용하지 마세요.`;
+각 섹션은 이모지 헤더로 구분하고, 깊은 감동과 실용적 팁을 담아 친절하게 작성하세요.`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text().trim();
@@ -69,11 +110,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         explanation:
-          '🌟 지금은 분석 결과를 불러오는 중에 잠시 어려움이 있었어요.\n\n' +
-          '🌿 마치 구름이 잠시 달을 가린 것처럼, 곧 다시 맑아질 거예요.\n\n' +
-          '🔍 잠시 후 다시 시도해 주시면 더 정확한 분석을 보여드릴게요.\n\n' +
-          '💡 잠깐의 여유를 가지고, 차 한 잔의 따스함을 느껴보세요.\n\n' +
-          '✨ 기다림도 당신을 위한 시간입니다.',
+          '🌟 360° 다각도 분석 결과를 불러오는 중에 잠시 연결이 연장되고 있습니다.\n\n' +
+          '🌿 잠시 후 다시 클릭해 주시면 당신의 독보적인 강점과 뇌신경 융합 분석을 완벽히 선보이겠습니다.\n\n' +
+          '🔍 기다리는 순간에도 당신의 본질 에너지는 여전히 아름답게 빛나고 있습니다.\n\n' +
+          '💡 차 한 잔의 여유로 마음의 주파수를 432Hz 평온으로 맞추어 보세요.\n\n' +
+          '✨ 당신의 무한한 가능성을 항상 응원합니다.',
       },
       { status: 200 }
     );

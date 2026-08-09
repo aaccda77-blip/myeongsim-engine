@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, ShieldCheck, Activity, Brain } from 'lucide-react';
+import { Sparkles, Heart, Sun, Compass } from 'lucide-react';
+import MyeongsimSunLogo from './common/MyeongsimSunLogo';
 
-const LOADING_STEPS = [
-    { text: "보안 시스템 접속 중...", icon: Terminal, color: "text-green-500" },
-    { text: "생체 리듬 데이터 스캔...", icon: Activity, color: "text-blue-500" },
-    { text: "심리-현실 격차 분석 중...", icon: ShieldCheck, color: "text-yellow-500" },
-    { text: "뉴럴 패턴 매핑 동기화...", icon: Brain, color: "text-purple-500" },
+const WARM_LOADING_STEPS = [
+    { text: "당신의 마음에 공감하며 지혜를 모으는 중입니다...", icon: Heart, color: "text-amber-400" },
+    { text: "깊은 안도감과 안정감을 선사할 문장을 정성껏 가다듬고 있습니다...", icon: Sun, color: "text-amber-300" },
+    { text: "타고난 기질과 지혜의 빛을 융합하는 중입니다...", icon: Sparkles, color: "text-yellow-400" },
+    { text: "당신만을 위한 따뜻한 명심 에세이를 완성하고 있습니다...", icon: Compass, color: "text-amber-200" },
 ];
 
 export default function PatentLoadingTerminal() {
@@ -16,63 +17,59 @@ export default function PatentLoadingTerminal() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setStepIndex((prev) => (prev + 1) % LOADING_STEPS.length);
-        }, 800); // Switch every 0.8s
+            setStepIndex((prev) => (prev + 1) % WARM_LOADING_STEPS.length);
+        }, 1200);
 
         return () => clearInterval(interval);
     }, []);
 
-    const currentStep = LOADING_STEPS[stepIndex];
+    const currentStep = WARM_LOADING_STEPS[stepIndex];
     const Icon = currentStep.icon;
 
     return (
-        <div className="w-full flex flex-col items-center justify-center p-6 bg-black/80 border border-green-500/30 rounded-xl backdrop-blur-md shadow-[0_0_20px_rgba(0,255,0,0.1)] font-mono">
-            {/* Animated Icon */}
-            <div className="mb-4 relative">
-                <div className="absolute inset-0 bg-green-500/20 blur-xl rounded-full animate-pulse" />
+        <div className="w-full flex flex-col items-center justify-center p-5 bg-gradient-to-b from-[#0D1525]/90 to-[#050B14]/90 border border-amber-500/30 rounded-2xl backdrop-blur-md shadow-[0_8px_30px_rgba(251,191,36,0.1)] font-sans">
+            {/* Animated Sun Logo & Icon */}
+            <div className="mb-3 relative flex items-center justify-center">
+                <div className="absolute inset-0 bg-amber-500/20 blur-2xl rounded-full animate-pulse" />
                 <motion.div
                     key={stepIndex}
-                    initial={{ scale: 0.8, opacity: 0 }}
+                    initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="relative z-10 flex items-center gap-2"
                 >
-                    <Icon className={`w-8 h-8 ${currentStep.color}`} />
+                    <MyeongsimSunLogo size={36} />
                 </motion.div>
             </div>
 
-            {/* Terminal Text */}
-            <div className="h-6 overflow-hidden relative w-full flex justify-center">
-                <AnimatePresence mode='wait'>
+            {/* Warm Loading Text */}
+            <div className="min-h-[40px] relative w-full flex justify-center items-center py-1">
+                <AnimatePresence mode="wait">
                     <motion.div
                         key={stepIndex}
-                        initial={{ y: 20, opacity: 0 }}
+                        initial={{ y: 12, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -20, opacity: 0 }}
+                        exit={{ y: -12, opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="flex items-center gap-2"
+                        className="flex items-center justify-center gap-2 text-center px-2"
                     >
-                        <span className="text-green-500 text-xs">root@master-h:~$</span>
-                        <span className={`text-sm font-bold ${currentStep.color}`}>
+                        <Icon className={`w-4 h-4 ${currentStep.color} animate-pulse shrink-0`} />
+                        <span className="text-xs md:text-sm font-medium text-amber-100/90 tracking-tight leading-relaxed break-keep">
                             {currentStep.text}
                         </span>
-                        <span className="w-2 h-4 bg-green-500 animate-pulse ml-1" />
                     </motion.div>
                 </AnimatePresence>
             </div>
 
-            {/* Progress Bar */}
-            <div className="w-full h-1 bg-gray-800 rounded-full mt-4 overflow-hidden">
+            {/* Subtle Golden Progress Bar */}
+            <div className="w-3/4 h-1 bg-white/10 rounded-full mt-3 overflow-hidden">
                 <motion.div
-                    className="h-full bg-gradient-to-r from-green-500 via-blue-500 to-purple-500"
+                    className="h-full bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-400"
                     animate={{ x: ["-100%", "100%"] }}
-                    transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                    transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
                 />
             </div>
-
-            <p className="text-[10px] text-gray-500 mt-2">
-                특허출원번호 10-2025-0166877 발명의 명칭: 심리 및 생체 데이터기반 스트레스 관리 솔루션 제공장치 및 이를 이용한 스트레스 관리 솔루션 제공방법
-            </p>
         </div>
     );
 }

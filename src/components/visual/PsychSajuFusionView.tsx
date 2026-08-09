@@ -150,9 +150,9 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
 
     if (!isOpen) return null;
 
-    // SVG Radar Chart Logic (Pentagram)
+    // SVG Radar Chart Logic (Pentagram with Safe Margin)
     const renderRadarPolygon = (data: number[], color: string, fillOpacity: number = 0.2) => {
-        const cx = 100, cy = 100, r = 80;
+        const cx = 100, cy = 100, r = 65;
         const coords = data.map((val, i) => {
             const angle = (Math.PI / 2) - (2 * Math.PI * i / 5);
             return `${cx + (r * val / 100) * Math.cos(angle)},${cy - (r * val / 100) * Math.sin(angle)}`;
@@ -166,60 +166,68 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
     const currentCase = CASE_DATA[selectedCase];
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-gray-900 border border-blue-500/30 rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(59,130,246,0.2)] text-gray-100"
+                className="bg-gray-900 border border-blue-500/30 rounded-2xl w-full max-w-5xl max-h-[92vh] overflow-y-auto shadow-[0_0_50px_rgba(59,130,246,0.2)] text-gray-100 my-auto"
             >
                 {/* Header */}
-                <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-purple-900/20 sticky top-0 z-10 backdrop-blur-md">
-                    <div>
-                        <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight block mt-2">
+                <div className="p-4 sm:p-6 border-b border-gray-800 flex justify-between items-start bg-gradient-to-r from-blue-900/20 to-purple-900/20 sticky top-0 z-20 backdrop-blur-md gap-3">
+                    <div className="flex-1 min-w-0 pr-2">
+                        <h2 className="text-lg sm:text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight block leading-snug">
                             나의 16가지 행동 기질(성격) 테스트
                         </h2>
-                        <p className="text-sm md:text-base text-gray-300 mt-2 font-medium">융의 분석심리학과 동양학적 64 신경망 코드가 만났다!</p>
+                        <p className="text-xs sm:text-sm md:text-base text-gray-300 mt-1 font-medium leading-relaxed">
+                            융의 분석심리학과 동양학적 64 신경망 코드가 만났다!
+                        </p>
                         
-                        <div className="mt-3 flex flex-col justify-center border-t border-gray-700/50 pt-2">
-                            <span className="text-xs text-blue-400/80 font-mono tracking-wider">🧬 원천 기술: 동서양 기질 융합 스캐너 (특허 기술)</span>
-                            <span className="text-[10px] text-gray-500 font-mono mt-0.5">Western 5대 성격 지표 & 16가지 행동 기질 × Eastern Saju & Neural Code</span>
+                        <div className="mt-2.5 flex flex-col justify-center border-t border-gray-700/50 pt-2">
+                            <span className="text-[11px] sm:text-xs text-blue-400/90 font-mono tracking-wider">🧬 원천 기술: 동서양 기질 융합 스캐너 (특허 기술)</span>
+                            <span className="text-[9px] sm:text-[10px] text-gray-400 font-mono mt-0.5">Western 5대 성격 지표 & 16가지 행동 기질 × Eastern Saju & Neural Code</span>
                         </div>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl font-light">&times;</button>
+                    <button 
+                        onClick={onClose} 
+                        className="text-gray-400 hover:text-white text-2xl sm:text-3xl font-light p-1 rounded-lg hover:bg-white/10 transition-colors shrink-0 leading-none"
+                        aria-label="닫기"
+                    >
+                        &times;
+                    </button>
                 </div>
 
                 {/* Tabs */}
                 {scanned && (
-                    <div className="flex flex-wrap items-center justify-between border-b border-gray-800 bg-gray-900/50 px-6">
+                    <div className="flex flex-wrap items-center justify-between border-b border-gray-800 bg-gray-900/50 px-4 sm:px-6">
                         <div className="flex flex-wrap">
                             <button 
                                 onClick={() => setActiveTab('fusion')}
-                                className={`py-4 px-6 text-sm font-bold border-b-2 transition-colors ${activeTab === 'fusion' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                                className={`py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm font-bold border-b-2 transition-colors ${activeTab === 'fusion' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
                             >
                                 1. 교차 분석 (Cross-Mapping)
                             </button>
                             <button 
                                 onClick={() => { setActiveTab('evolution'); setSimStep(1); }}
-                                className={`py-4 px-6 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'evolution' ? 'border-purple-500 text-purple-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                                className={`py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-1.5 ${activeTab === 'evolution' ? 'border-purple-500 text-purple-400' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
                             >
-                                2. 다차원 인지 진화 시뮬레이터 <span className="px-2 py-0.5 rounded text-[10px] bg-red-500/20 text-red-400 border border-red-500/30">심사위원 데모</span>
+                                2. 다차원 인지 진화 시뮬레이터
                             </button>
                         </div>
                         <button
                             onClick={() => setIsSandboxOpen(true)}
-                            className="my-2 py-2 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs font-black tracking-wider uppercase shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+                            className="my-2 py-1.5 px-3 sm:py-2 sm:px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-[11px] sm:text-xs font-black tracking-wider uppercase shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
                         >
-                            ⚡ 3세대 심리 디버깅 콘솔 가동
+                            ⚡ 3세대 심리 디버깅 콘솔
                         </button>
                     </div>
                 )}
 
-                <div className="p-6 md:p-8 space-y-8 min-h-[500px]">
+                <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 min-h-[450px]">
                     {!scanned ? (
-                        <div className="flex flex-col items-center justify-center py-32">
-                            <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-700 rounded-full animate-spin"></div>
-                            <p className="mt-6 text-blue-400 tracking-widest font-mono text-sm uppercase">Syncing Bio-Data & Psychological Vectors...</p>
+                        <div className="flex flex-col items-center justify-center py-24 sm:py-32">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-t-blue-500 border-gray-700 rounded-full animate-spin"></div>
+                            <p className="mt-6 text-blue-400 tracking-widest font-mono text-xs sm:text-sm uppercase">Syncing Bio-Data & Psychological Vectors...</p>
                         </div>
                     ) : (
                         <AnimatePresence mode="wait">
@@ -230,16 +238,17 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                     initial={{ opacity: 0, x: -20 }} 
                                     animate={{ opacity: 1, x: 0 }} 
                                     exit={{ opacity: 0, x: -20 }}
-                                    className="space-y-12"
+                                    className="space-y-8 sm:space-y-12"
                                 >
                                     {/* Main Visual: Two Radars with Connection */}
-                                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-center">
                                         {/* WESTERN */}
-                                        <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 relative overflow-hidden">
+                                        <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-4 sm:p-6 rounded-xl border border-gray-700/50 relative overflow-hidden w-full">
                                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full"></div>
-                                            <h3 className="text-lg font-semibold text-blue-300 tracking-wide">서양 심리학 (Cognitive)</h3>
-                                            <div className="w-48 h-48 relative">
-                                                <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                                            <h3 className="text-base sm:text-lg font-semibold text-blue-300 tracking-wide text-center">서양 심리학 (Cognitive)</h3>
+                                            
+                                            <div className="w-full max-w-[220px] aspect-square relative flex items-center justify-center">
+                                                <svg viewBox="-40 -20 280 240" className="w-full h-full drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] overflow-visible">
                                                     {/* Grid */}
                                                     {renderRadarPolygon([100,100,100,100,100], "#374151", 0)}
                                                     {renderRadarPolygon([80,80,80,80,80], "#374151", 0)}
@@ -248,21 +257,22 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                     {renderRadarPolygon([20,20,20,20,20], "#374151", 0)}
                                                     {/* Data */}
                                                     {renderRadarPolygon(bigFiveArray, "#3b82f6", 0.4)}
-                                                    {/* Labels approximate positions */}
-                                                    <text x="100" y="15" fill="#9ca3af" fontSize="10" textAnchor="middle">외향성(E)</text>
-                                                    <text x="180" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">개방성(O)</text>
-                                                    <text x="150" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">우호성(A)</text>
-                                                    <text x="50" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">성실성(C)</text>
-                                                    <text x="20" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">신경성(N)</text>
+                                                    {/* Safe Label Placements with Exact Text Anchors */}
+                                                    <text x="100" y="16" fill="#60a5fa" fontSize="11" fontWeight="bold" textAnchor="middle">외향성(E)</text>
+                                                    <text x="180" y="72" fill="#9ca3af" fontSize="10" textAnchor="start">개방성(O)</text>
+                                                    <text x="155" y="185" fill="#9ca3af" fontSize="10" textAnchor="start">우호성(A)</text>
+                                                    <text x="45" y="185" fill="#9ca3af" fontSize="10" textAnchor="end">성실성(C)</text>
+                                                    <text x="20" y="72" fill="#9ca3af" fontSize="10" textAnchor="end">신경성(N)</text>
                                                 </svg>
                                             </div>
-                                            <div className="text-center z-10">
+                                            
+                                            <div className="text-center z-10 w-full">
                                                 <p className="text-xs text-gray-400 mb-1">16가지 행동 기질형</p>
-                                                <div className="inline-block px-4 py-1.5 rounded-lg bg-blue-900/40 border border-blue-500/30 text-2xl font-bold text-white tracking-widest">{userData.mbti}</div>
+                                                <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg bg-blue-900/40 border border-blue-500/30 text-xl sm:text-2xl font-bold text-white tracking-widest whitespace-nowrap">{userData.mbti}</div>
                                             </div>
                                         </div>
 
-                                        {/* CONNECTOR / SYNC */}
+                                        {/* CONNECTOR / SYNC (Desktop & Mobile Adaptations) */}
                                         <div className="hidden md:flex flex-col items-center justify-center space-y-2 relative h-full">
                                             <div className="text-center text-[10px] text-blue-400 font-mono tracking-widest uppercase mb-4 animate-pulse">Bio-Metric Cross Sync</div>
                                             
@@ -284,17 +294,24 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                 </svg>
                                             </div>
                                             
-                                            <div className="px-3 py-1 rounded bg-gray-800 border border-gray-600 text-[10px] md:text-xs text-blue-300 blur-[0.3px] whitespace-nowrap overflow-hidden">
+                                            <div className="px-3 py-1 rounded bg-gray-800 border border-gray-600 text-[10px] md:text-xs text-blue-300 whitespace-nowrap overflow-hidden">
                                                 60 Archetype Neural Vector Generation
                                             </div>
                                         </div>
 
+                                        {/* Mobile Connector Divider */}
+                                        <div className="flex md:hidden flex-col items-center justify-center my-1 py-2 border-y border-gray-700/50 w-full text-center">
+                                            <span className="text-[10px] text-blue-400 font-mono tracking-widest uppercase">🧬 Bio-Metric Cross Sync</span>
+                                            <span className="text-[11px] text-purple-300 font-bold mt-0.5">60 Archetype Neural Vector Sync</span>
+                                        </div>
+
                                         {/* EASTERN */}
-                                        <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 relative overflow-hidden">
+                                        <div className="flex flex-col items-center space-y-4 bg-gray-800/50 p-4 sm:p-6 rounded-xl border border-gray-700/50 relative overflow-hidden w-full">
                                             <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full"></div>
-                                            <h3 className="text-lg font-semibold text-purple-300 tracking-wide">동양 성격 기질 선천 유전자 (Genotype)</h3>
-                                            <div className="w-48 h-48 relative">
-                                                <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                                            <h3 className="text-base sm:text-lg font-semibold text-purple-300 tracking-wide text-center">동양 성격 기질 선천 유전자 (Genotype)</h3>
+                                            
+                                            <div className="w-full max-w-[220px] aspect-square relative flex items-center justify-center">
+                                                <svg viewBox="-40 -20 280 240" className="w-full h-full drop-shadow-[0_0_15px_rgba(168,85,247,0.5)] overflow-visible">
                                                     {/* Grid */}
                                                     {renderRadarPolygon([100,100,100,100,100], "#374151", 0)}
                                                     {renderRadarPolygon([80,80,80,80,80], "#374151", 0)}
@@ -303,17 +320,18 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                     {renderRadarPolygon([20,20,20,20,20], "#374151", 0)}
                                                     {/* Data */}
                                                     {renderRadarPolygon(ohaengArray, "#a855f7", 0.4)}
-                                                    {/* Labels approximate positions */}
-                                                    <text x="100" y="15" fill="#9ca3af" fontSize="10" textAnchor="middle">화(火/발산)</text>
-                                                    <text x="180" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">목(木/성장)</text>
-                                                    <text x="150" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">토(土/수용)</text>
-                                                    <text x="50" y="180" fill="#9ca3af" fontSize="10" textAnchor="middle">금(金/규칙)</text>
-                                                    <text x="20" y="70" fill="#9ca3af" fontSize="10" textAnchor="middle">수(水/응축)</text>
+                                                    {/* Safe Label Placements with Exact Text Anchors */}
+                                                    <text x="100" y="16" fill="#c084fc" fontSize="11" fontWeight="bold" textAnchor="middle">화(火/발산)</text>
+                                                    <text x="180" y="72" fill="#9ca3af" fontSize="10" textAnchor="start">목(木/성장)</text>
+                                                    <text x="155" y="185" fill="#9ca3af" fontSize="10" textAnchor="start">토(土/수용)</text>
+                                                    <text x="45" y="185" fill="#9ca3af" fontSize="10" textAnchor="end">금(金/규칙)</text>
+                                                    <text x="20" y="72" fill="#9ca3af" fontSize="10" textAnchor="end">수(水/응축)</text>
                                                 </svg>
                                             </div>
-                                            <div className="text-center z-10">
+                                            
+                                            <div className="text-center z-10 w-full">
                                                 <p className="text-xs text-gray-400 mb-1">기질 신경망 (Neural Code)</p>
-                                                <div className="inline-block px-4 py-1.5 rounded-lg bg-purple-900/40 border border-purple-500/30 text-xl font-bold text-white tracking-widest">{userData.neuralCode}</div>
+                                                <div className="inline-flex items-center justify-center px-3 sm:px-4 py-1.5 rounded-lg bg-purple-900/40 border border-purple-500/30 text-sm sm:text-base md:text-lg font-bold text-white tracking-wide whitespace-nowrap">{userData.neuralCode}</div>
                                             </div>
                                         </div>
                                     </div>

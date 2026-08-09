@@ -30,6 +30,13 @@ const CATEGORIES = ['자아', '그림자', '관계', '목적', '초월', '연애
 export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' }: AwakeningChatProps) {
     const { reportData } = useReportStore();
     const { t, language } = useLanguage(); // [Multi-Language]
+    
+    // [이름 연동] 실제 사용자 성함 추출 (이경윤님)
+    const rawUserName = reportData?.userName || (typeof window !== 'undefined' ? localStorage.getItem('saju_user_name') : null);
+    const userName = (rawUserName && !rawUserName.toLowerCase().includes('the') && !rawUserName.toLowerCase().includes('te') && !rawUserName.includes('@')) 
+      ? rawUserName 
+      : '이경윤';
+
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -52,24 +59,24 @@ export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' 
             if (mode === '108') {
                 // [NEW] Category Selection Step
                 setFlowStep('category');
-                addBotMessage(language === 'kr' ? `오늘 당신의 내면을 비춰볼 자각의 거울입니다.\n지금 가장 마주하고 싶은 주제는 무엇입니까?` : t('awakening.intro'));
+                addBotMessage(language === 'kr' ? `오늘 ${userName}님의 내면을 비춰볼 자각의 거울입니다.\n지금 가장 마주하고 싶은 주제는 무엇입니까?` : t('awakening.intro'));
             } else {
                 // [Mode: Diagnosis] Standard Flow (Unchanged)
                 const generated = generateQuestions(reportData);
-                const roleAlias = generated[0]?.text.includes("'") ? generated[0].text.split("'")[1] : '나';
+                const roleAlias = generated[0]?.text.includes("'") ? generated[0].text.split("'")[1] : userName;
                 setRoleAlias(roleAlias);
                 const finalChoice = getDestinyChoice(reportData);
                 const fullCourse = [...generated, finalChoice];
 
                 setQuestions(fullCourse);
                 if (fullCourse.length > 0) {
-                    addBotMessage(fullCourse[0].text);
+                    addBotMessage(fullCourse[0].text.replace(/당신/g, `${userName}님`));
                 }
             }
         } else {
             addBotMessage(t('errors.user_data_load_failed') || "사용자 데이터를 불러오는 중 오류가 발생했습니다.");
         }
-    }, [reportData, mode, language]);
+    }, [reportData, mode, language, userName]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -97,9 +104,10 @@ export default function AwakeningChat({ onComplete, onClose, mode = 'diagnosis' 
         const protocol = categoryProtocols[Math.floor(Math.random() * categoryProtocols.length)] || AWAKENING_108[0];
 
         // Define 3 Stages (Maieutics -> Recursive -> Meta)
-        const q1Text = `[1단계: 직면 - ${category} 프로토콜]\n\n**${protocol.title}**\n"${protocol.subtitle}"\n\n${protocol.stage1_q || protocol.core_question}`;
-        const q2Text = protocol.stage2_q || `[2단계: 심층] 방금 하신 대답의 이면에는 어떤 진짜 감정이 숨어있을까요?`;
-        const q3Text = protocol.stage3_q || `[3단계: 객관화] 지금 그 마음을 3인칭 관찰자의 시선에서 조금 떨어져서 바라본다면, 자신에게 어떤 말을 해주고 싶나요?`;
+        const rawQ1 = protocol.stage1_q || protocol.core_question;
+        const q1Text = `[1단계: 직면 - ${category} 프로토콜]\n\n**${protocol.title}**\n"${protocol.subtitle}"\n\n${userName}님, ${rawQ1.replace(/당신/g, `${userName}님`)}`;
+        const q2Text = (protocol.stage2_q || `[2단계: 심층] 방금 하신 대답의 이면에는 어떤 진짜 감정이 숨어있을까요?`).replace(/당신/g, `${userName}님`);
+        const q3Text = (protocol.stage3_q || `[3단계: 객관화] 지금 그 마음을 3인칭 관찰자의 시선에서 조금 떨어져서 바라본다면, 자신에게 어떤 말을 해주고 싶나요?`).replace(/당신/g, `${userName}님`);
 
         const qs: CoachingQuestion[] = [
             { id: `${protocol.id}_s1`, type: 'hidden', text: q1Text, options: protocol.reflection_prompts },

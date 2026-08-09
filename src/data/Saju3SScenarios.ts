@@ -166,7 +166,7 @@ export const SAJU_3S_SCENARIOS: Record<string, Saju3SScenario> = {
         trigger: { userInputPlaceholder: "다 나한테 기대기만 하고, 나는 기댈 곳이 없어.", analysisText: "포용적 본성과 억눌린 자아 사이의 지각 변동." },
         scan: { uiMessage: "🔍 [견고한 바위산] 지각 균열 신호", description: "모든 것을 버텨내느라 당신의 내면에는 용암이 끓고 있습니다." },
         sync: { uiMessage: "🧬 싱크로율 확인: 대지의 스케일입니다.", description: "미동도 않는 당신의 든든함은 만물의 안식처가 됩니다." },
-        shift: { uiMessage: "🔄 에너지 시프트: 용암의 분출", description: "참지 말고 당신 안의 열기를 단어로 뱉어내십시오.", quest: "비밀 일기장에 욕 하나 적어보기", questAction: "단호하게", questMantra: "나는 남을 품기보다 나를 지키는 태산이다." }
+        shift: { uiMessage: "🔄 에너지 시프트: 용암의 분출", description: "참지 말고 당신 안의 열기를 단어로 뱉어내십시오.", quest: "내면의 노트에 차마 입으로 뱉지 못했던 거친 진심의 문장 적어보기", questAction: "단호하게", questMantra: "나는 남을 품기보다 나를 지키는 태산이다." }
     },
     '己': {
         id: 'gi',

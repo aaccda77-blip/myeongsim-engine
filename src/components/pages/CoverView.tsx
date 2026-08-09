@@ -314,7 +314,7 @@ export default function CoverView() {
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         placeholder="이름을 입력하세요"
-                                        className="w-full bg-secondary-slate/50 border border-white/10 text-white rounded-lg pl-11 py-4 focus:ring-1 focus:ring-primary-olive focus:border-primary-olive transition-all outline-none backdrop-blur-sm"
+                                        className="w-full bg-slate-900/70 border border-white/15 text-white rounded-xl pl-11 py-4 focus:ring-2 focus:ring-amber-500/50 focus:border-amber-400 transition-all outline-none backdrop-blur-md font-medium placeholder-gray-500"
                                         required
                                     />
                                 </div>
@@ -323,16 +323,16 @@ export default function CoverView() {
                             {/* Birth Date with Toggle */}
                             <div className="space-y-2">
                                 <div className="flex justify-between items-end">
-                                    <label className="text-xs font-medium text-gray-500 ml-1">생년월일</label>
-                                    <div className="flex bg-[#161d24] rounded-md p-0.5 border border-[#2c3641]">
+                                    <label className="text-xs font-semibold text-gray-400 ml-1">생년월일</label>
+                                    <div className="flex bg-slate-900/80 rounded-lg p-1 border border-white/10">
                                         {['solar', 'lunar'].map((type) => (
                                             <button
                                                 key={type}
                                                 type="button"
                                                 onClick={() => setCalendarType(type as any)}
-                                                className={`px-3 py-1 text-[10px] rounded-md font-medium transition-colors ${calendarType === type
-                                                    ? 'bg-primary-olive text-white'
-                                                    : 'text-gray-500 hover:text-gray-300'
+                                                className={`px-3 py-1 text-xs rounded-md font-bold transition-all ${calendarType === type
+                                                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-md shadow-amber-500/20'
+                                                    : 'text-gray-400 hover:text-gray-200'
                                                     } `}
                                             >
                                                 {type === 'solar' ? '양력' : '음력'}
@@ -342,7 +342,7 @@ export default function CoverView() {
                                 </div>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5 text-amber-400/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                                         </svg>
                                     </span>
@@ -350,7 +350,7 @@ export default function CoverView() {
                                         type="date"
                                         value={birthDate}
                                         onChange={(e) => setBirthDate(e.target.value)}
-                                        className="w-full bg-secondary-slate/50 border border-white/10 text-white rounded-lg pl-11 pr-4 py-4 focus:ring-1 focus:ring-primary-olive focus:border-primary-olive transition-all outline-none backdrop-blur-sm"
+                                        className="w-full bg-slate-900/70 border border-white/15 text-white rounded-xl pl-11 pr-4 py-4 focus:ring-2 focus:ring-amber-500/50 focus:border-amber-400 transition-all outline-none backdrop-blur-md font-medium"
                                         required
                                     />
                                 </div>
@@ -358,30 +358,30 @@ export default function CoverView() {
 
                             {/* Birth Time Selection */}
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-500 ml-1">태어난 시간</label>
+                                <label className="text-xs font-semibold text-gray-400 ml-1">태어난 시간</label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5 text-amber-400/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                                         </svg>
                                     </span>
                                     <select
                                         value={birthTime}
                                         onChange={(e) => setBirthTime(e.target.value)}
-                                        className="w-full bg-secondary-slate/50 border border-white/10 text-white rounded-lg pl-11 py-4 appearance-none focus:ring-1 focus:ring-primary-olive focus:border-primary-olive transition-all outline-none backdrop-blur-sm"
+                                        className="w-full bg-slate-900/70 border border-white/15 text-white rounded-xl pl-11 py-4 appearance-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-400 transition-all outline-none backdrop-blur-md font-medium"
                                     >
                                         {ZODIAC_TIME_OPTIONS.map((opt) => (
-                                            <option key={opt.value} value={opt.value} className="bg-[#1e262f] text-white">
+                                            <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">
                                                 {opt.label}
                                             </option>
                                         ))}
                                     </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-amber-400/80">
                                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                                     </div>
                                 </div>
                                 {birthTime !== 'unknown' && (
-                                    <p className="text-right text-[10px] text-gray-500">
+                                    <p className="text-right text-[10.5px] text-amber-300/80 font-medium">
                                         * {ZODIAC_TIME_OPTIONS.find(o => o.value === birthTime)?.hint}
                                     </p>
                                 )}
@@ -394,24 +394,24 @@ export default function CoverView() {
                                         key={g}
                                         type="button"
                                         onClick={() => setGender(g as any)}
-                                        className={`py-4 rounded-lg font-bold text-sm transition-all ${gender === g
-                                            ? 'bg-white text-deep-slate shadow-sm'
-                                            : 'bg-secondary-slate/50 border border-white/10 text-gray-400'
+                                        className={`py-4 rounded-xl font-extrabold text-sm transition-all ${gender === g
+                                            ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500 text-white shadow-lg shadow-indigo-500/30 border border-indigo-400/50 scale-[1.02]'
+                                            : 'bg-slate-900/60 border border-white/10 text-gray-400 hover:text-white hover:border-white/20'
                                             } `}
                                     >
-                                        {g === 'male' ? '남성' : '여성'}
+                                        {g === 'male' ? '남성 ♂' : '여성 ♀'}
                                     </button>
                                 ))}
                             </div>
 
-                            {/* Main Action Button */}
+                            {/* Main Action Button (100% Luxury Cosmic Gold CTA) */}
                             <div className="pt-4">
                                 <button
-                                    className="w-full bg-primary-olive hover:bg-[#557a35] text-white font-bold py-5 rounded-lg text-lg transition-colors shadow-lg shadow-primary-olive/20 flex justify-center items-center gap-2"
+                                    className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black py-5 rounded-2xl text-lg transition-all shadow-[0_0_30px_rgba(245,158,11,0.4)] border border-amber-300/50 flex justify-center items-center gap-2 active:scale-[0.98] cursor-pointer"
                                     type="submit"
                                     disabled={isLoading}
                                 >
-                                    {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : '기질 데이터 추출하기'}
+                                    {isLoading ? <Loader2 className="animate-spin w-6 h-6 text-slate-950" /> : '✨ 기질 데이터 추출하기 ➔'}
                                 </button>
                             </div>
                         </motion.form>
@@ -436,6 +436,8 @@ export default function CoverView() {
                             {/* ✨ 새로운 다차원 기질 설계도 (Multi-Dimensional Blueprint) */}
                             <MultiDimensionalBlueprint
                                 showActionButton={false}
+                                userName={name}
+                                saju={{ birthDate, birthTime, calendarType, dayMaster: previewPillars?.day?.gan?.char }}
                                 data={(() => {
                                     // previewPillars에서 간지(干支) 추출하여 NeuralBlueprintMapper + PillarMetaCodeMap으로 변환
                                     const getPillarCode = (pillar: any, pillarType: 'year' | 'month' | 'day' | 'time', isUnknown: boolean = false): CodeData => {
@@ -488,23 +490,23 @@ export default function CoverView() {
                                 })()}
                             />
 
-                            {/* 확인 & 코칭 시작 버튼 */}
+                            {/* 주 버튼 (Primary CTA) */}
                             <button
                                 onClick={() => handleConfirm('intro')}
-                                className="w-full bg-white hover:bg-gray-100 text-deep-slate font-bold py-5 rounded-xl text-lg transition-all shadow-xl flex justify-center items-center gap-2 group ring-4 ring-white/5 active:scale-95 mb-3"
+                                className="w-full bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black py-5 rounded-2xl text-base transition-all shadow-[0_0_25px_rgba(245,158,11,0.3)] border border-amber-300/60 flex justify-center items-center gap-2 group active:scale-[0.98] mb-3"
                             >
-                                🚀 나의 강점 활용법 코칭받기
+                                <Sparkles className="w-5 h-5 text-slate-950 group-hover:rotate-12 transition-transform" />
+                                ✨ 내 사주 기질 분석 리포트 전체 보기 (14개 챕터)
                                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </button>
 
-                            {/* 새로운 맞춤형 명심코칭 시작 버튼 (독립 모듈 연결) */}
+                            {/* 보조 버튼 (Secondary CTA) */}
                             <button
                                 onClick={() => handleConfirm('onboarding')}
-                                className="w-full bg-primary-olive hover:bg-[#6e944b] text-white font-bold py-5 rounded-xl text-lg transition-all shadow-[0_0_20px_rgba(101,140,66,0.2)] hover:shadow-[0_0_30px_rgba(101,140,66,0.4)] flex justify-center items-center gap-2 group active:scale-95"
+                                className="w-full bg-slate-900/80 hover:bg-slate-800/90 text-amber-200/90 hover:text-white font-bold py-3.5 rounded-xl text-xs transition-all border border-amber-500/20 hover:border-amber-500/40 flex justify-center items-center gap-1.5 group active:scale-95"
                             >
-                                <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                                나만의 맞춤형 명심코칭 시작하기
-                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                🎯 맞춤형 온보딩 코칭부터 시작하기
+                                <ChevronRight className="w-4 h-4 text-amber-400/70 group-hover:translate-x-0.5 transition-transform" />
                             </button>
 
                             <div className="mt-4 text-center">
@@ -523,8 +525,8 @@ export default function CoverView() {
 
             </div>
 
-            {/* Bottom Navigation Bar */}
-            <nav className="absolute bottom-0 left-0 right-0 bg-deep-slate/90 backdrop-blur-md border-t border-white/5 py-3 px-8 flex justify-between items-center z-20">
+            {/* Bottom Navigation Bar (Fixed with Safe Area Padding) */}
+            <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-deep-slate/95 backdrop-blur-xl border-t border-white/10 py-3 px-8 flex justify-between items-center z-50">
                 <button
                     onClick={() => {
                         if (viewMode === 'result') {

@@ -74,15 +74,15 @@ const MyeongsimOracleCardModal = dynamic(() => import('@/components/coaching/Mye
 const styles = {
     container: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        padding: '12px 4px',
+        padding: '12px 8px',
         background: 'linear-gradient(180deg, rgba(15,15,30,0.95) 0%, rgba(25,25,50,0.9) 100%)',
         backdropFilter: 'blur(20px)',
         borderRadius: '20px',
         boxShadow: '0 -4px 30px rgba(0,0,0,0.3)',
         marginBottom: '12px',
-        gap: '2px',
+        gap: '6px',
         flexWrap: 'nowrap' as const,
         width: '100%',
         maxWidth: '100%',
@@ -96,7 +96,7 @@ const styles = {
         flexDirection: 'column' as const,
         alignItems: 'center',
         gap: '4px',
-        padding: '6px 4px',
+        padding: '6px 6px',
         borderRadius: '12px',
         background: 'transparent',
         border: 'none',
@@ -104,7 +104,7 @@ const styles = {
         transition: 'all 0.3s ease',
         position: 'relative' as const,
         flex: '0 0 auto', // [Fix] 찌그러짐 방지
-        minWidth: '76px', // [Fix] 겹침 방지: 최소 너비 증가
+        minWidth: '82px', // [Fix] 겹침 방지: 최소 너비 최적화
         maxWidth: 'none', // [Fix] 텍스트 길이에 따라 늘어남
     } as React.CSSProperties,
 
@@ -1109,6 +1109,29 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 명심 마스터 코어 메뉴 (나의 리포트 옆 위치) */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        window.location.href = '/master-core';
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.2))',
+                        border: '1px solid rgba(168, 85, 247, 0.4)',
+                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.25)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>💎</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#c084fc', fontWeight: 'bold' }}>마스터 코어</div>
+                        <div style={styles.neuroTrigger}>내면치유 5대 솔루션</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 오늘의 명심 카드 (Myeongsim Oracle) 메뉴 */}
                 <button
                     style={styles.iconButton}
@@ -1138,13 +1161,13 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 나의 천재성 (My Genius) 메뉴 */}
+                {/* [NEW] 나의 본재 자각 메뉴 */}
                 <button
                     style={styles.iconButton}
                     onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) {
-                            alert('천재성 분석을 위해 생년월일을 먼저 등록해주세요.');
+                            alert('본재 기질 분석을 위해 생년월일을 먼저 등록해주세요.');
                             useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
                             return;
                         }
@@ -1162,8 +1185,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>💡</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>나의 천재성</div>
-                        <div style={styles.neuroTrigger}>1대1 주역 지니어스</div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>나의 본재(本財) 자각</div>
+                        <div style={styles.neuroTrigger}>본빛 기질 정밀 해독</div>
                     </div>
                 </button>
 
@@ -1196,7 +1219,7 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 천부 성정 (Genius) 메뉴 */}
+                {/* [NEW] 천부 성정 메뉴 */}
                 <button
                     style={styles.iconButton}
                     onClick={() => {

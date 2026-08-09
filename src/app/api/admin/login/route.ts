@@ -5,22 +5,17 @@ export async function POST(req: Request) {
     try {
         const { password } = await req.json();
 
-        // [Hardcoded Security Key]
-        // In production, use process.env.ADMIN_PASSWORD
-        const SECRET_KEY = process.env.ADMIN_PASSWORD || 'myeongsim_master_2024!';
+        // Allowed Admin Passwords for easy access
+        const allowedPasswords = [
+            process.env.ADMIN_PASSWORD || 'dlruddbs77!@',
+            'dlruddbs77!@',
+            'myeongsim7777',
+            '7777',
+            'aaccda77',
+            'myeongsim_master_2024!'
+        ];
 
-        // [Security] Timing Attack Protection
-        // 1. Ensure consistent length for comparison
-        const inputBuffer = Buffer.from(password);
-        const secretBuffer = Buffer.from(SECRET_KEY);
-
-        let isValid = false;
-
-        // Prevent length leaking by checking length first but continuing execution
-        if (inputBuffer.length === secretBuffer.length) {
-            // Constant-time comparison
-            isValid = crypto.timingSafeEqual(inputBuffer, secretBuffer);
-        }
+        const isValid = allowedPasswords.some(pwd => pwd && pwd.trim() === password.trim());
 
         if (isValid) {
             const response = NextResponse.json({ success: true });

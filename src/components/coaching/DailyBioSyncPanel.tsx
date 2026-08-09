@@ -844,37 +844,40 @@ export default function DailyBioSyncPanel() {
           >
             <div className="bg-[#0b1018]/90 border border-white/[0.06] rounded-2xl p-4 backdrop-blur-md">
 
-              {/* 프리미엄 탭 */}
-              <div className="flex gap-1.5 mb-5">
-                {TABS.map(tab => {
-                  const active = activeTab === tab.id;
-                  const isDeepScan = tab.id === 'deepscan';
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`relative flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${isDeepScan && !active ? 'animate-pulse' : ''}`}
-                      style={{
-                        color: active ? '#fff' : (isDeepScan ? '#f87171' : '#475569'),
-                        background: active
-                          ? (isDeepScan
-                              ? 'linear-gradient(135deg, #7f1d1d60, #450a0a30)'
-                              : `linear-gradient(135deg, ${energyColor}45, ${energyColor}20)`)
-                          : 'transparent',
-                        border: active
-                          ? (isDeepScan ? '1px solid #dc262660' : `1px solid ${energyColor}60`)
-                          : (isDeepScan ? '1px solid #7f1d1d50' : '1px solid #ffffff08'),
-                        boxShadow: active
-                          ? (isDeepScan ? '0 0 18px rgba(239,68,68,0.30)' : `0 0 18px ${energyColor}28`)
-                          : undefined,
-                      }}
-                    >
-                      <span>{tab.emoji}</span>
-                      <span>{tab.label}</span>
-                    </button>
-
-                  );
-                })}
+              {/* 프리미엄 탭 (수평 스크롤 지원 및 페이드 힌트) */}
+              <div className="relative mb-5">
+                <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 scroll-smooth">
+                  {TABS.map(tab => {
+                    const active = activeTab === tab.id;
+                    const isDeepScan = tab.id === 'deepscan';
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`relative shrink-0 flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 whitespace-nowrap ${isDeepScan && !active ? 'animate-pulse' : ''}`}
+                        style={{
+                          color: active ? '#fff' : (isDeepScan ? '#f87171' : '#94a3b8'),
+                          background: active
+                            ? (isDeepScan
+                                ? 'linear-gradient(135deg, #7f1d1d60, #450a0a30)'
+                                : `linear-gradient(135deg, ${energyColor}45, ${energyColor}20)`)
+                            : 'rgba(255, 255, 255, 0.03)',
+                          border: active
+                            ? (isDeepScan ? '1px solid #dc262660' : `1px solid ${energyColor}60`)
+                            : (isDeepScan ? '1px solid #7f1d1d50' : '1px solid #ffffff08'),
+                          boxShadow: active
+                            ? (isDeepScan ? '0 0 18px rgba(239,68,68,0.30)' : `0 0 18px ${energyColor}28`)
+                            : undefined,
+                        }}
+                      >
+                        <span>{tab.emoji}</span>
+                        <span>{tab.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Right Scroll Fade Mask Hint */}
+                <div className="absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-[#0b1018] to-transparent pointer-events-none rounded-r-xl" />
               </div>
 
               {/* 탭 콘텐츠 */}

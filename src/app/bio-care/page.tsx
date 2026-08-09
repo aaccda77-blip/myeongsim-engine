@@ -23,29 +23,29 @@ interface MenuCard {
 const MENU_CARDS: MenuCard[] = [
     {
         id: 'med-literacy',
-        title: '약물 리터러시',
-        subtitle: 'Med-Literacy',
-        description: '내 약을 제대로 이해하고 안전하게 복용하는 법',
-        icon: 'medication',
-        gradient: 'from-blue-900/40 to-slate-900',
-        glowColor: 'bg-blue-500/10',
+        title: '라이프 영양 리터러시',
+        subtitle: 'Nutri-Literacy',
+        description: '나의 섭취 영양소와 라이프 밸런스 가이드',
+        icon: 'nutrition',
+        gradient: 'from-emerald-900/40 to-slate-900',
+        glowColor: 'bg-emerald-500/10',
         route: '/bio-care/med-literacy'
     },
     {
         id: 'nutri-synergy',
-        title: '영양제 타이밍 스케줄러',
+        title: '영양소 타이밍 스케줄러',
         subtitle: 'Nutri-Timing',
         description: '흡수율 최적화를 위한 섭취 시간표',
         icon: 'schedule',
-        gradient: 'from-emerald-900/40 to-slate-900',
-        glowColor: 'bg-emerald-500/10',
+        gradient: 'from-blue-900/40 to-slate-900',
+        glowColor: 'bg-blue-500/10',
         route: '/bio-care/nutri-scheduler'
     },
     {
         id: 'body-log',
         title: '신체 알아차림 로그',
         subtitle: 'Body Awareness',
-        description: '내 몸의 변화를 기록하고 패턴 파악하기',
+        description: '내 몸 컨디션 반응을 기록하고 패턴 파악하기',
         icon: 'monitor_heart',
         gradient: 'from-orange-900/40 to-slate-900',
         glowColor: 'bg-orange-500/10',
@@ -55,7 +55,7 @@ const MENU_CARDS: MenuCard[] = [
         id: 'educator-note',
         title: '전문가의 한마디',
         subtitle: "Educator's Note",
-        description: '보건교육사의 전문 지식과 바이오해킹 인사이트',
+        description: '보건교육사의 영양·건강 전문 지식 칼럼',
         icon: 'school',
         gradient: 'from-purple-900/40 to-slate-900',
         glowColor: 'bg-purple-500/10',
@@ -102,7 +102,7 @@ export default function BioCarePage() {
                         바이오 밸런서
                     </h1>
                     <p className="text-slate-400 text-sm leading-relaxed">
-                        약물, 영양, 신체의 균형을 찾아가는<br />
+                        영양, 자율신경, 신체의 균형을 찾아가는<br />
                         당신만의 건강 관리 파트너
                     </p>
                 </div>

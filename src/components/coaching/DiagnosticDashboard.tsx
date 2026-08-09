@@ -644,14 +644,17 @@ export default function DiagnosticDashboard({ sajuInfo, reportData: propReportDa
                     ))}
 
                     <button
-                        onClick={() => router.push('/master-core')}
-                        className="w-full mt-6 py-4 bg-cyan-500 hover:bg-cyan-400 text-[#070a12] font-black text-sm uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 group"
+                        onClick={() => {
+                            if (onStartChat) onStartChat();
+                            router.push('/myeongsim-chat');
+                        }}
+                        className="w-full mt-6 py-4 bg-cyan-500 hover:bg-cyan-400 text-[#070a12] font-black text-sm uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 group cursor-pointer"
                     >
                         <Zap className="w-5 h-5 group-hover:animate-bounce" />
-                        {dayStem} 맞춤 디버그 세션 동기화 — AI 코치 연결
+                        {dayStem} 맞춤 메인 AI 챗봇 연결 — 실시간 코칭 시작
                     </button>
-                    <p className="text-center text-[9px] text-gray-600 font-mono mt-2">
-                        명심코칭 AI 채팅 페이지로 이동합니다. {dayStem} 일간 맞춤 코칭을 시작하십시오.
+                    <p className="text-center text-[10px] text-cyan-400/80 font-mono mt-2">
+                        명심 메인 AI 챗봇으로 이동합니다. {dayStem} 일간 맞춤 코칭을 바로 시작하십시오.
                     </p>
                 </div>
             </div>

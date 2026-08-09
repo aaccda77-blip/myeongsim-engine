@@ -86,6 +86,7 @@ export default function SocialValueDiscovery() {
     const [aiReport, setAiReport] = useState<AiReport | null>(null);
     const [aiLoading, setAiLoading] = useState(false);
     const [aiError, setAiError] = useState('');
+    const [copied, setCopied] = useState(false);
 
     // ── 사주 데이터에서 일간 자동 추출 ──
     const autoElementKey = useMemo(() => {
@@ -165,6 +166,14 @@ export default function SocialValueDiscovery() {
         setSelectedProfile(null);
     };
 
+    const handleCopyAiReport = () => {
+        if (!aiReport) return;
+        const text = `[사회적 가치 AI 코칭 리포트]\n\n01. 직업/기여 분석\n${aiReport.career_analysis}\n\n02. 알아차림 (생각과 나를 분리하기)\n"${aiReport.meta_awareness}"\n\n03. 내면 성찰 질문\n${aiReport.socratic_questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}\n\n04. 맞춤 코칭 전략\n${aiReport.coaching_strategy}\n\n05. 액션 플랜\n${aiReport.action_plan}`;
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     // Element selector button styles
     const elementButtonStyles: Record<string, string> = {
         growth: 'border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/30 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)]',
@@ -195,11 +204,20 @@ export default function SocialValueDiscovery() {
             <header className="relative z-10 p-4 border-b border-teal-900/40 bg-black/40 backdrop-blur-md">
                 <div className="max-w-2xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        {phase === 'REVEAL' && !autoElementKey && (
-                            <button onClick={handleBack} className="mr-2 text-gray-500 hover:text-white transition-colors">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-                            </button>
-                        )}
+                        <button 
+                            onClick={() => {
+                                if (phase === 'REVEAL' && !autoElementKey) {
+                                    handleBack();
+                                } else {
+                                    window.location.href = '/master-core';
+                                }
+                            }} 
+                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all border border-white/10 flex items-center gap-1 text-xs"
+                            title="마스터 코어 메인으로"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                            <span className="hidden sm:inline">이전</span>
+                        </button>
                         <span className="text-xl">🌏</span>
                         <div>
                             <h1 className="text-sm font-bold text-teal-200">사회적 가치 발견</h1>
@@ -244,9 +262,9 @@ export default function SocialValueDiscovery() {
                                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-200 via-white to-amber-200 mb-3">
                                     나의 사회적 가치 발견하기
                                 </h2>
-                                <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-900/20 border border-yellow-500/30">
-                                    <span className="text-yellow-400 text-xs">⚠️</span>
-                                    <span className="text-yellow-300/80 text-xs">만세력 사주 정보가 없습니다.<br />코어 드라이브를 직접 선택해 주세요.</span>
+                                <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-950/40 border border-teal-500/30">
+                                    <span className="text-teal-400 text-xs">✨</span>
+                                    <span className="text-teal-200/90 text-xs font-medium">나를 상징하는 코어 에너지를 직접 선택해 보세요!</span>
                                 </div>
                                 <p className="text-sm text-gray-400 leading-relaxed break-keep max-w-sm mx-auto">
                                     코어 드라이브(Core Drive)를 선택하면, 명심 마스터가 그 에너지를
@@ -372,7 +390,7 @@ export default function SocialValueDiscovery() {
                                         {isGongmang && selectedProfile.gongmangMessage && (
                                             <div className="p-5 rounded-2xl border border-purple-500/30" style={{ background: 'rgba(168,85,247,0.05)' }}>
                                                 <p className="text-[10px] font-bold text-purple-400 flex items-center gap-1.5 mb-2 tracking-wider">
-                                                    <span className="text-sm">🌌</span> QUANTUM VOID ACTIVATED
+                                                    <span className="text-sm">🌌</span> QUANTUM VOID (공망) — 새로운 가능성의 공간
                                                 </p>
                                                 <p className="text-[12px] text-purple-300/90 leading-relaxed italic break-keep">
                                                     {selectedProfile.gongmangMessage}
@@ -557,13 +575,13 @@ export default function SocialValueDiscovery() {
 
                                                 {/* 2. 알아차림 (인지 탈융합) */}
                                                 <div className="p-5 rounded-2xl border border-amber-500/20 bg-amber-950/5">
-                                                    <div className="text-[10px] font-mono text-amber-400 mb-2 tracking-wider">02 / 알아차림 — 인지 탈융합</div>
+                                                    <div className="text-[10px] font-mono text-amber-400 mb-2 tracking-wider">02 / 알아차림 — 생각과 나를 분리하기</div>
                                                     <p className="text-[13px] text-gray-200 leading-relaxed break-keep italic">&ldquo;{aiReport.meta_awareness}&rdquo;</p>
                                                 </div>
 
                                                 {/* 3. 산파술 질문 */}
                                                 <div className="p-5 rounded-2xl border border-rose-500/20 bg-rose-950/5">
-                                                    <div className="text-[10px] font-mono text-rose-400 mb-3 tracking-wider">03 / 산파술적 질문 (Socratic)</div>
+                                                    <div className="text-[10px] font-mono text-rose-400 mb-3 tracking-wider">03 / 내면의 답을 깨우는 성찰 질문</div>
                                                     <div className="space-y-3">
                                                         {aiReport.socratic_questions.map((q, i) => (
                                                             <div key={i} className="flex gap-3 items-start">
@@ -586,14 +604,22 @@ export default function SocialValueDiscovery() {
                                                     <p className="text-[13px] text-gray-200 leading-relaxed break-keep">{aiReport.action_plan}</p>
                                                 </div>
 
-                                                {/* 다시 생성 버튼 */}
-                                                <button
-                                                    onClick={handleGenerateAiReport}
-                                                    disabled={aiLoading}
-                                                    className="w-full py-3 rounded-xl text-[11px] font-bold text-indigo-400 border border-indigo-500/20 hover:border-indigo-400/40 hover:bg-indigo-950/20 transition-all"
-                                                >
-                                                    🔄 리포트 다시 생성하기
-                                                </button>
+                                                {/* 생성 후 액션 버튼들 */}
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={handleCopyAiReport}
+                                                        className="flex-1 py-3 rounded-xl text-[11px] font-bold bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 border border-indigo-500/30 transition-all flex items-center justify-center gap-1.5"
+                                                    >
+                                                        {copied ? '✅ 클립보드에 복사됨!' : '📋 AI 리포트 복사하기'}
+                                                    </button>
+                                                    <button
+                                                        onClick={handleGenerateAiReport}
+                                                        disabled={aiLoading}
+                                                        className="py-3 px-4 rounded-xl text-[11px] font-bold text-gray-400 border border-gray-800 hover:border-gray-700 hover:text-white transition-all"
+                                                    >
+                                                        🔄 다시 생성
+                                                    </button>
+                                                </div>
                                             </motion.div>
                                         )}
 

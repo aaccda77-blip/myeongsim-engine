@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic'; // [Deep Tech] Lazy Loading의 핵심
+import dynamic from 'next/dynamic';
 import { useReportStore } from '@/store/useReportStore';
 import BookLayout from '@/components/layout/BookLayout';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { Loader2 } from 'lucide-react';
+import { ConsentService } from '@/lib/services/ConsentService';
+import DailyMindWelcomeModal from '@/components/modals/DailyMindWelcomeModal';
 
 // [Optimization] 무거운 컴포넌트는 필요할 때만 로드합니다 (Code Splitting)
 // ssr: false로 설정하여 클라이언트 전용 라이브러리(Recharts, Framer Motion) 충돌 방지
@@ -16,20 +18,20 @@ const loadingView = () => (
     </div>
 );
 
-const CoverView = dynamic(() => import('@/components/pages/CoverView'), { loading: loadingView });
-const ScienceIntroView = dynamic(() => import('@/components/pages/ScienceIntroView'), { loading: loadingView });
-const IdentityView = dynamic(() => import('@/components/pages/IdentityView'), { loading: loadingView });
-const SajuPaljaView = dynamic(() => import('@/components/pages/SajuPaljaView'), { loading: loadingView, ssr: false }); // [Fix] Forced SSR disable for new component
-const RadarChartView = dynamic(() => import('@/components/pages/RadarChartView'), { loading: loadingView });
-const TalentStatsView = dynamic(() => import('@/components/pages/TalentStatsView'), { loading: loadingView });
-const FlipCardView = dynamic(() => import('@/components/pages/FlipCardView'), { loading: loadingView });
-const RelationBubbleView = dynamic(() => import('@/components/pages/RelationBubbleView'), { loading: loadingView });
-const WealthGaugeView = dynamic(() => import('@/components/pages/WealthGaugeView'), { loading: loadingView });
-const LifeWaveView = dynamic(() => import('@/components/pages/LifeWaveView'), { loading: loadingView });
-const TimelineView = dynamic(() => import('@/components/pages/TimelineView'), { loading: loadingView });
-const ActionItemsView = dynamic(() => import('@/components/pages/ActionItemsView'), { loading: loadingView });
-const EpilogueView = dynamic(() => import('@/components/pages/EpilogueView'), { loading: loadingView });
-const NewPageView = dynamic(() => import('@/components/pages/NewPageView'), { loading: loadingView });
+const CoverView = dynamic(() => import('@/components/pages/CoverView'), { loading: loadingView, ssr: false });
+const ScienceIntroView = dynamic(() => import('@/components/pages/ScienceIntroView'), { loading: loadingView, ssr: false });
+const IdentityView = dynamic(() => import('@/components/pages/IdentityView'), { loading: loadingView, ssr: false });
+const SajuPaljaView = dynamic(() => import('@/components/pages/SajuPaljaView'), { loading: loadingView, ssr: false });
+const RadarChartView = dynamic(() => import('@/components/pages/RadarChartView'), { loading: loadingView, ssr: false });
+const TalentStatsView = dynamic(() => import('@/components/pages/TalentStatsView'), { loading: loadingView, ssr: false });
+const FlipCardView = dynamic(() => import('@/components/pages/FlipCardView'), { loading: loadingView, ssr: false });
+const RelationBubbleView = dynamic(() => import('@/components/pages/RelationBubbleView'), { loading: loadingView, ssr: false });
+const WealthGaugeView = dynamic(() => import('@/components/pages/WealthGaugeView'), { loading: loadingView, ssr: false });
+const LifeWaveView = dynamic(() => import('@/components/pages/LifeWaveView'), { loading: loadingView, ssr: false });
+const TimelineView = dynamic(() => import('@/components/pages/TimelineView'), { loading: loadingView, ssr: false });
+const ActionItemsView = dynamic(() => import('@/components/pages/ActionItemsView'), { loading: loadingView, ssr: false });
+const EpilogueView = dynamic(() => import('@/components/pages/EpilogueView'), { loading: loadingView, ssr: false });
+const NewPageView = dynamic(() => import('@/components/pages/NewPageView'), { loading: loadingView, ssr: false });
 
 // Fallback
 const PlaceholderView = ({ step }: { step: number }) => (
@@ -75,7 +77,6 @@ function ReportContent() {
 export default function ReportPage() {
     const router = useRouter();
     // [Fix Hydration] 클라이언트 마운트 여부 체크
-    // Next.js에서 Persist Store를 쓸 때 필수적인 패턴입니다.
     const [isMounted, setIsMounted] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -83,27 +84,131 @@ export default function ReportPage() {
     useEffect(() => {
         setIsMounted(true);
 
-        // Check authentication
-        const checkAuth = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                router.push('/login');
-            } else {
-                setIsAuthenticated(true);
-                // [NEW] 리포트 페이지 최초 진입 시 항상 1단계(입력 폼)로 시작하도록 단계를 초기화합니다.
-                useReportStore.getState().setStep(1);
+        let isSubscribed = true;
+
+        // [Safety Guard] 어떤 경우에도 2.5초 이상 로딩 스피너에 갇히지 않도록 강제 해제 보장
+        const safetyTimer = setTimeout(() => {
+            if (isSubscribed) {
+                console.warn('[ReportPage] Absolute safety timer triggered - forcing loading state false');
+                setIsCheckingAuth(false);
             }
-            setIsCheckingAuth(false);
+        }, 2500);
+
+        // Helper: Check if token exists in localStorage synchronously
+        const hasLocalStorageToken = () => {
+            if (typeof window === 'undefined') return false;
+            try {
+                const keys = Object.keys(localStorage);
+                return keys.some(k => k.includes('auth-token') || k.includes('sb-'));
+            } catch (e) {
+                return false;
+            }
         };
 
+        // 타임아웃 없이 안전하게 세션 획득
+        const fetchSessionSafe = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) return { session, user: session.user };
+
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) return { session: { user }, user };
+            } catch (e) {
+                console.warn('[ReportPage] fetchSession error:', e);
+            }
+            return { session: null, user: null };
+        };
+
+        // Check authentication & Consent status
+        const checkAuth = async () => {
+            try {
+                // 1차 세션 획득 시도
+                let { session, user } = await fetchSessionSafe();
+
+                // 세션이 없지만 localStorage에 토큰 흔적이 있거나, URL에 auth_success 파라미터가 있다면 재시도 대기
+                if (!session && !user && (hasLocalStorageToken() || window.location.search.includes('auth_success'))) {
+                    console.log('[ReportPage] LocalStorage token or auth_success detected! Waiting for session hydration...');
+                    const delays = [300, 800, 1500, 2500];
+                    for (const delay of delays) {
+                        await new Promise(r => setTimeout(r, delay));
+                        const retry = await fetchSessionSafe();
+                        if (retry.session || retry.user) {
+                            session = retry.session;
+                            user = retry.user;
+                            console.log(`[ReportPage] Session hydrated after ${delay}ms retry!`);
+                            break;
+                        }
+                    }
+                }
+
+                // 100% 확실히 세션이 없고 localStorage에도 토큰이 없을 때만 로그인 페이지로 리다이렉트
+                if (!session && !user && !hasLocalStorageToken()) {
+                    console.log('[ReportPage] No session and no local token found, redirecting to login');
+                    if (isSubscribed) {
+                        setIsAuthenticated(false);
+                        router.push('/login');
+                    }
+                    return;
+                }
+
+                // 세션이 확인되었거나 토큰이 존재하므로 화면 승인
+                if (isSubscribed) {
+                    setIsAuthenticated(true);
+                    useReportStore.getState().setStep(1);
+                }
+
+                // 약관 검사는 화면 진입 후 백그라운드 비동기로 가볍게 처리
+                if (user?.id) {
+                    ConsentService.getConsents(user.id).then((consents) => {
+                        if (consents && !ConsentService.isConsentValid(consents) && isSubscribed) {
+                            console.log('[ReportPage] Consents invalid, redirecting to consent');
+                            router.push('/consent');
+                        }
+                    }).catch((err) => {
+                        console.warn('[ReportPage] ConsentService check non-blocking warning:', err);
+                    });
+                }
+            } catch (error) {
+                console.error('[ReportPage] Fatal auth check error:', error);
+                if (isSubscribed) {
+                    setIsAuthenticated(false);
+                    router.push('/login');
+                }
+            } finally {
+                // 어떤 경우에도 무조건 로딩 해제 보장
+                if (isSubscribed) {
+                    setIsCheckingAuth(false);
+                    clearTimeout(safetyTimer);
+                }
+            }
+        };
+
+        // 1. Initial Check
         checkAuth();
+
+        // 2. Realtime Auth State Listener for OAuth Session Completion
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            console.log('[ReportPage] Auth event:', event, session ? 'Session Exists' : 'No Session');
+            if (session && isSubscribed) {
+                setIsAuthenticated(true);
+                setIsCheckingAuth(false);
+                clearTimeout(safetyTimer);
+            }
+        });
+
+        return () => {
+            isSubscribed = false;
+            clearTimeout(safetyTimer);
+            subscription.unsubscribe();
+        };
     }, [router]);
 
     // 서버 사이드 렌더링 중이거나 아직 마운트 안 됐으면 껍데기만 보여줌 (에러 방지)
     if (!isMounted || isCheckingAuth) {
         return (
-            <div className="min-h-[100dvh] w-full bg-[#1e262f] flex justify-center items-center">
+            <div className="min-h-[100dvh] w-full bg-[#1e262f] flex flex-col justify-center items-center gap-3">
                 <Loader2 className="w-8 h-8 text-[#10b748] animate-spin" />
+                <p className="text-xs text-gray-400 font-mono">인증 및 기질 데이터 확인 중...</p>
             </div>
         );
     }
@@ -116,6 +221,8 @@ export default function ReportPage() {
     return (
         <BookLayout>
             <ReportContent />
+            <DailyMindWelcomeModal />
         </BookLayout>
     );
 }
+

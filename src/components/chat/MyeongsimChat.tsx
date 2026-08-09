@@ -1,24 +1,108 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useChat } from 'ai/react';
-import { Send, User, Sparkles } from 'lucide-react';
+import { Send, User, Sparkles, Zap, Shield, BrainCircuit, Crown, MessageCircleHeart, Lock, Home, ArrowLeft, MessageSquarePlus, Volume2, VolumeX, Copy, Check, Heart, Smile, Mic, MicOff, Music, Activity, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useReportStore } from '@/store/useReportStore';
+import Footer from '@/components/Footer';
+
+const PSYCH_PROTOCOLS = [
+    { code: 'MBCT', name: '마음챙김 인지치료', desc: 'Mindfulness-Based Cognitive Therapy: 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point)', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/50' },
+    { code: 'CBT', name: '인지행동치료', desc: 'Cognitive Behavioral Therapy: 부정적 자동적 사고(다크코드) 식별 및 현실적 뇌회로 재구성', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/50' },
+    { code: 'ACT', name: '수용전념치료', desc: 'Acceptance & Commitment Therapy: 생각을 사실과 분리하는 인지 탈융합 (Cognitive Defusion)', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50' },
+    { code: 'DBT', name: '변증법적 행동치료', desc: 'Dialectical Behavior Therapy: 극단적 감정 폭주 차단, 중용의 지혜 및 현명한 마음(Wise Mind) 조율', badge: 'bg-amber-500/20 text-amber-300 border-amber-400/50' },
+    { code: 'MBSR', name: '스트레스 감세', desc: 'Mindfulness-Based Stress Reduction: 자율신경계 밸런싱 및 뇌 신경가소성(Neuroplasticity) 재배선', badge: 'bg-purple-500/20 text-purple-300 border-purple-400/50' },
+    { code: 'IFS/IFT', name: '내면가족체계', desc: 'Internal Family Systems Therapy: 불안과 완벽주의(다크코드)를 생존 보호자(Protector)로 자비롭게 수용', badge: 'bg-pink-500/20 text-pink-300 border-pink-400/50' },
+    { code: 'MSC', name: '마음챙김 자기자비', desc: 'Mindful Self-Compassion: 자기 비판 멈춤 및 내면의 다정한 수용 온기 주입', badge: 'bg-rose-500/20 text-rose-300 border-rose-400/50' },
+    { code: 'IFP', name: '통합 자각 심리치료', desc: 'Integral Focus Psychotherapy: 사주 에너지 흐름과 대뇌피질 역량의 1:1 싱크로 재배선', badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50' },
+];
+
+const renderFormattedText = (text: string) => {
+    let clean = text.replace(/^---$/gm, '').trim();
+    if (!clean) return null;
+
+    const parts = clean.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, idx) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            return (
+                <strong key={idx} className="text-amber-300 font-extrabold px-0.5">
+                    {part.slice(2, -2)}
+                </strong>
+            );
+        }
+        return part;
+    });
+};
 
 interface MyeongsimChatProps {
     userId?: string;
 }
 
 export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProps) {
-    // Vercel AI SDK 연동 (앞선 /api/myeongsim-chat 백엔드 사용)
-    const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    const [sessionId, setSessionId] = useState<string | null>(null);
+    const [selectedProtocol, setSelectedProtocol] = useState<typeof PSYCH_PROTOCOLS[0] | null>(null);
+    const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
+    const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+    const [isListening, setIsListening] = useState<boolean>(false);
+    const [sttError, setSttError] = useState<string | null>(null);
+    const [isBgmPlaying, setIsBgmPlaying] = useState<boolean>(false);
+    const [reactions, setReactions] = useState<Record<string, string>>({});
+    const [showCardModal, setShowCardModal] = useState<boolean>(false);
+    const recognitionRef = useRef<any>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioCtxRef = useRef<AudioContext | null>(null);
+    const oscRef = useRef<OscillatorNode | null>(null);
+    const reportData = useReportStore((s) => s.reportData);
+
+    const clientSajuData = useMemo(() => {
+        if (reportData) {
+            return {
+                userName: reportData.userName || (reportData as any).name,
+                birthDate: reportData.birthDate || (reportData as any).birth_date,
+                birthTime: reportData.birthTime || (reportData as any).birth_time,
+                calendarType: (reportData as any).calendarType || (reportData as any).calendar_type || 'solar',
+                gender: reportData.gender,
+                dayMaster: reportData.saju?.dayMaster,
+                fourPillars: reportData.saju?.fourPillars,
+            };
+        }
+        if (typeof window !== 'undefined') {
+            try {
+                const raw = localStorage.getItem('user_saju_info') || localStorage.getItem('myeongsim_user_profile');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+        }
+        return null;
+    }, [reportData]);
+
+    const { messages, setMessages, input, setInput, handleInputChange, handleSubmit, isLoading, append } = useChat({
         api: '/api/myeongsim-chat',
-        body: { userId } // 백엔드로 사용자 ID 전송 (컨텍스트 주입 용도)
+        body: { userId, sessionId, sajuData: clientSajuData },
+        onError: (err) => {
+            console.error('[Myeongsim Chat UI Error]', err);
+        }
     });
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // 자동 스크롤
+    // 과거 대화 내역 불러오기
+    useEffect(() => {
+        if (userId && !userId.startsWith('guest-')) {
+            fetch(`/api/myeongsim-chat/history?userId=${userId}${sessionId ? `&sessionId=${sessionId}` : ''}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.sessionId) {
+                        setSessionId(data.sessionId);
+                    }
+                    if (data.messages && data.messages.length > 0) {
+                        setMessages(data.messages);
+                    }
+                })
+                .catch(err => console.error('[Myeongsim Chat] Failed to load history:', err));
+        }
+    }, [userId, setMessages]);
+
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -30,81 +114,649 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
         handleSubmit(e);
     };
 
+    const handleChipClick = (chipText: string) => {
+        if (isLoading) return;
+        const parts = chipText.split('"');
+        const cleanPrompt = parts.length >= 2 ? parts[1] : chipText;
+        append({
+            role: 'user',
+            content: cleanPrompt
+        });
+    };
+
+    const handlePrescriptionClick = () => {
+        if (typeof window !== 'undefined') {
+            window.location.href = '/report';
+        }
+    };
+
+    const handleGoHome = () => {
+        if (typeof window !== 'undefined') {
+            window.location.href = '/';
+        }
+    };
+
+    const handleNewChat = () => {
+        if (isLoading) return;
+        setMessages([]);
+        setSessionId(crypto.randomUUID());
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current = null;
+        }
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        setSpeakingMessageId(null);
+    };
+
+    const handleSpeak = async (messageId: string, text: string) => {
+        if (speakingMessageId === messageId) {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            setSpeakingMessageId(null);
+            return;
+        }
+
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current = null;
+        }
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+
+        setSpeakingMessageId(messageId);
+        const cleanText = text.replace(/[*#_~`[\]()]/g, '');
+
+        // 1. 고품질 구글 Neural2 서버 사이드 명상 나레이션 TTS 우선 호출
+        try {
+            const res = await fetch('/api/tts/supertone', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: cleanText.slice(0, 350),
+                    voiceId: 'psycho', // 딥 감성 수용 나레이터 (ko-KR-Neural2-B)
+                    voice_settings: {
+                        pitch: -1.0,  // 따뜻하고 깊은 나레이션 톤
+                        rate: 0.88    // 마음을 가다듬는 평온한 호흡 속도
+                    }
+                }),
+            });
+
+            if (res.ok) {
+                const blob = await res.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                const audio = new Audio(audioUrl);
+                audioRef.current = audio;
+                audio.onended = () => {
+                    setSpeakingMessageId(null);
+                    audioRef.current = null;
+                };
+                audio.onerror = () => {
+                    fallbackBrowserTTS(messageId, cleanText);
+                };
+                await audio.play();
+                return;
+            }
+        } catch (e) {
+            console.warn('[Server Neural2 TTS Failed, falling back to Browser Neural Voice]', e);
+        }
+
+        // 2. 서버 TTS 실패 시 브라우저 최상급 Neural/Natural 보이스로 튜닝 폴백
+        fallbackBrowserTTS(messageId, cleanText);
+    };
+
+    const fallbackBrowserTTS = (messageId: string, cleanText: string) => {
+        if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+            setSpeakingMessageId(null);
+            return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'ko-KR';
+        utterance.pitch = 0.9;  // 고주파 기계음 제거: 온기 있는 저음역대
+        utterance.rate = 0.88;  // 명상 가이드 템포
+
+        const voices = window.speechSynthesis.getVoices();
+        const naturalVoice = voices.find(v => 
+            v.lang.includes('ko') && (
+                v.name.includes('Natural') || 
+                v.name.includes('Neural') || 
+                v.name.includes('Google') || 
+                v.name.includes('SunHi') || 
+                v.name.includes('Yuna') || 
+                v.name.includes('Heami')
+            )
+        ) || voices.find(v => v.lang.includes('ko'));
+
+        if (naturalVoice) {
+            utterance.voice = naturalVoice;
+        }
+
+        utterance.onend = () => setSpeakingMessageId(null);
+        utterance.onerror = () => setSpeakingMessageId(null);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    const handleCopy = (messageId: string, text: string) => {
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+            const cleanText = text.replace(/[*#_~`[\]()]/g, '');
+            navigator.clipboard.writeText(cleanText);
+            setCopiedMessageId(messageId);
+            setTimeout(() => setCopiedMessageId(null), 2000);
+        }
+    };
+
+    const handleReaction = (messageId: string, emoji: string) => {
+        setReactions(prev => ({
+            ...prev,
+            [messageId]: prev[messageId] === emoji ? '' : emoji
+        }));
+    };
+
+    const toggle432HzBgm = () => {
+        if (typeof window === 'undefined') return;
+        if (isBgmPlaying) {
+            if (oscRef.current) {
+                try { oscRef.current.stop(); } catch (e) {}
+                oscRef.current = null;
+            }
+            if (audioCtxRef.current) {
+                try { audioCtxRef.current.close(); } catch (e) {}
+                audioCtxRef.current = null;
+            }
+            setIsBgmPlaying(false);
+            return;
+        }
+
+        try {
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+            const ctx = new AudioCtx();
+            audioCtxRef.current = ctx;
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(432, ctx.currentTime);
+            gain.gain.setValueAtTime(0.035, ctx.currentTime);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start();
+            oscRef.current = osc;
+            setIsBgmPlaying(true);
+        } catch (e) {
+            console.error('[432Hz Audio Error]', e);
+            setIsBgmPlaying(false);
+        }
+    };
+
+    const toggleListening = async () => {
+        if (typeof window === 'undefined') return;
+        setSttError(null);
+
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            setSttError('사용 중이신 브라우저에서는 음성 인식을 지원하지 않습니다. Chrome/Safari/Edge 브라우저를 이용해 주세요.');
+            return;
+        }
+
+        if (isListening) {
+            if (recognitionRef.current) {
+                try { recognitionRef.current.stop(); } catch (e) {}
+            }
+            setIsListening(false);
+            return;
+        }
+
+        // 데스크톱 브라우저 마이크 접근 권한 팝업 강제 유도
+        try {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach((track) => track.stop());
+            }
+        } catch (mediaErr: any) {
+            console.error('[Microphone Permission Error]', mediaErr);
+            setSttError('🎙️ 마이크 권한이 차단되어 있습니다. 브라우저 주소창 좌측 🔒 아이콘(또는 마이크 아이콘)을 눌러 [마이크 허용]으로 변경해 주세요.');
+            return;
+        }
+
+        try {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ko-KR';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onstart = () => {
+                setIsListening(true);
+                setSttError(null);
+            };
+
+            recognition.onresult = (event: any) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                if (transcript.trim()) {
+                    setInput((prev: string) => {
+                        const cleanPrev = prev ? prev.trim() + ' ' : '';
+                        return cleanPrev + transcript;
+                    });
+                }
+            };
+
+            recognition.onerror = (err: any) => {
+                console.error('[STT Error]', err);
+                setIsListening(false);
+                if (err.error === 'not-allowed' || err.error === 'service-not-allowed') {
+                    setSttError('🎙️ 마이크 권한이 거부되었습니다. 주소창 좌측 마이크 아이콘을 눌러 허용으로 변경해 주세요.');
+                } else if (err.error !== 'no-speech') {
+                    setSttError(`🎙️ 음성 인식 오류 (${err.error || '알 수 없는 오류'}). 다시 시도해 주세요.`);
+                }
+            };
+
+            recognition.onend = () => {
+                setIsListening(false);
+            };
+
+            recognitionRef.current = recognition;
+            recognition.start();
+        } catch (e: any) {
+            console.error('[STT Launch Error]', e);
+            setIsListening(false);
+            setSttError('🎙️ 음성 인식 시작에 실패했습니다. Chrome 또는 Edge 브라우저에서 실행해 주세요.');
+        }
+    };
+
     return (
-        <div className="flex flex-col h-[600px] max-h-[85vh] w-full max-w-2xl bg-[#0d131a]/80 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl font-sans relative">
-            {/* Header */}
-            <header className="p-4 border-b border-white/10 bg-white/5 flex items-center gap-3 shrink-0">
-                <div className="w-10 h-10 rounded-full bg-primary-olive/20 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-primary-olive" />
+        <div className="flex flex-col h-[760px] max-h-[92vh] w-full max-w-4xl bg-[#040714]/95 backdrop-blur-3xl border border-white/15 rounded-[32px] overflow-hidden shadow-[0_0_80px_rgba(15,23,42,0.8)] font-sans relative text-left">
+            
+            {/* ── 1. 세계 최고 수준 웰니스 헤더 (모바일 초강력 콤팩트 최적화) ── */}
+            <header className="p-3 sm:p-5 border-b border-white/10 bg-gradient-to-r from-slate-950 via-slate-900/90 to-indigo-950/80 flex flex-col gap-2.5 shrink-0 relative z-20">
+                <div className="flex items-center justify-between gap-2">
+                    {/* 브랜딩 & 아바타 */}
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <button
+                            onClick={handleGoHome}
+                            title="메인으로 돌아가기"
+                            className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-all border border-white/10 active:scale-95 flex items-center justify-center shrink-0"
+                        >
+                            <ArrowLeft className="w-4 h-4 text-amber-300" />
+                        </button>
+
+                        <div className="relative group shrink-0">
+                            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-400/30 via-purple-600/30 to-indigo-600/30 border border-amber-400/40 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.25)]">
+                                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
+                            </div>
+                            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-slate-950 rounded-full animate-ping" />
+                            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-slate-950 rounded-full" />
+                        </div>
+
+                        <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-nowrap">
+                                <h2 className="text-white font-black text-sm sm:text-lg tracking-tight whitespace-nowrap">명심 AI 코치</h2>
+                                <span className="text-[9px] sm:text-[10px] text-amber-300 font-mono font-extrabold bg-amber-400/10 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-400/30 shadow-inner whitespace-nowrap">
+                                    📜 특허출원중
+                                </span>
+                            </div>
+                            <p className="text-gray-400 text-[11px] mt-0.5 hidden sm:flex items-center gap-1.5">
+                                <span>세계 최고 수준 3세대 최신 심리 과학적 도구 & 사주 명리 융합 코칭</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* 컨트롤 버튼들 (모바일 반응형 콤팩트) */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        {/* 432Hz Ambient Healing Sound Toggle */}
+                        <button
+                            type="button"
+                            onClick={toggle432HzBgm}
+                            title={isBgmPlaying ? '432Hz 힐링 음원 끄기' : '432Hz 평온 명상 음원 켜기'}
+                            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-1 border cursor-pointer whitespace-nowrap ${
+                                isBgmPlaying
+                                    ? 'bg-amber-400 text-slate-950 border-amber-300 animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.5)] font-black'
+                                    : 'bg-white/5 hover:bg-white/15 text-amber-300 border-amber-400/30'
+                            }`}
+                        >
+                            <Music size={13} className={isBgmPlaying ? 'animate-spin' : ''} />
+                            <span className="text-[11px] sm:text-xs">{isBgmPlaying ? '432Hz 켜짐' : '432Hz'}</span>
+                        </button>
+
+                        <button
+                            onClick={handleNewChat}
+                            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-200 hover:text-white text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-1 whitespace-nowrap"
+                        >
+                            <MessageSquarePlus className="w-3.5 h-3.5 text-emerald-300" />
+                            <span className="hidden sm:inline">새 대화</span>
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <h2 className="text-white font-bold text-lg tracking-tight">명심코칭 AI</h2>
-                    <p className="text-gray-400 text-xs">나만의 기질과 현재 상태를 반영한 맞춤 코칭</p>
+
+                {/* ── 3세대 최신 심리 과학적 도구 8대 라이브 오라 바 (모바일 콤팩트) ── */}
+                <div className="bg-slate-900/90 border border-cyan-500/30 px-3 py-1.5 rounded-xl sm:rounded-2xl flex items-center justify-between gap-2 shadow-inner overflow-hidden">
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" />
+                        <span className="text-[10px] sm:text-xs font-black text-cyan-300 font-mono tracking-tight whitespace-nowrap">
+                            🧠 3세대 최신 심리 과학적 도구:
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0 overflow-x-auto no-scrollbar py-0.5">
+                        {PSYCH_PROTOCOLS.map((p) => (
+                            <button
+                                key={p.code}
+                                type="button"
+                                onClick={() => setSelectedProtocol(p)}
+                                title={p.desc}
+                                className={`px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-black font-mono transition-all border ${p.badge} hover:scale-105 active:scale-95 cursor-pointer shadow-sm whitespace-nowrap`}
+                            >
+                                {p.code}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* ── 실시간 3S 코칭 진도율 & 뇌파 공명 바 ── */}
+                <div className="flex flex-col gap-1 pt-1 border-t border-white/10">
+                    <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold">
+                        <span className="text-amber-300 flex items-center gap-1.5 truncate">
+                            <Activity size={12} className="text-amber-400 animate-pulse shrink-0" />
+                            <span className="truncate">3S 진도: {messages.length <= 2 ? '🛡️ SCAN (33%)' : messages.length <= 6 ? '🧠 SYNC (66%)' : '👑 SHIFT (100%)'}</span>
+                        </span>
+                        <span className="text-cyan-300 hidden sm:inline-block whitespace-nowrap">
+                            🧠 432Hz Alpha 98.4%
+                        </span>
+                    </div>
+                    <div className="w-full h-1 bg-slate-950 rounded-full overflow-hidden border border-white/10 flex">
+                        <div
+                            className="h-full bg-gradient-to-r from-rose-500 via-blue-400 to-amber-400 transition-all duration-500 rounded-full"
+                            style={{
+                                width: messages.length === 0 ? '15%' : `${Math.min(100, Math.max(33, (messages.length / 8) * 100))}%`
+                            }}
+                        />
+                    </div>
                 </div>
             </header>
 
-            {/* Message List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar relative min-h-0">
+            {/* ── 2. 메시지 영역 ── */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 no-scrollbar relative min-h-0">
                 {messages.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-50">
-                        <Sparkles className="w-8 h-8 text-primary-olive mb-2" />
-                        <p className="text-sm text-gray-300">
-                            안녕하세요!<br />
-                            온보딩에서 남겨주신 소중한 데이터를 바탕으로<br />
-                            당신만을 위한 맞춤형 대화를 준비했습니다.
-                        </p>
-                        <p className="text-xs text-gray-500">아래 입력창에 첫 고민을 남겨주세요.</p>
+                    <div className="flex flex-col items-center justify-center h-full text-center space-y-5 py-8">
+                        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-500/20 via-purple-500/20 to-indigo-500/20 flex items-center justify-center border border-amber-400/40 shadow-[0_0_40px_rgba(245,158,11,0.25)] relative">
+                            <Sparkles className="w-10 h-10 text-amber-300 animate-pulse" />
+                        </div>
+                        <div className="space-y-2 max-w-md">
+                            <h3 className="text-lg font-black text-white">안녕하세요! 영혼의 AI 코치입니다 ✨</h3>
+                            <p className="text-xs sm:text-sm text-gray-300 leading-relaxed break-keep font-medium">
+                                연동된 생년월일과 사주팔자를 바탕으로<br />
+                                <strong>3세대 임상심리학(ACT·CBT·MBCT·IFS) 8대 과학적 도구</strong>를 가동하여 1:1 핑퐁 코칭을 진행합니다.
+                            </p>
+                        </div>
+
+                        <div className="pt-2 flex flex-wrap gap-2 justify-center max-w-md">
+                            <span className="text-xs bg-rose-500/10 text-rose-300 border border-rose-500/30 px-3 py-1 rounded-full font-bold">
+                                🛡️ Step 1. SCAN (다크코드 수용)
+                            </span>
+                            <span className="text-xs bg-blue-500/10 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full font-bold">
+                                🧠 Step 2. SYNC (뇌회로 재배선)
+                            </span>
+                            <span className="text-xs bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full font-bold">
+                                👑 Step 3. SHIFT (영점 각성)
+                            </span>
+                        </div>
                     </div>
                 )}
 
                 {messages.map((m) => (
                     <motion.div
                         key={m.id}
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}
+                        transition={{ duration: 0.3 }}
+                        className={`flex gap-3 sm:gap-4 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}
                     >
-                        {/* Avatar */}
-                        <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center ${m.role === 'user' ? 'bg-blue-500/20' : 'bg-primary-olive/20'}`}>
-                            {m.role === 'user' ? <User className="w-4 h-4 text-blue-400" /> : <Sparkles className="w-4 h-4 text-primary-olive" />}
+                        {/* 아바타 */}
+                        <div className={`w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-2xl flex items-center justify-center shadow-lg ${
+                            m.role === 'user'
+                                ? 'bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 border border-indigo-400/40 text-white'
+                                : 'bg-gradient-to-br from-amber-500/20 to-purple-600/30 border border-amber-400/40 text-amber-300'
+                        }`}>
+                            {m.role === 'user' ? <User className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
                         </div>
 
-                        {/* Bubble */}
-                        <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${m.role === 'user'
-                            ? 'bg-[#1e40af] text-white rounded-tr-sm'
-                            : 'bg-white/10 border border-white/5 text-gray-200 rounded-tl-sm'
-                            }`}>
-                            {m.content.split('\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    <br />
-                                </span>
-                            ))}
+                        {/* 메시지 말풍선 */}
+                        <div className={`max-w-[85%] sm:max-w-[80%] px-5 py-4 rounded-3xl text-xs sm:text-sm leading-relaxed ${
+                            m.role === 'user'
+                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-tr-xs shadow-lg font-medium'
+                                : 'bg-[#0b1329]/95 border border-white/15 text-gray-200 rounded-tl-xs shadow-2xl space-y-3'
+                        }`}>
+                            {m.role === 'user' ? (
+                                <span>{m.content}</span>
+                            ) : (
+                                <div className="space-y-3">
+                                    {m.content.split('\n\n').map((paragraph, i) => {
+                                        const formatted = renderFormattedText(paragraph);
+                                        if (!formatted) return null;
+
+                                        // 3S 단계별 강조 렌더링
+                                        if (paragraph.includes('Scan') || paragraph.includes('다크코드') || paragraph.includes('보호막')) {
+                                            return (
+                                                <div key={i} className="bg-rose-950/40 border-l-4 border-rose-500 p-3 rounded-r-2xl shadow-inner">
+                                                    <span className="text-xs text-rose-400 font-black block mb-1">🛡️ Step 1. SCAN (다크코드 자비 수용)</span>
+                                                    <div className="text-rose-100/90 leading-relaxed">{formatted}</div>
+                                                </div>
+                                            );
+                                        }
+                                        if (paragraph.includes('Sync') || paragraph.includes('뉴럴코드') || paragraph.includes('재배선')) {
+                                            return (
+                                                <div key={i} className="bg-blue-950/40 border-l-4 border-blue-400 p-3 rounded-r-2xl shadow-inner">
+                                                    <span className="text-xs text-blue-400 font-black block mb-1">🧠 Step 2. SYNC (뉴럴코드 역량 재배선)</span>
+                                                    <div className="text-blue-100/90 leading-relaxed">{formatted}</div>
+                                                </div>
+                                            );
+                                        }
+                                        if (paragraph.includes('Shift') || paragraph.includes('메타코드') || paragraph.includes('제로포인트')) {
+                                            return (
+                                                <div key={i} className="bg-amber-950/40 border-l-4 border-amber-500 p-3 rounded-r-2xl shadow-inner">
+                                                    <span className="text-xs text-amber-400 font-black block mb-1">👑 Step 3. SHIFT (메타코드 영점 각성)</span>
+                                                    <div className="text-amber-100/90 leading-relaxed">{formatted}</div>
+                                                </div>
+                                            );
+                                        }
+                                        // 질문 문장 하이라이트
+                                        if (paragraph.includes('?') || paragraph.includes('💭') || paragraph.includes('💖')) {
+                                            return (
+                                                <div key={i} className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-2xl mt-1.5">
+                                                    <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 mb-1">
+                                                        <MessageCircleHeart size={14} /> AI 코치의 핑퐁 성찰 질문
+                                                    </span>
+                                                    <div className="text-emerald-200 font-bold leading-relaxed">{formatted}</div>
+                                                </div>
+                                            );
+                                        }
+                                        return <p key={i} className="leading-relaxed">{formatted}</p>;
+                                    })}
+
+                                    {/* 이모지 성찰 공감 칩 */}
+                                    <div className="flex items-center gap-1.5 pt-1">
+                                        {[
+                                            { emoji: '💖', label: '울림' },
+                                            { emoji: '✨', label: '자각' },
+                                            { emoji: '🧘', label: '평온' }
+                                        ].map((rec) => (
+                                            <button
+                                                key={rec.emoji}
+                                                type="button"
+                                                onClick={() => handleReaction(m.id, rec.emoji)}
+                                                className={`text-[10px] px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
+                                                    reactions[m.id] === rec.emoji
+                                                        ? 'bg-amber-400 text-slate-950 border-amber-300 font-black scale-105'
+                                                        : 'bg-white/5 hover:bg-white/10 text-gray-400 border-white/10'
+                                                }`}
+                                            >
+                                                {rec.emoji} {rec.label}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* 3세대 임상심리학 메커니즘 & 음성/복사 인터랙션 툴바 */}
+                                    <div className="flex items-center justify-between gap-2 text-[10px] font-mono pt-3 border-t border-white/10 mt-3 flex-wrap">
+                                        <div className="flex items-center gap-1.5 text-cyan-300 font-bold">
+                                            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" />
+                                            <span>🔬 3세대 임상심리학 메커니즘 (ACT · CBT · MBCT · IFS)</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-1.5 ml-auto">
+                                            {/* TTS 음성 청취 버튼 */}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSpeak(m.id, m.content)}
+                                                className={`px-2.5 py-1 rounded-xl font-bold transition-all border flex items-center gap-1 cursor-pointer ${
+                                                    speakingMessageId === m.id
+                                                        ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.5)] animate-pulse'
+                                                        : 'bg-white/5 hover:bg-white/15 text-amber-300 border-amber-400/30'
+                                                }`}
+                                            >
+                                                {speakingMessageId === m.id ? (
+                                                    <>
+                                                        <VolumeX size={12} />
+                                                        <span>음성 정지</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Volume2 size={12} />
+                                                        <span>🔊 음성 힐링</span>
+                                                    </>
+                                                )}
+                                            </button>
+
+                                            {/* 1:1 영혼 처방 카드 보기 버튼 */}
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowCardModal(true)}
+                                                className="px-2.5 py-1 rounded-xl font-bold bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 transition-all flex items-center gap-1 cursor-pointer"
+                                            >
+                                                <FileText size={12} />
+                                                <span>📜 1:1 처방 카드</span>
+                                            </button>
+
+                                            {/* 복사 버튼 */}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleCopy(m.id, m.content)}
+                                                className="px-2.5 py-1 rounded-xl font-bold bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white border border-white/10 transition-all flex items-center gap-1 cursor-pointer"
+                                            >
+                                                {copiedMessageId === m.id ? (
+                                                    <>
+                                                        <Check size={12} className="text-emerald-400" />
+                                                        <span className="text-emerald-400 font-bold">복사됨!</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Copy size={12} />
+                                                        <span>복사</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 ))}
 
                 {isLoading && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="flex gap-3"
-                    >
-                        <div className="w-8 h-8 shrink-0 rounded-full bg-primary-olive/20 flex items-center justify-center">
-                            <Sparkles className="w-4 h-4 text-primary-olive animate-pulse" />
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-4">
+                        <div className="w-10 h-10 shrink-0 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center">
+                            <Sparkles className="w-5 h-5 text-amber-300 animate-spin" />
                         </div>
-                        <div className="bg-white/10 border border-white/5 px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <div className="bg-[#0b1329]/95 border border-white/15 px-5 py-4 rounded-3xl rounded-tl-xs flex items-center gap-3 shadow-xl">
+                            <span className="text-xs sm:text-sm text-amber-300 font-extrabold animate-pulse">
+                                명심 AI 코치가 함께 호흡하며 영혼의 응답을 직조하고 있습니다...
+                            </span>
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
                         </div>
                     </motion.div>
                 )}
                 <div ref={messagesEndRef} />
+                
+                {/* ── 회사 정보 및 고객센터 하단 푸터 ── */}
+                <Footer />
             </div>
 
-            {/* Input Form */}
-            <form onSubmit={onSubmit} className="p-4 border-t border-white/10 bg-[#0a0f14] shrink-0">
+            {/* ── 3. 상용화 결제 퍼널 브릿지 (CTA Banner - 모바일 최적화) ── */}
+            {messages.length > 0 && (
+                <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-amber-950/60 via-purple-950/60 to-slate-950 border-t border-amber-500/30 flex items-center justify-between text-xs gap-2 shrink-0">
+                    <span className="text-gray-200 font-bold flex items-center gap-1.5 truncate text-[11px] sm:text-xs">
+                        <Sparkles size={13} className="text-amber-400 shrink-0" />
+                        <span className="truncate">대화 내용 기반 1:1 맞춤 핀포인트 처방전</span>
+                    </span>
+                    <button
+                        onClick={handlePrescriptionClick}
+                        className="py-1 px-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black shadow-md transition-all active:scale-95 flex items-center gap-1 text-[11px] sm:text-xs shrink-0 whitespace-nowrap"
+                    >
+                        ⚡ 890원 소장하기
+                    </button>
+                </div>
+            )}
+
+            {/* ── 4. 실시간 감정 스위치 & 추천 대화 칩 (모바일 슬림화) ── */}
+            <div className="p-2 sm:p-3 border-t border-white/10 bg-slate-950/90 flex flex-col gap-1.5 shrink-0">
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                    <span className="text-[10px] sm:text-[11px] text-amber-400 font-extrabold shrink-0 flex items-center gap-1 font-mono whitespace-nowrap">
+                        <Smile size={12} className="text-amber-400" />
+                        마음 상태:
+                    </span>
+                    {[
+                        { label: '🛡️ 불안·완벽주의', prompt: '지금 내 안의 불안과 완벽주의를 ACT 인지탈융합으로 다정하게 안아줘' },
+                        { label: '🔥 조바심·스트레스', prompt: '사업이나 일에서 조바심이 나는데 MBSR 스트레스 감세로 조율해줘' },
+                        { label: '🌧️ 무기력·혼란', prompt: '에너지가 다운되어 있는데 내 사주 2026년 병오년 활력 기운을 재배선해줘' },
+                        { label: '👑 평온·영점 각성', prompt: '오늘의 432Hz 제로포인트 영점 자각 명상 처방을 알려줘' },
+                    ].map((emo, idx) => (
+                        <button
+                            key={idx}
+                            type="button"
+                            onClick={() => handleChipClick(emo.prompt)}
+                            className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/5 hover:bg-amber-400/20 border border-white/10 hover:border-amber-400/50 text-gray-300 hover:text-amber-200 text-[10px] sm:text-[11px] font-bold transition-all shrink-0 active:scale-95 cursor-pointer whitespace-nowrap"
+                        >
+                            {emo.label}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                    {[
+                        '💼 "내 사주 기반 2026년 사업 확장운 정밀 분석해줘"',
+                        '🧠 "불안과 완벽주의 다크코드 인지탈융합(ACT) 해줘"',
+                        '🧘‍♀️ "1분 3S 스위치 실천법 물어보기"',
+                        '🔮 "나의 다음 운율 주파수 확인하기"'
+                    ].map((chip, idx) => (
+                        <button
+                            key={idx}
+                            type="button"
+                            onClick={() => handleChipClick(chip)}
+                            className="text-[10px] sm:text-xs font-extrabold px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-indigo-950/90 to-purple-950/90 hover:from-indigo-900 hover:to-purple-900 border border-indigo-500/40 text-indigo-200 hover:text-white transition-all whitespace-nowrap shrink-0 shadow-md active:scale-95 cursor-pointer flex items-center gap-1"
+                        >
+                            {chip}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── 5. 메시지 입력 폼 ── */}
+            <form onSubmit={onSubmit} className="p-3 sm:p-4 border-t border-white/10 bg-[#040714] shrink-0 relative">
                 <div className="relative flex items-end">
                     <textarea
                         value={input}
@@ -112,26 +764,137 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
-                                // Trigger form submit programmatically
                                 if (input.trim() && !isLoading) {
                                     e.currentTarget.form?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
                                 }
                             }
                         }}
-                        placeholder="메시지를 입력하세요... (Enter로 전송, Shift+Enter로 줄바꿈)"
-                        className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white placeholder:text-gray-600 outline-none focus:border-primary-olive/50 transition-colors resize-none overflow-y-auto no-scrollbar"
+                        placeholder="마음속 고민이나 질문을 편하게 남겨주세요... (Enter 전송)"
+                        className="w-full bg-black/70 border border-white/15 focus:border-amber-400/60 rounded-2xl py-3.5 pl-4 pr-13 text-white placeholder:text-gray-500 outline-none transition-all resize-none overflow-y-auto no-scrollbar text-xs sm:text-sm font-medium"
                         rows={1}
-                        style={{ minHeight: '48px', maxHeight: '120px' }}
+                        style={{ minHeight: '50px', maxHeight: '130px' }}
                     />
+
+                    {/* 전송 버튼 */}
                     <button
                         type="submit"
                         disabled={!input.trim() || isLoading}
-                        className="absolute right-2 bottom-2 w-8 h-8 bg-primary-olive hover:bg-[#6e944b] text-white rounded-lg flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-olive"
+                        className="absolute right-2 bottom-2 w-9 h-9 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 rounded-xl flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg active:scale-95 cursor-pointer"
                     >
-                        <Send className="w-4 h-4 -ml-0.5 mt-0.5" />
+                        <Send className="w-4.5 h-4.5" />
                     </button>
                 </div>
             </form>
+
+            {/* ── 6. 3세대 임상심리학 8대 과학적 도구 상세 모달 ── */}
+            {selectedProtocol && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center p-4" onClick={() => setSelectedProtocol(null)}>
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-[#0b1329] border border-cyan-500/40 p-6 rounded-3xl max-w-lg w-full shadow-2xl space-y-4 relative text-left"
+                    >
+                        <button
+                            onClick={() => setSelectedProtocol(null)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+                        >
+                            ✕ 닫기
+                        </button>
+                        <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
+                            <BrainCircuit className="w-6 h-6 text-cyan-400" />
+                            <div>
+                                <h3 className="text-white font-black text-base sm:text-lg">제3세대 임상심리학 8대 과학적 엔진</h3>
+                                <p className="text-gray-400 text-xs">명심 AI 코치 실시간 가동 근거중심 심리치료 프로토콜</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-cyan-950/40 border border-cyan-500/30 p-4 rounded-2xl space-y-2">
+                            <div className="flex items-center justify-between">
+                                <span className={`px-2.5 py-0.5 rounded text-xs font-black font-mono border ${selectedProtocol.badge}`}>
+                                    {selectedProtocol.code}
+                                </span>
+                                <span className="text-cyan-300 font-extrabold text-xs">{selectedProtocol.name}</span>
+                            </div>
+                            <p className="text-xs text-cyan-100 leading-relaxed">{selectedProtocol.desc}</p>
+                        </div>
+
+                        <div className="text-[11px] text-gray-300 space-y-1.5 bg-white/5 p-3.5 rounded-2xl border border-white/5">
+                            <p className="font-bold text-amber-300 flex items-center gap-1.5">
+                                <Sparkles size={14} /> AI 실시간 융합 작동 메커니즘
+                            </p>
+                            <p className="leading-relaxed">
+                                명심 AI 코치는 사용자와 대화하는 도중 사고 왜곡, 불안, 완벽주의를 실시간 감지하여 <strong>{selectedProtocol.name}({selectedProtocol.code})</strong>의 임상적 도구를 타고난 사주 오행 기운과 1:1로 맞물려 가동합니다.
+                            </p>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+            {/* ── 7. 1:1 영혼 처방 카드 팝업 모달 ── */}
+            {showCardModal && (
+                <div className="fixed inset-0 bg-black/85 backdrop-blur-xl z-50 flex items-center justify-center p-4" onClick={() => setShowCardModal(false)}>
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-gradient-to-b from-[#0b1329] via-[#080d1f] to-black border-2 border-amber-400/50 p-6 sm:p-7 rounded-[32px] max-w-md w-full shadow-[0_0_80px_rgba(245,158,11,0.3)] space-y-5 relative text-left"
+                    >
+                        <button
+                            onClick={() => setShowCardModal(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+                        >
+                            ✕ 닫기
+                        </button>
+
+                        <div className="flex items-center gap-3 border-b border-amber-400/20 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center">
+                                <Crown className="w-6 h-6 text-amber-300" />
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-mono text-amber-300 font-bold bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/30">
+                                    📜 2026 丙午年 1:1 웰니스 영혼 처방전
+                                </span>
+                                <h3 className="text-white font-black text-lg sm:text-xl mt-1">
+                                    {clientSajuData?.userName || '경윤'}님의 영점 자각 카드
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3 text-xs text-gray-200 bg-white/5 p-4 rounded-2xl border border-white/10">
+                            <div className="flex justify-between items-center text-amber-300 font-bold border-b border-white/10 pb-2">
+                                <span>🔮 타고난 사주 일간:</span>
+                                <span className="font-mono text-sm font-extrabold">{clientSajuData?.dayMaster || '辛金 (신금)'}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-cyan-300 font-bold border-b border-white/10 pb-2">
+                                <span>🧠 3세대 임상 심리 도구:</span>
+                                <span>ACT 인지탈융합 & MBSR</span>
+                            </div>
+                            <div className="flex justify-between items-center text-emerald-300 font-bold">
+                                <span>🎵 뇌파 공명 주파수:</span>
+                                <span className="font-mono">432Hz Alpha Waves</span>
+                            </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 to-purple-500/10 border border-amber-400/30 text-xs text-amber-100 leading-relaxed font-medium">
+                            <p className="font-bold text-amber-300 mb-1 flex items-center gap-1">
+                                <Sparkles size={14} /> 오늘의 영점 각성 주문 (Affirmation):
+                            </p>
+                            "내 안의 불안은 살아있음을 증명하는 다정한 파수꾼이다. 생각은 흘려보내고, 2026년 오롯이 빛나는 본래의 나로 귀환한다."
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-2">
+                            <button
+                                onClick={handlePrescriptionClick}
+                                className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black shadow-lg transition-all active:scale-95 text-xs text-center"
+                            >
+                                ⚡ 890원 정밀 처방 리포트 발급
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 }

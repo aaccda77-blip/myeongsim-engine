@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { calculateTenGodsFromOhaeng } from './TripleCoreAnalysis';
 
 // ─────────────────────────────────────────────
 // 타입
@@ -248,21 +249,21 @@ const PatternBar = ({
           : 'border-slate-700/40 bg-slate-800/30 hover:border-slate-600/60 hover:bg-slate-800/50'
       }`}
     >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center text-black" style={{ background: rankColor }}>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center text-black shrink-0" style={{ background: rankColor }}>
             {rank + 1}
           </span>
-          <span className="text-sm font-bold text-white">{def.korName}</span>
+          <span className="text-sm font-bold text-white break-keep">{def.korName}</span>
           {active ? (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-700/60 text-emerald-200">ACTIVE</span>
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-700/60 text-emerald-200 shrink-0">ACTIVE</span>
           ) : (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded border border-slate-600/50 bg-slate-800/80 text-slate-400">
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded border border-slate-600/50 bg-slate-800/80 text-slate-400 shrink-0">
               {(result as any).isBroken ? '연결 단절' : '에너지 미달'}
             </span>
           )}
         </div>
-        <div className="flex flex-col items-end">
+        <div className="flex flex-col items-end shrink-0">
           <span className="text-lg font-black leading-none" style={{ color: active ? def.color : '#4b5563' }}>
             {score}<span className="text-xs font-medium opacity-70">%</span>
           </span>
@@ -272,10 +273,10 @@ const PatternBar = ({
         </div>
       </div>
 
-      <div className="flex gap-1 mb-2">
+      <div className="flex flex-wrap gap-1 mb-2">
         {def.label.map((l, i) => (
           <React.Fragment key={i}>
-            <span className="text-[9px] px-1.5 py-0.5 rounded font-bold"
+            <span className="text-[9px] px-1.5 py-0.5 rounded font-bold break-keep"
               style={{ background: active ? `${def.color}20` : '#1e293b', color: active ? def.color : '#4b5563', border: `1px solid ${active ? def.color + '40' : '#334155'}` }}>
               {def.mode[i]}
             </span>
@@ -299,8 +300,8 @@ const PatternBar = ({
       </div>
 
       {isSelected && (
-        <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
-          {def.summary}
+        <p className="text-xs text-slate-300 mt-2.5 leading-relaxed break-keep font-normal">
+          {def.summary.replace(/\*\*/g, '')}
         </p>
       )}
     </motion.button>
@@ -342,7 +343,7 @@ const DetailPanel = ({ result, pcts, gongmang }: {
       <div className="p-5 space-y-5">
         {/* 3노드 게이지 */}
         <div className="space-y-2.5">
-          <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">パイプライン 현황</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">PIPELINE STATUS (에너지 파이프라인 현황)</p>
           {def.tags.map((tag, i) => (
             <MiniGauge
               key={tag}
@@ -355,32 +356,32 @@ const DetailPanel = ({ result, pcts, gongmang }: {
         </div>
 
         {/* 시스템 분석 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/40">
-            <p className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-2">CORE STRENGTH</p>
-            <p className="text-xs text-slate-300 leading-relaxed">{def.coachingStrength}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/40">
+            <p className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-2 font-mono">CORE STRENGTH</p>
+            <p className="text-xs text-slate-200 leading-relaxed break-keep font-medium">{def.coachingStrength}</p>
           </div>
-          <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/40">
-            <p className="text-[10px] uppercase tracking-widest text-red-400 font-bold mb-2">SHADOW PATTERN</p>
-            <p className="text-xs text-slate-300 leading-relaxed">{def.coachingShadow}</p>
+          <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/40">
+            <p className="text-[10px] uppercase tracking-widest text-red-400 font-bold mb-2 font-mono">SHADOW PATTERN</p>
+            <p className="text-xs text-slate-200 leading-relaxed break-keep font-medium">{def.coachingShadow}</p>
           </div>
         </div>
 
         {/* 병목 경고 */}
         {pcts[def.bottleneckKey] < 12 && (
-          <div className="p-3.5 rounded-xl bg-red-950/30 border border-red-500/30">
-            <p className="text-[10px] uppercase tracking-widest text-red-400 font-bold mb-1">🚨 BOTTLENECK DETECTED</p>
-            <p className="text-xs text-red-200/80 leading-relaxed">{def.bottleneckDesc}</p>
+          <div className="p-4 rounded-xl bg-red-950/30 border border-red-500/30">
+            <p className="text-[10px] uppercase tracking-widest text-red-400 font-bold mb-1 font-mono">🚨 BOTTLENECK DETECTED</p>
+            <p className="text-xs text-red-200/90 leading-relaxed break-keep">{def.bottleneckDesc}</p>
           </div>
         )}
 
         {/* 공망 감지 */}
         {gongmang?.isActive && (
-          <div className="p-3.5 rounded-xl bg-yellow-950/30 border border-yellow-500/30">
-            <p className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold mb-1">
+          <div className="p-4 rounded-xl bg-yellow-950/30 border border-yellow-500/30">
+            <p className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold mb-1 font-mono">
               ⚡ 공망(Quantum Void) 감지 — {gongmang.labels.join('·')}
             </p>
-            <p className="text-xs text-yellow-100/80 leading-relaxed">
+            <p className="text-xs text-yellow-100/90 leading-relaxed break-keep">
               공망 기둥의 에너지는 체감보다 현실화가 어렵습니다. 이 흐름 패턴의 특정 노드에서 레이턴시(실행 지연)가 발생할 수 있습니다.
             </p>
           </div>
@@ -391,7 +392,7 @@ const DetailPanel = ({ result, pcts, gongmang }: {
           <p className="text-[10px] uppercase tracking-widest text-slate-500 font-mono mb-2">OPTIMAL ROLES</p>
           <div className="flex flex-wrap gap-1.5">
             {def.careers.map(c => (
-              <span key={c} className="text-[10px] px-2 py-1 rounded-full font-bold"
+              <span key={c} className="text-[10px] px-2.5 py-1 rounded-full font-bold break-keep"
                 style={{ background: `${def.color}18`, color: def.color, border: `1px solid ${def.color}40` }}>
                 {c}
               </span>
@@ -407,24 +408,24 @@ const DetailPanel = ({ result, pcts, gongmang }: {
               <p className="text-[10px] uppercase tracking-widest font-mono font-bold mb-1.5 flex items-center gap-1.5" style={{ color: def.color }}>
                 <span className="text-sm">🧠</span> Deep Neuro-Analysis
               </p>
-              <h4 className="text-sm font-bold text-white mb-1.5">뇌과학적 행동 기전</h4>
-              <p className="text-xs text-slate-300 leading-relaxed break-keep">{def.neuroAnalysis}</p>
+              <h4 className="text-sm font-bold text-white mb-1.5 break-keep">뇌과학적 행동 기전</h4>
+              <p className="text-xs text-slate-300 leading-relaxed break-keep font-normal">{def.neuroAnalysis}</p>
             </div>
             <div className="w-full h-px bg-slate-700/50"></div>
             <div>
               <p className="text-[10px] uppercase tracking-widest font-mono font-bold mb-1.5 flex items-center gap-1.5 text-amber-400">
                 <span className="text-sm">⚔️</span> Cognitive Tactic
               </p>
-              <h4 className="text-sm font-bold text-amber-100 mb-1.5">행동 교정 전술</h4>
-              <p className="text-xs text-amber-200/80 leading-relaxed break-keep">{def.behavioralTactic}</p>
+              <h4 className="text-sm font-bold text-amber-100 mb-1.5 break-keep">행동 교정 전술</h4>
+              <p className="text-xs text-amber-200/90 leading-relaxed break-keep font-normal">{def.behavioralTactic}</p>
             </div>
           </div>
         </div>
 
         {/* 활성화 질문 */}
         <div className="p-4 rounded-xl bg-cyan-950/30 border border-cyan-500/30">
-          <p className="text-[10px] uppercase tracking-widest text-cyan-400 font-bold mb-2">❓ ACTIVATION QUESTION</p>
-          <p className="text-sm font-bold text-cyan-100 italic leading-relaxed">{def.activationQ}</p>
+          <p className="text-[10px] uppercase tracking-widest text-cyan-400 font-bold mb-2 font-mono">❓ ACTIVATION QUESTION</p>
+          <p className="text-sm font-bold text-cyan-100 italic leading-relaxed break-keep">{def.activationQ}</p>
         </div>
       </div>
     </motion.div>
@@ -520,9 +521,8 @@ export default function SajuArchitectureFlow({
   const tg = useMemo<TenGods>(() => {
     if (tenGods && (tenGods.resource + tenGods.self + tenGods.output + tenGods.power + tenGods.wealth) > 0) return tenGods;
     if (ohaeng) {
-      const metalStems = ['庚', '辛'];
-      if (metalStems.includes(dayStem || '')) return { resource: ohaeng.earth, self: ohaeng.metal, output: ohaeng.water, wealth: ohaeng.wood, power: ohaeng.fire };
-      return { resource: ohaeng.water, self: ohaeng.wood, output: ohaeng.fire, wealth: ohaeng.earth, power: ohaeng.metal };
+      const derived = calculateTenGodsFromOhaeng(ohaeng, dayStem);
+      if (derived) return derived;
     }
     return { resource: 2, self: 3, output: 1, wealth: 1, power: 1 };
   }, [tenGods, ohaeng, dayStem]);
@@ -551,117 +551,121 @@ export default function SajuArchitectureFlow({
   return (
     <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl font-sans">
       {/* 헤더 */}
-      <div className="bg-slate-950 px-6 py-5 border-b border-slate-800 relative overflow-hidden">
+      <div className="bg-slate-950 px-5 sm:px-6 py-5 border-b border-slate-800 relative overflow-hidden space-y-4">
         <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-70" />
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div>
-            <span className="text-[10px] font-black tracking-widest text-cyan-400 font-mono uppercase">
-              MYEONGSIM ARCHITECTURE ENGINE — FLOW PATTERN MATRIX
+        
+        {/* 타이틀 영역 (100% Full-Width) */}
+        <div>
+          <span className="text-[10px] font-black tracking-widest text-cyan-400 font-mono uppercase block mb-1">
+            MYEONGSIM ARCHITECTURE ENGINE — FLOW PATTERN MATRIX
+          </span>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-extrabold text-white mt-1 break-keep leading-snug">
+            {userName}의 사주{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">
+              시스템 흐름 전체 분석
             </span>
-            <h2 className="text-xl md:text-2xl font-extrabold text-white mt-1">
-              {userName}의 사주{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">
-                시스템 흐름 전체 분석
-              </span>
-            </h2>
-            <div className="text-slate-400 text-xs mt-2 space-y-1">
-              <p>5대 뉴럴 네트워크(흐름 패턴) 스캔 — {activeCount > 0 ? `${activeCount}개 네트워크 활성화됨` : '단일 집중 구조'}</p>
-              <p className="text-[10px] text-slate-500 leading-relaxed max-w-lg mt-1 break-keep">
-                * 퍼센트(%)는 해당 행동 패턴이 뇌 구조에서 얼마나 빠르고 강력하게 발현되는지를 나타내는 <strong className="text-slate-300">시냅스 동기화율(Synaptic Sync Rate)</strong>입니다. 점수가 높을수록 무의식적으로 즉각 발동되는 당신의 강력한 무기입니다.
-              </p>
-            </div>
+          </h2>
+          <div className="text-slate-400 text-xs mt-2 space-y-1">
+            <p className="font-semibold text-slate-300 break-keep">
+              5대 뉴럴 네트워크(흐름 패턴) 스캔 — {activeCount > 0 ? `${activeCount}개 네트워크 활성화됨` : '단일 집중 구조'}
+            </p>
+            <p className="text-[11px] text-slate-400 leading-relaxed mt-1 break-keep font-normal">
+              * 퍼센트(%)는 해당 행동 패턴이 뇌 구조에서 얼마나 빠르고 강력하게 발현되는지를 나타내는{' '}
+              <strong className="text-slate-200 font-bold">시냅스 동기화율(Synaptic Sync Rate)</strong>입니다. 점수가 높을수록 무의식적으로 즉각 발동되는 당신의 강력한 무기입니다.
+            </p>
           </div>
-          {/* 핵심 패턴 뱃지 */}
-          <div className="flex flex-col items-start md:items-end gap-1.5 shrink-0">
-            <span className="text-[9px] text-slate-500 uppercase tracking-widest">DOMINANT PATTERN</span>
-            <span className="font-black text-sm px-3 py-1.5 rounded-full" style={{ background: `${topFlow.def.color}20`, color: topFlow.def.color, border: `1px solid ${topFlow.def.color}40` }}>
+        </div>
+
+        {/* 핵심 패턴 뱃지 바 (독립 하단 행) */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-slate-800/80 bg-slate-900/50 p-3 rounded-xl">
+          <span className="text-[10px] text-slate-400 uppercase tracking-widest font-mono font-bold">DOMINANT PATTERN (최우선 활성 패턴)</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-black text-xs sm:text-sm px-3.5 py-1 rounded-full shadow-md break-keep" style={{ background: `${topFlow.def.color}25`, color: topFlow.def.color, border: `1px solid ${topFlow.def.color}50` }}>
               {topFlow.def.korName}
             </span>
-            <span className="text-[10px] text-slate-400">{topFlow.def.archetype}</span>
+            <span className="text-xs text-slate-200 font-semibold break-keep">{topFlow.def.archetype}</span>
           </div>
         </div>
       </div>
 
-      <div className="p-5 md:p-6 space-y-6">
-        {/* 전체 점수 바 + 레이더 레이아웃 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* 왼쪽: 순위 바 (2/3) */}
-          <div className="md:col-span-2 space-y-2.5">
-            <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">
-              📊 5대 흐름 패턴 점수 랭킹 — 탭하면 상세 코칭 열람
+      <div className="p-4 sm:p-6 space-y-6">
+        {/* 1. 5대 흐름 패턴 점수 랭킹 (Full Width) */}
+        <div className="space-y-2.5">
+          <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">
+            📊 5대 흐름 패턴 점수 랭킹 — 탭하면 상세 코칭 열람
+          </p>
+          {flowResults.map((r, i) => (
+            <PatternBar
+              key={r.def.key}
+              result={r}
+              rank={i}
+              isSelected={selectedIdx === i}
+              onClick={() => setSelectedIdx(i)}
+            />
+          ))}
+        </div>
+
+        {/* 2. 레이더 차트 & 십성 분포 (데스크톱 2열 가로 분할, 모바일 1열 스택) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* 레이더 차트 */}
+          <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 flex flex-col items-center justify-center">
+            <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-3 text-center">
+              PATTERN RADAR (오각형 행동 차트)
             </p>
-            {flowResults.map((r, i) => (
-              <PatternBar
-                key={r.def.key}
-                result={r}
-                rank={i}
-                isSelected={selectedIdx === i}
-                onClick={() => setSelectedIdx(i)}
-              />
-            ))}
+            <RadarChart scores={flowResults} />
           </div>
 
-          {/* 오른쪽: 레이더 차트 (1/3) */}
-          <div className="flex flex-col gap-4">
-            <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
-              <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-3 text-center">
-                PATTERN RADAR
-              </p>
-              <RadarChart scores={flowResults} />
-            </div>
-
-            {/* 십성 분포 원형 */}
-            <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
-              <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-3">
-                십성(十星) 분포
-              </p>
-              <div className="space-y-2">
-                {([
-                  { key: 'resource' as const, label: '인성(印星)', color: '#a78bfa' },
-                  { key: 'self'     as const, label: '비겁(比劫)', color: '#60a5fa' },
-                  { key: 'output'   as const, label: '식상(食傷)', color: '#34d399' },
-                  { key: 'wealth'   as const, label: '재성(財星)', color: '#fbbf24' },
-                  { key: 'power'    as const, label: '관성(官星)', color: '#f87171' },
-                ] as const).map(({ key, label, color }) => (
-                  <div key={key} className="flex items-center gap-2">
-                    <span className="text-[9px] text-slate-400 w-14">{label}</span>
-                    <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pcts[key]}%` }}
-                        transition={{ duration: 0.8, delay: 0.3 }}
-                        className="h-full rounded-full"
-                        style={{ background: color }}
-                      />
-                    </div>
-                    <span className="text-[9px] font-bold w-7 text-right" style={{ color }}>{pcts[key]}%</span>
+          {/* 십성 분포 */}
+          <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 flex flex-col justify-center">
+            <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-3">
+              십성(十星) 에너지 분포
+            </p>
+            <div className="space-y-3">
+              {([
+                { key: 'resource' as const, label: '인성(印星)', color: '#a78bfa' },
+                { key: 'self'     as const, label: '비겁(比劫)', color: '#60a5fa' },
+                { key: 'output'   as const, label: '식상(食傷)', color: '#34d399' },
+                { key: 'wealth'   as const, label: '재성(財星)', color: '#fbbf24' },
+                { key: 'power'    as const, label: '관성(官星)', color: '#f87171' },
+              ] as const).map(({ key, label, color }) => (
+                <div key={key} className="flex items-center gap-2.5">
+                  <span className="text-xs text-slate-300 font-medium break-keep w-20 shrink-0">{label}</span>
+                  <div className="flex-1 h-2.5 bg-slate-700/60 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pcts[key]}%` }}
+                      transition={{ duration: 0.8, delay: 0.3 }}
+                      className="h-full rounded-full"
+                      style={{ background: color }}
+                    />
                   </div>
-                ))}
-              </div>
+                  <span className="text-xs font-bold w-10 text-right shrink-0" style={{ color }}>{pcts[key]}%</span>
+                </div>
+              ))}
             </div>
+          </div>
+        </div>
 
-            {/* 초보자 관전 포인트 & 밸런스 개선 전략 */}
-            <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-4 shadow-inner space-y-3">
-              <div>
-                <p className="text-[10px] text-emerald-400 font-bold mb-1.5 flex items-center gap-1.5 uppercase tracking-widest">
-                  💡 초보자 관전 포인트
-                </p>
-                <p className="text-[11px] text-emerald-100/90 leading-[1.6] break-keep">
-                  오각형 그래프가 한 쪽으로 찌그러져 있나요? 전혀 나쁜 것이 아닙니다! 어느 한 분야의 에너지를 폭발적으로 쓸 수 있는 <strong>당신만의 '명확한 무기'</strong>가 있다는 뜻입니다. 가장 튀어나온 에너지를 무기 삼아 돌파하세요.
-                </p>
-              </div>
-              <div className="pt-3 border-t border-emerald-500/10">
-                <p className="text-[10px] text-red-400 font-bold mb-1.5 flex items-center gap-1.5 uppercase tracking-widest">
-                  🚨 시스템 밸런스 점검
-                </p>
-                <h4 className="text-[11px] font-bold text-slate-200 mb-1">
-                  가장 취약한 에러(병목): <span className="text-red-300">{lowestCoaching.title}</span>
-                </h4>
-                <p className="text-[11px] text-slate-400 leading-[1.6] break-keep">
-                  {lowestCoaching.text}
-                </p>
-              </div>
-            </div>
+        {/* 3. 초보자 관전 포인트 & 밸런스 개선 전략 (데스크톱 2열 가로 분할, 모바일 1열 스택) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-4.5 shadow-inner">
+            <p className="text-[10px] text-emerald-400 font-bold mb-2 flex items-center gap-1.5 uppercase tracking-widest">
+              💡 초보자 관전 포인트
+            </p>
+            <p className="text-xs text-emerald-100/90 leading-relaxed break-keep">
+              오각형 그래프가 한 쪽으로 찌그러져 있나요? 전혀 나쁜 것이 아닙니다! 어느 한 분야의 에너지를 폭발적으로 쓸 수 있는 <strong className="text-emerald-300 font-bold">'당신만의 명확한 무기'</strong>가 있다는 뜻입니다. 가장 튀어나온 에너지를 무기 삼아 돌파하세요.
+            </p>
+          </div>
+          <div className="bg-red-950/20 border border-red-500/20 rounded-xl p-4.5 shadow-inner">
+            <p className="text-[10px] text-red-400 font-bold mb-1.5 flex items-center gap-1.5 uppercase tracking-widest">
+              🚨 시스템 밸런스 점검
+            </p>
+            <h4 className="text-xs font-bold text-slate-200 mb-1.5">
+              가장 취약한 에러(병목): <span className="text-red-300 font-extrabold">{lowestCoaching.title}</span>
+            </h4>
+            <p className="text-xs text-slate-300 leading-relaxed break-keep font-normal">
+              {lowestCoaching.text}
+            </p>
           </div>
         </div>
 

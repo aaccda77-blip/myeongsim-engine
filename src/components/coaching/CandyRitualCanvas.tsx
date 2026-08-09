@@ -270,8 +270,16 @@ export default function CandyRitualCanvas({ phase, flavor }: CandyRitualCanvasPr
         )}
       </div>
 
+      {/* 💡 초보자를 위한 디지털 알사탕 1초 도슨트 툴팁 */}
+      <div className="absolute top-3 inset-x-3 bg-slate-950/90 border border-purple-500/40 rounded-xl px-3 py-1.5 text-center text-[10px] font-sans z-30 shadow-lg backdrop-blur-md">
+        <span className="font-black text-amber-300">💡 디지털 알사탕(0)의 의미: </span>
+        <span className="text-slate-200 font-medium">
+          지친 뇌(DMN)의 과부하를 0(Zero)으로 비우고 이경윤님의 본질 주파수를 일깨우는 10초 자각 알사탕입니다.
+        </span>
+      </div>
+
       {/* 뇌파 (편도체) 파형 디스플레이 영역 */}
-      <div className="absolute bottom-4 left-0 right-0 flex flex-col items-center pointer-events-none z-30">
+      <div className="absolute bottom-3 left-0 right-0 flex flex-col items-center pointer-events-none z-30">
         <svg className="w-72 h-14 overflow-visible">
           <defs>
             <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -297,11 +305,11 @@ export default function CandyRitualCanvas({ phase, flavor }: CandyRitualCanvasPr
             className="transition-all duration-700"
           />
         </svg>
-        <span className="text-[8px] font-mono text-zinc-600 uppercase tracking-widest mt-1">
-          {phase === 'intro' && 'AMYGDALA_OSC // INITIALIZING'}
-          {phase === 'scan' && 'AMYGDALA_OSC // DMN OVERLOAD DETECTED'}
-          {phase === 'sync' && 'AMYGDALA_OSC // CALMING DOWN'}
-          {phase === 'shift' && 'AMYGDALA_OSC // ZERO_POINT_ACQUISITION'}
+        <span className="text-[10px] font-mono text-amber-400 font-bold tracking-wider mt-0.5">
+          {phase === 'intro' && '🔮 뇌 과부하 정밀 컴파일 준비'}
+          {phase === 'scan' && '⚠️ 편도체 과부하 감지 // 과열된 생각 스캔 중'}
+          {phase === 'sync' && '✨ 제로포인트 주파수 정렬 // 마음 이완 중'}
+          {phase === 'shift' && '🌌 본질 스크린 각성 // 제로포인트 시프트 완료'}
         </span>
       </div>
 

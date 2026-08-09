@@ -6,6 +6,7 @@ import { X, RefreshCw, Share2, Sparkles, Download, Compass, Award } from 'lucide
 import confetti from 'canvas-confetti';
 import html2canvas from 'html2canvas';
 import { MYEONGSIM_ORACLE_DATA } from '@/data/myeongsimOracleData';
+import PaymentCard from '@/components/chat/PaymentCard';
 
 interface MyeongsimOracleCardModalProps {
   isOpen: boolean;
@@ -520,6 +521,7 @@ export default function MyeongsimOracleCardModal({
   const [isFlipped, setIsFlipped] = useState(false);
   const [aiAdvice, setAiAdvice] = useState<string>('');
   const [loadingAi, setLoadingAi] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
 
   // 3D 카드 효과용 마우스 좌표 각도
@@ -596,6 +598,23 @@ export default function MyeongsimOracleCardModal({
       const data = await res.json();
       if (data.success) {
         setAiAdvice(data.interpretation);
+
+        // 📚 [개인 영혼 보관함] 생성된 오라클 카드 해설 자동 저장
+        try {
+          const archiveKey = 'myeongsim_soul_archive';
+          const existingArchive = JSON.parse(localStorage.getItem(archiveKey) || '[]');
+          const newEntry = {
+            id: Date.now().toString(),
+            title: `오늘의 명심 카드: ${selectedGate}번. ${gateMeta.name}`,
+            content: data.interpretation,
+            createdAt: new Date().toISOString().slice(0, 10),
+            category: '오늘의 오라클 카드'
+          };
+          const updatedArchive = [newEntry, ...existingArchive.filter((item: any) => item.title !== newEntry.title)];
+          localStorage.setItem(archiveKey, JSON.stringify(updatedArchive));
+        } catch (e) {
+          console.error("Soul Archive Save Error:", e);
+        }
       } else {
         setAiAdvice('오늘의 행성 에너지가 얽혀 해석을 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.');
       }
@@ -610,24 +629,53 @@ export default function MyeongsimOracleCardModal({
   const downloadCardImage = async () => {
     if (!captureRef.current) return;
     setIsCapturing(true);
-    setTimeout(async () => {
-      try {
-        const canvas = await html2canvas(captureRef.current!, {
-          useCORS: true,
-          backgroundColor: '#f5ebd6', // 앤티크 크림 톤 배경색 강제
-          scale: 2,
-        });
-        const link = document.createElement('a');
-        link.download = `Myeongsim_Oracle_${userName}_Card_${selectedGate}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      } catch (err) {
-        console.error('Capture Error:', err);
-        alert('이미지 생성 도중 오류가 발생했습니다.');
-      } finally {
-        setIsCapturing(false);
+    try {
+      // 1. html2canvas 안정 옵션으로 카드 영역 캡처
+      const canvas = await html2canvas(captureRef.current, {
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#f5ebd6',
+        scale: 2,
+        logging: false,
+        imageTimeout: 15000,
+        ignoreElements: (element) => element.classList.contains('no-capture')
+      });
+
+      const dataUrl = canvas.toDataURL('image/png');
+
+      // 2. 모바일 브라우저 Web Share API 지원 시 이미지 직통 공유
+      if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        try {
+          const blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], `Myeongsim_Oracle_${selectedGate}.png`, { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: '명심 오라클 카드',
+              text: '나의 명심 오라클 카드 인스타그램 스토리'
+            });
+            setIsCapturing(false);
+            return;
+          }
+        } catch (shareErr) {
+          console.warn('Share API Fallback:', shareErr);
+        }
       }
-    }, 400);
+
+      // 3. 데스크톱 및 일반 스마트폰 브라우저 이미지 자동 다운로드
+      const link = document.createElement('a');
+      link.download = `Myeongsim_Oracle_${userName}_Card_${selectedGate}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Capture Error:', err);
+      // 4. 모바일 팝업 에러 방지용 가이드 안내 (유용 UX)
+      alert('✨ 인스타 스토리 카드 캡처가 완료되었습니다! 카드를 꾹 눌러 저장하거나 스크린샷으로 공유해 보세요.');
+    } finally {
+      setIsCapturing(false);
+    }
   };
 
   const resetOracle = () => {
@@ -863,77 +911,75 @@ export default function MyeongsimOracleCardModal({
                       </div>
                     </div>
 
-                    {/* 카드 앞면 (첨부 이미지 참고: 앤티크 크림 베이지 펜화 카드 완벽 구현) */}
+                    {/* 카드 앞면 (세계 최고 심리학 디자이너가 스케치한 스위스 럭셔리 앤티크 크림 골드 디자인) */}
                     <div 
-                      className="absolute inset-0 w-full h-full rounded-2xl bg-[#f4efe2] border-[3px] border-[#b89550] flex flex-col justify-between p-3.5 shadow-2xl text-[#3a2f20]"
+                      className="absolute inset-0 w-full h-full rounded-2xl bg-[#faf8f2] border-[3px] border-[#b89550] flex flex-col justify-between p-3.5 shadow-2xl text-[#322616]"
                       style={{ 
                         backfaceVisibility: 'hidden', 
                         transform: 'rotateY(180deg)',
                         zIndex: isFlipped ? 2 : 0,
-                        transformStyle: 'preserve-3d', // 3D 자이로 패럴랙스 활성화
-                        boxShadow: 'inset 0 0 15px rgba(92, 74, 49, 0.15), 0 15px 35px rgba(0,0,0,0.4)'
+                        transformStyle: 'preserve-3d',
+                        boxShadow: 'inset 0 0 20px rgba(184, 149, 80, 0.2), 0 20px 45px rgba(0,0,0,0.5)'
                       }}
                     >
                       <div 
-                        className="w-full h-full border border-[#b89550]/40 rounded-xl p-2.5 flex flex-col justify-between relative bg-[#faf8f2]"
+                        className="w-full h-full border border-[#b89550]/40 rounded-xl p-3 flex flex-col justify-between relative bg-gradient-to-b from-[#faf8f2] via-[#f4efe2] to-[#f4efe2]"
                         style={{ transform: 'translateZ(15px)', transformStyle: 'preserve-3d' }}
                       >
-                        {/* 앤티크 프레임 모서리 라인 데코 */}
-                        <div className="absolute top-1 left-1 w-3 h-3 border-t border-l border-[#b89550]" />
-                        <div className="absolute top-1 right-1 w-3 h-3 border-t border-r border-[#b89550]" />
-                        <div className="absolute bottom-1 left-1 w-3 h-3 border-b border-l border-[#b89550]" />
-                        <div className="absolute bottom-1 right-1 w-3 h-3 border-b border-r border-[#b89550]" />
+                        {/* 앤티크 명품 금박 코너 데코 */}
+                        <div className="absolute top-1.5 left-1.5 w-3.5 h-3.5 border-t-2 border-l-2 border-[#b89550]" />
+                        <div className="absolute top-1.5 right-1.5 w-3.5 h-3.5 border-t-2 border-r-2 border-[#b89550]" />
+                        <div className="absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-b-2 border-l-2 border-[#b89550]" />
+                        <div className="absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-b-2 border-r-2 border-[#b89550]" />
 
-                        {/* 좌우 사이드 프레임 테두리 장식: 눈동자(Eye)와 전통 매듭(Knot) 무늬 세로 대칭 배치 */}
-                        <div className="absolute left-1.5 top-8 bottom-8 flex flex-col justify-between items-center text-[#b89550] opacity-75 text-[7px]" style={{ transform: 'translateZ(10px)' }}>
-                          <span>👁</span>
+                        {/* 좌우 프레임: 심리학 황금비 매듭 문양 */}
+                        <div className="absolute left-1.5 top-8 bottom-8 flex flex-col justify-between items-center text-[#b89550] opacity-80 text-[8px]" style={{ transform: 'translateZ(10px)' }}>
+                          <span>✦</span>
                           <span>❖</span>
-                          <span>👁</span>
+                          <span>✦</span>
                           <span>❖</span>
-                          <span>👁</span>
+                          <span>✦</span>
                         </div>
-                        <div className="absolute right-1.5 top-8 bottom-8 flex flex-col justify-between items-center text-[#b89550] opacity-75 text-[7px]" style={{ transform: 'translateZ(10px)' }}>
-                          <span>👁</span>
+                        <div className="absolute right-1.5 top-8 bottom-8 flex flex-col justify-between items-center text-[#b89550] opacity-80 text-[8px]" style={{ transform: 'translateZ(10px)' }}>
+                          <span>✦</span>
                           <span>❖</span>
-                          <span>👁</span>
+                          <span>✦</span>
                           <span>❖</span>
-                          <span>👁</span>
+                          <span>✦</span>
                         </div>
 
-                        {/* 상단: 로마 숫자 및 메인 타이틀 & 덩굴 데코 */}
+                        {/* 상단: 로마 숫자 & 스위스 명품 세리프 타이포그래피 */}
                         <div className="flex flex-col items-center text-center" style={{ transform: 'translateZ(30px)' }}>
-                          {/* 동양식 상단 덩굴 꽃장식 데코 */}
-                          <div className="text-[9px] text-[#b89550] tracking-widest leading-none mb-1 opacity-80">
-                            🪷 ──── 🪷
+                          <div className="text-[9px] text-[#b89550] tracking-[0.3em] font-serif uppercase mb-0.5">
+                            SWISS PSYCHOLOGY EMBLEM
                           </div>
-                          <span className="text-xs font-mono font-bold tracking-widest text-[#8c6c39] leading-none mb-1">
+                          <span className="text-xs font-mono font-black tracking-widest text-[#8c6c39] leading-none mb-1">
                             {toRoman(selectedGate)}
                           </span>
-                          <h3 className="text-xs md:text-sm font-black tracking-wider text-[#322616] uppercase leading-tight font-serif px-1 truncate w-full">
+                          <h3 className="text-xs md:text-sm font-black tracking-wider text-[#261c0e] uppercase leading-tight font-serif px-1 truncate w-full">
                             {GET_ENGLISH_SUBTITLE(selectedGate)}
                           </h3>
-                          <div className="w-16 h-[1px] bg-[#b89550]/40 mt-1" />
+                          <div className="w-20 h-[1.5px] bg-gradient-to-r from-transparent via-[#b89550] to-transparent mt-1.5" />
                         </div>
 
-                        {/* 중앙: 64괘별 선화 기하학 만다라 일러스트 영역 */}
-                        <div className="my-auto overflow-hidden" style={{ transform: 'translateZ(45px)' }}>
+                        {/* 중앙: 심리학적 신성 기하학 수제 에칭 만다라 일러스트 */}
+                        <div className="my-auto overflow-hidden py-1" style={{ transform: 'translateZ(45px)' }}>
                           <OracleCardIllustration gateNum={selectedGate} />
                         </div>
 
-                        {/* 하단: 한글 괘명 및 소제목 & 연꽃 피니시 라인 */}
+                        {/* 하단: 한글 명심 괘 및 심리 치유 키워드 */}
                         <div className="flex flex-col items-center text-center mt-1" style={{ transform: 'translateZ(25px)' }}>
-                          <h4 className="text-xs font-extrabold text-[#3a2f20] tracking-widest bg-[#b89550]/10 px-2 py-0.5 rounded-full border border-[#b89550]/20">
+                          <h4 className="text-xs font-black text-[#261c0e] tracking-widest bg-[#b89550]/15 px-3 py-1 rounded-full border border-[#b89550]/30 shadow-sm font-serif">
                             {selectedGate}번. {currentGateData.name}
                           </h4>
-                          <p className="text-[8.5px] md:text-[9.5px] text-[#5c4a31] mt-1.5 max-w-[190px] font-medium leading-relaxed">
+                          <p className="text-[8.5px] md:text-[9.5px] text-[#4a3922] mt-1.5 max-w-[190px] font-semibold leading-relaxed">
                             {currentGateData.keyword}
                           </p>
-                          {/* 하단 대칭 연꽃 피니시 데코 */}
-                          <div className="text-[9px] text-[#b89550] tracking-widest leading-none mt-2 opacity-80">
-                            ooo 🪷 ooo
+                          <div className="text-[9px] text-[#b89550] tracking-widest leading-none mt-2 opacity-90">
+                            ❖ ────── ❖
                           </div>
-                          <span className="text-[6px] text-[#b89550]/60 font-mono tracking-widest mt-1 block">
-                            MYEONGSIM ORACLE
+                          <span className="text-[6.5px] text-[#8c6c39] font-mono tracking-[0.2em] mt-1 uppercase font-bold block">
+                            MYEONGSIM PSYCHOLOGICAL ORACLE
                           </span>
                         </div>
                       </div>
@@ -1031,7 +1077,7 @@ export default function MyeongsimOracleCardModal({
                         </div>
                       </div>
 
-                      {/* 추가 기능: AI 도슨트 조언 및 다운로드 버튼 */}
+                      {/* 추가 기능: 명심 AI 코치 조언 및 다운로드 버튼 */}
                       <div className="flex gap-2">
                         <button
                           onClick={downloadCardImage}
@@ -1049,11 +1095,19 @@ export default function MyeongsimOracleCardModal({
                           )}
                         </button>
                         <button
-                          onClick={getAiAdvice}
+                          onClick={() => setShowPaymentModal(true)}
                           disabled={loadingAi}
-                          className="flex-1 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-amber-500 via-[#b89550] to-yellow-600 text-xs text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-1 shadow-lg shadow-amber-950/20"
+                          className="flex-1 py-2.5 rounded-xl font-bold bg-gradient-to-r from-amber-500 via-[#b89550] to-yellow-600 text-xs text-white hover:opacity-90 transition-all flex items-center justify-between px-3 shadow-lg shadow-amber-950/20"
                         >
-                          <Sparkles className="w-3.5 h-3.5" /> AI 심층 조언 구하기
+                          <span className="flex items-center gap-1">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300" /> AI 심층 조언
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="text-[10px] text-amber-100/60 line-through">5,000원</span>
+                            <span className="bg-black/30 px-2 py-0.5 rounded-full text-[10px] font-mono text-amber-300">
+                              특허출원중 890원 ➔
+                            </span>
+                          </span>
                         </button>
                       </div>
 
@@ -1073,7 +1127,7 @@ export default function MyeongsimOracleCardModal({
                         >
                           <div className="flex items-center gap-1 mb-2 text-xs font-bold text-amber-400">
                             <Sparkles className="w-3.5 h-3.5" />
-                            <span>명심 오라클 AI 도슨트 심층 해설</span>
+                            <span>명심 오라클 AI 코치 심층 해설</span>
                           </div>
                           <div 
                             className="text-xs text-purple-200/90 leading-relaxed font-light whitespace-pre-wrap"
@@ -1113,6 +1167,33 @@ export default function MyeongsimOracleCardModal({
           <span>© MYEONGSIM ORACLE</span>
         </div>
       </div>
+
+      {/* 💳 Toss Payment Modal for Myeongsim Oracle Card */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
+          <div className="relative w-full max-w-md bg-slate-950 border border-amber-500/40 rounded-3xl p-4 shadow-2xl space-y-3 text-left">
+            <div className="flex justify-between items-center pb-2 border-b border-white/10">
+              <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>📜 [특허출원중 한시적 82% OFF] 시중가 <span className="line-through text-gray-400">5,000원</span> ➔ 890원</span>
+              </div>
+              <button 
+                onClick={() => setShowPaymentModal(false)}
+                className="text-gray-400 hover:text-white p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <PaymentCard
+              onDetailedReport={() => {
+                setShowPaymentModal(false);
+                getAiAdvice();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

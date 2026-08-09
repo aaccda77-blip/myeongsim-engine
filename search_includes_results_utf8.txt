@@ -1,0 +1,342 @@
+﻿
+src\app\admin\page.tsx:190:                                if (['TRIAL_30M', 'PASS_24H', 'VIP_7D'].includes(t)) return 
+t;
+src\app\iching\codes\page.tsx:15:            code.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+src\app\iching\codes\page.tsx:16:            code.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+src\app\iching\codes\page.tsx:17:            code.darkCode.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+src\app\iching\codes\page.tsx:18:            code.gift.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+src\app\iching\codes\page.tsx:19:            code.metaCode.name.toLowerCase().includes(searchQuery.toLowerCase());
+src\app\master-core\dark-code-debugger\page.tsx:303:                <span className={log.includes('[WARNING]') ? 'text-
+amber-400 font-bold' : log.includes('[SCAN COMPLETE]') ? 'text-cyan-400 font-bold' : ''}>
+src\app\master-core\mental\page.tsx:178:                                                        if(line.includes('[상태 판
+별:')) return <div key={i} className="text-yellow-400 font-bold mt-2">{line}</div>;
+src\app\master-core\mental\page.tsx:179:                                                        if(line.includes('지시:')
+) return <div key={i} className="text-purple-400 font-bold mb-2 mt-4">{line}</div>;
+src\app\master-core\value\page.tsx:65:    return grounds.includes(g1) || grounds.includes(g2) || grounds.includes(g1H) 
+|| grounds.includes(g2H);
+src\app\startup\facilitation\page.tsx:438:                if (fullContent.includes("명리학") || fullContent.includes("운세")
+ || fullContent.includes("전략")) {
+src\app\test-db\page.tsx:86:                        <div key={i} className={`mb-2 ${log.includes('❌') ? 'text-red-400' 
+: log.includes('✅') ? 'text-green-300' : 'text-gray-300'}`}>
+src\components\PsychFlipCard.tsx:22:        if (checkedItems.includes(index)) {
+src\components\PsychFlipCard.tsx:81:                                <div className={`w-6 h-6 rounded border flex items-
+center justify-center transition-colors ${checkedItems.includes(idx) ? 'bg-primary-gold border-primary-gold' : 'border-
+gray-600'}`}>
+src\components\PsychFlipCard.tsx:82:                                    {checkedItems.includes(idx) && <Check className
+="w-4 h-4 text-black" />}
+src\components\PsychFlipCard.tsx:85:                                    <p className={`transition-all ${checkedItems.in
+cludes(idx) ? 'text-gray-500 line-through' : 'text-gray-200'}`}>
+src\components\PsychFlipCard.tsx:88:                                    {checkedItems.includes(idx) && (
+src\components\auth\PhoneAuthModal.tsx:106:                    if (user.membership_tier.includes('TRIAL')) {
+src\components\bio\MentalPrescriptionModal.tsx:46:        setSelectedSymptoms(prev => prev.includes(id) ? prev.filter(s
+ => s !== id) : [...prev, id]);
+src\components\bio\MentalPrescriptionModal.tsx:136:                                        const isSelected = selectedS
+ymptoms.includes(sym.id);
+src\components\bio\MentalPrescriptionV2.tsx:46:        setSelectedSymptoms(prev => prev.includes(id) ? prev.filter(s =>
+ s !== id) : [...prev, id]);
+src\components\bio\MentalPrescriptionV2.tsx:136:                                        const isSelected = selectedSymp
+toms.includes(sym.id);
+src\components\bio-care\SupplementInput.tsx:23:        sup.name.toLowerCase().includes(searchTerm.toLowerCase())
+src\components\chat\ActionPlanCard.tsx:31:            prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+src\components\chat\ActionPlanCard.tsx:65:                        const isCompleted = completedSteps.includes(idx);
+src\components\chat\ActionPlanCard.tsx:94:                                            <span className={`text-xs font-bo
+ld px-2 py-0.5 rounded-full ${step.time.includes('아침') ? 'bg-orange-900/40 text-orange-300' :
+src\components\chat\ActionPlanCard.tsx:95:                                                step.time.includes('저녁') ? 'b
+g-indigo-900/40 text-indigo-300' :
+src\components\chat\ChatInterface.tsx:79:    if (dm.includes('갑') || dm.includes('을')) return ["성장", "창의성", "유연함"];
+src\components\chat\ChatInterface.tsx:80:    if (dm.includes('병') || dm.includes('정')) return ["열정", "표현력", "활기"];
+src\components\chat\ChatInterface.tsx:81:    if (dm.includes('무') || dm.includes('기')) return ["포용력", "신뢰", "안정"];
+src\components\chat\ChatInterface.tsx:82:    if (dm.includes('경') || dm.includes('신')) return ["결단력", "정확성", "의리"];
+src\components\chat\ChatInterface.tsx:83:    if (dm.includes('임') || dm.includes('계')) return ["지혜", "유동성", "통찰"];
+src\components\chat\ChatInterface.tsx:518:        if (!userId || userId.includes('0000')) return;
+src\components\chat\ChatInterface.tsx:534:            if (!userId || userId.includes('-0000-')) return; // Skip for gue
+st/demo IDs
+src\components\chat\ChatInterface.tsx:579:        if (!userId || userId.includes('-0000-')) return;
+src\components\chat\ChatInterface.tsx:986:        if (ETHICAL_GUIDELINES.CRISIS_KEYWORDS.some(k => lowerMsg.includes(k)
+)) {
+src\components\chat\ChatInterface.tsx:998:        if (ETHICAL_GUIDELINES.PROHIBITED_KEYWORDS.some(k => lowerMsg.include
+s(k))) {
+src\components\chat\ChatInterface.tsx:1024:        if (false && !isSurveyCompleted && !msgToSend.includes(":::") && !ms
+gToSend.startsWith("/")) {
+src\components\chat\ChatInterface.tsx:1128:        if (msgToSend.includes('감사') || msgToSend.includes('좋아') || msgToSen
+d.includes('신기')) {
+src\components\chat\ChatInterface.tsx:1134:        if (msgToSend.trim() === '/신청' || msgToSend.includes('Beta 신청')) {
+src\components\chat\ChatInterface.tsx:1392:                if (jsonPart.includes('gaugeData')) {
+src\components\chat\ChatInterface.tsx:1416:            if (error.message?.includes('403') || error.status === 403) {
+src\components\chat\ChatInterface.tsx:2435:                                            {msg.content.includes('[NEURAL_R
+EPORT:BP54]') && (
+src\components\chat\ChatInterface.tsx:2442:                                            {msg.content.includes('[NEURAL_A
+RCHITECTURE]') && (
+src\components\chat\ChatInterface.tsx:2891:                                    const isCool = dm.includes('임') || dm.in
+cludes('계') || dm.includes('경') || dm.includes('신');
+src\components\chat\ConsciousnessCard.tsx:12:    const isLowLevel = level.includes('1') || level.includes('2') || level
+.includes('3');
+src\components\chat\TalentReportCard.tsx:153:        if (['甲', '乙', '寅', '卯', '목'].includes(char)) return 'wood';
+src\components\chat\TalentReportCard.tsx:154:        if (['丙', '丁', '巳', '午', '화'].includes(char)) return 'fire';
+src\components\chat\TalentReportCard.tsx:155:        if (['戊', '己', '辰', '戌', '丑', '未', '토'].includes(char)) return 'ea
+rth';
+src\components\chat\TalentReportCard.tsx:156:        if (['庚', '辛', '申', '酉', '금'].includes(char)) return 'metal';
+src\components\chat\TalentReportCard.tsx:157:        if (['壬', '癸', '亥', '子', '수'].includes(char)) return 'water';
+src\components\coaching\AkashicRecordSection.tsx:220:      if (text.includes('Error') || text.includes('상관') || text.in
+cludes('루프') || text.includes('경직') || text.includes('모순') || text.includes('고립')) {
+src\components\coaching\AwakeningChat.tsx:59:                const roleAlias = generated[0]?.text.includes("'") ? gener
+ated[0].text.split("'")[1] : '나';
+src\components\coaching\DiscoveryChatModal.tsx:164:            } else if ((text.includes('상담실') || text.includes('이동'))
+ && onConvertToMainChat) {
+src\components\coaching\DiscoveryChatModal.tsx:167:            } else if (text.includes('종료')) {
+src\components\coaching\Healing108CoachingReport.tsx:801:        if (branches.includes('未') || branches.includes('戌')) 
+{
+src\components\coaching\Healing108CoachingReport.tsx:802:            dryerElement = branches.includes('未') ? '未土' : '戌土
+';
+src\components\coaching\Healing108CoachingReport.tsx:804:        } else if (branches.includes('辰') || branches.includes
+('丑')) {
+src\components\coaching\Healing108CoachingReport.tsx:805:            dryerElement = branches.includes('辰') ? '辰土' : '丑土
+';
+src\components\coaching\Healing108CoachingReport.tsx:835:        if (branchString.includes('子') && branchString.include
+s('午')) primaryClash = '子午沖(자오충)';
+src\components\coaching\Healing108CoachingReport.tsx:836:        else if (branchString.includes('丑') && branchString.in
+cludes('未')) primaryClash = '丑未沖(축미충)';
+src\components\coaching\Healing108CoachingReport.tsx:837:        else if (branchString.includes('寅') && branchString.in
+cludes('申')) primaryClash = '寅申沖(인신충)';
+src\components\coaching\Healing108CoachingReport.tsx:838:        else if (branchString.includes('卯') && branchString.in
+cludes('酉')) primaryClash = '卯酉沖(묘유충)';
+src\components\coaching\Healing108CoachingReport.tsx:839:        else if (branchString.includes('辰') && branchString.in
+cludes('戌')) primaryClash = '辰戌沖(진술충)';
+src\components\coaching\Healing108CoachingReport.tsx:840:        else if (branchString.includes('巳') && branchString.in
+cludes('亥')) primaryClash = '巳亥沖(사해충)';
+src\components\coaching\Healing108CoachingReport.tsx:841:        else if (branchString.includes('巳') && branchString.in
+cludes('申')) primaryClash = '巳申형 갈등';
+src\components\coaching\Healing108CoachingReport.tsx:842:        else if (branchString.includes('寅') && branchString.in
+cludes('巳') && branchString.includes('申')) primaryClash = '삼형살(三刑殺) 스파크';
+src\components\coaching\Healing108CoachingReport.tsx:938:            key.toLowerCase().includes(searchQuery.toLowerCase
+()) ||
+src\components\coaching\Healing108CoachingReport.tsx:939:            resolvedTitle.toLowerCase().includes(searchQuery.t
+oLowerCase()) ||
+src\components\coaching\Healing108CoachingReport.tsx:940:            resolvedDesc.toLowerCase().includes(searchQuery.to
+LowerCase())
+src\components\coaching\MindSpaceTrainingModal.tsx:336:  if (['인', '묘'].includes(monthJi)) seasonText = '봄';
+src\components\coaching\MindSpaceTrainingModal.tsx:338:  else if (['사', '오'].includes(monthJi)) seasonText = '여름';
+src\components\coaching\MindSpaceTrainingModal.tsx:340:  else if (['신', '유'].includes(monthJi)) seasonText = '가을';
+src\components\coaching\MindSpaceTrainingModal.tsx:342:  else if (['해', '자'].includes(monthJi)) seasonText = '겨울';
+src\components\coaching\MindSpaceTrainingModal.tsx:358:    if (monthJijanggan.includes(ct.char)) {
+src\components\coaching\MindSpaceTrainingModal.tsx:779:  if (yongsinChar.includes('수')) typeKey = 'water';
+src\components\coaching\MindSpaceTrainingModal.tsx:780:  else if (yongsinChar.includes('화')) typeKey = 'fire';
+src\components\coaching\MindSpaceTrainingModal.tsx:781:  else if (yongsinChar.includes('금')) typeKey = 'metal';
+src\components\coaching\MindSpaceTrainingModal.tsx:782:  else if (yongsinChar.includes('목')) typeKey = 'wood';
+src\components\coaching\MindSpaceTrainingModal.tsx:871:  const hasZi = allBranches.includes('자');
+src\components\coaching\MindSpaceTrainingModal.tsx:872:  const hasChuk = allBranches.includes('축');
+src\components\coaching\MindSpaceTrainingModal.tsx:873:  const hasOh = allBranches.includes('오');
+src\components\coaching\MindSpaceTrainingModal.tsx:920:  if (shinsalName.includes('도화')) typeKey = 'dohwa';
+src\components\coaching\MindSpaceTrainingModal.tsx:921:  else if (shinsalName.includes('역마')) typeKey = 'yeokma';
+src\components\coaching\MindSpaceTrainingModal.tsx:922:  else if (shinsalName.includes('화개')) typeKey = 'hwagae';
+src\components\coaching\MindSpaceTrainingModal.tsx:923:  else if (shinsalName.includes('양인')) typeKey = 'yangin';
+src\components\coaching\MindSpaceTrainingModal.tsx:1204:  const hasZi = allBranches.includes('자');
+src\components\coaching\MindSpaceTrainingModal.tsx:1205:  const hasChuk = allBranches.includes('축');
+src\components\coaching\MindSpaceTrainingModal.tsx:1206:  const hasOh = allBranches.includes('오');
+src\components\coaching\MindSpaceTrainingModal.tsx:1226:  if (allBranches.includes('자') || allBranches.includes('오') ||
+ allBranches.includes('묘') || allBranches.includes('유')) {
+src\components\coaching\MindSpaceTrainingModal.tsx:1233:  if (allBranches.includes('인') || allBranches.includes('신') ||
+ allBranches.includes('사') || allBranches.includes('해')) {
+src\components\coaching\MindSpaceTrainingModal.tsx:1240:  if (allBranches.includes('축') || allBranches.includes('미') ||
+ allBranches.includes('진') || allBranches.includes('술')) {
+src\components\coaching\MindSpaceTrainingModal.tsx:1248:  const hasYangIn = (rawDayGan === '임' && allBranches.includes(
+'자')) || 
+src\components\coaching\MindSpaceTrainingModal.tsx:1249:                    (rawDayGan === '병' && allBranches.includes(
+'오')) || 
+src\components\coaching\MindSpaceTrainingModal.tsx:1250:                    (rawDayGan === '무' && allBranches.includes(
+'오')) || 
+src\components\coaching\MindSpaceTrainingModal.tsx:1251:                    (rawDayGan === '갑' && allBranches.includes(
+'인')) || 
+src\components\coaching\MindSpaceTrainingModal.tsx:1252:                    (rawDayGan === '경' && allBranches.includes(
+'신'));
+src\components\coaching\MindSpaceTrainingModal.tsx:1523:        if (idLower.includes('편인')) gyeokgukId = 'pyunin';
+src\components\coaching\MindSpaceTrainingModal.tsx:1524:        else if (idLower.includes('식신')) gyeokgukId = 'sikshin'
+;
+src\components\coaching\MindSpaceTrainingModal.tsx:1525:        else if (idLower.includes('상관')) gyeokgukId = 'sangwan'
+;
+src\components\coaching\MindSpaceTrainingModal.tsx:1526:        else if (idLower.includes('편재')) gyeokgukId = 'pyunjae'
+;
+src\components\coaching\MindSpaceTrainingModal.tsx:1527:        else if (idLower.includes('정재')) gyeokgukId = 'jeongjae
+';
+src\components\coaching\MindSpaceTrainingModal.tsx:1528:        else if (idLower.includes('편관')) gyeokgukId = 'pyungwan
+';
+src\components\coaching\MindSpaceTrainingModal.tsx:1529:        else if (idLower.includes('정관')) gyeokgukId = 'jeonggwa
+n';
+src\components\coaching\MindSpaceTrainingModal.tsx:1530:        else if (idLower.includes('정인')) gyeokgukId = 'jeongin'
+;
+src\components\coaching\MindSpaceTrainingModal.tsx:1539:        if (nameStr.includes('도화')) shinKey = 'dohwa';
+src\components\coaching\MindSpaceTrainingModal.tsx:1540:        else if (nameStr.includes('역마')) shinKey = 'yeokma';
+src\components\coaching\MindSpaceTrainingModal.tsx:1541:        else if (nameStr.includes('화개')) shinKey = 'hwagae';
+src\components\coaching\MindSpaceTrainingModal.tsx:1542:        else if (nameStr.includes('양인')) shinKey = 'yangin';
+src\components\coaching\MindSpaceTrainingModal.tsx:2502:                          { year: '40대 대운 (현재)', name: sajuData
+?.dayMaster?.includes('금') ? '정해(丁亥) 운' : '현재 런타임', active: true },
+src\components\coaching\MindSpaceTrainingModal.tsx:2885:                              {palace.name === '명' || palace.na
+me.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+src\components\coaching\MindSpaceTrainingModal.tsx:2948:                                {palace.name === '명' || palace.
+name.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+src\components\coaching\MindSpaceTrainingModal.tsx:4638:                              {palace.name === '명' || palace.na
+me.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+src\components\coaching\MindSpaceTrainingModal.tsx:4680:                                  {palace.name === '명' || palac
+e.name.includes('명') ? '🔮 명궁' : `${palace.name}궁`}
+src\components\coaching\MptiTestModal.tsx:564:        if (tag.includes("인") || tag.includes("인성")) {
+src\components\coaching\MptiTestModal.tsx:568:            if (isIntuitive && enneagramCenter.includes("머리")) {
+src\components\coaching\MptiTestModal.tsx:579:        } else if (tag.includes("재") || tag.includes("재성")) {
+src\components\coaching\MptiTestModal.tsx:594:        } else if (tag.includes("식") || tag.includes("상") || tag.includes
+("식상")) {
+src\components\coaching\MptiTestModal.tsx:598:            if (mbti.F > mbti.T && enneagramCenter.includes("가슴")) {
+src\components\coaching\MptiTestModal.tsx:609:        } else if (tag.includes("관") || tag.includes("관성")) {
+src\components\coaching\MptiTestModal.tsx:628:            if (enneagramCenter.includes("장") || bigFive.E >= 4) {
+src\components\coaching\MptiTestModal.tsx:947:                if (heavenGans.includes(cand)) {
+src\components\coaching\MptiTestModal.tsx:982:            if (gongmangInfo.chars.includes(yearJi)) activeGongmangs.push
+('년지공망');
+src\components\coaching\MptiTestModal.tsx:983:            if (gongmangInfo.chars.includes(monthJi)) activeGongmangs.pus
+h('월지공망');
+src\components\coaching\MptiTestModal.tsx:984:            if (gongmangInfo.chars.includes(dayJi)) activeGongmangs.push(
+'일지공망');
+src\components\coaching\MptiTestModal.tsx:985:            if (gongmangInfo.chars.includes(timeJi)) activeGongmangs.push
+('시지공망');
+src\components\coaching\MyeongsimCoachingDashboard.tsx:463:  if (['寅', '午', '戌'].includes(basis)) {
+src\components\coaching\MyeongsimCoachingDashboard.tsx:465:  } else if (['申', '子', '辰'].includes(basis)) {
+src\components\coaching\MyeongsimCoachingDashboard.tsx:467:  } else if (['巳', '酉', '丑'].includes(basis)) {
+src\components\coaching\MyeongsimCoachingDashboard.tsx:469:  } else if (['亥', '卯', '未'].includes(basis)) {
+src\components\coaching\MyeongsimCoachingDashboard.tsx:518:      const isGM = getGongmangBranches(dayGan, dayJi).includ
+es(cleanChar) && position.includes('지지');
+src\components\coaching\MyeongsimCoachingDashboard.tsx:811:    if (['庚', '辛', '경', '신'].includes(dm) && elements.water 
+>= 2) {
+src\components\coaching\MyeongsimCoachingDashboard.tsx:816:    else if (['甲', '乙', '갑', '을'].includes(dm) && elements.f
+ire >= 2) {
+src\components\coaching\MyeongsimCoachingDashboard.tsx:821:    else if (['壬', '癸', '임', '계'].includes(dm) && elements.w
+ood >= 2) {
+src\components\coaching\MyeongsimCoachingDashboard.tsx:945:      if (gmBranches.includes(cleanJi)) {
+src\components\coaching\MyeongsimCoachingDashboard.tsx:947:        if (['비견', '겁재'].includes(tenGod)) result.self = tru
+e;
+src\components\coaching\MyeongsimCoachingDashboard.tsx:948:        if (['식신', '상관'].includes(tenGod)) result.output = t
+rue;
+src\components\coaching\MyeongsimCoachingDashboard.tsx:949:        if (['편재', '정재'].includes(tenGod)) result.wealth = t
+rue;
+src\components\coaching\MyeongsimCoachingDashboard.tsx:950:        if (['편관', '정관'].includes(tenGod)) result.power = tr
+ue;
+src\components\coaching\MyeongsimCoachingDashboard.tsx:951:        if (['편인', '정인'].includes(tenGod)) result.resource =
+ true;
+src\components\coaching\MyeongsimCoachingDashboard.tsx:1374:      const isGM = gmBranches.includes(item.ji) || gmBranch
+es.includes(ANIMAL_MAP[item.ji]);
+src\components\coaching\NeuralCodeCoachingModal.tsx:236:    if (questionText.includes('불씨') || questionText.includes('치
+유력')) {
+src\components\coaching\NeuralCodeCoachingModal.tsx:244:    if (questionText.includes('초조함') || questionText.includes('
+결실')) {
+src\components\coaching\NeuralCodeCoachingModal.tsx:252:    if (questionText.includes('완벽') || questionText.includes('면
+도날') || questionText.includes('흠결')) {
+src\components\coaching\NeuralCodeCoachingModal.tsx:260:    if (questionText.includes('보호색') || questionText.includes('
+눈물겨운 적응력') || questionText.includes('대본')) {
+src\components\coaching\NeuralCodeCoachingModal.tsx:268:    if (questionText.includes('강철 같은 뚝심') || questionText.inclu
+des('돌파력') || questionText.includes('장애물')) {
+src\components\coaching\NeuralCodeCoachingModal.tsx:276:    if (questionText.includes('수고로움') || questionText.includes(
+'이타적') || questionText.includes('옥토') || questionText.includes('개척')) {
+src\components\coaching\NeuralCodeCoachingModal.tsx:299:    if (label.includes('지향') || label.includes('vision')) retur
+n 'vision';
+src\components\coaching\NeuralCodeCoachingModal.tsx:300:    if (label.includes('자아') || label.includes('identity') || l
+abel.includes('핵심')) return 'identity';
+src\components\coaching\NeuralCodeCoachingModal.tsx:301:    if (label.includes('사회') || label.includes('social') || lab
+el.includes('환경')) return 'social';
+src\components\coaching\NeuralCodeCoachingModal.tsx:302:    if (label.includes('배경') || label.includes('base') || label
+.includes('에너지')) return 'base';
+src\components\coaching\NeuralCodeCoachingModal.tsx:317:        if (stepLabel.toLowerCase().includes('산파') || stepLabel
+.toLowerCase().includes('socratic')) {
+src\components\coaching\NeuralCodeCoachingModal.tsx:319:        } else if (stepLabel.toLowerCase().includes('재귀') || st
+epLabel.toLowerCase().includes('recursive')) {
+src\components\coaching\PremiumReportModal.tsx:526:                            if (['갑', '을'].includes(kor)) {
+src\components\coaching\PremiumReportModal.tsx:536:                            if (['병', '정'].includes(kor)) {
+src\components\coaching\PremiumReportModal.tsx:546:                            if (['무', '기'].includes(kor)) {
+src\components\coaching\PremiumReportModal.tsx:556:                            if (['경', '신'].includes(kor)) {
+src\components\coaching\PremiumReportModal.tsx:566:                            if (['임', '계'].includes(kor)) {
+src\components\coaching\SajuArchitectureFlow.tsx:524:      if (metalStems.includes(dayStem || '')) return { resource: o
+haeng.earth, self: ohaeng.metal, output: ohaeng.water, wealth: ohaeng.wood, power: ohaeng.fire };
+src\components\coaching\SovereignCoachingReport.tsx:103:        if (dayMasterRaw.includes(s)) { dayMasterChar = s; brea
+k; }
+src\components\coaching\SovereignCoachingReport.tsx:108:            if (dayMasterRaw.includes(s)) { dayMasterChar = s; 
+break; }
+src\components\coaching\SovereignCoachingReport.tsx:201:    const hasYearGongmang = gongmangLabels.some(g => finalYearP
+illar.includes(g));
+src\components\coaching\SovereignCoachingReport.tsx:202:    const hasMonthGongmang = gongmangLabels.some(g => finalMont
+hPillar.includes(g));
+src\components\coaching\SovereignCoachingReport.tsx:203:    const hasTimeGongmang = gongmangLabels.some(g => finalTimeP
+illar.includes(g));
+src\components\coaching\SovereignCoachingReport.tsx:1784:                                                ['甲','乙'].incl
+udes(sajuInfo.dayStem) ? '목' :
+src\components\coaching\SovereignCoachingReport.tsx:1785:                                                ['丙','丁'].incl
+udes(sajuInfo.dayStem) ? '화' :
+src\components\coaching\SovereignCoachingReport.tsx:1786:                                                ['戊','己'].incl
+udes(sajuInfo.dayStem) ? '토' :
+src\components\coaching\SovereignCoachingReport.tsx:1787:                                                ['庚','辛'].incl
+udes(sajuInfo.dayStem) ? '금' :
+src\components\coaching\SovereignCoachingReport.tsx:1788:                                                ['壬','癸'].incl
+udes(sajuInfo.dayStem) ? '수' : ''
+src\components\coaching\StageAnalysisModal.tsx:127:        if (gongmangInfo.chars.includes(yearJi)) status.year = true;
+src\components\coaching\StageAnalysisModal.tsx:128:        if (gongmangInfo.chars.includes(monthJi)) status.month = tru
+e;
+src\components\coaching\StageAnalysisModal.tsx:129:        if (gongmangInfo.chars.includes(dayJi)) status.day = true;
+src\components\coaching\StageAnalysisModal.tsx:130:        if (gongmangInfo.chars.includes(timeJi)) status.time = true;
+src\components\coaching\StageAnalysisModal.tsx:178:                if (heavenGans.includes(cand)) {
+src\components\coaching\TripleCoreAnalysis.tsx:313:        const color = line.includes('CRITICAL') ? 'text-red-400'
+src\components\coaching\TripleCoreAnalysis.tsx:314:          : line.includes('WARNING') ? 'text-yellow-400'
+src\components\coaching\TripleCoreAnalysis.tsx:315:          : line.includes('OPTIMAL') ? 'text-emerald-400'
+src\components\coaching\debugging\ACTSandboxPanel.tsx:205:                                                        log.i
+ncludes('SYSTEM ERROR') || log.includes('ERR_') 
+src\components\coaching\debugging\ACTSandboxPanel.tsx:207:                                                        : log
+.includes('SYSTEM ALERT') 
+src\components\coaching\debugging\ACTSandboxPanel.tsx:209:                                                        : log
+.includes('SYSTEM WARNING') 
+src\components\dashboard\TodayEnergyDashboard.tsx:131:        if (dayMaster.includes('갑') || dayMaster.includes('을')) r
+eturn '목';
+src\components\dashboard\TodayEnergyDashboard.tsx:132:        if (dayMaster.includes('병') || dayMaster.includes('정')) r
+eturn '화';
+src\components\dashboard\TodayEnergyDashboard.tsx:133:        if (dayMaster.includes('무') || dayMaster.includes('기')) r
+eturn '토';
+src\components\dashboard\TodayEnergyDashboard.tsx:134:        if (dayMaster.includes('경') || dayMaster.includes('신')) r
+eturn '금';
+src\components\dashboard\TodayEnergyDashboard.tsx:135:        if (dayMaster.includes('임') || dayMaster.includes('계')) r
+eturn '수';
+src\components\onboarding\OnboardingFlow.tsx:28:        if (ganEl && ELEMENT_ORDER.includes(ganEl)) {
+src\components\onboarding\OnboardingFlow.tsx:32:        if (jiEl && ELEMENT_ORDER.includes(jiEl)) {
+src\components\onboarding\OnboardingFlow.tsx:158:            stressFactors: prev.stressFactors.includes(factor)
+src\components\onboarding\OnboardingFlow.tsx:323:                                                const isSelected = for
+mData.stressFactors.includes(factor);
+src\components\os\DailyDebuggingModal.tsx:423:                        <span className={`text-xs ${saveMessage.includes(
+'성공') ? 'text-emerald-400' : 'text-rose-400'}`}>
+src\components\os\FrequencyLevelUpModal.tsx:334:                      {saveMessage && <span className={`text-xs ${saveM
+essage.includes('성공') ? 'text-emerald-400' : 'text-rose-400'}`}>{saveMessage}</span>}
+src\components\pages\CoverView.tsx:30:        if (ganEl && ELEMENT_ORDER.includes(ganEl)) {
+src\components\pages\CoverView.tsx:34:        if (jiEl && ELEMENT_ORDER.includes(jiEl)) {
+src\components\pages\FlipCardView.tsx:40:        if (checkedItems.includes(index)) {
+src\components\pages\FlipCardView.tsx:138:                            const isChecked = checkedItems.includes(idx);
+src\components\pages\IdentityView.tsx:55:    if (dmString.includes('Wood') || dmString.includes('목') || dmString.includ
+es('갑') || dmString.includes('을')) return 'Wood';
+src\components\pages\IdentityView.tsx:56:    if (dmString.includes('Fire') || dmString.includes('화') || dmString.includ
+es('병') || dmString.includes('정')) return 'Fire';
+src\components\pages\IdentityView.tsx:57:    if (dmString.includes('Earth') || dmString.includes('토') || dmString.inclu
+des('무') || dmString.includes('기')) return 'Earth';
+src\components\pages\IdentityView.tsx:58:    if (dmString.includes('Metal') || dmString.includes('금') || dmString.inclu
+des('경') || dmString.includes('신')) return 'Metal';
+src\components\pages\IdentityView.tsx:59:    if (dmString.includes('Water') || dmString.includes('수') || dmString.inclu
+des('임') || dmString.includes('계')) return 'Water';
+src\components\report\PremiumActionGuide.tsx:239:        if (dm.includes('갑') || dm.includes('을')) return '성장하는 목(木)';
+src\components\report\PremiumActionGuide.tsx:240:        if (dm.includes('병') || dm.includes('정')) return '불안한 화(火)';
+src\components\report\PremiumActionGuide.tsx:241:        if (dm.includes('무') || dm.includes('기')) return '안정적인 토(土)';
+src\components\report\PremiumActionGuide.tsx:242:        if (dm.includes('경') || dm.includes('신')) return '날카로운 금(金)';
+src\components\report\PremiumActionGuide.tsx:243:        if (dm.includes('임') || dm.includes('계')) return '흐르는 수(水)';
+src\components\strength-report\StrengthReportContainer.tsx:363:                            strengthData.leadershipStyle
+.includes('CONFIDENT') ? 75 : 60
+src\components\user\ProfileModal.tsx:28:        if (ganEl && ELEMENT_ORDER.includes(ganEl)) {
+src\components\user\ProfileModal.tsx:32:        if (jiEl && ELEMENT_ORDER.includes(jiEl)) {
+src\components\user\ProfileModal.tsx:118:            if (dm.includes('갑') || dm.includes('을')) return ["성장", "창의성", "유연
+함"];
+src\components\user\ProfileModal.tsx:119:            if (dm.includes('병') || dm.includes('정')) return ["열정", "표현력", "활기
+"];
+src\components\user\ProfileModal.tsx:120:            if (dm.includes('무') || dm.includes('기')) return ["포용력", "신뢰", "안정
+"];
+src\components\user\ProfileModal.tsx:121:            if (dm.includes('경') || dm.includes('신')) return ["결단력", "정확성", "의
+리"];
+src\components\user\ProfileModal.tsx:122:            if (dm.includes('임') || dm.includes('계')) return ["지혜", "유동성", "통찰
+"];
+
+

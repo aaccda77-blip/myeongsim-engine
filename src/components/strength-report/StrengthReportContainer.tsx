@@ -281,16 +281,40 @@ export default function StrengthReportContainer() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-12"
+                    className="text-center mb-8"
                 >
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-mono mb-3">
+                        <Sparkles size={13} className="text-amber-400 animate-pulse" />
+                        <span>3세대 최신 심리 과학적 도구 & 기질 융합 역량 진단</span>
+                    </div>
+
                     <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
                         <span className="text-amber-400">{effectiveData.userName}</span>님의 강점/재능 리포트
                     </h1>
-                    <p className="text-gray-400">당신만의 본질 에너지를 시각화합니다</p>
+                    <p className="text-gray-400 text-sm md:text-base">당신만의 본질 에너지를 시각화하고 최적의 성장 스케일업을 도출합니다</p>
+                    
                     {!reportData && (
                         <p className="text-xs text-amber-500/70 mt-2">📌 데모 모드: 실제 분석은 리포트 입력 후 확인하세요</p>
                     )}
-                    <p className="text-xs text-gray-500 mt-2">💡 각 그래프를 클릭하면 AI가 상세 해설을 보여줍니다</p>
+
+                    {/* ━━━ 👑 세계 최고 360° AI 강점 심층 통찰 버튼 ━━━ */}
+                    <div className="mt-6 flex justify-center">
+                        <button
+                            type="button"
+                            onClick={() => openModal(
+                                'forceField',
+                                'total360',
+                                `${effectiveData.userName}님의 세계 최고 360° 강점 심층 통찰 총평`,
+                                98
+                            )}
+                            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-purple-600 hover:from-amber-400 hover:to-purple-500 text-slate-950 font-black text-sm md:text-base shadow-[0_0_30px_rgba(245,158,11,0.4)] transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2.5 cursor-pointer border border-amber-300/40"
+                        >
+                            <Sparkles className="w-5 h-5 text-slate-950 animate-spin" style={{ animationDuration: '6s' }} />
+                            <span>✨ [세계 최고 360° AI 강점 심층 통찰 보고서 받기]</span>
+                        </button>
+                    </div>
+
+                    <p className="text-xs text-gray-500 mt-3">💡 개별 카드를 클릭하셔도 항목별 다각도 AI 심층 분석을 확인하실 수 있습니다.</p>
                 </motion.div>
 
                 {/* Grid Layout */}
@@ -377,19 +401,106 @@ export default function StrengthReportContainer() {
                             </div>
                         </div>
 
-                        <p className="text-[10px] text-gray-600 mt-4 text-center">👆 클릭하면 AI 상세 해설</p>
+                        <p className="text-[10px] text-amber-400 mt-4 text-center font-bold">👉 클릭하면 360° AI 리더십 심층 해설</p>
                     </motion.div>
                 </div>
+
+                {/* ━━━ 🎯 나의 강점 레버리지 3대 실행 로드맵 ━━━ */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="mt-12 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-slate-900/90 via-indigo-950/80 to-slate-950 border border-indigo-500/30 shadow-2xl relative overflow-hidden"
+                >
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                    
+                    <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-amber-500/20 rounded-2xl border border-amber-400/40 text-amber-300">
+                                <Sparkles className="w-6 h-6 animate-pulse" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-white">🎯 {effectiveData.userName}님을 위한 강점 레버리지 3대 실행 로드맵</h3>
+                                <p className="text-xs text-gray-400">타고난 본질 에너지를 현실의 압도적 성과로 전환하는 최적 경로 (카드 터치 시 AI 심층 해설)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* STEP 01 */}
+                        <div
+                            onClick={() => openModal(
+                                'forceField',
+                                'step01_scaleup',
+                                `로드맵 STEP 01: 핵심 강점 스케일업 (${effectiveData.userName}님 맞춤형)`,
+                                95
+                            )}
+                            className="p-5 rounded-2xl bg-white/5 hover:bg-amber-400/10 border border-white/10 hover:border-amber-400/50 space-y-2.5 transition-all transform hover:-translate-y-1 cursor-pointer group shadow-lg relative overflow-hidden"
+                        >
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs font-mono font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/30">STEP 01</span>
+                                <span className="text-[10px] text-amber-300 group-hover:underline font-bold">✨ AI 심층 분석 ➔</span>
+                            </div>
+                            <h4 className="text-sm font-bold text-white group-hover:text-amber-200 transition-colors">핵심 강점 스케일업</h4>
+                            <p className="text-xs text-gray-300 leading-relaxed">
+                                본질 포스필드에서 가장 높은 에너지 축을 직무 메인 미션에 100% 집중 배치하세요.
+                            </p>
+                            <p className="text-[10px] text-amber-400/80 pt-1 font-mono">👉 클릭 시 360° AI 가속 처방 호출</p>
+                        </div>
+
+                        {/* STEP 02 */}
+                        <div
+                            onClick={() => openModal(
+                                'cooperation',
+                                'step02_partnership',
+                                `로드맵 STEP 02: 상보적 팀 파트너십 (${effectiveData.userName}님 맞춤형)`,
+                                92
+                            )}
+                            className="p-5 rounded-2xl bg-white/5 hover:bg-indigo-400/10 border border-white/10 hover:border-indigo-400/50 space-y-2.5 transition-all transform hover:-translate-y-1 cursor-pointer group shadow-lg relative overflow-hidden"
+                        >
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-400/10 px-2 py-0.5 rounded border border-indigo-400/30">STEP 02</span>
+                                <span className="text-[10px] text-indigo-300 group-hover:underline font-bold">✨ AI 심층 분석 ➔</span>
+                            </div>
+                            <h4 className="text-sm font-bold text-white group-hover:text-indigo-200 transition-colors">상보적 팀 파트너십</h4>
+                            <p className="text-xs text-gray-300 leading-relaxed">
+                                내가 취약한 에너지를 보완해 줄 수 있는 파트너와 협력 구조를 형성하세요.
+                            </p>
+                            <p className="text-[10px] text-indigo-400/80 pt-1 font-mono">👉 클릭 시 360° AI 시너지 처방 호출</p>
+                        </div>
+
+                        {/* STEP 03 */}
+                        <div
+                            onClick={() => openModal(
+                                'talentProfile',
+                                'step03_metacognition',
+                                `로드맵 STEP 03: 1분 메타인지 리셋 (${effectiveData.userName}님 맞춤형)`,
+                                96
+                            )}
+                            className="p-5 rounded-2xl bg-white/5 hover:bg-emerald-400/10 border border-white/10 hover:border-emerald-400/50 space-y-2.5 transition-all transform hover:-translate-y-1 cursor-pointer group shadow-lg relative overflow-hidden"
+                        >
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/30">STEP 03</span>
+                                <span className="text-[10px] text-emerald-300 group-hover:underline font-bold">✨ AI 심층 분석 ➔</span>
+                            </div>
+                            <h4 className="text-sm font-bold text-white group-hover:text-emerald-200 transition-colors">1분 메타인지 리셋</h4>
+                            <p className="text-xs text-gray-300 leading-relaxed">
+                                스트레스 발생 시 인지 탈융합 성찰로 다크코드를 해제하고 본래의 맑은 상태를 유지하세요.
+                            </p>
+                            <p className="text-[10px] text-emerald-400/80 pt-1 font-mono">👉 클릭 시 360° AI 리셋 처방 호출</p>
+                        </div>
+                    </div>
+                </motion.div>
 
                 {/* Footer Tagline */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1 }}
-                    className="text-center mt-16 pb-8"
+                    className="text-center mt-12 pb-8"
                 >
                     <p className="text-gray-500 text-sm">
-                        Powered by <span className="text-amber-400">명심코칭</span> · 기질 기반 과학적 역량 분석
+                        Powered by <span className="text-amber-400 font-bold">명심코칭</span> · 3세대 최신 심리 과학적 도구 & 사주명리학 기질 기반 과학적 역량 분석
                     </p>
                 </motion.div>
             </main>

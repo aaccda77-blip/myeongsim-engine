@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { pageKey, sajuData, sajuProfile, originalPage } = body;
+    const { pageKey, sajuData, sajuProfile, originalPage, userName, birthDate, gender } = body;
 
     // [진단 로그] 서버에 도달한 데이터 완전 투명 공개
     console.log(`\n🔍 [generate-108] ===== ${pageKey} 생성 요청 =====`);
@@ -41,22 +41,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
     }
 
-    // 10개 모듈 초고도화 JSON 스키마
+    // 11개 모듈 초고도화 JSON 스키마 (융합 에세이 포함)
     const jsonSchema: any = {
       type: SchemaType.OBJECT,
       properties: {
-        title: { type: SchemaType.STRING, description: "시적이고 감동적인 맞춤 제목" },
-        sajuAnalysis: { type: SchemaType.STRING, description: "이 주제에 대한 사주 기질 분석 요약" },
-        darkCodeCbt: { type: SchemaType.STRING, description: "CBT 다크코드 - 생각의 함정 해체" },
-        metaCodeAct: { type: SchemaType.STRING, description: "ACT 메타코드 - 있는 그대로 받아들이기" },
-        neuralCodeDbt: { type: SchemaType.STRING, description: "DBT 뉴럴코드 - 마음이 흔들릴 때 처방전" },
-        socraticMbct: { type: SchemaType.STRING, description: "MBCT 마음챙김 자각 질문" },
-        relaxMbsr: { type: SchemaType.STRING, description: "MBSR 스트레스 이완 안내" },
-        selfCompassionMsc: { type: SchemaType.STRING, description: "MSC 자기연민 실천법" },
-        coachingSolution: { type: SchemaType.STRING, description: "오늘부터 실천할 코칭 솔루션" },
-        mantra: { type: SchemaType.STRING, description: "평생 꺼내 읽는 확언문" }
+        title: { type: SchemaType.STRING, description: "시적이고 감동적인 맞춤 제목 (페이지 주제 밀착)" },
+        healingEssay: { type: SchemaType.STRING, description: "사주 4주팔자(년·월·일·시주)와 공망, 6대 심리치료(CBT·ACT·DBT·MBSR·MSC)가 하나로 융합된 350~500자의 100% 독창적이고 감동적인 1:1 영혼 치유 에세이" },
+        sajuAnalysis: { type: SchemaType.STRING, description: "이 주제와 사주 8자/공망의 연결 요약 (50~80자)" },
+        darkCodeCbt: { type: SchemaType.STRING, description: "CBT 인지성찰 - 생각의 함정 탈출 요약 (50~80자)" },
+        metaCodeAct: { type: SchemaType.STRING, description: "ACT 수용전념 - 강점 전환 요약 (50~80자)" },
+        neuralCodeDbt: { type: SchemaType.STRING, description: "DBT 행동조율 - 이완 가이드 요약 (50~80자)" },
+        socraticMbct: { type: SchemaType.STRING, description: "MBCT 마음챙김 자각 질문 (50~80자)" },
+        relaxMbsr: { type: SchemaType.STRING, description: "MBSR 스트레스 이완 안내 (50~80자)" },
+        selfCompassionMsc: { type: SchemaType.STRING, description: "MSC 자기연민 실천법 (50~80자)" },
+        coachingSolution: { type: SchemaType.STRING, description: "오늘부터 실천할 코칭 솔루션 (50~80자)" },
+        mantra: { type: SchemaType.STRING, description: "평생 꺼내 읽는 확언문 (50~80자)" }
       },
-      required: ["title", "sajuAnalysis", "darkCodeCbt", "metaCodeAct", "neuralCodeDbt", "socraticMbct", "relaxMbsr", "selfCompassionMsc", "coachingSolution", "mantra"]
+      required: ["title", "healingEssay", "sajuAnalysis", "darkCodeCbt", "metaCodeAct", "neuralCodeDbt", "socraticMbct", "relaxMbsr", "selfCompassionMsc", "coachingSolution", "mantra"]
     };
 
     const model = google.getGenerativeModel({
@@ -119,6 +120,33 @@ export async function POST(req: NextRequest) {
     else if (resourceCount === 0) tenGodNarrative.push('인성이 부재하여 지적 탐구보다 실천과 행동을 중시하는 기질입니다. 돌봐주고 보호해줄 심리적 지원군이 부족할 수 있습니다.');
     else tenGodNarrative.push(`인성이 ${resourceCount}개로 학습과 실천 사이의 균형을 유지합니다.`);
 
+    // 공망(空亡) 정밀 연산 헬퍼
+    const GAN_LIST = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const JI_LIST  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    const GONGMANG_MAP: Record<number, string> = {
+      0: '술해(戌亥 / 영성과 비움의 공간)',
+      10: '신유(申酉 / 결실과 신념의 공간)',
+      8: '오미(午未 / 열정과 비전의 공간)',
+      6: '진사(辰巳 / 변혁과 인연의 공간)',
+      4: '인묘(寅卯 / 시작과 도약의 공간)',
+      2: '자축(子丑 / 지혜와 뿌리의 공간)'
+    };
+
+    const getGongmang = (ganStr?: string, jiStr?: string) => {
+      if (!ganStr || !jiStr) return '신유(申酉 / 결실의 공간)';
+      const gChar = ganStr.charAt(0);
+      const jChar = jiStr.charAt(0);
+      const gIdx = GAN_LIST.indexOf(gChar);
+      const jIdx = JI_LIST.indexOf(jChar);
+      if (gIdx === -1 || jIdx === -1) return '신유(申酉 / 결실의 공간)';
+      const diff = (jIdx - gIdx + 12) % 12;
+      return GONGMANG_MAP[diff] || '신유(申酉 / 결실의 공간)';
+    };
+
+    const dayGan = fp?.day?.gan || fp?.day?.ganKor || sp.dayMasterChar || '辛';
+    const dayJi = fp?.day?.ji || fp?.day?.jiKor || '巳';
+    const gongmangInfo = getGongmang(dayGan, dayJi);
+
     // 오행 불균형 분석
     const ohaengLabels = { wood: '목(木)', fire: '화(火)', earth: '토(土)', metal: '금(金)', water: '수(水)' };
     const ohaengScores: Record<string, number> = { wood: el.wood||0, fire: el.fire||0, earth: el.earth||0, metal: el.metal||0, water: el.water||0 };
@@ -133,86 +161,53 @@ export async function POST(req: NextRequest) {
 [🧬 내담자 사주 기질 프로파일 - 절대 무시 금지]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-◆ 사기둥(四柱):
-  년주(年柱): ${getGanJi(fp.year)} — 조상궁, 사회적 환경
-  월주(月柱): ${getGanJi(fp.month)} — 부모궁, 성장 환경
-  일주(日柱): ${getGanJi(fp.day)} — 🌟 본인의 핵심 🌟
-  시주(時柱): ${getGanJi(fp.time)} — 자녀궁, 잠재력
+◆ 내담자 이름: ${userName || '소중한 내담자'}님
+◆ 생년월일: ${birthDate || '정보 없음'}
+◆ 성별: ${gender === 'male' ? '남성' : gender === 'female' ? '여성' : '정보 없음'}
 
-◆ 일간(Day Master): ${sp.dayMasterChar || sajuData.dayMaster || '알 수 없음'}
-  → 은유: "${sp.dayMasterAnalogy || '(알 수 없음)'}"
-  → 짧은 은유: "${sp.dayMasterShortAnalogy || ''}"
-
-◆ 내면의 검열관 (관성/Official Star):
-  → 한자: ${sp.killerElement || '?'}
-  → 은유: "${sp.killerAnalogy || '?'}"
-  → 십신명: ${sp.killerName || '?'}
-
-◆ 감정의 출구 (식상/Expression Star):
-  → 한자: ${sp.expressionElement || '?'}
-  → 은유: "${sp.expressionAnalogy || '?'}"
-  → 짧은 은유: "${sp.expressionShortAnalogy || '?'}"
-  → 십신명: ${sp.expressionName || '?'}
-
-◆ 마음의 방해꾼 (조후/Dryer):
-  → 한자: ${sp.dryerElement || '?'}
-  → 은유: "${sp.dryerAnalogy || '?'}"
-
-◆ 경쟁의 그림자 (비겁/Rival Star):
-  → 한자: ${sp.competitorElement || '?'}
-  → 은유: "${sp.competitorAnalogy || '?'}"
-  → 십신명: ${sp.competitorName || '?'}
-
-◆ 나의 보물 자산 (재성/Asset Star):
-  → 한자: ${sp.assetElement || '?'}
-  → 은유: "${sp.assetAnalogy || '?'}"
-  → 짧은 은유: "${sp.assetShortAnalogy || '?'}"
-  → 십신명: ${sp.assetName || '?'}
-
-◆ 핵심 충(沖)/형(刑): ${sp.primaryClash || '없음'}
-◆ 현재 대운: ${sp.currentDaewoonGanji || '정보 없음'}
+◆ 사기둥(四柱 八字):
+  년주(年柱 - 사회/조상궁): ${getGanJi(fp.year)}
+  월주(月柱 - 무의식/부모궁): ${getGanJi(fp.month)}
+  일주(日柱 - 본질/자기): ${getGanJi(fp.day)} 🌟 (핵심)
+  시주(時柱 - 잠재력/미래): ${getGanJi(fp.time)}
+◆ 나의 공망(空亡): ${gongmangInfo} — 내 삶에서 채워야 할 수호적 공간
 
 ◆ 십신(十神) 수치: 비겁 ${selfCount} | 식상 ${outputCount} | 재성 ${wealthCount} | 관성 ${powerCount} | 인성 ${resourceCount}
-
-◆ 십신 심리 서사:
-${tenGodNarrative.map(n => `  · ${n}`).join('\n')}
-
-◆ 오행(五行) 점수: ${Object.entries(ohaengScores).map(([k,v]) => `${(ohaengLabels as any)[k]}=${v}`).join(' | ')}
-  → 가장 강한 기운: ${(ohaengLabels as any)[maxElem[0]]}(${maxElem[1]}점) — 과잉 주의
-  → 가장 약한 기운: ${(ohaengLabels as any)[minElem[0]]}(${minElem[1]}점) — 치유적 보강 필요
+◆ 오행(五行) 강약: 가장 강함=${(ohaengLabels as any)[maxElem[0]]}(${maxElem[1]}점) | 가장 약함=${(ohaengLabels as any)[minElem[0]]}(${minElem[1]}점)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[📖 이 페이지의 원래 치유 테마 가이드]
+[📖 이 페이지의 독창적 자각 테마]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- 페이지: ${pageKey}
-- 원래 제목: ${originalPage.title}
-- 원래 설명: ${(originalPage.desc || '').substring(0, 300)}
-- 원래 질문: ${originalPage.socratic}
-- 원래 확약문: ${originalPage.recursive}
+- 페이지 코드: ${pageKey}
+- 이번 페이지의 원래 주제: "${originalPage.title}"
+- 원래 설명 내용: "${(originalPage.desc || '').substring(0, 300)}"
+- 원래 질문: "${originalPage.socratic}"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[✍️ 6대 심리치료 + 사주 분석 + 코칭 솔루션 — 10모듈 초고도화 지침 🌸]
+[✍️ 100% 독창적 1:1 심층 융합 에세이 집필 지침 🌸]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-★ 문체 규칙 (절대 지켜야 할 3가지):
-- 전문 용어 금지! "인지 왜곡", "변증법" 같은 말 대신 "생각의 함정", "마음의 균형" 같은 쉬운 말을 쓰세요.
-- "~해요", "~거예요", "~죠" 같은 다정하고 따뜻한 친구 말투로 쓰세요.
-- 읽는 사람의 마음을 어루만지는 감동적이고 시적인 이야기체로 쓰세요.
+★ [핵심 지침: 페이지 간 중복 100% 차단]
+1. 모든 페이지에 "은빛 다이아몬드", "가혹한 감시 카메라", "오아시스" 같은 똑같은 비유 단어를 반복하지 마세요!
+2. 이번 페이지의 주제("${originalPage.title}")에 완전히 집중하여, 이 내담자의 사주 4주팔자(년/월/일/시주)와 공망(${gongmangInfo}) 및 십신 성향(비겁/식상/재성/관성/인성)을 결합해 "아, 정말 이건 내 이야기구나!" 하고 깊은 소름과 감동을 느끼도록 상세히 분석하세요.
+3. 사람들이 사주에서 가장 궁금해하는 인기 핵심 키워드 [💰 재물과 부의 그릇, 👑 직업과 출세길, 💕 인연과 배우자운, 🧠 내면의 불안과 번아웃 극복]를 이번 페이지 주제에 자연스럽게 엮어 분석해 주세요.
+4. 3세대 과학적 인지재구성 (CBT 생각의 함정 탈출 + ACT 기질 강점 전환 + DBT 행동 이완)을 융합하여 따뜻하고 친절하며 깊이 있는 1:1 이야기체로 써주세요.
+5. ★ 의료법 준수 금지 단어: "처방전", "처방", "진단", "치료", "환자" 사용 절대 금지! ("행동 가이드", "솔루션", "디코딩", "성찰", "내담자" 사용)
+6. ★ 호칭 지침: 일간 이름("신금님" 등) 대신 반드시 "${userName || '소중한 내담자'}님"으로 호칭하세요.
 
-★ 각 필드는 반드시 50~80자! 절대 100자를 넘기지 마세요. 짧고 임팩트 있게!
+1. **title**: 이 페이지 주제를 담은 독창적인 맞춤 제목 (15자 이내)
+2. **healingEssay**: ★ [핵심] 사주 4주팔자 + 공망 + 십신 + 3세대 인지재구성이 하나로 융합된 350~500자의 감동적인 1:1 초개인화 에세이! (중복 비유 금지, 깊은 분석과 따뜻한 위로)
+3. **sajuAnalysis**: 이 주제와 내 사주 8자/공망의 구체적 연결 요약 (50~80자)
+4. **darkCodeCbt**: 이 주제 관련 생각의 함정 탈출법 요약 (50~80자)
+5. **metaCodeAct**: 이 주제 관련 기질의 강점 전환법 요약 (50~80자)
+6. **neuralCodeDbt**: 이 주제 관련 행동 가이드 요약 (50~80자)
+7. **socraticMbct**: 내면 자각 질문 (50~80자)
+8. **relaxMbsr**: 구체적 이완 안내 (50~80자)
+9. **selfCompassionMsc**: 자기연민 실천법 (50~80자)
+10. **coachingSolution**: 오늘 실천 과제 (50~80자)
+11. **mantra**: 확언문 한 줄 (50~80자)
 
-1. **title**: 시적 제목 (15자 이내)
-2. **sajuAnalysis**: 이 주제와 내 사주의 연결 (50~80자)
-3. **darkCodeCbt**: 생각의 함정 해체 (50~80자)
-4. **metaCodeAct**: 기질 수용과 강점 전환 (50~80자)
-5. **neuralCodeDbt**: 힘들 때 행동 처방전 (50~80자)
-6. **socraticMbct**: 내면 자각 질문 1~2개 (50~80자)
-7. **relaxMbsr**: 구체적 이완 안내 (50~80자)
-8. **selfCompassionMsc**: 자기연민 실천법 (50~80자)
-9. **coachingSolution**: 오늘 실천 과제 1개 (50~80자)
-10. **mantra**: 확언문 한 줄 (50~80자)
-
-10개 필드만 포함. 짧고 다정하게!
+11개 필드 포함! healingEssay는 풍부하고 100% 독창적이며 감동적으로!
 `.trim();
 
     const result = await model.generateContent(prompt);

@@ -5,12 +5,13 @@ import { Zap, Sparkles, Brain, Cpu, Wifi } from 'lucide-react';
 interface MindSyncStatusBarProps {
     level: number;
     xp: number; // 0-100
-    stateLabel: string; // e.g., "MIND WANDERER"
+    stateLabel: string; // e.g., "의식 각성 (AWAKE)"
     isLevelUp?: boolean;
+    actionButtons?: React.ReactNode;
+    isBioSynced?: boolean;
+    bioSyncStatusText?: string;
+    onOpenBioModal?: () => void;
 }
-
-// [Growth Map Configuration]
-
 
 // [UX] Premium Status Label - 고급스러운 인터렉티브 라벨
 const PremiumStatusLabel = ({ text }: { text: string }) => {
@@ -52,6 +53,10 @@ export const MindSyncStatusBar: React.FC<MindSyncStatusBarProps> = ({
     xp,
     stateLabel,
     isLevelUp = false,
+    actionButtons,
+    isBioSynced = false,
+    bioSyncStatusText = '생체 데이터 미연동',
+    onOpenBioModal,
 }) => {
     const [displayXP, setDisplayXP] = useState(0);
 
@@ -67,8 +72,10 @@ export const MindSyncStatusBar: React.FC<MindSyncStatusBarProps> = ({
         return () => clearInterval(interval);
     }, [xp]);
 
+    const nextLevelXP = 100 - Math.floor(displayXP);
+
     return (
-        <div className="w-full bg-[#0a0f18] border-b border-white/5 relative overflow-hidden shadow-xl z-50">
+        <div className="w-full bg-[#0a0f18]/95 backdrop-blur-md border-b border-white/10 relative overflow-hidden shadow-xl z-50">
             {/* [Living Background] Digital Grid Scanning */}
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
             <motion.div
@@ -77,26 +84,26 @@ export const MindSyncStatusBar: React.FC<MindSyncStatusBarProps> = ({
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
 
-            <div className="px-4 py-3 flex items-center justify-between relative z-10">
+            <div className="px-3 sm:px-4 py-2 flex items-center justify-between relative z-10 gap-2">
 
                 {/* Left: Level Badge & Neural Status */}
-                <div className="flex items-center gap-4">
-                    <div className="relative group cursor-pointer">
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
+                    <div className="relative group cursor-pointer" onClick={onOpenBioModal}>
                         {/* Level Ring */}
                         <motion.div
-                            className={`w-11 h-11 rounded-full flex items-center justify-center border-[2px] backdrop-blur-md relative z-10
-                            ${isLevelUp ? 'border-primary-gold bg-primary-gold/10' : 'border-white/10 bg-white/5'}`}
+                            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-[2px] backdrop-blur-md relative z-10
+                            ${isLevelUp ? 'border-primary-gold bg-primary-gold/10' : 'border-cyan-500/30 bg-white/5'}`}
                             animate={isLevelUp ? {
                                 rotate: [0, 360],
                                 scale: [1, 1.2, 1],
                                 borderColor: ['#DAA520', '#FFF', '#DAA520']
                             } : {
-                                borderColor: ['rgba(255,255,255,0.1)', 'rgba(34,211,238,0.3)', 'rgba(255,255,255,0.1)']
+                                borderColor: ['rgba(34,211,238,0.2)', 'rgba(34,211,238,0.5)', 'rgba(34,211,238,0.2)']
                             }}
                             transition={{ duration: 3, repeat: Infinity }}
                         >
-                            <span className={`font-black text-sm ${isLevelUp ? 'text-primary-gold' : 'text-white'}`}>
-                                Lv.<span className="text-lg">{level}</span>
+                            <span className={`font-black text-xs ${isLevelUp ? 'text-primary-gold' : 'text-white'}`}>
+                                Lv.<span className="text-sm font-mono">{level}</span>
                             </span>
                         </motion.div>
 
@@ -116,51 +123,65 @@ export const MindSyncStatusBar: React.FC<MindSyncStatusBarProps> = ({
                                     exit={{ opacity: 0 }}
                                     className="absolute inset-0 flex items-center justify-center -z-10"
                                 >
-                                    <div className="w-20 h-20 rounded-full bg-primary-gold/40 blur-xl" />
+                                    <div className="w-16 h-16 rounded-full bg-primary-gold/40 blur-xl" />
                                 </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
 
-                    {/* Text Info */}
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                            {isLevelUp ? <Zap className="w-3 h-3 text-yellow-400 animate-bounce" /> : <Brain className="w-3 h-3 text-cyan-400" />}
-                            <span className={`text-sm font-bold tracking-wider ${level >= 5 ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400' : 'text-gray-200'}`}>
+                    {/* Text Info & Bio Sync Status */}
+                    <div className="flex flex-col min-w-0">
+                        <div className="flex items-center gap-1.5 truncate">
+                            {isLevelUp ? <Zap className="w-3 h-3 text-yellow-400 animate-bounce shrink-0" /> : <Brain className="w-3 h-3 text-cyan-400 shrink-0" />}
+                            <span className="text-xs font-bold tracking-wider truncate">
                                 <PremiumStatusLabel text={stateLabel} />
                             </span>
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[9px] text-gray-500 uppercase tracking-[0.2em] font-mono">
-                                NEURAL LINK
-                            </span>
-                            <span className="flex gap-0.5">
-                                <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1, repeat: Infinity }} className="w-1 h-1 bg-green-500 rounded-full" />
-                                <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1, delay: 0.2, repeat: Infinity }} className="w-1 h-1 bg-green-500 rounded-full" />
-                                <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1, delay: 0.4, repeat: Infinity }} className="w-1 h-1 bg-green-500 rounded-full" />
-                            </span>
+
+                        {/* [NEW] Bio Sync Status Pill (Interactive) */}
+                        <div className="flex items-center gap-1.5 mt-0.5" onClick={onOpenBioModal}>
+                            {isBioSynced ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/70 border border-emerald-500/40 px-2 py-0.5 rounded-full cursor-pointer hover:bg-emerald-900/80 transition-all truncate">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping shrink-0" />
+                                    <span>🟢 {bioSyncStatusText}</span>
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-amber-300 font-bold bg-amber-950/80 border border-amber-500/50 px-2 py-0.5 rounded-full cursor-pointer hover:bg-amber-900/90 transition-all animate-pulse truncate">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                                    <span>🔴 생체데이터 미연동 [클릭하여 연동]</span>
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
 
-                {/* Right: Sync Status (Simplified for Space) */}
-                <div className="flex items-center gap-4">
-                    <div className="flex flex-col items-end">
+                {/* Right: Sync Status & Progress */}
+                <div className="flex items-center gap-2 sm:gap-3 ml-auto shrink-0">
+                    <div className="hidden md:flex flex-col items-end">
                         <div className="flex items-center gap-1.5">
-                            <Brain className="w-3 h-3 text-cyan-400" />
-                            <span className="text-xs font-bold text-gray-300">Target Lv.{level}</span>
+                            <Cpu className="w-3 h-3 text-cyan-400" />
+                            <span className="text-[10px] font-bold text-gray-300 font-mono">
+                                {level >= 10 ? '✨ 최고 메타 관찰자 레벨' : `다음 Lv.${level + 1}까지 ${nextLevelXP}%`}
+                            </span>
                         </div>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                            <div className="w-16 h-1.5 bg-gray-800 rounded-full overflow-hidden relative">
+                            <div className="w-16 sm:w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden relative border border-white/10">
                                 <motion.div
-                                    className="h-full bg-cyan-500"
+                                    className="h-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-400"
                                     initial={{ width: 0 }}
                                     animate={{ width: `${xp}%` }}
                                 />
                             </div>
-                            <span className="text-[9px] text-cyan-400 font-mono">{Math.floor(displayXP)}%</span>
+                            <span className="text-[9px] text-cyan-400 font-mono font-bold">{Math.floor(displayXP)}%</span>
                         </div>
                     </div>
+
+                    {/* Action Buttons Slot */}
+                    {actionButtons && (
+                        <div className="flex items-center gap-1">
+                            {actionButtons}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

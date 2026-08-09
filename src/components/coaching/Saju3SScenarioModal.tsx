@@ -93,10 +93,15 @@ export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, on
                 className="bg-slate-900 border border-primary-gold/30 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col relative min-h-[500px]"
             >
                 {/* Header */}
-                <div className="flex justify-between items-center p-4 border-b border-white/5 bg-slate-800/50">
-                    <div className="flex items-center gap-2">
-                        <span className="text-primary-gold font-bold">명심코칭 3S 시나리오</span>
-                        <span className="text-xs text-gray-400 bg-black/30 px-2 py-1 rounded-full">{scenario.stem}</span>
+                <div className="flex justify-between items-center p-4 border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-amber-300 font-extrabold text-sm sm:text-base tracking-tight flex items-center gap-1.5">
+                            ✨ 명심코칭 3S 시나리오
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/30">
+                            🏛️ 특허출원중 제10-2025-0166877호
+                        </span>
+                        <span className="text-xs text-gray-300 bg-black/40 px-2 py-0.5 rounded-full border border-white/10 font-mono">{scenario.stem}</span>
                     </div>
                     <button onClick={onClose} className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors">
                         <X className="w-5 h-5" />
@@ -150,14 +155,14 @@ export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, on
                                         <p className="text-gray-300 leading-relaxed text-base">{displayData.scan}</p>
                                     </div>
                                     <div className="mt-8 space-y-3">
-                                        <p className="text-xs text-gray-400 mb-2">Q. 지금 당신도 이런 상태를 자각하시나요?</p>
-                                        <button onClick={handleNext} className="w-full text-left p-4 rounded-xl border border-cyan-500/30 bg-cyan-900/30 hover:bg-cyan-800/50 text-white font-medium transition-colors flex items-center justify-between group">
-                                            <span>네, 정확히 그런 압박감을 느끼고 있습니다.</span>
-                                            <ArrowRight className="w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <p className="text-xs text-amber-300 font-bold mb-2">Q. 지금 당신도 내면에서 일어나는 이런 상태를 자각하시나요?</p>
+                                        <button onClick={handleNext} className="w-full text-left p-4 rounded-2xl border border-cyan-500/40 bg-gradient-to-r from-cyan-950/60 to-slate-900 hover:border-cyan-400 text-white font-semibold transition-all flex items-center justify-between group shadow-lg active:scale-[0.98]">
+                                            <span className="text-xs sm:text-sm text-cyan-100">✨ 네, 정확히 내면에서 그런 압박감을 자각하고 있습니다.</span>
+                                            <ArrowRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-1 transition-transform" />
                                         </button>
-                                        <button onClick={handleNext} className="w-full text-left p-4 rounded-xl border border-white/5 hover:bg-white/10 text-gray-400 hover:text-gray-200 transition-colors flex items-center justify-between group">
-                                            <span>아니요, 지금은 꽤 안정적입니다. (그래도 진행)</span>
-                                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <button onClick={handleNext} className="w-full text-left p-4 rounded-2xl border border-white/10 bg-slate-950/40 hover:bg-white/5 text-gray-300 hover:text-white transition-all flex items-center justify-between group active:scale-[0.98]">
+                                            <span className="text-xs sm:text-sm text-gray-300">🌿 현재는 평온하지만 내면의 숨겨진 코드를 알아차려 보겠습니다.</span>
+                                            <ArrowRight className="w-4 h-4 text-gray-500 group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
                                 </div>
@@ -228,12 +233,12 @@ export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, on
                                         <button
                                             onClick={handleNext}
                                             disabled={isSaving}
-                                            className="w-full py-4 rounded-xl font-bold transition-all bg-primary-gold text-black hover:bg-yellow-500 hover:scale-[1.02] shadow-[0_0_20px_rgba(212,175,55,0.4)] flex justify-center items-center gap-2"
+                                            className="w-full py-4 rounded-2xl font-black text-xs sm:text-sm transition-all bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white shadow-[0_0_30px_rgba(245,158,11,0.35)] border border-amber-400/40 flex justify-center items-center gap-2 active:scale-[0.98] cursor-pointer"
                                         >
                                             {isSaving ? (
-                                                <><Loader2 className="w-5 h-5 animate-spin" /> 연산 중...</>
+                                                <><Loader2 className="w-5 h-5 animate-spin" /> 뇌신경 퀘스트 연산 중...</>
                                             ) : (
-                                                <><CheckCircle2 className="w-5 h-5" /> 퀘스트 수락하고 완료하기</>
+                                                <><CheckCircle2 className="w-5 h-5 text-amber-300" /> ✨ 뇌신경 퀘스트 수락하고 수용 완료하기 ➔</>
                                             )}
                                         </button>
                                     </div>

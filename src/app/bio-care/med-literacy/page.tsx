@@ -196,7 +196,7 @@ export default function MedLiteracyPage() {
                     <span className="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h2 className="text-white text-lg font-bold leading-tight flex-1 text-center pr-10 font-serif">
-                    약물 리터러시
+                    라이프 영양 리터러시
                 </h2>
             </header>
 
@@ -206,10 +206,10 @@ export default function MedLiteracyPage() {
                     <span className="material-symbols-outlined text-blue-400 text-3xl">medication</span>
                 </div>
                 <h3 className="text-white text-xl font-bold mb-2 font-serif">
-                    내 약 가이드
+                    영양소 밸런스 가이드
                 </h3>
                 <p className="text-gray-400 text-sm">
-                    복용 중인 약물을 선택하여<br />작용 원리와 주의사항을 확인하세요.
+                    일상에서 섭취하는 영양 요소를 선택하여<br />기질별 반응과 영양 밸런스 수치를 확인하세요.
                 </p>
             </div>
 

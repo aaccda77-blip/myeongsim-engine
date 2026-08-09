@@ -6,6 +6,11 @@ import { useReportStore } from '@/store/useReportStore';
 import { getTodayDailyPillar } from '@/utils/SajuCalculator';
 import DailyMindRoutine from './DailyMindRoutine';
 import MindGrowthStages from './MindGrowthStages';
+import MyeongsimContentGridView from '../coaching/MyeongsimContentGridView';
+import MicroPassModal from '../coaching/MicroPassModal';
+import Myeongsim64KeysModal from '../coaching/Myeongsim64KeysModal';
+import OhaengContributionModal from '../coaching/OhaengContributionModal';
+import MyeongsimGeniusReportModal from '../coaching/MyeongsimGeniusReportModal';
 
 /**
  * TodayEnergyDashboard - 오늘의 에너지 대시보드
@@ -80,8 +85,27 @@ export default function TodayEnergyDashboard({
     const [dailyPillar, setDailyPillar] = useState({ gan: '기', zhi: '묘', ganElement: '토', zhiElement: '목', ganColor: '#F59E0B', zhiColor: '#10B981' });
 
     // [NEW] 바이오리듬 데이터 (API 연동)
-    const [biorhythmData, setBiorhythmData] = useState<BiorhythmData | null>(null);
+    const [biorhythmData, setBiorhythmData] = useState<any>(null);
     const [biorhythmLoading, setBiorhythmLoading] = useState(true);
+
+    // [NEW] 뷰 모드 스위치 (사주아이 스타일 큐레이션 카드 모드 vs 딥 헬스케어 코칭 모드)
+    const [viewMode, setViewMode] = useState<'grid' | 'dashboard'>('grid');
+    const [showMicroPassModal, setShowMicroPassModal] = useState(false);
+    const [show64KeysModal, setShow64KeysModal] = useState(false);
+    const [showOhaengModal, setShowOhaengModal] = useState(false);
+    const [showGeniusModal, setShowGeniusModal] = useState(false);
+
+    useEffect(() => {
+        const savedMode = localStorage.getItem('myeongsim_view_mode');
+        if (savedMode === 'dashboard' || savedMode === 'grid') {
+            setViewMode(savedMode);
+        }
+    }, []);
+
+    const handleModeSwitch = (mode: 'grid' | 'dashboard') => {
+        setViewMode(mode);
+        localStorage.setItem('myeongsim_view_mode', mode);
+    };
 
     useEffect(() => {
         const pillar = getTodayDailyPillar();
@@ -195,7 +219,7 @@ export default function TodayEnergyDashboard({
             <header className="relative z-20 px-6 pt-12 pb-2 flex justify-between items-center w-full">
                 <button
                     onClick={onBack}
-                    className="p-2 rounded-full hover:bg-white/5 transition-colors"
+                    className="p-2 rounded-full hover:bg-white/5 transition-colors cursor-pointer"
                 >
                     <span className="text-gray-400 hover:text-white">←</span>
                 </button>
@@ -203,15 +227,57 @@ export default function TodayEnergyDashboard({
                     MYSTIC COACHING
                 </h1>
                 <button
-                    onClick={onSettings}
-                    className="p-2 rounded-full hover:bg-white/5 transition-colors"
+                    onClick={onSettings || (() => window.location.href = '/settings')}
+                    className="p-2 rounded-full hover:bg-white/5 transition-colors cursor-pointer"
                 >
                     <span className="text-gray-400 hover:text-white">⚙️</span>
                 </button>
             </header>
 
+            {/* 📱 Mode Toggle Switcher (큐레이션 카드 모드 ↔ 딥 헬스케어 코칭 모드) */}
+            <div className="relative z-20 px-5 pt-1 pb-3 flex justify-center">
+                <div className="bg-black/60 border border-white/15 p-1 rounded-2xl flex items-center gap-1 shadow-xl backdrop-blur-md">
+                    <button
+                        onClick={() => handleModeSwitch('grid')}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                            viewMode === 'grid'
+                                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-lg shadow-amber-400/30 scale-105'
+                                : 'text-gray-400 hover:text-white'
+                        }`}
+                    >
+                        <span>📱 큐레이션 카드 모드</span>
+                    </button>
+                    <button
+                        onClick={() => handleModeSwitch('dashboard')}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                            viewMode === 'dashboard'
+                                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/30 scale-105'
+                                : 'text-gray-400 hover:text-white'
+                        }`}
+                    >
+                        <span>🌌 딥 헬스케어 코칭</span>
+                    </button>
+                </div>
+            </div>
+
             {/* 메인 콘텐츠 */}
             <main className="relative z-10 flex-1 px-5 pb-24 flex flex-col gap-5 overflow-y-auto">
+
+                {/* MODE A: 📱 사주아이 스타일 큼직한 비주얼 카드 모드 */}
+                {viewMode === 'grid' && (
+                    <MyeongsimContentGridView
+                        userProfile={reportData}
+                        onOpenMicroPassModal={() => setShowMicroPassModal(true)}
+                        onOpen64KeysModal={() => setShow64KeysModal(true)}
+                        onOpenOhaengModal={() => setShowOhaengModal(true)}
+                        onOpenGeniusModal={() => setShowGeniusModal(true)}
+                        onOpenFullPassModal={() => setShowMicroPassModal(true)}
+                    />
+                )}
+
+                {/* MODE B: 🌌 기존 프리미엄 딥 헬스케어 코칭 모드 */}
+                {viewMode === 'dashboard' && (
+                    <>
 
                 {/* 에너지 카드 */}
                 <motion.div
@@ -394,6 +460,8 @@ export default function TodayEnergyDashboard({
                 {/* --- [NEW] 데일리 마음 정렬 루틴 & 마음 성장 단계 --- */}
                 <DailyMindRoutine />
                 <MindGrowthStages />
+                    </>
+                )}
             </main>
 
             {/* 하단 네비게이션 */}
@@ -426,6 +494,32 @@ export default function TodayEnergyDashboard({
                     </motion.button>
                 </div>
             </nav>
+
+            {/* 팝업 모달 연동 */}
+            {showMicroPassModal && (
+                <MicroPassModal
+                    isOpen={showMicroPassModal}
+                    onClose={() => setShowMicroPassModal(false)}
+                />
+            )}
+            {show64KeysModal && (
+                <Myeongsim64KeysModal
+                    isOpen={show64KeysModal}
+                    onClose={() => setShow64KeysModal(false)}
+                />
+            )}
+            {showOhaengModal && (
+                <OhaengContributionModal
+                    isOpen={showOhaengModal}
+                    onClose={() => setShowOhaengModal(false)}
+                />
+            )}
+            {showGeniusModal && (
+                <MyeongsimGeniusReportModal
+                    isOpen={showGeniusModal}
+                    onClose={() => setShowGeniusModal(false)}
+                />
+            )}
 
             {/* 애니메이션 스타일 */}
             <style jsx>{`

@@ -558,42 +558,42 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 15. ⚖️ 바이오 밸런서 (BIO_CARE - NEW)
+    // 15. 🌿 바이오 밸런서 (BIO_CARE - NEW)
     BIO_CARE: {
         id: 'BIO_CARE',
         label: "바이오 밸런서",
-        icon: "⚖️",
-        neuro_trigger: "약물·영양·신체의 균형 관리",
+        icon: "🌿",
+        neuro_trigger: "영양·자율신경·신체 밸런스 리추얼",
         style: 'healing_green',
         sub_menus: [
             {
                 id: "bc_med_literacy",
-                label: "💊 약물 리터러시",
-                desc: "내 약을 제대로 이해하기",
+                label: "🥗 라이프 영양 리터러시",
+                desc: "나의 섭취 영양소 & 라이프 밸런스 가이드",
                 intent: "bio_care_med_literacy"
             },
             {
                 id: "bc_nutri_synergy",
-                label: "🥗 시너지 영양학 (Daily Bio-Hacking)",
+                label: "⚡ 시너지 영양학 (Daily Bio-Hacking)",
                 desc: "매일 5개씩 바뀌는 맞춤형 건강 비법",
                 intent: "bio_care_nutri_synergy"
             },
             {
                 id: "bc_nutri_archive",
-                label: "📚 지난 비법 아카이브 (History)",
-                desc: "놓친 건강 팁 다시보기",
+                label: "📜 지난 비법 아카이브 (History)",
+                desc: "놓친 건강 라이프 팁 다시보기",
                 intent: "bio_care_nutri_archive"
             },
             {
                 id: "bc_body_log",
-                label: "📊 신체 알아차림 로그",
-                desc: "증상 기록 및 패턴 파악",
+                label: "🧬 신체 알아차림 로그",
+                desc: "내몸 컨디션 반응 기록 및 패턴 파악",
                 intent: "bio_care_body_log"
             },
             {
                 id: "bc_educator_note",
-                label: "📚 전문가의 한마디",
-                desc: "보건교육사 칼럼",
+                label: "🎓 전문가의 한마디",
+                desc: "보건교육사 영양·건강 칼럼",
                 intent: "bio_care_educator_note"
             }
         ]

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, ChevronLeft, ChevronRight, HelpCircle, Sparkles, BookOpen, Layers, Info } from 'lucide-react';
+import { X, Loader2, ChevronLeft, ChevronRight, HelpCircle, Sparkles, BookOpen, Layers, Info, Lock, ArrowRight, Zap } from 'lucide-react';
 import { playTechBeep, playSuccessChime, playScanPulse } from '@/utils/sfx';
 import { useLanguage } from '@/contexts/LanguageContext';
 import GeniusExplainModal from './GeniusExplainModal';
@@ -87,6 +87,61 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
 
   // AI 설명 팝업용 State
   const [selectedIndicator, setSelectedIndicator] = useState<{ name: string; score: number | string } | null>(null);
+
+  // 블러 마케팅 페이월 (Page 1은 무료 공개, Page 2~8은 890원 잠금)
+  const [isPaid, setIsPaid] = useState<boolean>(false);
+  const isPageLocked = currentPage >= 2 && !isPaid;
+
+  // 블러 잠금 마케팅 오버레이 렌더러
+  const renderBlurPaywall = (children: React.ReactNode) => {
+    if (!isPageLocked) return children;
+    return (
+      <div className="relative">
+        {/* 블러 처리된 컨텐츠 (티저 미리보기) */}
+        <div className="filter blur-[6px] opacity-40 select-none pointer-events-none max-h-[60vh] overflow-hidden">
+          {children}
+        </div>
+        {/* 프리미엄 잠금 마케팅 오버레이 */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="absolute inset-0 z-30 flex flex-col items-center justify-center p-5 bg-gradient-to-t from-[#03050a] via-[#03050a]/95 to-[#03050a]/70 rounded-2xl text-center"
+        >
+          <div className="w-14 h-14 rounded-full bg-amber-500/15 border-2 border-amber-500/40 flex items-center justify-center text-amber-300 mb-4 shadow-[0_0_25px_rgba(245,158,11,0.3)] animate-pulse">
+            <Lock size={24} />
+          </div>
+          <h4 className="text-base sm:text-lg font-black text-white mb-1.5">
+            🔒 나의 정밀 분석 리포트 전체 해독
+          </h4>
+          <p className="text-[11px] sm:text-xs text-gray-300 max-w-sm mb-1 leading-relaxed">
+            생년월일 기반 8차원 주파수 정밀 분석 결과를<br />
+            <span className="text-amber-300 font-bold">단 890원</span>에 전 페이지 즉시 열람하실 수 있습니다.
+          </p>
+          <p className="text-[10px] text-gray-500 mb-4">Page {currentPage} ~ {8} / 총 40페이지 분량 잠금 해제</p>
+
+          <div className="flex items-baseline justify-center gap-2 mb-4">
+            <span className="text-xs text-gray-400 line-through font-mono">정가 9,900원</span>
+            <span className="text-amber-400 font-extrabold text-xs">[91% OFF]</span>
+            <span className="text-3xl font-black font-mono text-white">890</span>
+            <span className="text-sm font-bold text-gray-300">원</span>
+          </div>
+
+          <button
+            onClick={() => { setIsPaid(true); playSuccessChime(); }}
+            className="w-full max-w-xs py-3.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-sm rounded-xl shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all active:scale-[0.97] flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>890원에 전체 해독 열람하기</span>
+            <ArrowRight size={16} />
+          </button>
+
+          <div className="mt-3 text-[10px] text-amber-300/70 flex items-center gap-1">
+            <Zap size={11} className="fill-amber-300 text-amber-300" />
+            <span>특허출원중 제 10-2025-0166877 호 · 생년월일 연동 정밀 분석</span>
+          </div>
+        </motion.div>
+      </div>
+    );
+  };
 
   // 로딩바 애니메이션
   useEffect(() => {
@@ -260,7 +315,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
             <span className="text-xl md:text-3xl p-1.5 md:p-2 bg-indigo-950/60 border border-indigo-500/30 rounded-xl md:rounded-2xl shadow-[0_0_15px_rgba(99,102,241,0.2)]">🧬</span>
             <div>
               <h2 className="text-xs md:text-lg font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-purple-200">
-                GENIUS 천부성정 심리분석 보고서
+                명심 천부성정 심리분석 보고서
               </h2>
               <div className="flex flex-wrap items-center gap-1.5 md:gap-2 mt-0.5">
                 <p className="text-[7px] md:text-[9px] text-indigo-400 font-bold font-mono tracking-widest uppercase flex items-center gap-1">
@@ -290,7 +345,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
               <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-2xl animate-ping scale-75"></div>
               <Loader2 size={40} className="text-indigo-400 animate-spin relative" />
             </div>
-            <h3 className="text-sm font-black tracking-wider text-indigo-200 mb-2 uppercase">Synthesizing Genius Matrix...</h3>
+            <h3 className="text-sm font-black tracking-wider text-indigo-200 mb-2 uppercase">Synthesizing Myeongsim Matrix...</h3>
             <p className="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed mb-6 break-keep">
               오행의 순환 구조와 십신 역학 및 지장간에 투출된 기운을 융합하여 8개 영역의 전문 도표 리포트를 생성하는 중입니다.
             </p>
@@ -314,7 +369,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
             {/* 상단 팁 안내 */}
             <div className="bg-indigo-950/20 px-4 py-1.5 md:px-6 md:py-2 border-b border-white/5 text-[7px] md:text-[9px] text-indigo-300 font-bold flex items-center justify-center gap-1 relative z-10 text-center">
               <Info size={11} className="text-indigo-400 flex-shrink-0" />
-              <span>[PDF 도표형 보고서 모드] 도표의 모든 행과 차트 요소를 클릭하시면 AI 도슨트의 친절하고 상세한 감동 해설 카드가 팝업됩니다.</span>
+              <span>[PDF 도표형 보고서 모드] 도표의 모든 행과 차트 요소를 클릭하시면 명심 AI 코치의 친절하고 상세한 감동 해설 카드가 팝업됩니다.</span>
             </div>
 
             {/* 페이지별 동적 렌더링 컨테이너 */}
@@ -334,7 +389,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                   {currentPage === 1 && fullData?.forceField && (
                     <div className="space-y-3 flex flex-col h-full max-w-2xl mx-auto">
                       <div className="text-center">
-                        <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 1 / Genius Core Energy Field</span>
+                        <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 1 / Myeongsim Core Energy Field</span>
                         <h3 className="text-sm md:text-lg font-black mt-0.5">명심 에너지 포스필드 (기운의 지형도)</h3>
                         <p className="text-[8px] md:text-[10px] text-gray-500 mt-0.5">자아(Core Ego)를 축으로 배치된 8대 명심 영역의 상생 상극 흐름도</p>
                       </div>
@@ -356,93 +411,53 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                               </filter>
                             </defs>
 
-                            {/* 학술 3중 기하학 동심원 (Orbital Concentric Rings) */}
-                            <circle cx="200" cy="200" r="60" fill="none" stroke="rgba(99, 102, 241, 0.08)" strokeWidth="1" strokeDasharray="3,3" />
-                            <circle cx="200" cy="200" r="120" fill="none" stroke="rgba(99, 102, 241, 0.08)" strokeWidth="1" strokeDasharray="3,3" />
-                            <circle cx="200" cy="200" r="170" fill="none" stroke="rgba(99, 102, 241, 0.08)" strokeWidth="1" strokeDasharray="3,3" />
-                            
-                            {/* 동심원 각도선 (Ruler Radials) */}
-                            <line x1="200" y1="30" x2="200" y2="370" stroke="rgba(255,255,255,0.02)" strokeWidth="1" strokeDasharray="4,4" />
-                            <line x1="30" y1="200" x2="370" y2="200" stroke="rgba(255,255,255,0.02)" strokeWidth="1" strokeDasharray="4,4" />
+                            {/* 동심원 가이드 (50%, 75%, 100% 궤도) */}
+                            <circle cx="200" cy="200" r="55" fill="none" stroke="rgba(99, 102, 241, 0.06)" strokeWidth="1" strokeDasharray="3,3" />
+                            <circle cx="200" cy="200" r="100" fill="none" stroke="rgba(99, 102, 241, 0.06)" strokeWidth="1" strokeDasharray="3,3" />
+                            <circle cx="200" cy="200" r="145" fill="none" stroke="rgba(99, 102, 241, 0.06)" strokeWidth="1" strokeDasharray="3,3" />
 
-                            {/* 1. 상생 기운 연결망 실선 (오렌지) */}
-                            <g stroke="#f97316" strokeWidth="2" opacity="0.8" filter="url(#glow-orange)">
-                              <line x1="200" y1="80" x2="290" y2="110" />
-                              <line x1="290" y1="110" x2="320" y2="200" />
-                              <line x1="320" y1="200" x2="290" y2="290" />
-                              <line x1="290" y1="290" x2="200" y2="320" />
-                              <line x1="200" y1="320" x2="110" y2="290" />
-                              <line x1="110" y1="290" x2="80" y2="200" />
-                              <line x1="80" y1="200" x2="110" y2="110" />
-                              <line x1="110" y1="110" x2="200" y2="80" />
-
-                              {/* 외곽 노드에서 중앙 ME(자아) 노드로의 연결과 파동 연출 */}
-                              <line x1="200" y1="200" x2="200" y2="80" strokeDasharray="3,3" opacity="0.4" />
-                              <line x1="200" y1="200" x2="290" y2="110" strokeDasharray="3,3" opacity="0.4" />
-                              <line x1="200" y1="200" x2="320" y2="200" strokeDasharray="3,3" opacity="0.4" />
-                              <line x1="200" y1="200" x2="290" y2="290" strokeDasharray="3,3" opacity="0.4" />
-                              <line x1="200" y1="200" x2="200" y2="320" strokeDasharray="3,3" opacity="0.4" />
-                              <line x1="200" y1="200" x2="110" y2="290" strokeDasharray="3,3" opacity="0.4" />
-                              <line x1="200" y1="200" x2="80" y2="200" strokeDasharray="3,3" opacity="0.4" />
-                              <line x1="200" y1="200" x2="110" y2="110" strokeDasharray="3,3" opacity="0.4" />
-                            </g>
-
-                            {/* 2. 대화형 인터랙티브 노드 써클 그리기 */}
-                            {[
-                              { key: 'willpower', label: '주체 영역 (의지)', cx: 200, cy: 80, color: '#f87171' },
-                              { key: 'lifeforce', label: '식상 영역 (창조표현)', cx: 290, cy: 110, color: '#fb923c' },
-                              { key: 'drive', label: '관성 영역 (규율구조)', cx: 320, cy: 200, color: '#facc15' },
-                              { key: 'intuition', label: '통찰 영역 (수용성)', cx: 290, cy: 290, color: '#4ade80' },
-                              { key: 'orientation', label: '현실 영역 (구조화)', cx: 200, cy: 320, color: '#2dd4bf' },
-                              { key: 'inspiration', label: '영감 영역 (정신성)', cx: 110, cy: 290, color: '#60a5fa' },
-                              { key: 'mental', label: '논리 영역 (사유)', cx: 80, cy: 200, color: '#a78bfa' },
-                              { key: 'concepts', label: '기획 영역 (개념화)', cx: 110, cy: 110, color: '#f472b6' },
-                            ].map((node) => {
-                              const val = fullData.forceField[node.key] || 50;
-                              const size = 10 + (val / 100) * 8; // 강도에 비례해 노드 크기 조절
-
+                            {/* 수치 비례 동적 8각 거미줄 방사형 궤도 */}
+                            {(() => {
+                              const nodes = [
+                                { key: 'willpower', label: '주체 영역', sub: '의지', angle: -90, color: '#f87171' },
+                                { key: 'lifeforce', label: '식상 영역', sub: '창조표현', angle: -45, color: '#fb923c' },
+                                { key: 'drive', label: '관성 영역', sub: '규율구조', angle: 0, color: '#facc15' },
+                                { key: 'intuition', label: '통찰 영역', sub: '수용성', angle: 45, color: '#4ade80' },
+                                { key: 'orientation', label: '현실 영역', sub: '구조화', angle: 90, color: '#2dd4bf' },
+                                { key: 'inspiration', label: '영감 영역', sub: '정신성', angle: 135, color: '#60a5fa' },
+                                { key: 'mental', label: '논리 영역', sub: '사유', angle: 180, color: '#a78bfa' },
+                                { key: 'concepts', label: '기획 영역', sub: '개념화', angle: 225, color: '#f472b6' },
+                              ];
+                              const maxVal = Math.max(...nodes.map(n => fullData.forceField[n.key] || 50));
+                              const calculated = nodes.map(n => {
+                                const val = fullData.forceField[n.key] || 50;
+                                const r = 50 + (val / 100) * 95;
+                                const rad = (n.angle * Math.PI) / 180;
+                                return { ...n, val, cx: 200 + r * Math.cos(rad), cy: 200 + r * Math.sin(rad), isTop: val === maxVal };
+                              });
+                              const polyPts = calculated.map(n => `${n.cx},${n.cy}`).join(' ');
                               return (
-                                <g
-                                  key={node.key}
-                                  className="cursor-pointer group"
-                                  onClick={() => handleGraphElementClick(node.label, `${val}%`)}
-                                >
-                                  <circle
-                                    cx={node.cx}
-                                    cy={node.cy}
-                                    r={size + 6}
-                                    fill="transparent"
-                                    className="group-hover:fill-white/10 transition-colors duration-200"
-                                  />
-                                  <circle
-                                    cx={node.cx}
-                                    cy={node.cy}
-                                    r={size}
-                                    fill={node.color}
-                                    opacity="0.8"
-                                    className="group-hover:scale-110 group-hover:opacity-100 transition-all duration-300"
-                                  />
-                                  <text
-                                    x={node.cx}
-                                    y={node.cy + size + 12}
-                                    textAnchor="middle"
-                                    fill="rgba(255,255,255,0.7)"
-                                    className="text-[8px] md:text-[9px] font-black pointer-events-none group-hover:fill-white transition-colors"
-                                  >
-                                    {node.label}
-                                  </text>
-                                  <text
-                                    x={node.cx}
-                                    y={node.cy + 3}
-                                    textAnchor="middle"
-                                    fill="#000"
-                                    className="text-[7px] md:text-[8px] font-mono font-black pointer-events-none"
-                                  >
-                                    {val}
-                                  </text>
-                                </g>
+                                <>
+                                  <polygon points={polyPts} fill="rgba(249,115,22,0.12)" stroke="#f97316" strokeWidth="2" filter="url(#glow-orange)" />
+                                  {calculated.map(nd => (
+                                    <line key={`r-${nd.key}`} x1="200" y1="200" x2={nd.cx} y2={nd.cy} stroke={nd.color} strokeWidth={nd.isTop ? "2" : "1"} strokeDasharray={nd.isTop ? "none" : "3,3"} opacity={nd.isTop ? 0.85 : 0.35} />
+                                  ))}
+                                  {calculated.map(nd => {
+                                    const sz = 11 + (nd.val / 100) * 8;
+                                    return (
+                                      <g key={nd.key} className="cursor-pointer group" onClick={() => handleGraphElementClick(`${nd.label} (${nd.sub})`, `${nd.val}%`)}>
+                                        {nd.isTop && <circle cx={nd.cx} cy={nd.cy} r={sz + 8} fill="none" stroke="#facc15" strokeWidth="1.5" className="animate-ping opacity-50" />}
+                                        <circle cx={nd.cx} cy={nd.cy} r={sz + 4} fill="transparent" className="group-hover:fill-white/10 transition-colors" />
+                                        <circle cx={nd.cx} cy={nd.cy} r={sz} fill={nd.color} opacity={nd.isTop ? "1" : "0.8"} className="group-hover:scale-110 transition-all duration-300" />
+                                        {nd.isTop && <text x={nd.cx} y={nd.cy - sz - 4} textAnchor="middle" fill="#FDE047" className="text-[10px] font-black select-none pointer-events-none">{'👑 1위'}</text>}
+                                        <text x={nd.cx} y={nd.cy + sz + 11} textAnchor="middle" fill={nd.isTop ? "#FDE047" : "rgba(255,255,255,0.75)"} className="text-[7.5px] md:text-[9px] font-black pointer-events-none">{nd.label}</text>
+                                        <text x={nd.cx} y={nd.cy + 3} textAnchor="middle" fill="#000" className="text-[7px] md:text-[8.5px] font-mono font-black pointer-events-none">{nd.val}%</text>
+                                      </g>
+                                    );
+                                  })}
+                                </>
                               );
-                            })}
+                            })()}
 
                             {/* 중앙 ME 자아 노드 */}
                             <g
@@ -464,7 +479,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                   {/* ==========================================
                       Page 2: 타고난 명심 알고리즘 (5대 천부 성정)
                       ========================================== */}
-                  {currentPage === 2 && fullData?.specificTalents && (
+                  {currentPage === 2 && fullData?.specificTalents && renderBlurPaywall(
                     <div className="space-y-3">
                       <div className="text-center">
                         <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 2 / Inherited Cognitive Matrix</span>
@@ -472,70 +487,105 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                         <p className="text-[8px] md:text-[10px] text-gray-500 mt-0.5">지장간 가중치를 결합하여 두뇌 인지 시스템에서 작용하는 5대 핵심 행동 역량 분석</p>
                       </div>
 
-                      {/* 모바일 짤림 방지형 학술 격자 테이블 */}
-                      <div className="overflow-x-auto border border-indigo-500/20 rounded-xl md:rounded-2xl bg-[#090b16]/90 backdrop-blur-sm shadow-2xl">
-                        <table className="w-full text-left border-collapse">
-                          <thead>
-                            <tr className="bg-indigo-950/40 text-indigo-300 text-[8px] md:text-[10px] font-extrabold uppercase tracking-wider border-b border-indigo-500/20">
-                              <th className="py-2 px-2 md:py-3 md:px-4 w-1/4">성정 역량 (Dimension)</th>
-                              <th className="py-2 px-2 md:py-3 md:px-4 w-1/4 hidden sm:table-cell">핵심 작용 (Cognitive Factor)</th>
-                              <th className="py-2 px-2 md:py-3 md:px-4">기운 지수 게이지 (Intensity)</th>
-                              <th className="py-2 px-2 md:py-3 md:px-4 w-1/5 text-right">명리 원천</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {[
-                              { key: 'action', label: '식상 몰입 실행력', desc: '식신/상관의 창조적 몰입 및 추진력', badge: '식상 기운 기준', color: 'from-emerald-500 to-teal-500' },
-                              { key: 'courage', label: '재관 변혁 돌파력', desc: '편재/편관의 리스크 극복 및 돌파력', badge: '편재/편관 작용', color: 'from-rose-500 to-orange-500' },
-                              { key: 'leadership', label: '관성 통합 제어력', desc: '관성/비겁의 조직 지시 및 조율력', badge: '관성/비겁 기반', color: 'from-indigo-500 to-purple-500' },
-                              { key: 'structuring', label: '재성 현실 조직화', desc: '재성의 논리적 분석 및 자원 조율', badge: '재성 오행 제어', color: 'from-amber-500 to-yellow-500' },
-                              { key: 'autonomy', label: '비겁 주도 자율력', desc: '비겁의 주도적 몰입 및 자율성', badge: '비겁 자율 모드', color: 'from-cyan-500 to-blue-500' }
-                            ].map((item) => {
-                              const val = fullData.specificTalents[item.key];
-                              return (
-                                <tr
-                                  key={item.key}
-                                  onClick={() => handleGraphElementClick(item.label, `${val}%`)}
-                                  className="border-b border-white/5 hover:bg-indigo-500/10 cursor-pointer transition-all text-[9px] md:text-xs"
-                                >
-                                  <td className="py-2.5 px-2 md:py-3.5 md:px-4 font-black text-white">
-                                    {item.label}
-                                  </td>
-                                  <td className="py-2.5 px-2 md:py-3.5 md:px-4 text-gray-400 text-[8px] md:text-[10px] leading-relaxed hidden sm:table-cell">
-                                    {item.desc}
-                                  </td>
-                                  <td className="py-2.5 px-2 md:py-3.5 md:px-4">
-                                    <div className="flex items-center gap-1.5 md:gap-3">
-                                      <span className="text-[10px] md:text-[11px] font-mono font-black text-indigo-300 w-8">{val}%</span>
-                                      <div className="flex-1 bg-white/5 h-3 md:h-4 rounded overflow-hidden border border-white/10 relative">
-                                        <GaugeRuler />
-                                        <motion.div
-                                          className={`h-full bg-gradient-to-r ${item.color} relative z-10 opacity-85`}
-                                          initial={{ width: 0 }}
-                                          animate={{ width: `${val}%` }}
-                                          transition={{ duration: 1.1, ease: 'easeOut' }}
-                                        />
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td className="py-2.5 px-2 md:py-3.5 md:px-4 text-right">
-                                    <span className="text-[7px] md:text-[8px] bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-extrabold px-1.5 py-0.5 rounded font-mono uppercase tracking-wider whitespace-nowrap">
-                                      {item.badge}
-                                    </span>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
+                      {/* 1위 판정 및 도표 렌더러 */}
+                      {(() => {
+                        const items = [
+                          { key: 'action', label: '식상 몰입 실행력', subTag: '🚀 아이디어 스피드 실행', desc: '식신/상관의 창조적 몰입 및 추진력', badge: '식상 기운 기준', color: 'from-emerald-500 to-teal-500', summary: '어떤 아이디어든 망설임 없이 즉시 현실로 직조해 내는 스피드 실행 엔진' },
+                          { key: 'courage', label: '재관 변혁 돌파력', subTag: '⚡ 위기 파괴 & 한계 정면 돌파', desc: '편재/편관의 리스크 극복 및 돌파력', badge: '편재/편관 작용', color: 'from-rose-500 to-orange-500', summary: '어떤 난관이 와도 판을 뒤엎고 뚫고 나가는 강렬한 정면 돌파형 야성 엔진' },
+                          { key: 'leadership', label: '관성 통합 제어력', subTag: '🏛️ 조직 통률 & 시스템 지율', desc: '관성/비겁의 조직 지시 및 조율력', badge: '관성/비겁 기반', color: 'from-indigo-500 to-purple-500', summary: '조직과 자신을 깊이 있게 통율하고 질서를 다잡는 시스템 구축 엔진' },
+                          { key: 'structuring', label: '재성 현실 조직화', subTag: '📊 현실 자원 계산 & 구조화', desc: '재성의 논리적 분석 및 자원 조율', badge: '재성 오행 제어', color: 'from-amber-500 to-yellow-500', summary: '자금과 자원을 명확히 정밀 계산하고 구체적 구조로 엮어내는 현실 전략 엔진' },
+                          { key: 'autonomy', label: '비겁 주도 자율력', subTag: '🛡️ 독립적 마이웨이', desc: '비겁의 주도적 몰입 및 자율성', badge: '비겁 자율 모드', color: 'from-cyan-500 to-blue-500', summary: '타인의 시선에 흔들리지 않고 고유의 마이웨이를 지키는 독립 주체 엔진' }
+                        ];
+
+                        const maxScore = Math.max(...items.map(i => fullData.specificTalents[i.key] || 0));
+                        const topItem = items.find(i => (fullData.specificTalents[i.key] || 0) === maxScore) || items[0];
+                        const userNameStr = userProfile?.userName || '명심가';
+
+                        return (
+                          <>
+                            {/* 상단 1줄 천부 엔진 자각 인사이트 카드 */}
+                            <div className="bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-purple-500/10 border border-amber-500/30 rounded-xl md:rounded-2xl p-3 md:p-3.5 text-center relative overflow-hidden shadow-lg">
+                              <p className="text-[10px] md:text-xs text-amber-200 font-extrabold leading-relaxed break-keep">
+                                💡 <span className="text-white underline decoration-amber-400 underline-offset-4">{userNameStr}</span> 님의 두뇌에는 <span className="text-amber-300 font-black">[{topItem.label} ({maxScore}%)]</span> 이(가) 가장 뜨겁게 가동 중입니다. {topItem.summary}을(를) 품고 계십니다.
+                              </p>
+                            </div>
+
+                            {/* 모바일 짤림 방지형 학술 격자 테이블 */}
+                            <div className="overflow-x-auto border border-indigo-500/20 rounded-xl md:rounded-2xl bg-[#090b16]/90 backdrop-blur-sm shadow-2xl">
+                              <table className="w-full text-left border-collapse">
+                                <thead>
+                                  <tr className="bg-indigo-950/40 text-indigo-300 text-[8px] md:text-[10px] font-extrabold uppercase tracking-wider border-b border-indigo-500/20">
+                                    <th className="py-2 px-2 md:py-3 md:px-4 w-1/3">성정 역량 (Dimension)</th>
+                                    <th className="py-2 px-2 md:py-3 md:px-4 hidden sm:table-cell">핵심 작용 (Cognitive Factor)</th>
+                                    <th className="py-2 px-2 md:py-3 md:px-4">기운 지수 게이지 (Intensity)</th>
+                                    <th className="py-2 px-2 md:py-3 md:px-4 w-1/5 text-right">명리 원천</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {items.map((item) => {
+                                    const val = fullData.specificTalents[item.key] || 0;
+                                    const isTop = val === maxScore;
+                                    return (
+                                      <tr
+                                        key={item.key}
+                                        onClick={() => handleGraphElementClick(item.label, `${val}%`)}
+                                        className={`border-b border-white/5 cursor-pointer transition-all text-[9px] md:text-xs ${
+                                          isTop ? 'bg-amber-500/10 hover:bg-amber-500/15 border-l-4 border-l-amber-400' : 'hover:bg-indigo-500/10'
+                                        }`}
+                                      >
+                                        <td className="py-2.5 px-2 md:py-3.5 md:px-4 font-black text-white">
+                                          <div className="flex flex-col gap-0.5">
+                                            <div className="flex items-center gap-1.5">
+                                              <span>{item.label}</span>
+                                              {isTop && (
+                                                <span className="text-[8px] md:text-[9px] bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-black px-1.5 py-0.5 rounded shadow-md animate-pulse">
+                                                  👑 1위 슈퍼 엔진
+                                                </span>
+                                              )}
+                                            </div>
+                                            <span className="text-[8px] md:text-[9.5px] text-amber-300/90 font-bold">{item.subTag}</span>
+                                          </div>
+                                        </td>
+                                        <td className="py-2.5 px-2 md:py-3.5 md:px-4 text-gray-400 text-[8px] md:text-[10px] leading-relaxed hidden sm:table-cell">
+                                          {item.desc}
+                                        </td>
+                                        <td className="py-2.5 px-2 md:py-3.5 md:px-4">
+                                          <div className="flex items-center gap-1.5 md:gap-3">
+                                            <span className={`text-[10px] md:text-[11px] font-mono font-black w-9 ${isTop ? 'text-amber-300 text-xs' : 'text-indigo-300'}`}>{val}%</span>
+                                            <div className="flex-1 bg-white/5 h-4 md:h-5 rounded-md overflow-hidden border border-white/10 relative shadow-inner">
+                                              <GaugeRuler />
+                                              <motion.div
+                                                className={`h-full bg-gradient-to-r ${item.color} relative z-10 opacity-90 ${isTop ? 'shadow-[0_0_12px_rgba(245,158,11,0.6)]' : ''}`}
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${val}%` }}
+                                                transition={{ duration: 1.1, ease: 'easeOut' }}
+                                              />
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td className="py-2.5 px-2 md:py-3.5 md:px-4 text-right">
+                                          <span className={`text-[7px] md:text-[8px] border font-extrabold px-1.5 py-0.5 rounded font-mono uppercase tracking-wider whitespace-nowrap ${
+                                            isTop ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300'
+                                          }`}>
+                                            {item.badge}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   )}
 
                   {/* ==========================================
                       Page 3: 기운적 포지셔닝 & 파워베이스 (사회적 기여도)
                       ========================================== */}
-                  {currentPage === 3 && fullData?.fulfill && (
+                  {currentPage === 3 && fullData?.fulfill && renderBlurPaywall(
                     <div className="space-y-3">
                       <div className="text-center">
                         <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 3 / Social Dynamic Alignment</span>
@@ -644,7 +694,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                   {/* ==========================================
                       Page 4: 기운 정렬 프로필 (콤팩트 그리드로 모바일 최적화)
                       ========================================== */}
-                  {currentPage === 4 && fullData?.talentProfile && (
+                  {currentPage === 4 && fullData?.talentProfile && renderBlurPaywall(
                     <div className="space-y-3">
                       <div className="text-center">
                         <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 4 / Cognitive Alignment Profiles</span>
@@ -725,7 +775,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                   {/* ==========================================
                       Page 5: 명심 의사결정 필터 (도넛형 파이 차트 및 인지 속도 게이지)
                       ========================================== */}
-                  {currentPage === 5 && fullData?.mindWorks && (
+                  {currentPage === 5 && fullData?.mindWorks && renderBlurPaywall(
                     <div className="space-y-3">
                       <div className="text-center">
                         <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 5 / Cognitive Decision Filter</span>
@@ -838,7 +888,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                   {/* ==========================================
                       Page 6: 리더십 스펙트럼 (자타 인식 듀얼 계측 도표 및 격차 수치 분석)
                       ========================================== */}
-                  {currentPage === 6 && fullData?.leadershipPerception && (
+                  {currentPage === 6 && fullData?.leadershipPerception && renderBlurPaywall(
                     <div className="space-y-3">
                       <div className="text-center">
                         <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 6 / Sovereign Leadership Spectrum</span>
@@ -920,7 +970,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                   {/* ==========================================
                       Page 7: 스트레스 시프트 & 행동 본능 (모바일 뷰포트 압축 컴팩트 카드)
                       ========================================== */}
-                  {currentPage === 7 && fullData?.behaviors && (
+                  {currentPage === 7 && fullData?.behaviors && renderBlurPaywall(
                     <div className="space-y-3">
                       <div className="text-center">
                         <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 7 / Behavior Instinct & Stress Shift</span>
@@ -984,7 +1034,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
                   {/* ==========================================
                       Page 8: 인지 메타코드 (3열의 정갈한 인지 차원 매핑 도표)
                       ========================================== */}
-                  {currentPage === 8 && fullData?.metaCode && (
+                  {currentPage === 8 && fullData?.metaCode && renderBlurPaywall(
                     <div className="space-y-3">
                       <div className="text-center">
                         <span className="text-[8px] md:text-[10px] text-indigo-400 font-bold uppercase tracking-widest font-mono">Page 8 / Cognitive Meta Codes</span>

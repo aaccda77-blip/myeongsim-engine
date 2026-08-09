@@ -70,6 +70,11 @@ import { PsychSajuFusionView } from '../visual/PsychSajuFusionView';
 import NeuralHackingReportCard from './NeuralHackingReportCard';
 import NeuralArchitectureBlueprint from './NeuralArchitectureBlueprint';
 
+import ChunkedAssistantMessage from './ChunkedAssistantMessage';
+import MyeongsimDocentAvatar from './MyeongsimDocentAvatar';
+import MicroChatPassModal from '../modals/MicroChatPassModal';
+import Footer from '@/components/Footer';
+
 // [NEW] 데일리 바이오-사주 동기화 패널 (독립 모듈 - 기존 시스템 영향 0%)
 import dynamic from 'next/dynamic';
 const DailyBioSyncPanel = dynamic(() => import('../coaching/DailyBioSyncPanel'), { ssr: false });
@@ -351,6 +356,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [premiumReport, setPremiumReport] = useState<string | null>(null);
     const [isPremiumLoading, setIsPremiumLoading] = useState(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [showMicroPassModal, setShowMicroPassModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState<'IDLE' | 'PENDING' | 'SUCCESS'>('IDLE');
 
@@ -380,6 +386,10 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [freeTurns, setFreeTurns] = useState(0);
     const [isTrialMode, setIsTrialMode] = useState(true);
     const FREE_TRIAL_LIMIT = 3;
+    const [pendingChoiceText, setPendingChoiceText] = useState<string | null>(null);
+
+    const remainingChats = Math.max(0, FREE_TRIAL_LIMIT - freeTurns);
+    const isChatLocked = isExpired || (isTrialMode && !isPremiumMember && remainingChats <= 0);
 
     // [Init] UUID for Guest, but replaceable by Auth + Free Trial Counter
     // [Init] UUID for Guest, Persistence, and Auth Listener
@@ -801,7 +811,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     setMessages(prev => [...prev, {
                         id: Date.now().toString(),
                         role: 'assistant',
-                        content: `🔬 **Deep Scan Protocol 완료**\n\n당신의 뉴럴 코드 분석이 완료되었습니다.\n특허출원된 **[Neural Sync 알고리즘]**으로 통합 리포트를 생성합니다...`,
+                        content: `🔬 **Deep Scan Protocol 완료**\n\n당신의 뉴럴 코드 분석이 완료되었습니다.\n특허출원중인 **[Neural Sync 알고리즘]**으로 통합 리포트를 생성합니다...`,
                         options: ["리포트 확인하기", "다른 고민 말하기"]
                     }]);
 
@@ -1327,7 +1337,12 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
             const jsonPart = parts[1];
 
             // 2. Split messages by :::BREAK::: for Tiki-Taka effect
-            const messagesToQueue = textPart.split(":::BREAK:::").map(s => s.trim()).filter(s => s.length > 0);
+            let messagesToQueue = textPart.split(":::BREAK:::").map(s => s.trim()).filter(s => s.length > 0);
+
+            // [CRITICAL FIX] If no :::BREAK::: found or empty queue, fallback to entire textPart or botContent
+            if (messagesToQueue.length === 0 && (textPart.trim() || botContent.trim())) {
+                messagesToQueue = [(textPart.trim() || botContent.trim())];
+            }
 
             // 3. Remove Loading State & Queue Messages
             setIsLoading(false); // Stop the main spinner
@@ -1481,90 +1496,51 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     xp={syncXP}
                     stateLabel={getSyncStateLabel(syncLevel)}
                     isLevelUp={isLevelUp}
+                    isBioSynced={typeof window !== 'undefined' && Boolean(localStorage.getItem('myeongsim_user_profile') || localStorage.getItem('saju_input_data'))}
+                    bioSyncStatusText={typeof window !== 'undefined' && Boolean(localStorage.getItem('myeongsim_user_profile') || localStorage.getItem('saju_input_data')) ? '1:1 사주·생체 동기화 (432Hz)' : '생체데이터 미연동'}
+                    onOpenBioModal={() => setShowFusionView(true)}
+                    actionButtons={(
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                            <button
+                                onClick={() => setIsFocusMode(!isFocusMode)}
+                                className={`p-1.5 sm:p-2 rounded-full transition-all text-xs ${isFocusMode
+                                    ? 'bg-primary-gold/20 text-primary-gold border border-primary-gold/50'
+                                    : 'text-gray-400 hover:text-white hover:bg-white/10'
+                                    }`}
+                                title={isFocusMode ? "UI 표시" : "집중 모드"}
+                            >
+                                {isFocusMode ? '📊' : '🎯'}
+                            </button>
+
+                            <button
+                                onClick={handleChatClose}
+                                className="p-1.5 sm:p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                            >
+                                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </button>
+                        </div>
+                    )}
                 />
             )}
 
-            {/* [Free Trial] Badge - Hidden in Focus Mode */}
-            {!isFocusMode && isTrialMode && !isPremiumMember && (
-                <div className="absolute top-16 right-4 z-40 bg-yellow-500/20 border border-yellow-500/50 px-3 py-1 rounded-full text-xs text-yellow-300 font-bold">
-                    🎁 무료 체험 중 ({freeTurns}/{FREE_TRIAL_LIMIT})
+            {/* Focus Mode Floating Controls */}
+            {isFocusMode && (
+                <div className="absolute top-3 right-3 z-50 flex items-center gap-1.5">
+                    <button
+                        onClick={() => setIsFocusMode(false)}
+                        className="p-2 rounded-full bg-slate-800/80 text-primary-gold border border-primary-gold/50 shadow-lg text-xs"
+                        title="UI 표시"
+                    >
+                        📊
+                    </button>
+                    <button
+                        onClick={handleChatClose}
+                        className="p-2 text-gray-400 hover:text-white bg-slate-800/80 rounded-full transition-colors"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
                 </div>
             )}
-
-            {/* [TimeCapsule] Pass Timer - Hidden in Focus Mode */}
-            {!isFocusMode && userExpiryDate && (
-                <div className="absolute top-16 left-4 z-40">
-                    <TimeCapsule
-                        expiryDate={userExpiryDate}
-                        tier={userTier} // [New] Pass Tier
-                        onExpire={() => {
-                            console.log("⏰ Timer Expired!");
-                            setIsPremiumMember(false);
-                            setIsTrialMode(false);
-                            // Show expiration notice
-                            setMessages(prev => [...prev, {
-                                id: `expired-${Date.now()}`,
-                                role: 'assistant',
-                                content: '⏰ **이용 시간이 종료되었습니다.**\n\n연결을 유지하려면 이용권을 갱신해주세요.',
-                                type: 'payment'
-                            }]);
-                            // Open Auth/Payment Flow
-                            setSelectedPaymentTier('PASS');
-                            setIsAuthModalOpen(true);
-                        }}
-                    />
-                </div>
-            )}
-
-            {/* [UserStatusHUD] User Status Display - Hidden in Focus Mode */}
-            {!isFocusMode && (
-                <UserStatusHUD userStatus={userStatus} />
-            )}
-
-            {/* [UrgentNoticeModal] 5-Minute Warning - Always Active */}
-            {userExpiryDate && (
-                <UrgentNoticeModal
-                    expiryDate={userExpiryDate}
-                    onExtend={() => {
-                        // [FIX] Navigate to login page for payment/extension
-                        window.location.href = '/login?action=extend';
-                    }}
-                />
-            )}
-
-            {/* [Removed] Duplicate GrowthMapIndicator */}
-
-            {/* Close Button Overlay */}
-
-            {/* Close Button Overlay */}
-            <div className="absolute top-4 right-4 z-50 flex gap-2">
-                {/* [NEW] Patent Fusion Scanner Button */}
-                <button
-                    onClick={() => setShowFusionView(true)}
-                    className="px-3 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-blue-600/80 to-purple-600/80 hover:from-blue-500 hover:to-purple-500 border border-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all animate-pulse-slow backdrop-blur-md"
-                >
-                    🧬 동서양 융합 스캔
-                </button>
-
-                {/* Focus Mode Toggle */}
-                <button
-                    onClick={() => setIsFocusMode(!isFocusMode)}
-                    className={`p-2 rounded-full transition-all ${isFocusMode
-                        ? 'bg-primary-gold/20 text-primary-gold border border-primary-gold/50'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
-                        }`}
-                    title={isFocusMode ? "UI 표시" : "집중 모드"}
-                >
-                    {isFocusMode ? '📊' : '🎯'}
-                </button>
-
-                <button
-                    onClick={handleChatClose}
-                    className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-colors"
-                >
-                    <X className="w-5 h-5" />
-                </button>
-            </div>
 
             {/* [NEW] Component Render */}
             <PsychSajuFusionView isOpen={showFusionView} onClose={() => setShowFusionView(false)} />
@@ -1882,6 +1858,19 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     }
                 }}
             >
+                {/* [NEW] Fairy-tale Master Docent Header Badge */}
+                <div className="mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-slate-900/90 via-emerald-950/20 to-slate-900/90 border border-amber-400/20 backdrop-blur-md shadow-xl flex items-center justify-between">
+                    <MyeongsimDocentAvatar
+                        ohaeng={(reportData as any)?.sajuConfig?.dayElement || 'wood'}
+                        size="md"
+                        showTitle={true}
+                    />
+                    <div className="text-right">
+                        <span className="text-[11px] font-bold text-amber-300 bg-amber-400/10 px-2 py-1 rounded-full border border-amber-400/30 inline-flex items-center gap-1">
+                            ✨ 동화 수공예 멘토
+                        </span>
+                    </div>
+                </div>
                 {/* [UX] Hypnotic Loader (Breathing Circle) */}
                 {isLoading && loadingCount.current > 1 && (
                     <div className="flex justify-center py-4">
@@ -2083,18 +2072,24 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         )}
 
                                         <div className={`
-                                            relative group backdrop-blur-md border shadow-lg transition-all duration-300
-                                            ${isPayment
-                                                ? 'bg-transparent p-0 shadow-none border-none'
-                                                : msg.role === 'user'
-                                                    ? 'bg-primary-olive text-white border-transparent shadow-md rounded-2xl rounded-tr-sm ml-auto'
-                                                    : 'bg-white/5 border-white/10 rounded-2xl rounded-tl-sm text-gray-200 backdrop-blur-md'
+                                            relative group transition-all duration-300
+                                            ${isPayment || !isUser
+                                                ? 'bg-transparent p-0 shadow-none border-none w-full max-w-full'
+                                                : 'backdrop-blur-md border shadow-lg bg-primary-olive text-white border-transparent rounded-2xl rounded-tr-sm ml-auto w-fit max-w-full md:max-w-[85%] px-5 py-4 min-w-[200px]'
                                             }
-                                            w-fit max-w-full md:max-w-[85%] px-5 py-4 min-w-[200px] ${!isUser ? 'pr-12' : ''}
                                         `}>
                                             {isPayment ? (
                                                 <PaymentCard
                                                     onDetailedReport={handleUnlockReport}
+                                                />
+                                            ) : !isUser ? (
+                                                <ChunkedAssistantMessage
+                                                    content={displayContent}
+                                                    isLastMessage={idx === messages.length - 1}
+                                                    onSelectQuestion={(q) => handleSend(q)}
+                                                    onSpeak={(text) => speak(text)}
+                                                    isVoicePlaying={isVoicePlaying}
+                                                    ohaeng={(reportData as any)?.sajuConfig?.dayElement || 'wood'}
                                                 />
                                             ) : (
                                                 <div className="relative">
@@ -2481,15 +2476,28 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                                     {msg.options.map((option, idx) => (
                                                         <button
                                                             key={`opt-${idx}`}
-                                                            onClick={() => handleSend(option)}
+                                                            onClick={() => {
+                                                                if (isChatLocked) {
+                                                                    setPendingChoiceText(option);
+                                                                    setShowMicroPassModal(true);
+                                                                } else {
+                                                                    handleSend(option);
+                                                                }
+                                                            }}
                                                             disabled={isLoading}
-                                                            className="w-full text-left p-3 rounded-xl bg-indigo-900/30 border border-indigo-500/30 hover:bg-indigo-900/50 hover:border-indigo-400 transition-all flex items-center gap-3 group"
+                                                            className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isChatLocked ? 'bg-amber-950/40 border-amber-500/50 hover:bg-amber-900/60 hover:border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)] cursor-pointer' : 'bg-indigo-900/30 border-indigo-500/30 hover:bg-indigo-900/50 hover:border-indigo-400'}`}
                                                         >
-                                                            <div className="w-8 h-8 min-w-[32px] rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/50 text-indigo-300 group-hover:bg-indigo-500/40">
-                                                                <span className="text-sm">{idx + 1}</span>
+                                                            <div className={`w-8 h-8 min-w-[32px] rounded-full flex items-center justify-center border text-sm font-bold ${isChatLocked ? 'bg-amber-500/20 border-amber-400 text-amber-300 animate-pulse' : 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300 group-hover:bg-indigo-500/40'}`}>
+                                                                <span>{idx + 1}</span>
                                                             </div>
-                                                            <span className="text-gray-100 text-sm font-medium">{option}</span>
-                                                            <ArrowUp className="w-4 h-4 ml-auto text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity transform rotate-90" />
+                                                            <span className="text-gray-100 text-sm font-medium flex-1">{option}</span>
+                                                            {isChatLocked ? (
+                                                                <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-amber-400 text-black shrink-0 flex items-center gap-1 shadow-md group-hover:scale-105 transition-all">
+                                                                    🔒 890원 충전 후 선택
+                                                                </span>
+                                                            ) : (
+                                                                <ArrowUp className="w-4 h-4 ml-auto text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity transform rotate-90" />
+                                                            )}
                                                         </button>
                                                     ))}
                                                 </div>
@@ -2509,6 +2517,11 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 )}
                 {/* [Auto-scroll] Invisible div at the end of messages */}
                 <div ref={messagesEndRef} />
+                
+                {/* [Footer] Company Info & Support */}
+                <div className="w-full max-w-[95%] md:max-w-[85%] mx-auto py-6">
+                    <Footer />
+                </div>
             </div>
 
 
@@ -3028,9 +3041,43 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             </div>
                         )}
 
+                        {/* [NEW] 890원 수다 소액 충전 & 남은 횟수 뱃지 */}
+                        <div className="flex items-center justify-between mb-2 px-1 relative z-20 gap-2">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                                <span className="text-[11px] font-medium text-gray-300 flex items-center gap-1 shrink-0">
+                                    💬 핀포인트 수다
+                                </span>
+                                {remainingChats > 0 ? (
+                                    <span className="px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shrink-0">
+                                        ⚡ 남은 수다 {remainingChats}회 / 3회
+                                    </span>
+                                ) : (
+                                    <span className="px-2 py-0.5 rounded-full bg-red-950/90 border border-red-500/60 text-red-300 font-mono text-[10px] font-bold animate-pulse shrink-0">
+                                        🔒 수다 소진 (890원 충전 필요)
+                                    </span>
+                                )}
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowMicroPassModal(true)}
+                                className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
+                            >
+                                <span>⚡ 890원에 3회 즉시 충전</span>
+                            </button>
+                        </div>
+
                         {/* Ghost Bubble Input */}
                         <form
-                            onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (isChatLocked) {
+                                    if (input.trim()) setPendingChoiceText(input);
+                                    setShowMicroPassModal(true);
+                                } else {
+                                    handleSend();
+                                }
+                            }}
                             className="relative group w-full"
                         >
                             <div className="absolute inset-0 bg-primary-gold/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -3038,23 +3085,27 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder={isExpired ? "🔒 이용권이 만료되었습니다. 충전 후 이용해주세요." : "이곳을 터치해서 대화를 시작하세요..."}
-                                className={`w-full bg-deep-slate/50 backdrop-blur-xl border rounded-2xl pl-6 pr-14 py-5 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-lg shadow-inner ${isExpired ? 'border-red-500/50 cursor-not-allowed opacity-60' : 'border-white/10 focus:border-primary-olive/50 focus:ring-1 focus:ring-primary-olive/30'}`}
+                                placeholder={isChatLocked ? "🔒 3회 수다권을 다 썼어요! 890원 충전 후 계속 대화 가능" : "대화를 시작해보세요..."}
+                                className={`w-full bg-deep-slate/80 backdrop-blur-xl border rounded-2xl pl-4 sm:pl-5 pr-12 sm:pr-14 py-3.5 sm:py-4 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-sm sm:text-base shadow-inner ${isChatLocked ? 'border-amber-500/60 bg-amber-950/20 text-amber-200 placeholder-amber-400/80 cursor-pointer' : 'border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30'}`}
                                 autoFocus
-                                disabled={isExpired}
+                                onClick={() => {
+                                    if (isChatLocked) {
+                                        setShowMicroPassModal(true);
+                                    }
+                                }}
                             />
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 z-20">
-                                {/* [Removed] Mic Button */}
-
                                 <button
                                     type="submit"
-                                    disabled={!input.trim()}
+                                    disabled={!input.trim() && !isChatLocked}
                                     className={`p-2 rounded-xl transition-all flex items-center justify-center
-                                        ${input.trim()
-                                            ? 'bg-primary-olive text-white shadow-[0_0_15px_rgba(101,140,66,0.4)] hover:scale-105 active:scale-95'
-                                            : 'bg-white/5 text-gray-500 cursor-not-allowed'}`}
+                                        ${isChatLocked
+                                            ? 'bg-amber-500 text-black font-black shadow-[0_0_15px_rgba(245,158,11,0.4)] animate-pulse'
+                                            : input.trim()
+                                                ? 'bg-primary-olive text-white shadow-[0_0_15px_rgba(101,140,66,0.4)] hover:scale-105 active:scale-95'
+                                                : 'bg-white/5 text-gray-500 cursor-not-allowed'}`}
                                 >
-                                    <Send className={`w-5 h-5 ${input.trim() ? 'fill-current' : ''}`} />
+                                    {isChatLocked ? <Lock className="w-4 h-4 text-black" /> : <Send className={`w-5 h-5 ${input.trim() ? 'fill-current' : ''}`} />}
                                 </button>
                             </div>
                         </form>
@@ -3113,6 +3164,29 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* [NEW] 890원 수다 3회 소액 충전 모달 */}
+            <MicroChatPassModal
+                isOpen={showMicroPassModal}
+                onClose={() => setShowMicroPassModal(false)}
+                onSuccessPay={() => {
+                    setFreeTurns(0); // Resets turns so user gets 3 fresh turns!
+                    if (typeof window !== 'undefined') {
+                        sessionStorage.setItem('freeTurns', '0');
+                    }
+                    setShowToast(true);
+                    setTimeout(() => setShowToast(false), 3000);
+
+                    // Auto-send pending choice/text if user clicked while locked
+                    if (pendingChoiceText) {
+                        const textToSend = pendingChoiceText;
+                        setPendingChoiceText(null);
+                        setTimeout(() => {
+                            handleSend(textToSend);
+                        }, 400);
+                    }
+                }}
+            />
 
             {/* [NEW] Modular Myeongsim Secret Room Overlay */}
             <AnimatePresence>

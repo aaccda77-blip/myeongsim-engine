@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react';
-import { CreditCard, Copy, ExternalLink, Check, Lock, Shield } from 'lucide-react';
+import { CreditCard, Shield, Sparkles, ArrowRight, CheckCircle2, Lock, FileCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface PaymentCardProps {
@@ -8,175 +8,188 @@ interface PaymentCardProps {
     onDetailedReport?: () => void;
 }
 
-export default function PaymentCard({ onCopy, onDetailedReport }: PaymentCardProps) {
-    const [copied, setCopied] = useState(false);
-    const [privacyConsent, setPrivacyConsent] = useState(false);
-    const [selectedTier, setSelectedTier] = useState<'TRIAL' | 'PASS' | 'VIP'>('PASS');
+export type PaymentTierKey = 'CHAT_3' | 'REPORT_BASE' | 'SOCIAL_FIVE' | 'MASTER_CORE';
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText('농협 351-0733-820813');
-        setCopied(true);
-        if (onCopy) onCopy();
-        setTimeout(() => setCopied(false), 2000);
-    };
+export default function PaymentCard({ onDetailedReport }: PaymentCardProps) {
+    const [selectedTier, setSelectedTier] = useState<PaymentTierKey>('CHAT_3');
+    const [isPaying, setIsPaying] = useState(false);
 
-    const handleOpenKakao = () => {
-        if (!privacyConsent) {
-            alert('개인정보 수집·이용 동의가 필요합니다.');
-            return;
-        }
-
-        // Trigger phone auth modal (passed from parent)
-        if (onDetailedReport) {
-            onDetailedReport(); // This triggers PhoneAuthModal in ChatInterface
-        }
-    };
-
-    const getPrice = () => {
+    const getSelectedPriceInfo = () => {
         switch (selectedTier) {
-            case 'TRIAL': return '3,900원';
-            case 'PASS': return '9,900원';
-            case 'VIP': return '49,000원';
+            case 'CHAT_3':
+                return { name: '💬 챗봇 대화 3회 충전', original: '9,900원', price: '890원', numPrice: 890, badge: '91% OFF' };
+            case 'REPORT_BASE':
+                return { name: '📋 나의 리포트 (기본 진단 요약)', original: '9,900원', price: '890원', numPrice: 890, badge: '91% OFF' };
+            case 'SOCIAL_FIVE':
+                return { name: '🔬 사회적기여 / 오행상생 리포트', original: '19,000원', price: '1,900원', numPrice: 1900, badge: '90% OFF' };
+            case 'MASTER_CORE':
+                return { name: '🔮 명심 마스터코어 (4대 기질+3단계 제로포인트)', original: '29,000원', price: '3,900원', numPrice: 3900, badge: '86% 한정특가' };
         }
     };
+
+    const handleTossPaymentsCheckout = () => {
+        setIsPaying(true);
+        // Instant Toss Payments PG Simulation
+        setTimeout(() => {
+            setIsPaying(false);
+            if (onDetailedReport) {
+                onDetailedReport();
+            }
+        }, 1200);
+    };
+
+    const currentInfo = getSelectedPriceInfo();
 
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-full max-w-sm bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 rounded-xl border border-white/10 shadow-xl overflow-hidden my-2"
+            className="w-full max-w-md bg-gradient-to-br from-slate-950 via-indigo-950/90 to-slate-900 rounded-2xl border border-amber-500/30 shadow-2xl overflow-hidden my-3 text-left"
         >
             {/* Header */}
-            <div className="bg-white/5 px-5 py-3 border-b border-white/5 flex items-center gap-2">
-                <Lock className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-bold text-white tracking-wide">🔐 프리미엄 이용권 구매</span>
+            <div className="bg-gradient-to-r from-amber-950/80 via-amber-900/40 to-indigo-950/80 px-5 py-3.5 border-b border-amber-500/20 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400 fill-amber-400" />
+                    <span className="text-sm font-black text-white tracking-wide">토스페이먼츠 안전 전자결제</span>
+                </div>
+                <span className="text-[10px] text-amber-300 bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
+                    <Shield className="w-3 h-3 text-emerald-400" />
+                    실시간 자동 승인
+                </span>
             </div>
 
             <div className="p-5 flex flex-col gap-4">
-                {/* Pricing Tiers */}
-                <div className="flex flex-col gap-3 w-full">
-                    {/* Tier 1 */}
-                    <div
-                        onClick={() => setSelectedTier('TRIAL')}
-                        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${selectedTier === 'TRIAL' ? 'bg-indigo-600/20 border-indigo-500 ring-1 ring-indigo-500' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}
-                    >
-                        <div className="flex flex-col">
-                            <span className={`text-sm font-bold ${selectedTier === 'TRIAL' ? 'text-indigo-300' : 'text-gray-300'}`}>💎 맛보기 (30분)</span>
-                            <div className="flex items-center gap-1">
-                                <span className="text-gray-400 text-xs line-through">10,000원</span>
-                                <span className="text-red-400 text-xs font-bold">61% OFF</span>
-                            </div>
-                        </div>
-                        <span className="text-xl font-bold text-white">3,900<span className="text-sm font-normal">원</span></span>
+                
+                {/* 📜 Patent Official Disclosure Badge */}
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-[11px] text-amber-200/90 space-y-1">
+                    <div className="flex items-center gap-1.5 font-bold text-amber-300 text-xs">
+                        <FileCheck className="w-4 h-4 text-amber-400" />
+                        <span>특허 출원 기술 한정할인 이벤트</span>
                     </div>
-
-                    {/* Tier 2 (Highlighted) */}
-                    <div
-                        onClick={() => setSelectedTier('PASS')}
-                        className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all relative ${selectedTier === 'PASS' ? 'bg-indigo-900/40 border-indigo-500 shadow-lg' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}
-                    >
-                        <div className="absolute top-0 right-0 bg-indigo-500 text-[9px] text-white px-2 py-0.5 rounded-bl-md font-bold">Best</div>
-                        <div className="flex flex-col">
-                            <span className={`text-sm font-bold ${selectedTier === 'PASS' ? 'text-indigo-200' : 'text-gray-400'}`}>⚡ 데이 패스 (24시간)</span>
-                            <div className="flex items-center gap-1">
-                                <span className="text-indigo-300/60 text-xs line-through">30,000원</span>
-                                <span className="text-red-400 text-xs font-bold">67% OFF</span>
-                            </div>
-                        </div>
-                        <span className="text-2xl font-bold text-white">9,900<span className="text-sm font-normal">원</span></span>
-                    </div>
-
-                    {/* Tier 3 */}
-                    <div
-                        onClick={() => setSelectedTier('VIP')}
-                        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${selectedTier === 'VIP' ? 'bg-primary-gold/20 border-primary-gold ring-1 ring-primary-gold' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}
-                    >
-                        <div className="flex flex-col">
-                            <span className={`text-sm font-bold ${selectedTier === 'VIP' ? 'text-primary-gold' : 'text-primary-gold/60'}`}>👑 VIP (7일)</span>
-                            <div className="flex items-center gap-1">
-                                <span className="text-gray-400 text-xs line-through">150,000원</span>
-                                <span className="text-red-400 text-xs font-bold">67% OFF</span>
-                            </div>
-                        </div>
-                        <span className="text-xl font-bold text-white">49,000<span className="text-sm font-normal">원</span></span>
+                    <div className="text-[10px] text-amber-100/80 space-y-0.5 pt-0.5">
+                        <div>• <strong>특허 출원번호</strong>: 제 10-2025-0166877 호</div>
+                        <div>• <strong>특허 출원명칭</strong>: 심리 및 생체데이터 기반 스트레스 관리 솔루션 제공장치 및 이를 이용한 스트레스 관리솔루션 제공방법</div>
+                        <div>• <strong>특허 출원인</strong>: 이경윤</div>
                     </div>
                 </div>
 
-                {/* Security & Patent Info */}
-                <div className="bg-indigo-950/30 border border-indigo-500/20 rounded-lg p-3 text-xs text-gray-300 space-y-1">
-                    <div className="flex items-center gap-2 text-indigo-300 font-bold">
-                        <Shield className="w-3 h-3" />
-                        <span>안전한 개인정보 처리</span>
+                {/* Micro-Tier Options Selection */}
+                <div className="flex flex-col gap-2.5">
+                    <div className="text-xs font-bold text-gray-300 flex items-center justify-between">
+                        <span>결제 항목 선택 (단발성 1회 해독)</span>
+                        <span className="text-[10px] text-amber-400">※ 특허 출원 86%~91% OFF</span>
                     </div>
-                    <div className="space-y-0.5 text-gray-400 pl-5">
-                        <div>✅ 이름, 이메일, 주민번호 수집 안 함</div>
-                        <div>✅ 전화번호 SHA-256 암호화 저장</div>
-                        <div>✅ 특허출원 10-2025-0166877 기술 적용</div>
+
+                    {/* Option 1: 챗봇 대화 3회 충전 */}
+                    <div
+                        onClick={() => setSelectedTier('CHAT_3')}
+                        className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${selectedTier === 'CHAT_3' ? 'bg-amber-500/15 border-amber-500 ring-1 ring-amber-500' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}
+                    >
+                        <div className="flex flex-col">
+                            <span className={`text-xs font-black ${selectedTier === 'CHAT_3' ? 'text-amber-300' : 'text-gray-300'}`}>
+                                💬 챗봇 대화 3회 추가 충전
+                            </span>
+                            <span className="text-[10px] text-gray-400">끊김 없는 실시간 명심 코칭</span>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-[10px] text-gray-500 line-through mr-1.5">9,900원</span>
+                            <span className="text-base font-black font-mono text-amber-400">890<span className="text-xs font-normal">원</span></span>
+                        </div>
+                    </div>
+
+                    {/* Option 2: 나의 리포트 70% 잠금해제 */}
+                    <div
+                        onClick={() => setSelectedTier('REPORT_BASE')}
+                        className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${selectedTier === 'REPORT_BASE' ? 'bg-amber-500/15 border-amber-500 ring-1 ring-amber-500' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}
+                    >
+                        <div className="flex flex-col">
+                            <span className={`text-xs font-bold ${selectedTier === 'REPORT_BASE' ? 'text-amber-300' : 'text-gray-300'}`}>
+                                📋 나의 리포트 (기본 진단 70% 해독)
+                            </span>
+                            <span className="text-[10px] text-gray-400">기본 본질 자아 및 성향 해독</span>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-[10px] text-gray-500 line-through mr-1.5">9,900원</span>
+                            <span className="text-base font-black font-mono text-amber-400">890<span className="text-xs font-normal">원</span></span>
+                        </div>
+                    </div>
+
+                    {/* Option 3: 사회적기여 / 오행상생 리포트 */}
+                    <div
+                        onClick={() => setSelectedTier('SOCIAL_FIVE')}
+                        className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${selectedTier === 'SOCIAL_FIVE' ? 'bg-indigo-600/20 border-indigo-500 ring-1 ring-indigo-500' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}
+                    >
+                        <div className="flex flex-col">
+                            <span className={`text-xs font-bold ${selectedTier === 'SOCIAL_FIVE' ? 'text-indigo-300' : 'text-gray-300'}`}>
+                                🔬 사회적기여 / 오행 상생 리포트
+                            </span>
+                            <span className="text-[10px] text-gray-400">관계 흐름 및 심화 오행 분석</span>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-[10px] text-gray-500 line-through mr-1.5">19,000원</span>
+                            <span className="text-base font-black font-mono text-indigo-300">1,900<span className="text-xs font-normal">원</span></span>
+                        </div>
+                    </div>
+
+                    {/* Option 4: 명심 마스터코어 (BEST HERO) */}
+                    <div
+                        onClick={() => setSelectedTier('MASTER_CORE')}
+                        className={`flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all relative ${selectedTier === 'MASTER_CORE' ? 'bg-amber-950/60 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}
+                    >
+                        <div className="absolute top-0 right-0 bg-amber-500 text-[9px] text-black px-2 py-0.5 rounded-bl-lg font-black">HERO BEST</div>
+                        <div className="flex flex-col">
+                            <span className={`text-xs font-black ${selectedTier === 'MASTER_CORE' ? 'text-amber-300' : 'text-gray-300'}`}>
+                                🔮 명심 마스터코어 정밀 해독
+                            </span>
+                            <span className="text-[10px] text-amber-200/80">4대 기질 + 3단계 제로포인트 메타코드</span>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-[10px] text-gray-400 line-through block">29,000원</span>
+                            <span className="text-lg font-black font-mono text-amber-300">3,900<span className="text-xs font-normal">원</span></span>
+                        </div>
                     </div>
                 </div>
 
-                {/* Privacy Consent */}
-                <label className="flex items-start gap-2 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        checked={privacyConsent}
-                        onChange={(e) => setPrivacyConsent(e.target.checked)}
-                        className="mt-1 w-4 h-4 accent-indigo-500"
-                    />
-                    <span className="text-xs text-gray-400 leading-relaxed">
-                        <span className="font-bold text-gray-300 block mb-1">[필수] 개인정보 수집 및 이용 동의</span>
-                        <div className="pl-1 space-y-0.5 opacity-80">
-                            <div>• 수집 항목: 휴대전화번호, 입금자명</div>
-                            <div>• 수집 목적: 서비스 이용권 제공 및 본인 확인</div>
-                            <div>• 보유 기간: 회원 탈퇴 시까지 (법령 별도 보관)</div>
-                        </div>
-                    </span>
-                </label>
-
-                {/* Conditional Account Info */}
-                {privacyConsent ? (
-                    <div className="bg-black/30 rounded-lg p-3 border border-white/5 space-y-2">
-                        <div className="flex items-center justify-between group">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-500 mb-0.5">입금 계좌 (농협)</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-200 font-mono tracking-wide">351-0733-820813</span>
-                                    <span className="text-xs text-gray-400">이경윤</span>
-                                </div>
-                            </div>
-                            <button onClick={handleCopy} className="p-2 hover:bg-white/10 rounded-md">
-                                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-gray-400" />}
-                            </button>
-                        </div>
-                        <div className="text-[10px] text-gray-500 space-y-0.5">
-                            <div>⏰ 입금 확인: 평일 10분 이내</div>
-                            <div>📞 비상 연락: 오픈카톡으로 연락 요망</div>
-                        </div>
+                {/* Toss Payments Security Badge */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-xl p-2.5 text-[10px] text-gray-400 space-y-1">
+                    <div className="flex items-center gap-1.5 text-gray-300 font-bold">
+                        <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>토스 페이먼츠 (Toss Payments) 3초 원클릭 결제</span>
                     </div>
-                ) : (
-                    <div className="bg-black/30 rounded-lg p-4 border border-white/5 text-center text-gray-500 text-sm">
-                        개인정보 동의 후 계좌번호가 표시됩니다
+                    <div className="flex items-center gap-2 text-gray-400 pl-5 text-[9px]">
+                        <span>⚡ 카카오페이</span>
+                        <span>•</span>
+                        <span>⚡ 토스페이</span>
+                        <span>•</span>
+                        <span>⚡ 신용/체크카드</span>
+                        <span>•</span>
+                        <span>⚡ 네이버페이</span>
                     </div>
-                )}
+                </div>
 
-                {/* Action Buttons */}
+                {/* Toss Direct Instant PG Payment Button */}
                 <button
-                    onClick={handleOpenKakao}
-                    disabled={!privacyConsent}
-                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-colors"
+                    onClick={handleTossPaymentsCheckout}
+                    disabled={isPaying}
+                    className="w-full py-3.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-sm rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                    <ExternalLink className="w-4 h-4" />
-                    <span>{getPrice()} 입금 및 전화번호 등록</span>
+                    {isPaying ? (
+                        <>
+                            <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                            <span>토스페이먼츠 승인 진행 중...</span>
+                        </>
+                    ) : (
+                        <>
+                            <span>💳 {currentInfo.price} 토스 결제 승인하기</span>
+                            <ArrowRight size={15} />
+                        </>
+                    )}
                 </button>
 
-                {/* [Pulse Check] Open Kakao Link for Manual Confirm */}
-                <button
-                    onClick={() => window.open('https://open.kakao.com/o/spgWFR8h', '_blank')}
-                    className="w-full py-3 bg-[#FAE300] hover:bg-[#F9D500] text-black font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors mt-2"
-                >
-                    <span className="text-lg">💬</span>
-                    <span>관리자와 1:1 대화 (입금 확인)</span>
-                </button>
+                {/* Legal Refund Clause (통합 법적 조항) */}
+                <p className="text-[9.5px] text-gray-500 text-center leading-snug mt-1 px-1">
+                    ※ 본 상품은 결제 즉시 개시되어 1회 답변 확인으로 서비스 목적이 완전 완결되는 단발성 디지털 콘텐츠 상품으로, 답변 열람 후에는 관련 법령(전자상거래법 제17조 제2항 제5호)에 따라 청약철회 및 전액 환불이 불가능합니다.
+                </p>
             </div>
         </motion.div>
     );

@@ -18,6 +18,12 @@ import PaymentLockOverlay from '@/components/auth/PaymentLockOverlay';
 import { getTargetStepForStage } from '@/utils/StageMapping';
 
 import { useSearchParams } from 'next/navigation';
+import MyeongsimContentGridView from '../coaching/MyeongsimContentGridView';
+import MicroPassModal from '../coaching/MicroPassModal';
+import Myeongsim64KeysModal from '../coaching/Myeongsim64KeysModal';
+import OhaengContributionModal from '../coaching/OhaengContributionModal';
+import MyeongsimGeniusReportModal from '../coaching/MyeongsimGeniusReportModal';
+import SupportInquiryModal from '../modals/SupportInquiryModal';
 
 export default function BookLayout({ children }: { children: React.ReactNode }) {
     const { 
@@ -34,54 +40,69 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
         fptiAvatarCode,
         reportData
     } = useReportStore();
-    const searchParams = useSearchParams();
 
     // UI State
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isMapOpen, setIsMapOpen] = useState(false);
+    const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+    const [intentParams, setIntentParams] = useState<{ intent: string | null; section: string | null }>({ intent: null, section: null });
 
-    // [New] Auto-open chat if intent exists
+    // [NEW] 뷰 모드 스위치 (큐레이션 카드 모드 vs 딥 헬스케어 코칭 모드)
+    const [viewMode, setViewMode] = useState<'grid' | 'dashboard'>('grid');
+    const [showMicroPassModal, setShowMicroPassModal] = useState(false);
+    const [show64KeysModal, setShow64KeysModal] = useState(false);
+    const [showOhaengModal, setShowOhaengModal] = useState(false);
+    const [showGeniusModal, setShowGeniusModal] = useState(false);
+
     useEffect(() => {
-        // [Safety Reset] Next.js useSearchParams가 Hydration 불일치나 캐시로 오작동하는 문제를 방지하기 위해 
-        // 실제 브라우저 window.location.search의 intent 존재 여부도 함께 검증합니다.
-        let hasIntent = false;
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('intent')) {
-                hasIntent = true;
+        try {
+            const savedMode = localStorage.getItem('myeongsim_view_mode');
+            if (savedMode === 'dashboard' || savedMode === 'grid') {
+                setViewMode(savedMode);
             }
-        } else {
-            hasIntent = !!searchParams.get('intent');
+        } catch (e) {
+            console.warn('LocalStorage access warning:', e);
         }
+    }, []);
 
-        if (hasIntent) {
-            setIsChatOpen(true);
-            // [NEW] 챗창이 자동으로 열린 직후에는 주소창의 intent/section 파라미터를 완전히 지워 
-            // 수동으로 말풍선 버튼을 누르거나 새로고침 시 모달이 다시 오작동하는 현상을 원천 방지합니다.
-            if (typeof window !== 'undefined') {
-                const url = new URL(window.location.href);
-                url.searchParams.delete('intent');
-                url.searchParams.delete('section');
-                window.history.replaceState({}, '', url.pathname);
-            }
-        } else {
-            setIsChatOpen(false);
-            setPlannerOpen(false);
+    const handleModeSwitch = (mode: 'grid' | 'dashboard') => {
+        setViewMode(mode);
+        try {
+            localStorage.setItem('myeongsim_view_mode', mode);
+        } catch (e) {
+            console.warn('LocalStorage set warning:', e);
         }
-    }, [searchParams, setPlannerOpen]);
+    };
+
+    // [New] Auto-open chat if intent exists (Safe Client-Only Parsing without Suspense deadlock)
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const intent = params.get('intent');
+                const section = params.get('section');
+                
+                if (intent) {
+                    setIntentParams({ intent, section });
+                    setIsChatOpen(true);
+                    
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('intent');
+                    url.searchParams.delete('section');
+                    window.history.replaceState({}, '', url.pathname);
+                }
+            } catch (err) {
+                console.warn('URL SearchParams parsing warning:', err);
+            }
+        }
+    }, []);
 
     // [Removed] Legacy Auth & Payment State - Replaced by Premium System
     const [user, setUser] = useState<any>(null);
     const [points, setPoints] = useState(0);
 
-    // [Deep Tech Logic] 실제 DB나 Store에서 단계를 가져와야 함 (데모용 State 분리)
-    // const currentStageLevel = useReportStore(s => s.currentStageLevel) || 1;
     const [demoStage, setDemoStage] = useState(7); // [Demo] 7단계 모두 오픈
-
     const progressPercentage = (currentStep / totalSteps) * 100;
-
-    // [Removed] Legacy Access Key System - Replaced by Premium Membership
-
 
     // [Strict Payment Lock]
     const [isLocked, setIsLocked] = useState(false);
@@ -89,63 +110,57 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
     const checkUserStatus = async (): Promise<boolean> => {
         setIsLoadingLock(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        setUser(user);
-
         let shouldLock = false;
 
-        if (user) {
-            // 1. Fetch User Profile for Points
-            const { data: profile } = await supabase.from('profiles').select('points').eq('id', user.id).single();
-            if (profile) setPoints(profile.points);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
 
-            // 2. Fetch User Subscription Status (Detailed)
-            const { data: subscription } = await supabase
-                .from('users')
-                .select('expires_at, membership_tier')
-                .eq('id', user.id)
-                .single();
-
-            if (subscription) {
-                const now = new Date();
-                const expiresAt = subscription.expires_at ? new Date(subscription.expires_at) : null;
-
-                // Lock if:
-                // a) No expiration date (Never paid/approved)
-                // b) Expiration date is in the past
-                // UNLESS tier is 'ADMIN' (Just in case)
-                const isExpired = !expiresAt || expiresAt < now;
-                const isAdmin = subscription.membership_tier === 'ADMIN';
-
-                if (isExpired && !isAdmin) {
-                    shouldLock = true;
-                    console.log("🔒 Access Locked: User is expired or has no pass.");
-                } else {
-                    shouldLock = false;
-                    console.log("🔓 Access Granted.");
+            if (user) {
+                try {
+                    const { data: profile } = await supabase.from('profiles').select('points').eq('id', user.id).single();
+                    if (profile) setPoints(profile.points);
+                } catch (e) {
+                    console.warn('Profile points fetch warning:', e);
                 }
-            } else {
-                // No record found? Lock it to be safe (or handle new user creation)
-                // Assuming 'users' row is created on signup trigger
-                shouldLock = true;
+
+                try {
+                    const { data: subscription } = await supabase
+                        .from('users')
+                        .select('expires_at, membership_tier')
+                        .eq('id', user.id)
+                        .single();
+
+                    if (subscription) {
+                        const now = new Date();
+                        const expiresAt = subscription.expires_at ? new Date(subscription.expires_at) : null;
+                        const isExpired = !expiresAt || expiresAt < now;
+                        const isAdmin = subscription.membership_tier === 'ADMIN';
+
+                        if (isExpired && !isAdmin) {
+                            shouldLock = true;
+                        } else {
+                            shouldLock = false;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Subscription fetch warning:', e);
+                }
             }
-        } else {
-            // Not logged in? Handled by page.tsx redirect usually, 
-            // but if we are here without user, maybe we shouldn't lock? 
-            // BookLayout wraps content that usually requires auth.
-            // Let's assume AuthGuard handles non-login. 
-            // We only lock LOGGED IN but UNPAID users here.
-            shouldLock = false;
+        } catch (globalErr) {
+            console.error('checkUserStatus error:', globalErr);
+        } finally {
+            setIsLocked(shouldLock);
+            setIsLoadingLock(false);
         }
 
-        setIsLocked(shouldLock);
-        setIsLoadingLock(false);
         return shouldLock;
     };
 
     useEffect(() => {
         checkUserStatus();
     }, []);
+
 
     return (
         // [Fix 1] PC 배경과 앱 컨테이너 분리
@@ -163,17 +178,49 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
             <div className="w-full max-w-md h-[100dvh] bg-deep-slate text-text-gray font-sans flex flex-col relative shadow-2xl md:border-x md:border-white/10 z-10">
 
                 {/* 1. Header */}
-                <header className="h-14 px-4 flex items-center justify-between border-b border-white/5 bg-deep-slate/80 backdrop-blur-md z-50 absolute top-0 left-0 right-0">
-                    <div className="flex gap-2">
+                <header className="h-14 px-3 flex items-center justify-between border-b border-white/5 bg-deep-slate/80 backdrop-blur-md z-50 absolute top-0 left-0 right-0">
+                    <div className="flex items-center gap-1.5">
                         <button
-                            className="p-2 hover:bg-white/5 rounded-full transition-colors"
+                            className="p-1.5 hover:bg-white/5 rounded-full transition-colors cursor-pointer"
                             onClick={() => setIsMapOpen(true)}
+                            title="전체 메뉴"
                         >
                             <Menu className="w-5 h-5 text-gray-400" />
                         </button>
+                        <button
+                            className="p-1.5 hover:bg-white/5 rounded-full transition-colors cursor-pointer text-amber-400"
+                            onClick={() => setIsInquiryOpen(true)}
+                            title="문의하기 게시판"
+                        >
+                            <MessageCircle className="w-5 h-5" />
+                        </button>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    {/* 📱 Mode Toggle Bar (큐레이션 카드 모드 ↔ 딥 헬스케어 코칭 모드) */}
+                    <div className="flex items-center bg-black/70 border border-white/20 p-0.5 rounded-xl shadow-lg">
+                        <button
+                            onClick={() => handleModeSwitch('grid')}
+                            className={`px-2.5 py-1 rounded-lg text-[10.5px] font-black transition-all cursor-pointer ${
+                                viewMode === 'grid'
+                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-md scale-105'
+                                    : 'text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            📱 카드 모드
+                        </button>
+                        <button
+                            onClick={() => handleModeSwitch('dashboard')}
+                            className={`px-2.5 py-1 rounded-lg text-[10.5px] font-black transition-all cursor-pointer ${
+                                viewMode === 'dashboard'
+                                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md scale-105'
+                                    : 'text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            🌌 코칭 모드
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-1">
                         {/* [Removed] Login/Charge Button hidden by user request */}
 
                         {/* [NEW] 맞춤 코칭 플래너 적용 시 나타나는 🧭 버튼 */}
@@ -238,8 +285,8 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                     setIsChatOpen(false);
                                 }}
                                 currentStage={demoStage}
-                                initialIntent={searchParams.get('intent')} // [New] Pass Intent
-                                initialSectionId={searchParams.get('section')} // [New] Pass Section ID for Deep Linking
+                                initialIntent={intentParams.intent}
+                                initialSectionId={intentParams.section}
                             />
                         </div>
                     )}
@@ -260,23 +307,67 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                 </AnimatePresence>
 
                 {/* 2. Main Content */}
-                {/* [Fix 2] touch-none 제거하고 스크롤 영역 명시 */}
                 <main className="flex-1 w-full relative pt-14 pb-20 overflow-hidden">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={currentStep}
-                            initial={{ opacity: 0, x: 20 }} // 슬라이드 효과로 변경 (책 넘기는 느낌)
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="w-full h-full overflow-y-auto scrollbar-hide"
-                        >
-                            <div className="px-5 py-6 pb-10 min-h-full">
-                                {children}
-                            </div>
-                        </motion.div>
-                    </AnimatePresence>
+                    {viewMode === 'grid' ? (
+                        <div className="w-full h-full overflow-y-auto px-4 py-4 scrollbar-hide">
+                            <MyeongsimContentGridView
+                                userProfile={reportData}
+                                onOpenMicroPassModal={() => setShowMicroPassModal(true)}
+                                onOpen64KeysModal={() => setShow64KeysModal(true)}
+                                onOpenOhaengModal={() => setShowOhaengModal(true)}
+                                onOpenGeniusModal={() => setShowGeniusModal(true)}
+                                onOpenFullPassModal={() => setShowMicroPassModal(true)}
+                            />
+                        </div>
+                    ) : (
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentStep}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                className="w-full h-full overflow-y-auto scrollbar-hide"
+                            >
+                                <div className="px-5 py-6 pb-10 min-h-full">
+                                    {children}
+                                </div>
+                            </motion.div>
+                        </AnimatePresence>
+                    )}
                 </main>
+
+                {/* 팝업 모달 연동 */}
+                {showMicroPassModal && (
+                    <MicroPassModal
+                        isOpen={showMicroPassModal}
+                        onClose={() => setShowMicroPassModal(false)}
+                    />
+                )}
+                {show64KeysModal && (
+                    <Myeongsim64KeysModal
+                        isOpen={show64KeysModal}
+                        onClose={() => setShow64KeysModal(false)}
+                    />
+                )}
+                {showOhaengModal && (
+                    <OhaengContributionModal
+                        isOpen={showOhaengModal}
+                        onClose={() => setShowOhaengModal(false)}
+                    />
+                )}
+                {showGeniusModal && (
+                    <MyeongsimGeniusReportModal
+                        isOpen={showGeniusModal}
+                        onClose={() => setShowGeniusModal(false)}
+                    />
+                )}
+                {isInquiryOpen && (
+                    <SupportInquiryModal
+                        isOpen={isInquiryOpen}
+                        onClose={() => setIsInquiryOpen(false)}
+                    />
+                )}
 
                 {/* [Strict Payment Guardian] */}
                 <AnimatePresence>

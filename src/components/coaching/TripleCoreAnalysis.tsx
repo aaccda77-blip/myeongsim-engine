@@ -74,11 +74,11 @@ function calcSocialCore(
     .sort(([, a], [, b]) => b - a)[0][0];
 
   const osMap: Record<string, { os: string; role: string; score: number; status: StatusLevel; advice: string }> = {
-    power:    { os: '정관격(行政 OS)', role: '질서·규율·조직 최적화형', score: 82, status: 'OPTIMAL', advice: '제도권 안에서 기여하는 역할이 최대 성능을 냅니다. 리더십과 책임감을 발휘하세요.' },
-    resource: { os: '인수격(學術 OS)', role: '지식·학습·철학 최적화형', score: 76, status: 'NORMAL', advice: '지식 축적과 전달로 사회를 이끕니다. 강의·집필·컨설팅 분야가 배포 채널입니다.' },
-    output:   { os: '식신격(創造 OS)', role: '창작·표현·생산 최적화형', score: 85, status: 'OPTIMAL', advice: '창의적 아이디어를 세상에 꺼내는 것이 생존 전략입니다. 출력(식상)을 막지 마세요.' },
-    wealth:   { os: '재성격(實戰 OS)', role: '현실·결과·자원 최적화형', score: 72, status: 'NORMAL', advice: '현실적 실행과 자원 관리가 핵심입니다. 전략적 실행력이 강점입니다.' },
-    self:     { os: '비겁격(主權 OS)', role: '자아·독립·개척 최적화형', score: 65, status: 'WARNING', advice: '강한 자아가 경쟁 또는 협력으로 분기됩니다. 소버린 스탠스를 유지하되 연대하세요.' },
+    power:    { os: '정관격(行政 OS)', role: '질서·규율·조직 최적화형', score: 82, status: 'OPTIMAL', advice: '세상의 질서 속에서 당당히 당신의 빛을 밝히세요. 책임감 있는 리더십이 만인을 안내하는 따뜻한 길잡이가 됩니다.' },
+    resource: { os: '인수격(學術 OS)', role: '지식·학습·철학 최적화형', score: 76, status: 'NORMAL', advice: '깊이 있게 배운 지혜를 세상에 다정하게 건네세요. 글과 정성 어린 언어로 사람들의 마음을 치유하는 온기 어린 스승이 됩니다.' },
+    output:   { os: '식신격(創造 OS)', role: '창작·표현·생산 최적화형', score: 85, status: 'OPTIMAL', advice: '가슴속 솟아오르는 순수한 표현을 세상에 아낌없이 풀어놓으세요. 당신의 당당한 창작물이 누군가에게 큰 희망이 됩니다.' },
+    wealth:   { os: '재성격(實戰 OS)', role: '현실·결과·자원 최적화형', score: 72, status: 'NORMAL', advice: '현실의 결실과 자원을 지혜롭게 가꾸어 가세요. 당신의 뛰어난 전략적 실행력이 풍요롭고 안전한 울타리를 만듭니다.' },
+    self:     { os: '비겁격(主權 OS)', role: '자아·독립·개척 최적화형', score: 65, status: 'WARNING', advice: '나다운 내면의 중심(뿌리)은 단단히 지키되, 세상을 향해 따뜻한 온기의 손을 내밀어 다정하게 동행하세요.' },
   };
 
   const cfg = osMap[dominant] || osMap['self'];
@@ -243,21 +243,21 @@ const CoreCard = ({
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
-      className={`relative rounded-2xl border ${cfg.border} ${cfg.bg} p-5 overflow-hidden`}
+      className={`relative rounded-2xl border ${cfg.border} ${cfg.bg} p-5 overflow-hidden backdrop-blur-md transition-all duration-300 shadow-xl`}
     >
       {/* 배경 글로우 */}
-      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-10" style={{ background: cfg.color, filter: 'blur(24px)' }} />
+      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-10 pointer-events-none" style={{ background: cfg.color, filter: 'blur(24px)' }} />
 
       {/* 헤더 */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl">{icon}</div>
-          <div>
-            <div className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">{sourceText}</div>
-            <h3 className="text-base font-extrabold text-white">{coreName}</h3>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="text-2xl shrink-0">{icon}</div>
+          <div className="min-w-0">
+            <div className="text-[9px] font-mono text-slate-400 uppercase tracking-widest truncate">{sourceText}</div>
+            <h3 className="text-base font-extrabold text-white break-keep">{coreName}</h3>
           </div>
         </div>
-        <span className={`text-[10px] font-black px-2.5 py-1 rounded-full ${cfg.badge}`}>
+        <span className={`text-[10px] font-black px-2.5 py-1 rounded-full shrink-0 ${cfg.badge}`}>
           {cfg.icon} {result.status}
         </span>
       </div>
@@ -267,20 +267,24 @@ const CoreCard = ({
         <CoreGauge score={result.score} color={cfg.color} delay={delay + 0.2} />
       </div>
 
-      {/* 진단 */}
-      <div className="space-y-2.5">
-        <div className={`p-3 rounded-lg`} style={{ background: `${cfg.color}10`, border: `1px solid ${cfg.color}30` }}>
-          <p className="text-[10px] uppercase tracking-widest font-bold mb-1" style={{ color: cfg.color }}>
-            DIAGNOSIS
-          </p>
-          <p className="text-sm text-white font-semibold">{result.title}</p>
-          <p className="text-xs text-slate-300 mt-1 leading-relaxed">{result.diagnosis}</p>
+      {/* 진단 및 처방 (데스크톱에서는 2열 가로 분할, 모바일에서는 1열 세로 스택) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 rounded-xl flex flex-col justify-between" style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}35` }}>
+          <div>
+            <p className="text-[10px] uppercase tracking-widest font-bold mb-1.5 font-mono" style={{ color: cfg.color }}>
+              🔍 DIAGNOSIS (시스템 진단)
+            </p>
+            <p className="text-sm sm:text-base text-white font-extrabold break-keep">{result.title}</p>
+            <p className="text-xs text-slate-200 mt-2 leading-relaxed break-keep font-medium">{result.diagnosis}</p>
+          </div>
         </div>
-        <div className="p-3 rounded-lg bg-slate-800/60 border border-slate-700/50">
-          <p className="text-[10px] uppercase tracking-widest text-emerald-500 font-bold mb-1">
-            PRESCRIPTION
-          </p>
-          <p className="text-xs text-slate-300 leading-relaxed">{result.prescription}</p>
+        <div className="p-4 rounded-xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-1.5 font-mono">
+              💊 PRESCRIPTION (처방 & 액션 루틴)
+            </p>
+            <p className="text-xs text-slate-300 mt-1 leading-relaxed break-keep font-normal">{result.prescription}</p>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -334,12 +338,44 @@ const TerminalLog = ({ lines, conclusion }: { lines: string[]; conclusion: strin
       transition={{ delay: 2.1 }}
       className="mt-4 pt-4 border-t border-slate-700"
     >
-      <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">[CONCLUSION]</p>
-      <p className="text-xs text-white leading-relaxed">{conclusion}</p>
+      <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-mono">[CONCLUSION]</p>
+      <p className="text-xs text-white leading-relaxed break-keep font-medium">{conclusion}</p>
       <span className="inline-block mt-2 w-2 h-3 bg-cyan-400 animate-pulse" />
     </motion.div>
   </motion.div>
 );
+
+/**
+ * 오행(五行) 비율과 일간(日干)으로부터 십성(十星) 카운트/비율 동적 계산
+ */
+export function calculateTenGodsFromOhaeng(
+  ohaeng?: Ohaeng,
+  dayStem: string = '甲'
+) {
+  if (!ohaeng) return undefined;
+
+  let stemElement = 'wood';
+  const stem = (dayStem || '甲').trim().charAt(0);
+  if (['甲', '乙', '갑', '을'].includes(stem)) stemElement = 'wood';
+  else if (['丙', '丁', '병', '정'].includes(stem)) stemElement = 'fire';
+  else if (['戊', '己', '무', '기'].includes(stem)) stemElement = 'earth';
+  else if (['庚', '辛', '경', '신'].includes(stem)) stemElement = 'metal';
+  else if (['壬', '癸', '임', '계'].includes(stem)) stemElement = 'water';
+
+  const elements = ['wood', 'fire', 'earth', 'metal', 'water'];
+  const dmIdx = elements.indexOf(stemElement);
+
+  const result = { self: 0, output: 0, wealth: 0, power: 0, resource: 0 };
+  const keys: (keyof typeof result)[] = ['self', 'output', 'wealth', 'power', 'resource'];
+
+  elements.forEach((el, idx) => {
+    const diff = (idx - dmIdx + 5) % 5;
+    const val = ohaeng[el as keyof Ohaeng] ?? 0;
+    result[keys[diff]] = val;
+  });
+
+  return result;
+}
 
 // ─────────────────────────────────────────────
 // 메인 컴포넌트
@@ -355,9 +391,17 @@ export default function TripleCoreAnalysis({
 
   const defaultOhaeng: Ohaeng = ohaeng || { wood: 1, fire: 1, earth: 2, metal: 3, water: 1 };
 
+  // tenGods가 주어지지 않았거나 미완성인 경우, ohaeng과 dayStem으로 십성 수치 동적 자동 도출
+  const derivedTenGods = useMemo(() => {
+    if (tenGods && (tenGods.self + tenGods.resource + tenGods.output + tenGods.wealth + tenGods.power) > 0) {
+      return tenGods;
+    }
+    return calculateTenGodsFromOhaeng(defaultOhaeng, dayStem);
+  }, [tenGods, defaultOhaeng, dayStem]);
+
   const climateResult = useMemo(() => calcClimateCore(defaultOhaeng, monthBranch), [defaultOhaeng, monthBranch]);
-  const balanceResult = useMemo(() => calcBalanceCore(defaultOhaeng, tenGods, dayStem), [defaultOhaeng, tenGods, dayStem]);
-  const socialResult  = useMemo(() => calcSocialCore(tenGods, dayStem), [tenGods, dayStem]);
+  const balanceResult = useMemo(() => calcBalanceCore(defaultOhaeng, derivedTenGods, dayStem), [defaultOhaeng, derivedTenGods, dayStem]);
+  const socialResult  = useMemo(() => calcSocialCore(derivedTenGods, dayStem), [derivedTenGods, dayStem]);
 
   const avgScore = Math.round((climateResult.score + balanceResult.score + socialResult.score) / 3);
   const overallStatus: StatusLevel = avgScore >= 80 ? 'OPTIMAL' : avgScore >= 60 ? 'NORMAL' : avgScore >= 40 ? 'WARNING' : 'CRITICAL';
@@ -422,13 +466,13 @@ export default function TripleCoreAnalysis({
                 진단 리포트
               </span>
             </h2>
-            <p className="text-slate-400 text-xs mt-1">
+            <p className="text-slate-400 text-xs mt-1 break-keep">
               당신이라는 시스템을 구동하는 3가지 핵심 알고리즘 — Climate · Balance · Social
             </p>
           </div>
           <div className="flex items-center gap-3">
             {/* 종합 점수 원형 */}
-            <div className="relative flex items-center justify-center w-16 h-16">
+            <div className="relative flex items-center justify-center w-16 h-16 shrink-0">
               <svg className="absolute w-16 h-16 -rotate-90" viewBox="0 0 64 64">
                 <circle cx="32" cy="32" r="28" fill="none" stroke="#1e293b" strokeWidth="6" />
                 <motion.circle
@@ -446,8 +490,8 @@ export default function TripleCoreAnalysis({
                 <span className="text-base font-black" style={{ color: overallCfg.color }}>{avgScore}</span>
               </div>
             </div>
-            <div>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest">SYSTEM SCORE</p>
+            <div className="shrink-0">
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">SYSTEM SCORE</p>
               <p className="text-sm font-bold" style={{ color: overallCfg.color }}>
                 {overallCfg.icon} {overallStatus}
               </p>
@@ -456,9 +500,9 @@ export default function TripleCoreAnalysis({
         </div>
       </div>
 
-      <div className="p-5 md:p-6 space-y-6">
-        {/* 3 코어 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="p-4 md:p-6 space-y-6">
+        {/* 3 코어 카드 (모든 화면 크기 및 모달 팝업 환경에서 시원한 1열 세로 스택) */}
+        <div className="flex flex-col gap-6">
           {cores.map(c => (
             <CoreCard key={c.coreKey} {...c} />
           ))}

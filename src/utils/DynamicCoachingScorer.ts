@@ -219,28 +219,26 @@ export function calculateDynamicCoachingTags(
         shadowDesc
     ].join(' ').toLowerCase();
 
-    allTags.forEach(tag => {
-        const matchKeywords = TAG_COGNITIVE_MAP[tag];
-        if (matchKeywords) {
-            let matchCount = 0;
-            matchKeywords.forEach(kw => {
-                if (psychTextContext.includes(kw.toLowerCase())) {
-                    matchCount++;
-                }
-            });
-            // 겹치는 심리 키워드가 있을 경우 점수 추가 (개수당 15점 가산, 최대 30점)
-            if (matchCount > 0) {
-                scores[tag] += Math.min(30, matchCount * 15);
-            }
-        }
+    // ────────── [차원 4] 데일리 날짜 시드 (Daily Date Seed) 보정 (가중치 45%) ──────────
+    // 동일 사용자라도 매일매일(yyyy-MM-dd) 접속할 때마다 다채로운 태그를 경험하도록 날짜 시드 순환 추가
+    const todayStr = new Date().toISOString().slice(0, 10); // e.g. "2026-07-24"
+    let dateHash = 0;
+    for (let i = 0; i < todayStr.length; i++) {
+        dateHash = (dateHash * 31 + todayStr.charCodeAt(i)) % 10007;
+    }
+
+    allTags.forEach((tag, idx) => {
+        // 날짜 해시와 태그 인덱스를 결합하여 매일매일 다른 10~35점 데일리 에너지 파동 부여
+        const dailyBonus = ((dateHash + idx * 17) % 35);
+        scores[tag] += dailyBonus;
     });
 
     // 5. 점수 기준 내림차순 정렬하여 상위 2개 태그 추출
     const sortedTags = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
     const finalTags = sortedTags.slice(0, 2);
 
-    console.log("🎯 [Scorer Realtime] 다차원 스코어 결과:", scores);
-    console.log("🚀 [Scorer Realtime] 선정된 탑 2 태그:", finalTags);
+    console.log("🎯 [Scorer Realtime] 데일리 날짜 시드 적용 다차원 스코어:", scores);
+    console.log("🚀 [Scorer Realtime] 오늘( " + todayStr + " ) 선정된 2대 태그:", finalTags);
 
     return finalTags;
 }

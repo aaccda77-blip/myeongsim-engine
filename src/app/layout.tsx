@@ -20,6 +20,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "명심코칭 (Myeongsim Coaching)",
     description: "당신의 운명을 읽고 마음을 치유합니다.",
+    icons: {
+        icon: "/myeongsim_logo.png",
+        apple: "/myeongsim_logo.png",
+    },
+    openGraph: {
+        title: "명심코칭 (Myeongsim Coaching)",
+        description: "당신의 운명을 읽고 마음을 치유합니다.",
+        images: ["/myeongsim_logo.png"],
+    },
 };
 
 export const viewport: Viewport = {

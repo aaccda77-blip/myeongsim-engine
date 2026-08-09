@@ -238,11 +238,22 @@ export async function POST(req: NextRequest) {
 
 
 
-        // [GoogleGenerativeAI Fix] Force history to start with 'user' role
-        // The API throws: "First content should be with role 'user', got model"
-        while (historyForGemini.length > 0 && historyForGemini[0].role !== 'user') {
-            historyForGemini.shift();
+        // [GoogleGenerativeAI Fix] Force history to strictly alternate between 'user' and 'model'
+        const cleanedHistory: any[] = [];
+        for (const item of historyForGemini) {
+            if (!item || !item.parts || !item.parts[0] || !item.parts[0].text) continue;
+            if (cleanedHistory.length === 0) {
+                if (item.role === 'user') {
+                    cleanedHistory.push(item);
+                }
+            } else {
+                const lastRole = cleanedHistory[cleanedHistory.length - 1].role;
+                if (item.role !== lastRole) {
+                    cleanedHistory.push(item);
+                }
+            }
         }
+        historyForGemini = cleanedHistory;
 
         // [Fix] Consolidate Birth Profile (Moved up for Persona ID generation)
         const effectiveBirthDate = birthDate || sajuData?.birthDate || userSaju?.birthDate;
@@ -964,15 +975,19 @@ export async function POST(req: NextRequest) {
         const memoryContext = `${coreProfileSystemPrompt}\n${recentChatHistory}\n\n${longTermMemoryContext}`;
         const genreCodes = genreCodesResult;
 
-        // [SECURITY STEP 0] Origin/Referer Verification (Same as before)
+        // [SECURITY STEP 0] Origin/Referer Verification
         const origin = req.headers.get('origin') || req.headers.get('referer');
         const allowedOrigins = [
+            'https://myeongsimcoaching.com',
+            'https://www.myeongsimcoaching.com',
             'https://myeongsim-report.vercel.app',
             'http://localhost:3000',
-            // [Security Update] Allow all Vercel previews & production aliases
+            'http://localhost:3001',
             'https://myeongsim-report'
         ];
-        const isAllowed = !origin || allowedOrigins.some(domain => origin.startsWith(domain));
+        const isAllowed = !origin || 
+            allowedOrigins.some(domain => origin.startsWith(domain)) || 
+            origin.includes('myeongsimcoaching.com');
 
         if (origin && !isAllowed) {
             console.warn(`🚨 [Security] Blocked unauthorized origin: ${origin}`);
@@ -1781,7 +1796,7 @@ c) "action_plan": 정확히 3개의 일일 미션 배열(Day 1, 2, 3)
             finalSystemPrompt = CrisisInterventionModule.constructCrisisPrompt(mergedSaju, userName || '회원');
         }
 
-        // 5. Call Gemini AI (Context-Aware Chat)
+        // 5. Call Gemini AI (Context-Aware Chat with Auto Fallback)
         const genAI = new GoogleGenerativeAI(apiKey);
 
         // [FIX] For Mastermind sessions, enforce JSON schema to guarantee role tags
@@ -1845,26 +1860,48 @@ c) "action_plan": 정확히 3개의 일일 미션 배열(Day 1, 2, 3)
             }
         }
 
-        const model = genAI.getGenerativeModel({
-            model: 'gemini-2.5-flash',
-            systemInstruction: finalSystemPrompt,
-            generationConfig,
-            safetySettings: [
-                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
-            ]
-        });
+        // [Explicit User Directive] API Model strictly set to gemini-2.5-flash
+        const candidateModels = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash'];
+        let result: any = null;
+        let lastError: any = null;
 
-        const chat = model.startChat({
-            history: historyForGemini,
-            generationConfig: {
-                maxOutputTokens: maxTokens,
-            },
-        });
+        for (const targetModel of candidateModels) {
+            try {
+                console.log(`🤖 [Gemini API] Attempting model: ${targetModel}`);
+                const model = genAI.getGenerativeModel({
+                    model: targetModel,
+                    systemInstruction: finalSystemPrompt,
+                    generationConfig,
+                    safetySettings: [
+                        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+                        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+                        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+                        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+                    ]
+                });
 
-        const result = await chat.sendMessageStream(currentMessageContent);
+                const chat = model.startChat({
+                    history: historyForGemini,
+                    generationConfig: {
+                        maxOutputTokens: maxTokens,
+                    },
+                });
+
+                result = await chat.sendMessageStream(currentMessageContent);
+                if (result && result.stream) {
+                    console.log(`✅ [Gemini API] Success with model: ${targetModel}`);
+                    break;
+                }
+            } catch (err: any) {
+                console.warn(`⚠️ [Gemini API] Model ${targetModel} error:`, err?.message || err);
+                lastError = err;
+            }
+        }
+
+        if (!result || !result.stream) {
+            throw lastError || new Error("All Gemini models failed.");
+        }
+
         const response = result.stream;
 
         const readableStream = new ReadableStream({

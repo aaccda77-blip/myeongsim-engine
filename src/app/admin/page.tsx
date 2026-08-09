@@ -156,12 +156,32 @@ export default function AdminPage() {
                             <Shield className="w-6 h-6 text-indigo-400" />
                             <h1 className="text-2xl font-bold text-white">회원 관리 대시보드</h1>
                         </div>
-                        <button
-                            onClick={fetchUsers}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm transition-colors"
-                        >
-                            새로고침
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <a
+                                href="/admin/users"
+                                className="bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
+                            >
+                                👥 가입자 통합 관리
+                            </a>
+                            <a
+                                href="/admin/payments"
+                                className="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-xs transition-colors"
+                            >
+                                💳 결제 내역
+                            </a>
+                            <a
+                                href="/admin/keys"
+                                className="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-xs transition-colors"
+                            >
+                                🔑 키 관리
+                            </a>
+                            <button
+                                onClick={fetchUsers}
+                                className="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-lg text-xs font-bold transition-colors"
+                            >
+                                새로고침
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -250,10 +270,8 @@ export default function AdminPage() {
                                                 onChange={(e) => setSelectedTiers(prev => ({ ...prev, [user.id]: e.target.value }))}
                                                 className={`flex-1 bg-black/50 border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 ${isPending ? 'border-yellow-500/50 ring-1 ring-yellow-500/20' : 'border-white/20'}`}
                                             >
-                                                <option value="">이용권 선택 (변경/연장)</option>
-                                                <option value="TRIAL_30M">💎 맛보기 (30분) - 3,900원</option>
-                                                <option value="PASS_24H">⚡ 데이 패스 (24시간) - 9,900원</option>
-                                                <option value="VIP_7D">👑 VIP (7일) - 49,000원</option>
+                                                <option value="">이용권 선택 (충전/연장)</option>
+                                                <option value="CHAT_3">⚡ 890원 수다 3회 즉시 충전 (890원)</option>
                                             </select>
                                             <button
                                                 onClick={() => selectedTier && approveUser(user.id, selectedTier)}
