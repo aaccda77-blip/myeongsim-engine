@@ -1127,8 +1127,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>💎</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#c084fc', fontWeight: 'bold' }}>마스터 코어</div>
-                        <div style={styles.neuroTrigger}>내면치유 5대 솔루션</div>
+                        <div style={{ ...styles.iconLabel, color: '#c084fc', fontWeight: 'bold' }}>내면치유 코어</div>
+                        <div style={styles.neuroTrigger}>5대 내면치유 솔루션</div>
                     </div>
                 </button>
 
@@ -1185,8 +1185,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>💡</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>나의 본재(本財) 자각</div>
-                        <div style={styles.neuroTrigger}>본빛 기질 정밀 해독</div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>본재(本財) 해독</div>
+                        <div style={styles.neuroTrigger}>나의 본빛 기질 자각</div>
                     </div>
                 </button>
 
@@ -1215,7 +1215,7 @@ export default function DrillDownIconMenu({
                     </div>
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>천명 지도</div>
-                        <div style={styles.neuroTrigger}>천명 지도 분석</div>
+                        <div style={styles.neuroTrigger}>삶의 궤적과 운명 분석</div>
                     </div>
                 </button>
 
@@ -1273,7 +1273,7 @@ export default function DrillDownIconMenu({
                     </div>
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>격국 연금술</div>
-                        <div style={styles.neuroTrigger}>정격·종격 순응과 균형</div>
+                        <div style={styles.neuroTrigger}>삶의 격(格)과 에너지 균형</div>
                     </div>
                 </button>
 
@@ -1301,8 +1301,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>⚡</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#ef4444' }}>다크디코딩</div>
-                        <div style={styles.neuroTrigger}>부정 감정의 원석화 연성</div>
+                        <div style={{ ...styles.iconLabel, color: '#ef4444' }}>다크 디코딩</div>
+                        <div style={styles.neuroTrigger}>부정 감정의 에너지 전환</div>
                     </div>
                 </button>
 
@@ -1330,8 +1330,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>💻</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#34d399' }}>다크코드 디버거</div>
-                        <div style={styles.neuroTrigger}>의식 오류 실시간 재배선</div>
+                        <div style={{ ...styles.iconLabel, color: '#34d399' }}>마인드 디버거</div>
+                        <div style={styles.neuroTrigger}>의식 오류 및 시간 재배선</div>
                     </div>
                 </button>
 
@@ -1353,8 +1353,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>🔬</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>사회적기여</div>
-                        <div style={styles.neuroTrigger}>통합 코칭 리포트</div>
+                        <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>마스터 리포트</div>
+                        <div style={styles.neuroTrigger}>통합 심층 코칭 리포트</div>
                     </div>
                 </button>
 
@@ -1382,8 +1382,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>🪞</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#c084fc' }}>거울의방</div>
-                        <div style={styles.neuroTrigger}>참나 자각 & 객체 해체</div>
+                        <div style={{ ...styles.iconLabel, color: '#c084fc' }}>거울의 방</div>
+                        <div style={styles.neuroTrigger}>참나 자각과 의식 탐구</div>
                     </div>
                 </button>
 
@@ -1411,8 +1411,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>👁️</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6' }}>거울 뒤로 한 걸음</div>
-                        <div style={styles.neuroTrigger}>안팎 조망 & 주객 해제</div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6' }}>경계 너머</div>
+                        <div style={styles.neuroTrigger}>안팎 조망과 주객 해체</div>
                     </div>
                 </button>
 
@@ -1432,8 +1432,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>🔮</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>명심마스터코어</div>
-                        <div style={styles.neuroTrigger}>4대 핵심 기질</div>
+                        <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>4대 기질 코어</div>
+                        <div style={styles.neuroTrigger}>명심 4대 핵심 기질</div>
                     </div>
                 </button>
 

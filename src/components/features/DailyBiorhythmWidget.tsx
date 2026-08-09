@@ -82,9 +82,9 @@ export const DailyBiorhythmWidget = ({ dayMaster }: { dayMaster: string }) => {
                         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-4 h-1.5 bg-gray-600 rounded-t-sm" />
                     </div>
                     <div>
-                        <div className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Today's Energy</div>
+                        <div className="text-amber-300/90 text-xs font-bold uppercase tracking-wider">일진 기운 강도 (Energy)</div>
                         <div className="text-3xl font-black text-white flex items-baseline gap-1">
-                            {data.energyScore}<span className="text-sm font-normal text-gray-400">%</span>
+                            {data.energyScore}<span className="text-sm font-normal text-amber-400/80">점</span>
                         </div>
                     </div>
                 </div>

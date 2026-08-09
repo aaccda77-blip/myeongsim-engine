@@ -25,7 +25,6 @@ export default function MyeongsimDocentAvatar({
 }: MyeongsimDocentAvatarProps) {
     const normalizedOhaeng = (ohaeng?.toLowerCase() || 'wood') as OhaengType;
 
-    // 장인 손끝 디자인의 5대 동화 캐릭터 컨셉
     const avatarSpecs: Record<OhaengType, {
         name: string;
         title: string;
@@ -37,9 +36,9 @@ export default function MyeongsimDocentAvatar({
         bgSvg: React.ReactNode;
     }> = {
         wood: {
-            name: "숲의 파수꾼 '솔아'",
-            title: "영원한 생명력을 품은 서정의 수호자",
-            quote: "모든 시련은 당신이라는 유일한 나무가 깊게 뿌리내리는 과정입니다.",
+            name: "솔아 아키텍트",
+            title: "내면 의식과 행동 패턴을 분석하는 마인드 아키텍트",
+            quote: "모든 시련은 당신이라는 유일한 시스템이 단단히 뿌리내리는 과정입니다.",
             gradient: "from-[#0F382C] via-[#1B5E4B] to-[#0A261D]",
             borderColor: "border-emerald-400/40",
             glowColor: "rgba(52, 211, 153, 0.35)",
@@ -58,9 +57,9 @@ export default function MyeongsimDocentAvatar({
             )
         },
         fire: {
-            name: "태양의 등불 '아란'",
-            title: "따뜻한 온기로 영혼을 감싸는 빛의 파수꾼",
-            quote: "당신의 가슴속 붉은 온도는 세상을 가장 아름답게 밝히는 등불입니다.",
+            name: "아란 코치",
+            title: "마인드 아키텍처 & 몰입 조율 디렉터",
+            quote: "당신의 가슴속 에너지는 행동 패턴을 가장 아름답게 밝히는 동력입니다.",
             gradient: "from-[#4A151B] via-[#7F1D1D] to-[#2A080C]",
             borderColor: "border-rose-400/40",
             glowColor: "rgba(251, 113, 133, 0.35)",
@@ -79,9 +78,9 @@ export default function MyeongsimDocentAvatar({
             )
         },
         earth: {
-            name: "대지의 오아시스 '다온'",
-            title: "모든 불안을 안아주는 황금 오아시스",
-            quote: "흔들려도 괜찮습니다. 대지는 언제나 당신의 발밑을 단단히 지켜주고 있으니까요.",
+            name: "다온 멘토",
+            title: "의식 패턴 및 회복탄력성 정밀 분석가",
+            quote: "흔들려도 괜찮습니다. 내면의 오아시스는 당신의 발밑을 단단히 지켜줍니다.",
             gradient: "from-[#3B260F] via-[#784617] to-[#1F1206]",
             borderColor: "border-amber-400/40",
             glowColor: "rgba(251, 191, 36, 0.35)",
@@ -99,8 +98,8 @@ export default function MyeongsimDocentAvatar({
             )
         },
         metal: {
-            name: "달빛 나침반 '은율'",
-            title: "선명한 통찰과 결단을 벼리는 달빛 아키텍트",
+            name: "은율 마스터",
+            title: "선명한 통찰과 결단을 벼리는 마인드 아키텍트",
             quote: "가장 맑은 거울은 깊은 고요 속에서 자신의 참모습을 비추어냅니다.",
             gradient: "from-[#1A2332] via-[#2D3A4F] to-[#0D131D]",
             borderColor: "border-cyan-300/40",
@@ -120,9 +119,9 @@ export default function MyeongsimDocentAvatar({
             )
         },
         water: {
-            name: "깊은 심해의 항해자 '모람'",
-            title: "지혜의 깊은 호수를 항해하는 유연한 영혼",
-            quote: "바다는 어떠한 그릇에도 자신을 담을 수 있는 세상에서 가장 유연한 지혜를 가졌습니다.",
+            name: "모람 디렉터",
+            title: "메타인지 & 지혜 탐구 코칭 디렉터",
+            quote: "바다는 어떠한 그릇에도 자신을 담을 수 있는 유연한 지혜의 자산입니다.",
             gradient: "from-[#0F1B38] via-[#1E3A8A] to-[#070D1E]",
             borderColor: "border-indigo-400/40",
             glowColor: "rgba(129, 140, 248, 0.35)",
