@@ -278,7 +278,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         </div>
                     )}
                     {isChatOpen && (
-                        <div className="absolute inset-0 z-[55] pt-14 pb-16 bg-deep-slate/95 backdrop-blur-sm">
+                        <div className="fixed inset-0 z-[55] pt-12 pb-2 sm:pb-3 bg-deep-slate/95 backdrop-blur-sm flex flex-col overflow-hidden">
                             <ChatInterface
                                 key={demoStage}
                                 onClose={() => {

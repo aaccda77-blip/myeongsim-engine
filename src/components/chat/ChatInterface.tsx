@@ -1482,7 +1482,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     };
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-deep-slate border-l border-white/5 relative z-50">
+        <div className="flex flex-col h-full max-h-full bg-deep-slate border-l border-white/5 relative z-50 overflow-hidden">
             {/* [Module] Phone Auth Modal */}
             <PhoneAuthModal
                 isOpen={isAuthModalOpen}
