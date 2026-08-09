@@ -6,6 +6,7 @@ import { Send, User, Sparkles, Zap, Shield, BrainCircuit, Crown, MessageCircleHe
 import { motion } from 'framer-motion';
 import { useReportStore } from '@/store/useReportStore';
 import Footer from '@/components/Footer';
+import CompanyInfoModal from '../modals/CompanyInfoModal';
 
 const PSYCH_PROTOCOLS = [
     { code: 'MBCT', name: '마음챙김 인지치료', desc: 'Mindfulness-Based Cognitive Therapy: 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point)', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/50' },
@@ -49,6 +50,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [isBgmPlaying, setIsBgmPlaying] = useState<boolean>(false);
     const [reactions, setReactions] = useState<Record<string, string>>({});
     const [showCardModal, setShowCardModal] = useState<boolean>(false);
+    const [showCompanyModal, setShowCompanyModal] = useState<boolean>(false);
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioCtxRef = useRef<AudioContext | null>(null);
@@ -786,10 +788,26 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 </div>
             </form>
 
-            {/* ── 회사 정보 및 고객센터 푸터 (입력창 하단) ── */}
-            <div className="p-3 bg-[#040714] border-t border-white/5 shrink-0">
-                <Footer />
+            {/* ── 회사 정보 및 고객센터 (1줄 스림 디자인) ── */}
+            <div className="py-2 bg-[#040714] border-t border-white/5 shrink-0 flex items-center justify-center gap-2 text-[10px] text-gray-500 font-medium">
+                <button
+                    type="button"
+                    onClick={() => setShowCompanyModal(true)}
+                    className="hover:text-gray-300 transition-colors underline cursor-pointer flex items-center gap-1"
+                >
+                    🏢 (주)마인드플로우랩 사업자 정보 및 고객센터
+                </button>
+                <span>|</span>
+                <a href="/terms" className="hover:text-gray-300 transition-colors cursor-pointer">이용약관</a>
+                <span>|</span>
+                <a href="/privacy" className="hover:text-gray-300 transition-colors font-bold cursor-pointer">개인정보처리방침</a>
             </div>
+
+            {/* 회사 정보 팝업 모달 */}
+            <CompanyInfoModal 
+                isOpen={showCompanyModal} 
+                onClose={() => setShowCompanyModal(false)} 
+            />
 
             {/* ── 6. 3세대 임상심리학 8대 과학적 도구 상세 모달 ── */}
             {selectedProtocol && (

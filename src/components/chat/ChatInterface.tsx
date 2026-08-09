@@ -74,6 +74,7 @@ import ChunkedAssistantMessage from './ChunkedAssistantMessage';
 import MyeongsimDocentAvatar from './MyeongsimDocentAvatar';
 import MicroChatPassModal from '../modals/MicroChatPassModal';
 import Footer from '@/components/Footer';
+import CompanyInfoModal from '../modals/CompanyInfoModal';
 
 // [NEW] 데일리 바이오-사주 동기화 패널 (독립 모듈 - 기존 시스템 영향 0%)
 import dynamic from 'next/dynamic';
@@ -229,6 +230,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showCompanyModal, setShowCompanyModal] = useState(false);
 
     // [New] Auto-Start Intent Logic (Updated for Natural Language Prompts)
     const hasStartedRef = useRef(false);
@@ -3109,10 +3111,26 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             정확한 진단과 치료는 반드시 전문의와 상담하십시오.
                         </p>
 
-                        {/* [Footer] 회사소개 및 고객센터 정보 (대화를 시작해보세요 입력창 하단) */}
-                        <div className="w-full mt-6 pt-4 border-t border-white/5">
-                            <Footer />
+                        {/* [Footer Link] 사업자 정보 & 고객센터 팝업 모달 링크 (1줄 스림 디자인) */}
+                        <div className="flex items-center justify-center gap-2 mt-2.5 pt-1 text-[10px] text-gray-500 font-medium">
+                            <button
+                                type="button"
+                                onClick={() => setShowCompanyModal(true)}
+                                className="hover:text-gray-300 transition-colors underline cursor-pointer flex items-center gap-1"
+                            >
+                                🏢 (주)마인드플로우랩 사업자 정보 및 고객센터
+                            </button>
+                            <span>|</span>
+                            <a href="/terms" className="hover:text-gray-300 transition-colors cursor-pointer">이용약관</a>
+                            <span>|</span>
+                            <a href="/privacy" className="hover:text-gray-300 transition-colors font-bold cursor-pointer">개인정보처리방침</a>
                         </div>
+
+                        {/* 사업자 정보 팝업 모달 */}
+                        <CompanyInfoModal 
+                            isOpen={showCompanyModal} 
+                            onClose={() => setShowCompanyModal(false)} 
+                        />
                     </div>
                 )
             }
