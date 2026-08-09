@@ -2517,11 +2517,6 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 )}
                 {/* [Auto-scroll] Invisible div at the end of messages */}
                 <div ref={messagesEndRef} />
-                
-                {/* [Footer] Company Info & Support */}
-                <div className="w-full max-w-[95%] md:max-w-[85%] mx-auto py-6">
-                    <Footer />
-                </div>
             </div>
 
 
@@ -3113,6 +3108,11 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             본 서비스는 의학적 진단이 아니며, 건강 증진을 위한 가이드입니다. <br />
                             정확한 진단과 치료는 반드시 전문의와 상담하십시오.
                         </p>
+
+                        {/* [Footer] 회사소개 및 고객센터 정보 (대화를 시작해보세요 입력창 하단) */}
+                        <div className="w-full mt-6 pt-4 border-t border-white/5">
+                            <Footer />
+                        </div>
                     </div>
                 )
             }

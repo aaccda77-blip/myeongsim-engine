@@ -786,6 +786,11 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 </div>
             </form>
 
+            {/* ── 회사 정보 및 고객센터 푸터 (입력창 하단) ── */}
+            <div className="p-3 bg-[#040714] border-t border-white/5 shrink-0">
+                <Footer />
+            </div>
+
             {/* ── 6. 3세대 임상심리학 8대 과학적 도구 상세 모달 ── */}
             {selectedProtocol && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center p-4" onClick={() => setSelectedProtocol(null)}>
