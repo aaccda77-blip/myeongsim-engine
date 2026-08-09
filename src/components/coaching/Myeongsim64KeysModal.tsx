@@ -592,8 +592,8 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
       wealthTitle = '💰 재정적 내실화와 자본 재구조화의 기류';
       wealthTxt = `${currMeta.lowWealth} 2028년은 무리한 투자를 지양하고, 문서화된 자산과 시스템 내실에 집중하는 보수적 자금 운용이 유리합니다.`;
     } else if (wealthScore < 75) {
-      wealthTitle = '💰 안정적 자산 관리와 내실 강화의 기류';
-      wealthTxt = `온화한 기운 흐름 속에서 재정적 자립도가 점진적이고 윤택한 우상향 흐름을 타기 시작하는 안정기입니다. 무리한 확장보다는 나만의 견고한 경제적 안전 기틀이 훌륭하게 축적되어 갑니다.`;
+      wealthTitle = '💰 명예와 자산 가치가 함께 구축되는 내실 축적기';
+      wealthTxt = `단기적인 현금 확장보다는, 쌓아 올린 사업적 신뢰와 브랜드 가치가 재정적 안정으로 환원되는 시기(재생관 財生官)입니다. 무리한 투기보다는 나만의 견고한 경제적 안전 기틀과 시스템 자산(특허/인허가/자격)을 확립하기에 최적의 해입니다.`;
     } else {
       wealthTitle = '💰 재정적 확장과 번영의 결실기';
       wealthTxt = `마침내 풍성한 결실이 벌판을 가득 채우고, 오랜 노력을 통해 쌓인 지혜가 거대한 재정적 성과로 열매를 맺는 추수의 대풍년기입니다. ${currMeta.desc} 본연의 기운이 세상과 맞물리며 선순환을 이룹니다.`;
@@ -625,8 +625,8 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
       workTitle = '💼 천명 비즈니스의 탐색과 역량 숙련기';
       workTxt = `수많은 시행착오를 보물 상자로 삼아, 내게 진짜 맞물리는 천명 비즈니스의 아키타입이 무엇인지 정교하고 유연하게 베타 테스트해 가는 실험과 숙련의 계절입니다.`;
     } else {
-      workTitle = '💼 비전의 성취와 사회적 영향력 확장기';
-      workTxt = `당신이 일생을 거쳐 벼려 온 본질적인 솔루션과 가치 철학이 대중과 사회의 요구와 맞물리며, 큰 사회적 평판과 기적적인 도약을 선물 받는 축복의 절정기입니다.`;
+      workTitle = '💼 공식적 승인과 브랜드 가치 극대화의 황금기';
+      workTxt = `일간과 정관이 합을 이루며 사회적 권위, 자격, 명예가 크게 상승하는 해입니다. 준비해 온 프로젝트나 시스템(특허/사업체 자격)이 공식적인 인정을 받으며, 강력한 사업적 간판과 영향력을 확보하게 됩니다.`;
     }
 
     return { 
@@ -2726,37 +2726,56 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                         </div>
                       </div>
 
-                      {/* 2. 오행 비유법 해설 목록 */}
+                      {/* 2. 오행 비유법 해설 목록 (점수 높은 순서로 정렬 & 최고점 하이라이트) */}
                       <div className="space-y-3.5 text-[9px] leading-relaxed">
-                        {/* 재물 상세 */}
-                        <div className="bg-[#120b05]/95 border border-amber-500/20 p-3.5 rounded-2xl space-y-1.5">
-                          <span className="text-amber-400 font-extrabold flex items-center gap-1">
-                            {analyses.wealthTitle}
-                          </span>
-                          <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
-                            {analyses.wealthTxt}
-                          </p>
-                        </div>
-
-                        {/* 연애 상세 */}
-                        <div className="bg-[#160610]/95 border border-pink-500/20 p-3.5 rounded-2xl space-y-1.5">
-                          <span className="text-pink-400 font-extrabold flex items-center gap-1">
-                            {analyses.loveTitle}
-                          </span>
-                          <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
-                            {analyses.loveTxt}
-                          </p>
-                        </div>
-
-                        {/* 사업 상세 */}
-                        <div className="bg-[#060c16]/95 border border-sky-500/20 p-3.5 rounded-2xl space-y-1.5">
-                          <span className="text-sky-400 font-extrabold flex items-center gap-1">
-                            {analyses.workTitle}
-                          </span>
-                          <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
-                            {analyses.workTxt}
-                          </p>
-                        </div>
+                        {[
+                          {
+                            key: 'work',
+                            score: activeInfo.work,
+                            title: analyses.workTitle,
+                            txt: analyses.workTxt,
+                            bg: 'bg-[#060c16]/95',
+                            border: 'border-sky-500/30',
+                            textCol: 'text-sky-400',
+                            label: '사업·직업 주파수'
+                          },
+                          {
+                            key: 'love',
+                            score: activeInfo.love,
+                            title: analyses.loveTitle,
+                            txt: analyses.loveTxt,
+                            bg: 'bg-[#160610]/95',
+                            border: 'border-pink-500/30',
+                            textCol: 'text-pink-400',
+                            label: '연애·인연 주파수'
+                          },
+                          {
+                            key: 'wealth',
+                            score: activeInfo.wealth,
+                            title: analyses.wealthTitle,
+                            txt: analyses.wealthTxt,
+                            bg: 'bg-[#120b05]/95',
+                            border: 'border-amber-500/30',
+                            textCol: 'text-amber-400',
+                            label: '재물 주파수'
+                          }
+                        ]
+                          .sort((a, b) => b.score - a.score)
+                          .map((item, idx) => (
+                            <div key={item.key} className={`${item.bg} border ${item.border} p-3.5 rounded-2xl space-y-1.5 relative overflow-hidden shadow-lg`}>
+                              {idx === 0 && (
+                                <div className="inline-flex items-center gap-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full text-[8.5px] font-black mb-1">
+                                  ⭐ {selectedYear}년 핵심 하이라이트 ({item.score}점)
+                                </div>
+                              )}
+                              <span className={`${item.textCol} font-extrabold flex items-center gap-1`}>
+                                {item.title} ({item.score}점)
+                              </span>
+                              <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
+                                {item.txt}
+                              </p>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   );
