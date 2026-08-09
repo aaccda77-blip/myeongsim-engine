@@ -2536,7 +2536,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
             {/* [Neural Flow Input] Dynamic Inline Input */}
             {
                 !isLoading && (
-                    <div className="p-2 sm:p-3 pb-3 animate-fade-in-up max-w-[95%] md:max-w-[85%] mx-auto w-full shrink-0">
+                    <div className="p-2 sm:p-3 pb-1 animate-fade-in-up max-w-[95%] md:max-w-[85%] mx-auto w-full shrink-0">
 
                         {/* [NEW] Quick Suggestion Chips (질문 가이드) */}
                         <div className="flex gap-2 overflow-x-auto pb-2 mb-2 px-1 scrollbar-hide">
@@ -3135,9 +3135,6 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 </button>
                             </div>
                         </form>
-                        <p className="text-center text-gray-500 text-[9px] mt-1 leading-tight opacity-60">
-                            본 서비스는 의학적 진단이 아닌 가이드입니다. 정확한 진단은 전문의와 상담하십시오.
-                        </p>
 
                         {/* 사업자 정보 팝업 모달 */}
                         <CompanyInfoModal 
