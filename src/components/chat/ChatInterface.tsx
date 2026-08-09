@@ -2561,6 +2561,15 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 )}
                             </button>
 
+                            {/* [Company Info] Button in chips bar */}
+                            <button
+                                type="button"
+                                onClick={() => setShowCompanyModal(true)}
+                                className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all border bg-slate-800/90 border-amber-400/40 text-amber-300 hover:bg-slate-700 cursor-pointer shadow-sm"
+                            >
+                                <span>🏢 사업자 정보</span>
+                            </button>
+
                             {[
                                 { key: 'fortune', icon: '🌞' },
                                 { key: 'wealth', icon: '💰' },
@@ -3072,14 +3081,6 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
                             >
                                 <span>⚡ 890원에 3회 즉시 충전</span>
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => setShowCompanyModal(true)}
-                                className="px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 bg-white/10 hover:bg-white/20 text-gray-200 border border-white/20"
-                            >
-                                <span>🏢 사업자 정보</span>
                             </button>
                         </div>
 
