@@ -672,7 +672,7 @@ export default function DailyBioSyncPanel() {
     { id: 'patch',    label: '3S 패치',        emoji: '💉' },
     { id: 'deepscan', label: '딥 스캔 (경고)', emoji: '🚨' },
     { id: 'mindreset',label: '마음 리셋',      emoji: '✨' },
-    { id: 'livesync', label: 'Live Sync [PRO]',emoji: '📡' },
+    { id: 'livesync', label: 'Live Sync [PRO] (서비스 준비중)', emoji: '📡' },
   ];
 
 
