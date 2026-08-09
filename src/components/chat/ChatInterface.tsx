@@ -2519,6 +2519,17 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 )}
                 {/* [Auto-scroll] Invisible div at the end of messages */}
                 <div ref={messagesEndRef} />
+
+                {/* [Company Info Link] Inside Scrollable Message Stream */}
+                <div className="pt-6 pb-2 text-center">
+                    <button
+                        type="button"
+                        onClick={() => setShowCompanyModal(true)}
+                        className="text-[11px] text-gray-400 hover:text-amber-300 transition-colors underline font-medium cursor-pointer"
+                    >
+                        🏢 (주)마인드플로우랩 사업자 정보 및 고객센터
+                    </button>
+                </div>
             </div>
 
 
@@ -3061,6 +3072,14 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
                             >
                                 <span>⚡ 890원에 3회 즉시 충전</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowCompanyModal(true)}
+                                className="px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 bg-white/10 hover:bg-white/20 text-gray-200 border border-white/20"
+                            >
+                                <span>🏢 사업자 정보</span>
                             </button>
                         </div>
 
