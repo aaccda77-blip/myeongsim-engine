@@ -81,7 +81,7 @@ export const MicroPassModal: React.FC<MicroPassModalProps> = ({
                             <div>
                                 <h3 className="text-xl font-black tracking-tight text-white leading-tight">
                                     오늘의 우주 오행<br />
-                                    <span className="text-amber-400">890원 핀포인트 처방전</span> ⚡
+                                    <span className="text-amber-400">890원 핀포인트 솔루션</span> ⚡
                                 </h3>
                                 <p className="text-xs text-gray-400 mt-1 leading-relaxed">
                                     부담 없는 커피 한 잔 값 미만! 오늘 나를 돕는 오행 귀인 기운과 핵심 코드 1개를 3초 만에 해독하세요.
@@ -93,7 +93,7 @@ export const MicroPassModal: React.FC<MicroPassModalProps> = ({
                                 <div className="flex items-center gap-2 text-xs">
                                     <Compass className="w-4 h-4 text-amber-400 shrink-0" />
                                     <div>
-                                        <span className="font-bold text-gray-200 block">오늘의 귀인 오행 처방</span>
+                                        <span className="font-bold text-gray-200 block">오늘의 귀인 오행 솔루션</span>
                                         <span className="text-[10px] text-gray-400">행운의 오행 컬러 / 행운의 방위 / 귀인 시간대</span>
                                     </div>
                                 </div>
@@ -161,9 +161,9 @@ export const MicroPassModal: React.FC<MicroPassModalProps> = ({
                                 <span className="text-[10px] text-gray-400 font-mono">ID: MP-890-SAFE</span>
                             </div>
 
-                            {/* 1. 오늘의 오행 처방 */}
+                            {/* 1. 오늘의 오행 솔루션 */}
                             <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3.5 space-y-2">
-                                <span className="text-[10px] font-extrabold text-amber-300 block">⚡ 오늘의 귀인 오행 처방</span>
+                                <span className="text-[10px] font-extrabold text-amber-300 block">⚡ 오늘의 귀인 오행 솔루션</span>
                                 <div className="space-y-1 text-xs">
                                     <div className="flex justify-between">
                                         <span className="text-gray-400">본질 오행:</span>
@@ -187,12 +187,12 @@ export const MicroPassModal: React.FC<MicroPassModalProps> = ({
                                 </p>
                             </div>
 
-                            {/* 2. 890원 핀포인트 처방전 완충 완료 메세지 */}
+                            {/* 2. 890원 핀포인트 솔루션 완충 완료 메세지 */}
                             <div className="bg-gradient-to-r from-slate-900 via-indigo-950/90 to-slate-900 border border-amber-500/40 rounded-2xl p-4 space-y-2.5 relative overflow-hidden shadow-[0_0_25px_rgba(245,158,11,0.2)]">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-black text-amber-300 flex items-center gap-1">
                                         <Sparkles size={14} className="text-amber-400 animate-pulse" />
-                                        ✨ 890원 핀포인트 처방전 해독 완료!
+                                        ✨ 890원 핀포인트 솔루션 해독 완료!
                                     </span>
                                     <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-bold text-[10px]">
                                         ✓ 결제 완료

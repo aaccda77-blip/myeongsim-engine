@@ -63,7 +63,7 @@ export default function PaybackBanner({ expiresAt, onUpgradeClick }: PaybackBann
           </div>
 
           <h3 className="text-sm sm:text-base font-black text-slate-100">
-            특허출원중 기념 <span className="text-amber-400">890원 핀포인트 처방전</span> 혜택 적용 중!
+            특허출원중 기념 <span className="text-amber-400">890원 핀포인트 솔루션</span> 혜택 적용 중!
           </h3>
           <p className="text-xs text-slate-300 mt-0.5">
             생년월일 사주 오행 연동 1:1 심층 AI 코칭 (<span className="line-through text-gray-500">19,000원</span> → <strong className="text-amber-300 font-black">890원</strong>)
@@ -81,12 +81,12 @@ export default function PaybackBanner({ expiresAt, onUpgradeClick }: PaybackBann
             </span>
           </div>
 
-          {/* 처방 버튼 */}
+          {/* 솔루션 버튼 */}
           <button
             onClick={() => onUpgradeClick && onUpgradeClick()}
             className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs px-3.5 py-2 rounded-xl transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95 whitespace-nowrap cursor-pointer flex items-center gap-1"
           >
-            <span>890원 처방받기 ➔</span>
+            <span>890원 솔루션받기 ➔</span>
           </button>
         </div>
       </div>

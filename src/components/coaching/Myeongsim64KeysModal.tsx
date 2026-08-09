@@ -1101,7 +1101,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                 className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-[9.5px] sm:text-[10px] shadow-[0_0_15px_rgba(245,158,11,0.35)] transition-all active:scale-95 flex items-center gap-1 cursor-pointer whitespace-nowrap border border-amber-400/40"
               >
                 <Zap size={10} className="text-amber-300 animate-pulse fill-amber-300" />
-                <span>⚡ 890원 처방 ➔</span>
+                <span>⚡ 890원 솔루션 ➔</span>
               </button>
               <button
                 onClick={onClose}
@@ -1318,7 +1318,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                   onClick={() => setShowMicroPassModal(true)}
                                   className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 text-white font-black text-[9px] shadow transition-all active:scale-95 flex items-center gap-1 cursor-pointer border border-amber-300/40"
                                 >
-                                  <span>🔒 890원 처방 락 해제 ➔</span>
+                                  <span>🔒 890원 솔루션 락 해제 ➔</span>
                                 </button>
                               </div>
                             </div>

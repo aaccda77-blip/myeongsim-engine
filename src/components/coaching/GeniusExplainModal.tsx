@@ -331,7 +331,7 @@ export default function GeniusExplainModal({
                       }}
                       className="w-full py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/40 text-emerald-300 text-[12px] font-extrabold transition-all duration-200 active:scale-95 text-center flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
                     >
-                      <Zap size={14} className="text-emerald-400" /> 오늘의 890원 핀포인트 처방전 소장하기
+                      <Zap size={14} className="text-emerald-400" /> 오늘의 890원 핀포인트 솔루션 소장하기
                     </button>
                   </div>
                 )}

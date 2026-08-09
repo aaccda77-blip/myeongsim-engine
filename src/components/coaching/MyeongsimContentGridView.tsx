@@ -113,7 +113,7 @@ export default function MyeongsimContentGridView({
         {/* 2x2 서브 큐레이션 카드 그리드 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           
-          {/* Card 1: 890원 오행 상생 밸런스 처방전 */}
+          {/* Card 1: 890원 오행 상생 밸런스 솔루션 */}
           <motion.div
             whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}

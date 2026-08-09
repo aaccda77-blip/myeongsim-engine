@@ -478,7 +478,7 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                 className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-[10px] sm:text-xs shadow-[0_0_15px_rgba(245,158,11,0.35)] transition-all active:scale-95 flex items-center gap-1 cursor-pointer border border-amber-400/40"
               >
                 <Zap size={11} className="text-amber-300 animate-pulse fill-amber-300" />
-                <span>⚡ 890원 처방 ➔</span>
+                <span>⚡ 890원 솔루션 ➔</span>
               </button>
               <button
                 onClick={() => {
