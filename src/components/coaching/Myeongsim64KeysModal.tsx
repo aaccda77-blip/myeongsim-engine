@@ -538,59 +538,102 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
     }
   }, [data]);
 
-  // 선택 연도의 상세 운세 감동 해설을 동적 생성
+  // 선택 연도의 상세 운세 해설을 동적 생성 (명리적 정밀성 & 점수 분기 기반)
   const getYearDetailAnalyses = (yr: number, activeInfo: any) => {
-    if (!activeInfo) return { wealthTxt: '', loveTxt: '', workTxt: '' };
-    
-    const dayGan = data?.saju?.fourPillars?.day?.gan || '신';
-    const elementMap: Record<string, string> = { '갑': '목', '을': '목', '병': '화', '정': '화', '무': '토', '기': '토', '경': '금', '신': '금', '임': '수', '계': '수' };
-    const myElement = elementMap[dayGan] || '금';
-    
-    // 오행별 은유적 묘사
-    const elementMetaphor: Record<string, string> = {
-      '목': '🌳 푸른 숲을 향해 뻗어나가는 굳건한 한 그루의 소나무',
-      '화': '🔥 어두운 세상을 환히 밝히는 따뜻한 모닥불과 태양',
-      '토': '⛰️ 흔들림 없이 수많은 생명을 안아주는 웅장한 대지',
-      '금': '💎 오랜 압력을 이겨내고 스스로를 완성한 눈부신 다이아몬드',
-      '수': '🌊 좁은 골짜기를 지나 마침내 대해로 유연하게 흘러가는 생명수'
+    if (!activeInfo) return { 
+      wealthTitle: '💰 재정적 기류 분석', wealthTxt: '', 
+      loveTitle: '❤️ 관계와 인연의 기류', loveTxt: '', 
+      workTitle: '💼 사업과 비즈니스의 기류', workTxt: '' 
     };
     
-    const myMetaphor = elementMetaphor[myElement] || '💎 눈부신 원석';
+    const dayGan = data?.saju?.fourPillars?.day?.ganKor || data?.saju?.fourPillars?.day?.gan || '신';
+    const elementMap: Record<string, string> = { 
+      '갑': '목', '을': '목', '병': '화', '정': '화', '무': '토', '기': '토', '경': '금', '신': '금', '임': '수', '계': '수',
+      '甲': '목', '乙': '목', '丙': '화', '丁': '화', '戊': '토', '己': '토', '庚': '금', '辛': '금', '壬': '수', '癸': '수'
+    };
+    const myElement = elementMap[dayGan] || '금';
+    
+    // 오행별 명리적 정밀 은유 및 비유
+    const elementMetaphors: Record<string, { noun: string; desc: string; lowWealth: string }> = {
+      '목': {
+        noun: '🌳 푸른 나무(목)',
+        desc: '굳건히 뿌리를 내리는 한 그루 소나무',
+        lowWealth: '뿌리가 땅속 깊이 견고히 뻗어 나가듯, 무리한 자금 확장을 삼가고 내실 자본을 보호하는 축적기입니다. 당장은 현금 유동성이 잠기거나 수확이 더디더라도 자본의 소실을 막고 기틀을 다지는 시기입니다.'
+      },
+      '화': {
+        noun: '🔥 열정과 온기(화)',
+        desc: '주위를 환히 밝히는 모닥불과 태양',
+        lowWealth: '불꽃의 열기를 고요히 가다듬듯, 고위험 투자를 삼가고 현금 유동성과 안정적 재정을 우선시하는 정비기입니다. 내부 시스템을 점검하며 기틀을 다지는 내실의 계절입니다.'
+      },
+      '토': {
+        noun: '⛰️ 웅장한 대지(토)',
+        desc: '수많은 생명을 안아주는 든든한 토대',
+        lowWealth: '대지의 자양분을 차분히 비축하듯, 보수적인 자금 운용으로 자산 구조의 내실을 다지는 축적기입니다. 겉보기 확장보다 단단한 내실 형성이 중요한 시점입니다.'
+      },
+      '금': {
+        noun: '💎 단단한 원석과 결정을 이루는 금(金)',
+        desc: '단단하게 제련된 결정체(금)',
+        lowWealth: '단단한 원석(금)을 정제하듯, 외부 확장보다는 내부 자산 구조를 재정비하고 시스템을 구축하는 내실의 축적기입니다. 당장은 현금 유동성이 잠기거나 수확이 더디게 느껴질 수 있으나, 이는 더 큰 재정적 그릇을 만들기 위해 자본의 형태를 내실 있게 재배치하는 과정입니다.'
+      },
+      '수': {
+        noun: '🌊 유연한 생명수(수)',
+        desc: '대해로 유연하게 흘러가는 지혜의 물결',
+        lowWealth: '고요한 샘물처럼 세력을 비축하며 내부 리스크를 선제적으로 관리하는 정제기입니다. 자본 유출을 막고 보수적인 자산 보호에 집중하는 것이 유리합니다.'
+      }
+    };
+    
+    const currMeta = elementMetaphors[myElement] || elementMetaphors['금'];
 
-    // 재운(Wealth) 비유
+    // 1. 재운 (Wealth)
     const wealthScore = activeInfo.wealth;
+    let wealthTitle = '';
     let wealthTxt = '';
     if (wealthScore < 50) {
-      wealthTxt = `내 영혼의 기름진 대지(${myElement})에 비축해 둔 씨앗들이 겨울 눈보라를 견디며 땅속 깊이 묵묵히 뿌리를 밀어 넣는 소중한 적립의 철학적 겨울입니다. 당장은 수확이 눈에 띄지 않더라도, 이는 곧 다가올 거대한 재정적 번영의 그릇을 단단하게 넓히기 위해 내실의 창고를 비우고 재정비하는 고귀한 우주적 안식기입니다. 수치에 연연하기보다 흙 속에 조용히 숨 쉬는 생명력과 가능성을 응시해 주세요.`;
+      wealthTitle = '💰 재정적 내실화와 자본 재구조화의 기류';
+      wealthTxt = `${currMeta.lowWealth} 2028년은 무리한 투자를 지양하고, 문서화된 자산과 시스템 내실에 집중하는 보수적 자금 운용이 유리합니다.`;
     } else if (wealthScore < 75) {
-      wealthTxt = `따스한 봄비와 온화한 햇살이 메마른 영토 위에 부드럽게 스며들어, 당신이 인내로 가꾸어 온 주체적 성장의 싹이 대지 껍질을 뚫고 연록색 고유의 이파리를 힘차게 내미는 희망찬 자립의 계절입니다. 맑은 기운 흐름 속에서 재정적 자립도가 점진적이고 윤택한 우상향 흐름을 타기 시작하여, 흔들리지 않는 나만의 견고한 경제적 안전 기틀이 훌륭하게 축적되어 갑니다.`;
+      wealthTitle = '💰 안정적 자산 관리와 내실 강화의 기류';
+      wealthTxt = `온화한 기운 흐름 속에서 재정적 자립도가 점진적이고 윤택한 우상향 흐름을 타기 시작하는 안정기입니다. 무리한 확장보다는 나만의 견고한 경제적 안전 기틀이 훌륭하게 축적되어 갑니다.`;
     } else {
-      wealthTxt = `마침내 풍성하게 물결치는 황금빛 이삭들이 벌판을 가득 채우고, 오랜 훈련을 통해 쌓인 자각의 지혜가 거대한 재정적 번영과 결실로 환하게 폭발하는 눈부신 추수의 대풍년기입니다. ${myMetaphor} 본연의 맑은 창조성이 세상과 온전히 맞물리며, 억지로 소유하려 집착하지 않아도 필요한 풍요와 자원이 마르지 않는 영원의 샘물처럼 아름답게 순환하는 기적을 낳습니다.`;
+      wealthTitle = '💰 재정적 확장과 번영의 결실기';
+      wealthTxt = `마침내 풍성한 결실이 벌판을 가득 채우고, 오랜 노력을 통해 쌓인 지혜가 거대한 재정적 성과로 열매를 맺는 추수의 대풍년기입니다. ${currMeta.desc} 본연의 기운이 세상과 맞물리며 선순환을 이룹니다.`;
     }
 
-    // 연애/관계(Love) 비유
+    // 2. 연애/관계 (Love)
     const loveScore = activeInfo.love;
+    let loveTitle = '';
     let loveTxt = '';
     if (loveScore < 50) {
-      loveTxt = `외부 관계의 시끄러운 소음과 먼지를 후후 털어내고, 오직 나 자신의 참된 영혼을 비추는 맑고 외로운 고요의 호숫가를 응시하는 치유의 밤입니다. 겉보기에는 고독하고 외로운 동굴 같지만, 밖으로 흩어지던 애정 결핍의 시선을 내면으로 돌려 나 자신을 가장 극진하고 따뜻하게 안아주는 '참된 자비와 상생'의 기초 뼈대를 세우는 신비로운 영혼의 충전 기간입니다.`;
+      loveTitle = '❤️ 관계의 경계 설정과 성숙한 조율';
+      loveTxt = `주변 사람과의 관계에서 명확한 경계를 설정하고 진실된 소통을 이끌어내는 내면의 조율기입니다. 경쟁이나 지분·지출 문제로 인한 갈등을 줄이기 위해 계약과 역할 분담을 투명하게 정립할 때, 불필요한 에너지를 줄이고 성숙한 인연을 안전하게 지켜낼 수 있습니다.`;
     } else if (loveScore < 75) {
-      loveTxt = `맑은 유리거울 위에 서로의 진실을 투명하게 비추어 보듯, 에고의 불필요한 위선과 방어 경계를 허물고 상대방과 진실하고 성숙한 소통을 조율해 가는 다정하고 유연한 보정기입니다. 따뜻한 자각의 주파수가 활성화되어 주변 인맥들과 오해 없이 조화롭게 신뢰를 쌓아가는 든든한 상생의 평화 네트워크가 완성됩니다.`;
+      loveTitle = '❤️ 상호 신뢰와 유연한 관계 조율의 기류';
+      loveTxt = `에고의 불필요한 위선과 방어 경계를 허물고 상대방과 진실하고 성숙한 소통을 조율해 가는 보정기입니다. 따뜻한 자각의 주파수가 활성화되어 주변 인맥들과 오해 없이 조화롭게 신뢰를 쌓아가는 든든한 상생의 평화 네트워크가 완성됩니다.`;
     } else {
-      loveTxt = `억지로 마음을 갈구하거나 증명하지 않아도, 온전하게 빛나는 당신 고유의 아름다운 영혼 아우라에 공명하여 인생의 소중한 귀인과 평생을 함께할 영혼의 동반자가 붉은 꽃길을 밟듯 자연스럽게 당신의 마당으로 찾아오는 인연 만개의 황금기입니다. 조건 없는 순수한 참사랑과 가슴 따뜻한 영적 연대가 온 사방으로 황금빛 파동을 일으킵니다.`;
+      loveTitle = '❤️ 영혼의 동반자와 인연 만개의 황금기';
+      loveTxt = `억지로 마음을 갈구하거나 증명하지 않아도, 온전하게 빛나는 당신 고유의 아우라에 공명하여 인생의 소중한 귀인과 평생을 함께할 영혼의 동반자가 찾아오는 인연 만개의 황금기입니다.`;
     }
 
-    // 사업/일(Work) 비유
+    // 3. 사업/직업 (Work)
     const workScore = activeInfo.work;
+    let workTitle = '';
     let workTxt = '';
     if (workScore < 50) {
-      workTxt = `낡고 무거운 구조의 댐을 뚫고 지나가기 위해, 고요한 밤의 연구소처럼 나만의 독립적 비즈니스 설계도를 정밀하게 구상하고 조립해 가는 단단한 준비의 기초기입니다. 조급하게 열매를 탐하기보다는, 나다움을 훌륭하게 무기로 제련하기 위해 실력과 숙련도를 묵묵히 쌓으십시오. 이것은 곧 하늘을 뚫고 비상하기 전 활주로를 힘차게 달리는 축복의 시작점입니다.`;
+      workTitle = '💼 내부 시스템 재정비와 역량 축적의 기류';
+      workTxt = `조직이나 계약의 재편, 내부 시스템을 정교하게 고도화하는 재정비기입니다. 당장은 대외적 급격한 확장보다는 내부 프로세스 정비 및 실력 제련에 주력할 때, 향후 더 큰 성장과 비상의 단단한 발판이 마련됩니다.`;
     } else if (workScore < 75) {
-      workTxt = `수많은 시행착오라는 보물 상자를 밟고 가며, 내게 진짜 맞물리는 천명 비즈니스의 아키타입이 무엇인지 정교하고 유연하게 베타 테스트해 가는 실험과 숙련의 계절입니다. 겪는 모든 보정의 시행착오는 좌절이 아닌 최적의 정답 지점을 고정해 주는 소중한 길잡이가 되며, 이때 벼려진 내공이 거대한 상생 사업을 이끌어 줍니다.`;
+      workTitle = '💼 천명 비즈니스의 탐색과 역량 숙련기';
+      workTxt = `수많은 시행착오를 보물 상자로 삼아, 내게 진짜 맞물리는 천명 비즈니스의 아키타입이 무엇인지 정교하고 유연하게 베타 테스트해 가는 실험과 숙련의 계절입니다.`;
     } else {
-      workTxt = `당신이 일생을 거쳐 벼려 온 본질적인 솔루션과 가치 철학이 대중과 사회의 절실한 목마름과 조우하며, 큰 사회적 평판과 기적적인 비상의 도약을 선물 받는 축복의 절정기입니다. 억지 노동과 투쟁이 아닌, 존재 자체로 세상의 문제를 부드럽게 해결해 주는 문제 해결사의 리더로서 명예와 찬란한 번영이 세상에 널리 방사됩니다.`;
+      workTitle = '💼 비전의 성취와 사회적 영향력 확장기';
+      workTxt = `당신이 일생을 거쳐 벼려 온 본질적인 솔루션과 가치 철학이 대중과 사회의 요구와 맞물리며, 큰 사회적 평판과 기적적인 도약을 선물 받는 축복의 절정기입니다.`;
     }
 
-    return { wealthTxt, loveTxt, workTxt };
+    return { 
+      wealthTitle, wealthTxt, 
+      loveTitle, loveTxt, 
+      workTitle, workTxt 
+    };
   };
 
   // 타임라인 데이터 연동
@@ -2688,7 +2731,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                         {/* 재물 상세 */}
                         <div className="bg-[#120b05]/95 border border-amber-500/20 p-3.5 rounded-2xl space-y-1.5">
                           <span className="text-amber-400 font-extrabold flex items-center gap-1">
-                            💰 재정적 풍요와 상생의 기류
+                            {analyses.wealthTitle}
                           </span>
                           <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
                             {analyses.wealthTxt}
@@ -2698,7 +2741,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                         {/* 연애 상세 */}
                         <div className="bg-[#160610]/95 border border-pink-500/20 p-3.5 rounded-2xl space-y-1.5">
                           <span className="text-pink-400 font-extrabold flex items-center gap-1">
-                            ❤️ 관계와 우주적 인연의 등불
+                            {analyses.loveTitle}
                           </span>
                           <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
                             {analyses.loveTxt}
@@ -2708,7 +2751,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                         {/* 사업 상세 */}
                         <div className="bg-[#060c16]/95 border border-sky-500/20 p-3.5 rounded-2xl space-y-1.5">
                           <span className="text-sky-400 font-extrabold flex items-center gap-1">
-                            💼 천명 비즈니스와 영향력의 확장
+                            {analyses.workTitle}
                           </span>
                           <p className="text-gray-300 select-none break-keep leading-relaxed font-normal">
                             {analyses.workTxt}
