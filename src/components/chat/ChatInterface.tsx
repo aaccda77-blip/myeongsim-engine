@@ -2527,7 +2527,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                         onClick={() => setShowCompanyModal(true)}
                         className="text-[11px] text-gray-400 hover:text-amber-300 transition-colors underline font-medium cursor-pointer"
                     >
-                        🏢 (주)마인드플로우랩 사업자 정보 및 고객센터
+                        🏢 마인드플로우랩 사업자 정보 및 고객센터
                     </button>
                 </div>
             </div>

@@ -795,7 +795,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     onClick={() => setShowCompanyModal(true)}
                     className="hover:text-gray-300 transition-colors underline cursor-pointer flex items-center gap-1"
                 >
-                    🏢 (주)마인드플로우랩 사업자 정보 및 고객센터
+                    🏢 마인드플로우랩 사업자 정보 및 고객센터
                 </button>
                 <span>|</span>
                 <a href="/terms" className="hover:text-gray-300 transition-colors cursor-pointer">이용약관</a>
