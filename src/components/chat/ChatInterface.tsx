@@ -3059,7 +3059,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                         )}
 
                         {/* [NEW] 890원 수다 소액 충전 & 남은 횟수 뱃지 */}
-                        <div className="flex items-center justify-between mb-2 px-1 relative z-20 gap-2">
+                        <div className="flex items-center justify-between mb-2 px-1 relative z-20 gap-1.5">
                             <div className="flex items-center gap-1.5 min-w-0">
                                 <span className="text-[11px] font-medium text-gray-300 flex items-center gap-1 shrink-0">
                                     💬 핀포인트 수다
@@ -3075,13 +3075,22 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 )}
                             </div>
 
-                            <button
-                                type="button"
-                                onClick={() => setShowMicroPassModal(true)}
-                                className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
-                            >
-                                <span>⚡ 890원에 3회 즉시 충전</span>
-                            </button>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowMicroPassModal(true)}
+                                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
+                                >
+                                    <span>⚡ 890원 충전</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCompanyModal(true)}
+                                    className="px-2 py-1 rounded-full text-[10px] font-medium transition-all cursor-pointer shrink-0 bg-white/5 hover:bg-white/15 text-gray-400 hover:text-amber-300 border border-white/10"
+                                >
+                                    🏢
+                                </button>
+                            </div>
                         </div>
 
                         {/* Ghost Bubble Input */}
@@ -3126,26 +3135,9 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 </button>
                             </div>
                         </form>
-                        <div className="mt-1.5 text-center space-y-1">
-                            <p className="text-gray-500 text-[10px] leading-tight opacity-75">
-                                본 서비스는 의학적 진단이 아니며, 건강 증진을 위한 가이드입니다. 정확한 진단과 치료는 반드시 전문의와 상담하십시오.
-                            </p>
-
-                            {/* [Footer Link] 사업자 정보 & 고객센터 팝업 모달 링크 */}
-                            <div className="flex items-center justify-center gap-2 text-[10px] text-gray-400 font-medium pt-0.5">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowCompanyModal(true)}
-                                    className="text-amber-300/90 hover:text-amber-200 transition-colors underline cursor-pointer flex items-center gap-1 font-semibold"
-                                >
-                                    🏢 (주)마인드플로우랩 사업자 정보 및 고객센터
-                                </button>
-                                <span>|</span>
-                                <a href="/terms" className="hover:text-gray-200 transition-colors cursor-pointer">이용약관</a>
-                                <span>|</span>
-                                <a href="/privacy" className="hover:text-gray-200 transition-colors font-bold cursor-pointer">개인정보처리방침</a>
-                            </div>
-                        </div>
+                        <p className="text-center text-gray-500 text-[9px] mt-1 leading-tight opacity-60">
+                            본 서비스는 의학적 진단이 아닌 가이드입니다. 정확한 진단은 전문의와 상담하십시오.
+                        </p>
 
                         {/* 사업자 정보 팝업 모달 */}
                         <CompanyInfoModal 
