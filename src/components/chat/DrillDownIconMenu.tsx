@@ -1077,7 +1077,7 @@ export default function DrillDownIconMenu({
                     <button
                         key={tab.id}
                         onClick={() => setActiveCategoryTab(tab.id as any)}
-                        className={`px-3 py-1 rounded-xl whitespace-nowrap transition-all flex items-center gap-1 border ${
+                        className={`px-3 py-1 rounded-xl whitespace-nowrap transition-all flex items-center gap-1 border cursor-pointer ${
                             activeCategoryTab === tab.id
                                 ? 'bg-amber-400/20 text-amber-300 border-amber-400/50 shadow-[0_0_12px_rgba(251,191,36,0.25)] scale-105 font-extrabold'
                                 : 'bg-slate-900/60 text-gray-400 border-white/10 hover:text-white hover:bg-white/5 font-medium'
@@ -1118,14 +1118,12 @@ export default function DrillDownIconMenu({
                 >
                     <div style={{
                         ...styles.iconWrapper,
-                        // Special Gold Styling for Report
                         background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(180, 83, 9, 0.2))',
                         border: '1px solid rgba(251, 191, 36, 0.3)',
                         boxShadow: '0 4px 15px rgba(251, 191, 36, 0.2)',
                         position: 'relative',
                         zIndex: 10
                     }}>
-                        {/* Clipboard Icon */}
                         <span style={{ fontSize: '20px' }}>📋</span>
                     </div>
                     <div>
@@ -1134,607 +1132,374 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 명심 마스터 코어 메뉴 (나의 리포트 옆 위치) */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
-                        window.location.href = '/master-core';
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.2))',
-                        border: '1px solid rgba(168, 85, 247, 0.4)',
-                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.25)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>💎</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#c084fc', fontWeight: 'bold' }}>내면치유 코어</div>
-                        <div style={styles.neuroTrigger}>5대 내면치유 솔루션</div>
-                    </div>
-                </button>
+                {/* [NEW] 명심 마스터 코어 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => { window.location.href = '/master-core'; }}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.2))', border: '1px solid rgba(168, 85, 247, 0.4)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.25)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>💎</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#c084fc', fontWeight: 'bold' }}>내면치유 코어</div>
+                            <div style={styles.neuroTrigger}>5대 내면치유 솔루션</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 오늘의 명심 카드 (Myeongsim Oracle) 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('오늘의 명심 카드를 뽑기 위해 생년월일을 먼저 등록해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('오늘의 명심 카드를 뽑기 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShowMyeongsimOracle(true);
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(244, 114, 182, 0.2))',
-                        border: '1px solid rgba(167, 139, 250, 0.4)',
-                        boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>🃏</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#a78bfa', fontWeight: 'bold' }}>오늘의 카드</div>
-                        <div style={styles.neuroTrigger}>3D 데일리 드로우</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(244, 114, 182, 0.2))', border: '1px solid rgba(167, 139, 250, 0.4)', boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🃏</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#a78bfa', fontWeight: 'bold' }}>오늘의 카드</div>
+                            <div style={styles.neuroTrigger}>3D 데일리 드로우</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 나의 본재 자각 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('본재 기질 분석을 위해 생년월일을 먼저 등록해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('본재 기질 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShowMyeongsimGenius(true);
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.2))',
-                        border: '1px solid rgba(236, 72, 153, 0.4)',
-                        boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>💡</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>본재(本財) 해독</div>
-                        <div style={styles.neuroTrigger}>나의 본빛 기질 자각</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.2))', border: '1px solid rgba(236, 72, 153, 0.4)', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>💡</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>본재(本財) 해독</div>
+                            <div style={styles.neuroTrigger}>나의 본빛 기질 자각</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 천명 지도 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('천명 지도 분석을 위해 생년월일을 먼저 등록해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('천명 지도 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShow64KeysModal(true);
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(147, 51, 234, 0.2))',
-                        border: '1px solid rgba(245, 158, 11, 0.4)',
-                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>🗺️</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>천명 지도</div>
-                        <div style={styles.neuroTrigger}>삶의 궤적과 운명 분석</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(147, 51, 234, 0.2))', border: '1px solid rgba(245, 158, 11, 0.4)', boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🗺️</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>천명 지도</div>
+                            <div style={styles.neuroTrigger}>삶의 궤적과 운명 분석</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 천부 성정 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('천부 성정 분석을 위해 생년월일을 먼저 등록해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('천부 성정 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShowGeniusReport(true);
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.2))',
-                        border: '1px solid rgba(99, 102, 241, 0.4)',
-                        boxShadow: '0 4px 15px rgba(99, 102, 241, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>🧬</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#818cf8', fontWeight: 'bold' }}>천부 성정</div>
-                        <div style={styles.neuroTrigger}>8페이지 전면 해독</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.2))', border: '1px solid rgba(99, 102, 241, 0.4)', boxShadow: '0 4px 15px rgba(99, 102, 241, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🧬</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#818cf8', fontWeight: 'bold' }}>천부 성정</div>
+                            <div style={styles.neuroTrigger}>8페이지 전면 해독</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 격국 연금술 (정격·종격) 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {/* [NEW] 격국 연금술 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'business') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('격국 분석 및 균형 진단을 위해 생년월일을 먼저 등록해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('격국 분석 및 균형 진단을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/alignment');
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(59, 130, 246, 0.2))',
-                        border: '1px solid rgba(167, 139, 250, 0.4)',
-                        boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>☯️</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>격국 연금술</div>
-                        <div style={styles.neuroTrigger}>삶의 격(格)과 에너지 균형</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(59, 130, 246, 0.2))', border: '1px solid rgba(167, 139, 250, 0.4)', boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>☯️</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>격국 연금술</div>
+                            <div style={styles.neuroTrigger}>삶의 격(格)과 에너지 균형</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 다크디코딩 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('다크 감정 분석 및 디코딩을 위해 생년월일을 먼저 등록해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('다크 감정 분석 및 디코딩을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/dark-decoding');
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(99, 102, 241, 0.2))',
-                        border: '1px solid rgba(239, 68, 68, 0.4)',
-                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>⚡</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#ef4444' }}>다크 디코딩</div>
-                        <div style={styles.neuroTrigger}>부정 감정의 에너지 전환</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(99, 102, 241, 0.2))', border: '1px solid rgba(239, 68, 68, 0.4)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>⚡</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#ef4444' }}>다크 디코딩</div>
+                            <div style={styles.neuroTrigger}>부정 감정의 에너지 전환</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 다크코드 디버거 (1번 메뉴) */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {/* [NEW] 마인드 디버거 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('의식 오류 분석 및 디버깅을 위해 생년월일을 먼저 등록해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('의식 오류 분석 및 디버깅을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/dark-code-debugger');
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(99, 102, 241, 0.2))',
-                        border: '1px solid rgba(16, 185, 129, 0.4)',
-                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>💻</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#34d399' }}>마인드 디버거</div>
-                        <div style={styles.neuroTrigger}>의식 오류 및 시간 재배선</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(99, 102, 241, 0.2))', border: '1px solid rgba(16, 185, 129, 0.4)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>💻</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#34d399' }}>마인드 디버거</div>
+                            <div style={styles.neuroTrigger}>의식 오류 및 시간 재배선</div>
+                        </div>
+                    </button>
+                )}
 
-
-
-                {/* [NEW] 사회적기여 메뉴 — 명심 프리미엄 통합 코칭 리포트 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => setShowSovereignReport(true)}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2))',
-                        border: '1px solid rgba(139,92,246,0.4)',
-                        boxShadow: '0 4px 15px rgba(139,92,246,0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🔬</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>마스터 리포트</div>
-                        <div style={styles.neuroTrigger}>통합 심층 코칭 리포트</div>
-                    </div>
-                </button>
+                {/* [NEW] 마스터 리포트 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => setShowSovereignReport(true)}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2))', border: '1px solid rgba(139,92,246,0.4)', boxShadow: '0 4px 15px rgba(139,92,246,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🔬</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>마스터 리포트</div>
+                            <div style={styles.neuroTrigger}>통합 심층 코칭 리포트</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 거울의방 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('자각 코칭을 시작하기 위해 생년월일을 먼저 입력해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('자각 코칭을 시작하기 위해 생년월일을 먼저 입력해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShowMirrorRoom(true);
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))',
-                        border: '1px solid rgba(168, 85, 247, 0.4)',
-                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>🪞</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#c084fc' }}>거울의 방</div>
-                        <div style={styles.neuroTrigger}>참나 자각과 의식 탐구</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))', border: '1px solid rgba(168, 85, 247, 0.4)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🪞</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#c084fc' }}>거울의 방</div>
+                            <div style={styles.neuroTrigger}>참나 자각과 의식 탐구</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 거울 뒤로 한 걸음 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {/* [NEW] 경계 너머 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) {
-                            alert('의식 자각 코칭을 위해 생년월일을 먼저 등록해주세요.');
-                            useReportStore.getState().setStep(1); // 온보딩 Step 1 이동
-                            return;
-                        }
+                        if (!hasBirthDate) { alert('의식 자각 코칭을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/step-back');
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.2))',
-                        border: '1px solid rgba(236, 72, 153, 0.4)',
-                        boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>👁️</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6' }}>경계 너머</div>
-                        <div style={styles.neuroTrigger}>안팎 조망과 주객 해체</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.2))', border: '1px solid rgba(236, 72, 153, 0.4)', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>👁️</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#f472b6' }}>경계 너머</div>
+                            <div style={styles.neuroTrigger}>안팎 조망과 주객 해체</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 명심마스터코어 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => router.push('/master-core')}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.2))',
-                        border: '1px solid rgba(6,182,212,0.4)',
-                        boxShadow: '0 4px 15px rgba(6,182,212,0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🔮</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>4대 기질 코어</div>
-                        <div style={styles.neuroTrigger}>명심 4대 핵심 기질</div>
-                    </div>
-                </button>
+                {/* [NEW] 4대 기질 코어 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => router.push('/master-core')}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.2))', border: '1px solid rgba(6,182,212,0.4)', boxShadow: '0 4px 15px rgba(6,182,212,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🔮</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>4대 기질 코어</div>
+                            <div style={styles.neuroTrigger}>명심 4대 핵심 기질</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 오행 상생공헌 메뉴 — 상생 공헌 주파수 (Cosmic Legacy) */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {/* [NEW] 오행 상생공헌 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'business') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const hasSaju = !!(reportData && reportData.saju);
-                        if (!hasSaju) {
-                            alert("먼저 상단의 '만세력(My Report)' 또는 사주 정보를 입력해 주시면, 당신의 고유한 오행 에너지를 바탕으로 한 맞춤형 상생 공헌 리포트가 활성화됩니다! ✨");
-                            return;
-                        }
+                        if (!hasSaju) { alert("먼저 상단의 '만세력(My Report)' 또는 사주 정보를 입력해 주시면, 당신의 고유한 오행 에너지를 바탕으로 한 맞춤형 상생 공헌 리포트가 활성화됩니다! ✨"); return; }
                         setShowOhaengContribution(true);
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(20,184,166,0.25), rgba(13,148,136,0.2))',
-                        border: '1px solid rgba(20,184,166,0.4)',
-                        boxShadow: '0 4px 15px rgba(20,184,166,0.2)',
-                        position: 'relative',
-                        zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>🌌</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#2dd4bf' }}>오행 상생공헌</div>
-                        <div style={styles.neuroTrigger}>상생 공헌 주파수</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(20,184,166,0.25), rgba(13,148,136,0.2))', border: '1px solid rgba(20,184,166,0.4)', boxShadow: '0 4px 15px rgba(20,184,166,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🌌</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#2dd4bf' }}>오행 상생공헌</div>
+                            <div style={styles.neuroTrigger}>상생 공헌 주파수</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] MPTI 성향 검사 메뉴 -> FPTI 성향해독 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => setShowMptiTest(true)}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(16,185,129,0.25), rgba(5,150,105,0.2))',
-                        border: '1px solid rgba(16,185,129,0.4)',
-                        boxShadow: '0 4px 15px rgba(16,185,129,0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🧭</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#34d399' }}>FPTI 성향해독</div>
-                        <div style={styles.neuroTrigger}>운명 성향 코드 해독</div>
-                    </div>
-                </button>
+                {/* [NEW] FPTI 성향해독 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => setShowMptiTest(true)}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(16,185,129,0.25), rgba(5,150,105,0.2))', border: '1px solid rgba(16,185,129,0.4)', boxShadow: '0 4px 15px rgba(16,185,129,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🧭</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#34d399' }}>FPTI 성향해독</div>
+                            <div style={styles.neuroTrigger}>운명 성향 코드 해독</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 에고싱크(Ego-Sync) 메뉴 — 맞춤 코칭 플래너 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                {/* [NEW] 에고싱크 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'bio') && (
+                    <button style={styles.iconButton} onClick={() => {
                         const isApplied = useReportStore.getState().isPlannerApplied;
-                        if (!isApplied) {
-                            alert("먼저 'FPTI 성향해독🧭'을 진행하여 타고난 성향 코드를 해독하십시오. 검사가 완료되면 에고싱크 플래너가 활성화됩니다!");
-                            setShowMptiTest(true);
-                        } else {
-                            useReportStore.getState().setPlannerOpen(true);
-                        }
-                    }}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(99,102,241,0.2))',
-                        border: '1px solid rgba(139,92,246,0.4)',
-                        boxShadow: '0 4px 15px rgba(139,92,246,0.2)',
-                        position: 'relative',
-                        zIndex: 10
+                        if (!isApplied) { alert("먼저 'FPTI 성향해독🧭'을 진행하여 타고난 성향 코드를 해독하십시오. 검사가 완료되면 에고싱크 플래너가 활성화됩니다!"); setShowMptiTest(true); } else { useReportStore.getState().setPlannerOpen(true); }
                     }}>
-                        <span style={{ fontSize: '20px' }}>🌀</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>에고싱크</div>
-                        <div style={styles.neuroTrigger}>맞춤 코칭 플래너</div>
-                    </div>
-                </button>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(99,102,241,0.2))', border: '1px solid rgba(139,92,246,0.4)', boxShadow: '0 4px 15px rgba(139,92,246,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🌀</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#a78bfa' }}>에고싱크</div>
+                            <div style={styles.neuroTrigger}>맞춤 코칭 플래너</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 소버린 3S 메뉴 — 초고도화 보건 아키텍처 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => setShowSovereign3S(true)}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.2))',
-                        border: '1px solid rgba(6,182,212,0.4)',
-                        boxShadow: '0 4px 15px rgba(6,182,212,0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🧬</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>소버린 3S</div>
-                        <div style={styles.neuroTrigger}>보건 시스템 스캔</div>
-                    </div>
-                </button>
+                {/* [NEW] 소버린 3S 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'bio') && (
+                    <button style={styles.iconButton} onClick={() => setShowSovereign3S(true)}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.2))', border: '1px solid rgba(6,182,212,0.4)', boxShadow: '0 4px 15px rgba(6,182,212,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🧬</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>소버린 3S</div>
+                            <div style={styles.neuroTrigger}>보건 시스템 스캔</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 마음 리셋 메뉴 — 5D 심리 디버깅 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => setShowMindReset(true)}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(251,191,36,0.25), rgba(245,158,11,0.2))',
-                        border: '1px solid rgba(251,191,36,0.4)',
-                        boxShadow: '0 4px 15px rgba(251,191,36,0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>✨</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>마음 리셋</div>
-                        <div style={styles.neuroTrigger}>5D 매트릭스 디버깅</div>
-                    </div>
-                </button>
+                {/* [NEW] 마음 리셋 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => setShowMindReset(true)}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(251,191,36,0.25), rgba(245,158,11,0.2))', border: '1px solid rgba(251,191,36,0.4)', boxShadow: '0 4px 15px rgba(251,191,36,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>✨</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>마음 리셋</div>
+                            <div style={styles.neuroTrigger}>5D 매트릭스 디버깅</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 프리미엄 심층 리포트 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={handlePremiumReportClick}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.2))',
-                        border: '1px solid rgba(245, 158, 11, 0.4)',
-                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>💎</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>심층 리포트</div>
-                        <div style={styles.neuroTrigger}>5파트 통합 가이드</div>
-                    </div>
-                </button>
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'business') && (
+                    <button style={styles.iconButton} onClick={handlePremiumReportClick}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.2))', border: '1px solid rgba(245, 158, 11, 0.4)', boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>💎</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>심층 리포트</div>
+                            <div style={styles.neuroTrigger}>5파트 통합 가이드</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 마음 공간 넓히기 훈련 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={handleMindSpaceTrainingClick}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))',
-                        border: '1px solid rgba(168, 85, 247, 0.4)',
-                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🌌</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#c084fc' }}>마음 공간 넓히기</div>
-                        <div style={styles.neuroTrigger}>3단계 메타코드 융합</div>
-                    </div>
-                </button>
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={handleMindSpaceTrainingClick}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))', border: '1px solid rgba(168, 85, 247, 0.4)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🌌</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#c084fc' }}>마음 공간 넓히기</div>
+                            <div style={styles.neuroTrigger}>3단계 메타코드 융합</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 108 자각 메뉴 — 108페이지 초감동 자각 백서 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => setShowHealing108Report(true)}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(236,72,153,0.25), rgba(219,39,119,0.2))',
-                        border: '1px solid rgba(236,72,153,0.4)',
-                        boxShadow: '0 4px 15px rgba(236,72,153,0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🧠</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6' }}>핵심 자각 퀘스트</div>
-                        <div style={styles.neuroTrigger}>힐링 자각 백서</div>
-                    </div>
-                </button>
+                {/* [NEW] 핵심 자각 퀘스트 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => setShowHealing108Report(true)}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236,72,153,0.25), rgba(219,39,119,0.2))', border: '1px solid rgba(236,72,153,0.4)', boxShadow: '0 4px 15px rgba(236,72,153,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🧠</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#f472b6' }}>핵심 자각 퀘스트</div>
+                            <div style={styles.neuroTrigger}>힐링 자각 백서</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 108 자각 new 메뉴 — 실시간 대시보드 리포트 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => setShowHealing108NewReport(true)}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.2))',
-                        border: '1px solid rgba(245,158,11,0.4)',
-                        boxShadow: '0 4px 15px rgba(245,158,11,0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>📊</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>핵심 자각 대시보드</div>
-                        <div style={styles.neuroTrigger}>실시간 대시보드</div>
-                    </div>
-                </button>
+                {/* [NEW] 핵심 자각 대시보드 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
+                    <button style={styles.iconButton} onClick={() => setShowHealing108NewReport(true)}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.2))', border: '1px solid rgba(245,158,11,0.4)', boxShadow: '0 4px 15px rgba(245,158,11,0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>📊</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>핵심 자각 대시보드</div>
+                            <div style={styles.neuroTrigger}>실시간 대시보드</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 디코드 메뉴 — 심층 무의식 보고서 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={handleDecodeClick}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.25), rgba(79, 70, 229, 0.2))',
-                        border: '1px solid rgba(147, 51, 234, 0.4)',
-                        boxShadow: '0 4px 15px rgba(147, 51, 234, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>🌌</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#c084fc' }}>디코드</div>
-                        <div style={styles.neuroTrigger}>심층 무의식 보고서</div>
-                    </div>
-                </button>
+                {/* [NEW] 디코드 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
+                    <button style={styles.iconButton} onClick={handleDecodeClick}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.25), rgba(79, 70, 229, 0.2))', border: '1px solid rgba(147, 51, 234, 0.4)', boxShadow: '0 4px 15px rgba(147, 51, 234, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>🌌</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#c084fc' }}>디코드</div>
+                            <div style={styles.neuroTrigger}>심층 무의식 보고서</div>
+                        </div>
+                    </button>
+                )}
 
-                {/* [NEW] 제로 캡슐 메뉴 — 오늘의 디지털 알약 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => router.push('/zero-capsule')}
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(79, 70, 229, 0.2))',
-                        border: '1px solid rgba(59, 130, 246, 0.4)',
-                        boxShadow: '0 4px 15px rgba(59, 130, 246, 0.2)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>💊</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#60a5fa' }}>제로 캡슐</div>
-                        <div style={styles.neuroTrigger}>오늘의 디지털 알약</div>
-                    </div>
-                </button>
+                {/* [NEW] 제로 캡슐 메뉴 */}
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'bio') && (
+                    <button style={styles.iconButton} onClick={() => router.push('/zero-capsule')}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(79, 70, 229, 0.2))', border: '1px solid rgba(59, 130, 246, 0.4)', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.2)', position: 'relative', zIndex: 10 }}>
+                            <span style={{ fontSize: '20px' }}>💊</span>
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#60a5fa' }}>제로 캡슐</div>
+                            <div style={styles.neuroTrigger}>오늘의 디지털 알약</div>
+                        </div>
+                    </button>
+                )}
 
                 {/* [NEW] 명심 OS 코칭 메뉴 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => setShowMyeongsimOS(true)}
-                >
-                    <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: 'linear-gradient(135deg, #4ade80 0%, #3b82f6 100%)',
-                        boxShadow: '0 0 15px rgba(74, 222, 128, 0.4)',
-                        marginBottom: '8px',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <Cpu className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#4ade80' }}>명심 OS</div>
-                        <div style={styles.neuroTrigger}>시스템 디버깅</div>
-                    </div>
-                </button>
+                {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
+                    <button style={styles.iconButton} onClick={() => setShowMyeongsimOS(true)}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #4ade80 0%, #3b82f6 100%)', boxShadow: '0 0 15px rgba(74, 222, 128, 0.4)', marginBottom: '8px', position: 'relative', zIndex: 10 }}>
+                            <Cpu className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                            <div style={{ ...styles.iconLabel, color: '#4ade80' }}>명심 OS</div>
+                            <div style={styles.neuroTrigger}>시스템 디버깅</div>
+                        </div>
+                    </button>
+                )}
 
-                {icons.map((icon) => {
+                {icons.filter(icon => {
+                    if (activeCategoryTab === 'all') return true;
+                    switch (icon.id) {
+                        case 'WORLD_WEALTH': case 'WEALTH': case 'STARTUP': case 'CAREER':
+                            return activeCategoryTab === 'business';
+                        case 'BIO_SYNC': case 'BIO_CARE': case 'STRESS_RELIEF': case 'HEALTH_QA': case 'DAILY_MISSION':
+                            return activeCategoryTab === 'bio';
+                        case 'X_LAB': case 'NEURAL_ENGINEERING': case 'QUANTUM_AWAKENING': case 'STRATEGY_LAB':
+                            return activeCategoryTab === 'ai';
+                        default:
+                            return activeCategoryTab === 'psych';
+                    }
+                }).map((icon) => {
                     const isHovered = hoveredIcon === icon.id;
                     const translatedLabel = t(`menu.${icon.id.toLowerCase()}`) || icon.label;
                     const friendlyLabel = {
