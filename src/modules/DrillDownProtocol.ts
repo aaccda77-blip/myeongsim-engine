@@ -396,12 +396,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
     // [LEGACY] Original Functions (Restored)
     // ============================================
 
-    // 6. 💰 부의 그릇 (WEALTH)
+    // 6. 💰 부의 수용체 (WEALTH)
     WEALTH: {
         id: 'WEALTH',
-        label: "부의 그릇 (Original)",
+        label: "부의 수용체",
         icon: "💰",
-        neuro_trigger: "왜 벌어도 모이지 않을까?",
+        neuro_trigger: "자산 수용체 및 부의 흐름 디코딩",
         style: 'default',
         sub_menus: [
             { id: "w_1", label: "🕳️ '밑 빠진 독' 탐지기 (Leak)", desc: "돈이 새는 운명의 구멍 찾기", intent: "ms_wealth_leak" },
@@ -411,14 +411,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-
-
-    // 7. ⌚ 바이오싱크 (BIO_SYNC)
+    // 7. ⌚ 바이오 리듬 싱크 (BIO_SYNC)
     BIO_SYNC: {
         id: 'BIO_SYNC',
-        label: "생체 연동 (Bio-Sync)",
+        label: "바이오 리듬 싱크",
         icon: "⌚",
-        neuro_trigger: "실시간 운명 동기화",
+        neuro_trigger: "실시간 생체 데이터 & 오행 연동",
         style: 'default',
         sub_menus: [
             { id: "b_1", label: "⚡ Bio-Sync 대시보드", desc: "웨어러블 연결 및 데이터 확인", intent: "bio_sync_dashboard_view" },
@@ -438,12 +436,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 8. ❤️ 관계의 멍 (RELATIONSHIP)
+    // 8. ❤️ 인연 & 대인관계 (RELATIONSHIP)
     RELATIONSHIP: {
         id: 'RELATIONSHIP',
-        label: "관계의 멍 (Original)",
+        label: "인연 & 대인관계",
         icon: "❤️",
-        neuro_trigger: "반복되는 상처 끊어내기",
+        neuro_trigger: "상호 에너지 균형과 인연 조율",
         style: 'healing_green',
         sub_menus: [
             { id: "r_1", label: "💘 매력의 법칙 (Attraction)", desc: "나는 어떤 사람에게 끌리는가?", intent: "ms_rel_attraction" },
@@ -453,12 +451,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 9. 🚀 천직 발견 (CAREER)
+    // 9. 🧭 커리어 패스 (CAREER)
     CAREER: {
         id: 'CAREER',
-        label: "천직 발견 (Original)",
-        icon: "🚀",
-        neuro_trigger: "나는 이 일을 하려고 태어났다",
+        label: "커리어 패스",
+        icon: "🧭",
+        neuro_trigger: "적성과 비전의 방향성 탐색",
         style: 'default',
         sub_menus: [
             { id: "c_1", label: "🗡️ 나만의 '히든 스킬' (Skill)", desc: "남들은 모르는 나의 사기급 능력", intent: "ms_career_skill" },
@@ -468,12 +466,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 10. 🧬 성격분석 (PERSONALITY -> Soul Architecture)
+    // 10. 📊 성격 & 행동 패턴 (PERSONALITY_ANALYSIS)
     PERSONALITY_ANALYSIS: {
         id: 'PERSONALITY_ANALYSIS',
-        label: "성격분석 (Original)",
-        icon: "🧬",
-        neuro_trigger: "나만의 본질 에너지 코드",
+        label: "성격 & 행동 패턴",
+        icon: "📊",
+        neuro_trigger: "행동 패턴과 심리 구조 정밀 분석",
         style: 'premium_purple',
         sub_menus: [
             { id: "g_1", label: "🏛️ 소울 아키텍처 (Soul)", desc: "내 영혼의 설계도 해킹", intent: "ms_soul_arch" },
@@ -485,12 +483,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 11. 💊 데일리 미션 (DAILY -> Energy Cheat Key)
+    // 11. ⚡ 데일리 루틴 퀘스트 (DAILY_MISSION)
     DAILY_MISSION: {
         id: 'DAILY_MISSION',
-        label: "데일리 미션 (Original)",
-        icon: "💊",
-        neuro_trigger: "오늘 뭘 해야 운이 트일까?",
+        label: "데일리 루틴 퀘스트",
+        icon: "⚡",
+        neuro_trigger: "오늘의 마인드 밸런스 실천 습관",
         style: 'default',
         sub_menus: [
             { id: "d_0", label: "⚔️ 오늘의 퀘스트 (Quest)", desc: "오늘의 기질 데이터를 200% 활용법", intent: "ms_daily_quest" },
@@ -500,12 +498,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 12. 🔮 마인드 코드 분석 (IDENTITY)
+    // 12. 🔍 선천 기질 디코딩 (SAJU_ANALYSIS)
     SAJU_ANALYSIS: {
         id: 'SAJU_ANALYSIS',
-        label: "마인드 코드 분석 (Original)",
-        icon: "🔮",
-        neuro_trigger: "운명의 설계도 확인",
+        label: "선천 기질 디코딩",
+        icon: "🔍",
+        neuro_trigger: "선천적 본질 코드 및 운명 분석",
         style: 'premium_purple',
         sub_menus: [
             { id: "s_0", label: "🌦️ 인생의 날씨 예보 (Weather)", desc: "내일 비가 올까, 해가 뜰까?", intent: "ms_destiny_weather" },
@@ -515,12 +513,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 13. 🌿 명심 힐링 (HEALING -> Neural Healing)
+    // 13. 🌿 스트레스 릴리프 (STRESS_RELIEF)
     STRESS_RELIEF: {
         id: 'STRESS_RELIEF',
-        label: "명심 힐링 (Original)",
+        label: "스트레스 릴리프",
         icon: "🌿",
-        neuro_trigger: "지친 마음 쉬어가기",
+        neuro_trigger: "자율신경 안정을 위한 주파수 테라피",
         style: 'healing_green',
         sub_menus: [
             { id: "h_sonic", label: "🎧 주파수 처방전 (Sonic)", desc: "듣기만 해도 운이 좋아진다?", intent: "ms_sonic_cure" },
@@ -529,12 +527,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 14. 💡 오늘의 건강상식 (HEALTH_QA - NEW)
+    // 14. 🩺 건강 Q&A 코칭 (HEALTH_QA)
     HEALTH_QA: {
         id: 'HEALTH_QA',
-        label: "오늘의 건강상식",
-        icon: "💡",
-        neuro_trigger: "매일 새로운 헬스케어 지식",
+        label: "건강 Q&A 코칭",
+        icon: "🩺",
+        neuro_trigger: "생체 데이터 기반 1:1 맞춤 건강 팁",
         style: 'healing_green',
         sub_menus: [
             {
@@ -558,12 +556,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 15. 🌿 바이오 밸런서 (BIO_CARE - NEW)
+    // 15. 🛡️ 생체 에너제틱스 (BIO_CARE)
     BIO_CARE: {
         id: 'BIO_CARE',
-        label: "바이오 밸런서",
-        icon: "🌿",
-        neuro_trigger: "영양·자율신경·신체 밸런스 리추얼",
+        label: "생체 에너제틱스",
+        icon: "🛡️",
+        neuro_trigger: "신체 밸런스 & 오행 영양 리추얼",
         style: 'healing_green',
         sub_menus: [
             {
@@ -599,12 +597,12 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 14. 뉴럴 인사이트 (NEURAL_INSIGHTS - Brain Science Based)
+    // 16. 🧠 핵심 자각 퀘스트 (AWARENESS_108)
     AWARENESS_108: {
         id: 'AWARENESS_108',
-        label: "뉴럴 인사이트",
+        label: "핵심 자각 퀘스트",
         icon: "🧠",
-        neuro_trigger: "신경과학 기반 자기인식 프로토콜",
+        neuro_trigger: "무의식의 뇌 회로 패턴 및 명심 자각 퀘스트",
         style: 'premium_purple',
         sub_menus: [
             {

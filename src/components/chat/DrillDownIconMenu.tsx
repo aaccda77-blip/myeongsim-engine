@@ -1612,10 +1612,10 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
-                        <span style={{ fontSize: '20px' }}>🌸</span>
+                        <span style={{ fontSize: '20px' }}>🧠</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6' }}>108 자각</div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6' }}>핵심 자각 퀘스트</div>
                         <div style={styles.neuroTrigger}>힐링 자각 백서</div>
                     </div>
                 </button>
@@ -1636,7 +1636,7 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>📊</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>108 자각 new</div>
+                        <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>핵심 자각 대시보드</div>
                         <div style={styles.neuroTrigger}>실시간 대시보드</div>
                     </div>
                 </button>
