@@ -2525,7 +2525,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
             {/* [Neural Flow Input] Dynamic Inline Input */}
             {
                 !isLoading && (
-                    <div className="p-4 animate-fade-in-up max-w-[95%] md:max-w-[85%] mx-auto w-full mt-4">
+                    <div className="p-2 sm:p-3 pb-3 animate-fade-in-up max-w-[95%] md:max-w-[85%] mx-auto w-full shrink-0">
 
                         {/* [NEW] Quick Suggestion Chips (질문 가이드) */}
                         <div className="flex gap-2 overflow-x-auto pb-2 mb-2 px-1 scrollbar-hide">
@@ -3106,24 +3106,25 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 </button>
                             </div>
                         </form>
-                        <p className="text-center text-gray-500 text-[10px] mt-3 leading-tight opacity-70">
-                            본 서비스는 의학적 진단이 아니며, 건강 증진을 위한 가이드입니다. <br />
-                            정확한 진단과 치료는 반드시 전문의와 상담하십시오.
-                        </p>
+                        <div className="mt-1.5 text-center space-y-1">
+                            <p className="text-gray-500 text-[10px] leading-tight opacity-75">
+                                본 서비스는 의학적 진단이 아니며, 건강 증진을 위한 가이드입니다. 정확한 진단과 치료는 반드시 전문의와 상담하십시오.
+                            </p>
 
-                        {/* [Footer Link] 사업자 정보 & 고객센터 팝업 모달 링크 (1줄 스림 디자인) */}
-                        <div className="flex items-center justify-center gap-2 mt-2.5 pt-1 text-[10px] text-gray-500 font-medium">
-                            <button
-                                type="button"
-                                onClick={() => setShowCompanyModal(true)}
-                                className="hover:text-gray-300 transition-colors underline cursor-pointer flex items-center gap-1"
-                            >
-                                🏢 (주)마인드플로우랩 사업자 정보 및 고객센터
-                            </button>
-                            <span>|</span>
-                            <a href="/terms" className="hover:text-gray-300 transition-colors cursor-pointer">이용약관</a>
-                            <span>|</span>
-                            <a href="/privacy" className="hover:text-gray-300 transition-colors font-bold cursor-pointer">개인정보처리방침</a>
+                            {/* [Footer Link] 사업자 정보 & 고객센터 팝업 모달 링크 */}
+                            <div className="flex items-center justify-center gap-2 text-[10px] text-gray-400 font-medium pt-0.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCompanyModal(true)}
+                                    className="text-amber-300/90 hover:text-amber-200 transition-colors underline cursor-pointer flex items-center gap-1 font-semibold"
+                                >
+                                    🏢 (주)마인드플로우랩 사업자 정보 및 고객센터
+                                </button>
+                                <span>|</span>
+                                <a href="/terms" className="hover:text-gray-200 transition-colors cursor-pointer">이용약관</a>
+                                <span>|</span>
+                                <a href="/privacy" className="hover:text-gray-200 transition-colors font-bold cursor-pointer">개인정보처리방침</a>
+                            </div>
                         </div>
 
                         {/* 사업자 정보 팝업 모달 */}
