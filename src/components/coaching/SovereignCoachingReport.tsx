@@ -1674,12 +1674,12 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: '100%' }}
                         transition={{ type: 'spring', stiffness: 280, damping: 32 }}
-                        className="fixed inset-x-0 bottom-0 z-[90] flex flex-col md:max-w-4xl lg:max-w-5xl xl:max-w-6xl md:mx-auto md:top-4 md:bottom-4 md:rounded-3xl shadow-2xl overflow-hidden"
+                        className="fixed inset-x-0 bottom-0 top-10 sm:top-12 z-[90] flex flex-col md:max-w-4xl lg:max-w-5xl xl:max-w-6xl md:mx-auto md:top-4 md:bottom-4 md:rounded-3xl shadow-2xl overflow-hidden"
                         style={{ maxHeight: '100dvh' }}
                     >
                         <div
                             ref={scrollRef}
-                            className="flex flex-col overflow-y-auto rounded-t-3xl gpu-accelerated"
+                            className="flex flex-col overflow-y-auto rounded-t-3xl gpu-accelerated h-full"
                             style={{
                                 background: 'linear-gradient(180deg, #0e0e0e 0%, #131313 100%)',
                                 border: '1px solid rgba(242,202,80,0.15)',
@@ -1735,24 +1735,24 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             통합 코칭 리포트
                                         </span>
                                     </h2>
-                                    <p className="text-xs text-gray-400 font-medium tracking-wide">4D-Sovereign Matrix × CAFE 파이프라인</p>
+                                    <p className="text-xs text-gray-400 font-medium tracking-wide">4D-자각 매트릭스 × CAFE (Cognitive Awareness & Flow Engine) 파이프라인</p>
                                     <div className="border-l-2 border-yellow-400/40 pl-5 py-2 my-4">
                                         <p className="font-serif text-base italic text-gray-200 leading-relaxed">
                                             "당신의 고통은 버그가 아닙니다. 위대한 세공을 위한 뜨거운 담금질입니다."
                                         </p>
                                     </div>
                                     <div className="p-4 rounded-xl border border-white/10" style={{ background: 'rgba(42,42,42,0.6)' }}>
-                                        <p className="text-xs text-gray-400 leading-relaxed">
-                                            소버린, 명심 마스터가 당신의 명식에 내재된 가장 깊은 코드를 해독했습니다.
-                                            이 리포트는 단순한 운세 풀이를 넘어 당신의 영적 하드웨어와 정신적 소프트웨어 사이의
-                                            충돌 지점을 정밀 타격하는 전략적 가이드입니다.
+                                        <p className="text-xs text-gray-300 leading-relaxed">
+                                            자각의 주체이신 당신을 위해, 명식에 프로그래밍된 가장 깊은 코드를 해독했습니다.
+                                            이 리포트는 단순한 운세 풀이를 넘어 당신의 <strong className="text-yellow-400 font-bold">선천적 하드웨어(명식 기전)</strong>와
+                                            정신적 소프트웨어(인지 패턴) 사이의 충돌 지점을 정밀 타격하는 전략적 코칭 가이드입니다.
                                         </p>
                                     </div>
                                 </section>
 
                                 {/* ── Phase 0: CAFE ── */}
                                 <section>
-                                    <SectionHeader phase="Phase 0" title="CAFE 파이프라인 시뮬레이션" />
+                                    <SectionHeader phase="Phase 0" title="CAFE (Cognitive Awareness & Flow Engine) 파이프라인 시뮬레이션" />
                                     <p className="font-serif text-sm text-gray-400 mb-5 italic">
                                         "명식에 프로그래밍된 거대한 역학적 물리법칙"
                                     </p>
