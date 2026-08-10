@@ -44,6 +44,7 @@ interface MyeongsimChatProps {
 export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProps) {
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [selectedProtocol, setSelectedProtocol] = useState<typeof PSYCH_PROTOCOLS[0] | null>(null);
+    const [selectedMood, setSelectedMood] = useState<string>('불안·완벽주의');
     const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
     const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
     const [isListening, setIsListening] = useState<boolean>(false);
@@ -92,6 +93,34 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const userMessageCount = useMemo(() => {
         return (messages || []).filter(m => m.role === 'user').length;
     }, [messages]);
+
+    
+    const MOOD_CHIP_MAP: Record<string, string[]> = {
+        '불안·완벽주의': [
+            '💰 "내 사주로 돈 벌 수 있어? 2026년 사업·재물운 정밀 분석"',
+            '🧠 "완벽주의와 조급증 다크코드 뇌 쿨링(ACT) 해줘"',
+            '🌙 "밤/새벽에 일해야 해, 낮에 해야 해? 내 맞춤 시간대"',
+            '🔮 "올해 대박 날 3S 마이크로 실천 지침 알려줘"'
+        ],
+        '조바심·스트레스': [
+            '🔥 "속도만 내다 번아웃 올 것 같은데 메타인지로 정밀 교정해줘"',
+            '⚡ "890원 마이크로 퍼널 ➔ B2C/B2B 수익화 구조 사주 풀이해줘"',
+            '🧘 "조급함이 솟구칠 때 뇌 편도체 리셋 1분 3S 스위치 알려줘"',
+            '📜 "내 사주에 수(水) 냉각수 부족한지 4D 풀 스캔해줘"'
+        ],
+        '무기력·혼란': [
+            '🌧️ "에너지가 고갈되었는데 2026년 병오년 활력 기운 재배선해줘"',
+            '🌱 "내 가슴속 창의적 영감을 재물(木)로 바꾸는 방법 풀이해줘"',
+            '🛡️ "자책과 무기력감 생존 보호자(IFS) 자비 수용 에세이 부탁해"',
+            '👑 "흔들리는 내 영혼의 군주 통치권 회복하는 명상 가이드"'
+        ],
+        '평온·영점 각성': [
+            '✨ "오늘 432Hz 제로포인트 순수 자각 명상 가이드 알려줘"',
+            '💎 "60갑자 중 내 일간 기질에 맞는 80% 미학 실천법"',
+            '🚀 "2026년 정식 특허 출원 후 B2B 30만원 스케일업 운세"',
+            '💖 "내 영혼을 따뜻하게 안아주는 3S 감동 에세이 리포트"'
+        ]
+    };
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
