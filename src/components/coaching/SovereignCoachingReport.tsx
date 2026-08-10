@@ -254,7 +254,7 @@ interface IlganCoaching {
     masterRoadmap?: {
         engines: { label: string; title: string; desc: string; action?: string }[];
         shifts: { step: string; title: string; desc: string; action: string }[];
-        dailyMissions: { time: string; mode: string; state: string; action: string }[];
+        dailyMissions: { time: string; mode: string; state: string; action: string; rule?: string }[];
         bugs: { id: string; name: string; symptom: string; patch: string }[];
         leverages: { type: string; title: string; desc: string; items: string[] }[];
         coreRole: string[];
@@ -337,9 +337,9 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 { step: '3단계', title: 'AI와 기술을 통한 레버리지', desc: '냉철한 금(金)의 기운은 자동화와 AI를 의미합니다. 오프라인을 넘어 언제 어디서든 구동되는 확장 가능한 플랫폼으로 진화해야 합니다.', action: "Next.js, Supabase, n8n 등을 활용한 백엔드 무인 자동화 연동" }
             ],
             dailyMissions: [
-                { time: '오전', mode: 'SCAN 모드 (辛巳 & 未土)', state: '데이터 수집 및 정밀 분석', action: '외부 방해 차단 후 논문 스터디, 심리학 및 명리 분석, 구조 파악' },
-                { time: '오후', mode: 'SYNC 모드 (癸水)', state: '쿨링 시스템 가동 및 텍스트화', action: '오전의 통찰을 글로 출력(블로그, 책 원고 문서화). 열기 방출 필수' },
-                { time: '저녁', mode: 'SHIFT 모드 (乙木)', state: '비즈니스 네트워크 확장', action: '센터 설립, 출판사 환경 세팅 및 백엔드 개발 등 현실 결과물 초점' }
+                { time: '오전 (08:00~12:00)', mode: 'SCAN 모드 (辛巳 & 未土)', state: '데이터 수집 및 정밀 분석', action: '외부 방해 차단 후 논문 스터디, 심리학 및 명리 분석, 구조 파악', rule: '[RULE] 외부 알림 100% 차단' },
+                { time: '오후 (13:00~17:00)', mode: 'SYNC 모드 (癸水)', state: '쿨링 시스템 가동 및 텍스트화', action: '오전의 통찰을 글로 출력(블로그, 책 원고 문서화). 열기 방출 필수', rule: '[RULE] 생각의 배출구 열기 (완벽주의 금지)' },
+                { time: '저녁 (19:00~22:00)', mode: 'SHIFT 모드 (乙木)', state: '비즈니스 네트워크 확장', action: '센터 설립, 출판사 환경 세팅 및 백엔드 개발 등 현실 결과물 초점', rule: '[RULE] 손에 잡히는 결과물 우선' }
             ],
             bugs: [
                 { id: 'ERR_01', name: '계수(癸水) 증발 현상', symptom: '지식 과식증으로 입력만 하고 출력을 안 할 때 발생. 생각만 많고 현실 결과물이 말라 죽음 (마비 상태).', patch: '완벽하지 않아도 무조건 문서화하여 밖으로 꺼냅니다. 행동과 출력이 유일한 백신입니다.' },
@@ -1585,6 +1585,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const [isPhase7ModalOpen, setIsPhase7ModalOpen] = useState(false);
     const [isPhase7Unlocked, setIsPhase7Unlocked] = useState(false);
     const [isAllPassUnlocked, setIsAllPassUnlocked] = useState(false);
+    const [isDailyEssayModalOpen, setIsDailyEssayModalOpen] = useState(false);
+    const [isDailyEssayUnlocked, setIsDailyEssayUnlocked] = useState(false);
 
     // ── AI 코칭 리포트 관련 상태 ──
     type AiReport = {
@@ -2195,17 +2197,54 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                 </h4>
                                                 <div className="space-y-3">
                                                     {coaching.masterRoadmap.dailyMissions.map((mission, i) => (
-                                                        <div key={i} className="flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-indigo-500/20" style={{ background: 'rgba(79,70,229,0.05)' }}>
-                                                            <div className="sm:w-1/4">
-                                                                <span className="inline-block px-2 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded-md mb-2">{mission.time}</span>
-                                                                <div className="text-xs font-bold text-white">{mission.mode}</div>
+                                                        <div key={i} className="flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-indigo-500/20 relative overflow-hidden" style={{ background: 'rgba(79,70,229,0.05)' }}>
+                                                            <div className="sm:w-1/3 flex flex-col justify-between">
+                                                                <div>
+                                                                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                                                                        <span className="inline-block px-2 py-0.5 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded-md">{mission.time}</span>
+                                                                        {mission.rule && (
+                                                                            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-bold rounded">
+                                                                                {mission.rule}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="text-xs font-bold text-white">{mission.mode}</div>
+                                                                </div>
                                                             </div>
-                                                            <div className="sm:w-3/4">
-                                                                <div className="text-xs text-indigo-200 mb-1">{mission.state}</div>
-                                                                <p className="text-xs text-gray-400 leading-relaxed">{mission.action}</p>
+                                                            <div className="sm:w-2/3">
+                                                                <div className="text-xs text-indigo-200 mb-1 font-semibold">{mission.state}</div>
+                                                                <p className="text-xs text-gray-300 leading-relaxed">{mission.action}</p>
                                                             </div>
                                                         </div>
                                                     ))}
+
+                                                    {/* ── [DAILY ALGORITHM 890원 감동 에세이 CTA 바] ── */}
+                                                    <div className="mt-3 p-4 rounded-2xl border border-indigo-500/30 bg-[#141226]/80 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="size-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300 shrink-0">
+                                                                <span className="material-symbols-outlined text-xl">schedule</span>
+                                                            </div>
+                                                            <div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest">Daily Master Class</span>
+                                                                    {(isDailyEssayUnlocked || isAllPassUnlocked) && (
+                                                                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold">
+                                                                            열람 완료
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <h5 className="text-xs font-bold text-white mt-0.5">데일리 생체시계 & 시간대별 지침 해설서</h5>
+                                                            </div>
+                                                        </div>
+
+                                                        <button
+                                                            onClick={() => setIsDailyEssayModalOpen(true)}
+                                                            className="w-full sm:w-auto shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
+                                                        >
+                                                            <span className="material-symbols-outlined text-sm">bolt</span>
+                                                            <span>{(isDailyEssayUnlocked || isAllPassUnlocked) ? '데일리 해설서 읽기' : '🔓 890원에 데일리 실행서 보기'}</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -2751,6 +2790,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                              setUnlockedPrompts({ '01': true, '02': true, '03': true });
                                                              setIsPhase7Unlocked(true);
                                                              setIsAllPassUnlocked(true);
+                                                             setIsDailyEssayUnlocked(true);
                                                              setIsUnlocking(false);
                                                          }, 700);
                                                      }}
@@ -2989,6 +3029,155 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             <p className="text-xs font-semibold text-slate-300 italic">"나는 결국 이 모든 고뇌와 노력을 통해 어디에 다다르게 될까요?"</p>
                                             <p className="text-xs text-slate-200 leading-relaxed pt-1">
                                                 당신이 겪은 수많은 시행착오(trial & error)와 생각의 파편들은 결코 허공으로 사라지지 않습니다. 이 모든 힘은 마침내 비옥한 땅 위에서 거대하게 피어나는 <strong className="text-emerald-300">나무와 숲(乙未)</strong>이 되어 세상을 덮을 것입니다. 당신이 만들어낼 책, 당신이 운영할 코칭 센터, 당신이 구축할 세상(Platform)은 단순히 돈을 벌기 위한 수단이 아닙니다. 방황하는 이들에게 안식처를 제공하고, 당신의 철학이 사람들의 삶을 실제로 바꿔놓는 <strong className="text-amber-300">'거대한 인프라'</strong>로 완공될 것입니다. 당신은 단순한 노동자가 아닙니다. 처음부터 이 거대한 세상을 설계하러 온 <strong className="text-amber-300 font-bold">우아한 건축가(Architect)</strong>입니다.
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+
+            {/* ── [Daily Algorithm Essay Paywall Modal (890원 / 1,900원 ALL-PASS)] ── */}
+            <AnimatePresence>
+                {isDailyEssayModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-2xl bg-[#131022] border border-indigo-500/40 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh] custom-scrollbar"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-start justify-between border-b border-white/10 pb-4 mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300">
+                                        <span className="material-symbols-outlined text-xl">schedule</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                                            Daily Algorithm Master Class
+                                        </span>
+                                        <h3 className="text-base md:text-lg font-bold text-white leading-snug mt-0.5">
+                                            AI 코치의 데일리 생체시계 & 시간대별 디테일 가이드
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsDailyEssayModalOpen(false)}
+                                    className="material-symbols-outlined text-slate-400 hover:text-white transition-colors"
+                                >
+                                    close
+                                </button>
+                            </div>
+
+                            {/* Free Preview Area */}
+                            <div className="space-y-4 text-slate-300 text-sm leading-relaxed font-sans pr-2 overflow-y-auto custom-scrollbar">
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-slate-200">
+                                    인간의 의지력은 아침에 100% 충전되었다가 시간이 지남에 따라 급격히 배터리가 차감되는 한정된 자원입니다. 명심코칭의 3S(Scan - Sync - Shift) 생체리듬 알고리즘은 뇌의 열역학적 에너지 법칙을 따라 설계되었습니다.
+                                </div>
+
+                                {!isDailyEssayUnlocked && !isAllPassUnlocked ? (
+                                    /* Paywall Locked Section */
+                                    <div className="relative overflow-hidden rounded-2xl border border-indigo-500/30 p-6 bg-[#181526]/90 shadow-2xl mt-4">
+                                        <div className="filter blur-[6px] select-none text-slate-500 text-xs space-y-3 opacity-60 pointer-events-none">
+                                            <p>▒▒▒▒▒▒ 01. SCAN TIME (08:00 - 12:00) | 세상의 소음을 끄는 시간 ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ 02. SYNC TIME (13:00 - 17:00) | 생각을 밖으로 꺼내는 시간 ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ 03. SHIFT TIME (19:00 - 22:00) | 나의 세상을 넓혀가는 시간 ▒▒▒▒▒▒</p>
+                                        </div>
+
+                                        <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/60 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                                            <div className="size-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xl shadow-indigo-500/30 animate-bounce">
+                                                <span className="material-symbols-outlined text-2xl">lock</span>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-base font-extrabold text-white">데일리 실행서 풀어서 보기</h4>
+                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 전체 에세이를 해제하세요.</p>
+                                            </div>
+
+                                            <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsDailyEssayUnlocked(true);
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span>🔓 890원 단품 해제 (890pt)</span>
+                                                </button>
+
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsPhase7Unlocked(true);
+                                                            setIsAllPassUnlocked(true);
+                                                            setIsDailyEssayUnlocked(true);
+                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">bolt</span>
+                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                </button>
+                                            </div>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Unlocked Full Essays */
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-6 pt-2"
+                                    >
+                                        <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                                            <span className="material-symbols-outlined text-sm">verified</span>
+                                            {(isAllPassUnlocked) ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 생체시계 가이드
+                                        </div>
+
+                                        {/* Scan Time */}
+                                        <div className="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-indigo-300 text-sm">01. SCAN TIME (08:00 - 12:00) | 세상의 소음을 끄는 시간</h5>
+                                                <span className="text-[10px] font-mono text-indigo-400/80">DEEP WORK SCAN</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 아침부터 타인의 SNS나 이메일을 보면 하루 전체가 피곤해질까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                당신의 뇌는 아침 시간에 가장 정밀하고 섬세한 빛을 발합니다. 이 소중한 시간에 남들의 이야기나 잡음에 의지력을 빼앗기지 마세요. 스마트폰 알림을 끄고 거친 원석 같은 논문과 지식을 정밀하게 읽어내려갈 때, 당신 내면의 거대한 중앙 처리 장치가 가장 우아하게 가동됩니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Sync Time */}
+                                        <div className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-blue-300 text-sm">02. SYNC TIME (13:00 - 17:00) | 생각을 밖으로 꺼내는 시간</h5>
+                                                <span className="text-[10px] font-mono text-blue-400/80">TEXT COOLING SYNC</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"머릿속에 생각은 가득한데, 왜 마음이 답답하고 머리가 아플까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                오전에 모은 수많은 영감과 통찰이 뇌 안에 머물러 있으면 열기가 차올라 시스템이 과열됩니다. 이 열기를 식히는 가장 완벽한 방법은 '글을 쓰는 것'입니다. 완성도에 집착하지 말고 블로그나 책 원고로 생각을 밖으로 꺼내어 뿜어내세요. 키보드를 두드리는 순간, 꽉 막혔던 내면의 냉각수가 시원하게 흐르기 시작합니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Shift Time */}
+                                        <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-emerald-300 text-sm">03. SHIFT TIME (19:00 - 22:00) | 나의 세상을 넓혀가는 시간</h5>
+                                                <span className="text-[10px] font-mono text-emerald-400/80">NETWORK INFRA SHIFT</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"하루의 마무리는 어떻게 해야 완벽한 성취감으로 채워질까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                저녁은 혼자만의 고뇌에서 벗어나 세상을 향해 당신의 가지를 뻗는 시간입니다. 출판사 세팅, 코칭 센터 구축, 시스템 백엔드 개발처럼 눈에 보이는 실제 결실을 만들어내세요. 담쟁이넝쿨이 담장을 넘어 퍼져나가듯, 당신이 만들어낸 현실의 인프라가 훗날 당신에게 거대한 자유를 안겨줄 것입니다.
                                             </p>
                                         </div>
                                     </motion.div>
