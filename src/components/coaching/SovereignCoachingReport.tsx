@@ -297,6 +297,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
                 '완벽하지 않으면 시작조차 하지 않으려는 마비성 완벽주의',
                 '타인의 사소한 비판에도 영혼이 베이는 듯한 극심한 감정적 마모',
                 '에너지가 고갈되었음에도 멈추지 못하고 자신을 채찍질하는 강박적 번아웃',
+                '감정의 과잉 침전 및 생각이 꼬리를 무는 사고의 오버플로우 (수(水) 기운의 감정적 마모)',
             ],
         },
         metaCode: {
@@ -309,9 +310,9 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
             ]
         },
         neuralPrompts: [
-            { id: '01', label: 'SOCRATES PROMPT', q: '"내가 지금 느끼는 이 완벽에 대한 압박은 나의 생존을 돕고 있는가, 아니면 나의 통치권을 침해하고 있는가?"' },
-            { id: '02', label: 'RECURSIVE PROMPT', q: '"오늘 내가 한 실수 중 1년 뒤에도 기억날 것이 하나라도 있는가? 없다면 왜 지금 나를 처벌하고 있는가?"' },
-            { id: '03', label: 'META-COGNITION PROMPT', q: '"나는 지금 보석으로서 빛나고 싶은 것인가, 아니면 그저 부서지지 않으려고 경직되어 있는 것인가?"' },
+            { id: '01', label: 'SOCRATES PROMPT', q: '"내가 지금 느끼는 이 완벽에 대한 압박은 나의 <span class=\'text-amber-300 font-bold not-italic\'>생존</span>을 돕고 있는가, 아니면 나의 <span class=\'text-indigo-400 font-bold not-italic\'>통치권</span>을 침해하고 있는가?"' },
+            { id: '02', label: 'RECURSIVE PROMPT', q: '"오늘 내가 한 실수 중 <span class=\'text-amber-300 font-bold not-italic\'>1년 뒤에도 기억날 것</span>이 하나라도 있는가? 없다면 왜 지금 나를 처벌하고 있는가?"' },
+            { id: '03', label: 'META-COGNITION PROMPT', q: '"나는 지금 <span class=\'text-amber-300 font-bold not-italic\'>보석으로서 빛나고 싶은 것</span>인가, 아니면 그저 <span class=\'text-red-400 font-bold not-italic\'>부서지지 않으려고 경직</span>되어 있는 것인가?"' },
         ],
         steps: [
             { label: 'STEP 01: 코어 안정화 (CBT)', desc: '흑백 논리의 인지적 오류를 탐지하십시오. 세상은 100점 아니면 0점이 아닙니다. 중간 지대의 회색조를 수용할 때 당신의 예리함은 비로소 전략적 무기가 됩니다.' },
@@ -2036,7 +2037,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         {coaching.neuralPrompts.map(p => (
                                             <div key={p.id} className="p-4 rounded-xl border border-indigo-400/20 hover:border-indigo-400/50 transition-colors" style={{ background: 'rgba(42,42,42,0.6)' }}>
                                                 <span className="text-[10px] text-indigo-400 font-bold">{p.id}. {p.label}</span>
-                                                <p className="text-sm text-gray-200 mt-2 leading-relaxed italic">{p.q}</p>
+                                                <p className="text-sm text-gray-200 mt-2 leading-relaxed italic" dangerouslySetInnerHTML={{ __html: p.q }} />
                                             </div>
                                         ))}
                                     </div>
