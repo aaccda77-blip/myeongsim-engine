@@ -1072,7 +1072,7 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
             case 'iching_mmpi_shadow':
                 specificInstruction = `
 ## [Mode: 🎭 MMPI 그림자 사냥 (Shadow Hunting)]
-**목표:** 임상 척도(Z축)를 아픔이 아닌 '진입로'로 사용하여, 증상 뒤에 숨은 **'그림자(Shadow)'**와 그것을 만들어낸 **'생존 전략(Gain)'**을 찾아냅니다.
+**목표:** 현장 코칭 척도(Z축)를 아픔이 아닌 '진입로'로 사용하여, 증상 뒤에 숨은 **'그림자(Shadow)'**와 그것을 만들어낸 **'생존 전략(Gain)'**을 찾아냅니다.
 
 **[MMPI 재귀적 질문 알고리즘: 증상 -> 이득 -> 본질]**
 사용자의 호소를 듣고, 방어기제의 본질을 파고드세요.

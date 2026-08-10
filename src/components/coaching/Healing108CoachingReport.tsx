@@ -1346,7 +1346,7 @@ export default function Healing108CoachingReport({
                                         </h1>
                                     </div>
 
-                                    {/* ===== 1:1 융합 영혼 치유 에세이 + 6대 임상 심리 시스템 ===== */}
+                                    {/* ===== 1:1 융합 영혼 치유 에세이 + 6대 현장 코칭 심리 시스템 ===== */}
                                     {hasAiContent ? (
                                         <div className="space-y-6">
                                             {/* ✨ [핵심] 1:1 초개인화 융합 영혼 치유 에세이 카드 */}

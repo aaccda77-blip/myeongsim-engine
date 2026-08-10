@@ -271,7 +271,7 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
                     <div>
                       <h4 className="text-xs font-bold text-amber-300">생년월일을 연동하여 진짜 기질 맞춤형 힐링을 만나보세요!</h4>
                       <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                        현재 생년월일 정보가 연동되지 않아 기본값(갑목 기질)으로 생성된 치유 가이드가 보이고 있습니다. 메인 화면에서 <strong>명심 리포트</strong>를 생성하시면, 나만의 사주 일간 오행과 오늘의 바이오리듬이 완벽히 연합된 초개인화 AI 힐링 메시지가 실시간으로 활성화됩니다!
+                        현재 생년월일 정보가 연동되지 않아 기본값(갑목 기질)으로 생성된 웰니스 가이드가 보이고 있습니다. 메인 화면에서 <strong>명심 리포트</strong>를 생성하시면, 나만의 사주 일간 오행과 오늘의 바이오리듬이 완벽히 연합된 초개인화 AI 힐링 메시지가 실시간으로 활성화됩니다!
                       </p>
                     </div>
                   </motion.div>

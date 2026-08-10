@@ -213,7 +213,7 @@ function getFrameworkPromptForPage(pageId: string, sajuProfile: any): { title: s
     p13_16: {
       title: "[결정적 재능] 잠재력 디코딩",
       framework: "MSC 자기자비 마음챙김",
-      prompt: `내담자의 타고난 재능이 억압받았던 심리적 궤적을 짚어내고, 무의식 속 깊은 상처와 그림자 에너지를 스스로 따뜻하게 안아주고 보듬어주는 자기자비(MSC) 치유 가이드을 기술해주세요.`
+      prompt: `내담자의 타고난 재능이 억압받았던 심리적 궤적을 짚어내고, 무의식 속 깊은 상처와 그림자 에너지를 스스로 따뜻하게 안아주고 보듬어주는 자기자비(MSC) 웰니스 가이드을 기술해주세요.`
     },
     p17_20: {
       title: "[일주 분석] 시공간과 영역의 법칙",
@@ -670,7 +670,7 @@ export async function POST(req: NextRequest) {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - 섹션: ${mapping.title}
 - 심리 프레임워크: ${mapping.framework}
-- 핵심 치유 가이드라인:
+- 핵심 웰니스 가이드라인:
 ${mapping.prompt}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

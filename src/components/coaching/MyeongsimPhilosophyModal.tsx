@@ -67,7 +67,7 @@ export default function MyeongsimPhilosophyModal({ isOpen, onClose, userName = '
       iconBg: 'bg-rose-500/20 text-rose-300',
       tag: '05 // 긍정 뉴럴 재배선',
       title: '무의식 심리 치유 & 새로운 긍정 뉴럴 신경계 형성',
-      desc: '매일매일 들어와 1분 질문에 답하는 인터랙션만으로도 무의식적 마음 치유가 일어나며, 뇌에 긍정적인 새로운 뇌 신경망(Neural Circuit)을 재배선해 나갑니다.',
+      desc: '매일매일 들어와 1분 질문에 답하는 인터랙션만으로도 무의식적 마음 웰니스가 일어나며, 뇌에 긍정적인 새로운 뇌 신경망(Neural Circuit)을 재배선해 나갑니다.',
     },
   ];
 

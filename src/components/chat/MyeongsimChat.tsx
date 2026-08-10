@@ -498,7 +498,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                             <h3 className="text-lg font-black text-white">안녕하세요! 영혼의 AI 코치입니다 ✨</h3>
                             <p className="text-xs sm:text-sm text-gray-300 leading-relaxed break-keep font-medium">
                                 연동된 생년월일과 사주팔자를 바탕으로<br />
-                                <strong>3세대 임상심리학(ACT·CBT·MBCT·IFS) 8대 과학적 도구</strong>를 가동하여 1:1 핑퐁 코칭을 진행합니다.
+                                <strong>3세대 현장 코칭심리학(ACT·CBT·MBCT·IFS) 8대 과학적 도구</strong>를 가동하여 1:1 핑퐁 코칭을 진행합니다.
                             </p>
                         </div>
 
@@ -608,11 +608,11 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                         ))}
                                     </div>
 
-                                    {/* 3세대 임상심리학 메커니즘 & 음성/복사 인터랙션 툴바 */}
+                                    {/* 3세대 현장 코칭심리학 메커니즘 & 음성/복사 인터랙션 툴바 */}
                                     <div className="flex items-center justify-between gap-2 text-[10px] font-mono pt-3 border-t border-white/10 mt-3 flex-wrap">
                                         <div className="flex items-center gap-1.5 text-cyan-300 font-bold">
                                             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" />
-                                            <span>🔬 3세대 임상심리학 메커니즘 (ACT · CBT · MBCT · IFS)</span>
+                                            <span>🔬 3세대 현장 코칭심리학 메커니즘 (ACT · CBT · MBCT · IFS)</span>
                                         </div>
 
                                         <div className="flex items-center gap-1.5 ml-auto">
@@ -809,7 +809,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 onClose={() => setShowCompanyModal(false)} 
             />
 
-            {/* ── 6. 3세대 임상심리학 8대 과학적 도구 상세 모달 ── */}
+            {/* ── 6. 3세대 현장 코칭심리학 8대 과학적 도구 상세 모달 ── */}
             {selectedProtocol && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center p-4" onClick={() => setSelectedProtocol(null)}>
                     <motion.div
@@ -828,7 +828,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
                             <BrainCircuit className="w-6 h-6 text-cyan-400" />
                             <div>
-                                <h3 className="text-white font-black text-base sm:text-lg">제3세대 임상심리학 8대 과학적 엔진</h3>
+                                <h3 className="text-white font-black text-base sm:text-lg">제3세대 현장 코칭심리학 8대 과학적 엔진</h3>
                                 <p className="text-gray-400 text-xs">명심 AI 코치 실시간 가동 근거중심 심리코칭 프로토콜</p>
                             </div>
                         </div>
@@ -848,7 +848,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                 <Sparkles size={14} /> AI 실시간 융합 작동 메커니즘
                             </p>
                             <p className="leading-relaxed">
-                                명심 AI 코치는 사용자와 대화하는 도중 사고 왜곡, 불안, 완벽주의를 실시간 감지하여 <strong>{selectedProtocol.name}({selectedProtocol.code})</strong>의 임상적 도구를 타고난 사주 오행 기운과 1:1로 맞물려 가동합니다.
+                                명심 AI 코치는 사용자와 대화하는 도중 사고 왜곡, 불안, 완벽주의를 실시간 감지하여 <strong>{selectedProtocol.name}({selectedProtocol.code})</strong>의 실전 코칭적 도구를 타고난 사주 오행 기운과 1:1로 맞물려 가동합니다.
                             </p>
                         </div>
                     </motion.div>
@@ -891,7 +891,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                 <span className="font-mono text-sm font-extrabold">{clientSajuData?.dayMaster || '辛金 (신금)'}</span>
                             </div>
                             <div className="flex justify-between items-center text-cyan-300 font-bold border-b border-white/10 pb-2">
-                                <span>🧠 3세대 임상 심리 도구:</span>
+                                <span>🧠 3세대 현장 코칭 심리 도구:</span>
                                 <span>ACT 인지탈융합 & MBSR</span>
                             </div>
                             <div className="flex justify-between items-center text-emerald-300 font-bold">

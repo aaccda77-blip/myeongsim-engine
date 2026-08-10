@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ affirmation: defaultAffirmation || '오늘도 온전한 나의 중심으로 하루를 시작합니다.' });
     }
 
-    const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 통찰력 있는 마음 치유 코치입니다.
+    const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 통찰력 있는 마음 웰니스 코치입니다.
 사용자의 사주 일간(타고난 영혼의 기질)과 오늘 일진(오늘의 우주적 에너지 흐름), 그리고 둘 사이의 관계성을 바탕으로, 오늘 하루 사용자에게 강력한 용기와 위로를 줄 수 있는 '오늘의 핵심 선언문(Daily Affirmation)'을 작성해주세요.
 
 [정보]

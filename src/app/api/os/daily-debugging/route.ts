@@ -139,8 +139,8 @@ export async function POST(req: Request) {
       generationConfig: { responseMimeType: "application/json" }
     });
 
-    const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 감동적인 마음 치유 코치입니다.
-아래 사용자의 타고난 기질과 오늘의 에너지를 바탕으로, 상처받은 마음을 다정하게 어루만지고 용기를 건네는 '오늘의 마음 치유 리포트'를 작성하세요.
+    const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 감동적인 마음 웰니스 코치입니다.
+아래 사용자의 타고난 기질과 오늘의 에너지를 바탕으로, 상처받은 마음을 다정하게 어루만지고 용기를 건네는 '오늘의 마음 웰니스 리포트'를 작성하세요.
 
 === 사용자 프로필 ===
 - 사주 정보: ${pillarsDisplay} (${pillarsHanja}) / ${gender || '성별 미상'}

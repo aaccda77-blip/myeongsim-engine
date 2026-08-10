@@ -3093,7 +3093,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                     <h4 className="text-xs md:text-sm font-black text-white">6대 영역별 사주 × 자미두수 AI 교차 보고서</h4>
                   </div>
                   <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
-                    원하는 분야의 카드를 클릭해 보세요. 사주 일주와 자미두수 궁성(宮星)의 흐름을 다정한 은유법으로 버무린 감동의 자아 치유 리포트가 펼쳐집니다.
+                    원하는 분야의 카드를 클릭해 보세요. 사주 일주와 자미두수 궁성(宮星)의 흐름을 다정한 은유법으로 버무린 감동의 자아 웰니스 리포트가 펼쳐집니다.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -3144,7 +3144,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                           { id: 'job', label: '🌳 직업/진로/이직', icon: Milestone },
                           { id: 'love', label: '🪞 연애/결혼/사랑', icon: EyeOff },
                           { id: 'wealth', label: '💵 재물/사업/재테크', icon: Compass },
-                          { id: 'general', label: '🧘 마음 치유/인간관계', icon: Sparkles }
+                          { id: 'general', label: '🧘 마음 웰니스/인간관계', icon: Sparkles }
                         ].map((cat) => {
                           const CatIcon = cat.icon;
                           const isSelected = troubleCategory === cat.id;
@@ -3471,7 +3471,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                             </p>
                           </div>
                           <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500">
-                            <span>치유 가이드전 읽기</span>
+                            <span>웰니스 가이드전 읽기</span>
                             <ArrowRight className="w-3.5 h-3.5 text-purple-400 group-hover:translate-x-1 transition-transform" />
                           </div>
                         </motion.div>
@@ -3653,7 +3653,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                   </p>
                   
                   <div className="space-y-3">
-                    <span className="text-[10px] font-black text-emerald-400 block uppercase tracking-wider">💡 인지행동 치유 가이드 (Hot-Fix Patch)</span>
+                    <span className="text-[10px] font-black text-emerald-400 block uppercase tracking-wider">💡 인지행동 웰니스 가이드 (Hot-Fix Patch)</span>
                     <p className="text-xs text-slate-400 leading-relaxed">
                       이 충돌 에러는 특정 상황에서 작동하는 당신의 자동 방어 기제일 뿐입니다. 
                       이를 무력화하기 위해 "내가 틀릴 수 있음을 수용"하거나 "상황을 급격히 롤백하지 않고 3초간 머무르는" 핫픽스 실천을 가동해 보십시오.
@@ -3815,7 +3815,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                             : 'text-slate-400 hover:text-slate-205'
                         }`}
                       >
-                        🌿 마음 치유 에세이
+                        🌿 마음 웰니스 에세이
                       </button>
                       <button
                         onClick={() => setGyeokgukTab('advanced')}
@@ -3898,7 +3898,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
 
                       </div>
                     ) : (
-                      // 기존 마음 치유 에세이 탭 화면 (3대 MSC 자각)
+                      // 기존 마음 웰니스 에세이 탭 화면 (3대 MSC 자각)
                       <>
                         {/* 마음챙김 영역 */}
                         <div className="p-4 bg-slate-950/70 border border-white/5 rounded-2xl relative overflow-hidden">

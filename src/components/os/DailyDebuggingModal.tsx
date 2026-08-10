@@ -135,7 +135,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
     { id: 'matrix', label: '마음속 이야기', icon: Bug, color: 'text-rose-400' },
     { id: 'coaching', label: '따뜻한 코칭', icon: Brain, color: 'text-amber-400' },
     { id: 'questions', label: '마음 돌아보기', icon: Scan, color: 'text-violet-400' },
-    { id: 'reset', label: '마음 치유', icon: Eye, color: 'text-cyan-400' },
+    { id: 'reset', label: '마음 웰니스', icon: Eye, color: 'text-cyan-400' },
     { id: 'zeropoint', label: '온전한 나', icon: Target, color: 'text-emerald-400' },
     { id: 'worksheet', label: '워크시트', icon: Edit3, color: 'text-rose-300' },
   ];
@@ -162,7 +162,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
             <h2 className="text-sm font-bold flex items-center gap-2 font-mono">
               <Terminal className="w-4 h-4 text-emerald-400" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-                🌿 오늘의 명심 마음 치유 리포트
+                🌿 오늘의 명심 마음 웰니스 리포트
               </span>
             </h2>
             <div className="flex items-center gap-2">
@@ -217,7 +217,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                   <Cpu className="w-10 h-10 text-emerald-400" />
                 </motion.div>
                 <div className="text-center">
-                  <p className="text-sm text-emerald-400 font-mono mb-1">오늘의 마음 치유 리포트를 준비하고 있어요...</p>
+                  <p className="text-sm text-emerald-400 font-mono mb-1">오늘의 마음 웰니스 리포트를 준비하고 있어요...</p>
                   <p className="text-xs text-slate-500">당신의 타고난 기질과 오늘의 에너지를 정성껏 분석하고 있습니다</p>
                 </div>
                 <div className="w-48 h-1 bg-slate-800 rounded-full overflow-hidden">
@@ -342,7 +342,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                 {activeSection === 'reset' && (
                   <motion.div key="reset" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} className="space-y-5">
                     <div className="text-center mb-2">
-                      <span className="text-xs font-bold text-slate-500 font-mono">마음 치유 2단계 여행</span>
+                      <span className="text-xs font-bold text-slate-500 font-mono">마음 웰니스 2단계 여행</span>
                     </div>
 
                     {/* STEP 1 */}
@@ -427,7 +427,7 @@ export default function DailyDebuggingModal({ userId, dayMaster, yearPillar, mon
                     </div>
                     
                     <p className="text-xs text-slate-400">
-                      오늘의 마음 치유 리포트를 읽고 느낀 점, 떠오르는 생각, 혹은 내일의 나에게 남기는 따뜻한 다짐을 기록해보세요.
+                      오늘의 마음 웰니스 리포트를 읽고 느낀 점, 떠오르는 생각, 혹은 내일의 나에게 남기는 따뜻한 다짐을 기록해보세요.
                     </p>
 
                     <div className="flex-1 relative min-h-[250px]">
