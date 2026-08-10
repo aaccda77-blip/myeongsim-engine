@@ -315,10 +315,10 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
             { id: '03', label: 'META-COGNITION PROMPT', q: '"나는 지금 <span class=\'text-amber-300 font-bold not-italic\'>보석으로서 빛나고 싶은 것</span>인가, 아니면 그저 <span class=\'text-red-400 font-bold not-italic\'>부서지지 않으려고 경직</span>되어 있는 것인가?"' },
         ],
         steps: [
-            { label: 'STEP 01: 코어 안정화 (CBT)', desc: '흑백 논리의 인지적 오류를 탐지하십시오. 세상은 100점 아니면 0점이 아닙니다. 중간 지대의 회색조를 수용할 때 당신의 예리함은 비로소 전략적 무기가 됩니다.' },
-            { label: 'STEP 02: 장갑 해제 (ACT)', desc: '당신의 생각과 당신 자신을 분리하십시오. "나는 무능하다"가 아니라 "나는 무능하다는 생각을 하고 있다"라고 객관화하십시오. 당신은 그 생각을 관찰하는 하늘이지, 지나가는 먹구름이 아닙니다.' },
-            { label: 'STEP 03: 대류 현상 (DBT)', desc: '감정의 파도를 억누르지 말고 타십시오. 임수(壬水)의 에너지는 흐름입니다. 일주일에 한 번, 목적 없는 창작이나 몰입을 통해 감정의 배출구를 강제로 개방하십시오.' },
-            { label: 'STEP 04: 결실 (MBCT)', desc: '현재에 머무는 감각을 회복하십시오. 미래의 불안과 과거의 후회라는 금속성 소음을 끄고, 지금 이 순간 당신의 손끝에 닿는 감각에 집중할 때 진정한 주권자의 결실(乙木)이 맺힙니다.' },
+            { label: 'STEP 01: 코어 안정화 (CBT)', desc: '흑백 논리의 인지적 오류를 탐지하십시오. 세상은 100점 아니면 0점이 아닙니다. <span class=\'text-amber-300 font-bold\'>중간 지대의 회색조</span>를 수용할 때 당신의 예리함은 비로소 전략적 무기가 됩니다.' },
+            { label: 'STEP 02: 장갑 해제 (ACT)', desc: '당신의 생각과 당신 자신을 분리하십시오. "나는 무능하다"가 아니라 "나는 무능하다는 생각을 하고 있다"라고 객관화하십시오. 당신은 그 생각을 <span class=\'text-amber-300 font-bold\'>관찰하는 하늘</span>이지, 지나가는 먹구름이 아닙니다.' },
+            { label: 'STEP 03: 대류 현상 (DBT)', desc: '감정의 파도를 억누르지 말고 타십시오. 임수(壬水)의 에너지는 흐름입니다. 일주일에 한 번, 목적 없는 창작이나 몰입을 통해 <span class=\'text-amber-300 font-bold\'>감정의 배출구</span>를 강제로 개방하십시오.' },
+            { label: 'STEP 04: 결실 (MBCT)', desc: '현재에 머무는 감각을 회복하십시오. 미래의 불안과 과거의 후회라는 금속성 소음을 끄고, <span class=\'text-amber-300 font-bold\'>지금 이 순간 당신의 손끝에 닿는 감각</span>에 집중할 때 진정한 주권자의 결실(乙木)이 맺힙니다.' },
         ],
         metaSelf: '이제 당신은 더 이상 타인에 의해 제련되는 원석이 아닙니다. 스스로의 광채를 조절할 줄 아는 완성된 보석이자, 깊은 지혜의 바다를 품은 군주입니다. 예리함은 통찰로 변모했고, 강박은 우아함으로 승화되었습니다. 당신의 진화는 이제부터가 시작입니다.',
         finalQuote: '"夏月辛金, 壬水為尊"',
@@ -2095,23 +2095,32 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                 <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full"
                                                     style={{ background: 'linear-gradient(135deg, #f2ca50 0%, #d4af37 100%)' }} />
                                                 <p className="text-xs font-bold text-yellow-400 mb-1">{step.label}</p>
-                                                <p className="text-xs text-gray-400 leading-relaxed">{step.desc}</p>
+                                                <p className="text-xs text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: step.desc }} />
                                             </div>
                                         ))}
                                     </div>
                                 </section>
 
-                                {/* ── Phase 5: Meta-Self ── */}
-                                <section className="py-8 px-5 rounded-2xl relative overflow-hidden border border-yellow-400/10" style={{ background: 'rgba(28,27,27,0.8)' }}>
-                                    <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-[60px]"
+                                {/* ── Phase 5: Meta-Self (Sovereign Execution State) ── */}
+                                <section className="py-8 px-5 rounded-2xl relative overflow-hidden border border-yellow-400/20 shadow-2xl" style={{ background: 'rgba(28,27,27,0.85)' }}>
+                                    <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-15 blur-[60px]"
                                         style={{ background: 'radial-gradient(circle, #f2ca50 0%, transparent 70%)' }} />
                                     <div className="relative space-y-4">
-                                        <span className="text-[10px] text-gray-500 uppercase tracking-widest">Execution State</span>
-                                        <h2 className="font-serif text-2xl font-bold"
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Execution State</span>
+                                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[9px] font-mono font-extrabold uppercase tracking-wider flex items-center gap-1">
+                                                <span className="material-symbols-outlined text-[11px]">verified</span>
+                                                META CODE INTEGRATED
+                                            </span>
+                                            <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 text-[9px] font-mono font-extrabold uppercase tracking-wider">
+                                                ZERO POINT STATE
+                                            </span>
+                                        </div>
+                                        <h2 className="font-serif text-xl md:text-2xl font-bold"
                                             style={{ background: 'linear-gradient(135deg, #f2ca50 0%, #d4af37 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                             Sovereign of Deep Compassion & Flawless Elegance
                                         </h2>
-                                        <p className="text-sm text-gray-300 italic leading-relaxed">{coaching.metaSelf}</p>
+                                        <p className="text-sm text-gray-200 italic leading-relaxed font-sans">{coaching.metaSelf}</p>
                                     </div>
                                 </section>
 
