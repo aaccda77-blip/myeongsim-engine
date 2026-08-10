@@ -448,10 +448,10 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
         closingMessage: '당신의 직선적인 에너지가 세상을 개척합니다. 단, 뿌리를 적셔줄 물(水)의 공감과 토대를 굳혀줄 흙(土)의 신뢰를 함께 키우십시오.',
         masterRoadmap: {
             engines: [
-                { label: '하드웨어 엔진 (木 비겁)', title: '불굴의 개척 코어', desc: '하늘을 향해 뻗어나가는 대나무. 어떤 장애물이 있어도 우회하지 않고 뚫고 나가는 원초적 에너지입니다.' },
+                { label: '하드웨어 엔진 (木 비겁)', title: '불굴의 개척 코어', desc: '독자적 규격을 밀어붙이는 수직 스케일링 코어. 어떤 장애물이 있어도 우회하지 않고 뚫고 나가는 고밀도 시스템 하드웨어입니다.' },
                 { label: '중앙 처리 장치 (甲木)', title: '직진형 돌파 프로세서', desc: '목적지가 정해지면 뒤돌아보지 않습니다. 복잡성을 배제하고 가장 직선적인 경로(Fast-Track)를 계산하는 코어입니다.' },
-                { label: '냉각수 및 출력 포트 (火 식상)', title: '비전의 언어화 쿨링', desc: '강한 추진력으로 인해 발생하는 내부 압력을 타인을 향한 따뜻한 설득력과 비전 제시로 방열합니다.' },
-                { label: '최종 결과물 및 네트워크 (土 재성)', title: '안정적 신뢰 인프라', desc: '개척한 땅에 깊이 뿌리를 내리는 작업. 사람들의 신뢰라는 비옥한 토양에 현실적 비즈니스 네트워크를 완성합니다.' }
+                { label: '에너지 방열 및 출력 포트 (火 식상)', title: '비전의 언어화 방열 포트', desc: '고성능 추진 과정에서 발생하는 내부 열기를 타인을 향한 따뜻한 비전 발산과 전략적 언어로 완벽히 방열합니다.' },
+                { label: '최종 결과물 및 네트워크 (土 재성)', title: '스케일러블 신뢰 인프라', desc: '스케일러블 인프라 세팅 및 데이터베이스 고정. 사람들의 신뢰 데이터베이스 위에서 구축되는 지능형 비즈니스 네트워크입니다.' }
             ],
             shifts: [
                 { step: '1단계', title: '비전 스위치를 켜라', desc: '혼자 앞서 나가지 말고, 당신이 보고 있는 미래의 비전을 사람들에게 명확히 설명하십시오.', action: "팀원/고객에게 명심(비전) 공유 세션 즉시 개최" },
@@ -2230,32 +2230,40 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                 </div>
 
                                                 {/* ── [PHASE 7 890원 / 1,900원 ALL-PASS 감동 에세이 CTA 바] ── */}
-                                                <div className="mt-4 p-5 rounded-2xl border border-amber-500/30 bg-[#181526]/80 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl relative overflow-hidden">
-                                                    <div className="flex items-center gap-3.5">
-                                                        <div className="size-12 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 shrink-0">
-                                                            <span className="material-symbols-outlined text-2xl">menu_book</span>
-                                                        </div>
-                                                        <div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">VIP Master Class</span>
-                                                                {(isPhase7Unlocked || isAllPassUnlocked) && (
-                                                                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold">
-                                                                        열람 완료
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <h4 className="text-sm font-bold text-white mt-0.5">4대 코어 엔진 '인생 실행서' 감동 에세이 해설</h4>
-                                                            <p className="text-xs text-slate-400 mt-1">4대 엔진이 내 삶과 비즈니스에서 어떻게 만개하는지 AI 코치의 마스터 클래스를 확인해 보세요.</p>
-                                                        </div>
+                                                <div className="mt-6 p-5 rounded-2xl border border-amber-500/40 bg-[#161224]/90 flex flex-col gap-4 shadow-2xl relative overflow-hidden">
+                                                    {/* 블러 프리뷰 텍스트 2줄 (시각적 잠금 힌트) */}
+                                                    <div className="filter blur-[5px] select-none text-slate-400 text-xs space-y-1 opacity-70 pointer-events-none border-b border-amber-500/20 pb-3">
+                                                        <p className="font-mono">▒▒▒▒▒▒ [VIP Master Architect 에세이 미리보기] 4대 코어 엔진이 내 삶과 비즈니스에서 ▒▒▒▒▒▒</p>
+                                                        <p className="font-mono">▒▒▒▒▒▒ 복잡한 관념을 넘어 어떻게 고단가 스케일러블 인프라로 구동되는지 디테일 가이드를 해제하세요. ▒▒▒▒▒▒</p>
                                                     </div>
 
-                                                    <button
-                                                        onClick={() => setIsPhase7ModalOpen(true)}
-                                                        className="w-full md:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-5 py-3 rounded-xl font-black text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
-                                                    >
-                                                        <span className="material-symbols-outlined text-base">auto_awesome</span>
-                                                        <span>{(isPhase7Unlocked || isAllPassUnlocked) ? '마스터 클래스 에세이 읽기' : '🔓 890원에 4대 코어 인생 실행서 풀어서 보기'}</span>
-                                                    </button>
+                                                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                                                        <div className="flex items-center gap-3.5">
+                                                            <div className="size-12 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 shrink-0">
+                                                                <span className="material-symbols-outlined text-2xl">lock</span>
+                                                            </div>
+                                                            <div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">VIP Master Class</span>
+                                                                    {(isPhase7Unlocked || isAllPassUnlocked) && (
+                                                                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold">
+                                                                            열람 완료
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <h4 className="text-sm font-bold text-white mt-0.5">4대 코어 엔진 '인생 실행서' 감동 에세이 해설</h4>
+                                                                <p className="text-xs text-slate-400 mt-1">4대 엔진이 내 삶과 비즈니스에서 어떻게 스케일업되는지 AI 코치의 마스터 클래스를 확인해 보세요.</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <button
+                                                            onClick={() => setIsPhase7ModalOpen(true)}
+                                                            className="w-full md:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                                                        >
+                                                            <span className="material-symbols-outlined text-base">lock</span>
+                                                            <span>{(isPhase7Unlocked || isAllPassUnlocked) ? '마스터 클래스 에세이 읽기' : '🔒 890원에 4대 코어 인생 실행서 해제하기'}</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
 
