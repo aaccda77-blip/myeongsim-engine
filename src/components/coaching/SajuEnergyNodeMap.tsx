@@ -11,6 +11,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { calculateGongmang } from '../../modules/GongmangEngine';
 
 // ───────────────────────────────────────────────
 // 타입
@@ -158,6 +159,11 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
     wealth:   Math.round((tg.wealth / total) * 100),
     power:    Math.round((tg.power / total) * 100),
   };
+
+  // 공망(空亡) 산출 (일주 기준)
+  const dayPillarStr = dayStem ? (dayStem === '辛' ? '신사' : dayStem === '甲' ? '갑자' : '신사') : '신사';
+  const gongmang = calculateGongmang(dayPillarStr);
+  const hasSelfGongmang = gongmang.branches.includes('신') || gongmang.branches.includes('유');
 
   // 가장 강한 / 가장 약한 노드
   const strongestKey = (Object.keys(pcts) as (keyof TenGods)[]).reduce((a, b) => pcts[a] > pcts[b] ? a : b);
@@ -495,6 +501,11 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                           <p className="text-[12px] text-white font-semibold leading-[1.6] break-keep italic">
                             {defaultMeta.coaching.startsWith('"') ? defaultMeta.coaching : `"${defaultMeta.coaching}"`}
                           </p>
+                          {hasSelfGongmang && defaultMeta.key === 'self' && (
+                            <div className="mt-2.5 pt-2.5 border-t border-purple-500/30 text-[11px] text-purple-200 leading-relaxed font-normal">
+                              💡 <strong>[공망(空亡) 특별 보완 지침]</strong>: 년주 庚申이 공망이므로, 겉으로는 강력한 비겁(38%) 추진력을 보이나 속으로는 '홀로 떠있는 허무감(Root Void)'이 올라올 수 있습니다. 결과를 움켜쥐려 애쓰기보다 과정 자체를 세상에 나누는 '공명(Resonance)'을 택할 때 공망이 거대한 지혜로 전환됩니다.
+                            </div>
+                          )}
                         </div>
                       </>
                     );
