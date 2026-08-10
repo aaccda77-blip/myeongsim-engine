@@ -21,6 +21,7 @@ import SajuArchitectureFlow from './SajuArchitectureFlow';
 import SajuEnergyNodeMap from './SajuEnergyNodeMap';
 import TripleCoreAnalysis, { calculateTenGodsFromOhaeng } from './TripleCoreAnalysis';
 import SelfCoaching100 from './SelfCoaching100';
+import ShiftStepDetailModal from '../modals/ShiftStepDetailModal';
 
 // ─────────────────────────────────────────────
 // 타입 정의
@@ -456,7 +457,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
             ],
             shifts: [
                 { step: '1단계', title: '비전 스위치를 켜라', desc: '혼자 앞서 나가지 말고, 당신이 보고 있는 미래의 비전을 사람들에게 명확히 설명하십시오.', action: "팀원/고객에게 명심(비전) 공유 세션 즉시 개최" },
-                { step: '2단계', title: '경청의 토양을 다져라', desc: '추진 과정에서 놓친 타인의 감정과 현실적 위험 요소를 수집하는 시스템을 구축합니다.', action: "반대 의견을 수렴할 수 있는 피드백 루프 파이프라인 생성" },
+                { step: '2단계', title: '경청의 토양을 다져라', desc: '추진 과정에서 놓친 타인의 감정과 현실적 위험 요소를 수집하는 시스템을 구축합니다.', action: "마음을 열고 주변의 소중한 조언과 다른 의견을 따뜻하게 경청하는 대화의 장 마련" },
                 { step: '3단계', title: '결과의 뿌리내림 (System)', desc: '단순한 아이디어를 넘어 대중이 밟고 설 수 있는 견고한 플랫폼(조직/기업)으로 전환합니다.', action: "개인 비즈니스에서 시스템이 스스로 굴러가는 구조(팀 빌딩) 완성" }
             ],
             dailyMissions: [
@@ -1634,6 +1635,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const [isDailyEssayModalOpen, setIsDailyEssayModalOpen] = useState(false);
     const [isDailyEssayUnlocked, setIsDailyEssayUnlocked] = useState(false);
     const [isShiftEssayModalOpen, setIsShiftEssayModalOpen] = useState(false);
+    const [selectedShiftStep, setSelectedShiftStep] = useState<any>(null);
+    const [showShiftStepModal, setShowShiftStepModal] = useState(false);
     const [isShiftEssayUnlocked, setIsShiftEssayUnlocked] = useState(false);
     const [isRuntimeEssayModalOpen, setIsRuntimeEssayModalOpen] = useState(false);
     const [isRuntimeEssayUnlocked, setIsRuntimeEssayUnlocked] = useState(false);
@@ -3024,6 +3027,13 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* AI 코치 쉬운 예시 팝업 모달 */}
+            <ShiftStepDetailModal
+                isOpen={showShiftStepModal}
+                onClose={() => setShowShiftStepModal(false)}
+                stepData={selectedShiftStep}
+            />
 
 
             {/* ── [Phase 7 Master Class Essay Paywall Modal (890원 / 1,900원 ALL-PASS)] ── */}
