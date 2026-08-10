@@ -8,6 +8,8 @@ import { useReportStore } from '@/store/useReportStore';
 import Footer from '@/components/Footer';
 import CompanyInfoModal from '../modals/CompanyInfoModal';
 import MicroChatPassModal from '../modals/MicroChatPassModal';
+import MindStateSelectorModal from '../modals/MindStateSelectorModal';
+import TrendingTopicModal from '../modals/TrendingTopicModal';
 
 const PSYCH_PROTOCOLS = [
     { code: 'MBCT', name: '마음챙김 인지코칭', desc: 'Mindfulness-Based Cognitive Therapy: 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point)', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/50' },
@@ -54,6 +56,8 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [showCardModal, setShowCardModal] = useState<boolean>(false);
     const [showCompanyModal, setShowCompanyModal] = useState<boolean>(false);
     const [showMicroPassModal, setShowMicroPassModal] = useState<boolean>(false);
+    const [showMindStateModal, setShowMindStateModal] = useState<boolean>(false);
+    const [showTrendingTopicModal, setShowTrendingTopicModal] = useState<boolean>(false);
     const [isPaidUser, setIsPaidUser] = useState<boolean>(false);
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
