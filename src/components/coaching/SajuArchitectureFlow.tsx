@@ -686,24 +686,24 @@ export default function SajuArchitectureFlow({
 
         {/* 비활성 패턴 요약 */}
         {flowResults.some(r => !r.active) && (
-          <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4">
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono mb-3">
-              ⬜ 비활성 패턴 (단절 또는 미달)
+          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 shadow-lg">
+            <p className="text-[11px] text-slate-300 font-bold uppercase tracking-widest font-mono mb-3 flex items-center gap-1.5">
+              <span>⬜</span> 비활성 패턴 (단절 또는 미달)
             </p>
             <div className="flex flex-wrap gap-2">
               {flowResults.filter(r => !r.active).map(r => (
                 <button
                   key={r.def.key}
                   onClick={() => setSelectedIdx(flowResults.indexOf(r))}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 hover:border-slate-600 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-600/60 bg-slate-800/70 hover:border-purple-400/60 hover:bg-slate-700/70 transition-all cursor-pointer shadow-sm"
                 >
-                  <span className="w-2 h-2 rounded-full" style={{ background: r.def.color, opacity: 0.4 }} />
-                  <span className="text-[10px] text-slate-400 font-medium">{r.def.korName}</span>
-                  <span className="text-[9px] text-slate-500 font-bold">{r.score}% ({(r as any).isBroken ? '단절' : '미달'})</span>
+                  <span className="w-2 h-2 rounded-full" style={{ background: r.def.color, opacity: 0.8 }} />
+                  <span className="text-[11px] text-white font-bold">{r.def.korName}</span>
+                  <span className="text-[10px] text-slate-300 font-extrabold">{r.score}% ({(r as any).isBroken ? '단절' : '미달'})</span>
                 </button>
               ))}
             </div>
-            <p className="text-[10px] text-slate-600 mt-3 leading-relaxed break-keep">
+            <p className="text-[11px] text-slate-300 font-medium mt-3 leading-relaxed break-keep">
               비활성 패턴은 현재 뇌 구조에서 필수 신경망(노드) 하나가 완전히 끊겨 있거나(연결 단절), 발동 에너지가 부족해(에너지 미달) 현실에서 온전히 쓰이지 못하는 흐름입니다. 클릭하여 원인과 교정 전술을 확인하세요.
             </p>
           </div>
