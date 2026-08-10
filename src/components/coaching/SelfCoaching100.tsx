@@ -150,7 +150,7 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
   const [randomQuestion, setRandomQuestion] = useState<{ id: number; text: string; catId: string } | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
-  // ── 890pt AI 오라클 감동 에세이 모달 상태 ──
+  // ── 890원 AI 오라클 감동 에세이 모달 상태 ──
   const [selectedQuestionModal, setSelectedQuestionModal] = useState<{
     id: number;
     text: string;
@@ -421,7 +421,7 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
                     {q.text}
                   </p>
                   <span className="inline-flex items-center gap-1 text-[10px] text-amber-400/70 mt-1.5 font-mono">
-                    <span>🔒 890pt AI 코치 감동 해설 열람하기 ➜</span>
+                    <span>🔒 890원 AI 코치 감동 해설 열람하기 ➜</span>
                   </span>
                 </div>
                 
@@ -505,7 +505,7 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
                         }}
                         className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
                       >
-                        <span>🔓 890원 단품 해제 (890pt)</span>
+                        <span>🔓 890원 단품 해제 (890원)</span>
                       </button>
 
                       <button
@@ -534,7 +534,7 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
                   className="space-y-4 pt-2"
                 >
                   <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
-                    <span>✓</span> {isAllPassUnlocked ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 오라클 1:1 감동 해설서
+                    <span>✓</span> {isAllPassUnlocked ? '1,900원 ALL-PASS 결제 완료' : '890원 단품 결제 완료'} • AI 오라클 1:1 감동 해설서
                   </div>
 
                   <div className="p-5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-3">
