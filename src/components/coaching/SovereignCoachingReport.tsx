@@ -3683,41 +3683,37 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             {(isAllPassUnlocked) ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 마이크로 가이드
                                         </div>
 
-                                        {/* Step 1 */}
-                                        <div className="p-5 rounded-xl bg-yellow-500/10 border border-yellow-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-yellow-300 text-sm">01. 기술적 레버리지: "더 이상 모든 것을 백지에서 시작하지 마세요"</h5>
-                                                <span className="text-[10px] font-mono text-yellow-400/80">AUTOMATION PIPELINE</span>
+                                        {coaching.masterRoadmap?.microManual?.sections?.map((sec, idx) => (
+                                            <div key={idx} className={`p-5 rounded-xl border space-y-2 ${
+                                                idx === 0 ? 'bg-yellow-500/10 border-yellow-500/30' :
+                                                idx === 1 ? 'bg-amber-500/10 border-amber-500/30' :
+                                                'bg-cyan-500/10 border-cyan-500/30'
+                                            }`}>
+                                                <div className="flex items-center justify-between">
+                                                    <h5 className={`font-bold text-sm ${
+                                                        idx === 0 ? 'text-yellow-300' :
+                                                        idx === 1 ? 'text-amber-300' :
+                                                        'text-cyan-300'
+                                                    }`}>
+                                                        {sec.title}
+                                                    </h5>
+                                                    <span className="text-[10px] font-mono text-slate-400">MICRO EXECUTION {idx + 1}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                    {sec.desc}
+                                                </p>
+                                                {sec.insight && (
+                                                    <div className="mt-3 pt-2 border-t border-amber-500/20 text-xs font-semibold text-amber-300">
+                                                        {sec.insight}
+                                                    </div>
+                                                )}
                                             </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 매번 상담이나 작업을 할 때마다 처음부터 끝까지 혼자 머리를 쥐어짜며 괴로워했을까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                세상을 바꾸는 명장(Master)은 광산에 직접 들어가 땅을 파지 않습니다. 땅을 파고 원석을 캐내는 고된 작업(데이터 수집 및 1차 분석)은 24시간 지치지 않는 AI 시스템(n8n + Gemini)에게 맡기세요. AI가 10초 만에 들고 온 80점짜리 초안을 바탕으로, 당신은 가장 예리하고 우아하게 <strong className="text-amber-300">'최종 다듬기'</strong>만 거치면 됩니다. 기술을 두려워하지 마세요. 기술은 당신의 자리를 빼앗는 것이 아니라, 당신을 '지친 노동자'에서 '우아한 세공사'로 격상시켜 주는 가장 다정한 하수인입니다.
-                                            </p>
-                                        </div>
-
-                                        {/* Step 2 */}
-                                        <div className="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-amber-300 text-sm">02. 인적 레버리지: "당신의 시간은 폰트를 고르기엔 너무나 숭고합니다"</h5>
-                                                <span className="text-[10px] font-mono text-amber-400/80">HUMAN DELEGATION</span>
+                                        )) || (
+                                            <div className="p-5 rounded-xl bg-yellow-500/10 border border-yellow-500/30 space-y-2">
+                                                <h5 className="font-bold text-yellow-300 text-sm">마이크로 실행 매뉴얼</h5>
+                                                <p className="text-xs text-slate-200 leading-relaxed">{coaching.masterRoadmap?.microManual?.intro || coaching.closingMessage}</p>
                                             </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"단돈 몇만 원을 아끼겠다고 온종일 서류 양식을 만들고 디자인을 수정하진 않으셨나요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                당신이 지닌 가장 뛰어난 자산은 '남들이 보지 못하는 오류를 잡아내는 예리한 분석력'입니다. 하지만 그 고귀한 능력을 영수증 정리나 서류 발급, 디자인 작업 같은 잡무에 낭비한다면, 당신의 가치는 평범한 수준에 머물게 됩니다. 잡무는 시스템과 전문가에게 위임하세요. <strong className="text-amber-300">"내 시급은 이런 일에 쓰기엔 너무 비싸다"</strong>라는 정당한 자부심을 가질 때, 당신의 리포트는 30만 원, 50만 원, 나아가 기업이 고개 숙여 요청하는 고단가 B2B 솔루션으로 변모합니다.
-                                            </p>
-                                        </div>
-
-                                        {/* Step 3 */}
-                                        <div className="p-5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-cyan-300 text-sm">03. 마스터 아키텍트의 선언: "나는 채굴자가 아니라 세공사다"</h5>
-                                                <span className="text-[10px] font-mono text-cyan-400/80">MASTER DECLARATION</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"완벽하지 않은 AI의 초안에 답답해하지 마세요. 그것이 바로 당신이 존재하는 이유입니다."</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                AI가 완벽한 답을 낸다면 당신이 설 자리는 사라집니다. AI가 가져온 원석의 허점을 찾아내어 날카로운 단 하나의 질문(SHIFT Trigger)을 던지는 것, 그것이 바로 인간인 당신만이 할 수 있는 진정한 가치 창출입니다. 이제 스스로를 기계처럼 채찍질하는 삶을 멈추고, AI가 깎아온 원석 위에서 당신만의 빛을 세공하는 주권자의 삶을 시작하세요.
-                                            </p>
-                                        </div>
+                                        )}
                                     </motion.div>
                                 )}
                             </div>
