@@ -8,12 +8,12 @@ export const metadata = {
 
 export default function MyeongsimChatPage() {
     return (
-        <main className="min-h-screen bg-[#0d131a] flex flex-col items-center justify-start p-4 py-8 overflow-y-auto">
+        <main className="min-h-[100dvh] bg-[#040714] flex flex-col items-center justify-center p-0 sm:p-4 overflow-x-hidden">
             {/* MyeongsimChatWrapper: 실제 로그인 userId 자동 주입 */}
             <MyeongsimChatWrapper />
             
             {/* 하단 푸터 (회사 정보 및 고객센터) */}
-            <div className="w-full max-w-2xl mt-8 pb-12">
+            <div className="w-full max-w-2xl mt-4 sm:mt-8 pb-8 sm:pb-12 px-4 sm:px-0">
                 <Footer />
             </div>
         </main>

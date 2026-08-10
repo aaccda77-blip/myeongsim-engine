@@ -395,7 +395,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     };
 
     return (
-        <div className="flex flex-col h-[760px] max-h-[92vh] w-full max-w-4xl bg-[#040714]/95 backdrop-blur-3xl border border-white/15 rounded-[32px] overflow-hidden shadow-[0_0_80px_rgba(15,23,42,0.8)] font-sans relative text-left">
+        <div className="flex flex-col h-[100dvh] sm:h-[780px] sm:max-h-[92vh] w-full max-w-4xl bg-[#040714] sm:bg-[#040714]/95 backdrop-blur-3xl border-0 sm:border border-white/15 rounded-none sm:rounded-[32px] overflow-hidden shadow-[0_0_80px_rgba(15,23,42,0.8)] font-sans relative text-left">
             
             {/* ── 1. 세계 최고 수준 웰니스 헤더 (모바일 초강력 콤팩트 최적화) ── */}
             <header className="p-3 sm:p-5 border-b border-white/10 bg-gradient-to-r from-slate-950 via-slate-900/90 to-indigo-950/80 flex flex-col gap-2.5 shrink-0 relative z-20">
@@ -559,48 +559,44 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                 <span>{m.content}</span>
                             ) : (
                                 <div className="space-y-3">
-                                    {m.content.split('\n\n').map((paragraph, i) => {
-                                        const formatted = renderFormattedText(paragraph);
-                                        if (!formatted) return null;
+                                    {(() => {
+    let scanDone = false;
+    let syncDone = false;
+    let shiftDone = false;
+    return m.content.split('\n\n').map((paragraph, i) => {
+        const formatted = renderFormattedText(paragraph);
+        if (!formatted) return null;
 
-                                        // 3S 단계별 강조 렌더링
-                                        if (paragraph.includes('Scan') || paragraph.includes('다크코드') || paragraph.includes('보호막')) {
-                                            return (
-                                                <div key={i} className="bg-rose-950/40 border-l-4 border-rose-500 p-3 rounded-r-2xl shadow-inner">
-                                                    <span className="text-xs text-rose-400 font-black block mb-1">🛡️ Step 1. SCAN (다크코드 자비 수용)</span>
-                                                    <div className="text-rose-100/90 leading-relaxed">{formatted}</div>
-                                                </div>
-                                            );
-                                        }
-                                        if (paragraph.includes('Sync') || paragraph.includes('뉴럴코드') || paragraph.includes('재배선')) {
-                                            return (
-                                                <div key={i} className="bg-blue-950/40 border-l-4 border-blue-400 p-3 rounded-r-2xl shadow-inner">
-                                                    <span className="text-xs text-blue-400 font-black block mb-1">🧠 Step 2. SYNC (뉴럴코드 역량 재배선)</span>
-                                                    <div className="text-blue-100/90 leading-relaxed">{formatted}</div>
-                                                </div>
-                                            );
-                                        }
-                                        if (paragraph.includes('Shift') || paragraph.includes('메타코드') || paragraph.includes('제로포인트')) {
-                                            return (
-                                                <div key={i} className="bg-amber-950/40 border-l-4 border-amber-500 p-3 rounded-r-2xl shadow-inner">
-                                                    <span className="text-xs text-amber-400 font-black block mb-1">👑 Step 3. SHIFT (메타코드 영점 각성)</span>
-                                                    <div className="text-amber-100/90 leading-relaxed">{formatted}</div>
-                                                </div>
-                                            );
-                                        }
-                                        // 질문 문장 하이라이트
-                                        if (paragraph.includes('?') || paragraph.includes('💭') || paragraph.includes('💖')) {
-                                            return (
-                                                <div key={i} className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-2xl mt-1.5">
-                                                    <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 mb-1">
-                                                        <MessageCircleHeart size={14} /> AI 코치의 핑퐁 성찰 질문
-                                                    </span>
-                                                    <div className="text-emerald-200 font-bold leading-relaxed">{formatted}</div>
-                                                </div>
-                                            );
-                                        }
-                                        return <p key={i} className="leading-relaxed">{formatted}</p>;
-                                    })}
+        if (!scanDone && (paragraph.includes('Scan') || paragraph.includes('다크코드') || paragraph.includes('보호막'))) {
+            scanDone = true;
+            return (
+                <div key={i} className="bg-rose-950/40 border-l-4 border-rose-500 p-3 rounded-r-2xl shadow-inner">
+                    <span className="text-xs text-rose-400 font-black block mb-1">🛡️ Step 1. SCAN (다크코드 자비 수용)</span>
+                    <div className="text-rose-100/90 leading-relaxed">{formatted}</div>
+                </div>
+            );
+        }
+        if (!syncDone && (paragraph.includes('Sync') || paragraph.includes('뉴럴코드') || paragraph.includes('재배선'))) {
+            syncDone = true;
+            return (
+                <div key={i} className="bg-blue-950/40 border-l-4 border-blue-400 p-3 rounded-r-2xl shadow-inner">
+                    <span className="text-xs text-blue-400 font-black block mb-1">🧠 Step 2. SYNC (뉴럴코드 역량 재배선)</span>
+                    <div className="text-blue-100/90 leading-relaxed">{formatted}</div>
+                </div>
+            );
+        }
+        if (!shiftDone && (paragraph.includes('Shift') || paragraph.includes('메타코드') || paragraph.includes('제로포인트'))) {
+            shiftDone = true;
+            return (
+                <div key={i} className="bg-amber-950/40 border-l-4 border-amber-500 p-3 rounded-r-2xl shadow-inner">
+                    <span className="text-xs text-amber-400 font-black block mb-1">👑 Step 3. SHIFT (메타코드 영점 각성)</span>
+                    <div className="text-amber-100/90 leading-relaxed">{formatted}</div>
+                </div>
+            );
+        }
+        return <p key={i} className="leading-relaxed">{formatted}</p>;
+    });
+})()}
 
                                     {/* 이모지 성찰 공감 칩 */}
                                     <div className="flex items-center gap-1.5 pt-1">
@@ -659,7 +655,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                             <button
                                                 type="button"
                                                 onClick={() => setShowCardModal(true)}
-                                                className="px-2.5 py-1 rounded-xl font-bold bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 transition-all flex items-center gap-1 cursor-pointer"
+                                                className="px-3 py-1.5 rounded-xl font-bold bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40 transition-all flex items-center gap-1.5 cursor-pointer text-xs min-h-[36px] shadow-sm"
                                             >
                                                 <FileText size={12} />
                                                 <span>📜 1:1 가이드 카드</span>
@@ -669,7 +665,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                             <button
                                                 type="button"
                                                 onClick={() => handleCopy(m.id, m.content)}
-                                                className="px-2.5 py-1 rounded-xl font-bold bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white border border-white/10 transition-all flex items-center gap-1 cursor-pointer"
+                                                className="px-3 py-1.5 rounded-xl font-bold bg-white/10 hover:bg-white/20 text-gray-200 hover:text-white border border-white/15 transition-all flex items-center gap-1.5 cursor-pointer text-xs min-h-[36px] shadow-sm"
                                             >
                                                 {copiedMessageId === m.id ? (
                                                     <>
