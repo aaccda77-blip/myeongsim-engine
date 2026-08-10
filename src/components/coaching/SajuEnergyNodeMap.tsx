@@ -164,10 +164,10 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
   const weakestKey   = (Object.keys(pcts) as (keyof TenGods)[]).reduce((a, b) => pcts[a] < pcts[b] ? a : b);
 
   // SVG 사이즈 & 여백 확장 (클리핑 방지)
-  const SVG_SIZE = 300;
+  const SVG_SIZE = 320;
   const CX = SVG_SIZE / 2;
   const CY = SVG_SIZE / 2;
-  const R = 85;
+  const R = 78;
   const pentagons = getPentagonPoints(CX, CY, R);
 
   const selectedMeta = selectedNode ? NODE_META.find(n => n.key === selectedNode) : null;
@@ -194,7 +194,7 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
             onClick={() => setShowFlowGuide(!showFlowGuide)}
             className="px-3 py-1.5 rounded-lg text-[10px] font-bold border border-purple-500/40 text-purple-300 bg-purple-900/20 hover:bg-purple-900/40 transition-all shrink-0 ml-2"
           >
-            {showFlowGuide ? '지도 보기' : '흐름 가이드'}
+            {showFlowGuide ? '🔷 5대 스탯 지도 보기' : '⚡ 상생 흐름 보기'}
           </button>
         </div>
       </div>
@@ -205,7 +205,7 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
           {/* ── 왼쪽: SVG 에너지 맵 ── */}
           <div className="flex flex-col items-center w-full">
             <div className="relative flex flex-col items-center w-full">
-              <svg viewBox="0 0 300 300" className="w-full max-w-[280px] sm:max-w-[320px] h-auto overflow-visible drop-shadow-2xl">
+              <svg viewBox="0 0 320 320" className="w-full max-w-[280px] sm:max-w-[320px] h-auto overflow-visible drop-shadow-2xl">
                 {/* 배경 동심원 그리드 */}
                 {[0.25, 0.5, 0.75, 1].map((f, i) => (
                   <polygon
@@ -347,7 +347,7 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                   {FLOW_CONNECTIONS.map((conn, i) => (
                     <div
                       key={i}
-                      className="p-3 rounded-xl border transition-all"
+                      className="p-3 rounded-xl border transition-all shadow-md"
                       style={{
                         borderColor: conn.highlighted ? `${conn.color}40` : '#334155',
                         backgroundColor: conn.highlighted ? `${conn.color}10` : 'rgba(15,23,42,0.4)',
@@ -357,7 +357,7 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                         {conn.highlighted && <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-300">핵심 흐름</span>}
                         <span className="text-[11px] font-bold" style={{ color: conn.color }}>{conn.label}</span>
                       </div>
-                      <p className="text-[11px] text-slate-400">{conn.desc}</p>
+                      <p className="text-[11px] text-slate-300 font-medium">{conn.desc}</p>
                     </div>
                   ))}
                   <div className="p-3 rounded-xl border border-cyan-500/20 bg-cyan-900/10 mt-2">
@@ -432,19 +432,73 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                 </motion.div>
               ) : (
                 <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center py-12 space-y-3"
+                  key="default-strongest"
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="space-y-3"
                 >
-                  <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-600 flex items-center justify-center text-2xl">
-                    👆
+                  <div className="flex items-center justify-between px-1">
+                    <span className="text-[10px] font-bold text-amber-300 flex items-center gap-1">
+                      ✨ 당신의 최강 무기 ({NODE_META.find(n => n.key === strongestKey)?.kor} {pcts[strongestKey]}%)
+                    </span>
+                    <span className="text-[9px] text-slate-400 font-mono">* 다른 노드를 탭하면 해당 코칭으로 전환됩니다</span>
                   </div>
-                  <p className="text-sm text-slate-400 text-center">
-                    오각형의 노드를 탭하면<br />상세 코칭 설명이 나타납니다
-                  </p>
-                  <p className="text-[10px] text-slate-600 text-center">
-                    5개 노드 각각에 친절한 코칭 가이드가 담겨 있습니다
-                  </p>
+                  {(() => {
+                    const defaultMeta = NODE_META.find(n => n.key === strongestKey)!;
+                    return (
+                      <>
+                        <div className="p-4 rounded-xl border relative overflow-hidden shadow-xl" style={{ borderColor: `${defaultMeta.color}60`, backgroundColor: defaultMeta.bgColor }}>
+                          <div className="absolute top-2 right-3 text-3xl opacity-25">{defaultMeta.emoji}</div>
+                          <p className="text-[10px] font-mono tracking-widest font-bold" style={{ color: defaultMeta.color }}>
+                            {defaultMeta.engLabel} · {pcts[defaultMeta.key]}% (최강 에너지)
+                          </p>
+                          <h4 className="text-base font-extrabold text-white mt-0.5">{defaultMeta.title}</h4>
+                          <div className="flex items-center gap-1.5 mt-1.5">
+                            {defaultMeta.tagline.split('·').map(t => (
+                              <span key={t} className="text-[9px] px-1.5 py-0.5 rounded font-bold" style={{ color: defaultMeta.color, backgroundColor: `${defaultMeta.color}25` }}>
+                                {t.trim()}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="mt-3">
+                            <div className="h-2 bg-slate-700/60 rounded-full overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pcts[defaultMeta.key]}%` }}
+                                transition={{ duration: 0.8 }}
+                                className="h-full rounded-full"
+                                style={{ background: `linear-gradient(90deg,${defaultMeta.color}66,${defaultMeta.color})` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl border border-white/10 bg-slate-800/60 space-y-2">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">이 에너지란?</p>
+                          <p className="text-[12px] text-slate-200 leading-[1.6] break-keep">{defaultMeta.description}</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-950/20">
+                            <p className="text-[9px] font-bold text-emerald-400 mb-1 uppercase tracking-widest">핵심 강점</p>
+                            <p className="text-[11px] text-slate-200 leading-[1.5] break-keep">{defaultMeta.strength}</p>
+                          </div>
+                          <div className="p-3 rounded-xl border border-red-500/30 bg-red-950/20">
+                            <p className="text-[9px] font-bold text-red-400 mb-1 uppercase tracking-widest">주의 패턴</p>
+                            <p className="text-[11px] text-slate-200 leading-[1.5] break-keep">{defaultMeta.shadow}</p>
+                          </div>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-950/30 shadow-lg">
+                          <p className="text-[10px] font-bold text-cyan-300 mb-1 flex items-center gap-1.5">
+                            ⚡ 명심 코치의 맞춤 처방
+                          </p>
+                          <p className="text-[12px] text-white font-semibold leading-[1.6] break-keep italic">
+                            "{defaultMeta.coaching}"
+                          </p>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </motion.div>
               )}
             </AnimatePresence>
