@@ -1578,6 +1578,11 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'document' | 'diagnostic'>('document');
 
+    // ── [NEW] Phase 3 Neural Prompts 에세이 열람 및 890원/890pt 결제 상태 ──
+    const [selectedPromptForEssay, setSelectedPromptForEssay] = useState<any>(null);
+    const [unlockedPrompts, setUnlockedPrompts] = useState<Record<string, boolean>>({});
+    const [isUnlocking, setIsUnlocking] = useState(false);
+
     // ── AI 코칭 리포트 관련 상태 ──
     type AiReport = {
         career_analysis: string;
@@ -2001,17 +2006,73 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     </div>
                                 </section>
 
-                                {/* ── Phase 2.5: Meta Code ── */}
+
+
+                                {/* ── Phase 3: Neural Hacking ── */}
+                                <section>
+                                    <SectionHeader phase="Phase 3 🧠" title="Neural Code (뉴럴코드: 메타인지)" />
+                                    <div className="flex items-center gap-3 mb-5">
+                                        <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                                        <span className="text-xs font-bold text-indigo-400">NEURAL CODE: {coaching.outputCode} 가동 (냉각수 주입)</span>
+                                    </div>
+                                    <p className="text-[10px] text-gray-500 uppercase mb-3">소버린의 셀프-자각 3질문 (Neural Prompts)</p>
+                                    <div className="space-y-3">
+{coaching.neuralPrompts.map(p => {
+                                            const isUnlocked = !!unlockedPrompts[p.id];
+                                            return (
+                                                <div
+                                                    key={p.id}
+                                                    onClick={() => setSelectedPromptForEssay(p)}
+                                                    className="p-4 rounded-xl border border-indigo-400/30 hover:border-indigo-400/60 transition-all cursor-pointer bg-white/5 hover:bg-white/10 group flex flex-col justify-between gap-3 relative overflow-hidden shadow-lg"
+                                                >
+                                                    <div>
+                                                        <div className="flex items-center justify-between mb-1.5">
+                                                            <span className="text-[10px] text-indigo-400 font-bold tracking-wider">{p.id}. {p.label}</span>
+                                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 transition-colors ${
+                                                                isUnlocked 
+                                                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                                                    : 'bg-indigo-500/20 text-amber-300 border border-indigo-500/30 group-hover:bg-indigo-500/30'
+                                                            }`}>
+                                                                {isUnlocked ? (
+                                                                    <>
+                                                                        <span className="material-symbols-outlined text-xs">lock_open</span>
+                                                                        열람 완료
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <span className="material-symbols-outlined text-xs">lock</span>
+                                                                        🔒 890원 AI 코치 에세이 솔루션
+                                                                    </>
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-sm text-gray-200 mt-2 leading-relaxed italic" dangerouslySetInnerHTML={{ __html: p.q }} />
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-white/5 font-medium">
+                                                        <span className="flex items-center gap-1 text-indigo-300">
+                                                            <span className="material-symbols-outlined text-xs text-amber-300">auto_awesome</span>
+                                                            클릭하여 AI 코치의 감동 심층 솔루션 열람하기
+                                                        </span>
+                                                        <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform text-indigo-400">chevron_right</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </section>
+
+                                                                {/* ── Phase 4: Meta Code (제로포인트: 알아차림의 알아차림) ── */}
                                 {coaching.metaCode && (
                                     <section>
-                                        <SectionHeader phase="Phase 2.5 ✨" title="Meta Code (메타코드)" />
+                                        <SectionHeader phase="Phase 4 ✨" title="Meta Code (메타코드: 제로포인트 순수 자각)" />
                                         <div className="border-l-4 border-indigo-500 p-5 space-y-4 rounded-r-xl" style={{ background: 'rgba(99,102,241,0.05)' }}>
                                             <div className="flex justify-between items-center">
                                                 <span className="text-xs font-bold text-indigo-400">META CODE: {coaching.metaCode.id}</span>
-                                                <span className="px-2 py-0.5 bg-indigo-500 text-white text-[10px] font-bold rounded">{coaching.metaCode.tag}</span>
+                                                <span className="px-2 py-0.5 bg-indigo-500 text-white text-[10px] font-bold rounded">Zero Point / Pure Awareness</span>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-gray-500 uppercase mb-2">수용과 전념 수칙 (ACT Guidelines):</p>
+                                                <p className="text-[10px] text-gray-500 uppercase mb-2">알아차림의 알아차림 (ACT & Zero Point Guidelines):</p>
                                                 <ul className="space-y-2">
                                                     {coaching.metaCode.values.map((v, i) => (
                                                         <li key={i} className="flex gap-2 text-xs text-gray-300">
@@ -2025,27 +2086,9 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     </section>
                                 )}
 
-                                {/* ── Phase 3: Neural Hacking ── */}
-                                <section>
-                                    <SectionHeader phase="Phase 3" title="Neural Hacking" />
-                                    <div className="flex items-center gap-3 mb-5">
-                                        <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                                        <span className="text-xs font-bold text-indigo-400">NEURAL CODE: {coaching.outputCode} 가동 (냉각수 주입)</span>
-                                    </div>
-                                    <p className="text-[10px] text-gray-500 uppercase mb-3">소버린의 셀프-자각 3질문 (Neural Prompts)</p>
-                                    <div className="space-y-3">
-                                        {coaching.neuralPrompts.map(p => (
-                                            <div key={p.id} className="p-4 rounded-xl border border-indigo-400/20 hover:border-indigo-400/50 transition-colors" style={{ background: 'rgba(42,42,42,0.6)' }}>
-                                                <span className="text-[10px] text-indigo-400 font-bold">{p.id}. {p.label}</span>
-                                                <p className="text-sm text-gray-200 mt-2 leading-relaxed italic" dangerouslySetInnerHTML={{ __html: p.q }} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </section>
-
                                 {/* ── Phase 4: Anti-Fragile ── */}
                                 <section>
-                                    <SectionHeader phase="Phase 4" title="안티-프래질 리프로그래밍" />
+                                    <SectionHeader phase="Phase 5 🛡️" title="안티-프래질 리프로그래밍" />
                                     <div className="space-y-6">
                                         {coaching.steps.map((step, i) => (
                                             <div key={i} className="relative pl-7 border-l border-white/15">
@@ -2556,6 +2599,183 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                     </motion.div>
                 </>
             )}
-        </AnimatePresence>
+        
+            {/* ── [Prompt Essay Solution Paywall Modal (890원/890pt)] ── */}
+            <AnimatePresence>
+                {selectedPromptForEssay && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-2xl bg-[#131022] border border-indigo-500/40 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh] custom-scrollbar"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-start justify-between border-b border-white/10 pb-4 mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-amber-300">
+                                        <span className="material-symbols-outlined text-xl">psychology</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                                            {selectedPromptForEssay.id}. {selectedPromptForEssay.label} (AI 심층 솔루션)
+                                        </span>
+                                        <h3 className="text-base md:text-lg font-bold text-white leading-snug mt-0.5">
+                                            AI 코치의 1:1 감동 심층 에세이
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedPromptForEssay(null)}
+                                    className="material-symbols-outlined text-slate-400 hover:text-white transition-colors"
+                                >
+                                    close
+                                </button>
+                            </div>
+
+                            {/* Prompt Original Quote Header Box */}
+                            <div className="p-4 rounded-xl bg-indigo-950/40 border border-indigo-500/30 mb-6">
+                                <p
+                                    className="text-sm font-semibold text-amber-300 leading-relaxed italic"
+                                    dangerouslySetInnerHTML={{ __html: selectedPromptForEssay.q }}
+                                />
+                            </div>
+
+                            {/* Essay Body Container */}
+                            <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 pr-2">
+                                {/* Free Preview Section (Always Visible) */}
+                                <div className="space-y-4 text-slate-300 text-sm leading-relaxed font-sans">
+                                    <p className="p-4 rounded-xl bg-white/5 border border-white/5 text-slate-200 leading-relaxed whitespace-pre-line">
+                                        {selectedPromptForEssay.id === '03' || selectedPromptForEssay.label?.includes('META-COGNITION')
+                                            ? "혹시 오늘도 실수하지 않으려고, 남들에게 지적받지 않으려고 온몸에 힘을 꽉 주고 버티진 않으셨나요? 어깨는 바짝 올라가 있고 숨은 얕아진 채, '절대 틀리면 안 돼', '약한 모습을 보이면 끝장이야'라며 스스로를 단단한 방어막 속에 가두고 있었을지도 모릅니다.\n\n그것은 우리 마음이 나를 지키기 위해 만들어낸 오랫동안의 습관이었습니다. 세상을 살아가며 상처받지 않으려고, 단 하나의 흠집도 내지 않으려고 우리는 스스로를 점점 더 딱딱하게 경직시키곤 하지요. 하지만 가만히 내면을 들여다보면 이상한 답답함이 밀려옵니다. 그렇게 완벽하게 스스로를 지키고 있는데도, 왜 마음은 조금도 행복하거나 편안하지 않을까요?"
+                                            : selectedPromptForEssay.id === '01' || selectedPromptForEssay.label?.includes('SOCRATES')
+                                            ? "오늘 당신의 머릿속을 맴돌던 '완벽해야 해'라는 목소리는 당신을 어디로 이끌고 있었나요? 작은 디테일 하나 놓치지 않으려 온 에너지를 쏟아붓고, 남들의 평가 하나에 가슴이 철렁했던 순간들을 떠올려 보세요.\n\n우리는 스스로에게 가장 엄격한 감독관이 되어 채찍질하곤 합니다. 불완전한 모습을 들키는 순간 내 모든 노력의 가치가 무너질 것 같은 불안함 때문이지요."
+                                            : "오늘 한 작은 실수 때문에 하루 종일 마음이 무겁고 자신을 탓하진 않으셨나요? 자려고 누워서도 '왜 그때 그렇게 말했을까', '왜 그 실수를 했을까' 하며 끝없는 후회의 굴레 속에 자신을 가두고 계셨을지도 모릅니다.\n\n우리의 뇌는 지나간 실수를 끊임없이 재생하며 자신을 처벌하려 드는 기묘한 기제를 지니고 있습니다."
+                                        }
+                                    </p>
+                                </div>
+
+                                {/* Paywall Locked Section vs Unlocked Section */}
+                                {!unlockedPrompts[selectedPromptForEssay.id] ? (
+                                    <div className="relative overflow-hidden rounded-2xl border border-indigo-500/30 p-6 bg-[#181526]/90 shadow-2xl">
+                                        {/* Blurred Text Preview Background */}
+                                        <div className="filter blur-[6px] select-none text-slate-500 text-xs space-y-3 opacity-60 pointer-events-none">
+                                            <p>▒▒▒▒▒▒ 바로 이 지점에서 마음의 눈을 떠 스스로에게 가장 다정한 질문을 던져보아야 합니다. ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ 보석은 부서지지 않기 위해 어두운 상자 속에서 버티라고 태어난 존재가 아닙니다. ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ 지금 당신을 괴롭히는 거대한 완벽주의와 강박적인 피로감은... ▒▒▒▒▒▒</p>
+                                        </div>
+
+                                        {/* Center Lock Layer Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/60 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                                            <div className="size-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xl shadow-indigo-500/30 animate-bounce">
+                                                <span className="material-symbols-outlined text-2xl">lock</span>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-base font-extrabold text-white">AI 코치의 정밀 솔루션 전체 보기</h4>
+                                                <p className="text-xs text-slate-400 mt-1">1,000원 미만의 마이크로 포인트로 완벽주의 강박을 해제하세요.</p>
+                                            </div>
+
+                                            <button
+                                                disabled={isUnlocking}
+                                                onClick={() => {
+                                                    setIsUnlocking(true);
+                                                    setTimeout(() => {
+                                                        setUnlockedPrompts(prev => ({ ...prev, [selectedPromptForEssay.id]: true }));
+                                                        setIsUnlocking(false);
+                                                    }, 700);
+                                                }}
+                                                className="w-full sm:w-auto bg-gradient-to-r from-[#3211d4] to-[#5b36ff] hover:from-[#3211d4]/90 hover:to-[#5b36ff]/90 text-white px-8 py-3.5 rounded-xl font-black text-sm shadow-xl shadow-[#3211d4]/30 transition-all flex items-center justify-center gap-2 group"
+                                            >
+                                                {isUnlocking ? (
+                                                    <>
+                                                        <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                        <span>890pt 차감 및 해제 중...</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <span className="material-symbols-outlined text-amber-300">bolt</span>
+                                                        <span>🔒 AI 코치의 정밀 솔루션 읽기 (890원 / 890pt)</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                            <p className="text-[10px] text-slate-500 font-medium">* 가입 기념 1,000pt 보유 중 (차감 후 즉시 해제)</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Unlocked Full Text Section with Fade-In Animation */
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="p-6 rounded-2xl bg-indigo-950/30 border border-indigo-500/40 text-slate-200 text-sm leading-relaxed space-y-4 relative"
+                                    >
+                                        <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
+                                            <span className="material-symbols-outlined text-sm">verified</span>
+                                            890pt 결제 완료 • AI 코치의 심층 전언
+                                        </div>
+
+                                        {selectedPromptForEssay.id === '03' || selectedPromptForEssay.label?.includes('META-COGNITION') ? (
+                                            <div className="space-y-4 text-slate-200 text-sm leading-relaxed">
+                                                <p className="font-bold text-amber-300 text-base">
+                                                    바로 이 지점에서 마음의 눈을 떠 스스로에게 가장 다정한 질문을 던져보아야 합니다.
+                                                </p>
+                                                <p className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200 italic font-serif text-base">
+                                                    "나는 지금 내 안에 숨겨진 진짜 빛을 세상에 펼치고 싶어 애쓰는 걸까, 아니면 그저 어디선가 날아올 공격에 부서지지 않으려고 몸을 사리며 굳어있는 걸까?"
+                                                </p>
+                                                <p>
+                                                    보석은 부서지지 않기 위해 어두운 상자 속에서 버티라고 태어난 존재가 아닙니다. 아무리 빛나는 보석이라 해도, 상처받을까 두려워 손아귀에 꽉 쥔 채 굳어있다면 그 찬란한 빛은 단 한 조각도 세상 밖으로 새어 나오지 못합니다.
+                                                </p>
+                                                <p>
+                                                    지금 당신을 괴롭히는 거대한 완벽주의와 강박적인 피로감은, 사실 당신이 능력이 부족해서가 아닙니다. 자신의 고유하고 아름다운 결을 세상에 보여주고 싶은 진정한 열망과, 혹시라도 상처받을까 봐 두려워하는 마음이 내면에서 서로 거세게 부딪치고 있기 때문입니다.
+                                                </p>
+                                                <p>
+                                                    부서지지 않으려고 온몸으로 버티는 삶은 늘 피곤하고 불안합니다. 언제 깨질지 몰라 매 순간 살얼음판을 걷는 기분이 들기 마련이니까요. 하지만 한 번만 가만히 스스로를 믿어보세요. 당신이라는 보석은 누군가의 사소한 평가나 한두 번의 실수 따위에 쉽게 깨져버릴 만큼 허술하게 만들어지지 않았습니다.
+                                                </p>
+                                                <p>
+                                                    이제는 힘을 잔뜩 넣었던 어깨를 자연스럽게 내리고, 참았던 깊은 숨을 내쉬어 보세요. 부서지지 않으려고 온몸을 사리는 대신, <strong className="text-amber-300 font-bold">"조금 비틀거려도 괜찮아, 나는 이미 그 자체로 충분히 완성된 보석이니까"</strong> 하고 자신을 가만히 보듬어주는 것입니다.
+                                                </p>
+                                                <p className="font-bold text-indigo-300 text-base">
+                                                    스스로를 짓누르던 딱딱한 경직을 내려놓을 때, 비로소 누구도 흉내 낼 수 없는 당신만의 우아하고 고유한 빛이 세상을 향해 뿜어져 나오기 시작할 것입니다.
+                                                </p>
+                                            </div>
+                                        ) : selectedPromptForEssay.id === '01' || selectedPromptForEssay.label?.includes('SOCRATES') ? (
+                                            <div className="space-y-4 text-slate-200 text-sm leading-relaxed">
+                                                <p className="font-bold text-amber-300 text-base">
+                                                    하지만 이제 냉정하고 다정하게 물어야 합니다.
+                                                </p>
+                                                <p className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200 italic font-serif text-base">
+                                                    "내가 지금 느끼는 이 완벽에 대한 압박은 나의 생존을 돕고 있는가, 아니면 나의 통치권을 침해하고 있는가?"
+                                                </p>
+                                                <p>
+                                                    완벽주의는 내 삶의 주인이 되는 길이 아니라, 타인의 시선에 내 삶의 통제권을 넘겨주는 감옥이 될 수 있습니다. 참된 주권자는 완벽한 사람이 아니라, 자신의 불완전함까지도 우아하게 껴안을 수 있는 사람입니다.
+                                                </p>
+                                                <p className="font-bold text-indigo-300 text-base">
+                                                    오늘 당신이 내려놓아도 될 그 완벽의 짐을 하나 내려놓으십시오. 당신의 가치는 완벽함에서 오는 것이 아니라, 이미 당신 안에 존재하는 독보적인 본질 그 자체입니다.
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4 text-slate-200 text-sm leading-relaxed">
+                                                <p className="font-bold text-amber-300 text-base">
+                                                    이 시간 마법 같은 재귀 질문을 던져보세요.
+                                                </p>
+                                                <p className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200 italic font-serif text-base">
+                                                    "오늘 내가 한 실수 중 1년 뒤에도 기억날 것이 하나라도 있는가? 없다면 왜 지금 나를 처벌하고 있는가?"
+                                                </p>
+                                                <p>
+                                                    1년 뒤, 5년 뒤의 시선에서 돌아보면 오늘의 사소한 오점이나 실수는 그저 인생이라는 위대한 화폭 위의 작은 점 하나에 불과합니다. 지나간 실수는 당신을 정의할 수 없습니다.
+                                                </p>
+                                                <p className="font-bold text-indigo-300 text-base">
+                                                    이제 자책의 채찍을 거두고, '오늘 하루도 치열하게 살아내느라 수고했다'고 스스로를 다정하게 보듬어주세요. 1년 뒤에도 기억나지 않을 일로 오늘 밤 당신의 귀한 평화를 빼앗기지 마십시오.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+</AnimatePresence>
     );
 }
