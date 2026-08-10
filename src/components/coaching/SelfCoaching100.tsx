@@ -1,8 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Copy, CheckCircle2, ChevronDown, ChevronRight, Dices } from 'lucide-react';
+import { Sparkles, Copy, CheckCircle2, ChevronDown, ChevronRight, ChevronLeft, Dices, Lock } from 'lucide-react';
+
+interface Props {
+  dayStem?: string;
+}
 
 // ── 카테고리 데이터 정의 ──
 const CATEGORIES = [
@@ -21,130 +25,153 @@ const CATEGORIES = [
 // ── 100가지 질문 데이터 ──
 const QUESTIONS_DB = [
   // 1. 지식의 구조화와 출력
-  { id: 1, catId: 'cat1', text: '머릿속을 맴도는 이 복잡한 생각 중, 가장 먼저 코드로 번역될 수 있는 단 하나의 논리는 무엇인가?' },
-  { id: 2, catId: 'cat1', text: '이 완벽주의는 나의 두려움인가, 아니면 진정한 품질을 유지하기 위한 최소한의 기준인가?' },
-  { id: 3, catId: 'cat1', text: '방금 찾아낸 이 새로운 정보가 내 시스템의 어느 폴더에 꽂혀야 가장 효율적으로 작동할까?' },
-  { id: 4, catId: 'cat1', text: '글을 쓰거나 코드를 짜면서 멈칫하는 이 순간, 나는 어떤 형태의 비판을 두려워하고 있는가?' },
-  { id: 5, catId: 'cat1', text: '지금 내가 짜고 있는 이 로직은 나의 불안을 달래기 위함인가, 타인의 문제를 해결하기 위함인가?' },
-  { id: 6, catId: 'cat1', text: '\'이 정도면 충분하다\'고 마침표를 찍을 때, 내 안에서 올라오는 찝찝함의 진짜 정체는 무엇인가?' },
-  { id: 7, catId: 'cat1', text: '추상적인 개념을 구체적인 UI나 텍스트로 치환했을 때, 내 몸에서 느껴지는 감각은 가벼움인가 무거움인가?' },
-  { id: 8, catId: 'cat1', text: '내가 설계한 이 시스템(규칙)에 갇혀, 정작 내가 숨 막혀 하고 있지는 않은가?' },
-  { id: 9, catId: 'cat1', text: '복잡한 문제를 가장 단순한 모듈로 쪼갠다면, 지금 당장 실행할 수 있는 첫 번째 함수는 무엇인가?' },
-  { id: 10, catId: 'cat1', text: '이 생각의 꼬리를 자르고 지금 바로 \'실행\' 버튼을 누른다면, 최악의 에러는 무엇일까?' },
+  { id: 1, catId: "cat1", text: "머릿속을 맴도는 이 복잡한 생각 중, 가장 먼저 코드로 번역될 수 있는 단 하나의 논리는 무엇인가?" },
+  { id: 2, catId: "cat1", text: "이 완벽주의는 나의 두려움인가, 아니면 진정한 품질을 유지하기 위한 최소한의 기준인가?" },
+  { id: 3, catId: "cat1", text: "방금 찾아낸 이 새로운 정보가 내 시스템의 어느 폴더에 꽂혀야 가장 효율적으로 작동할까?" },
+  { id: 4, catId: "cat1", text: "글을 쓰거나 코드를 짜면서 멈칫하는 이 순간, 나는 어떤 형태의 비판을 두려워하고 있는가?" },
+  { id: 5, catId: "cat1", text: "지금 내가 짜고 있는 이 로직은 나의 불안을 달래기 위함인가, 타인의 문제를 해결하기 위함인가?" },
+  { id: 6, catId: "cat1", text: "'이 정도면 충분하다'고 마침표를 찍을 때, 내 안에서 올라오는 찝찝함의 진짜 정체는 무엇인가?" },
+  { id: 7, catId: "cat1", text: "추상적인 개념을 구체적인 UI나 텍스트로 치환했을 때, 내 몸에서 느껴지는 감각은 가벼움인가 무거움인가?" },
+  { id: 8, catId: "cat1", text: "내가 설계한 이 시스템(규칙)에 갇혀, 정작 내가 숨 막혀 하고 있지는 않은가?" },
+  { id: 9, catId: "cat1", text: "복잡한 문제를 가장 단순한 모듈로 쪼갠다면, 지금 당장 실행할 수 있는 첫 번째 함수는 무엇인가?" },
+  { id: 10, catId: "cat1", text: "이 생각의 꼬리를 자르고 지금 바로 '실행' 버튼을 누른다면, 최악의 에러는 무엇일까?" },
 
   // 2. 신체적 순환과 발산
-  { id: 11, catId: 'cat2', text: '자전거 페달을 밟으며 느껴지는 이 호흡은, 지금 무엇을 비워내기 위해 가빠지고 있는가?' },
-  { id: 12, catId: 'cat2', text: '좁은 공간(노래방)에서 쏟아내는 이 목소리에는 어떤 종류의 압박감이 실려 밖으로 나가고 있는가?' },
-  { id: 13, catId: 'cat2', text: '신체를 움직이면서 내 머릿속의 열기가 식어가는 것을 \'알아차리고\' 있는가?' },
-  { id: 14, catId: 'cat2', text: '에너지가 고갈되었다고 느낄 때, 이것은 육체의 피로인가 아니면 인지적 과부하인가?' },
-  { id: 15, catId: 'cat2', text: '가만히 앉아 있을 때 느껴지는 답답함은 내 몸이 보내는 어떤 \'새로고침\' 신호인가?' },
-  { id: 16, catId: 'cat2', text: '지금 나의 호흡은 가슴 얕은 곳에 머물러 있는가, 아니면 배 깊은 곳까지 내려가고 있는가?' },
-  { id: 17, catId: 'cat2', text: '속도감을 즐길 때, 나는 무언가로부터 도망치고 있는가 아니면 새로운 목적지를 향해 달려가고 있는가?' },
-  { id: 18, catId: 'cat2', text: '신체의 움직임이 멈춘 직후, 내 머릿속에 가장 먼저 떠오르는 선명한 아이디어는 무엇인가?' },
-  { id: 19, catId: 'cat2', text: '땀을 흘리고 난 뒤의 이 개운함을, 다음번 과부하가 올 때의 \'디버깅 패치\'로 어떻게 예약해 둘 것인가?' },
-  { id: 20, catId: 'cat2', text: '내 몸의 감각에 온전히 집중하는 이 순간, 나는 과거에 있는가 미래에 있는가?' },
+  { id: 11, catId: "cat2", text: "자전거 페달을 밟으며 느껴지는 이 호흡은, 지금 무엇을 비워내기 위해 가빠지고 있는가?" },
+  { id: 12, catId: "cat2", text: "좁은 공간(노래방)에서 쏟아내는 이 목소리에는 어떤 종류의 압박감이 실려 밖으로 나가고 있는가?" },
+  { id: 13, catId: "cat2", text: "신체를 움직이면서 내 머릿속의 열기가 식어가는 것을 '알아차리고' 있는가?" },
+  { id: 14, catId: "cat2", text: "에너지가 고갈되었다고 느낄 때, 이것은 육체의 피로인가 아니면 인지적 과부하인가?" },
+  { id: 15, catId: "cat2", text: "가만히 앉아 있을 때 느껴지는 답답함은 내 몸이 보내는 어떤 '새로고침' 신호인가?" },
+  { id: 16, catId: "cat2", text: "지금 나의 호흡은 가슴 얕은 곳에 머물러 있는가, 아니면 배 깊은 곳까지 내려가고 있는가?" },
+  { id: 17, catId: "cat2", text: "속도감을 즐길 때, 나는 무언가로부터 도망치고 있는가 아니면 새로운 목적지를 향해 달려가고 있는가?" },
+  { id: 18, catId: "cat2", text: "신체의 움직임이 멈춘 직후, 내 머릿속에 가장 먼저 떠오르는 선명한 아이디어는 무엇인가?" },
+  { id: 19, catId: "cat2", text: "땀을 흘리고 난 뒤의 이 개운함을, 다음번 과부하가 올 때의 '디버깅 패치'로 어떻게 예약해 둘 것인가?" },
+  { id: 20, catId: "cat2", text: "내 몸의 감각에 온전히 집중하는 이 순간, 나는 과거에 있는가 미래에 있는가?" },
 
   // 3. 교육과 생태계 구축
-  { id: 21, catId: 'cat3', text: '내가 겪은 런타임 에러를 타인에게 설명할 때, 나는 그 과정에서 무엇을 새롭게 배우고 있는가?' },
-  { id: 22, catId: 'cat3', text: '누군가의 고통에 진심으로 공감하려 할 때, 내 안에서 무의식적으로 방어벽을 치는 감정은 무엇인가?' },
-  { id: 23, catId: 'cat3', text: '내가 구축하려는 이 커뮤니티(생태계)는 나를 돋보이게 하기 위함인가, 함께 성장하기 위함인가?' },
-  { id: 24, catId: 'cat3', text: '타인의 문제를 분석해 줄 때, 나는 그 사람 안에서 나의 과거 모습을 보고 있지는 않은가?' },
-  { id: 25, catId: 'cat3', text: '멘토링을 하면서 내 말이 길어진다면, 나는 상대방을 설득하려는 것인가 나 자신을 증명하려는 것인가?' },
-  { id: 26, catId: 'cat3', text: '지식을 전달할 때, 상대방이 이해하지 못하면 느껴지는 나의 답답함은 어디에서 기인하는가?' },
-  { id: 27, catId: 'cat3', text: '내 주변에 모이는 사람들은 나의 어떤 주파수(가치)에 동기화되어 다가오는 것일까?' },
-  { id: 28, catId: 'cat3', text: '갈등이 발생했을 때, 이것을 시스템의 치명적 결함으로 볼 것인가, 아니면 업그레이드를 위한 피드백으로 볼 것인가?' },
-  { id: 29, catId: 'cat3', text: '타인과의 경계를 명확히 설정하는 것이 나에게는 왜 이토록 중요한(혹은 어려운) 과제인가?' },
-  { id: 30, catId: 'cat3', text: '내가 타인에게 주고 싶은 가장 가치 있는 \'단 하나의 변화\'는 무엇인가?' },
+  { id: 21, catId: "cat3", text: "내가 겪은 런타임 에러를 타인에게 설명할 때, 나는 그 과정에서 무엇을 새롭게 배우고 있는가?" },
+  { id: 22, catId: "cat3", text: "누군가의 고통에 진심으로 공감하려 할 때, 내 안에서 무의식적으로 방어벽을 치는 감정은 무엇인가?" },
+  { id: 23, catId: "cat3", text: "내가 구축하려는 이 커뮤니티(생태계)는 나를 돋보이게 하기 위함인가, 함께 성장하기 위함인가?" },
+  { id: 24, catId: "cat3", text: "타인의 문제를 분석해 줄 때, 나는 그 사람 안에서 나의 과거 모습을 보고 있지는 않은가?" },
+  { id: 25, catId: "cat3", text: "멘토링을 하면서 내 말이 길어진다면, 나는 상대방을 설득하려는 것인가 나 자신을 증명하려는 것인가?" },
+  { id: 26, catId: "cat3", text: "지식을 전달할 때, 상대방이 이해하지 못하면 느껴지는 나의 답답함은 어디에서 기인하는가?" },
+  { id: 27, catId: "cat3", text: "내 주변에 모이는 사람들은 나의 어떤 주파수(가치)에 동기화되어 다가오는 것일까?" },
+  { id: 28, catId: "cat3", text: "갈등이 발생했을 때, 이것을 시스템의 치명적 결함으로 볼 것인가, 아니면 업그레이드를 위한 피드백으로 볼 것인가?" },
+  { id: 29, catId: "cat3", text: "타인과의 경계를 명확히 설정하는 것이 나에게는 왜 이토록 중요한(혹은 어려운) 과제인가?" },
+  { id: 30, catId: "cat3", text: "내가 타인에게 주고 싶은 가장 가치 있는 '단 하나의 변화'는 무엇인가?" },
 
   // 4. 예술적 승화와 결과물
-  { id: 31, catId: 'cat4', text: '내 삶의 크고 작은 오류들을 모아 하나의 \'장르\'로 부른다면, 그 장르의 이름은 무엇인가?' },
-  { id: 32, catId: 'cat4', text: '나의 철학을 책이나 교구로 세상에 유통시킬 때, 내가 가장 두려워하는 오해는 무엇인가?' },
-  { id: 33, catId: 'cat4', text: '공인된 예술인으로서의 정체성은 나의 비즈니스 기획에 어떤 영감을 불어넣고 있는가?' },
-  { id: 34, catId: 'cat4', text: '나의 결과물을 타인이 평가할 때, 그 평가와 나의 본질적 가치를 분리해서 바라볼 수 있는가?' },
-  { id: 35, catId: 'cat4', text: '창작의 과정에서 느껴지는 고통을, 나는 회피하려 하는가 아니면 기꺼이 연료로 수용하고 있는가?' },
-  { id: 36, catId: 'cat4', text: '세상에 내놓은 결과물이 기대와 다른 반응을 얻었을 때, 나는 이 데이터를 어떻게 다음 버전으로 업데이트할 것인가?' },
-  { id: 37, catId: 'cat4', text: '내 작품 속에 투영된 가장 강렬한 욕망은 무엇인가?' },
-  { id: 38, catId: 'cat4', text: '영감이 떠오르지 않을 때, 나는 억지로 쥐어짜는가 아니면 공간을 비워두는가?' },
-  { id: 39, catId: 'cat4', text: '나의 창작물은 누군가의 마음속에 어떤 온도의 불씨를 지피기를 원하는가?' },
-  { id: 40, catId: 'cat4', text: '지금 내가 만드는 이 콘텐츠는 10년 뒤의 나에게 어떤 의미로 남을 것인가?' },
+  { id: 31, catId: "cat4", text: "내 삶의 크고 작은 오류들을 모아 하나의 '장르'로 부른다면, 그 장르의 이름은 무엇인가?" },
+  { id: 32, catId: "cat4", text: "나의 철학을 책이나 교구로 세상에 유통시킬 때, 내가 가장 두려워하는 오해는 무엇인가?" },
+  { id: 33, catId: "cat4", text: "공인된 예술인으로서의 정체성은 나의 비즈니스 기획에 어떤 영감을 불어넣고 있는가?" },
+  { id: 34, catId: "cat4", text: "나의 결과물을 타인이 평가할 때, 그 평가와 나의 본질적 가치를 분리해서 바라볼 수 있는가?" },
+  { id: 35, catId: "cat4", text: "창작의 과정에서 느껴지는 고통을, 나는 회피하려 하는가 아니면 기꺼이 연료로 수용하고 있는가?" },
+  { id: 36, catId: "cat4", text: "세상에 내놓은 결과물이 기대와 다른 반응을 얻었을 때, 나는 이 데이터를 어떻게 다음 버전으로 업데이트할 것인가?" },
+  { id: 37, catId: "cat4", text: "내 작품 속에 투영된 가장 강렬한 욕망은 무엇인가?" },
+  { id: 38, catId: "cat4", text: "영감이 떠오르지 않을 때, 나는 억지로 쥐어짜는가 아니면 공간을 비워두는가?" },
+  { id: 39, catId: "cat4", text: "나의 창작물은 누군가의 마음속에 어떤 온도의 불씨를 지피기를 원하는가?" },
+  { id: 40, catId: "cat4", text: "지금 내가 만드는 이 콘텐츠는 10년 뒤의 나에게 어떤 의미로 남을 것인가?" },
 
   // 5. 비즈니스와 레버리지
-  { id: 41, catId: 'cat5', text: '외부로부터 유입된 자본(에너지)을 가장 먼저 투자해야 할 내 시스템의 코어 엔진은 어디인가?' },
-  { id: 42, catId: 'cat5', text: '비즈니스 마일스톤을 세울 때, 나는 현실의 가능성을 보는가 아니면 통제하고 싶은 욕망을 보는가?' },
-  { id: 43, catId: 'cat5', text: '돈을 \'구속하는 빚\'이 아니라 \'시스템을 돌릴 지렛대\'로 인지했을 때, 내 몸의 긴장도는 어떻게 변하는가?' },
-  { id: 44, catId: 'cat5', text: '목표한 수익이 달성되지 않았을 때, 나는 가치 추구를 멈출 것인가 아니면 경로를 재탐색할 것인가?' },
-  { id: 45, catId: 'cat5', text: '사업적 결정을 내릴 때, 내 직관(편인)과 객관적 데이터(재성) 중 어느 쪽의 목소리가 더 큰가?' },
-  { id: 46, catId: 'cat5', text: '나의 비즈니스 모델이 사회에 창출하는 긍정적인 파도(Impact)는 구체적으로 어떤 모습인가?' },
-  { id: 47, catId: 'cat5', text: '수익 창출 자체를 부끄러워하거나 피하고 싶은 무의식적인 저항감이 내 안에 존재하는가?' },
-  { id: 48, catId: 'cat5', text: '오늘 당장의 이익과 내일의 시스템 안정성 중, 지금 나에게 더 시급한 패치는 무엇인가?' },
-  { id: 49, catId: 'cat5', text: '내가 설계하는 평생교육원과 출판사의 가장 핵심적인 차별점은 결국 \'나\'라는 사람의 어떤 기질인가?' },
-  { id: 50, catId: 'cat5', text: '비즈니스가 궤도에 올라 시스템이 스스로 굴러가게 될 때, 나는 남은 시간을 어디에 쓸 것인가?' },
+  { id: 41, catId: "cat5", text: "외부로부터 유입된 자본(에너지)을 가장 먼저 투자해야 할 내 시스템의 코어 엔진은 어디인가?" },
+  { id: 42, catId: "cat5", text: "비즈니스 마일스톤을 세울 때, 나는 현실의 가능성을 보는가 아니면 통제하고 싶은 욕망을 보는가?" },
+  { id: 43, catId: "cat5", text: "돈을 '구속하는 빚'이 아니라 '시스템을 돌릴 지렛대'로 인지했을 때, 내 몸의 긴장도는 어떻게 변하는가?" },
+  { id: 44, catId: "cat5", text: "목표한 수익이 달성되지 않았을 때, 나는 가치 추구를 멈출 것인가 아니면 경로를 재탐색할 것인가?" },
+  { id: 45, catId: "cat5", text: "사업적 결정을 내릴 때, 내 직관(편인)과 객관적 데이터(재성) 중 어느 쪽의 목소리가 더 큰가?" },
+  { id: 46, catId: "cat5", text: "나의 비즈니스 모델이 사회에 창출하는 긍정적인 파도(Impact)는 구체적으로 어떤 모습인가?" },
+  { id: 47, catId: "cat5", text: "수익 창출 자체를 부끄러워하거나 피하고 싶은 무의식적인 저항감이 내 안에 존재하는가?" },
+  { id: 48, catId: "cat5", text: "오늘 당장의 이익과 내일의 시스템 안정성 중, 지금 나에게 더 시급한 패치는 무엇인가?" },
+  { id: 49, catId: "cat5", text: "내가 설계하는 평생교육원과 출판사의 가장 핵심적인 차별점은 결국 '나'라는 사람의 어떤 기질인가?" },
+  { id: 50, catId: "cat5", text: "비즈니스가 궤도에 올라 시스템이 스스로 굴러가게 될 때, 나는 남은 시간을 어디에 쓸 것인가?" },
 
   // 6. 욕구와 가치의 분리
-  { id: 51, catId: 'cat6', text: '지금 당장 이 작업을 멈추고 싶은 마음은 단기적인 \'회피 욕구\'인가, 아니면 방향타를 돌리라는 \'가치의 경고\'인가?' },
-  { id: 52, catId: 'cat6', text: '내가 바라는 것이 \'인정받는 것(욕구)\'인가, 아니면 \'도움이 되는 것(가치)\'인가?' },
-  { id: 53, catId: 'cat6', text: '불안감이라는 팝업창이 떴을 때, 나는 그 창을 끄기 위해 에너지를 쓰는가 아니면 뜬 채로 작업을 계속하는가?' },
-  { id: 54, catId: 'cat6', text: '지금 나의 행동은 무언가를 피하기 위한 방어인가, 무언가를 향해 나아가는 전진인가?' },
-  { id: 55, catId: 'cat6', text: '타인의 성공을 볼 때 느껴지는 조급함은, 나의 어떤 결핍(욕구)을 자극하고 있는가?' },
-  { id: 56, catId: 'cat6', text: '이 고통을 없앨 수 없다면, 나는 이 고통을 짊어지고서라도 지금의 목표를 향해 걸어갈 의향이 있는가?' },
-  { id: 57, catId: 'cat6', text: '완벽주의가 내 발목을 잡을 때, 나는 \'틀리지 않기(욕구)\' 위해 애쓰는가 \'완성하기(가치)\' 위해 애쓰는가?' },
-  { id: 58, catId: 'cat6', text: '편안해지고 싶은 욕구 이면에 숨겨진, 진짜 쟁취하고 싶은 치열한 가치는 무엇인가?' },
-  { id: 59, catId: 'cat6', text: '오늘 하루, 나는 욕구의 노예로 살았는가 가치의 주인으로 살았는가?' },
-  { id: 60, catId: 'cat6', text: '내일 아침 눈을 떴을 때, 어떤 가치를 첫 번째로 내 시스템에 동기화(SYNC)할 것인가?' },
+  { id: 51, catId: "cat6", text: "지금 당장 이 작업을 멈추고 싶은 마음은 단기적인 '회피 욕구'인가, 아니면 방향타를 돌리라는 '가치의 경고'인가?" },
+  { id: 52, catId: "cat6", text: "내가 바라는 것이 '인정받는 것(욕구)'인가, 아니면 '도움이 되는 것(가치)'인가?" },
+  { id: 53, catId: "cat6", text: "불안감이라는 팝업창이 떴을 때, 나는 그 창을 끄기 위해 에너지를 쓰는가 아니면 뜬 채로 작업을 계속하는가?" },
+  { id: 54, catId: "cat6", text: "지금 나의 행동은 무언가를 피하기 위한 방어인가, 무언가를 향해 나아가는 전진인가?" },
+  { id: 55, catId: "cat6", text: "타인의 성공을 볼 때 느껴지는 조급함은, 나의 어떤 결핍(욕구)을 자극하고 있는가?" },
+  { id: 56, catId: "cat6", text: "이 고통을 없앨 수 없다면, 나는 이 고통을 짊어지고서라도 지금의 목표를 향해 걸어갈 의향이 있는가?" },
+  { id: 57, catId: "cat6", text: "완벽주의가 내 발목을 잡을 때, 나는 '틀리지 않기(욕구)' 위해 애쓰는가 '완성하기(가치)' 위해 애쓰는가?" },
+  { id: 58, catId: "cat6", text: "편안해지고 싶은 욕구 이면에 숨겨진, 진짜 쟁취하고 싶은 치열한 가치는 무엇인가?" },
+  { id: 59, catId: "cat6", text: "오늘 하루, 나는 욕구의 노예로 살았는가 가치의 주인으로 살았는가?" },
+  { id: 60, catId: "cat6", text: "내일 아침 눈을 떴을 때, 어떤 가치를 첫 번째로 내 시스템에 동기화(SYNC)할 것인가?" },
 
   // 7. 중심 잡기와 여백
-  { id: 61, catId: 'cat7', text: '강하게 뭉친 내 안의 기운이 융통성 없이 굳어지려 할 때, 가장 빠르게 윤활유를 붓는 나만의 방법은 무엇인가?' },
-  { id: 62, catId: 'cat7', text: '오늘 나는 정보를 \'흡수(SCAN)\'하는 데 너무 많은 메모리를 써서, 정작 \'출력(SHIFT)\'할 에너지를 놓치지 않았는가?' },
-  { id: 63, catId: 'cat7', text: '내 시스템에 \'수분(휴식)\'이 고갈되었다는 것을 가장 먼저 알려주는 신체적/감정적 신호는 무엇인가?' },
-  { id: 64, catId: 'cat7', text: '바쁘게 돌아가는 일상 속에서, 철저하게 나를 비워내는 \'진공 상태\'의 시간은 얼마나 확보되어 있는가?' },
-  { id: 65, catId: 'cat7', text: '타인의 에너지에 휩쓸리지 않고, 나만의 템포를 유지하기 위해 지금 당장 그어야 할 선(Boundary)은 어디인가?' },
-  { id: 66, catId: 'cat7', text: '내가 통제할 수 있는 변수와 통제할 수 없는 변수를 명확히 구분하고 있는가?' },
-  { id: 67, catId: 'cat7', text: '새로운 일을 시작하기 전에, 기존의 일 중 무엇을 내려놓거나 자동화할 것인가?' },
-  { id: 68, catId: 'cat7', text: '에너지가 100% 충전되었을 때의 나와 30% 남았을 때의 나를 모두 있는 그대로 수용할 수 있는가?' },
-  { id: 69, catId: 'cat7', text: '지금 나에게 필요한 것은 더 강한 밀어붙임인가, 아니면 한 발짝 물러선 관조인가?' },
-  { id: 70, catId: 'cat7', text: '일상의 미세한 진동(Jittering)을 시스템 붕괴로 착각하여 과잉 대응하고 있지는 않은가?' },
+  { id: 61, catId: "cat7", text: "강하게 뭉친 내 안의 기운이 융통성 없이 굳어지려 할 때, 가장 빠르게 윤활유를 붓는 나만의 방법은 무엇인가?" },
+  { id: 62, catId: "cat7", text: "오늘 나는 정보를 '흡수(SCAN)'하는 데 너무 많은 메모리를 써서, 정작 '출력(SHIFT)'할 에너지를 놓치지 않았는가?" },
+  { id: 63, catId: "cat7", text: "내 시스템에 '수분(휴식)'이 고갈되었다는 것을 가장 먼저 알려주는 신체적/감정적 신호는 무엇인가?" },
+  { id: 64, catId: "cat7", text: "바쁘게 돌아가는 일상 속에서, 철저하게 나를 비워내는 '진공 상태'의 시간은 얼마나 확보되어 있는가?" },
+  { id: 65, catId: "cat7", text: "타인의 에너지에 휩쓸리지 않고, 나만의 템포를 유지하기 위해 지금 당장 그어야 할 선(Boundary)은 어디인가?" },
+  { id: 66, catId: "cat7", text: "내가 통제할 수 있는 변수와 통제할 수 없는 변수를 명확히 구분하고 있는가?" },
+  { id: 67, catId: "cat7", text: "새로운 일을 시작하기 전에, 기존의 일 중 무엇을 내려놓거나 자동화할 것인가?" },
+  { id: 68, catId: "cat7", text: "에너지가 100% 충전되었을 때의 나와 30% 남았을 때의 나를 모두 있는 그대로 수용할 수 있는가?" },
+  { id: 69, catId: "cat7", text: "지금 나에게 필요한 것은 더 강한 밀어붙임인가, 아니면 한 발짝 물러선 관조인가?" },
+  { id: 70, catId: "cat7", text: "일상의 미세한 진동(Jittering)을 시스템 붕괴로 착각하여 과잉 대응하고 있지는 않은가?" },
 
   // 8. 메타 인지 (알아차림)
-  { id: 71, catId: 'cat8', text: '지금 이 질문을 스스로에게 던지고 있는 나는, 어떤 표정을 짓고 있는가?' },
-  { id: 72, catId: 'cat8', text: '내 마음속에서 올라오는 \'불안\'이라는 감정을, 마치 스크린에 띄워진 텍스트처럼 객관적으로 바라볼 수 있는가?' },
-  { id: 73, catId: 'cat8', text: '내가 \'나\'라고 굳게 믿고 있는 이 자아상은, 진짜 나인가 아니면 내가 만들어낸 \'장르\'에 불과한가?' },
-  { id: 74, catId: 'cat8', text: '과거의 데이터(상처, 경험)가 현재의 나를 지배하려 할 때, 그 연결 고리를 끊어내는 나만의 단축키는 무엇인가?' },
-  { id: 75, catId: 'cat8', text: '나는 내 생각의 창조자인가, 아니면 끊임없이 떠오르는 생각들의 관찰자인가?' },
-  { id: 76, catId: 'cat8', text: '지금 내가 옳다고 굳게 믿는 이 신념이 만약 틀렸다면, 내 세상은 어떻게 무너질 것인가?' },
-  { id: 77, catId: 'cat8', text: '런타임 에러가 발생한 바로 그 순간, 당황하는 나 자신을 빙그레 웃으며 내려다보는 또 다른 내가 존재하는가?' },
-  { id: 78, catId: 'cat8', text: '지금 나를 가장 힘들게 하는 이 문제는, 5년 뒤의 우주적 관점에서 보았을 때 얼마나 큰 점으로 보일까?' },
-  { id: 79, catId: 'cat8', text: '나의 뇌파가 고요해지는 순간, 침묵 속에서 들려오는 가장 진실한 내면의 목소리는 무엇을 말하고 있는가?' },
-  { id: 80, catId: 'cat8', text: '\'알아차렸다\'는 사실조차 다시 집착의 대상이 되어, 나를 옥죄고 있지는 않은가?' },
+  { id: 71, catId: "cat8", text: "지금 이 질문을 스스로에게 던지고 있는 나는, 어떤 표정을 짓고 있는가?" },
+  { id: 72, catId: "cat8", text: "내 마음속에서 올라오는 '불안'이라는 감정을, 마치 스크린에 띄워진 텍스트처럼 객관적으로 바라볼 수 있는가?" },
+  { id: 73, catId: "cat8", text: "내가 '나'라고 굳게 믿고 있는 이 자아상은, 진짜 나인가 아니면 내가 만들어낸 '장르'에 불과한가?" },
+  { id: 74, catId: "cat8", text: "과거의 데이터(상처, 경험)가 현재의 나를 지배하려 할 때, 그 연결 고리를 끊어내는 나만의 단축키는 무엇인가?" },
+  { id: 75, catId: "cat8", text: "나는 내 생각의 창조자인가, 아니면 끊임없이 떠오르는 생각들의 관찰자인가?" },
+  { id: 76, catId: "cat8", text: "지금 내가 옳다고 굳게 믿는 이 신념이 만약 틀렸다면, 내 세상은 어떻게 무너질 것인가?" },
+  { id: 77, catId: "cat8", text: "런타임 에러가 발생한 바로 그 순간, 당황하는 나 자신을 빙그레 웃으며 내려다보는 또 다른 내가 존재하는가?" },
+  { id: 78, catId: "cat8", text: "지금 나를 가장 힘들게 하는 이 문제는, 5년 뒤의 우주적 관점에서 보았을 때 얼마나 큰 점으로 보일까?" },
+  { id: 79, catId: "cat8", text: "나의 뇌파가 고요해지는 순간, 침묵 속에서 들려오는 가장 진실한 내면의 목소리는 무엇을 말하고 있는가?" },
+  { id: 80, catId: "cat8", text: "'알아차렸다'는 사실조차 다시 집착의 대상이 되어, 나를 옥죄고 있지는 않은가?" },
 
   // 9. 재귀적 탐구
-  { id: 81, catId: 'cat9', text: '내가 A를 원한다고 할 때, A를 얻음으로써 궁극적으로 도달하려는 B는 무엇인가?' },
-  { id: 82, catId: 'cat9', text: 'B에 도달했다고 가정하면, 그때 나는 왜 여전히 공허함을 느낄 것이라 예상하는가?' },
-  { id: 83, catId: 'cat9', text: '그 공허함은 채울 수 있는 것인가, 아니면 애초에 인간이라는 시스템의 디폴트 값인가?' },
-  { id: 84, catId: 'cat9', text: '디폴트 값이라면, 나는 이 뚫린 구멍을 안고 어떻게 아름답게 작동할 것인가?' },
-  { id: 85, catId: 'cat9', text: '내가 가장 피하고 싶은 감정이 X라면, X를 피하기 위해 내가 포기하고 있는 기회 Y는 무엇인가?' },
-  { id: 86, catId: 'cat9', text: 'Y를 포기하는 대가로 얻는 안전함은, 과연 내 남은 생을 걸 만큼 가치 있는가?' },
-  { id: 87, catId: 'cat9', text: '타인에게 화가 나는 진짜 이유는 그 사람의 잘못 때문인가, 내 안의 어떤 기준이 침해받았기 때문인가?' },
-  { id: 88, catId: 'cat9', text: '그 기준은 도대체 누가, 언제 내 시스템에 설치해 둔 것인가?' },
-  { id: 89, catId: 'cat9', text: '이제 그 오래된 기준(규칙)을 삭제하거나 덮어쓰기(업데이트) 할 준비가 되었는가?' },
-  { id: 90, catId: 'cat9', text: '업데이트를 마친 후, 완전히 새로워진 시스템이 가장 먼저 실행할 명령어는 무엇인가?' },
+  { id: 81, catId: "cat9", text: "내가 A를 원한다고 할 때, A를 얻음으로써 궁극적으로 도달하려는 B는 무엇인가?" },
+  { id: 82, catId: "cat9", text: "이 생각은 어디에서 시작되었고, 누구의 목소리를 담고 있는가?" },
+  { id: 83, catId: "cat9", text: "질문하는 나와 그 질문에 답하는 나 사이에는 얼마나 큰 공간이 존재하는가?" },
+  { id: 84, catId: "cat9", text: "내가 두려워하는 그 사건이 실제로 일어난다면, 그 이후에 나는 어떻게 계속 살아갈 것인가?" },
+  { id: 85, catId: "cat9", text: "이 문제에 대한 내 답이 정답이 아니라면, 전혀 다른 180도 반대의 정답은 무엇일 수 있는가?" },
+  { id: 86, catId: "cat9", text: "나의 질문은 나를 확장시키고 있는가, 아니면 좁은 울타리에 가두고 있는가?" },
+  { id: 87, catId: "cat9", text: "지금 내가 겪는 고통은 나에게 어떤 퀀텀 경험치를 주고 있는가?" },
+  { id: 88, catId: "cat9", text: "내 안의 지혜로운 아키텍트라면, 지금의 이 상황에 대해 어떤 코멘트를 남길 것인가?" },
+  { id: 89, catId: "cat9", text: "이 모든 탐구의 끝에서, 나는 무엇을 수용하고 포용해야 하는가?" },
+  { id: 90, catId: "cat9", text: "내가 오늘 세상에 던진 가장 본질적인 질문은 무엇이었는가?" },
 
   // 10. 오늘, 지금, 여기
-  { id: 91, catId: 'cat10', text: '이 모든 철학적 사유를 끝내고, 당장 5분 안에 내가 할 수 있는 가장 작은 행동은 무엇인가?' },
-  { id: 92, catId: 'cat10', text: '오늘 만나는 사람에게 내가 건넬 수 있는 가장 따뜻한 \'수분 공급(공감)\'의 말 한마디는 무엇인가?' },
-  { id: 93, catId: 'cat10', text: '오늘 하루 중, 의도적으로 휴대폰을 끄고 완벽한 \'오프라인\'으로 존재할 30분은 언제인가?' },
-  { id: 94, catId: 'cat10', text: '어제보다 단 1퍼센트라도 내 시스템을 최적화한 부분이 있다면 그것은 무엇인가?' },
-  { id: 95, catId: 'cat10', text: '오늘 나를 웃게 만든 아주 사소하고 일상적인 에러(버그)는 무엇이었는가?' },
-  { id: 96, catId: 'cat10', text: '잠자리에 들기 전, 오늘 하루 치열하게 돌아간 나의 엔진(뇌와 심장)에게 어떤 감사의 메시지를 보낼 것인가?' },
-  { id: 97, catId: 'cat10', text: '내가 내일 해결하지 못할 문제는 내일의 나에게 완벽하게 위임할 수 있는가?' },
-  { id: 98, catId: 'cat10', text: '지금 이 순간, 키보드에 올려진 내 손끝의 감각이나 방 안의 공기 온도를 온전히 느끼고 있는가?' },
-  { id: 99, catId: 'cat10', text: '삶이라는 이 거대한 시뮬레이션 게임에서, 오늘 나는 나에게 주어진 캐릭터를 충분히 즐겼는가?' },
-  { id: 100, catId: 'cat10', text: '그리고 마지막으로, 지금 당신은 \'명심(明心)\'하고 있습니까?' },
+  { id: 91, catId: "cat10", text: "이 모든 철학적 사유를 끝내고, 당장 5분 안에 내가 할 수 있는 가장 작은 행동은 무엇인가?" },
+  { id: 92, catId: "cat10", text: "오늘 만나는 사람에게 내가 건넬 수 있는 가장 따뜻한 '수분 공급(공감)'의 말 한마디는 무엇인가?" },
+  { id: 93, catId: "cat10", text: "오늘 하루 중, 의도적으로 휴대폰을 끄고 완벽한 '오프라인'으로 존재할 30분은 언제인가?" },
+  { id: 94, catId: "cat10", text: "어제보다 단 1퍼센트라도 내 시스템을 최적화한 부분이 있다면 그것은 무엇인가?" },
+  { id: 95, catId: "cat10", text: "오늘 나를 웃게 만든 아주 사소하고 일상적인 에러(버그)는 무엇이었는가?" },
+  { id: 96, catId: "cat10", text: "잠자리에 들기 전, 오늘 하루 치열하게 돌아간 나의 엔진(뇌와 심장)에게 어떤 감사의 메시지를 보낼 것인가?" },
+  { id: 97, catId: "cat10", text: "내가 내일 해결하지 못할 문제는 내일의 나에게 완벽하게 위임할 수 있는가?" },
+  { id: 98, catId: "cat10", text: "지금 이 순간, 키보드에 올려진 내 손끝의 감각이나 방 안의 공기 온도를 온전히 느끼고 있는가?" },
+  { id: 99, catId: "cat10", text: "삶이라는 이 거대한 시뮬레이션 게임에서, 오늘 나는 나에게 주어진 캐릭터를 충분히 즐겼는가?" },
+  { id: 100, catId: "cat10", text: "그리고 마지막으로, 지금 당신은 '명심(明心)'하고 있습니까?" },
 ];
 
-export default function SelfCoaching100() {
+export default function SelfCoaching100({ dayStem = '甲' }: Props) {
   const [activeTab, setActiveTab] = useState('cat1');
-  const [randomQuestion, setRandomQuestion] = useState<{ id: number, text: string, catId: string } | null>(null);
+  const [randomQuestion, setRandomQuestion] = useState<{ id: number; text: string; catId: string } | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+
+  // ── 890pt AI 오라클 감동 에세이 모달 상태 ──
+  const [selectedQuestionModal, setSelectedQuestionModal] = useState<{
+    id: number;
+    text: string;
+    catTitle: string;
+    metaphor: string;
+    essay: string;
+    action: string;
+  } | null>(null);
+
+  const [isQuestionUnlocked, setIsQuestionUnlocked] = useState(false);
+  const [isAllPassUnlocked, setIsAllPassUnlocked] = useState(false);
+  const [isUnlocking, setIsUnlocking] = useState(false);
+
+  const tabScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollTabs = (direction: 'left' | 'right') => {
+    if (tabScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -250 : 250;
+      tabScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   // 랜덤 질문 뽑기 함수
   const pickRandomQuestion = () => {
@@ -158,10 +185,34 @@ export default function SelfCoaching100() {
   }, []);
 
   // 클립보드 복사
-  const handleCopy = (id: number, text: string) => {
+  const handleCopy = (e: React.MouseEvent, id: number, text: string) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  // 질문 클릭 시 AI 코치 감동 에세이 팝업 열기
+  const openQuestionEssayModal = (q: { id: number; text: string; catId: string }) => {
+    const cat = CATEGORIES.find(c => c.id === q.catId);
+    const catTitle = cat ? cat.title : '오라클 질문';
+    const isMok = dayStem === '甲' || dayStem === '乙';
+    const name = dayStem === '甲' ? '甲木(갑목) 선구자' : dayStem === '乙' ? '乙木(을목) 연결자' : '명심 아키텍트';
+
+    const metaphor = `"${name} 대표님, 복잡하게 얽힌 실타래에서 단 한 가닥의 핵심을 끌어당기듯, 초보자도 1초 만에 뇌를 정돈하는 명쾌한 현실 비유로 해설해 드립니다."`;
+
+    const essay = `이 질문은 당신의 뇌가 무의식적으로 겪고 있던 고독한 조급함(Root Lock) 회로를 멈추고, 명확한 현존(子水) 상태로 진입하도록 설계된 퀀텀 스위치입니다. 단번에 거대한 대답을 찾으려 애쓰지 마십시오. 거목이 대지 아래 뿌리를 내리듯, 이 질문을 가슴에 품고 하루를 시작할 때 당신의 직관과 행동은 저절로 가장 우아한 궤도를 찾아가게 됩니다.`;
+
+    const action = `오늘 이 질문을 노션이나 일기에 복사하여 적고, 3초간 눈을 감은 뒤 당신의 가슴에서 가장 먼저 튀어나오는 '단 하나의 키워드'를 수용하십시오.`;
+
+    setSelectedQuestionModal({
+      id: q.id,
+      text: q.text,
+      catTitle,
+      metaphor,
+      essay,
+      action
+    });
   };
 
   const currentQuestions = QUESTIONS_DB.filter(q => q.catId === activeTab);
@@ -182,7 +233,7 @@ export default function SelfCoaching100() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 font-sans">
       
       {/* ── 1. 오늘의 랜덤 질문 (Hero Section - Premium Oracle Card) ── */}
       <motion.div 
@@ -223,18 +274,24 @@ export default function SelfCoaching100() {
             </div>
             
             <AnimatePresence mode="wait">
-              <motion.div
-                key={randomQuestion?.id}
-                initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
-                transition={{ duration: 0.5 }}
-                className="min-h-[120px] flex items-center justify-center mb-8 w-full px-4"
-              >
-                <p className="font-serif text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-200 to-gray-500 leading-relaxed font-bold break-keep">
-                  "{randomQuestion?.text}"
-                </p>
-              </motion.div>
+              {randomQuestion && (
+                <motion.div
+                  key={randomQuestion.id}
+                  initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+                  transition={{ duration: 0.5 }}
+                  onClick={() => openQuestionEssayModal(randomQuestion)}
+                  className="min-h-[120px] flex flex-col items-center justify-center mb-8 w-full px-4 cursor-pointer group/hero"
+                >
+                  <p className="font-serif text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-200 to-gray-400 leading-relaxed font-bold break-keep group-hover/hero:text-yellow-300 transition-colors">
+                    "{randomQuestion.text}"
+                  </p>
+                  <span className="text-[10px] text-amber-400/80 mt-2 font-mono flex items-center gap-1">
+                    <span>💡 탭하여 AI 코치 1:1 감동 에세이 열람</span>
+                  </span>
+                </motion.div>
+              )}
             </AnimatePresence>
 
             <motion.button 
@@ -250,9 +307,35 @@ export default function SelfCoaching100() {
         </div>
       </motion.div>
 
-      {/* ── 2. 카테고리 탭 (Premium Glass Pills) ── */}
-      <div className="relative">
-        <div className="flex overflow-x-auto pb-4 scrollbar-hide gap-3 snap-x px-2">
+      {/* ── 2. 카테고리 탭 (PC 웹 스크롤 버튼 + 가시성 스크롤바 최적화) ── */}
+      <div className="relative group my-4">
+        {/* Left Scroll Button */}
+        <button
+          onClick={() => scrollTabs('left')}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-10 rounded-r-xl bg-slate-900/90 border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-lg backdrop-blur-md opacity-80 hover:opacity-100 hover:scale-105 transition-all"
+          title="왼쪽 메뉴 보기"
+        >
+          <ChevronLeft size={20} />
+        </button>
+
+        {/* Right Scroll Button */}
+        <button
+          onClick={() => scrollTabs('right')}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-8 h-10 rounded-l-xl bg-slate-900/90 border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-lg backdrop-blur-md opacity-80 hover:opacity-100 hover:scale-105 transition-all"
+          title="오른쪽 메뉴 보기"
+        >
+          <ChevronRight size={20} />
+        </button>
+
+        {/* Scrollable Tab Bar */}
+        <div
+          ref={tabScrollRef}
+          className="flex overflow-x-auto pb-3 gap-3 snap-x px-10 border-b border-slate-800/80 custom-h-scrollbar scroll-smooth"
+          style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#f59e0b #1e293b'
+          }}
+        >
           {CATEGORIES.map(cat => {
             const isActive = activeTab === cat.id;
             return (
@@ -287,13 +370,10 @@ export default function SelfCoaching100() {
             );
           })}
         </div>
-        {/* Right Fade out for scroll indication */}
-        <div className="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black to-transparent pointer-events-none" />
       </div>
 
-      {/* ── 3. 선택된 카테고리의 10가지 질문 리스트 (Staggered Glass Cards) ── */}
+      {/* ── 3. 선택된 카테고리의 10가지 질문 리스트 ── */}
       <div className="rounded-3xl border border-white/10 overflow-hidden relative">
-        {/* Dynamic Background matching category color */}
         <div className={`absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none ${currentCategory?.color.split(' ')[0]}`} />
         
         <div className="relative z-10 bg-black/60 backdrop-blur-md">
@@ -303,7 +383,9 @@ export default function SelfCoaching100() {
             </div>
             <div>
               <h4 className="text-base font-bold text-white tracking-wide">{currentCategory?.title}</h4>
-              <p className="text-[11px] text-gray-400 mt-1 uppercase tracking-widest font-mono">10 Core Prompts for Debugging</p>
+              <p className="text-[11px] text-gray-400 mt-1 uppercase tracking-widest font-mono">
+                10 Core Prompts for Debugging • 💡 질문을 누르면 AI 코치 감동 해설서가 열립니다
+              </p>
             </div>
           </div>
           
@@ -311,38 +393,39 @@ export default function SelfCoaching100() {
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            key={activeTab} // Re-trigger animation on tab change
+            key={activeTab}
             className="p-4 space-y-3"
           >
             {currentQuestions.map((q, idx) => (
               <motion.div 
                 variants={itemVariants}
                 key={q.id} 
-                className="group relative p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] transition-all duration-300 flex gap-4 items-start overflow-hidden"
+                onClick={() => openQuestionEssayModal(q)}
+                className="group relative p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.08] cursor-pointer transition-all duration-300 flex gap-4 items-start overflow-hidden shadow-md"
               >
-                {/* Hover gradient effect */}
-                <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white to-transparent -translate-x-[100%] group-hover:translate-x-[100%]`} />
-                
                 <div className={`shrink-0 w-8 h-8 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-[11px] font-mono font-bold transition-colors shadow-inner
-                  ${copiedId === q.id ? 'text-green-400 border-green-500/50' : 'text-gray-500 group-hover:text-white group-hover:border-white/30'}`}
+                  ${copiedId === q.id ? 'text-green-400 border-green-500/50' : 'text-amber-400 group-hover:text-white group-hover:border-amber-400/50'}`}
                 >
                   {(idx + 1).toString().padStart(2, '0')}
                 </div>
                 
                 <div className="flex-1 pt-1">
-                  <p className="text-sm text-gray-400 leading-[1.7] group-hover:text-gray-200 transition-colors break-keep">
+                  <p className="text-sm text-gray-300 leading-[1.7] group-hover:text-yellow-200 transition-colors break-keep font-medium">
                     {q.text}
                   </p>
+                  <span className="inline-flex items-center gap-1 text-[10px] text-amber-400/70 mt-1.5 font-mono">
+                    <span>🔒 890pt AI 코치 감동 해설 열람하기 ➜</span>
+                  </span>
                 </div>
                 
                 <motion.button 
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => handleCopy(q.id, q.text)}
+                  onClick={(e) => handleCopy(e, q.id, q.text)}
                   className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-lg
                     ${copiedId === q.id 
                       ? 'bg-green-500/20 text-green-400 border border-green-500/50' 
-                      : 'bg-white/5 text-gray-500 border border-white/10 hover:bg-white/10 hover:text-white'
+                      : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 hover:text-white'
                     }`}
                   title="프롬프트 복사하기"
                 >
@@ -353,7 +436,122 @@ export default function SelfCoaching100() {
           </motion.div>
         </div>
       </div>
-      
+
+      {/* ── 890원 블러(Blur) AI 오라클 감동 에세이 팝업 모달 ── */}
+      <AnimatePresence>
+        {selectedQuestionModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-[#121022] border border-amber-500/40 w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar"
+            >
+              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div>
+                  <span className="text-[10px] font-mono tracking-widest text-amber-400 uppercase font-bold">
+                    {selectedQuestionModal.catTitle} • 질문 #{selectedQuestionModal.id}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-extrabold text-white mt-1 leading-relaxed">
+                    "{selectedQuestionModal.text}"
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setSelectedQuestionModal(null)}
+                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors shrink-0"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Free Preview (초보자 맞춤 현실 메타포) */}
+              <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs sm:text-sm leading-relaxed mb-4 italic">
+                {selectedQuestionModal.metaphor}
+              </div>
+
+              {/* Paywall Locked Section */}
+              {!isQuestionUnlocked && !isAllPassUnlocked ? (
+                <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 p-6 bg-[#181526]/90 shadow-2xl mt-4">
+                  <div className="filter blur-[6px] select-none text-slate-400 text-xs space-y-3 opacity-50 pointer-events-none">
+                    <p>▒▒▒▒▒▒ {selectedQuestionModal.essay} ▒▒▒▒▒▒</p>
+                    <p>▒▒▒▒▒▒ {selectedQuestionModal.action} ▒▒▒▒▒▒</p>
+                  </div>
+
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/70 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                    <div className="size-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-black shadow-xl shadow-amber-500/30 animate-bounce">
+                      🔒
+                    </div>
+                    <div>
+                      <h4 className="text-base font-extrabold text-white">AI 코치의 1:1 오라클 감동 해설서</h4>
+                      <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 해설서 전체를 열람하세요.</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+                      <button
+                        disabled={isUnlocking}
+                        onClick={() => {
+                          setIsUnlocking(true);
+                          setTimeout(() => {
+                            setIsQuestionUnlocked(true);
+                            setIsUnlocking(false);
+                          }, 700);
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                      >
+                        <span>🔓 890원 단품 해제 (890pt)</span>
+                      </button>
+
+                      <button
+                        disabled={isUnlocking}
+                        onClick={() => {
+                          setIsUnlocking(true);
+                          setTimeout(() => {
+                            setIsAllPassUnlocked(true);
+                            setIsQuestionUnlocked(true);
+                            setIsUnlocking(false);
+                          }, 700);
+                        }}
+                        className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                      >
+                        <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                  </div>
+                </div>
+              ) : (
+                /* Unlocked Essay Content */
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-4 pt-2"
+                >
+                  <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
+                    <span>✓</span> {isAllPassUnlocked ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 오라클 1:1 감동 해설서
+                  </div>
+
+                  <div className="p-5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-3">
+                    <h5 className="font-bold text-amber-300 text-sm">📖 초보자 맞춤 1:1 감동 에세이</h5>
+                    <p className="text-xs text-slate-200 leading-relaxed break-keep font-normal">
+                      {selectedQuestionModal.essay}
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                    <h5 className="font-bold text-amber-300 text-xs flex items-center gap-1.5">
+                      💡 오늘 당장 실행하는 뇌 디버깅 지침
+                    </h5>
+                    <p className="text-xs text-slate-300 leading-relaxed font-semibold">
+                      {selectedQuestionModal.action}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
