@@ -3052,17 +3052,18 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                             {/* Free Preview Area */}
                             <div className="space-y-4 text-slate-300 text-sm leading-relaxed font-sans pr-2 overflow-y-auto custom-scrollbar">
                                 <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-slate-200">
-                                    4대 코어 엔진(庚申, 辛巳, 癸未, 乙未)은 당신의 사주 아키텍처가 지닌 가장 정밀한 시스템 스펙(Specs)입니다. 하지만 이 거대한 엔진들이 당신의 실제 삶과 비즈니스에서 어떻게 만개하는지, 어떤 다정한 의도로 설계되었는지를 이해하는 순간 당신의 삶은 비로소 거대한 주권의 숲으로 완성됩니다.
+                                    <strong className="text-amber-300 font-bold">{sajuInfo.name || '당신'}님({sajuInfo.dayPillar || sajuInfo.dayStem})</strong>의 4대 코어 엔진({coaching.masterRoadmap?.engines?.map(e => e.label.split('(')[1]?.replace(')', '') || '').filter(Boolean).join(', ') || '사주 아키텍처'})은 당신의 명식에 내재된 가장 정밀한 시스템 스펙(Specs)입니다. 이 엔진들이 당신의 실제 삶과 비즈니스에서 어떻게 스케일업되는지를 파악하는 순간 당신의 삶은 거대한 주권의 아키텍처로 완성됩니다.
                                 </div>
 
                                 {!isPhase7Unlocked && !isAllPassUnlocked ? (
                                     /* Paywall Locked Section */
                                     <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 p-6 bg-[#181526]/90 shadow-2xl mt-4">
                                         <div className="filter blur-[6px] select-none text-slate-500 text-xs space-y-3 opacity-60 pointer-events-none">
-                                            <p>▒▒▒▒▒▒ ① 하드웨어 엔진 (庚申): 왜 나는 남들보다 쉽게 포기하지 못하고... ▒▒▒▒▒▒</p>
-                                            <p>▒▒▒▒▒▒ ② 중앙 처리 장치 (辛巳): 남들은 그냥 지나치는 작은 오류나 어색함이... ▒▒▒▒▒▒</p>
-                                            <p>▒▒▒▒▒▒ ③ 냉각수 및 출력 포트 (癸未): 내 머릿속에 수없이 떠오르는 생각과 영감들은... ▒▒▒▒▒▒</p>
-                                            <p>▒▒▒▒▒▒ ④ 최종 결과물 및 네트워크 (乙未): 당신이 겪은 수많은 시행착오는... ▒▒▒▒▒▒</p>
+                                            {coaching.masterRoadmap?.engines?.map((eng, idx) => (
+                                                <p key={idx}>
+                                                    ▒▒▒▒▒▒ {['①', '②', '③', '④'][idx]} {eng.label}: {eng.title} — {eng.desc?.substring(0, 35)}... ▒▒▒▒▒▒
+                                                </p>
+                                            ))}
                                         </div>
 
                                         <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/60 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
@@ -3121,53 +3122,23 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             {isAllPassUnlocked ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 마스터 클래스
                                         </div>
 
-                                        {/* Engine 1 */}
-                                        <div className="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-amber-300 text-sm">① 하드웨어 엔진 (庚申): 돌파하는 힘</h5>
-                                                <span className="text-[10px] font-mono text-amber-400/80">CORE PHYSICAL POWER</span>
+                                        {coaching.masterRoadmap?.engines?.map((eng, idx) => (
+                                            <div key={idx} className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/10 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <h5 className="font-bold text-amber-300 text-sm">
+                                                        {['①', '②', '③', '④'][idx]} {eng.label}: {eng.title}
+                                                    </h5>
+                                                    <span className="text-[10px] font-mono text-amber-400/80">CORE ENGINE {idx + 1}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-200 leading-relaxed pt-1" dangerouslySetInnerHTML={{ __html: eng.desc }} />
+                                                {eng.action && (
+                                                    <div className="mt-3 pt-2 border-t border-amber-500/20 text-xs font-semibold text-amber-300 flex items-center gap-1.5">
+                                                        <span className="material-symbols-outlined text-xs">bolt</span>
+                                                        <span>{eng.action}</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 나는 남들보다 쉽게 포기하지 못하고, 일이 생기면 끝장을 보아야만 직성이 풀릴까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                당신 안에는 그 어떤 거친 풍파가 몰아쳐도 절대로 무너지지 않는 <strong className="text-amber-300">거대한 바위(庚申)</strong>가 들어있습니다. 때로는 이 강인함 때문에 스스로가 지치기도 하고, 남들에게 '무서운 사람'으로 오해받기도 했을 것입니다. 하지만 기억하세요. 이 힘은 세상을 무모하게 들이받기 위한 것이 아니라, 당신이 꿈꾸는 미래를 향해 묵직하게 길을 터주는 당신만의 든든한 장갑차입니다. 남들의 눈치를 보며 몸을 사리지 마세요. 당신의 몸과 마음은 생각보다 훨씬 더 단단하며, 그 어떤 난관도 뚫고 나갈 준비가 이미 끝났습니다.
-                                            </p>
-                                        </div>
-
-                                        {/* Engine 2 */}
-                                        <div className="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-indigo-300 text-sm">② 중앙 처리 장치 (辛巳): 정밀한 안목</h5>
-                                                <span className="text-[10px] font-mono text-indigo-400/80">PRECISION CPU DEBUGGER</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"남들은 그냥 지나치는 작은 오류나 어색함이, 왜 내 눈에는 송곳처럼 아프게 들어올까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                당신의 마음속에는 세상을 엑스레이처럼 정밀하게 정화하는 <strong className="text-indigo-300">빛나는 메스(辛巳)</strong>가 놓여 있습니다. 타인의 모호한 감정이나 시스템의 미세한 버그를 즉각 알아차리는 능력은 하나님이 당신에게 준 특별한 선물입니다. 스스로를 괴롭히는 '예민함'이라고 자책하지 마세요. 그 예민함은 복잡하게 꼬인 세상의 실타래를 가장 아름답고 명확하게 풀어내는 <strong className="text-amber-300">'완벽한 디버깅의 힘'</strong>입니다. 당신의 예리한 시선이 닿는 순간, 세상의 모든 혼란은 비로소 질서를 찾게 됩니다.
-                                            </p>
-                                        </div>
-
-                                        {/* Engine 3 */}
-                                        <div className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-blue-300 text-sm">③ 냉각수 및 출력 포트 (癸未): 마르지 않는 지혜</h5>
-                                                <span className="text-[10px] font-mono text-blue-400/80">COOLANT & I/O PORT</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"내 머릿속에 수없이 떠오르는 생각과 영감들은 도대체 어디로 흘러가야 할까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                과열된 엔진을 식혀주는 깊고 차가운 <strong className="text-blue-300">샘물(癸未)</strong>이 당신의 심연에서 계속 솟아나고 있습니다. 당신이 끊임없이 새로운 지식을 탐구하고, 이를 글로 쓰고, 정리하고, 다른 이들에게 나눠주고 싶어 하는 것은 본능입니다. 생각을 내면에 쌓아두기만 하면 마음이 과열되어 답답해집니다. 당신의 지식과 언어를 세상 밖으로 아낌없이 뿜어내세요. 당신이 적어 내려가는 문서 한 줄, 나누는 대화 한 토막이 누군가의 답답한 인생을 시원하게 식혀주는 가장 고마운 냉각수가 되어줄 것입니다.
-                                            </p>
-                                        </div>
-
-                                        {/* Engine 4 */}
-                                        <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-emerald-300 text-sm">④ 최종 결과물 및 네트워크 (乙未): 거대한 세상의 완성</h5>
-                                                <span className="text-[10px] font-mono text-emerald-400/80">BUSINESS INFRASTRUCTURE</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"나는 결국 이 모든 고뇌와 노력을 통해 어디에 다다르게 될까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                당신이 겪은 수많은 시행착오(trial & error)와 생각의 파편들은 결코 허공으로 사라지지 않습니다. 이 모든 힘은 마침내 비옥한 땅 위에서 거대하게 피어나는 <strong className="text-emerald-300">나무와 숲(乙未)</strong>이 되어 세상을 덮을 것입니다. 당신이 만들어낼 책, 당신이 운영할 코칭 센터, 당신이 구축할 세상(Platform)은 단순히 돈을 벌기 위한 수단이 아닙니다. 방황하는 이들에게 안식처를 제공하고, 당신의 철학이 사람들의 삶을 실제로 바꿔놓는 <strong className="text-amber-300">'거대한 인프라'</strong>로 완공될 것입니다. 당신은 단순한 노동자가 아닙니다. 처음부터 이 거대한 세상을 설계하러 온 <strong className="text-amber-300 font-bold">우아한 건축가(Architect)</strong>입니다.
-                                            </p>
-                                        </div>
+                                        ))}
                                     </motion.div>
                                 )}
                             </div>
