@@ -34,29 +34,29 @@ export default function SocialAntiPatternAnalysis({ dayStem, userName = '사용�
 
     if (key === 'DARK') {
       category = 'DARK CODE (Root Lock) AI 심층 해독';
-      introMetaphor = `"${name} 대표님, 타협을 패배라 여기며 홀로 모든 파도를 막아서던 가뭄 속 거목의 지친 잎사귀를 기억하십니까?"`;
-      essayContent = `타협을 패배로 인지하고 조언을 공격으로 받아들이는 현상은 당신이 나빠서가 아니라, 뇌 전두엽의 독단적 과부하(Root Lock) 회로가 구동했기 때문입니다. 홀로 모든 책임을 지려다 뿌리가 뽑히는 번아웃을 방지하려면, 타인의 피드백을 내 시스템을 키워주는 단비로 받아들여야 합니다.`;
-      actionGuide = `반대 의견을 만났을 때 3초간 호흡하며 "저 사람의 말 중 10%라도 내 시스템을 결함 없이 보완할 수 있는 부분은 무엇인가?"를 기록하십시오.`;
+      introMetaphor = `"${name} 대표님, 타협을 패배라 여기며 홀로 모든 폭풍을 막아서던 가뭄 속 거목의 지친 잎사귀를 기억하십니까?"`;
+      essayContent = `타협을 패배로 인지하고 조언을 공격으로 받아들이는 현상은 대표님이 나빠서가 아니라, 뇌 전두엽의 독단적 과부하(Root Lock) 회로가 구동했기 때문입니다. 60갑자 중 가장 앞서 달려 나가는 첫 번째 거목(甲木)이기에, 본능적으로 남에게 맡기지 못하고 혼자 다 짊어지려 했던 것입니다.\\n\\n하지만 혼자 모든 책임을 지려다 뿌리가 뽑히는 번아웃을 방지하려면, 타인의 피드백을 내 영토를 굳건히 해주는 단비로 받아들여야 합니다. 거목은 혼자 숲을 이룰 수 없듯, 팀원의 의견은 당신의 비전을 위협하는 공격이 아니라 함께 거대한 숲을 가꾸는 파트너십입니다.\\n\\n이제 혼자 모든 부담을 안고 고립된 전쟁을 치르던 낡은 왕관을 내려놓으십시오. 당신의 독단적인 돌진을 멈추고 타인의 헌신을 수용할 때, 당신의 비전은 비로소 세상 전체가 안심하고 밟고 설 수 있는 견고한 플랫폼으로 진화합니다.`;
+      actionGuide = `1단계 [Scan]: 반대 의견을 만났을 때 3초간 호흡하며 "저 사람의 말 중 10%라도 내 시스템을 결함 없이 보완할 수 있는 부분은 무엇인가?" 인지하기\\n2단계 [Sync]: "이 피드백은 나를 공격하는 것이 아니라, 내 시스템을 가꿔주는 단비다" 3번 읊조리기\\n3단계 [Shift]: 상대의 의견 중 유효한 1가지를 수용하고 고맙다는 인사를 전달하기`;
     } else if (key === 'NEURAL') {
       category = 'NEURAL CODE (Resonance Net) 신경망 리셋';
       introMetaphor = `"${name} 대표님, 수직으로만 치솟던 강철 깃대를 내려놓고, 땅 밑으로 수평하게 뻗어나가는 뿌리의 융합 지혜를 결합할 때입니다."`;
-      essayContent = `수직적 돌파 에너지는 초기에 거대한 영토를 개척하지만, 끝내 혼자 남아 외로워집니다. 공명 네트워크(Resonance Net)는 당신의 폭발적인 추진력을 '타인과 함께 굴러가는 자동화 시스템'으로 승화시키는 최적의 회로입니다.`;
-      actionGuide = `내가 직접 들고 있던 업무 중 1가지를 선정하여 AI 또는 파트너에게 외주·위임하고 그 결과를 경청하십시오.`;
+      essayContent = `수직적 돌파 에너지는 초기에 거대한 영토를 개척하는 데 유리하지만, 끝내 혼자 남아 외로워집니다. 공명 네트워크(Resonance Net)는 당신의 폭발적인 추진력을 '타인과 함께 굴러가는 자동화 시스템'으로 승화시키는 최적의 신경 회로입니다.\\n\\n내 방식을 고집하며 모든 세부 실무를 직접 처리하는 대신, 팀원과 AI에게 초기 초안 작성을 전적으로 위임하십시오. 대표님은 가장 우아하고 날카로운 '최종 검수 및 비전 설정'에만 뇌 에너지를 투입해야 합니다.\\n\\n이것이 바로 혼자 일하다 지치던 1단계 개척자에서, 100명이 함께 달리는 2단계 생태계 설계자(아키텍트)로 격상되는 운명적 퀀텀 쉼프트의 핵심입니다.`;
+      actionGuide = `1단계 [Scan]: 내가 직접 들고 있던 실무 중 가장 귀찮은 작업 1가지 고르기\\n2단계 [Sync]: AI(n8n/Gemini) 또는 파트너에게 100% 위임하고 초안 기다리기\\n3단계 [Shift]: 80%만 일치해도 '통과'를 선언하고 다음 비전 개척으로 넘어가기`;
     } else if (key === 'META') {
       category = 'META CODE (AWAKENING) 퀀텀 깨달음';
       introMetaphor = `"${name} 대표님, 나는 숲을 이끄는 가장 높은 나무이나, 숲 전체의 흙과 바람과 연결되어 있을 때만 우뚝 서 있을 수 있습니다."`;
-      essayContent = `에고(Ego)의 고집은 당신을 지켜주는 갑옷이 아니라 감옥이었습니다. '내가 항상 옳아야 한다'는 짐스러운 왕관을 내려놓는 순간, 당신은 비로소 모든 사람의 경험과 지혜를 내 것으로 흡수하는 우주적 유연함을 얻게 됩니다.`;
-      actionGuide = `매일 아침 "오늘 나는 틀릴 준비가 되어 있는가? 타인의 지혜를 내 숲으로 흡수할 준비가 되었는가?"를 저널에 기록하십시오.`;
+      essayContent = `에고(Ego)의 고집은 당신을 지켜주는 갑옷이 아니라, 당신을 타인으로부터 격리시키는 감옥이었습니다. '내가 항상 옳아야 한다'는 짐스러운 왕관을 내려놓는 순간, 당신은 비로소 모든 사람의 경험과 지혜를 내 것으로 흡수하는 우주적 유연함을 얻게 됩니다.\\n\\n세상에서 가장 강력한 거목은 가장 단단한 나무가 아니라, 어떤 폭풍에도 부러지지 않고 유연하게 흔들리는 뿌리 깊은 생태계 그 자체입니다. 대지의 수분(子水)을 온전히 흡수하십시오.\\n\\n당신이 겸손하게 무릎을 꿇고 숲 전체와 연결될 때, 세상의 모든 자본과 조력자는 당신의 숲으로 흘러 들어와 당신을 거대한 황제로 추대할 것입니다.`;
+      actionGuide = `1단계 [Scan]: 매일 아침 "오늘 나는 틀릴 준비가 되어 있는가?" 질문하기\\n2단계 [Sync]: 타인의 지혜를 흡수할 수 있는 마음의 여백 3초 확보하기\\n3단계 [Shift]: 팀원의 아이디어를 채택하여 비즈니스에 즉시 적용하기`;
     } else if (key.startsWith('Q_')) {
       category = '재귀적 산파술 1:1 심층 질문';
       introMetaphor = `"${name} 대표님, 상대방을 논리로 제압한 직후 당신의 가슴속에 남는 것은 승리의 쾌감입니까, 아니면 썰물처럼 빠져나가는 적막함입니까?"`;
-      essayContent = `논리로 승리하는 것은 쉽지만 사람의 마음을 얻는 것은 오직 경청과 산파술 질문으로만 가능합니다. 끓어오르는 조급함은 객관적 사실이 아니라, 머릿속 '거목의 에고'가 만들어낸 하나의 데이터일 뿐이라는 것을 분리해서 바라보십시오.`;
-      actionGuide = `다음 미팅에서 상대의 말이 끝나기 전까지 3분간 절대 개입하지 말고, 상대의 핵심 욕구를 1문장으로 요약해 짚어주십시오.`;
+      essayContent = `논리로 승리하는 것은 쉽지만, 사람의 마음과 온전한 에너지를 얻는 것은 오직 경청과 산파술 질문으로만 가능합니다. 끓어오르는 조급함은 객관적 사실이 아니라, 내 머릿속 에고가 만들어낸 하나의 '데이터'일 뿐이라는 것을 분리해서 바라보십시오.\\n\\n거목의 에고 뒤에서 무심하게 상황을 비추고 있는 '진짜 나'를 발견하는 순간, 당신의 말 한마디는 타인을 굴복시키는 칼날이 아니라 타인의 뇌를 깨우는 거대한 명약이 됩니다.\\n\\n상대를 제압하려 하지 말고, 상대의 뇌속 잠재력을 깨워주는 질문을 던지십시오. 당신이 사람의 마음을 얻을 때, 당신의 비즈니스는 무적의 군단을 얻게 됩니다.`;
+      actionGuide = `1단계 [Scan]: 상대방의 말이 끝나기 전까지 3분간 절대 개입하지 않기\\n2단계 [Sync]: 상대의 핵심 욕구를 한 문장으로 요약하여 짚어주기\\n3단계 [Shift]: "그 생각을 실현하려면 내가 무엇을 도와주면 되겠습니까?" 질문 던지기`;
     } else {
       category = '심층 코칭 프로토콜 (CBT/MBCT/DBT/ACT)';
       introMetaphor = `"${name} 대표님, 솟구치는 분수 입구를 손바닥으로 막는 대신, 차가운 샘물(子水)의 수분으로 뇌를 쿨링다운 시켜야 합니다."`;
-      essayContent = `CBT, MBCT, DBT, ACT 프로토콜은 당신의 인지 왜곡과 감정 과열 회로를 정밀 디버깅하는 최첨단 뇌과학 지침입니다. '나만 옳다'는 이분법적 사고가 발동할 때 3초간 호흡하며 발바닥 감각을 인지하고, 감정 온도가 내려갈 때까지 타임아웃을 선언하십시오.`;
-      actionGuide = `감정 온도가 솟구칠 때 즉각 행동하지 말고 '타임아웃'을 선언한 뒤 차가운 물을 마시며 3분간 깊은 호흡을 진행하십시오.`;
+      essayContent = `CBT, MBCT, DBT, ACT 프로토콜은 당신의 인지 왜곡과 감정 과열 회로를 정밀 디버깅하는 최첨단 뇌과학 지침입니다. '나만 옳다'는 이분법적 사고가 발동할 때 3초간 호흡하며 발바닥 감각을 인지하고, 감정 온도가 내려갈 때까지 타임아웃을 선언하십시오.\\n\\n감정이 분노나 조급함으로 과열될 때 즉각 반응하는 것은 뇌의 원시적 생존 본능입니다. 300ml의 차가운 물을 마시며 3분간 깊게 호흡하는 순간, 뇌 전두엽의 이성 회로가 복구됩니다.\\n\\n'나는 항상 앞서가야 한다'는 짐스러운 정체성을 관찰 대상으로 분리하고, 기꺼이 뒤로 물러나 타인을 세워주는 경험을 수용할 때, 당신은 비로소 평온하고 우아한 주권자의 삶을 회복하게 됩니다.`;
+      actionGuide = `1단계 [Scan]: 감정 온도가 솟구칠 때 즉각 행동하지 말고 '타임아웃' 선언하기\\n2단계 [Sync]: 차가운 물 한 잔을 마시며 발바닥이 땅에 닿아있는 감각 인지하기\\n3단계 [Shift]: 5분 후 고요해진 이성 뇌로 가장 우아한 최적의 코칭 답변 선택하기`;
     }
 
     setSelectedModalItem({ key, title, category, introMetaphor, essayContent, actionGuide });
@@ -405,18 +405,27 @@ export default function SocialAntiPatternAnalysis({ dayStem, userName = '사용�
 
                   <div className="p-5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-3">
                     <h5 className="font-bold text-cyan-300 text-sm">📖 초보자 맞춤 1:1 감동 에세이</h5>
-                    <p className="text-xs text-slate-200 leading-relaxed break-keep font-normal">
-                      {selectedModalItem.essayContent}
-                    </p>
+                    <div className="space-y-3 text-xs sm:text-sm text-slate-200 leading-relaxed break-keep font-normal">
+                      {selectedModalItem.essayContent.split('\n\n').map((para, idx) => (
+                        <p key={idx} className="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50">
+                          {para}
+                        </p>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 space-y-2">
                     <h5 className="font-bold text-amber-300 text-xs flex items-center gap-1.5">
                       💡 오늘 당장 실행하는 마이크로 실천 지침
                     </h5>
-                    <p className="text-xs text-slate-300 leading-relaxed font-semibold">
-                      {selectedModalItem.actionGuide}
-                    </p>
+                    <div className="space-y-1.5 text-xs text-slate-200 leading-relaxed font-medium">
+                      {selectedModalItem.actionGuide.split('\n').map((act, idx) => (
+                        <div key={idx} className="flex items-start gap-2 bg-cyan-950/40 p-2 rounded border border-cyan-500/30">
+                          <span className="text-cyan-400 font-bold shrink-0">▪</span>
+                          <span>{act}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </motion.div>
               )}
