@@ -1591,6 +1591,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const [isShiftEssayUnlocked, setIsShiftEssayUnlocked] = useState(false);
     const [isRuntimeEssayModalOpen, setIsRuntimeEssayModalOpen] = useState(false);
     const [isRuntimeEssayUnlocked, setIsRuntimeEssayUnlocked] = useState(false);
+    const [isMicroEssayModalOpen, setIsMicroEssayModalOpen] = useState(false);
+    const [isMicroEssayUnlocked, setIsMicroEssayUnlocked] = useState(false);
 
     // ── AI 코칭 리포트 관련 상태 ──
     type AiReport = {
@@ -2428,6 +2430,34 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                     </div>
                                                 ))}
                                             </div>
+
+                                            {/* ── [PHASE 8 MICRO MANUAL 890원 감동 에세이 CTA 바] ── */}
+                                            <div className="mt-4 p-4 rounded-2xl border border-yellow-500/30 bg-[#211d13]/80 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="size-10 rounded-xl bg-yellow-500/20 border border-yellow-500/40 flex items-center justify-center text-yellow-300 shrink-0">
+                                                        <span className="material-symbols-outlined text-xl">diamond</span>
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] font-extrabold text-yellow-400 uppercase tracking-widest">Micro Execution Master</span>
+                                                            {(isMicroEssayUnlocked || isAllPassUnlocked) && (
+                                                                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold">
+                                                                    열람 완료
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <h5 className="text-xs font-bold text-white mt-0.5">기계를 부리는 명장의 우아한 비즈니스 해설서</h5>
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => setIsMicroEssayModalOpen(true)}
+                                                    className="w-full sm:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">bolt</span>
+                                                    <span>{(isMicroEssayUnlocked || isAllPassUnlocked) ? '마이크로 해설서 읽기' : '🔓 890원에 마이크로 실행 해설서 보기'}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </section>
                                 )}
@@ -2853,6 +2883,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                              setIsDailyEssayUnlocked(true);
                                                              setIsShiftEssayUnlocked(true);
                                                              setIsRuntimeEssayUnlocked(true);
+                                                             setIsMicroEssayUnlocked(true);
                                                              setIsUnlocking(false);
                                                          }, 700);
                                                      }}
@@ -3541,6 +3572,158 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             <p className="text-xs font-semibold text-slate-300 italic">"혼자서 모든 것을 버텨내는 것은 용기가 아니라, 스스로를 고통으로 몰아넣는 일입니다."</p>
                                             <p className="text-xs text-slate-200 leading-relaxed pt-1">
                                                 자동화 AI(Cursor, n8n)를 구축하고, 행정이나 디자인 업무를 전문가에게 맡기는 것은 당신의 무능함이 아닙니다. 오히려 당신의 본질적 가치를 세상에 더 빠르게 퍼뜨리기 위한 <strong className="text-amber-300">'가장 우아한 지렛대(Leverage)'</strong>를 사용하는 것입니다. 반복되는 잡무는 기술과 사람에게 위임하세요. 당신이 코어 로직에 집중할 때, 당신의 비즈니스는 한 사람의 노동을 넘어 거대한 시스템으로 승화됩니다.
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+
+            {/* ── [Phase 8 Micro Manual Essay Paywall Modal (890원 / 1,900원 ALL-PASS)] ── */}
+            <AnimatePresence>
+                {isMicroEssayModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-2xl bg-[#131022] border border-yellow-500/40 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh] custom-scrollbar"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-start justify-between border-b border-white/10 pb-4 mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 rounded-xl bg-yellow-500/20 border border-yellow-500/40 flex items-center justify-center text-yellow-300">
+                                        <span className="material-symbols-outlined text-xl">diamond</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest">
+                                            Micro Manual Master Class
+                                        </span>
+                                        <h3 className="text-base md:text-lg font-bold text-white leading-snug mt-0.5">
+                                            AI 코치의 기계를 부리는 명장의 우아한 비즈니스 해설서
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsMicroEssayModalOpen(false)}
+                                    className="material-symbols-outlined text-slate-400 hover:text-white transition-colors"
+                                >
+                                    close
+                                </button>
+                            </div>
+
+                            {/* Free Preview Area */}
+                            <div className="space-y-4 text-slate-300 text-sm leading-relaxed font-sans pr-2 overflow-y-auto custom-scrollbar">
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-slate-200">
+                                    개발 및 시스템 지식이 부족한 일반 사용자나, 혼자서 모든 업무를 처리하다 지친 창업자에게 '어떻게 AI를 내 하수인으로 부려 시급을 10배 높일 것인가'에 대한 압도적인 마이크로 실행 아키텍처 가이드라인입니다.
+                                </div>
+
+                                {!isMicroEssayUnlocked && !isAllPassUnlocked ? (
+                                    /* Paywall Locked Section */
+                                    <div className="relative overflow-hidden rounded-2xl border border-yellow-500/30 p-6 bg-[#181526]/90 shadow-2xl mt-4">
+                                        <div className="filter blur-[6px] select-none text-slate-500 text-xs space-y-3 opacity-60 pointer-events-none">
+                                            <p>▒▒▒▒▒▒ 01. 기술적 레버리지: "더 이상 모든 것을 백지에서 시작하지 마세요" ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ 02. 인적 레버리지: "당신의 시간은 폰트를 고르기엔 너무나 숭고합니다" ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ 03. 마스터 아키텍트의 선언: "나는 채굴자가 아니라 세공사다" ▒▒▒▒▒▒</p>
+                                        </div>
+
+                                        <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/60 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                                            <div className="size-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-black shadow-xl shadow-amber-500/30 animate-bounce">
+                                                <span className="material-symbols-outlined text-2xl">lock</span>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-base font-extrabold text-white">마이크로 실행 & 파이프라인 해설서</h4>
+                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 전체 에세이를 해제하세요.</p>
+                                            </div>
+
+                                            <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsMicroEssayUnlocked(true);
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span>🔓 890원 단품 해제 (890pt)</span>
+                                                </button>
+
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsPhase7Unlocked(true);
+                                                            setIsAllPassUnlocked(true);
+                                                            setIsDailyEssayUnlocked(true);
+                                                            setIsShiftEssayUnlocked(true);
+                                                            setIsRuntimeEssayUnlocked(true);
+                                                            setIsMicroEssayUnlocked(true);
+                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">bolt</span>
+                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                </button>
+                                            </div>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Unlocked Full Essays */
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-6 pt-2"
+                                    >
+                                        <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                                            <span className="material-symbols-outlined text-sm">verified</span>
+                                            {(isAllPassUnlocked) ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 마이크로 가이드
+                                        </div>
+
+                                        {/* Step 1 */}
+                                        <div className="p-5 rounded-xl bg-yellow-500/10 border border-yellow-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-yellow-300 text-sm">01. 기술적 레버리지: "더 이상 모든 것을 백지에서 시작하지 마세요"</h5>
+                                                <span className="text-[10px] font-mono text-yellow-400/80">AUTOMATION PIPELINE</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 매번 상담이나 작업을 할 때마다 처음부터 끝까지 혼자 머리를 쥐어짜며 괴로워했을까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                세상을 바꾸는 명장(Master)은 광산에 직접 들어가 땅을 파지 않습니다. 땅을 파고 원석을 캐내는 고된 작업(데이터 수집 및 1차 분석)은 24시간 지치지 않는 AI 시스템(n8n + Gemini)에게 맡기세요. AI가 10초 만에 들고 온 80점짜리 초안을 바탕으로, 당신은 가장 예리하고 우아하게 <strong className="text-amber-300">'최종 다듬기'</strong>만 거치면 됩니다. 기술을 두려워하지 마세요. 기술은 당신의 자리를 빼앗는 것이 아니라, 당신을 '지친 노동자'에서 '우아한 세공사'로 격상시켜 주는 가장 다정한 하수인입니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Step 2 */}
+                                        <div className="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-amber-300 text-sm">02. 인적 레버리지: "당신의 시간은 폰트를 고르기엔 너무나 숭고합니다"</h5>
+                                                <span className="text-[10px] font-mono text-amber-400/80">HUMAN DELEGATION</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"단돈 몇만 원을 아끼겠다고 온종일 서류 양식을 만들고 디자인을 수정하진 않으셨나요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                당신이 지닌 가장 뛰어난 자산은 '남들이 보지 못하는 오류를 잡아내는 예리한 분석력'입니다. 하지만 그 고귀한 능력을 영수증 정리나 서류 발급, 디자인 작업 같은 잡무에 낭비한다면, 당신의 가치는 평범한 수준에 머물게 됩니다. 잡무는 시스템과 전문가에게 위임하세요. <strong className="text-amber-300">"내 시급은 이런 일에 쓰기엔 너무 비싸다"</strong>라는 정당한 자부심을 가질 때, 당신의 리포트는 30만 원, 50만 원, 나아가 기업이 고개 숙여 요청하는 고단가 B2B 솔루션으로 변모합니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Step 3 */}
+                                        <div className="p-5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-cyan-300 text-sm">03. 마스터 아키텍트의 선언: "나는 채굴자가 아니라 세공사다"</h5>
+                                                <span className="text-[10px] font-mono text-cyan-400/80">MASTER DECLARATION</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"완벽하지 않은 AI의 초안에 답답해하지 마세요. 그것이 바로 당신이 존재하는 이유입니다."</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                AI가 완벽한 답을 낸다면 당신이 설 자리는 사라집니다. AI가 가져온 원석의 허점을 찾아내어 날카로운 단 하나의 질문(SHIFT Trigger)을 던지는 것, 그것이 바로 인간인 당신만이 할 수 있는 진정한 가치 창출입니다. 이제 스스로를 기계처럼 채찍질하는 삶을 멈추고, AI가 깎아온 원석 위에서 당신만의 빛을 세공하는 주권자의 삶을 시작하세요.
                                             </p>
                                         </div>
                                     </motion.div>
