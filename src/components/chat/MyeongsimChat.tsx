@@ -10,6 +10,10 @@ import CompanyInfoModal from '../modals/CompanyInfoModal';
 import MicroChatPassModal from '../modals/MicroChatPassModal';
 import MindStateSelectorModal from '../modals/MindStateSelectorModal';
 import TrendingTopicModal from '../modals/TrendingTopicModal';
+import ChatMessageList from './modules/ChatMessageList';
+import ChatMoodSwitchBar from './modules/ChatMoodSwitchBar';
+import ChatTrendingChipsBar from './modules/ChatTrendingChipsBar';
+
 
 const PSYCH_PROTOCOLS = [
     { code: 'MBCT', name: '마음챙김 인지코칭', desc: 'Mindfulness-Based Cognitive Therapy: 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point)', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/50' },
