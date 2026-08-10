@@ -1578,10 +1578,13 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'document' | 'diagnostic'>('document');
 
-    // ── [NEW] Phase 3 Neural Prompts 에세이 열람 및 890원/890pt 결제 상태 ──
+    // ── [NEW] Phase 3 & Phase 7 에세이 열람 및 890원 / 1,900원 ALL-PASS 결제 상태 ──
     const [selectedPromptForEssay, setSelectedPromptForEssay] = useState<any>(null);
     const [unlockedPrompts, setUnlockedPrompts] = useState<Record<string, boolean>>({});
     const [isUnlocking, setIsUnlocking] = useState(false);
+    const [isPhase7ModalOpen, setIsPhase7ModalOpen] = useState(false);
+    const [isPhase7Unlocked, setIsPhase7Unlocked] = useState(false);
+    const [isAllPassUnlocked, setIsAllPassUnlocked] = useState(false);
 
     // ── AI 코칭 리포트 관련 상태 ──
     type AiReport = {
@@ -2153,6 +2156,35 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                          </div>
                                                      ))}
                                                 </div>
+
+                                                {/* ── [PHASE 7 890원 / 1,900원 ALL-PASS 감동 에세이 CTA 바] ── */}
+                                                <div className="mt-4 p-5 rounded-2xl border border-amber-500/30 bg-[#181526]/80 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl relative overflow-hidden">
+                                                    <div className="flex items-center gap-3.5">
+                                                        <div className="size-12 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 shrink-0">
+                                                            <span className="material-symbols-outlined text-2xl">menu_book</span>
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">VIP Master Class</span>
+                                                                {(isPhase7Unlocked || isAllPassUnlocked) && (
+                                                                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold">
+                                                                        열람 완료
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <h4 className="text-sm font-bold text-white mt-0.5">4대 코어 엔진 '인생 실행서' 감동 에세이 해설</h4>
+                                                            <p className="text-xs text-slate-400 mt-1">4대 엔진이 내 삶과 비즈니스에서 어떻게 만개하는지 AI 코치의 마스터 클래스를 확인해 보세요.</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => setIsPhase7ModalOpen(true)}
+                                                        className="w-full md:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-5 py-3 rounded-xl font-black text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
+                                                    >
+                                                        <span className="material-symbols-outlined text-base">auto_awesome</span>
+                                                        <span>{(isPhase7Unlocked || isAllPassUnlocked) ? '마스터 클래스 에세이 읽기' : '🔓 890원에 4대 코어 인생 실행서 풀어서 보기'}</span>
+                                                    </button>
+                                                </div>
                                             </div>
 
                                             {/* 일일 구동 알고리즘 */}
@@ -2692,30 +2724,43 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                 <p className="text-xs text-slate-400 mt-1">1,000원 미만의 마이크로 포인트로 완벽주의 강박을 해제하세요.</p>
                                             </div>
 
-                                            <button
-                                                disabled={isUnlocking}
-                                                onClick={() => {
-                                                    setIsUnlocking(true);
-                                                    setTimeout(() => {
-                                                        setUnlockedPrompts(prev => ({ ...prev, [selectedPromptForEssay.id]: true }));
-                                                        setIsUnlocking(false);
-                                                    }, 700);
-                                                }}
-                                                className="w-full sm:w-auto bg-gradient-to-r from-[#3211d4] to-[#5b36ff] hover:from-[#3211d4]/90 hover:to-[#5b36ff]/90 text-white px-8 py-3.5 rounded-xl font-black text-sm shadow-xl shadow-[#3211d4]/30 transition-all flex items-center justify-center gap-2 group"
-                                            >
-                                                {isUnlocking ? (
-                                                    <>
-                                                        <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                                        <span>890pt 차감 및 해제 중...</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <span className="material-symbols-outlined text-amber-300">bolt</span>
-                                                        <span>🔒 AI 코치의 정밀 솔루션 읽기 (890원 / 890pt)</span>
-                                                    </>
-                                                )}
-                                            </button>
-                                            <p className="text-[10px] text-slate-500 font-medium">* 가입 기념 1,000pt 보유 중 (차감 후 즉시 해제)</p>
+                                             <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+                                                 <button
+                                                     disabled={isUnlocking}
+                                                     onClick={() => {
+                                                         setIsUnlocking(true);
+                                                         setTimeout(() => {
+                                                             setUnlockedPrompts(prev => ({ ...prev, [selectedPromptForEssay.id]: true }));
+                                                             setIsUnlocking(false);
+                                                         }, 700);
+                                                     }}
+                                                     className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                 >
+                                                     {isUnlocking ? (
+                                                         <span>890pt 차감 중...</span>
+                                                     ) : (
+                                                         <span>🔒 890원 단품 해제 (890pt)</span>
+                                                     )}
+                                                 </button>
+
+                                                 <button
+                                                     disabled={isUnlocking}
+                                                     onClick={() => {
+                                                         setIsUnlocking(true);
+                                                         setTimeout(() => {
+                                                             setUnlockedPrompts({ '01': true, '02': true, '03': true });
+                                                             setIsPhase7Unlocked(true);
+                                                             setIsAllPassUnlocked(true);
+                                                             setIsUnlocking(false);
+                                                         }, 700);
+                                                     }}
+                                                     className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                                                 >
+                                                     <span className="material-symbols-outlined text-sm">bolt</span>
+                                                     <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                 </button>
+                                             </div>
+                                             <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 Phase 3 & Phase 7 전체 감동 에세이가 즉시 해제됩니다.</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -2785,6 +2830,167 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                 </p>
                                             </div>
                                         )}
+                                    </motion.div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+
+            {/* ── [Phase 7 Master Class Essay Paywall Modal (890원 / 1,900원 ALL-PASS)] ── */}
+            <AnimatePresence>
+                {isPhase7ModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-2xl bg-[#131022] border border-amber-500/40 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh] custom-scrollbar"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-start justify-between border-b border-white/10 pb-4 mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300">
+                                        <span className="material-symbols-outlined text-xl">menu_book</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">
+                                            VIP Master Class (AI 심층 마스터리)
+                                        </span>
+                                        <h3 className="text-base md:text-lg font-bold text-white leading-snug mt-0.5">
+                                            당신 안에 잠든 4가지 거대한 힘과 인생 실행서
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsPhase7ModalOpen(false)}
+                                    className="material-symbols-outlined text-slate-400 hover:text-white transition-colors"
+                                >
+                                    close
+                                </button>
+                            </div>
+
+                            {/* Free Preview Area */}
+                            <div className="space-y-4 text-slate-300 text-sm leading-relaxed font-sans pr-2 overflow-y-auto custom-scrollbar">
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-slate-200">
+                                    4대 코어 엔진(庚申, 辛巳, 癸未, 乙未)은 당신의 사주 아키텍처가 지닌 가장 정밀한 시스템 스펙(Specs)입니다. 하지만 이 거대한 엔진들이 당신의 실제 삶과 비즈니스에서 어떻게 만개하는지, 어떤 다정한 의도로 설계되었는지를 이해하는 순간 당신의 삶은 비로소 거대한 주권의 숲으로 완성됩니다.
+                                </div>
+
+                                {!isPhase7Unlocked && !isAllPassUnlocked ? (
+                                    /* Paywall Locked Section */
+                                    <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 p-6 bg-[#181526]/90 shadow-2xl mt-4">
+                                        <div className="filter blur-[6px] select-none text-slate-500 text-xs space-y-3 opacity-60 pointer-events-none">
+                                            <p>▒▒▒▒▒▒ ① 하드웨어 엔진 (庚申): 왜 나는 남들보다 쉽게 포기하지 못하고... ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ ② 중앙 처리 장치 (辛巳): 남들은 그냥 지나치는 작은 오류나 어색함이... ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ ③ 냉각수 및 출력 포트 (癸未): 내 머릿속에 수없이 떠오르는 생각과 영감들은... ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ ④ 최종 결과물 및 네트워크 (乙未): 당신이 겪은 수많은 시행착오는... ▒▒▒▒▒▒</p>
+                                        </div>
+
+                                        <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/60 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                                            <div className="size-14 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center text-black shadow-xl shadow-amber-500/30 animate-bounce">
+                                                <span className="material-symbols-outlined text-2xl">lock</span>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-base font-extrabold text-white">4대 코어 마스터 클래스 해설서 해제</h4>
+                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 리포트 전체 에세이를 해제하세요.</p>
+                                            </div>
+
+                                            <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsPhase7Unlocked(true);
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span>🔓 890원 단품 해제 (890pt)</span>
+                                                </button>
+
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsPhase7Unlocked(true);
+                                                            setIsAllPassUnlocked(true);
+                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">bolt</span>
+                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                </button>
+                                            </div>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 Phase 3 & Phase 7 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Unlocked Full 4 Core Master Essays */
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-6 pt-2"
+                                    >
+                                        <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                                            <span className="material-symbols-outlined text-sm">verified</span>
+                                            {isAllPassUnlocked ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 마스터 클래스
+                                        </div>
+
+                                        {/* Engine 1 */}
+                                        <div className="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-amber-300 text-sm">① 하드웨어 엔진 (庚申): 돌파하는 힘</h5>
+                                                <span className="text-[10px] font-mono text-amber-400/80">CORE PHYSICAL POWER</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 나는 남들보다 쉽게 포기하지 못하고, 일이 생기면 끝장을 보아야만 직성이 풀릴까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                당신 안에는 그 어떤 거친 풍파가 몰아쳐도 절대로 무너지지 않는 <strong className="text-amber-300">거대한 바위(庚申)</strong>가 들어있습니다. 때로는 이 강인함 때문에 스스로가 지치기도 하고, 남들에게 '무서운 사람'으로 오해받기도 했을 것입니다. 하지만 기억하세요. 이 힘은 세상을 무모하게 들이받기 위한 것이 아니라, 당신이 꿈꾸는 미래를 향해 묵직하게 길을 터주는 당신만의 든든한 장갑차입니다. 남들의 눈치를 보며 몸을 사리지 마세요. 당신의 몸과 마음은 생각보다 훨씬 더 단단하며, 그 어떤 난관도 뚫고 나갈 준비가 이미 끝났습니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Engine 2 */}
+                                        <div className="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-indigo-300 text-sm">② 중앙 처리 장치 (辛巳): 정밀한 안목</h5>
+                                                <span className="text-[10px] font-mono text-indigo-400/80">PRECISION CPU DEBUGGER</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"남들은 그냥 지나치는 작은 오류나 어색함이, 왜 내 눈에는 송곳처럼 아프게 들어올까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                당신의 마음속에는 세상을 엑스레이처럼 정밀하게 정화하는 <strong className="text-indigo-300">빛나는 메스(辛巳)</strong>가 놓여 있습니다. 타인의 모호한 감정이나 시스템의 미세한 버그를 즉각 알아차리는 능력은 하나님이 당신에게 준 특별한 선물입니다. 스스로를 괴롭히는 '예민함'이라고 자책하지 마세요. 그 예민함은 복잡하게 꼬인 세상의 실타래를 가장 아름답고 명확하게 풀어내는 <strong className="text-amber-300">'완벽한 디버깅의 힘'</strong>입니다. 당신의 예리한 시선이 닿는 순간, 세상의 모든 혼란은 비로소 질서를 찾게 됩니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Engine 3 */}
+                                        <div className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-blue-300 text-sm">③ 냉각수 및 출력 포트 (癸未): 마르지 않는 지혜</h5>
+                                                <span className="text-[10px] font-mono text-blue-400/80">COOLANT & I/O PORT</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"내 머릿속에 수없이 떠오르는 생각과 영감들은 도대체 어디로 흘러가야 할까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                과열된 엔진을 식혀주는 깊고 차가운 <strong className="text-blue-300">샘물(癸未)</strong>이 당신의 심연에서 계속 솟아나고 있습니다. 당신이 끊임없이 새로운 지식을 탐구하고, 이를 글로 쓰고, 정리하고, 다른 이들에게 나눠주고 싶어 하는 것은 본능입니다. 생각을 내면에 쌓아두기만 하면 마음이 과열되어 답답해집니다. 당신의 지식과 언어를 세상 밖으로 아낌없이 뿜어내세요. 당신이 적어 내려가는 문서 한 줄, 나누는 대화 한 토막이 누군가의 답답한 인생을 시원하게 식혀주는 가장 고마운 냉각수가 되어줄 것입니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Engine 4 */}
+                                        <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-emerald-300 text-sm">④ 최종 결과물 및 네트워크 (乙未): 거대한 세상의 완성</h5>
+                                                <span className="text-[10px] font-mono text-emerald-400/80">BUSINESS INFRASTRUCTURE</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"나는 결국 이 모든 고뇌와 노력을 통해 어디에 다다르게 될까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                당신이 겪은 수많은 시행착오(trial & error)와 생각의 파편들은 결코 허공으로 사라지지 않습니다. 이 모든 힘은 마침내 비옥한 땅 위에서 거대하게 피어나는 <strong className="text-emerald-300">나무와 숲(乙未)</strong>이 되어 세상을 덮을 것입니다. 당신이 만들어낼 책, 당신이 운영할 코칭 센터, 당신이 구축할 세상(Platform)은 단순히 돈을 벌기 위한 수단이 아닙니다. 방황하는 이들에게 안식처를 제공하고, 당신의 철학이 사람들의 삶을 실제로 바꿔놓는 <strong className="text-amber-300">'거대한 인프라'</strong>로 완공될 것입니다. 당신은 단순한 노동자가 아닙니다. 처음부터 이 거대한 세상을 설계하러 온 <strong className="text-amber-300 font-bold">우아한 건축가(Architect)</strong>입니다.
+                                            </p>
+                                        </div>
                                     </motion.div>
                                 )}
                             </div>
