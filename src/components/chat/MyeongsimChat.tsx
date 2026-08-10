@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useReportStore } from '@/store/useReportStore';
 import Footer from '@/components/Footer';
 import CompanyInfoModal from '../modals/CompanyInfoModal';
+import MicroChatPassModal from '../modals/MicroChatPassModal';
 
 const PSYCH_PROTOCOLS = [
     { code: 'MBCT', name: '마음챙김 인지코칭', desc: 'Mindfulness-Based Cognitive Therapy: 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point)', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/50' },
@@ -51,6 +52,8 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [reactions, setReactions] = useState<Record<string, string>>({});
     const [showCardModal, setShowCardModal] = useState<boolean>(false);
     const [showCompanyModal, setShowCompanyModal] = useState<boolean>(false);
+    const [showMicroPassModal, setShowMicroPassModal] = useState<boolean>(false);
+    const [isPaidUser, setIsPaidUser] = useState<boolean>(false);
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioCtxRef = useRef<AudioContext | null>(null);
@@ -86,6 +89,10 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
         }
     });
 
+    const userMessageCount = useMemo(() => {
+        return (messages || []).filter(m => m.role === 'user').length;
+    }, [messages]);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // 과거 대화 내역 불러오기
@@ -112,12 +119,21 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     }, [messages]);
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         if (!input.trim() || isLoading) return;
+        if (userMessageCount >= 3 && !isPaidUser) {
+            setShowMicroPassModal(true);
+            return;
+        }
         handleSubmit(e);
     };
 
     const handleChipClick = (chipText: string) => {
         if (isLoading) return;
+        if (userMessageCount >= 3 && !isPaidUser) {
+            setShowMicroPassModal(true);
+            return;
+        } 
         const parts = chipText.split('"');
         const cleanPrompt = parts.length >= 2 ? parts[1] : chipText;
         append({
@@ -703,10 +719,10 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-amber-950/60 via-purple-950/60 to-slate-950 border-t border-amber-500/30 flex items-center justify-between text-xs gap-2 shrink-0">
                     <span className="text-gray-200 font-bold flex items-center gap-1.5 truncate text-[11px] sm:text-xs">
                         <Sparkles size={13} className="text-amber-400 shrink-0" />
-                        <span className="truncate">대화 내용 기반 1:1 맞춤 핀포인트 가이드전</span>
+                        <span className="truncate">{userMessageCount < 3 ? `🎁 첫 3회 1:1 영혼 코칭 무료 체험 중 (${userMessageCount}/3회)` : `🔒 3회 무료 체험 완료! 890원에 1:1 맞춤 리포트 소장 & 무제한 코칭` }</span>
                     </span>
                     <button
-                        onClick={handlePrescriptionClick}
+                        onClick={() => setShowMicroPassModal(true)}
                         className="py-1 px-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black shadow-md transition-all active:scale-95 flex items-center gap-1 text-[11px] sm:text-xs shrink-0 whitespace-nowrap"
                     >
                         ⚡ 890원 소장하기

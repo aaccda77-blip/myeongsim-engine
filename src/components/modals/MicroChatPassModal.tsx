@@ -92,9 +92,9 @@ export default function MicroChatPassModal({
 
                     {/* Main Title & Subtitle */}
                     <h3 className="text-xl font-bold tracking-tight text-white mb-2 leading-snug">
-                        ☕ 890원으로<br />
+                        🎁 첫 3회 무료 코칭 완료!<br />
                         <span className="text-amber-300 underline decoration-amber-400/50 decoration-wavy underline-offset-4">
-                            대화 3회 더 이어가기
+                            890원에 1:1 맞춤 코칭 소장 & 대화 이어가기
                         </span>
                     </h3>
                     <p className="text-xs text-gray-300 font-light leading-relaxed mb-6 px-2">
