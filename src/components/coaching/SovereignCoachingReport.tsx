@@ -278,7 +278,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
         ilganLabel: '辛金(신금, 음금) — 완성된 보석·예리한 칼날',
         identity: '이미 완성되어 예리하고 섬세한 보석의 결을 지녔습니다. 높은 순도와 완벽주의를 지향하며, 주체적이고 독립적인 시선으로 세상을 관조하는 본질을 지닙니다.',
         coreIssue: '금(金) 기운 과잉 패턴 검출: 내면의 판단 로직과 표준화 요구가 과도해진 상태입니다. 강한 원석(庚金)과 보석(辛金)이 부딪쳐 서로를 긁어내듯, 과도한 기준 설정으로 인한 타인과의 마찰 및 인지적 경직성에 대한 자각적 조율이 필요합니다.',
-        cafeResult: 'Final[수] = 74.0점 🏆 만장일치 WINNER — 심층 센서(水)가 핵심 드라이브',
+        cafeResult: "Final[수] = 74.0점 [상승 동력 1위] — 수(水) 오행의 '심층 자각 센서'가 핵심 드라이브",
         primaryDrive: '🔮 심층 센서 (Deep Sensor, 水)',
         confidence: '98%',
         outputCode: 'N-DEEP-SYNC',
@@ -1835,14 +1835,20 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             </thead>
                                             <tbody className="divide-y divide-white/5">
                                                 {[
-                                                    { name: '궁통보감', desc: '夏月辛金, 壬水為尊', status: 'High Match' },
-                                                    { name: '적천수', desc: '能扶社稷, 能救生靈', status: 'Latent Power' },
-                                                    { name: '자평진전', desc: '傷官生財, 格局淸純', status: 'Flow Required' },
+                                                    { name: '궁통보감 (조후)', desc: '夏月辛金, 壬水爲尊', subDesc: '여름의 辛金은 수(水) 기운의 조후가 최우선이다.', status: 'High Match', statusKo: '최상 부합' },
+                                                    { name: '적천수 (체성)', desc: '能扶社稷, 能救生靈', subDesc: '예리한 辛金은 사직을 받치고 생명을 살리는 힘이 있다.', status: 'Latent Power', statusKo: '잠재 동력' },
+                                                    { name: '자평진전 (격국)', desc: '食神生財, 格局淸純', subDesc: '식신(水)이 재성(木)을 생하여 격국이 청순하다.', status: 'Flow Required', statusKo: '흐름 활성화 필요' },
                                                 ].map(e => (
                                                     <tr key={e.name}>
-                                                        <td className="py-3 pr-4 font-bold text-yellow-400">{e.name}</td>
-                                                        <td className="py-3 pr-4 text-gray-300 text-[11px]">{e.desc}</td>
-                                                        <td className="py-3 text-gray-500 text-[10px]">{e.status}</td>
+                                                        <td className="py-3 pr-4 font-bold text-yellow-400 whitespace-nowrap">{e.name}</td>
+                                                        <td className="py-3 pr-4 text-gray-300 text-[11px]">
+                                                            <div className="font-semibold text-gray-200">{e.desc}</div>
+                                                            <div className="text-[10px] text-amber-300/80 mt-0.5 font-sans">"{e.subDesc}"</div>
+                                                        </td>
+                                                        <td className="py-3 text-[10px] whitespace-nowrap">
+                                                            <span className="text-indigo-300 font-semibold">{e.status}</span>
+                                                            <span className="text-gray-400 text-[9px] ml-1">({e.statusKo})</span>
+                                                        </td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -1856,9 +1862,9 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             <div className="w-2 h-2 rounded-full bg-yellow-500/40" />
                                             <div className="w-2 h-2 rounded-full bg-green-500/40" />
                                         </div>
-                                        <span className="text-gray-500">// 🔬 CAFE 교차 가중 합산 및 최종 코드</span><br />
+                                        <span className="text-gray-500">// 🧪 CAFE 고전 로직 교차 가중 분석 완료</span><br />
                                         <span>{coaching.cafeResult}</span><br />
-                                        <span>Output_Code: {coaching.outputCode}</span>
+                                        <span>System Output Code: {coaching.outputCode}</span>
                                     </div>
 
                                     <div className="flex gap-3">
