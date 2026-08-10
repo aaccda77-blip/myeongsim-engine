@@ -235,6 +235,7 @@ function extractSajuInfo(userProfile: any, fallbackReportData?: any) {
 // 일간별 명심 코칭 텍스트 DB (모듈식)
 // ─────────────────────────────────────────────
 interface IlganCoaching {
+    heroQuote?: string;
     ilganLabel: string;
     identity: string;
     coreIssue: string;
@@ -275,6 +276,7 @@ interface IlganCoaching {
 
 const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     '辛': {
+        heroQuote: '"당신의 고통은 버그가 아닙니다. 완벽한 보석(辛金)으로 빛나기 위한 뜨거운 담금질입니다."',
         ilganLabel: '辛金(신금, 음금) — 완성된 보석·예리한 칼날',
         identity: '이미 완성되어 예리하고 섬세한 보석의 결을 지녔습니다. 높은 순도와 완벽주의를 지향하며, 주체적이고 독립적인 시선으로 세상을 관조하는 본질을 지닙니다.',
         coreIssue: '금(金) 기운 과잉 패턴 검출: 내면의 판단 로직과 표준화 요구가 과도해진 상태입니다. 강한 원석(庚金)과 보석(辛金)이 부딪쳐 서로를 긁어내듯, 과도한 기준 설정으로 인한 타인과의 마찰 및 인지적 경직성에 대한 자각적 조율이 필요합니다.',
@@ -395,6 +397,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
         }
     },
     '甲': {
+        heroQuote: '"당신의 고통은 부러짐이 아닙니다. 거대한 숲(甲木)을 이룰 깊은 뿌리를 내리는 순간입니다."',
         ilganLabel: '甲木(갑목, 양목) — 곧게 뻗는 대나무·선구자',
         identity: '하늘을 향해 꺾이지 않고 자라는 직목(直木). 개척과 리더십의 선구자적 에너지를 지닌 주권자입니다.',
         coreIssue: '木이 강하면 뿌리가 대지를 뒤흔들고, 약하면 방향을 잃습니다. 화(火)를 통해 에너지를 설기해야 빛납니다.',
@@ -514,6 +517,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
         }
     },
     '乙': {
+        heroQuote: '"당신의 시련은 시듦이 아닙니다. 어떤 벽이든 감싸 오를 굳건한 넝쿨(乙木)의 생명력입니다."',
         ilganLabel: '乙木(을목, 음목) — 부드러운 넝쿨·유연한 생존자',
         identity: '어떤 환경에서도 꿋꿋이 살아남는 넝쿨. 부드럽지만 어떤 강자도 감고 올라가는 무서운 생명력의 주권자입니다.',
         coreIssue: '木이 유연하지만 지지대가 없으면 방향을 잃습니다. 명확한 가치관(土)이 당신을 올바른 곳으로 이끕니다.',
@@ -637,6 +641,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     // 丙 — 태양·열정의 군주
     // ──────────────────────────────────────────────────────
     '丙': {
+        heroQuote: '"당신의 과열은 번아웃이 아닙니다. 온 세상을 밝히는 태양(丙火)의 기운을 절제하는 법을 배우는 과정입니다."',
         ilganLabel: '丙火(병화, 양화) — 타오르는 태양·열정의 군주',
         identity: '온 세상을 밝히는 태양의 기운. 숨기지 않고 전부를 내어주는 강렬한 존재감과 카리스마로 주변을 압도하는 주권자입니다.',
         coreIssue: '火가 과하면 만물을 태우고, 부족하면 세상이 어두워집니다. 수(水)의 절제가 없으면 에너지가 산산이 흩어져 번아웃으로 이어집니다.',
@@ -760,6 +765,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     // 丁 — 촛불·심리 치료사
     // ──────────────────────────────────────────────────────
     '丁': {
+        heroQuote: '"당신의 방전은 소멸이 아닙니다. 어둠을 밝히는 촛불(丁火)의 심지를 깊고 오래 충전하는 시간입니다."',
         ilganLabel: '丁火(정화, 음화) — 꺼지지 않는 촛불·심리 치료사',
         identity: '어두운 곳에서 조용히 타오르는 촛불. 화려하지 않지만 가장 필요한 순간에 빛을 주는 섬세한 감성의 주권자입니다.',
         coreIssue: '丁火는 외부의 강한 바람에 쉽게 흔들립니다. 내면의 중심(甲木)이 없으면 지나친 타인 의존과 감정 기복으로 소진됩니다.',
@@ -883,6 +889,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     // 戊 — 대산·포용자
     // ──────────────────────────────────────────────────────
     '戊': {
+        heroQuote: '"당신의 경직은 막힘이 아닙니다. 만물을 품는 넓은 대지(戊土)의 단단한 기반을 세우는 중입니다."',
         ilganLabel: '戊土(무토, 양토) — 흔들리지 않는 대산·포용자',
         identity: '거대한 산처럼 움직이지 않는 안정감과 포용력. 모든 것을 품되 결코 무너지지 않는 대지의 주권자입니다.',
         coreIssue: '土가 너무 두터우면 물이 스며들지 못하고 나무도 자라지 못합니다. 지나친 고집과 변화 거부가 성장을 막는 핵심 리스크입니다.',
@@ -1006,6 +1013,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     // 己 — 텃밭·섬세한 조율자
     // ──────────────────────────────────────────────────────
     '己': {
+        heroQuote: '"당신의 혼란은 흙탕물이 아닙니다. 모든 생명을 키워낼 비옥한 전답(己土)으로 제련되는 시간입니다."',
         ilganLabel: '己土(기토, 음토) — 풍요로운 텃밭·섬세한 조율자',
         identity: '척박한 곳에서도 생명을 키워내는 부드러운 흙. 조용하지만 모든 관계를 연결하고 조율하는 숨은 주권자입니다.',
         coreIssue: '己土는 물이 많으면 진흙이 되고, 목이 자라면 뿌리에 침식됩니다. 자신의 경계 없이 타인에게 소비되는 구조가 핵심 위험입니다.',
@@ -1129,6 +1137,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     // 庚 — 강철·전사
     // ──────────────────────────────────────────────────────
     '庚': {
+        heroQuote: '"당신의 저항은 단절이 아닙니다. 거친 원석(庚金)에서 세상을 돌파할 칼날을 갈아내는 담금질입니다."',
         ilganLabel: '庚金(경금, 양금) — 난공불락의 강철·전사',
         identity: '압도적인 의지력과 불굴의 독립심. 어떤 역경에도 꺾이지 않는 강철 같은 주권자입니다.',
         coreIssue: '庚金은 火의 담금질 없이는 날카롭지 못하고, 水의 설기 없이는 과강(過剛)의 위험이 있습니다. 극복만 있고 유연성이 없으면 부러집니다.',
@@ -1252,6 +1261,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     // 壬 — 대해·전략가
     // ──────────────────────────────────────────────────────
     '壬': {
+        heroQuote: '"당신의 범람은 혼란이 아닙니다. 거대한 바다(壬水)처럼 만물을 품고 도약할 에너지를 모으는 깊이입니다."',
         ilganLabel: '壬水(임수, 양수) — 광활한 대해·전략의 군주',
         identity: '모든 것을 담는 바다. 깊고 광활한 통찰력과 유연한 전략으로 세상의 흐름을 읽는 주권자입니다.',
         coreIssue: '水가 지나치면 범람하여 모든 것을 삼키고, 부족하면 방향을 잃습니다. 木의 배출 채널이 없으면 생각이 감정을 압도하여 행동 마비가 일어납니다.',
@@ -1375,6 +1385,7 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
     // 癸 — 이슬·치유자
     // ──────────────────────────────────────────────────────
     '癸': {
+        heroQuote: '"당신의 외로움은 마름이 아닙니다. 세상을 촉촉하게 적실 맑은 이슬(癸水)을 상쾌하게 모으는 새벽입니다."',
         ilganLabel: '癸水(계수, 음수) — 생명을 살리는 이슬·치유자',
         identity: '메마른 대지에 생명을 주는 이슬비. 조용하지만 가장 깊은 곳까지 스며드는 섬세한 치유의 주권자입니다.',
         coreIssue: '癸水는 戊土에 막히면 흐르지 못하고 고입니다. 타인의 기대와 틀에 갇혀 자신의 흐름을 잃는 것이 핵심 위험입니다.',
@@ -1755,14 +1766,14 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     <p className="text-xs text-gray-400 font-medium tracking-wide">4D-자각 매트릭스 × CAFE (Cognitive Awareness & Flow Engine) 파이프라인</p>
                                     <div className="border-l-2 border-yellow-400/40 pl-5 py-2 my-4">
                                         <p className="font-serif text-base italic text-gray-200 leading-relaxed">
-                                            "당신의 고통은 버그가 아닙니다. 위대한 세공을 위한 뜨거운 담금질입니다."
+                                            {coaching.heroQuote || '"당신의 고통은 버그가 아닙니다. 위대한 세공을 위한 뜨거운 담금질입니다."'}
                                         </p>
                                     </div>
                                     <div className="p-4 rounded-xl border border-white/10" style={{ background: 'rgba(42,42,42,0.6)' }}>
                                         <p className="text-xs text-gray-300 leading-relaxed">
-                                            자각의 주체이신 당신을 위해, 명식에 프로그래밍된 가장 깊은 코드를 해독했습니다.
-                                            이 리포트는 단순한 운세 풀이를 넘어 당신의 <strong className="text-yellow-400 font-bold">선천적 하드웨어(명식 기전)</strong>와
-                                            정신적 소프트웨어(인지 패턴) 사이의 충돌 지점을 정밀 타격하는 전략적 코칭 가이드입니다.
+                                            자각의 주체이신 <strong className="text-white font-bold">{sajuInfo.name || '당신'}님</strong>을 위해, 명식({sajuInfo.dayPillar || sajuInfo.dayStem})에 프로그래밍된 가장 깊은 코드를 해독했습니다.
+                                            이 리포트는 단순한 운세 풀이를 넘어 당신의 <strong className="text-yellow-400 font-bold">{coaching.ilganLabel || '선천적 하드웨어(명식 기전)'}</strong>와
+                                            정신적 소프트웨어(인지 패턴) 사이의 충돌 지점을 정밀 타격하는 1:1 맞춤형 전략 코칭 가이드입니다.
                                         </p>
                                     </div>
                                 </section>
