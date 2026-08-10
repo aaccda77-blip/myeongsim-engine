@@ -571,7 +571,11 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
-                        className={`flex gap-3 sm:gap-4 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}
+                        className={`flex gap-3 sm:gap-4 ${m.role === 'user' ? 'flex-row-reverse' : ''} ${
+                            userMessageCount >= 3 && !isPaidUser && messages.indexOf(m) >= 6
+                                ? 'blur-sm opacity-40 select-none pointer-events-none'
+                                : ''
+                        }`}
                     >
                         {/* 아바타 */}
                         <div className={`w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-2xl flex items-center justify-center shadow-lg ${
@@ -737,6 +741,62 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         </div>
                     </motion.div>
                 )}
+                
+                {/* ── 3회 무료 완료 후 챗봇 내 890원 블러 잠금 마케팅 카드 (Paywall Lock Card) ── */}
+                {userMessageCount >= 3 && !isPaidUser && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="my-6 p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-slate-900/95 via-[#0c1427]/95 to-slate-950 border-2 border-amber-400/60 shadow-[0_0_50px_rgba(245,158,11,0.35)] relative overflow-hidden text-center text-white z-30"
+                    >
+                        {/* Glow & Backdrop */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+
+                        {/* Lock Icon & Badge */}
+                        <div className="flex flex-col items-center mb-3">
+                            <div className="w-14 h-14 rounded-2xl bg-amber-400/20 border border-amber-400/50 flex items-center justify-center text-amber-300 mb-3 shadow-[0_0_20px_rgba(245,158,11,0.3)] animate-pulse">
+                                <Lock className="w-7 h-7" />
+                            </div>
+                            <span className="px-3.5 py-1 rounded-full text-xs font-black bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center gap-1.5 shadow-sm font-mono">
+                                🔒 첫 3회 무료 코칭 완료 (서비스 잠금)
+                            </span>
+                        </div>
+
+                        {/* Main Title */}
+                        <h3 className="text-lg sm:text-xl font-black text-white mb-2 leading-snug break-keep">
+                            ☕ 890원으로<br />
+                            <span className="text-amber-300 underline decoration-amber-400/50 decoration-wavy underline-offset-4 font-black">
+                                1:1 맞춤 영혼 코칭 3회 더 이어가기
+                            </span>
+                        </h3>
+
+                        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-md mx-auto mb-4 font-medium break-keep">
+                            커피 한 잔보다 가벼운 금액으로,<br />
+                            내 안의 고민을 명심 멘토와 끊김 없이 해결해 보세요.
+                        </p>
+
+                        {/* Patent Notice Box */}
+                        <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-left mb-6 max-w-md mx-auto space-y-1">
+                            <p className="text-[11px] font-black text-amber-300 flex items-center gap-1">
+                                <span>📜 [명심코칭 오픈 & 특허 출원 한정 혜택]</span>
+                            </p>
+                            <p className="text-[11px] text-gray-200 font-medium leading-[1.65]">
+                                특허 정식 출원 승인 시까지 특별 혜택가 <strong className="text-amber-300 font-black">890원</strong>에 제공되며, 정식 등록 완료 후 <span className="text-amber-200 font-bold">B2C 99,000원</span> / <span className="text-amber-200 font-bold">B2B 기업용 300,000원(30만원)</span>으로 정상 인상될 예정입니다.
+                            </p>
+                        </div>
+
+                        {/* 890원 Payment Button */}
+                        <button
+                            type="button"
+                            onClick={() => setShowMicroPassModal(true)}
+                            className="w-full max-w-md py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-base sm:text-lg shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer mx-auto"
+                        >
+                            <Zap className="w-5 h-5 text-slate-950 fill-slate-950" />
+                            <span>💳 890원에 3회 즉시 충전하기 ➔</span>
+                        </button>
+                    </motion.div>
+                )}
+
                 <div ref={messagesEndRef} />
                 
                 {/* ── 회사 정보 및 고객센터 하단 푸터 ── */}
