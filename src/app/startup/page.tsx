@@ -25,55 +25,55 @@ export default function StartupDashboard() {
         {
             id: 'content',
             icon: 'explore',
-            label: '스타트업 아이템 분석',
-            title: '스타트업 아이템 분석',
-            desc: '타고난 자산과 우주의 기운을 바탕으로 최적의 사업 아이템과 소재를 매칭해 드립니다.',
-            detail: '귀하의 기질 프로필에 나타난 재성(MONEY)과 관성(CAREER)의 흐름을 분석하여, 가장 승산이 높은 사업 아이템 카테고리를 추천합니다. 또한 현재 시장의 트렌드와 결합하여 구체적인 실행 전략을 제안해 드립니다.',
+            label: '사업 아이템 & 적성 적합도',
+            title: '사업 아이템 & 적성 적합도',
+            desc: '타고난 기질 구조(식신/재성)와 시장 수요를 교차 분석하여 승산 높은 사업 아이템과 카테고리를 추천합니다.',
+            detail: '귀하의 선천적 기질 프로필에 나타난 식상(INNOVATION)과 재성(CAPITAL)의 흐름을 정밀 분석하여, 가장 사업적 타당성이 높은 아이템 카테고리를 도출합니다. 또한 현재 시장 트렌드와 결합하여 구체적인 제품·서비스 실행 전략을 수립해 드립니다.',
             prompt: '제 기질 프로필에 가장 잘 맞는 창업 아이템과 사업 분야를 추천해주세요.'
         },
         {
             id: 'psychology',
             icon: 'psychology',
-            label: '창업자 심리 분석',
-            title: '창업자 심리 분석',
-            desc: '완벽주의, 번아웃 위험 등 창업자의 심리적 패턴 6가지를 심층 분석하여 멘탈 관리를 돕습니다.',
-            detail: '창업가는 끊임없는 불확실성과 싸워야 합니다. 귀하의 무의식적 불안 요인과 스트레스 반응 패턴을 분석하여, 멘탈이 흔들리는 시점을 예측하고 극복할 수 있는 심리적 방어 기제를 설계해 드립니다.',
+            label: '창업자 리더십 & 마인드셋',
+            title: '창업자 리더십 & 마인드셋',
+            desc: '완벽주의, 번아웃 위험 등 창업자의 리더십 기전 및 심리적 패턴 6가지를 심층 분석하여 멘탈 방어 기제를 설계합니다.',
+            detail: '창업가는 극심한 불확실성과 결정 피로(Decision Fatigue) 속에서 조직을 이끌어야 합니다. 일간 및 인성 기전 기반의 의식 오류 패턴을 분석하여, 리더십 균열 시점을 사전 예방하고 지속 가능한 CEO 멘탈리티를 구축해 드립니다.',
             prompt: '창업자로서 저의 심리적 강점과 약점, 그리고 주의해야 할 번아웃 패턴을 분석해주세요.'
         },
         {
             id: 'timing',
             icon: 'auto_graph',
-            label: '기업 에너지 및 전략',
-            title: '기업 에너지 및 전략',
-            desc: '기업의 연간 에너지 흐름을 분석하여, 공격적인 확장이 필요한 시기와 내실을 다져야 할 시기를 알려드립니다.',
-            detail: '시장의 흐름을 결합하여, 올해 귀하의 기업이 맞이할 기회와 위협을 분석합니다. 언제 피벗(Pivot)을 해야 하고, 언제 자금을 집행해야 하는지 최적의 타이밍을 제안합니다.',
-            prompt: '올해 우리 회사의 사업 에너지 흐름과 주요 전략적 타이밍을 분석해주세요.'
+            label: '기업 경영 모멘텀 & 전략',
+            title: '기업 경영 모멘텀 & 전략',
+            desc: '선천적 사업 구조와 세운의 흐름을 다차원으로 분석하여, 귀하의 기업이 언제 과감하게 도약하고 언제 조직의 내실을 다져야 할지 정밀 진단합니다.',
+            detail: '세운과 대운의 거시적 경영 사이클을 분석하여, 올해 귀하의 기업이 맞이할 피벗 적기와 자금 집행 및 조직 확장 최적 타이밍을 정밀 진단합니다.',
+            prompt: '올해 우리 회사의 사업 경영 모멘텀과 주요 전략적 타이밍을 분석해주세요.'
         },
         {
             id: 'partner',
             icon: 'group_work',
-            label: '공동 창업자 시너지 분석',
-            title: '공동 창업자 시너지 분석',
-            desc: '파트너 간의 에너지 시너지, 갈등 관리 스타일 및 파트너십의 지속 가능성을 평가합니다.',
-            detail: '동업은 결혼보다 어렵습니다. 파트너와의 에너지 모달리티 시너지 관계를 분석하여, 서로의 부족한 점을 보완해줄 수 있는지, 아니면 치명적인 갈등이 예고되어 있는지 진단합니다.',
+            label: '공동 창업자 케미스트리 & 시너지',
+            title: '공동 창업자 케미스트리 & 시너지',
+            desc: '경영 파트너 간의 오행 상생상극 및 비겁·관성 시너지를 진단하여 파트너십 지속 가능성을 평가합니다.',
+            detail: '공동 창업은 기업의 생존을 결정짓는 핵심 요소입니다. 파트너 간 궁합 및 오행·기질 모달리티 시너지를 분석하여, 서로의 리더십 공백을 보완하는 최상의 조직 케미스트리를 진단하고 갈등 예방 가이드를 제공합니다.',
             prompt: '공동 창업자와의 시너지와 협업 평가를 분석하고 싶습니다.'
         },
         {
             id: 'investment',
             icon: 'monetization_on',
-            label: '투자 유치 타이밍',
-            title: '투자 유치 타이밍',
-            desc: '최적의 IR 시점과 기업의 색깔에 맞는 투자자 성향(페르소나)을 제안합니다.',
-            detail: '투자도 타이밍입니다. 귀하의 재물운이 열리는 시기에 맞춰 IR을 진행해야 성공 확률이 높습니다. 또한 귀하의 기운과 잘 맞는 투자자 유형(VC, 엔젤 등)을 분석하여 매칭 전략을 수립합니다.',
+            label: '투자 유치 & 자금조달 타이밍',
+            title: '투자 유치 & 자금조달 타이밍',
+            desc: '재성·관성 활성화 시기에 맞춘 최적의 IR 자금조달 타이밍과 투자자(VC/엔젤) 성향 매칭을 제안합니다.',
+            detail: '자금 조달 역시 정밀한 타이밍의 예술입니다. 귀하의 재성(財) 및 관성(官) 에너지가 최고조에 달하는 시점에 맞춰 IR 및 라운드 오픈을 진행할 때 유동성 성공 확률이 가장 높습니다. 적합한 투자자 페르소나 매칭 전략을 제공합니다.',
             prompt: '저에게 가장 유리한 투자 유치 시점과 적합한 투자자 유형을 알려주세요.'
         },
         {
             id: 'bm',
             icon: 'ads_click',
-            label: '비즈니스 모델 검증',
-            title: '비즈니스 모델 검증',
-            desc: '현재 BM이 시장의 거시적 흐름과 기업의 운때에 적합한지 천문학적 관점에서 검증합니다.',
-            detail: '아무리 좋은 BM이라도 시대의 흐름과 맞지 않으면 실패합니다. 귀하의 사업 모델이 현재의 시장 사이클과 조화를 이루는지 분석하고, 보완해야 할 점을 컨설팅해 드립니다.',
+            label: '비즈니스 모델(BM) 타당성 검증',
+            title: '비즈니스 모델(BM) 타당성 검증',
+            desc: '식신생재 및 재생관 구조를 검증하여, 현재 BM이 시장 흐름과 기업 사이클에 부합하는지 타당성을 검증합니다.',
+            detail: '아무리 독창적인 BM이라도 시장의 생태계 사이클과 조화를 이루지 못하면 정체됩니다. 귀하의 사업 모델 내 수익 창출 구조(식신생재) 및 시장 안착(재생관) 타당성을 명리·경영학적으로 종합 검증하고 피벗 가이드를 제공합니다.',
             prompt: '제 비즈니스 모델이 현재 시장 흐름에 적합한지 검증해주세요.'
         }
     ];
@@ -303,10 +303,12 @@ export default function StartupDashboard() {
 
                 <div className="p-6 border-t border-[#2b2839]">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="size-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 border border-[#2b2839]"></div>
+                        <div className="size-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 border border-[#2b2839] flex items-center justify-center text-white font-bold text-xs">
+                            CEO
+                        </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold truncate text-white">대표님, 반갑습니다</p>
-                            <p className="text-[10px] text-slate-400 truncate">Premium Member</p>
+                            <p className="text-sm font-bold truncate text-white">이경윤 대표님 (명심코칭)</p>
+                            <p className="text-[10px] text-indigo-400 font-extrabold tracking-wider truncate">Enterprise Member</p>
                         </div>
                     </div>
                     <button className="w-full flex h-10 items-center justify-center gap-2 rounded-lg bg-[#3211d4] px-4 text-xs font-bold text-white shadow-lg shadow-[#3211d4]/30 transition-all hover:bg-[#3211d4]/90">
@@ -322,7 +324,7 @@ export default function StartupDashboard() {
                     {/* Header removed and moved to sidebar for mobile visibility */}
 
                     <section className="mb-12">
-                        <p className="text-xs font-bold text-[#3211d4] uppercase tracking-[0.2em] mb-4">오늘의 추천 분석</p>
+                        <p className="text-xs font-bold text-[#3211d4] uppercase tracking-[0.2em] mb-4">Enterprise Core Report</p>
                         <div className="relative overflow-hidden group rounded-2xl bg-gradient-to-br from-[#3211d4] to-[#5b36ff] p-[1px]">
                             <div className="bg-[#181526] rounded-[calc(1rem-1px)] p-8 md:p-12 relative overflow-hidden">
                                 <div className="absolute -top-24 -right-24 size-96 bg-[#3211d4]/10 rounded-full blur-3xl"></div>
@@ -333,9 +335,11 @@ export default function StartupDashboard() {
                                             <span className="material-symbols-outlined text-4xl">auto_graph</span>
                                         </div>
                                         <div className="space-y-3">
-                                            <h3 className="text-4xl font-black tracking-tight text-white">비즈니스 연간 에너지 및 전략 분석</h3>
-                                            <p className="text-lg text-[#a19db9] leading-relaxed max-w-2xl">
-                                                시장의 사이클을 분석하여, 귀하의 스타트업이 언제 도약하고 언제 내실을 다져야 할지 정밀하게 분석합니다. 올해의 핵심 피벗 시점과 최적의 전략적 타이밍을 확인하세요.
+                                            <h3 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
+                                                비즈니스 연간 경영 모멘텀 & 전략 분석
+                                            </h3>
+                                            <p className="text-base md:text-lg text-[#a19db9] leading-relaxed max-w-2xl">
+                                                선천적 사업 구조와 세운의 흐름을 다차원으로 분석하여, 귀하의 기업이 언제 과감하게 도약하고 언제 조직의 내실을 다져야 할지 정밀 진단합니다. 올해의 핵심 피벗(Pivot) 적기 및 최적의 자금/확장 타이밍을 확인하세요.
                                             </p>
                                         </div>
                                         <div className="flex flex-wrap gap-4 pt-2">
@@ -357,11 +361,42 @@ export default function StartupDashboard() {
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="hidden lg:block w-72 h-72 relative">
+
+                                    {/* [NEW] B2B Radar Chart & Corporate Momentum Visualization */}
+                                    <div className="hidden lg:block w-80 h-80 relative flex-shrink-0">
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="size-64 rounded-full border-2 border-dashed border-[#3211d4]/30 animate-[spin_60s_linear_infinite]"></div>
-                                            <div className="absolute size-48 rounded-full border-2 border-[#3211d4]/20"></div>
-                                            <span className="material-symbols-outlined text-8xl text-[#3211d4]/40">stars</span>
+                                            <div className="size-72 rounded-full border border-[#3211d4]/30 animate-[spin_90s_linear_infinite] flex items-center justify-center">
+                                                <div className="size-56 rounded-full border border-dashed border-[#5b36ff]/40 animate-[spin_45s_linear_infinite_reverse]"></div>
+                                            </div>
+
+                                            {/* Radar Polygon Grid */}
+                                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                <svg className="w-64 h-64 text-[#5b36ff]/40" viewBox="0 0 100 100">
+                                                    <polygon points="50,10 88,32 88,76 50,95 12,76 12,32" fill="none" stroke="currentColor" strokeWidth="0.8" strokeDasharray="2,2" />
+                                                    <polygon points="50,25 73,38 73,68 50,80 27,68 27,38" fill="none" stroke="currentColor" strokeWidth="0.6" opacity="0.6" />
+                                                    <line x1="50" y1="10" x2="50" y2="95" stroke="currentColor" strokeWidth="0.5" opacity="0.4" />
+                                                    <line x1="12" y1="32" x2="88" y2="76" stroke="currentColor" strokeWidth="0.5" opacity="0.4" />
+                                                    <line x1="12" y1="76" x2="88" y2="32" stroke="currentColor" strokeWidth="0.5" opacity="0.4" />
+
+                                                    {/* Data Curve */}
+                                                    <polygon points="50,18 80,35 68,72 50,86 20,70 24,36" fill="rgba(99,102,241,0.3)" stroke="#818cf8" strokeWidth="1.8" />
+
+                                                    {/* Data Nodes */}
+                                                    <circle cx="50" cy="18" r="2.5" fill="#c084fc" />
+                                                    <circle cx="80" cy="35" r="2.5" fill="#6366f1" />
+                                                    <circle cx="68" cy="72" r="2.5" fill="#38bdf8" />
+                                                    <circle cx="50" cy="86" r="2.5" fill="#a78bfa" />
+                                                    <circle cx="20" cy="70" r="2.5" fill="#34d399" />
+                                                    <circle cx="24" cy="36" r="2.5" fill="#fbbf24" />
+                                                </svg>
+                                            </div>
+
+                                            {/* Center Momentum Score Badge */}
+                                            <div className="absolute size-24 rounded-full bg-[#131022]/90 border border-indigo-500/50 shadow-2xl flex flex-col items-center justify-center text-center p-2 backdrop-blur-md">
+                                                <span className="text-[8px] font-bold tracking-wider text-indigo-400 uppercase">MOMENTUM</span>
+                                                <span className="text-lg font-black text-white font-mono leading-none my-0.5">94.8%</span>
+                                                <span className="text-[8px] text-emerald-400 font-bold">🚀 도약 적기</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
