@@ -1587,6 +1587,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const [isAllPassUnlocked, setIsAllPassUnlocked] = useState(false);
     const [isDailyEssayModalOpen, setIsDailyEssayModalOpen] = useState(false);
     const [isDailyEssayUnlocked, setIsDailyEssayUnlocked] = useState(false);
+    const [isShiftEssayModalOpen, setIsShiftEssayModalOpen] = useState(false);
+    const [isShiftEssayUnlocked, setIsShiftEssayUnlocked] = useState(false);
 
     // ── AI 코칭 리포트 관련 상태 ──
     type AiReport = {
@@ -2270,6 +2272,34 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                             </div>
                                                         </div>
                                                     ))}
+
+                                                 {/* ── [SHIFT ROADMAP 890원 감동 에세이 CTA 바] ── */}
+                                                 <div className="mt-4 p-4 rounded-2xl border border-green-500/30 bg-[#122417]/80 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
+                                                     <div className="flex items-center gap-3">
+                                                         <div className="size-10 rounded-xl bg-green-500/20 border border-green-500/40 flex items-center justify-center text-green-300 shrink-0">
+                                                             <span className="material-symbols-outlined text-xl">rocket_launch</span>
+                                                         </div>
+                                                         <div>
+                                                             <div className="flex items-center gap-2">
+                                                                 <span className="text-[10px] font-extrabold text-green-400 uppercase tracking-widest">Shift Master Class</span>
+                                                                 {(isShiftEssayUnlocked || isAllPassUnlocked) && (
+                                                                     <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold">
+                                                                         열람 완료
+                                                                     </span>
+                                                                 )}
+                                                             </div>
+                                                             <h5 className="text-xs font-bold text-white mt-0.5">명심 SHIFT 3단계 '생각을 현실로 만드는 실행 해설서'</h5>
+                                                         </div>
+                                                     </div>
+
+                                                     <button
+                                                         onClick={() => setIsShiftEssayModalOpen(true)}
+                                                         className="w-full sm:w-auto shrink-0 bg-green-600 hover:bg-green-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
+                                                     >
+                                                         <span className="material-symbols-outlined text-sm">bolt</span>
+                                                         <span>{(isShiftEssayUnlocked || isAllPassUnlocked) ? '실행 해설서 읽기' : '🔓 890원에 SHIFT 실행 해설서 보기'}</span>
+                                                     </button>
+                                                 </div>
                                                 </div>
                                             </div>
 
@@ -2791,6 +2821,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                              setIsPhase7Unlocked(true);
                                                              setIsAllPassUnlocked(true);
                                                              setIsDailyEssayUnlocked(true);
+                                                             setIsShiftEssayUnlocked(true);
                                                              setIsUnlocking(false);
                                                          }, 700);
                                                      }}
@@ -3178,6 +3209,156 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             <p className="text-xs font-semibold text-slate-300 italic">"하루의 마무리는 어떻게 해야 완벽한 성취감으로 채워질까요?"</p>
                                             <p className="text-xs text-slate-200 leading-relaxed pt-1">
                                                 저녁은 혼자만의 고뇌에서 벗어나 세상을 향해 당신의 가지를 뻗는 시간입니다. 출판사 세팅, 코칭 센터 구축, 시스템 백엔드 개발처럼 눈에 보이는 실제 결실을 만들어내세요. 담쟁이넝쿨이 담장을 넘어 퍼져나가듯, 당신이 만들어낸 현실의 인프라가 훗날 당신에게 거대한 자유를 안겨줄 것입니다.
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+
+            {/* ── [Shift Roadmap Essay Paywall Modal (890원 / 1,900원 ALL-PASS)] ── */}
+            <AnimatePresence>
+                {isShiftEssayModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-2xl bg-[#131022] border border-green-500/40 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh] custom-scrollbar"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-start justify-between border-b border-white/10 pb-4 mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 rounded-xl bg-green-500/20 border border-green-500/40 flex items-center justify-center text-green-300">
+                                        <span className="material-symbols-outlined text-xl">rocket_launch</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">
+                                            Shift Roadmap Master Class
+                                        </span>
+                                        <h3 className="text-base md:text-lg font-bold text-white leading-snug mt-0.5">
+                                            AI 코치의 생각을 현실로 가시화하는 SHIFT 3단계 실행 가이드
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsShiftEssayModalOpen(false)}
+                                    className="material-symbols-outlined text-slate-400 hover:text-white transition-colors"
+                                >
+                                    close
+                                </button>
+                            </div>
+
+                            {/* Free Preview Area */}
+                            <div className="space-y-4 text-slate-300 text-sm leading-relaxed font-sans pr-2 overflow-y-auto custom-scrollbar">
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-slate-200">
+                                    완벽주의로 인해 실행을 주저하던 사용자에게 '텍스트 출력 ➔ 물리적 인프라 ➔ AI 레버리지'라는 3단계 실행 우선순위는 관념에 머물지 않고 즉시 구동하게 만드는 가장 핵심적인 톱니바퀴입니다.
+                                </div>
+
+                                {!isShiftEssayUnlocked && !isAllPassUnlocked ? (
+                                    /* Paywall Locked Section */
+                                    <div className="relative overflow-hidden rounded-2xl border border-green-500/30 p-6 bg-[#181526]/90 shadow-2xl mt-4">
+                                        <div className="filter blur-[6px] select-none text-slate-500 text-xs space-y-3 opacity-60 pointer-events-none">
+                                            <p>▒▒▒▒▒▒ 1단계 | 출력의 스위치를 켜라: "완벽한 글 대신, 세상에 나온 글을 쓰세요" ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ 2단계 | 인프라를 구축하라: "당신의 철학에 공식적인 집을 지어주세요" ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ 3단계 | AI와 기술을 레버리지하라: "당신이 자는 동안에도 일하는 시스템" ▒▒▒▒▒▒</p>
+                                        </div>
+
+                                        <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/60 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                                            <div className="size-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-black shadow-xl shadow-green-500/30 animate-bounce">
+                                                <span className="material-symbols-outlined text-2xl">lock</span>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-base font-extrabold text-white">생각을 현실로 만드는 실행 해설서 해제</h4>
+                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 전체 에세이를 해제하세요.</p>
+                                            </div>
+
+                                            <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsShiftEssayUnlocked(true);
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span>🔓 890원 단품 해제 (890pt)</span>
+                                                </button>
+
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsPhase7Unlocked(true);
+                                                            setIsAllPassUnlocked(true);
+                                                            setIsDailyEssayUnlocked(true);
+                                                            setIsShiftEssayUnlocked(true);
+                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">bolt</span>
+                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                </button>
+                                            </div>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Unlocked Full Essays */
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-6 pt-2"
+                                    >
+                                        <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                                            <span className="material-symbols-outlined text-sm">verified</span>
+                                            {(isAllPassUnlocked) ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 SHIFT 가이드
+                                        </div>
+
+                                        {/* Step 1 */}
+                                        <div className="p-5 rounded-xl bg-green-500/10 border border-green-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-green-300 text-sm">1단계 | 출력의 스위치를 켜라: "완벽한 글 대신, 세상에 나온 글을 쓰세요"</h5>
+                                                <span className="text-[10px] font-mono text-green-400/80">TEXT OUTPUT SWITCH</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 우리는 머릿속으로 수없이 거대한 구상을 하면서도 한 줄을 쓰지 못할까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                생각은 머릿속에 머물러 있는 동안만 우아할 뿐, 밖으로 나오지 않으면 아무런 힘을 갖지 못합니다. 지금 당신에게 필요한 것은 완벽한 걸작이 아니라 <strong className="text-amber-300">'일단 세상 밖으로 꺼내어진 텍스트'</strong>입니다. 거친 원고라도 좋습니다. 당신의 직관을 키보드로 눌러 고정시키는 순간, 멈춰있던 인생의 톱니바퀴가 드디어 소리를 내며 돌아가기 시작합니다. 오늘 당장 단 한 단락이라도 당신의 지혜를 텍스트로 완성해보세요.
+                                            </p>
+                                        </div>
+
+                                        {/* Step 2 */}
+                                        <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-emerald-300 text-sm">2단계 | 인프라를 구축하라: "당신의 철학에 공식적인 집을 지어주세요"</h5>
+                                                <span className="text-[10px] font-mono text-emerald-400/80">PHYSICAL INFRASTRUCTURE</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"언제까지 내 귀한 생각들을 노트 한구석에만 묵혀두실 건가요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                세상은 당신의 내면에 무엇이 들었는지 다 알지 못합니다. 대중과 세상이 당신의 가치를 알아보게 하려면, 당신의 철학이 담길 <strong className="text-amber-300">공식적인 브랜드와 제도적 틀(출판사, 평생교육원, 플랫폼)</strong>이 필요합니다. 행정적 인프라를 세우는 과정은 복잡해 보이지만, 당신의 관념에 '현실의 몸'을 입혀주는 가장 숭고한 작업입니다. 이제 당신의 지혜에 당당한 집을 지어주고 세상의 공식적인 주권자로 서세요.
+                                            </p>
+                                        </div>
+
+                                        {/* Step 3 */}
+                                        <div className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-blue-300 text-sm">3단계 | AI와 기술을 레버리지하라: "당신이 자는 동안에도 일하는 시스템"</h5>
+                                                <span className="text-[10px] font-mono text-blue-400/80">AI & TECH LEVERAGE</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"내가 직접 몸으로 뛰지 않으면 멈춰버리는 일에 당신의 고귀한 에너지를 다 쓰지 마세요."</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                당신 안의 차가운 금(金)의 기운은 정밀함이자 자동화, 그리고 기술(AI)입니다. 오프라인이나 당신 한 사람의 노동력에 의존하던 단계를 넘어, 당신의 알고리즘을 디지털 공간에 탑재하세요. AI와 기술이 당신의 분신이 되어 24시간 사람들을 치유하고 길을 안내할 때, 당신은 비로소 자유로운 창조주이자 아키텍처로서 다음 미래를 설계할 수 있게 됩니다.
                                             </p>
                                         </div>
                                     </motion.div>
