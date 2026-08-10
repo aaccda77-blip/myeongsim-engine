@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { pageKey, sajuData, sajuProfile, originalPage, userName, birthDate, gender } = body;
 
-    // [진단 로그] 서버에 도달한 데이터 완전 투명 공개
+    // [분석 로그] 서버에 도달한 데이터 완전 투명 공개
     console.log(`\n🔍 [generate-108] ===== ${pageKey} 생성 요청 =====`);
     console.log(`📋 sajuProfile 키 수: ${sajuProfile ? Object.keys(sajuProfile).length : 'NULL/UNDEFINED'}`);
     console.log(`📋 sajuProfile.dayMasterChar: "${sajuProfile?.dayMasterChar || 'MISSING'}"`);
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       type: SchemaType.OBJECT,
       properties: {
         title: { type: SchemaType.STRING, description: "시적이고 감동적인 맞춤 제목 (페이지 주제 밀착)" },
-        healingEssay: { type: SchemaType.STRING, description: "사주 4주팔자(년·월·일·시주)와 공망, 6대 심리치료(CBT·ACT·DBT·MBSR·MSC)가 하나로 융합된 350~500자의 100% 독창적이고 감동적인 1:1 영혼 치유 에세이" },
+        healingEssay: { type: SchemaType.STRING, description: "사주 4주팔자(년·월·일·시주)와 공망, 6대 심리코칭(CBT·ACT·DBT·MBSR·MSC)가 하나로 융합된 350~500자의 100% 독창적이고 감동적인 1:1 영혼 치유 에세이" },
         sajuAnalysis: { type: SchemaType.STRING, description: "이 주제와 사주 8자/공망의 연결 요약 (50~80자)" },
         darkCodeCbt: { type: SchemaType.STRING, description: "CBT 인지성찰 - 생각의 함정 탈출 요약 (50~80자)" },
         metaCodeAct: { type: SchemaType.STRING, description: "ACT 수용전념 - 강점 전환 요약 (50~80자)" },
@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
 2. 이번 페이지의 주제("${originalPage.title}")에 완전히 집중하여, 이 내담자의 사주 4주팔자(년/월/일/시주)와 공망(${gongmangInfo}) 및 십신 성향(비겁/식상/재성/관성/인성)을 결합해 "아, 정말 이건 내 이야기구나!" 하고 깊은 소름과 감동을 느끼도록 상세히 분석하세요.
 3. 사람들이 사주에서 가장 궁금해하는 인기 핵심 키워드 [💰 재물과 부의 그릇, 👑 직업과 출세길, 💕 인연과 배우자운, 🧠 내면의 불안과 번아웃 극복]를 이번 페이지 주제에 자연스럽게 엮어 분석해 주세요.
 4. 3세대 과학적 인지재구성 (CBT 생각의 함정 탈출 + ACT 기질 강점 전환 + DBT 행동 이완)을 융합하여 따뜻하고 친절하며 깊이 있는 1:1 이야기체로 써주세요.
-5. ★ 의료법 준수 금지 단어: "처방전", "처방", "진단", "치료", "환자" 사용 절대 금지! ("행동 가이드", "솔루션", "디코딩", "성찰", "내담자" 사용)
+5. ★ 의료법 준수 금지 단어: "가이드전", "가이드", "분석", "코칭", "환자" 사용 절대 금지! ("행동 가이드", "솔루션", "디코딩", "성찰", "내담자" 사용)
 6. ★ 호칭 지침: 일간 이름("신금님" 등) 대신 반드시 "${userName || '소중한 내담자'}님"으로 호칭하세요.
 
 1. **title**: 이 페이지 주제를 담은 독창적인 맞춤 제목 (15자 이내)

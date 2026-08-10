@@ -89,7 +89,7 @@ export default function ActionItemsView() {
         return (
             <div className="h-full flex flex-col items-center justify-center opacity-50">
                 <AlertCircle className="w-8 h-8 mb-2 text-gray-500" />
-                <p className="text-gray-400 text-sm">처방 데이터가 없습니다.</p>
+                <p className="text-gray-400 text-sm">가이드 데이터가 없습니다.</p>
             </div>
         );
     }
@@ -199,7 +199,7 @@ export default function ActionItemsView() {
                     FINAL PRESCRIPTION
                 </div>
                 <h2 className="text-2xl font-serif font-bold text-white">
-                    나를 위한 <span className="text-primary-olive">개운(開運)</span> 처방
+                    나를 위한 <span className="text-primary-olive">개운(開運)</span> 가이드
                 </h2>
                 <p className="text-gray-500 text-xs mt-2">
                     운명을 바꾸는 구체적인 행동 가이드

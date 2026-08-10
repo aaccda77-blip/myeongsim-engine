@@ -28,7 +28,7 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA") 
     report += `**이미지 메타포:** ${iljuData.image_metaphor}\n\n`;
 
     // Detailed Strength Analysis (Expansion)
-    report += `### 1.2 핵심 강점 (Signature Strengths) 정밀 진단\n`;
+    report += `### 1.2 핵심 강점 (Signature Strengths) 정밀 분석\n`;
     iljuData.strengths?.forEach((s, i) => {
         report += `**Strength ${i + 1}: ${s}**\n`;
         report += `- 이 강점은 당신이 위기 상황에서 본능적으로 발휘하는 힘입니다.\n`;

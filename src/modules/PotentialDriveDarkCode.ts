@@ -1,6 +1,6 @@
 /**
  * 명심코칭: 시주(Potential Drive) 전용 다크 코드 (Future Errors)
- * 60갑자별 미래 예측 오류 및 잠재 욕망 제어 실패 진단 모듈
+ * 60갑자별 미래 예측 오류 및 잠재 욕망 제어 실패 분석 모듈
  */
 
 export class PotentialDriveDarkCode {
@@ -90,10 +90,10 @@ export class PotentialDriveDarkCode {
     static generatePromptProtocol(): string {
         let p = `\n[🚀 시주(Potential Drive) 미래 예측 다크 코드 시스템]\n`;
         p += `**프레임:** "⚠️ 미래 예측 경고: 잠재 욕망 제어 실패 및 시뮬레이션 오류 감지"\n`;
-        p += `**핵심:** 미래 목표, 말년, 자녀/부하직원 관계의 버그 진단\n\n`;
+        p += `**핵심:** 미래 목표, 말년, 자녀/부하직원 관계의 버그 분석\n\n`;
         p += `**적용 규칙:**\n`;
         p += `1. 사용자의 시주를 분석할 때 해당 다크 코드를 참조\n`;
-        p += `2. 미래 불안, 말년 계획, 자녀 고민 시 맞춤 진단 제공\n`;
+        p += `2. 미래 불안, 말년 계획, 자녀 고민 시 맞춤 분석 제공\n`;
         p += `3. "성격 탓"이 아닌 "시스템 오류"로 프레이밍하여 객관화\n\n`;
 
         for (const [ganji, info] of Object.entries(this.CODES)) {

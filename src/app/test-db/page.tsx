@@ -66,14 +66,14 @@ export default function TestDBPage() {
 
     return (
         <div className="min-h-screen bg-gray-900 text-white p-8 font-mono">
-            <h1 className="text-2xl font-bold mb-6 text-green-400">Supabase 연결 진단 도구</h1>
+            <h1 className="text-2xl font-bold mb-6 text-green-400">Supabase 연결 분석 도구</h1>
 
             <div className="mb-8">
                 <button
                     onClick={runTest}
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-colors"
                 >
-                    진단 시작하기 (Run Diagnostics)
+                    분석 시작하기 (Run Diagnostics)
                 </button>
                 <span className="ml-4 text-gray-400">{status}</span>
             </div>

@@ -208,7 +208,7 @@ export const HEALTH_KNOWLEDGE_DB: HealthQATemplate[] = [
                 },
                 {
                     icon: 'healing',
-                    title: '작은 상처도 즉시 치료',
+                    title: '작은 상처도 즉시 코칭',
                     content: '발에 상처가 생기면 절대 방치하지 마세요. 바로 소독하고, 낫지 않으면 병원에 가세요.'
                 }
             ],
@@ -449,7 +449,7 @@ function generateFallbackQA(userQuestion: string): HealthQATemplate {
                 {
                     icon: 'medical_services',
                     title: '전문가와 상담 권장',
-                    content: '정확한 진단을 위해 가까운 병원이나 보건소에서 전문가의 조언을 듣는 것이 가장 안전해요.'
+                    content: '정확한 분석을 위해 가까운 병원이나 보건소에서 전문가의 조언을 듣는 것이 가장 안전해요.'
                 },
                 {
                     icon: 'sentiment_satisfied',
@@ -462,7 +462,7 @@ function generateFallbackQA(userQuestion: string): HealthQATemplate {
                     content: '언제, 어떻게 아픈지 구체적으로 메모해두면 나중에 의사 선생님께 큰 도움이 됩니다.'
                 }
             ],
-            closing: '💡 이 답변은 일반적인 정보이며, 전문적인 의학적 진단을 대신할 수 없습니다.'
+            closing: '💡 이 답변은 일반적인 정보이며, 전문적인 의학적 분석을 대신할 수 없습니다.'
         },
         tags: ['일반상담', '건강관리'],
         difficulty: 'beginner'

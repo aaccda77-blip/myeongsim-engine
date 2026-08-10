@@ -252,7 +252,7 @@ export default function ScienceIntroView() {
                     <p className="text-gray-300 text-[10px] leading-relaxed">
                         본 서비스는 보건복지부의 <strong>&apos;비의료 건강관리 서비스 가이드라인&apos;</strong>을 준수합니다.
                         제공되는 모든 정보는 <strong>자기 주도적 건강 관리(Self-Care)</strong>를 위한 과학적 보조 수단이며,
-                        <strong> 의학적 진단, 치료, 처방을 대체할 수 없습니다.</strong>
+                        <strong> 의학적 분석, 코칭, 가이드을 대체할 수 없습니다.</strong>
                     </p>
                 </div>
             </div>

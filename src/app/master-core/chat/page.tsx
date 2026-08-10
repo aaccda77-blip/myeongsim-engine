@@ -289,7 +289,7 @@ export default function MasterCoreChatRoom() {
           </p>
           <div className="text-[10px] text-gray-400 bg-white/5 rounded-lg p-2.5 border border-white/5 flex gap-1.5 items-start">
             <Sparkle size={12} className="text-amber-400 flex-shrink-0 mt-0.5 animate-pulse" />
-            <span className="leading-relaxed"><strong className="text-gray-300 font-semibold">마음 처방:</strong> {selectedModule.phase1.meditationGuide}</span>
+            <span className="leading-relaxed"><strong className="text-gray-300 font-semibold">마음 가이드:</strong> {selectedModule.phase1.meditationGuide}</span>
           </div>
         </motion.div>
       </div>
@@ -396,7 +396,7 @@ export default function MasterCoreChatRoom() {
               }}
               className="text-[10px] text-emerald-400 hover:text-emerald-300 border border-emerald-500/20 hover:border-emerald-500/40 px-3 py-1 rounded-full bg-emerald-950/10 transition-colors font-medium"
             >
-              💡 "알려주신 행동 처방을 실천해 볼게요."
+              💡 "알려주신 행동 가이드을 실천해 볼게요."
             </button>
           </div>
 

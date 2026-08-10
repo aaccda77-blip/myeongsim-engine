@@ -42,7 +42,7 @@ export default function ActionPlan({ data }: ActionProps) {
 
     return (
         <section className="py-24 px-4 flex flex-col items-center text-center">
-            <h2 className="text-3xl font-bold text-white mb-16">Part 4. 처방과 행동 (Action Plan)</h2>
+            <h2 className="text-3xl font-bold text-white mb-16">Part 4. 가이드과 행동 (Action Plan)</h2>
 
             {/* Mantra */}
             <motion.div

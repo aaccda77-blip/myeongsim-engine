@@ -320,7 +320,7 @@ export default function GeniusExplainModal({
                     <ChevronRight size={14} />
                   </button>
                 ) : (
-                  /* 최종 단계: 챗봇 연결 및 890원 핀포인트 처방전 결제 전환 브릿지 */
+                  /* 최종 단계: 챗봇 연결 및 890원 핀포인트 가이드전 결제 전환 브릿지 */
                   <div className="flex-1 flex flex-col gap-2">
                     <button
                       onClick={() => {

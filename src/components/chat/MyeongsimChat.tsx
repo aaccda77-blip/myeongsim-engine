@@ -9,14 +9,14 @@ import Footer from '@/components/Footer';
 import CompanyInfoModal from '../modals/CompanyInfoModal';
 
 const PSYCH_PROTOCOLS = [
-    { code: 'MBCT', name: '마음챙김 인지치료', desc: 'Mindfulness-Based Cognitive Therapy: 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point)', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/50' },
-    { code: 'CBT', name: '인지행동치료', desc: 'Cognitive Behavioral Therapy: 부정적 자동적 사고(다크코드) 식별 및 현실적 뇌회로 재구성', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/50' },
-    { code: 'ACT', name: '수용전념치료', desc: 'Acceptance & Commitment Therapy: 생각을 사실과 분리하는 인지 탈융합 (Cognitive Defusion)', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50' },
-    { code: 'DBT', name: '변증법적 행동치료', desc: 'Dialectical Behavior Therapy: 극단적 감정 폭주 차단, 중용의 지혜 및 현명한 마음(Wise Mind) 조율', badge: 'bg-amber-500/20 text-amber-300 border-amber-400/50' },
+    { code: 'MBCT', name: '마음챙김 인지코칭', desc: 'Mindfulness-Based Cognitive Therapy: 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point)', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/50' },
+    { code: 'CBT', name: '인지행동코칭', desc: 'Cognitive Behavioral Therapy: 부정적 자동적 사고(다크코드) 식별 및 현실적 뇌회로 재구성', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/50' },
+    { code: 'ACT', name: '수용전념코칭', desc: 'Acceptance & Commitment Therapy: 생각을 사실과 분리하는 인지 탈융합 (Cognitive Defusion)', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50' },
+    { code: 'DBT', name: '변증법적 행동코칭', desc: 'Dialectical Behavior Therapy: 극단적 감정 폭주 차단, 중용의 지혜 및 현명한 마음(Wise Mind) 조율', badge: 'bg-amber-500/20 text-amber-300 border-amber-400/50' },
     { code: 'MBSR', name: '스트레스 감세', desc: 'Mindfulness-Based Stress Reduction: 자율신경계 밸런싱 및 뇌 신경가소성(Neuroplasticity) 재배선', badge: 'bg-purple-500/20 text-purple-300 border-purple-400/50' },
     { code: 'IFS/IFT', name: '내면가족체계', desc: 'Internal Family Systems Therapy: 불안과 완벽주의(다크코드)를 생존 보호자(Protector)로 자비롭게 수용', badge: 'bg-pink-500/20 text-pink-300 border-pink-400/50' },
     { code: 'MSC', name: '마음챙김 자기자비', desc: 'Mindful Self-Compassion: 자기 비판 멈춤 및 내면의 다정한 수용 온기 주입', badge: 'bg-rose-500/20 text-rose-300 border-rose-400/50' },
-    { code: 'IFP', name: '통합 자각 심리치료', desc: 'Integral Focus Psychotherapy: 사주 에너지 흐름과 대뇌피질 역량의 1:1 싱크로 재배선', badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50' },
+    { code: 'IFP', name: '통합 자각 심리코칭', desc: 'Integral Focus Psychotherapy: 사주 에너지 흐름과 대뇌피질 역량의 1:1 싱크로 재배선', badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50' },
 ];
 
 const renderFormattedText = (text: string) => {
@@ -639,14 +639,14 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                                 )}
                                             </button>
 
-                                            {/* 1:1 영혼 처방 카드 보기 버튼 */}
+                                            {/* 1:1 영혼 가이드 카드 보기 버튼 */}
                                             <button
                                                 type="button"
                                                 onClick={() => setShowCardModal(true)}
                                                 className="px-2.5 py-1 rounded-xl font-bold bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 transition-all flex items-center gap-1 cursor-pointer"
                                             >
                                                 <FileText size={12} />
-                                                <span>📜 1:1 처방 카드</span>
+                                                <span>📜 1:1 가이드 카드</span>
                                             </button>
 
                                             {/* 복사 버튼 */}
@@ -703,7 +703,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-amber-950/60 via-purple-950/60 to-slate-950 border-t border-amber-500/30 flex items-center justify-between text-xs gap-2 shrink-0">
                     <span className="text-gray-200 font-bold flex items-center gap-1.5 truncate text-[11px] sm:text-xs">
                         <Sparkles size={13} className="text-amber-400 shrink-0" />
-                        <span className="truncate">대화 내용 기반 1:1 맞춤 핀포인트 처방전</span>
+                        <span className="truncate">대화 내용 기반 1:1 맞춤 핀포인트 가이드전</span>
                     </span>
                     <button
                         onClick={handlePrescriptionClick}
@@ -725,7 +725,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         { label: '🛡️ 불안·완벽주의', prompt: '지금 내 안의 불안과 완벽주의를 ACT 인지탈융합으로 다정하게 안아줘' },
                         { label: '🔥 조바심·스트레스', prompt: '사업이나 일에서 조바심이 나는데 MBSR 스트레스 감세로 조율해줘' },
                         { label: '🌧️ 무기력·혼란', prompt: '에너지가 다운되어 있는데 내 사주 2026년 병오년 활력 기운을 재배선해줘' },
-                        { label: '👑 평온·영점 각성', prompt: '오늘의 432Hz 제로포인트 영점 자각 명상 처방을 알려줘' },
+                        { label: '👑 평온·영점 각성', prompt: '오늘의 432Hz 제로포인트 영점 자각 명상 가이드을 알려줘' },
                     ].map((emo, idx) => (
                         <button
                             key={idx}
@@ -829,7 +829,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                             <BrainCircuit className="w-6 h-6 text-cyan-400" />
                             <div>
                                 <h3 className="text-white font-black text-base sm:text-lg">제3세대 임상심리학 8대 과학적 엔진</h3>
-                                <p className="text-gray-400 text-xs">명심 AI 코치 실시간 가동 근거중심 심리치료 프로토콜</p>
+                                <p className="text-gray-400 text-xs">명심 AI 코치 실시간 가동 근거중심 심리코칭 프로토콜</p>
                             </div>
                         </div>
 
@@ -854,7 +854,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     </motion.div>
                 </div>
             )}
-            {/* ── 7. 1:1 영혼 처방 카드 팝업 모달 ── */}
+            {/* ── 7. 1:1 영혼 가이드 카드 팝업 모달 ── */}
             {showCardModal && (
                 <div className="fixed inset-0 bg-black/85 backdrop-blur-xl z-50 flex items-center justify-center p-4" onClick={() => setShowCardModal(false)}>
                     <motion.div
@@ -877,7 +877,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                             </div>
                             <div>
                                 <span className="text-[10px] font-mono text-amber-300 font-bold bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/30">
-                                    📜 2026 丙午年 1:1 웰니스 영혼 처방전
+                                    📜 2026 丙午年 1:1 웰니스 영혼 가이드전
                                 </span>
                                 <h3 className="text-white font-black text-lg sm:text-xl mt-1">
                                     {clientSajuData?.userName || '경윤'}님의 영점 자각 카드
@@ -912,7 +912,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                 onClick={handlePrescriptionClick}
                                 className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black shadow-lg transition-all active:scale-95 text-xs text-center"
                             >
-                                ⚡ 890원 정밀 처방 리포트 발급
+                                ⚡ 890원 정밀 가이드 리포트 발급
                             </button>
                         </div>
                     </motion.div>

@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     }
 
     const systemInstruction = `
-      당신은 사주명리의 음양 순환론과 현대 심리학의 수용전념치료(ACT)를 결합한 '명심코칭 OS'의 다크디코딩 모듈입니다.
+      당신은 사주명리의 음양 순환론과 현대 심리학의 수용전념코칭(ACT)를 결합한 '명심코칭 OS'의 다크디코딩 모듈입니다.
       유저가 호소하는 부정적 감정은 시스템 에러가 아닌, 에너지 축적을 위한 필수 프로세스(음/陰)입니다.
       제공된 유저의 사주 환경 데이터(${JSON.stringify(effectiveSaju)})를 기반으로 구조적 원인을 분석하되, 절대 감정을 억압하지 말고 '마주 앉아 품어줄 고유한 자산(원석)'으로 변환하는 리포트를 작성하세요.
       ${languageInstruction}
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
           properties: {
             status_line: { 
               type: SchemaType.STRING, 
-              description: '감정 상태 진단 한 줄 평 (예: 과도한 화(火)의 기운 분출로 인한 내면 과부하 상태)' 
+              description: '감정 상태 분석 한 줄 평 (예: 과도한 화(火)의 기운 분출로 인한 내면 과부하 상태)' 
             },
             saju_sync: {
               type: SchemaType.OBJECT,

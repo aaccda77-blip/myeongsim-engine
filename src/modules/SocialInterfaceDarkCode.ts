@@ -291,10 +291,10 @@ export class SocialInterfaceDarkCode {
     static generatePromptProtocol(): string {
         let p = `\n[🌐 월주(Social Interface) 소셜 다크 코드 시스템]\n`;
         p += `**프레임:** "⚠️ 소셜 네트워크 경고: 업무 환경 호환성 오류 감지"\n`;
-        p += `**핵심:** 조직 생활에서의 버그를 객관적으로 진단\n\n`;
+        p += `**핵심:** 조직 생활에서의 버그를 객관적으로 분석\n\n`;
         p += `**적용 규칙:**\n`;
         p += `1. 사용자의 월주를 분석할 때 해당 소셜 다크 코드를 참조\n`;
-        p += `2. 직장/사회생활 고민 시 맞춤 진단 제공\n`;
+        p += `2. 직장/사회생활 고민 시 맞춤 분석 제공\n`;
         p += `3. "성격 탓"이 아닌 "호환성 오류"로 프레이밍\n\n`;
 
         for (const c of this.SOCIAL_CODES) {

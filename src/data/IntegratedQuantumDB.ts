@@ -62,7 +62,7 @@ export const DAILY_MODES: Record<string, QuantumMode> = {
 // 4. 🌿 힐링/바이오 (Healing) -> Neural Healing
 export const HEALING_MODES: Record<string, QuantumMode> = {
     'ms_sonic_cure': {
-        title: "🎧 주파수 처방전 (Sonic Cure)",
+        title: "🎧 주파수 가이드전 (Sonic Cure)",
         subtitle: "듣기만 해도 운이 좋아진다?",
         core_concept: "오행은 고유의 **'주파수(Hz)'**를 가집니다. 당신의 사주에 부족한 진동수를 **'바이노럴 비트'**와 **'자연의 소리'**로 공명시켜 무의식의 균형을 맞춥니다.",
         saju_analysis_guide: "Match Elements to Frequencies: Wood(396Hz), Fire(528Hz), Earth(639Hz), Metal(741Hz), Water(852Hz). Play the track for the user's Yongsin."

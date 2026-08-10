@@ -169,7 +169,7 @@ export default function BioCarePage() {
             <div className="p-4 bg-[#1f2937]/90 backdrop-blur-md border-t border-white/5">
                 <p className="text-center text-xs text-slate-500 leading-relaxed">
                     💡 본 서비스는 보건교육 목적이며,<br />
-                    의학적 진단이나 처방을 대신할 수 없습니다.
+                    의학적 분석이나 가이드을 대신할 수 없습니다.
                 </p>
             </div>
         </div>

@@ -89,7 +89,7 @@ export const AWAKENING_PHASE_3: Record<string, AwakeningMode> = {
         title: "🧠 뇌 회로 재배선 (Rewiring)",
         subtitle: "생각을 바꾸는 게 아니라, 뇌를 바꿉니다.",
         core_concept: "당신의 뇌는 가소성(Plasticity)이 있습니다. 부정적인 운명 패턴을 반복하게 만드는 **'오래된 신경망'**을 끊고, 행운을 부르는 **'새로운 회로'**를 깝니다.",
-        saju_analysis_guide: "인지행동치료(CBT) 원리를 적용하여 부정적인 사주 특성을 재해석하세요 (예: 고집 -> 끈기)."
+        saju_analysis_guide: "인지행동코칭(CBT) 원리를 적용하여 부정적인 사주 특성을 재해석하세요 (예: 고집 -> 끈기)."
     },
     'ms_timeline_connect': {
         title: "⏳ 타임라인 접속: 미래의 나",

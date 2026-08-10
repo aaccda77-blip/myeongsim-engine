@@ -246,7 +246,7 @@ export default function JardianceHydrationPage() {
                 <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4">
                     <p className="text-purple-200 text-xs leading-relaxed">
                         📚 <strong>보건교육 목적 도구</strong><br />
-                        본 트래커는 건강 증진을 위한 자가 모니터링 도구이며, 의학적 진단이나 처방을 대신할 수 없습니다.
+                        본 트래커는 건강 증진을 위한 자가 모니터링 도구이며, 의학적 분석이나 가이드을 대신할 수 없습니다.
                         개인별 적정 수분 섭취량은 의료진과 상담하세요.
                     </p>
                 </div>

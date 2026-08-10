@@ -2657,28 +2657,28 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 }
 
                                 // ============================================
-                                // [NEW] 중독 회복 & SOS 긴급 - 심리치료 기반
+                                // [NEW] 중독 회복 & SOS 긴급 - 심리코칭 기반
                                 // ============================================
 
-                                // [ACT] 금연 알아차림 - 수용전념치료
+                                // [ACT] 금연 알아차림 - 수용전념코칭
                                 if (intent === 'quit_smoking_act') {
                                     handleSend(t('intents.quit_smoking'));
                                     return;
                                 }
 
-                                // [CBT] 금주 알아차림 - 인지행동치료
+                                // [CBT] 금주 알아차림 - 인지행동코칭
                                 if (intent === 'quit_drinking_cbt') {
                                     handleSend(t('intents.quit_drinking'));
                                     return;
                                 }
 
-                                // [DBT] 중독 탈출 - 변증법적행동치료
+                                // [DBT] 중독 탈출 - 변증법적행동코칭
                                 if (intent === 'addiction_escape_dbt') {
                                     handleSend(t('intents.addiction_escape'));
                                     return;
                                 }
 
-                                // [MBCT] SOS 긴급 - 마음챙김인지치료 + 위기개입
+                                // [MBCT] SOS 긴급 - 마음챙김인지코칭 + 위기개입
                                 if (intent === 'sos_crisis_mbct') {
                                     // 직접 위기 개입 화면 활성화
                                     setShowCrisisMode(true);

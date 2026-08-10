@@ -22,7 +22,7 @@ export const INTERACTION_DATA: InteractionRule[] = [
     { type: 'hap', name: '인해합 (육합)', pair: ['인', '해'], interpretation: "물심양면으로 돕는 귀인을 만납니다. 시작하는 에너지가 좋습니다.", guide: "새로운 프로젝트나 만남을 시작하기 좋습니다." },
 
     // Representative Hyeong (Punishment)
-    { type: 'hyeong', name: '인사신 삼형', pair: ['인', '사', '신'], interpretation: "강한 힘끼리 깎고 다듬는 날입니다. 관재구설(소송)이나 수술, 시비가 붙을 수 있습니다.", guide: "법을 지키고 원칙대로 하세요. 리모델링이나 치과 치료를 받기엔 최고의 날입니다." }
+    { type: 'hyeong', name: '인사신 삼형', pair: ['인', '사', '신'], interpretation: "강한 힘끼리 깎고 다듬는 날입니다. 관재구설(소송)이나 수술, 시비가 붙을 수 있습니다.", guide: "법을 지키고 원칙대로 하세요. 리모델링이나 치과 코칭를 받기엔 최고의 날입니다." }
 ];
 
 export interface HealthConstitution {

@@ -265,7 +265,7 @@ export default function Healing108CoachingReport({
                 };
 
 
-                // [진단 로그] 서버로 보내는 데이터 확인
+                // [분석 로그] 서버로 보내는 데이터 확인
                 const profile = buildSajuProfile();
                 console.log('🔍 [Healing108] API로 보내는 sajuProfile:', JSON.stringify(profile).substring(0, 300));
                 console.log('🔍 [Healing108] activeSaju.dayMaster:', activeSaju?.dayMaster);
@@ -926,7 +926,7 @@ export default function Healing108CoachingReport({
     const displayTitle = hasAiContent 
         ? ai.title 
         : getResolvedText(currentPageData?.title);
-    // 11모듈 필드 추출 (융합 에세이 + 6대 심리치료)
+    // 11모듈 필드 추출 (융합 에세이 + 6대 심리코칭)
     const displayHealingEssay = ai.healingEssay || null;
     const displaySajuAnalysis = ai.sajuAnalysis || null;
     const displayDarkCode = ai.darkCodeCbt || null;

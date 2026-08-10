@@ -1,8 +1,8 @@
 /**
  * PsychDebuggingEngine.ts
- * 3세대 심리 코칭 진단 알고리즘 핵심 엔진 (ACT/CBT 디버깅 라이브러리)
+ * 3세대 심리 코칭 분석 알고리즘 핵심 엔진 (ACT/CBT 디버깅 라이브러리)
  * 
- * 내담자의 실시간 심리 스코어링 데이터를 기반으로 오류 진단 및 ACT 프로토콜 매핑 수행
+ * 내담자의 실시간 심리 스코어링 데이터를 기반으로 오류 분석 및 ACT 프로토콜 매핑 수행
  */
 
 export interface PsychologicalMetrics {
@@ -12,7 +12,7 @@ export interface PsychologicalMetrics {
 }
 
 export interface DebuggingMission {
-    bugCode: string;             // 오류 진단 코드
+    bugCode: string;             // 오류 분석 코드
     bugTitle: string;            // 오류명 (한글)
     bugSeverity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
     errorLog: string;            // 에이전트 분석용 시뮬레이션 로그

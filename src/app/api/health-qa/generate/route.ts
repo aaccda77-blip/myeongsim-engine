@@ -129,7 +129,7 @@ ${levelInstructions[level] || levelInstructions.beginner}
             question: '',
             answer: {
                 greeting: "현재 AI 연결이 불안정하여 일반 가이드로 답변드릴게요.",
-                core_message: "질문하신 내용은 전문가의 진단이 필요한 중요한 주제입니다. 무리하지 않는 선에서 시작하고, 통증 발생 시 즉시 중단하세요.",
+                core_message: "질문하신 내용은 전문가의 분석이 필요한 중요한 주제입니다. 무리하지 않는 선에서 시작하고, 통증 발생 시 즉시 중단하세요.",
                 advice_cards: [
                     { icon: "priority_high", title: "안전 최우선", content: "새로운 운동이나 식단은 낮은 강도부터 시작하세요." },
                     { icon: "medical_services", title: "전문가 상담", content: "기저질환이 있다면 의사와 상담 후 진행하세요." },

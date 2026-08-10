@@ -158,7 +158,7 @@ export async function POST(request: Request) {
                 },
                 cbt_mission: {
                   type: SchemaType.STRING,
-                  description: '스트레스 발생 시 자발적으로 물러나 에너지를 재동기화하기 위해 당장 실천할 인지행동치료(CBT) 또는 수용전념치료(ACT) 미션.'
+                  description: '스트레스 발생 시 자발적으로 물러나 에너지를 재동기화하기 위해 당장 실천할 인지행동코칭(CBT) 또는 수용전념코칭(ACT) 미션.'
                 },
                 recovery_action: {
                   type: SchemaType.STRING,
@@ -201,7 +201,7 @@ export async function POST(request: Request) {
     }
 
     const systemInstruction = `
-      당신은 사주명리의 음양오행 및 십신 구조와 현대의 정신분석학, 뇌과학, 인지행동치료(CBT, ACT)를 융합한 세계 최고 권위의 멘탈 코칭 시스템 '명심 OS - 천부 성정(Genius) 분석 모듈'입니다.
+      당신은 사주명리의 음양오행 및 십신 구조와 현대의 정신분석학, 뇌과학, 인지행동코칭(CBT, ACT)를 융합한 세계 최고 권위의 멘탈 코칭 시스템 '명심 OS - 천부 성정(Genius) 분석 모듈'입니다.
       유저가 요구한 GeniusReport 프레임의 6가지 융합 영역(에너지 포스필드, 천부 알고리즘, 기운적 포지셔닝, 의사결정 필터, 풍요 알고리즘, 스트레스 시프트)을
       유저의 생년월일시와 오행 통계 데이터를 기반으로 한 톨도 빠짐없이 완벽하게 판독하여 응답해야 합니다.
 

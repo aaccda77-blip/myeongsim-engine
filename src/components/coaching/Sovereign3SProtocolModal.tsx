@@ -310,7 +310,7 @@ export default function Sovereign3SProtocolModal({ isOpen, onClose, userProfile 
                                 <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-[10px] font-black border border-cyan-500/30 uppercase tracking-wider">
                                     🌐 Z·X·Y 3D 좌표 스캔 (Full Scan)
                                 </span>
-                                <h2 className="text-2xl font-black text-white font-serif">생년월일 기반 입체 진단 결과</h2>
+                                <h2 className="text-2xl font-black text-white font-serif">생년월일 기반 입체 분석 결과</h2>
                                 <p className="text-xs text-slate-400 max-w-md mx-auto">
                                     {userName}님({birthDate})의 타고난 사주(Z) x 현재 관점(X) x 생체 파동(Y) 3D 입체 좌표입니다.
                                 </p>
@@ -651,7 +651,7 @@ export default function Sovereign3SProtocolModal({ isOpen, onClose, userProfile 
                                         </span>
                                     </div>
                                     <p className="text-xs text-slate-300 leading-relaxed line-clamp-2">
-                                        {userName}님의 생년월일 사주 하드웨어와 실시간 뇌 파동을 3차원으로 동기화하여 진단합니다.
+                                        {userName}님의 생년월일 사주 하드웨어와 실시간 뇌 파동을 3차원으로 동기화하여 분석합니다.
                                     </p>
                                 </motion.div>
 

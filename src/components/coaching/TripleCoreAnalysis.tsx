@@ -23,8 +23,8 @@ interface CoreResult {
   score: number;        // 0~100
   status: StatusLevel;
   title: string;        // e.g. "조열(燥熱) 감지"
-  diagnosis: string;    // 한 줄 진단
-  prescription: string; // 처방
+  diagnosis: string;    // 한 줄 분석
+  prescription: string; // 가이드
   logLine: string;      // 터미널 한 줄
 }
 
@@ -267,12 +267,12 @@ const CoreCard = ({
         <CoreGauge score={result.score} color={cfg.color} delay={delay + 0.2} />
       </div>
 
-      {/* 진단 및 처방 (데스크톱에서는 2열 가로 분할, 모바일에서는 1열 세로 스택) */}
+      {/* 분석 및 가이드 (데스크톱에서는 2열 가로 분할, 모바일에서는 1열 세로 스택) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 rounded-xl flex flex-col justify-between" style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}35` }}>
           <div>
             <p className="text-[10px] uppercase tracking-widest font-bold mb-1.5 font-mono" style={{ color: cfg.color }}>
-              🔍 DIAGNOSIS (시스템 진단)
+              🔍 DIAGNOSIS (시스템 스캔)
             </p>
             <p className="text-sm sm:text-base text-white font-extrabold break-keep">{result.title}</p>
             <p className="text-xs text-slate-200 mt-2 leading-relaxed break-keep font-medium">{result.diagnosis}</p>
@@ -281,7 +281,7 @@ const CoreCard = ({
         <div className="p-4 rounded-xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-1.5 font-mono">
-              💊 PRESCRIPTION (처방 & 액션 루틴)
+              💊 PRESCRIPTION (가이드 & 액션 루틴)
             </p>
             <p className="text-xs text-slate-300 mt-1 leading-relaxed break-keep font-normal">{result.prescription}</p>
           </div>
@@ -463,7 +463,7 @@ export default function TripleCoreAnalysis({
             <h2 className="text-xl md:text-2xl font-extrabold text-white mt-1">
               명심 트리플 코어{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">
-                진단 리포트
+                분석 리포트
               </span>
             </h2>
             <p className="text-slate-400 text-xs mt-1 break-keep">

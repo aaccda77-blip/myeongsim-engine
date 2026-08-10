@@ -432,13 +432,13 @@ export default function StageAnalysisModal({ isOpen, stageId, stageTitle, userCu
                                         {analysisData?.mainAnalysis}
                                     </div>
 
-                                    {/* 일상 실천 처방 */}
+                                    {/* 일상 실천 가이드 */}
                                     <div className="bg-primary-olive/5 border border-primary-olive/10 rounded-2xl p-3.5 flex items-start gap-2.5 mt-2">
                                         <div className="mt-0.5 p-1 rounded bg-primary-olive/10 text-primary-olive">
                                             <BookOpen size={12} />
                                         </div>
                                         <div>
-                                            <h6 className="text-[9px] text-primary-olive font-bold uppercase tracking-wider">명심 일일 행동 처방</h6>
+                                            <h6 className="text-[9px] text-primary-olive font-bold uppercase tracking-wider">명심 일일 행동 가이드</h6>
                                             <p className="text-[10px] text-gray-300 font-medium leading-normal mt-0.5 break-keep">
                                                 {analysisData?.dailyPractice}
                                             </p>

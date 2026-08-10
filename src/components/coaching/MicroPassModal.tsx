@@ -200,7 +200,7 @@ export const MicroPassModal: React.FC<MicroPassModalProps> = ({
                                 </div>
 
                                 <p className="text-[11px] text-gray-200 leading-relaxed">
-                                    <strong>{userSajuData?.userName || '명심가'}</strong> 님의 생년월일 사주 원국 오행 주파수와 1:1 맞춤 연결된 <b>오늘의 귀인 핀포인트 처방</b>입니다. <br />
+                                    <strong>{userSajuData?.userName || '명심가'}</strong> 님의 생년월일 사주 원국 오행 주파수와 1:1 맞춤 연결된 <b>오늘의 귀인 핀포인트 가이드</b>입니다. <br />
                                     명심 AI 코치와의 심층 1:1 코칭을 통해 인지 신경망을 빛으로 정렬해 보세요!
                                 </p>
 

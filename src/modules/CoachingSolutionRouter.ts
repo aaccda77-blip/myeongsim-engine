@@ -3,7 +3,7 @@
  * 5대 코칭 솔루션 라우터
  * 
  * 사용자 상태에 따라 최적의 코칭 방법론을 자동 매칭
- * CBT/ACT/MBCT/MBSR/DBT 기반 코칭 솔루션 (치료가 아닌 코칭!)
+ * CBT/ACT/MBCT/MBSR/DBT 기반 코칭 솔루션 (코칭가 아닌 코칭!)
  * 
  * ⚠️ 독립 모듈 — 기존 챗봇 시스템에 영향 없음
  * ⚠️ 법적 면책: 모든 솔루션은 '코칭'이며 '의료 행위'가 아님
@@ -132,9 +132,9 @@ export class CoachingSolutionRouter {
     /** AI 프롬프트 주입용 코칭 솔루션 프로토콜 생성 */
     static generatePromptProtocol(): string {
         let protocol = `\n[💊 5대 코칭 솔루션 라우터 (Coaching Solution Router)]\n`;
-        protocol += `**중요**: 아래는 '치료'가 아닌 '셀프 코칭 솔루션'입니다.\n`;
+        protocol += `**중요**: 아래는 '코칭'가 아닌 '셀프 코칭 솔루션'입니다.\n`;
         protocol += `사용자의 상태에 따라 가장 적합한 코칭 방법론을 자동 선택하여 적용하십시오.\n`;
-        protocol += `⚠️ 절대 '처방', '치료', '진단'이라는 단어를 사용하지 마십시오. '코칭', '솔루션', '훈련'만 사용.\n\n`;
+        protocol += `⚠️ 절대 '가이드', '코칭', '분석'이라는 단어를 사용하지 마십시오. '코칭', '솔루션', '훈련'만 사용.\n\n`;
 
         for (const sol of this.SOLUTIONS) {
             protocol += `### [${sol.id}] ${sol.name} (${sol.nameEn})\n`;

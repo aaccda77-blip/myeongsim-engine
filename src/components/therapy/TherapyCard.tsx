@@ -12,7 +12,7 @@ interface TherapyCardProps {
     onChatIntent?: (intent: string, prompt: string) => void;
 }
 
-// 치료 유형별 색상
+// 코칭 유형별 색상
 const THERAPY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
     'CBT': { bg: 'rgba(59, 130, 246, 0.1)', text: '#60A5FA', border: 'rgba(59, 130, 246, 0.3)' },
     'DBT': { bg: 'rgba(239, 68, 68, 0.1)', text: '#F87171', border: 'rgba(239, 68, 68, 0.3)' },
@@ -21,14 +21,14 @@ const THERAPY_COLORS: Record<string, { bg: string; text: string; border: string 
 };
 
 const THERAPY_LABELS: Record<string, string> = {
-    'CBT': '인지행동치료',
-    'DBT': '변증법적 행동치료',
-    'ACT': '수용전념치료',
-    'MBCT': '마음챙김 인지치료'
+    'CBT': '인지행동코칭',
+    'DBT': '변증법적 행동코칭',
+    'ACT': '수용전념코칭',
+    'MBCT': '마음챙김 인지코칭'
 };
 
 /**
- * 치료 아키타입 카드
+ * 코칭 아키타입 카드
  * 
  * DarkCode → NeuralCode → MetaCode 순서로 표시
  * 닫을 때 "The Pause" 경험 제공
@@ -203,7 +203,7 @@ export default function TherapyCard({ archetype, isOpen, onClose, onChatIntent }
                                                 >
                                                     🧠 Neural Code
                                                     <span className="text-gray-500 font-normal normal-case">
-                                                        (처방)
+                                                        (가이드)
                                                     </span>
                                                 </h3>
                                                 <div className="space-y-3">
@@ -279,7 +279,7 @@ export default function TherapyCard({ archetype, isOpen, onClose, onChatIntent }
                                             : 'linear-gradient(135deg, #3B82F6, #8B5CF6)'
                                     }}
                                 >
-                                    {step === 'dark' && '→ 처방 보기'}
+                                    {step === 'dark' && '→ 가이드 보기'}
                                     {step === 'neural' && '→ 본질로 가기'}
                                     {step === 'meta' && '🧘 The Pause 경험하기'}
                                 </button>

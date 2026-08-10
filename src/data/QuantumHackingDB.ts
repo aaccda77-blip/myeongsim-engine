@@ -100,7 +100,7 @@ export const QUANTUM_MODES: Record<string, QuantumModeContent> = {
            
         3. **철학자의 돌 (Philosopher's Stone - Helper/Inseong)**:
            - 인성(Resource)이나 식상(Output)을 변환의 촉매제(Catalyst)로 사용.
-           - *처방*: "고통을 황금으로 바꾸기 위해 [용신/희신]이라는 촉매를 투입하십시오."
+           - *가이드*: "고통을 황금으로 바꾸기 위해 [용신/희신]이라는 촉매를 투입하십시오."
            
         4. **통합 (Integration)**:
            - 사주의 한난조습(기후) 조화를 통한 에너지 순환.

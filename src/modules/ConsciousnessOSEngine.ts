@@ -34,7 +34,7 @@ export interface Prescription3S {
 
 export class ConsciousnessOSEngine {
     /**
-     * 사용자 메시지를 분석하여 3D 좌표 진단
+     * 사용자 메시지를 분석하여 3D 좌표 분석
      */
     diagnoseCoordinates(userMessage: string): Coordinates3D {
         const xAxis = this.analyzeXAxis(userMessage);
@@ -116,10 +116,10 @@ export class ConsciousnessOSEngine {
     }
 
     /**
-     * 3S 처방 생성
+     * 3S 가이드 생성
      */
     generate3SPrescription(coords: Coordinates3D): Prescription3S {
-        // Z축 기반 SCAN/SYNC 처방
+        // Z축 기반 SCAN/SYNC 가이드
         const scanTechnique = coords.z === 'In' ? 'MBCT' : 'MBSR';
         const syncTechnique = coords.z === 'In' ? 'ACT' : 'DBT';
 
@@ -184,7 +184,7 @@ export class ConsciousnessOSEngine {
      */
     formatResponse(coords: Coordinates3D, prescription: Prescription3S): string {
         return `
-🧠 **[시스템 로그: 3D 좌표 진단 완료]**
+🧠 **[시스템 로그: 3D 좌표 분석 완료]**
 
 **현재 좌표:**
 - **X축 (의식 레벨):** ${coords.x} (Level ${coords.xLevel})
@@ -198,25 +198,25 @@ export class ConsciousnessOSEngine {
 
 ---
 
-💉 **[Fate Hacking: 3S 처방]**
+💉 **[Fate Hacking: 3S 가이드]**
 
 **1️⃣ SCAN (Y축 제어)**
 - **기법:** ${prescription.scan.technique}
-- **처방:** ${prescription.scan.instruction}
+- **가이드:** ${prescription.scan.instruction}
 
 **2️⃣ SYNC (Z축 수용)**
 - **기법:** ${prescription.sync.technique}
-- **처방:** ${prescription.sync.instruction}
+- **가이드:** ${prescription.sync.instruction}
 
 **3️⃣ SHIFT (X축 상승)**
 - **기법:** ${prescription.shift.technique}
-- **처방:** ${prescription.shift.instruction}
+- **가이드:** ${prescription.shift.instruction}
 - **진화 경로:** ${prescription.shift.evolution}
 
 ---
 
 🎯 **[Next Step]**
-위 3S 처방을 순차적으로 실행하여 의식 OS를 업그레이드하십시오.
+위 3S 가이드을 순차적으로 실행하여 의식 OS를 업그레이드하십시오.
         `.trim();
     }
 }

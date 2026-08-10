@@ -19,7 +19,7 @@ export default function PaymentCard({ onDetailedReport }: PaymentCardProps) {
             case 'CHAT_3':
                 return { name: '💬 챗봇 대화 3회 충전', original: '9,900원', price: '890원', numPrice: 890, badge: '91% OFF' };
             case 'REPORT_BASE':
-                return { name: '📋 나의 리포트 (기본 진단 요약)', original: '9,900원', price: '890원', numPrice: 890, badge: '91% OFF' };
+                return { name: '📋 나의 리포트 (기본 분석 요약)', original: '9,900원', price: '890원', numPrice: 890, badge: '91% OFF' };
             case 'SOCIAL_FIVE':
                 return { name: '🔬 사회적기여 / 오행상생 리포트', original: '19,000원', price: '1,900원', numPrice: 1900, badge: '90% OFF' };
             case 'MASTER_CORE':
@@ -104,7 +104,7 @@ export default function PaymentCard({ onDetailedReport }: PaymentCardProps) {
                     >
                         <div className="flex flex-col">
                             <span className={`text-xs font-bold ${selectedTier === 'REPORT_BASE' ? 'text-amber-300' : 'text-gray-300'}`}>
-                                📋 나의 리포트 (기본 진단 70% 해독)
+                                📋 나의 리포트 (기본 분석 70% 해독)
                             </span>
                             <span className="text-[10px] text-gray-400">기본 본질 자아 및 성향 해독</span>
                         </div>

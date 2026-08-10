@@ -456,7 +456,7 @@ export default function OnboardingFlow() {
                                     {/* Legal & Compliance Agreement */}
                                     <div className="bg-black/40 border border-white/5 rounded-xl p-4 space-y-4">
                                         <p className="text-[11px] text-gray-500 leading-relaxed text-left">
-                                            명심코칭의 분석 결과는 개인의 성장과 자아 탐색을 위한 코칭 목적이며, 의학적 진단이나 전문적인 심리 치료를 대체하지 않습니다. 수집된 데이터는 맞춤형 코칭 제공을 위한 AI 분석 문맥(Context)으로만 안전하게 사용됩니다.
+                                            명심코칭의 분석 결과는 개인의 성장과 자아 탐색을 위한 코칭 목적이며, 의학적 분석이나 전문적인 심리 코칭를 대체하지 않습니다. 수집된 데이터는 맞춤형 코칭 제공을 위한 AI 분석 문맥(Context)으로만 안전하게 사용됩니다.
                                         </p>
                                         <label className="flex items-start gap-3 cursor-pointer group">
                                             <div className="mt-0.5">

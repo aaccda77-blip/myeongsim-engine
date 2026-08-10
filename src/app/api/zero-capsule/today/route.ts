@@ -99,7 +99,7 @@ export async function GET(request: Request) {
       userSajuElements = `사용자 일간: ${dayMaster}, 오늘의 일진: ${todayIljin}, 상세 사주 데이터: ${JSON.stringify(saju)}`;
     }
 
-    // 4. Gemini 2.5 Flash를 사용하여 처방전 생성
+    // 4. Gemini 2.5 Flash를 사용하여 가이드전 생성
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '';
     if (!apiKey) {
       throw new Error("Missing GEMINI_API_KEY environment variable.");

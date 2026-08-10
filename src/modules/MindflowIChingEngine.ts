@@ -39,7 +39,7 @@ export interface MindflowDiagnosis {
     };
     interpretation: string;                // 맥락적 해석
     ichingHexagram: number;                // 추천 주역 괘 (1-64)
-    recommendation: string;                // 처방
+    recommendation: string;                // 가이드
 }
 
 export class MindflowIChingEngine {
@@ -111,7 +111,7 @@ export class MindflowIChingEngine {
         let ichingHexagram: number;
         let recommendation: string;
 
-        // 맥락적 진단 로직
+        // 맥락적 분석 로직
         if (profile.energyType === 'HIGH') {
             // Type A: 고에너지군 (편관/상관형)
             if (biometric.currentHR > profile.baselineHR + 20) {
@@ -245,7 +245,7 @@ export class MindflowIChingEngine {
 
             questionMatrixPrompt = `
 ## [Mindflow Question Matrix™]
-**진단 유형:** ${typeCode}. ${typeName} (Z: ${zVector} / Y: ${yFreq})
+**분석 유형:** ${typeCode}. ${typeName} (Z: ${zVector} / Y: ${yFreq})
 
 **[해킹 전략 적용]**
 사용자의 답변에 대해 **다음 산파술(Socratic)과 재귀적 질문(Recursive)을 반드시 포함**하여 상담을 진행하세요.
@@ -263,12 +263,12 @@ ${hackingStrategy}
         if (biometric) {
             const diagnosis = this.diagnose(profile, biometric);
             mindflowContext = `
-[MINDFLOW SYSTEM™ 진단 결과]
+[MINDFLOW SYSTEM™ 분석 결과]
 - **Z축 (기질):** ${profile.energyType === 'HIGH' ? '고에너지형 (편관/상관)' : '저에너지형 (정인/식신)'} | 일주: ${profile.dayMaster}
 - **Y축 (생체):** HR ${biometric.currentHR}bpm (기준: ${profile.baselineHR}bpm, 편차: ${diagnosis.deviation.hrDeviation.toFixed(1)}%)
 - **X축 (심리):** **[${diagnosis.code} CODE]** ${diagnosis.interpretation}
 - **추천 괘:** 제${diagnosis.ichingHexagram}괘
-- **처방:** ${diagnosis.recommendation}
+- **가이드:** ${diagnosis.recommendation}
 `;
         }
 
@@ -284,7 +284,7 @@ ${hackingStrategy}
    - **고수(High X):** "말의 거친 힘을 이용해 절벽을 뛰어넘었다" (도구화/주인) -> 결과: 성취, 돌파
 3. **목표:** 이 점괘를 통해 사용자가 자신의 기질(야생마)을 억누르지 말고, **'도구'로 삼아 상황을 돌파하게 하세요.**
 
-## [Mindflow Litmus Test: 자가 진단 키트]
+## [Mindflow Litmus Test: 자가 분석 키트]
 사용자가 자신의 상태가 '오기'인지 '수행'인지 스스로 헷갈려할 때, 다음 3가지 절대 증거로 검증하게 하세요.
 
 1.  **신체 반응 (Body Sensor - Y축):**
@@ -316,10 +316,10 @@ ${questionMatrixPrompt}
 "${userQuestion}"
 
 ## [당신의 임무]
-1. **맥락적 괘 선택:** 위 Mindflow 진단 결과를 반영하여, 사용자의 **현재 기질 상태에 최적화된 괘**를 선택하세요.
+1. **맥락적 괘 선택:** 위 Mindflow 분석 결과를 반영하여, 사용자의 **현재 기질 상태에 최적화된 괘**를 선택하세요.
 2. **상대적 해석:** "이 괘는 일반적으로 길하다/흉하다"가 아니라, **"당신의 ${profile.dayMaster} 기질에게는 이것이 의미하는 바는..."** 형식으로 설명하세요.
 3. **생체 데이터 연동:** 만약 HR 편차가 크다면, "지금 당신의 몸이 말하고 있습니다..."라는 식으로 생체 신호를 해석에 포함하세요.
-4. **구체적 행동 지침:** 추상적 조언이 아닌, **"오늘 오후 3시에 10분간 산책하세요"** 같은 즉시 실행 가능한 처방을 제시하세요.
+4. **구체적 행동 지침:** 추상적 조언이 아닌, **"오늘 오후 3시에 10분간 산책하세요"** 같은 즉시 실행 가능한 가이드을 제시하세요.
 5. **질문 공격:** 위 **[Mindflow Question Matrix]**에 정의된 핵심 질문을 던져 사용자의 고정관념을 깨뜨리세요.
 
 ## [출력 형식]
@@ -379,7 +379,7 @@ ${questionMatrixPrompt}
         sajuData: any,
         biometric?: BiometricInput
     ): string {
-        // 공통: Mindflow 진단 (Z, Y축 분석)
+        // 공통: Mindflow 분석 (Z, Y축 분석)
         const baseContext = this.generateIChingPrompt(userQuestion, sajuData, biometric);
         const profile = this.calibrateBaseline(sajuData);
 
@@ -414,7 +414,7 @@ ${questionMatrixPrompt}
 **목표:** 관계의 역학(Dynamics)을 분석하고, **상대방과의 공명 주파수**를 맞추는 법을 알려줍니다.
 1. **에너지 궁합:** 나와 상대의 에너지가 상생(Circle)인지 상극(Clash)인지 주역의 괘로 설명하세요.
 2. **상대방 해킹:** 상대방의 현재 심리를 꿰뚫어보는(Insight) 키워드를 제시하세요.
-3. **관계 처방전:** "먼저 연락해라" vs "기다려라" 등 구체적인 행동 지침을 주세요.
+3. **관계 가이드전:** "먼저 연락해라" vs "기다려라" 등 구체적인 행동 지침을 주세요.
 `;
                 break;
 
@@ -642,7 +642,7 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
 *   **핵심:** 수비 없는 공격은 몸을 망가뜨립니다. 강력한 약물일수록 더 강력한 보호막이 필요합니다.
 *   **솔루션:** **코큐텐(심장 에너지) + 셀레늄(항산화 방패)**
 *   **과학적 근거:** 스웨덴 KiSel-10 연구 (심혈관 사망 위험 50% 감소)
-*   **처방:** 점심 식후 섭취 권장 (오후 활력 충전)
+*   **가이드:** 점심 식후 섭취 권장 (오후 활력 충전)
 *   🔗 **[코큐텐+셀레늄 최저가 보러가기](https://www.qoo10.com/item/COQ10-SELENIUM-SET)** (가상의 링크)
 
 ### 2. 🍎 오늘의 푸드 시너지 (Randomized by Date)
@@ -659,7 +659,7 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
 *   약물과 음식, 또는 영양제끼리의 **나쁜 궁합**을 하나 경고하세요.
 *   예: "고혈압 약 + 자몽 주스 (약효 과다)", "칼슘 + 철분 (흡수 방해)"
 
-### 5. 🧘 오늘의 한 줄 행동 처방 (Micro-Action)
+### 5. 🧘 오늘의 한 줄 행동 가이드 (Micro-Action)
 *   영양제가 필요 없는 **1분 건강 습관**을 제안하세요.
 *   예: "식후 10분간 햇볕 쬐기 (비타민D 합성)", "찬물 샤워 (도파민 부스팅)"
 
@@ -680,11 +680,11 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
 사용자의 사주(Z축) 정보를 '바이오 시스템 코드'로 해석하여, 에너지 흐름의 불균형(System Overload)을 분석하고 유지보수(Maintenance)를 위한 생활 습관 프로토콜을 제안한다.
 
 # Hard Constraints (법적 안전장치 - 의료법 준수):
-1. **[Forbidden Codes]**: 진단(Diagnosis), 치료(Cure/Treat), 처방(Prescribe), 환자(Patient), 약(Medicine), 효능(Efficacy).
+1. **[Forbidden Codes]**: 분석(Diagnosis), 코칭(Cure/Treat), 가이드(Prescribe), 환자(Patient), 약(Medicine), 효능(Efficacy).
 2. **[Engineering Codes]**:
-   - 진단 → **시스템 스캔, 경향성 분석, 모니터링**
+   - 분석 → **시스템 스캔, 경향성 분석, 모니터링**
    - 질환/증상 → **에너지 과부하, 불균형 패턴, 신호**
-   - 처방/치료 → **최적화 프로토콜, 엔지니어링, 밸런싱**
+   - 가이드/코칭 → **최적화 프로토콜, 엔지니어링, 밸런싱**
    - 약/영양제 → **에너지 패치, 보조 성분**
 3. **[Disclaimer]**: 모든 답변 하단에 **"본 리포트는 보건복지부 비의료 건강관리서비스 가이드라인(2차, 2022)을 준수하며, 대한영양사협회 등 공신력 있는 기관의 권장사항을 참고한 건강 증진(Health Promotion) 가이드입니다."** 문구 필수 포함.
 
@@ -718,7 +718,7 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
 
 **⚠️ [필수 고지 사항 / Disclaimer]**
 > 본 가이드는 보건교육사가 제안하는 **'건강 증진(Health Promotion) 및 생활 습관 교정'** 정보입니다.
-> 추천되는 내용은 건강기능식품 및 일반 식품에 대한 영양학적 정보를 기반으로 하며, **질병의 예방 및 치료를 위한 의약품 처방이 아닙니다.**
+> 추천되는 내용은 건강기능식품 및 일반 식품에 대한 영양학적 정보를 기반으로 하며, **질병의 예방 및 코칭를 위한 의약품 가이드이 아닙니다.**
 > 기저 질환이 있거나 복용 중인 약물이 있는 경우, 반드시 의사/약사와 상의하십시오.
 
 **[인트로] 왜 '타이밍'인가요?**
@@ -791,7 +791,7 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
 
 **[시나리오 재작성 프로토콜]**
 1. **현재 장르 분석 (As-Is):**
-   - 사용자의 이야기를 듣고, 현재 장르를 진단하세요. (예: "지금은 '막장 복수극'을 찍고 계시군요.")
+   - 사용자의 이야기를 듣고, 현재 장르를 분석하세요. (예: "지금은 '막장 복수극'을 찍고 계시군요.")
    - 주인공(사용자)의 현재 역할: **무력한 피해자** (Victim)
 
 2. **장르 변경 제안 (To-Be):**
@@ -1447,16 +1447,16 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
 
 **[Neural Detox Prescription]**
 - **자극 추구 과다 (도파민 중독):**
-  - 💊 처방: **"지루함 목욕 (Boredom Bath)"**
+  - 💊 가이드: **"지루함 목욕 (Boredom Bath)"**
   - 📝 지침: "하루 30분, 스마트폰 없이 벽만 보고 멍때리기. 지루함을 '죽음'이 아니라 '휴식'으로 재정의하세요."
 - **위험 회피 과다 (세로토닌 과민):**
-  - 💊 처방: **"마이크로 리스크 (Micro-Risk)"**
+  - 💊 가이드: **"마이크로 리스크 (Micro-Risk)"**
   - 📝 지침: "절대로 망하지 않을 아주 작은 실패(예: 일부러 거절당하기)를 하루 1회 실천하세요."
 - **사회적 민감성 과다 (옥시토신 갈망):**
-  - 💊 처방: **"노 데이 (No-Day)"**
+  - 💊 가이드: **"노 데이 (No-Day)"**
   - 📝 지침: "오늘 하루는 미안하다는 말 없이 3번 거절하기. 거절해도 세상이 무너지지 않음을 확인하세요."
 - **인내력 폭주 (과부하 상태):**
-  - 💊 처방: **"게으름의 시간 (Lazy Hour)"**
+  - 💊 가이드: **"게으름의 시간 (Lazy Hour)"**
   - 📝 지침: "아무 성과도 내지 않는 1시간을 강제로 가지십시오. 생산성은 잠시 내려놓으세요."
 `;
                 break;
@@ -1492,7 +1492,7 @@ ${JSON.stringify(ICHING_HEXAGRAMS, null, 2)}
             case 'iching_character_gym':
                 specificInstruction = `
 ## [Mode: 🏋️ 마음 근육 헬스장 (Mind Muscle Gym)]
-**목표:** 마음의 근육(인성)을 키우는 실전 PT를 처방합니다. 본성이 약해도 근육(인성)이 좋으면 인생을 지탱할 수 있습니다.
+**목표:** 마음의 근육(인성)을 키우는 실전 PT를 가이드합니다. 본성이 약해도 근육(인성)이 좋으면 인생을 지탱할 수 있습니다.
 
 **[Workout Routine]**
 - **자율성 근육 (책임감):**

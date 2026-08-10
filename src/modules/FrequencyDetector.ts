@@ -4,8 +4,8 @@
  * 목적: 사용자의 현재 감정/에너지 상태를 감지하고 3단계 레벨로 분류
  * 특징:
  *  - Dark Code (버그) / Neural Code (엔진) / Meta Code (초월) 감지
- *  - 감지 결과에 따라 AI 태도 모드 제안 (치료사/코치/현자)
- *  - 사주 기질과 융합된 처방 생성
+ *  - 감지 결과에 따라 AI 태도 모드 제안 (코칭사/코치/현자)
+ *  - 사주 기질과 융합된 가이드 생성
  */
 
 // ============== 타입 정의 ==============
@@ -19,7 +19,7 @@ export interface FrequencyAnalysis {
     suggestedMode: AIMode;
     keywords: string[];           // 감지된 키워드
     emotionalTone: string;        // 감정 톤 요약
-    prescription: string;         // 권장 처방 방향
+    prescription: string;         // 권장 가이드 방향
 }
 
 // ============== 키워드 사전 ==============
@@ -99,14 +99,14 @@ function summarizeEmotionalTone(level: FrequencyLevel): string {
 }
 
 /**
- * AI 모드에 따른 처방 방향 제안
+ * AI 모드에 따른 가이드 방향 제안
  */
 function generatePrescription(level: FrequencyLevel, dayMaster?: string): string {
     const dayMasterText = dayMaster ? `${dayMaster}일간의 ` : '';
 
     switch (level) {
         case 'dark':
-            return `[치료사 모드] 공감과 수용 우선. ${dayMasterText}에너지가 과열된 상태. 진정과 탈융합 필요.`;
+            return `[코칭사 모드] 공감과 수용 우선. ${dayMasterText}에너지가 과열된 상태. 진정과 탈융합 필요.`;
         case 'neural':
             return `[코치 모드] 동기부여와 행동 촉구. ${dayMasterText}잠재력 활성화 타이밍. 구체적 미션 제시.`;
         case 'meta':
@@ -195,7 +195,7 @@ export function generateFrequencyPromptBlock(analysis: FrequencyAnalysis): strin
     };
 
     const modeInstruction = {
-        therapist: '치료사처럼 공감하고 수용하세요. 판단하지 말고, 감정을 있는 그대로 인정하세요.',
+        therapist: '코칭사처럼 공감하고 수용하세요. 판단하지 말고, 감정을 있는 그대로 인정하세요.',
         coach: '코치처럼 동기를 부여하고 행동을 촉구하세요. 구체적인 미션을 제시하세요.',
         sage: '현자처럼 깊은 인정과 지지를 보내세요. 질문으로 통찰을 확장하세요.'
     };
@@ -210,7 +210,7 @@ ${levelEmoji[analysis.level]} **현재 감지된 주파수**: ${levelName[analys
 **🎭 AI 모드**: [${analysis.suggestedMode.toUpperCase()}]
 ${modeInstruction[analysis.suggestedMode]}
 
-**💊 처방 방향**: ${analysis.prescription}
+**💊 가이드 방향**: ${analysis.prescription}
 :::END_FREQUENCY:::
 `;
 }

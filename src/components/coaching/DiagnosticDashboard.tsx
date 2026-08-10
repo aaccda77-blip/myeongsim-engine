@@ -61,7 +61,7 @@ interface DiagnosticDashboardProps {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 일간(甲~癸)별 완전 개인화 진단 데이터 맵
+// 일간(甲~癸)별 완전 개인화 분석 데이터 맵
 // ─────────────────────────────────────────────────────────────
 const ILGAN_DIAGNOSTIC_DB: Record<string, {
     architectNote: string;
@@ -409,7 +409,7 @@ export default function DiagnosticDashboard({ sajuInfo, reportData: propReportDa
                 <div>
                     <h2 className="text-[10px] font-mono text-cyan-500 tracking-[0.3em] mb-1">01 // 전략</h2>
                     <h1 className="text-2xl font-black text-white">
-                        진단 요약 보고서 // <span className="text-cyan-400">DIAGNOSTIC_0X01</span>
+                        분석 요약 보고서 // <span className="text-cyan-400">DIAGNOSTIC_0X01</span>
                     </h1>
                 </div>
                 <div className="text-[10px] font-mono text-gray-500 text-right">
@@ -522,7 +522,7 @@ export default function DiagnosticDashboard({ sajuInfo, reportData: propReportDa
                 <p className="text-xs text-gray-300 leading-relaxed mb-4 break-keep">{ilgan.architectNote}</p>
                 <div className="flex gap-2 flex-wrap">
                     <span className="px-2 py-1 bg-cyan-950/40 text-cyan-400 border border-cyan-500/30 text-[9px] font-mono rounded">
-                        # 태그: {dayStem} 기질 맞춤진단
+                        # 태그: {dayStem} 기질 맞춤분석
                     </span>
                     <span className="px-2 py-1 bg-gray-900/60 text-gray-400 border border-white/10 text-[9px] font-mono rounded">
                         # 상태: 추적 중

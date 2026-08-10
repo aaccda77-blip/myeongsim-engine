@@ -128,7 +128,7 @@ export default function CustomHealthQAPage() {
                             </button>
                         )}
                         <p className="text-center text-[11px] text-gray-600 mt-4">
-                            본 서비스는 의학적 진단이 아닌 건강 정보 제공을 목적으로 합니다.
+                            본 서비스는 의학적 분석이 아닌 건강 정보 제공을 목적으로 합니다.
                         </p>
                     </div>
                 </form>

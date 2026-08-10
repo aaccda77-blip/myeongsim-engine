@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
   "stageName": "치유 (Healing) 등 단계명",
   "sajuCore": "사주에서 이번 단계에 가장 핵심적으로 연결되는 특징 1줄 요약",
   "mainAnalysis": "사용자의 사주 기질과 성장 단계가 융합된 상세하고 깊이 있는 정밀 가이드 분석 문장 (200~400자 사이, 따뜻하고 감동적이며 가독성 있는 개행 포함)",
-  "dailyPractice": "오늘 바로 실천할 수 있는 아주 구체적이고 사소한 마음 또는 행동 습관 1가지 처방"
+  "dailyPractice": "오늘 바로 실천할 수 있는 아주 구체적이고 사소한 마음 또는 행동 습관 1가지 가이드"
 }
 `;
 

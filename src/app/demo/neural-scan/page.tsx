@@ -326,7 +326,7 @@ export default function NeuralScanDemoPage() {
                                         {[
                                             { n: 1, c: 'blue', t: '생체 신호 수집', d: '스마트워치에서 심박수(BPM), HRV, 수면, 활동량 실시간 수집', tags: ['Apple HealthKit', 'Health Connect', 'Samsung Health'] },
                                             { n: 2, c: 'purple', t: '기질 × 생체 융합 분석', d: '생체 데이터와 기질 신경망(Z축)을 교차 분석하여 다크코드 활성화 예측', tags: [] },
-                                            { n: 3, c: 'emerald', t: '맞춤형 코칭 자동 트리거', d: '3단계 질문 + 4대 심리치료 코칭을 위험 감지 시 자동 푸시', tags: ['번아웃 알림', '분노 감지', '수면 부채 경고'] },
+                                            { n: 3, c: 'emerald', t: '맞춤형 코칭 자동 트리거', d: '3단계 질문 + 4대 심리코칭 코칭을 위험 감지 시 자동 푸시', tags: ['번아웃 알림', '분노 감지', '수면 부채 경고'] },
                                             { n: 4, c: 'amber', t: '효과 검증 피드백 루프', d: '코칭 전후 HRV·심박수 변화를 수치 기록하여 과학적 검증', tags: [] },
                                         ].map((s, i) => (
                                             <React.Fragment key={s.n}>
@@ -808,7 +808,7 @@ export default function NeuralScanDemoPage() {
                                             </div>
                                             <p className="text-[11px] text-gray-300 leading-relaxed break-keep mb-3">
                                                 시중의 웰니스 앱들은 <span className="text-red-300">코딩만 하는 개발자</span>이거나 <span className="text-red-300">IT를 모르는 심리 전문가</span>가 만든 반쪽짜리 서비스입니다.
-                                                명심코칭은 서양의 <strong className="text-blue-300">인지행동치료(CBT)</strong>, 동양의 <strong className="text-purple-300">기질 데이터(명리학)</strong>, 
+                                                명심코칭은 서양의 <strong className="text-blue-300">인지행동코칭(CBT)</strong>, 동양의 <strong className="text-purple-300">기질 데이터(명리학)</strong>, 
                                                 그리고 이를 <strong className="text-emerald-300">64가지 신경망 코드로 구현하는 IT 엔지니어링</strong>까지 
                                                 이 3가지 언어를 완벽하게 관통하는 <strong className="text-yellow-300">국가공인 보건교육사</strong>가 직접 설계한 세계 최초의 융합 모델입니다.
                                             </p>
@@ -846,7 +846,7 @@ export default function NeuralScanDemoPage() {
                                                 </div>
                                             </div>
                                             <p className="text-[11px] text-gray-300 leading-relaxed break-keep mb-3">
-                                                현재 국가 복지의 가장 큰 맹점은 회색지대 인구에게 일회성 <span className="text-red-300">물질 지원</span>이나 사후 <span className="text-red-300">치료</span>에만 예산을 소비한다는 것입니다.
+                                                현재 국가 복지의 가장 큰 맹점은 회색지대 인구에게 일회성 <span className="text-red-300">물질 지원</span>이나 사후 <span className="text-red-300">코칭</span>에만 예산을 소비한다는 것입니다.
                                                 명심코칭은 밑 빠진 독에 물 붓기를 멈추고, AI 선제 개입을 통해 국민 스스로 고통을 자각하고 수용하며
                                                 나아가는 <strong className="text-purple-300">셀프 자각 코칭</strong>과 <strong className="text-purple-300">의식의 전환(Shift)</strong>을 이끌어냅니다.
                                             </p>
@@ -854,7 +854,7 @@ export default function NeuralScanDemoPage() {
                                                 <div className="bg-red-950/20 border border-red-900/30 rounded-xl p-3">
                                                     <div className="text-[10px] text-red-400 font-bold mb-1.5">❌ 기존 방식</div>
                                                     <div className="space-y-1">
-                                                        {['일회성 물질 지원', '사후 치료 중심', '수혜자 의존성 증가', '예산 소모 반복'].map(t => (
+                                                        {['일회성 물질 지원', '사후 코칭 중심', '수혜자 의존성 증가', '예산 소모 반복'].map(t => (
                                                             <div key={t} className="text-[10px] text-gray-400 flex items-center gap-1"><span className="text-red-500">·</span>{t}</div>
                                                         ))}
                                                     </div>
@@ -971,7 +971,7 @@ export default function NeuralScanDemoPage() {
                     <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4">
                         <p className="text-gray-400 text-[10px] leading-relaxed break-keep">
                             ⚠️ 본 서비스는 보건복지부의 '비의료 건강관리 서비스 가이드라인'을 준수합니다.
-                            제공되는 정보는 자기 주도적 건강 관리(Self-Care)를 위한 보조 수단이며, 의학적 진단·치료·처방을 대체할 수 없습니다.
+                            제공되는 정보는 자기 주도적 건강 관리(Self-Care)를 위한 보조 수단이며, 의학적 분석·코칭·가이드을 대체할 수 없습니다.
                         </p>
                     </div>
                 </div>

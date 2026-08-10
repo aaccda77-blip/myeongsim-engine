@@ -223,7 +223,7 @@ export default function FrequencyLevelUpModal({ userId, dayMaster, yearPillar, m
                     <div className="bg-slate-950 border border-amber-900/30 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <Cpu className="w-4 h-4 text-amber-400" />
-                        <span className="text-xs font-bold text-amber-400 font-mono">현재 상태 진단 (타깃 OS)</span>
+                        <span className="text-xs font-bold text-amber-400 font-mono">현재 상태 분석 (타깃 OS)</span>
                       </div>
                       <p className="text-sm text-amber-100/80 leading-relaxed">{report.targetOS}</p>
                     </div>

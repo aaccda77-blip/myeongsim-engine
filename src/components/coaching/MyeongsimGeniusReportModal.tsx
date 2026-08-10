@@ -1000,7 +1000,7 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                             {/* 🔒 블러 미끼 예고 텍스트 */}
                             <div className="mt-1.5 p-2 rounded-xl bg-black/40 border border-white/5 relative">
                               <p className="text-[10.5px] text-amber-200/90 filter blur-[4px] select-none leading-relaxed">
-                                {selectedItemDetails.name}의 숨겨진 무의식 주파수가 부의 기회와 결합할 때 나타나는 3D 직관 파동 및 뇌신경 뉴럴코드의 최적화 처방...
+                                {selectedItemDetails.name}의 숨겨진 무의식 주파수가 부의 기회와 결합할 때 나타나는 3D 직관 파동 및 뇌신경 뉴럴코드의 최적화 가이드...
                               </p>
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <span className="text-xs font-black text-amber-300 bg-slate-950/80 px-2.5 py-1 rounded-full border border-amber-400/40 shadow-lg">

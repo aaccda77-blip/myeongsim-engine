@@ -331,7 +331,7 @@ export default function DeepHealingGuideModal({ onClose, dateString, userId, day
                   </div>
                 </motion.div>
 
-                {/* Module 4: 처방전 */}
+                {/* Module 4: 가이드전 */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-slate-800/30 p-6 rounded-2xl border border-slate-700/50">
                   <h3 className="text-sm font-mono text-amber-400 mb-5 flex items-center gap-2">
                     <span className="text-lg">📝</span> {data.module4.title}

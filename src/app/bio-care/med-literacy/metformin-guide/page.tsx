@@ -73,7 +73,7 @@ export default function MetforminGuidePage() {
                 {/* Intro */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
                     <p className="text-gray-300 text-sm leading-relaxed">
-                        메트포르민은 당뇨병 치료의 1차 약물로 안전하고 효과적입니다.
+                        메트포르민은 당뇨병 코칭의 1차 약물로 안전하고 효과적입니다.
                         하지만 <strong className="text-white">장기 복용 시 비타민 B12 흡수를 방해</strong>할 수 있어
                         주기적인 모니터링이 필요합니다.
                     </p>
@@ -188,7 +188,7 @@ export default function MetforminGuidePage() {
                                 영양제 보충
                             </h4>
                             <p className="text-gray-300 text-sm mb-2">
-                                결핍 시 1000mcg 고용량 보충 (의사 처방)
+                                결핍 시 1000mcg 고용량 보충 (의사 가이드)
                             </p>
                             <p className="text-blue-200 text-xs">
                                 💡 설하정(혀 밑)이 흡수율 높음
@@ -339,7 +339,7 @@ export default function MetforminGuidePage() {
                 <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4">
                     <p className="text-purple-200 text-xs leading-relaxed">
                         📚 <strong>보건교육 목적 콘텐츠</strong><br />
-                        본 가이드는 일반적인 건강 증진 정보 제공을 목적으로 하며, 개인별 의학적 진단이나 치료 계획을 대신할 수 없습니다.
+                        본 가이드는 일반적인 건강 증진 정보 제공을 목적으로 하며, 개인별 의학적 분석이나 코칭 계획을 대신할 수 없습니다.
                         구체적인 건강 문제는 반드시 의사, 약사 등 의료 전문가와 상담하세요.
                     </p>
                 </div>

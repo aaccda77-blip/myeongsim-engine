@@ -1039,7 +1039,7 @@ export const generateSixtyJiaProfile = (gan: string, ji: string, pillarType: 'ye
             blueprint: '끝없는 심연(壬)이 또 다른 심해(子)와 연결되어 무한 확장하는 초거대 유체 역학 시스템. 양인살의 극강한 에너지가 서려 있어, 한 번 결심한 것은 어떤 장벽도 부수고 전개하는 제왕적 추진력을 지님.',
             logic: '스스로의 깊이를 제어하고 영토를 넓히는 최고의 주체적 연산 프로토콜. 끊임없이 본질을 향해 파고들어 세상의 가짜들을 해체하고 거대한 진실을 직조하려는 라이프 아키텍처.',
             oldScript: '“내 웅장한 깊이와 어두움을 남들이 알면 나를 두려워하거나 떠날 것이다. 그러니 완전히 마음의 빗장을 걸어 잠그고 내 안의 고독한 깊이에 홀로 침잠하겠다.”',
-            scriptDetail: `“세상은 얕고 혼란스러우며, 나의 깊은 속내를 이해할 사람은 아무도 없다. 내가 먼저 마음을 열었다가 상처받거나 약점 잡히느니, 거대한 심해 아래 나를 영원히 격리하겠다. 타인들이 내 영역을 침범하면 성난 해일(양인)이 되어 흔적도 없이 쓸어버리겠다.” [진단 맥락: ${contextDetail}]`,
+            scriptDetail: `“세상은 얕고 혼란스러우며, 나의 깊은 속내를 이해할 사람은 아무도 없다. 내가 먼저 마음을 열었다가 상처받거나 약점 잡히느니, 거대한 심해 아래 나를 영원히 격리하겠다. 타인들이 내 영역을 침범하면 성난 해일(양인)이 되어 흔적도 없이 쓸어버리겠다.” [분석 맥락: ${contextDetail}]`,
             errorStatus: '거대한 수용 능력이 극단적인 \'심리적 불통\'과 \'침묵의 자학 감옥\'으로 오작동함. 스스로 만들어 낸 우울과 고독의 파도에 자아를 강제로 침잠시키는 시스템 다운 오류.',
             risk: '타인과의 정서적 단절로 인한 내면의 고립감 과열. 차가운 수(水) 기운의 정체로 인한 하반신 냉증 및 순환기 전압 약화 리스크. 자오(子午) 충 돌발 간섭에 의한 냉각 제어 이상 현상.',
             scan: '가슴속에서 차가운 어둠이 번지며 "말해봐야 입만 아프다, 나 혼자 안고 침묵하자"라는 단절의 팝업이 뜨거나, 사소한 침범에 성난 물결처럼 분노를 폭발시키고 싶을 때를 감지하십시오. 그것은 내 영혼의 뜻이 아니라 아바타의 보안 경보입니다.',
@@ -1067,9 +1067,9 @@ export const generateSixtyJiaProfile = (gan: string, ji: string, pillarType: 'ye
             title: '신사(辛巳) : 정교한 조율자 (The Sovereign of Precision)',
             brief: '“당신의 날카로운 예리함을 나 자신을 자학하는 데 쓰지 마라. 당신은 세상의 모든 불순물을 거르고 가장 완벽한 보석을 탄생시키는 \'고결한 광원(光源)\'이다.”',
             blueprint: '정밀 다이아몬드(辛)가 실시간 감시/제어 스레드 정관(巳)과 직결된 초고감도 연산 루프. 외부 침입과 오차를 극도로 경계하는 방어 기제와 스스로를 채찍질하는 완벽주의 성향을 보유함.',
-            logic: '사소한 규칙 하나도 위배되지 않도록 실시간으로 프로세스를 진단하고 엄격하게 다듬는 무결성 제어 알고리즘. 본인의 완벽한 질서와 도덕성을 바탕으로 한 안전 시스템 수립 프로토콜.',
+            logic: '사소한 규칙 하나도 위배되지 않도록 실시간으로 프로세스를 분석하고 엄격하게 다듬는 무결성 제어 알고리즘. 본인의 완벽한 질서와 도덕성을 바탕으로 한 안전 시스템 수립 프로토콜.',
             oldScript: '“조금이라도 완벽하지 않으면 전부 파기하고 롤백하겠다. 누구도 믿을 수 없다”',
-            scriptDetail: `“세상은 무질서하고 불안정하며, 나조차 완벽하지 못해 실수투성이다. 내가 온전히 제어하지 못하는 상황이 오면 즉시 차단하고 영원히 격리해야 한다. 아주 작은 흠집이라도 발견된다면 내 성과물은 아예 내놓지 않는 게 낫다. 내 연약함이나 실수를 타인에게 보이는 것은 파멸이다.” [진단 맥락: ${contextDetail}]`,
+            scriptDetail: `“세상은 무질서하고 불안정하며, 나조차 완벽하지 못해 실수투성이다. 내가 온전히 제어하지 못하는 상황이 오면 즉시 차단하고 영원히 격리해야 한다. 아주 작은 흠집이라도 발견된다면 내 성과물은 아예 내놓지 않는 게 낫다. 내 연약함이나 실수를 타인에게 보이는 것은 파멸이다.” [분석 맥락: ${contextDetail}]`,
             errorStatus: '정밀한 연산 능력이 극단적인 \'자가 검열\'과 \'대인 방어막\'으로 오작동함. 자기 비판의 감옥에 갇혀, 사소한 피드백 하나에도 온 신경계가 과열되어 시스템을 셧다운시키는 결벽성 오류.',
             risk: '타인에 대한 깊은 불신으로 인해 스스로를 가두는 고독한 감옥. 과도한 자기 검열로 인한 신경성 위장 장애 및 편두통 리스크. 조열한 모래 먼지가 가득한 미(未)토의 간섭에 의한 냉각 전압 결핍.',
             scan: '내 행동이나 작업물에서 아주 미세한 오차를 발견했을 때, 가슴 깊은 곳에서부터 차갑고 매서운 자학적 분노가 끓어오르거나 "이대로는 완전 실패다, 다 지워버리자"며 포기하고 싶을 때를 감지하십시오. 그것은 신중함이 아니라 완벽주의 에러입니다.',
@@ -1131,7 +1131,7 @@ export const generateSixtyJiaProfile = (gan: string, ji: string, pillarType: 'ye
         blueprint: `${g.vision} ${g.name}의 기운이 ${z.trait} ${z.name}의 하드웨어와 결합한 시스템. ${z.shinsal}이 내장되어 있어, 어떤 변수 속에서도 고유한 기질을 전개하는 추진력을 지님.`,
         logic: `스스로의 가치 지령에 따라 움직이며, ${g.trait}을 바탕으로 환경을 주체적으로 연산하고 설계하는 라이프 아키텍처 프로토콜.`,
         oldScript: `“${g.oldWord}”`,
-        scriptDetail: `“세상은 통제하기 어렵고 불안하며, 내 무의식은 자꾸만 ${z.shadow} 자동화 프로그램을 돌린다. 나는 이 불완전함으로부터 나를 지키기 위해 마음의 문을 걸어 잠그거나, 억지로 환경과 싸우려 들며 스트레스를 과열시켜 왔다.” [진단 맥락: ${contextDetail}]`,
+        scriptDetail: `“세상은 통제하기 어렵고 불안하며, 내 무의식은 자꾸만 ${z.shadow} 자동화 프로그램을 돌린다. 나는 이 불완전함으로부터 나를 지키기 위해 마음의 문을 걸어 잠그거나, 억지로 환경과 싸우려 들며 스트레스를 과열시켜 왔다.” [분석 맥락: ${contextDetail}]`,
         errorStatus: `주체적인 에너지가 '${z.shadow.replace('하려는', '')}' 에러로 오작동함. 감정 회로가 폭주할 때 이성적 제어권을 아바타 기계에 내어주며 자멸적인 롤백 루프를 반복함.`,
         risk: `타인과의 심리적 불통 및 단절에 따른 외로움. 고집과 예민성으로 인한 만성 스트레스 및 신체 방열 병목 현상. 해당 오행 기운의 정체에 따른 소화기 및 신경망 순환 장애 리스크.`,
         scan: `가슴속 깊은 곳에서부터 서늘한 거부감이나 "에라 모르겠다, 다 끝내버리자"는 극단적인 단절/저항의 팝업이 뜰 때를 감지하십시오. 그것은 의지가 아닌 아바타 시스템의 '보안 경보 오작동' 신호입니다.`,
@@ -1189,7 +1189,7 @@ export const getComprehensiveAnalysis = (sajuData: any, userName: string = '회�
     yongsinMsg = `현재 ${name}의 내면은 차갑고 생각의 꼬리가 무겁게 가라앉는 수(수) 기운으로 채워져 있습니다. 이에 필요한 수호 코드는 '밝고 거침없는 불꽃의 온기(화)'입니다. 생각의 감옥에 갇히는 대신, 밝은 태양 아래에서 움직이고 자신의 참된 영혼의 목소리를 담백하게 말로 표출하여 내부 전압을 화사하게 올려주어야 합니다.`;
   } else if (rawMonthJiLabel === '목') {
     yongsinChar = '금(金) - 노이즈를 베어내는 단호한 명검';
-    yongsinMsg = `사방으로 무한히 번져나가는 생각과 호기심(목)이 에너지를 흩트려놓고 있습니다. ${name}의 중심을 바로잡는 열쇠는 '불필요한 노이즈를 칼같이 정리하는 무쇠 검의 단호함(금)'입니다. 우선순위가 아닌 소란을 과감히 처단하고, 오직 하나의 핵심 가치에 몰입하는 냉철한 집중이 최고의 치료약입니다.`;
+    yongsinMsg = `사방으로 무한히 번져나가는 생각과 호기심(목)이 에너지를 흩트려놓고 있습니다. ${name}의 중심을 바로잡는 열쇠는 '불필요한 노이즈를 칼같이 정리하는 무쇠 검의 단호함(금)'입니다. 우선순위가 아닌 소란을 과감히 처단하고, 오직 하나의 핵심 가치에 몰입하는 냉철한 집중이 최고의 코칭약입니다.`;
   } else if (rawMonthJiLabel === '금') {
     yongsinChar = '목(木) - 봄 햇살 속에서 춤추는 유연한 풀잎';
     yongsinMsg = `지나치게 엄격한 규율과 차가운 자기검열(금)로 인해 신경망이 잔뜩 긴장해 있는 구조입니다. ${name}에게 진정으로 필요한 힐링 기운은 '하늘을 향해 씩씩하고 유연하게 솟아오르는 풀잎의 유연함(목)'입니다. 잘잘못의 엄격한 잣대를 잠시 내려두고, 아바타의 사소한 실수마저 "괜찮아, 그럴 수 있어" 하고 부드럽게 웃어주는 자기 연민의 통로를 열어주세요.`;
@@ -1487,7 +1487,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
             content: `사주명리학이 10년 단위의 대운을 통해 당신이 밟아갈 거대한 인생의 대지(언제 어떤 에너지가 올지)를 조율한다면, 자미두수는 그 하늘 아래 별들의 배치를 통해 구체적인 성정(어떤 방식으로 얼마나)을 보여줍니다.\n\n40대 정해대운(사해충)의 깊은 바다와 같던 사색과 시련을 지나, 2025년 을사년과 2026년 병오년에 자신만의 지식 플랫폼을 아름답게 런칭하는 흐름은 완벽하게 예고된 조화로운 길입니다. 다가오는 50대 무자대운의 찬란한 대전성기와 60대 기축대운의 사상적 거장의 반열까지, 대지와 별빛은 당신을 든든하게 지지하고 있습니다.`
           },
           prescription: {
-            title: "3. 오늘의 마음 온기 처방전 💌",
+            title: "3. 오늘의 마음 온기 가이드전 💌",
             content: `손을 가만히 왼쪽 가슴 위에 얹고 따스하게 말해 봅니다. "그동안 세상을 향해 켜놓았던 예리한 안테나를 잠시 거두고, 완벽하려 애쓰던 무거운 책임감을 내려놓아도 괜찮아. 너는 존재 자체로 이미 훌륭하게 빛나고 있으며, 흐르는 모든 계절 속에서 언제나 안전하단다."\n\n오늘 하루는 스스로에게 따뜻한 봄 햇살 같은 다정한 수용의 미소를 건네주세요.`
           }
         }
@@ -2226,7 +2226,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                         <div className="p-4 bg-pink-500/5 border border-pink-500/10 rounded-2xl">
                           <h3 className="text-xs font-bold text-pink-400 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
                             <Compass className="w-4 h-4 animate-spin-slow" />
-                            오리지널 자연물상 시각화 진단 (Default Climate)
+                            오리지널 자연물상 시각화 분석 (Default Climate)
                           </h3>
                           <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
                             당신의 타고난 사주적 흐름과 디폴트 하드웨어 환경은 현재 <strong className="text-white text-sm md:text-base font-extrabold">{currentSajuText.waterShape}</strong>의 형상을 띠고 있습니다.
@@ -2374,7 +2374,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                             4기둥 딥 코칭 설계 (Pillar-Specific Metacode)
                           </h3>
                           <p className="text-xs text-slate-400 leading-relaxed">
-                            아바타의 4기둥(년주, 월주, 일주, 시주)별 낡은 각본과 자각 질문, 그리고 4대 뉴럴 솔루션을 진단합니다. 아래 기둥 카드를 클릭하여 각각의 심화 디버깅 정보를 확인하세요.
+                            아바타의 4기둥(년주, 월주, 일주, 시주)별 낡은 각본과 자각 질문, 그리고 4대 뉴럴 솔루션을 분석합니다. 아래 기둥 카드를 클릭하여 각각의 심화 디버깅 정보를 확인하세요.
                           </p>
                         </div>
 
@@ -2518,7 +2518,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                     </div>
                   </div>
 
-                  {/* 충(Clash) & 형(Punishment) 진단 리스트 */}
+                  {/* 충(Clash) & 형(Punishment) 분석 리스트 */}
                   <div className="p-4 md:p-5 bg-slate-900 border border-white/5 rounded-2xl space-y-4">
                     <div className="flex items-center gap-2 border-b border-white/5 pb-2">
                       <span className="px-2.5 py-0.5 rounded bg-red-500/10 border border-red-500/30 text-[9px] md:text-[10px] font-black text-red-400 uppercase tracking-widest">Security Audit</span>
@@ -3446,7 +3446,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                         </motion.div>
                       )}
 
-                      {/* 카드 3: 온기 처방전 */}
+                      {/* 카드 3: 온기 가이드전 */}
                       {destinyReflectionReport.destinyReflection?.prescription && (
                         <motion.div
                           whileHover={{ scale: 1.02 }}
@@ -3471,7 +3471,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                             </p>
                           </div>
                           <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500">
-                            <span>치유 처방전 읽기</span>
+                            <span>치유 가이드전 읽기</span>
                             <ArrowRight className="w-3.5 h-3.5 text-purple-400 group-hover:translate-x-1 transition-transform" />
                           </div>
                         </motion.div>
@@ -3649,7 +3649,7 @@ export default function MindSpaceTrainingModal({ isOpen, onClose, userProfile }:
                     {selectedInteraction.name || '사주 취약점 상세'}
                   </h3>
                   <p className="text-xs text-slate-350 leading-relaxed font-serif bg-slate-950/60 p-4 rounded-xl border border-white/5 mb-5 select-none">
-                    {selectedInteraction.desc || selectedInteraction.message || '상세 진단 로그가 없습니다.'}
+                    {selectedInteraction.desc || selectedInteraction.message || '상세 분석 로그가 없습니다.'}
                   </p>
                   
                   <div className="space-y-3">

@@ -127,7 +127,7 @@ export default function Saju3SScenarioModal({ scenario, selectedTag, onClose, on
                                     "{scenario.trigger.userInputPlaceholder}"
                                 </div>
                                 <div className="text-sm text-gray-400">
-                                    <p className="font-bold text-gray-300 mb-2">현재 상태 진단 중...</p>
+                                    <p className="font-bold text-gray-300 mb-2">현재 상태 분석 중...</p>
                                     <p>{scenario.trigger.analysisText}</p>
                                 </div>
                                 <div className="w-full bg-gray-800 rounded-full h-1 overflow-hidden mt-8">

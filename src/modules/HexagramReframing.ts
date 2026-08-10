@@ -434,7 +434,7 @@ export class HexagramReframing {
 
     /** AI 프롬프트 주입용 3단계 분석 코드 사전 생성 */
     static generatePromptDictionary(): string {
-        let dict = `\n[🔮 64 멘탈 상태 진단 코드 — 3단계 분석 시스템 (Mental State Diagnostic)]\n`;
+        let dict = `\n[🔮 64 멘탈 상태 분석 코드 — 3단계 분석 시스템 (Mental State Diagnostic)]\n`;
         dict += `**절대 규칙**: 주역/괘 관련 전통 용어를 사용자에게 직접 노출하지 마십시오.\n`;
         dict += `반드시 아래 '멘탈 상태 코드'로 변환하고, 3단계(Dark/Neural/Meta)로 분석하십시오.\n`;
         dict += `예: "감위수(坎)괘입니다" (❌) → "현재 편도체 루프(Amygdala Loop) 상태가 감지됩니다" (✅)\n\n`;

@@ -420,10 +420,10 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                     </div>
                   </div>
 
-                  {/* 코칭 처방 */}
+                  {/* 코칭 가이드 */}
                   <div className="p-3.5 rounded-xl border border-cyan-500/20 bg-cyan-900/10">
                     <p className="text-[10px] font-bold text-cyan-400 mb-1.5 flex items-center gap-1.5">
-                      ⚡ 명심 코치의 맞춤 처방
+                      ⚡ 명심 코치의 맞춤 코칭 지침
                     </p>
                     <p className="text-[12px] text-white font-semibold leading-[1.6] break-keep italic">
                       "{selectedMeta.coaching}"
@@ -490,7 +490,7 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
 
                         <div className="p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-950/30 shadow-lg">
                           <p className="text-[10px] font-bold text-cyan-300 mb-1 flex items-center gap-1.5">
-                            ⚡ 명심 코치의 맞춤 처방
+                            ⚡ 명심 코치의 맞춤 코칭 지침
                           </p>
                           <p className="text-[12px] text-white font-semibold leading-[1.6] break-keep italic">
                             "{defaultMeta.coaching}"

@@ -362,49 +362,49 @@ const SECTIONS_108 = [
   {
     part: "Part 0. 나를 알아보기 : 성격·기질·장단점 (p. 5 ~ 32)",
     items: [
-      { id: "p5_8", title: "p. 5 ~ 8 [핵심 기질 1] 일간 본질 분석", framework: "CBT 인지행동치료" },
-      { id: "p9_12", title: "p. 9 ~ 12 [핵심 기질 2] 현대적 기질 메타포", framework: "CBT 인지행동치료" },
+      { id: "p5_8", title: "p. 5 ~ 8 [핵심 기질 1] 일간 본질 분석", framework: "CBT 인지행동코칭" },
+      { id: "p9_12", title: "p. 9 ~ 12 [핵심 기질 2] 현대적 기질 메타포", framework: "CBT 인지행동코칭" },
       { id: "p13_16", title: "p. 13 ~ 16 [결정적 재능] 잠재력 디코딩", framework: "MSC 자기자비 마음챙김" },
-      { id: "p17_20", title: "p. 17 ~ 20 [일주 분석] 시공간과 영역의 법칙", framework: "CBT 인지행동치료" },
-      { id: "p21_24", title: "p. 21 ~ 24 [심화 분석 1] 과다 십신의 폭주 제어", framework: "MBCT 마음챙김 인지치료" },
-      { id: "p25_28", title: "p. 25 ~ 28 [심화 분석 2] 인지적 왜곡과 마인드셋", framework: "CBT 인지행동치료" },
-      { id: "p29_32", title: "p. 29 ~ 32 [심화 분석 3] 결핍 십신의 보완과 소통", framework: "DBT 변증법적 행동치료" },
+      { id: "p17_20", title: "p. 17 ~ 20 [일주 분석] 시공간과 영역의 법칙", framework: "CBT 인지행동코칭" },
+      { id: "p21_24", title: "p. 21 ~ 24 [심화 분석 1] 과다 십신의 폭주 제어", framework: "MBCT 마음챙김 인지코칭" },
+      { id: "p25_28", title: "p. 25 ~ 28 [심화 분석 2] 인지적 왜곡과 마인드셋", framework: "CBT 인지행동코칭" },
+      { id: "p29_32", title: "p. 29 ~ 32 [심화 분석 3] 결핍 십신의 보완과 소통", framework: "DBT 변증법적 행동코칭" },
     ]
   },
   {
     part: "Part 1. 타이밍의 기술 : 운의 흐름과 메타 전략 (p. 33 ~ 54)",
     items: [
-      { id: "p33_36", title: "p. 33 ~ 36 [포커스 월간 운세 1] 기회의 달 폭발 전략", framework: "ACT 수용전념치료" },
-      { id: "p37_40", title: "p. 37 ~ 40 [포커스 월간 운세 2] 리스크 구간 방어 프로토콜", framework: "ACT 수용전념치료" },
+      { id: "p33_36", title: "p. 33 ~ 36 [포커스 월간 운세 1] 기회의 달 폭발 전략", framework: "ACT 수용전념코칭" },
+      { id: "p37_40", title: "p. 37 ~ 40 [포커스 월간 운세 2] 리스크 구간 방어 프로토콜", framework: "ACT 수용전념코칭" },
       { id: "p41_46", title: "p. 41 ~ 46 [현재 대운 분석] 인생의 거대한 파도", framework: "MBSR 스트레스 완화" },
       { id: "p47_50", title: "p. 47 ~ 50 [미래 대운 분석] 선행적 자산 설계", framework: "MSC 자기자비 마음챙김" },
-      { id: "p51_54", title: "p. 51 ~ 54 [타이밍 메타 코드] 운명 동기화", framework: "ACT 수용전념치료" },
+      { id: "p51_54", title: "p. 51 ~ 54 [타이밍 메타 코드] 운명 동기화", framework: "ACT 수용전념코칭" },
     ]
   },
   {
     part: "Part 2. 나의 본질 완전판 : 갭 분석 + 적성 (p. 55 ~ 76)",
     items: [
-      { id: "p55_59", title: "p. 55 ~ 59 [심리 구조] 내면 방어기제 해부", framework: "MBCT 마음챙김 인지치료" },
+      { id: "p55_59", title: "p. 55 ~ 59 [심리 구조] 내면 방어기제 해부", framework: "MBCT 마음챙김 인지코칭" },
       { id: "p60_64", title: "p. 60 ~ 64 [기질 융합] 동서양 심리 지표 크로스 매핑", framework: "MSC 자기자비 마음챙김" },
-      { id: "p65_68", title: "p. 65 ~ 68 [명심 적성] 천명 기반 비즈니스 설계", framework: "CBT 인지행동치료" },
+      { id: "p65_68", title: "p. 65 ~ 68 [명심 적성] 천명 기반 비즈니스 설계", framework: "CBT 인지행동코칭" },
       { id: "p69_72", title: "p. 69 ~ 72 [리스크 관리] 인간 리스크 방어막", framework: "MSC 자기자비 마음챙김" },
-      { id: "p73_76", title: "p. 73 ~ 76 [갭 분석 솔루션] 자아 디커플링 보정", framework: "MBCT 마음챙김 인지치료" },
+      { id: "p73_76", title: "p. 73 ~ 76 [갭 분석 솔루션] 자아 디커플링 보정", framework: "MBCT 마음챙김 인지코칭" },
     ]
   },
   {
     part: "Part 3. 관계의 기술 : 신살·귀인 + 연애 + 결혼 (p. 77 ~ 94)",
     items: [
-      { id: "p77_80", title: "p. 77 ~ 80 [신살 승화] 살을 매력 자산으로", framework: "DBT 변증법적 행동치료" },
+      { id: "p77_80", title: "p. 77 ~ 80 [신살 승화] 살을 매력 자산으로", framework: "DBT 변증법적 행동코칭" },
       { id: "p81_84", title: "p. 81 ~ 84 [대인 귀인] 운명의 인적 네트워크", framework: "MSC 자기자비 마음챙김" },
-      { id: "p85_87", title: "p. 85 ~ 87 [연애 DNA] 무의식적 끌림의 미학", framework: "DBT 변증법적 행동치료" },
-      { id: "p88_90", title: "p. 88 ~ 90 [관계 리스크] 검열의 함정", framework: "DBT 변증법적 행동치료" },
-      { id: "p91_94", title: "p. 91 ~ 94 [결혼 및 파트너십] 영혼의 결합", framework: "DBT 변증법적 행동치료" },
+      { id: "p85_87", title: "p. 85 ~ 87 [연애 DNA] 무의식적 끌림의 미학", framework: "DBT 변증법적 행동코칭" },
+      { id: "p88_90", title: "p. 88 ~ 90 [관계 리스크] 검열의 함정", framework: "DBT 변증법적 행동코칭" },
+      { id: "p91_94", title: "p. 91 ~ 94 [결혼 및 파트너십] 영혼의 결합", framework: "DBT 변증법적 행동코칭" },
     ]
   },
   {
     part: "Part 4. 실천의 시작 : 종합 리포트 + 액션플랜 (p. 95 ~ 108)",
     items: [
-      { id: "p95_98", title: "p. 95 ~ 98 [오행 솔루션] 신경학적 개운 처방", framework: "MBSR 스트레스 완화" },
+      { id: "p95_98", title: "p. 95 ~ 98 [오행 솔루션] 신경학적 개운 가이드", framework: "MBSR 스트레스 완화" },
       { id: "p99_102", title: "p. 99 ~ 102 [액션 플랜] 고효율 리추얼 설계", framework: "MBSR 스트레스 완화" },
       { id: "p103_105", title: "p. 103 ~ 105 [마스터의 편지] 세공의 마침표", framework: "MSC 자기자비 마음챙김" },
       { id: "p106_108", title: "p. 106 ~ 108 [명심코칭 메타 워크시트] 108일의 기적", framework: "MBSR 스트레스 완화" },
@@ -1413,7 +1413,7 @@ export default function MyeongsimCoachingDashboard({
             <div className="space-y-3">
               <div className="bg-white p-3.5 rounded-xl border border-purple-100 space-y-1">
                 <span className="block font-bold text-purple-950 text-xs flex items-center gap-1.5">
-                  🛡️ 십성(육친) 불균형 족집게 진단: <span className="text-purple-700 font-extrabold">{dominantSipsin.name}</span>
+                  🛡️ 십성(육친) 불균형 족집게 분석: <span className="text-purple-700 font-extrabold">{dominantSipsin.name}</span>
                 </span>
                 <p className="text-slate-600 text-xs leading-relaxed">
                   {dominantSipsin.tip}
@@ -1488,7 +1488,7 @@ export default function MyeongsimCoachingDashboard({
             </p>
           </div>
 
-          {/* 1:1 맞춤형 족집게 진단 */}
+          {/* 1:1 맞춤형 족집게 분석 */}
           <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-inner-sm space-y-4">
             <div className="border-b border-purple-100 pb-3">
               <span className="block text-xs font-bold text-purple-800 mb-1">🔍 1:1 사주 맞춤형 족집게 디코딩</span>
@@ -1569,7 +1569,7 @@ export default function MyeongsimCoachingDashboard({
 
     setActiveModalData({
       type: 'monthly_gongmang',
-      typeLabel: `월별 재물/성취 에너지 진단`,
+      typeLabel: `월별 재물/성취 에너지 분석`,
       mainIcon: item.isGM ? '🌌' : '📈',
       title: modalTitle,
       subtitle: modalSubtitle,

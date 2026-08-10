@@ -82,7 +82,7 @@ export default function MentalPrescriptionV2({ isOpen, onClose, userId, onComple
 - 환경(Environment): ${scores.lr_system}/10
 - 키워드: ${selectedSymptoms.map(s => MOOD_KEYWORDS.find(k => k.id === s)?.label || s).join(', ')}
             `.trim();
-            const richPrompt = `[마음 처방 데이터 수신]\n\n나의 현재 상태:\n${scoreDetails}\n\nAI 1차 분석:\n"${resultData.advice}"\n\n위 수치와 상태를 바탕으로, 특히 점수가 낮은 영역을 케어할 수 있는 구체적이고 실천 가능한 행동 가이드를 '용한 코치' 페르소나로 제시해줘.`;
+            const richPrompt = `[마음 가이드 데이터 수신]\n\n나의 현재 상태:\n${scoreDetails}\n\nAI 1차 분석:\n"${resultData.advice}"\n\n위 수치와 상태를 바탕으로, 특히 점수가 낮은 영역을 케어할 수 있는 구체적이고 실천 가능한 행동 가이드를 '용한 코치' 페르소나로 제시해줘.`;
             onComplete(resultData.advice, { ...resultData.context, initialPrompt: richPrompt });
             onClose();
         }
@@ -145,7 +145,7 @@ export default function MentalPrescriptionV2({ isOpen, onClose, userId, onComple
                             </div>
                             <motion.button onClick={handleSubmit} disabled={!isValid}
                                 className={`w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-2 ${isValid ? 'bg-gradient-to-r from-purple-600 to-indigo-600' : 'bg-gray-700 cursor-not-allowed'}`}>
-                                {isValid ? <><Zap size={20} /> 내 마음 처방받기</> : <><Lock size={18} /> 키워드를 선택해주세요</>}
+                                {isValid ? <><Zap size={20} /> 내 마음 가이드받기</> : <><Lock size={18} /> 키워드를 선택해주세요</>}
                             </motion.button>
                         </div>
                     )}

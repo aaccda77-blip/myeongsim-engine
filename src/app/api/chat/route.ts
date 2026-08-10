@@ -754,7 +754,7 @@ export async function POST(req: NextRequest) {
             } catch (error) {
                 console.error("Health Promotion Engine Execution Failed:", error);
                 return new Response(JSON.stringify({
-                    reply: "보건/건강 코칭 엔진 가동 중 오류가 발생했습니다. 증상을 정확히 포함해서 입력해주세요. (예: `/건강 손발저림 처방해줘`)"
+                    reply: "보건/건강 코칭 엔진 가동 중 오류가 발생했습니다. 증상을 정확히 포함해서 입력해주세요. (예: `/건강 손발저림 가이드해줘`)"
                 }), { headers: { 'Content-Type': 'application/json' } });
             }
         }

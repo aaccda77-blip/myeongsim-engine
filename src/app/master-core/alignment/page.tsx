@@ -290,7 +290,7 @@ export default function AlignmentPage() {
                   </div>
                 </div>
 
-                {/* 3. 명리 분석 & 멘탈 처방 전략 */}
+                {/* 3. 명리 분석 & 멘탈 가이드 전략 */}
                 <div className="space-y-4">
                   <div className="bg-[#0b0e1a]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-md space-y-3">
                     <div className="flex items-center gap-2 mb-1">

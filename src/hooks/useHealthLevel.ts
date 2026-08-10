@@ -35,13 +35,13 @@ export function useHealthLevel() {
         localStorage.setItem(STORAGE_KEY, newLevel);
     };
 
-    // 진단 완료 표시
+    // 분석 완료 표시
     const markAssessmentCompleted = () => {
         setHasCompletedAssessment(true);
         localStorage.setItem(ASSESSMENT_COMPLETED_KEY, 'true');
     };
 
-    // 진단 초기화 (다시하기)
+    // 분석 초기화 (다시하기)
     const resetAssessment = () => {
         setHasCompletedAssessment(false);
         localStorage.removeItem(ASSESSMENT_COMPLETED_KEY);

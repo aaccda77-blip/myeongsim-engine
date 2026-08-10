@@ -369,7 +369,7 @@ const NeuralHackingReportCard: React.FC<NeuralReportProps> = () => {
                         <div className="text-[10px] text-blue-400 font-bold tracking-widest mb-1 uppercase">명심(明心) 마스터의 브리핑</div>
                         <p className="text-xs md:text-sm text-gray-400 leading-relaxed break-keep">
                             소버린(Sovereign) 대표님, 4개의 신경망 레이어는 각각 <span className="text-gray-300 font-bold">배경 신경망(Base)</span>, <span className="text-cyan-300 font-bold">사회화 신경망(Social)</span>, <span className="text-blue-300 font-bold">코어 OS(Core Identity)</span>, <span className="text-emerald-300 font-bold">미래 설계도(Future Blueprint)</span>를 담당합니다.<br/><br/>
-                            각 레이어의 <span className="text-red-300">다크코드(낡은 각본)</span>를 3단계 질문으로 해체하고, <span className="text-emerald-300">4대 심리치료 기법(CBT/MBCT/DBT/ACT)</span>으로 신경 회로를 재배선하면, 당신은 자동 반응의 NPC에서 <span className="text-white font-bold">시스템 설계자(Sovereign)</span>로 격상됩니다.
+                            각 레이어의 <span className="text-red-300">다크코드(낡은 각본)</span>를 3단계 질문으로 해체하고, <span className="text-emerald-300">4대 심리코칭 기법(CBT/MBCT/DBT/ACT)</span>으로 신경 회로를 재배선하면, 당신은 자동 반응의 NPC에서 <span className="text-white font-bold">시스템 설계자(Sovereign)</span>로 격상됩니다.
                         </p>
                     </div>
                 </div>

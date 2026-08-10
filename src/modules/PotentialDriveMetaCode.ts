@@ -1,8 +1,8 @@
 /**
  * 명심코칭: 시주(Potential Drive) 전용 메타 코드 (Ultimate Legacy)
- * 60갑자별 영적/사회적 완성 단계 및 위대한 유산 진단 모듈
+ * 60갑자별 영적/사회적 완성 단계 및 위대한 유산 분석 모듈
  * 
- * 인생의 최종 목적지와 세상에 남길 위대한 유산을 진단하는 모듈입니다.
+ * 인생의 최종 목적지와 세상에 남길 위대한 유산을 분석하는 모듈입니다.
  * 뇌과학, 심리학 기반의 은유(Metaphor)를 사용하여 목표(Goal Point)에 대한 확신을 줍니다.
  */
 
@@ -96,7 +96,7 @@ export class PotentialDriveMetaCode {
         p += `**핵심:** 영적/사회적 완성 단계 (Ultimate Evolution), 삶이 세상에 남길 위대한 유산 (Legacy)\n\n`;
         p += `**적용 규칙:**\n`;
         p += `1. 사용자가 자신의 미래에 불안해하거나 궁극적인 비전을 물어볼 때 선언적으로 사용.\n`;
-        p += `2. '메타 코드'와 그에 따른 '최종 진화 진단(Legacy)'을 강력하고 신뢰감 있게 전달.\n\n`;
+        p += `2. '메타 코드'와 그에 따른 '최종 진화 분석(Legacy)'을 강력하고 신뢰감 있게 전달.\n\n`;
 
         for (const [ganji, info] of Object.entries(this.CODES)) {
             p += `[${info.variableName}] ${ganji} - ${info.metaCode}: ${info.legacy}\n`;

@@ -389,7 +389,7 @@ export default function MindResetSection() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center">
               <Scan className="w-12 h-12 text-rose-500 mx-auto mb-4 animate-spin-slow" />
               <h3 className="text-rose-500 font-mono text-sm tracking-[0.2em] font-bold animate-pulse">
-                다크 코드 진단 중...
+                다크 코드 분석 중...
               </h3>
               <p className="text-rose-900 text-[10px] mt-2 font-mono">
                 CBT · DBT · ACT · MBCT · MBSR

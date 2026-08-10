@@ -50,7 +50,7 @@ function getDestinyReflectionFallback(userName: string, sajuData: any) {
         content: harmonyContent
       },
       prescription: {
-        title: "3. 오늘의 마음 온기 처방전 💌",
+        title: "3. 오늘의 마음 온기 가이드전 💌",
         content: `손을 가만히 왼쪽 가슴 위에 얹고 따스하게 말해 봅니다. "그동안 세상을 향해 켜놓았던 예리한 안테나를 잠시 거두고, 완벽하려 애쓰던 무거운 책임감을 내려놓아도 괜찮아. 너는 존재 자체로 이미 훌륭하게 빛나고 있으며, 흐르는 모든 계절 속에서 언제나 안전하단다."\n\n오늘 하루는 스스로에게 따뜻한 봄 햇살 같은 다정한 수용의 미소를 건네주세요. 당신의 모든 발걸음이 아름다운 역사의 문장입니다.`
       }
     }
@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
             "content": "사주(대지)의 큰 인생 환경/타이밍 변화와 자미두수(별빛)의 구체적인 마음 런타임의 상호작용 및 흐름에 대한 따뜻한 비유 해설."
           },
           "prescription": {
-            "title": "3. 오늘의 마음 온기 처방전 💌",
+            "title": "3. 오늘의 마음 온기 가이드전 💌",
             "content": "자기연민(MSC) 기반의 감동적이고 시적인 에세이. 오늘 하루를 따스하게 위로하고 다듬어주는 다정한 치유 메시지."
           }
         }

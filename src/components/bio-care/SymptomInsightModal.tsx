@@ -254,7 +254,7 @@ export default function SymptomInsightModal({
                             <p className="text-gray-400 text-xs leading-relaxed">
                                 📚 <strong>보건교육 목적 콘텐츠</strong><br />
                                 본 분석은 일반적인 건강 증진 정보 제공을 목적으로 하며,
-                                개인별 의학적 진단이나 치료 계획을 대신할 수 없습니다.
+                                개인별 의학적 분석이나 코칭 계획을 대신할 수 없습니다.
                                 구체적인 건강 문제는 반드시 의사, 약사 등 의료 전문가와 상담하세요.
                             </p>
                         </div>

@@ -247,7 +247,7 @@ export default function BodyLogPage() {
                 <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mt-6">
                     <p className="text-red-200 text-xs leading-relaxed">
                         ⚠️ <strong>중요 안내</strong><br />
-                        본 기록은 자가 모니터링 도구이며, 의학적 진단을 대신할 수 없습니다.
+                        본 기록은 자가 모니터링 도구이며, 의학적 분석을 대신할 수 없습니다.
                         심한 증상이나 지속적인 불편감이 있다면 즉시 의료기관을 방문하세요.
                         응급 상황 시 119에 연락하세요.
                     </p>

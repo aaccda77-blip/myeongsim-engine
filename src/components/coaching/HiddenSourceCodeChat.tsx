@@ -273,7 +273,7 @@ export default function HiddenSourceCodeChat({ onComplete, onClose }: HiddenSour
             .join('\n\n');
 
         const prompt = `# System Prompt for 명심 AI 코치 (내면의 숨겨진 소스코드 해독 리포트)
-사용자가 '내면의 숨겨진 소스코드 해독' 진단을 수행했습니다.
+사용자가 '내면의 숨겨진 소스코드 해독' 분석을 수행했습니다.
 
 [사주 기본 정보]
 일간: ${dayMasterChar}

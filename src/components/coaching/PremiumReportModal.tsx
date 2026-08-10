@@ -255,7 +255,7 @@ export default function PremiumReportModal({ isOpen, onClose, userProfile }: Pro
             <div className="h-64 flex flex-col items-center justify-center gap-3 text-slate-400">
               <Loader2 className="w-10 h-10 text-amber-500 animate-spin" />
               <div className="text-sm font-bold text-slate-200">명심 프리미엄 리포트 로딩 중...</div>
-              <div className="text-xs text-slate-500">CBT, DBT, ACT, MBSR 치료법과 다크/뉴럴 코드를 조율 중입니다.</div>
+              <div className="text-xs text-slate-500">CBT, DBT, ACT, MBSR 코칭법과 다크/뉴럴 코드를 조율 중입니다.</div>
             </div>
           ) : errorMsg ? (
             <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-2xl flex items-start gap-3">
@@ -634,7 +634,7 @@ export default function PremiumReportModal({ isOpen, onClose, userProfile }: Pro
 
                   <div className="p-5 bg-gradient-to-r from-purple-950/30 to-indigo-950/30 border border-purple-500/20 rounded-2xl">
                     <div className="flex gap-2 items-center mb-2">
-                      <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-[9px] font-bold text-purple-300">MBSR / MBCT 처방</span>
+                      <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-[9px] font-bold text-purple-300">MBSR / MBCT 가이드</span>
                       <h4 className="text-xs font-bold text-white">타이밍 극복을 위한 마음챙김</h4>
                     </div>
                     <p className="text-xs text-slate-300 leading-relaxed">{reportData.part1.mbsr_coaching}</p>
@@ -728,7 +728,7 @@ export default function PremiumReportModal({ isOpen, onClose, userProfile }: Pro
                     <p className="text-xs text-slate-300 leading-relaxed">{reportData.part4.ohaeng_remedy}</p>
                   </div>
 
-                  {/* ACT 처방 */}
+                  {/* ACT 가이드 */}
                   <div className="bg-slate-950/60 border border-emerald-500/20 rounded-2xl p-5">
                     <h4 className="text-sm font-bold text-emerald-400 mb-2 flex items-center gap-1.5">
                       🏃 ACT (수용 전념) 가치 전념 실천 계획
@@ -942,7 +942,7 @@ export default function PremiumReportModal({ isOpen, onClose, userProfile }: Pro
                 <div>
                   <h4 className="text-[11px] font-black text-emerald-300">이 10년을 대하는 실천 행동 강령 (ACT)</h4>
                   <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                    불안을 억지로 제거하려 분투하지 마세요. {selectedMilestone.label}의 기류 속에서 자신이 진정으로 가치 있게 생각하는 행동을 정해 한 걸음씩 묵묵히 나아가는 수용전념 처방이 필요한 시기입니다.
+                    불안을 억지로 제거하려 분투하지 마세요. {selectedMilestone.label}의 기류 속에서 자신이 진정으로 가치 있게 생각하는 행동을 정해 한 걸음씩 묵묵히 나아가는 수용전념 가이드이 필요한 시기입니다.
                   </p>
                 </div>
               </div>

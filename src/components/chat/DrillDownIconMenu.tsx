@@ -343,7 +343,7 @@ const getIconStyleClass = (style?: MainIcon['style']): string => {
 
 // ============== 친숙한 라벨 매핑 ==============
 const FRIENDLY_LABELS: Record<string, { main: string; sub: string }> = {
-    WEALTH: { main: '번영코드', sub: '부의 에너지 흐름 진단' },
+    WEALTH: { main: '번영코드', sub: '부의 에너지 흐름 분석' },
     RELATIONSHIP: { main: '관계에너지', sub: '관계 패턴 분석 및 코칭' },
     CAREER: { main: '커리어코드', sub: '나의 적성과 재능 리포트' },
     PERSONALITY_ANALYSIS: { main: '성격분석', sub: '강점/재능(인적자원)리포트' },
@@ -1217,7 +1217,7 @@ export default function DrillDownIconMenu({
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'business') && (
                     <button style={styles.iconButton} onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) { alert('격국 분석 및 균형 진단을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
+                        if (!hasBirthDate) { alert('격국 분석 및 균형 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/alignment');
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(59, 130, 246, 0.2))', border: '1px solid rgba(167, 139, 250, 0.4)', boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)', position: 'relative', zIndex: 10 }}>

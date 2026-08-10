@@ -89,7 +89,7 @@ export default function ExecutiveDashboardModal({
                             </div>
                             <div>
                                 <h2 className="text-base font-extrabold text-white flex items-center gap-2">
-                                    <span>[Enterprise Report] {companyName} · 경영 모멘텀 정밀 진단 대시보드</span>
+                                    <span>[Enterprise Report] {companyName} · 경영 모멘텀 정밀 분석 대시보드</span>
                                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                                         CONFIDENTIAL
                                     </span>
@@ -136,7 +136,7 @@ export default function ExecutiveDashboardModal({
                                     <span className="material-symbols-outlined text-4xl text-indigo-400">equalizer</span>
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-xl font-bold text-white">엔터프라이즈 알고리즘 진단 중...</h3>
+                                    <h3 className="text-xl font-bold text-white">엔터프라이즈 알고리즘 분석 중...</h3>
                                     <p className="text-xs text-indigo-300 font-mono">
                                         [ 사주 명식 × 2026-2028 세운 파이프라인 매핑 진행 중 ({scanProgress}%) ]
                                     </p>
@@ -336,7 +336,7 @@ export default function ExecutiveDashboardModal({
                                                 4대 경영 축 레이더 차트
                                             </h3>
                                             <p className="text-xs text-slate-400 mb-4">
-                                                기업의 선천적 4대 밸류체인 진단 지수
+                                                기업의 선천적 4대 밸류체인 분석 지수
                                             </p>
                                         </div>
 

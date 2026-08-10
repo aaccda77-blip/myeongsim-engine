@@ -1229,7 +1229,7 @@ ${behaviorProtocol}`
                                 </h3>
 
                                 <p className="text-slate-400 text-xs leading-relaxed max-w-sm mb-8 break-keep">
-                                    선천적으로 타고난 동양의 <strong>오행(五행: 목·화·토·금·수) 에너지 밸런스</strong>와 내 사주의 핵심인 <strong>일주(日柱) 기운</strong>을 정밀 연산하여, 나만의 동양풍 아바타 카드와 맞춤 운명 처방전을 컴파일합니다.
+                                    선천적으로 타고난 동양의 <strong>오행(五행: 목·화·토·금·수) 에너지 밸런스</strong>와 내 사주의 핵심인 <strong>일주(日柱) 기운</strong>을 정밀 연산하여, 나만의 동양풍 아바타 카드와 맞춤 운명 가이드전을 컴파일합니다.
                                 </p>
 
                                 <button
@@ -1768,7 +1768,7 @@ ${behaviorProtocol}`
                                             )}
                                         </div>
 
-                                        {/* 삶의 조율 가이드 처방전 */}
+                                        {/* 삶의 조율 가이드 가이드전 */}
                                         <div className="bg-gradient-to-br from-slate-950 to-slate-900 border border-teal-500/20 p-5 rounded-2xl">
                                             <h4 className="text-white text-xs font-semibold mb-3 flex items-center gap-1.5">
                                                 <span>🎯</span>

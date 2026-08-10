@@ -92,7 +92,7 @@ export default function DecodingReport({ data, onAccept }: DecodingReportProps) 
       <div className="mb-6 space-y-3">
         <div className="flex items-center gap-2 text-emerald-400">
           <Shield size={16} />
-          <span className="text-xs font-mono tracking-wider font-bold">02 / 심리 처방 패치 (Psychological Patch)</span>
+          <span className="text-xs font-mono tracking-wider font-bold">02 / 심리 가이드 패치 (Psychological Patch)</span>
         </div>
         <div className="bg-[#0a0d16]/75 border border-white/5 rounded-2xl p-5 space-y-4">
           <div>

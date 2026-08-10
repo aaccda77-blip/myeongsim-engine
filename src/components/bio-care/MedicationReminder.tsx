@@ -99,7 +99,7 @@ export default function MedicationReminder() {
                         복약 알림
                     </h3>
                     <p className="text-gray-400 text-sm mt-1">
-                        규칙적인 복약으로 치료 효과 높이기
+                        규칙적인 복약으로 코칭 효과 높이기
                     </p>
                 </div>
                 <button
@@ -260,7 +260,7 @@ export default function MedicationReminder() {
             <div className="mt-6 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
                 <p className="text-yellow-200 text-xs leading-relaxed">
                     💡 <strong>복약 순응도 Tip</strong><br />
-                    매일 같은 시간에 복용하면 약물 혈중 농도가 일정하게 유지되어 치료 효과가 높아집니다.
+                    매일 같은 시간에 복용하면 약물 혈중 농도가 일정하게 유지되어 코칭 효과가 높아집니다.
                 </p>
             </div>
         </div>

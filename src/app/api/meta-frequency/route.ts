@@ -134,7 +134,7 @@ export async function POST(req: Request) {
 
 【사용자 현재 주파수】
 ${levelState.emoji} **${levelState.label}** — ${levelState.metaphor}
-${userMessage ? `사용자 메시지: "${userMessage}"` : '(선택지를 통해 자기 진단)'}
+${userMessage ? `사용자 메시지: "${userMessage}"` : '(선택지를 통해 자기 분석)'}
 
 【생체 에너지 및 바이오리듬 융합】
 - 실시간 신체 상태: 심박 ${safeBio.heartRate}BPM | 스트레스 ${safeBio.stress}% | HRV ${safeBio.hrv}ms
@@ -166,7 +166,7 @@ ${levelState.emoji} **[${levelState.label} 주파수 감지]**
 🌅 **[의식의 다음 단계]**
 (다크→뉴럴 또는 뉴럴→메타로의 자연스러운 전환 안내)
 
-【비의료 가이드라인】 진단·처방·치료 용어 절대 금지. 코칭·가이드·셀프케어만 사용.
+【비의료 가이드라인】 분석·가이드·코칭 용어 절대 금지. 코칭·가이드·셀프케어만 사용.
 마크다운 볼드·이모지로 모바일 최적화. 문장이 중간에 끊기지 않도록 끝까지 완성.
 `;
 

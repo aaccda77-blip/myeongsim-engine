@@ -8,7 +8,7 @@ import PaybackBanner from './PaybackBanner';
 interface DailyScanWidgetProps {
     userDayMaster?: string; // 예: '辛'
     userProfile?: any;
-    onOpenMicroPass?: () => void; // 890원 핀포인트 처방전 팝업 오픈 핸들러
+    onOpenMicroPass?: () => void; // 890원 핀포인트 가이드전 팝업 오픈 핸들러
 }
 
 export default function DailyScanWidget({ userDayMaster = '辛', onOpenMicroPass }: DailyScanWidgetProps) {
@@ -141,7 +141,7 @@ export default function DailyScanWidget({ userDayMaster = '辛', onOpenMicroPass
                         onClick={handleCheckinSubmit}
                         className="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-xs rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer mt-2"
                     >
-                        <span>3초 체크인 완료 & 처방 받기</span>
+                        <span>3초 체크인 완료 & 가이드 받기</span>
                         <ArrowRight size={14} />
                     </button>
                 </motion.div>
@@ -190,12 +190,12 @@ export default function DailyScanWidget({ userDayMaster = '辛', onOpenMicroPass
                         >
                             <div className="flex flex-col">
                                 <span className="text-xs font-black text-amber-300 flex items-center gap-1">
-                                    ⚡ 오늘 {harmonyData.tenGod}({selectedEmotion}) 왜곡 억제 처방
+                                    ⚡ 오늘 {harmonyData.tenGod}({selectedEmotion}) 왜곡 억제 가이드
                                 </span>
-                                <span className="text-[10px] text-gray-300">890원 핀포인트 처방전 (100% 환급 특가)</span>
+                                <span className="text-[10px] text-gray-300">890원 핀포인트 가이드전 (100% 환급 특가)</span>
                             </div>
                             <span className="text-xs bg-amber-400 text-black font-black px-2.5 py-1 rounded-lg flex items-center gap-1 shadow">
-                                890원 처방 받기 <ArrowRight size={12} />
+                                890원 가이드 받기 <ArrowRight size={12} />
                             </span>
                         </motion.div>
                     )}

@@ -468,7 +468,7 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                                                     
                                                     <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
                                                         <div className="bg-black/40 rounded-xl p-4 md:p-5 border border-red-900/30">
-                                                            <h4 className="text-xs md:text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">인지 편향 오류 진단 (Cognitive Error)</h4>
+                                                            <h4 className="text-xs md:text-sm text-gray-400 mb-3 border-b border-gray-800 pb-2">인지 편향 오류 분석 (Cognitive Error)</h4>
                                                             <ul className="space-y-3">
                                                                 <li className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-1"><span className="text-gray-400 text-xs">행동 스키마</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded text-xs">{currentCase.phase1.schema}</span></li>
                                                                 <li className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-1"><span className="text-gray-400 text-xs">신경망 활성</span> <span className="text-red-300 font-bold bg-red-900/30 px-2 py-1 rounded text-xs">{currentCase.phase1.neural}</span></li>

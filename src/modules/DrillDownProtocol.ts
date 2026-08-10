@@ -100,7 +100,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 intent: "NAV_CORE_BODY",
                 children: [
                     { id: "mc_27", label: "27. 바이오 에너지 설계도", desc: "오행으로 보는 신체 에너지 스펙", intent: "deep_health_weakness" },
-                    { id: "mc_47", label: "47. 보이스 건강 스캔", desc: "목소리(Hz)로 진단하는 오장육부", intent: "ms_voice_scan" },
+                    { id: "mc_47", label: "47. 보이스 건강 스캔", desc: "목소리(Hz)로 분석하는 오장육부", intent: "ms_voice_scan" },
                     { id: "mc_44", label: "44. DNA 크로스 체크", desc: "유전자 검사와 사주의 교차 검증", intent: "ms_dna_check" },
                     { id: "mc_28", label: "28. 형상과 스타일", desc: "내 외모 특징과 맞춤 스타일링", intent: "ms_style_guide" }
                 ]
@@ -190,7 +190,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "공간과 소리로 치유하기",
                 intent: "NAV_LIFE_HEALING",
                 children: [
-                    { id: "lh_34", label: "34. 소닉 테라피 (EMDR/음악)", desc: "나에게 필요한 주파수(ASMR) 처방", intent: "play_healing_music" },
+                    { id: "lh_34", label: "34. 소닉 테라피 (EMDR/음악)", desc: "나에게 필요한 주파수(ASMR) 가이드", intent: "play_healing_music" },
                     { id: "lh_37", label: "37. 꿈 해몽 분석", desc: "무의식의 메시지를 오행으로 해석", intent: "ms_dream_analysis" },
                     { id: "lh_42", label: "42. 스마트 풍수 (IoT)", desc: "집안 조명/온도 자동 제어", intent: "ms_smart_fengshui" },
                     { id: "lh_24", label: "24. 개운 인테리어", desc: "나를 살리는 잠자리 방향과 배치", intent: "ms_interior_lucky" }
@@ -202,14 +202,14 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "마음의 운영체제를 3단계로 진화시키기",
                 intent: "NAV_CONSCIOUSNESS_OS",
                 children: [
-                    // 3D 좌표 진단
+                    // 3D 좌표 분석
                     { id: "cos_42", label: "42. 현재 좌표 스캔", desc: "X/Y/Z 축 실시간 측정 (Dark/Neural/Meta)", intent: "ms_coordinate_scan" },
                     { id: "cos_43", label: "43. 의식 레벨 체크", desc: "내 마음의 OS 버전 확인", intent: "ms_consciousness_level" },
                     { id: "cos_44", label: "44. 에너지 벡터 분석", desc: "In(수렴)/Out(발산) 성향 파악", intent: "ms_energy_vector" },
-                    // 3S 처방 시스템
-                    { id: "cos_45", label: "45. SCAN 처방", desc: "Y축 주파수 제어 (MBCT/MBSR)", intent: "ms_scan_prescription" },
-                    { id: "cos_46", label: "46. SYNC 처방", desc: "Z축 에너지 수용 (ACT/DBT)", intent: "ms_sync_prescription" },
-                    { id: "cos_47", label: "47. SHIFT 처방", desc: "X축 의식 상승 (CBT)", intent: "ms_shift_prescription" },
+                    // 3S 가이드 시스템
+                    { id: "cos_45", label: "45. SCAN 가이드", desc: "Y축 주파수 제어 (MBCT/MBSR)", intent: "ms_scan_prescription" },
+                    { id: "cos_46", label: "46. SYNC 가이드", desc: "Z축 에너지 수용 (ACT/DBT)", intent: "ms_sync_prescription" },
+                    { id: "cos_47", label: "47. SHIFT 가이드", desc: "X축 의식 상승 (CBT)", intent: "ms_shift_prescription" },
                     // AI 주역 연동
                     { id: "cos_48", label: "48. 좌표 → 괘 매칭", desc: "3D 좌표로 64괘 자동 선택", intent: "ms_coordinate_iching" },
                     { id: "cos_49", label: "49. 진화 추적", desc: "X축 상승 기록 및 시각화", intent: "ms_evolution_tracker" },
@@ -315,7 +315,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             {
                 id: "startup_2",
                 label: "🧠 창업가 다크코드 자각",
-                desc: "스타트업 성공을 위한 뉴럴코드 셀프 진단",
+                desc: "스타트업 성공을 위한 뉴럴코드 셀프 분석",
                 intent: "ms_startup_neural_awakening"
             },
             {
@@ -345,10 +345,10 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 7. [3D 정밀 진단] (Neural Engineering) - System Persona Mode
+    // 7. [3D 정밀 분석] (Neural Engineering) - System Persona Mode
     NEURAL_ENGINEERING: {
         id: 'NEURAL_ENGINEERING',
-        label: "3D 정밀 진단",
+        label: "3D 정밀 분석",
         icon: "🧬",
         neuro_trigger: "내면의 3차원 에너지 좌표 분석",
         style: 'premium_purple',
@@ -374,7 +374,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             {
                 id: "ne_z",
                 label: "Z축: 에너지 벡터 (Vector)",
-                desc: "폭발(Out) vs 함몰(In) 위험도 진단",
+                desc: "폭발(Out) vs 함몰(In) 위험도 분석",
                 intent: "ms_3d_z_axis"
             },
             {
@@ -386,7 +386,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             {
                 id: "ne_action",
                 label: "🚀 3S 솔루션 실행 (Action)",
-                desc: "진단 결과를 실행 코드로 변환 (Scan-Sync-Shift)",
+                desc: "분석 결과를 실행 코드로 변환 (Scan-Sync-Shift)",
                 intent: "ms_3s_protocol_start"
             }
         ]
@@ -478,7 +478,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             { id: "g_2", label: "🌑 다크 사이드 & 빛 (Shadow)", desc: "단점이 최고의 무기가 된다", intent: "ms_dark_side" },
             { id: "g_3", label: "💫 번영 열쇠", desc: "재물운 핵심 코드", intent: "prosperity_key_analysis" },
             { id: "g_neural", label: "🧬 뉴럴 프로필", desc: "Life's Work, Evolution", intent: "neural_profile_analysis" },
-            { id: "g_5", label: "🧠 심리 치유 아키타입", desc: "DBT/ACT/MBCT 통합 처방", intent: "therapy_archetype_view" },
+            { id: "g_5", label: "🧠 심리 치유 아키타입", desc: "DBT/ACT/MBCT 통합 가이드", intent: "therapy_archetype_view" },
             { id: "g_strength", label: "📊 강점/재능 리포트", desc: "인적자원 역량 분석", intent: "strength_talent_report", isPremium: true }
         ]
     },
@@ -492,7 +492,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         style: 'default',
         sub_menus: [
             { id: "d_0", label: "⚔️ 오늘의 퀘스트 (Quest)", desc: "오늘의 기질 데이터를 200% 활용법", intent: "ms_daily_quest" },
-            { id: "d_1", label: "🔋 오행 에너지 충전소 (Charge)", desc: "부족한 기운 즉시 처방", intent: "ms_energy_station" },
+            { id: "d_1", label: "🔋 오행 에너지 충전소 (Charge)", desc: "부족한 기운 즉시 가이드", intent: "ms_energy_station" },
             { id: "d_3", label: "🧘 명상 가이드", desc: "5분 마음 정화", intent: "meditation_guide" },
             { id: "d_4", label: "✅ 미션 기록", desc: "실천 이력 확인", intent: "mission_history" }
         ]
@@ -521,7 +521,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         neuro_trigger: "자율신경 안정을 위한 주파수 테라피",
         style: 'healing_green',
         sub_menus: [
-            { id: "h_sonic", label: "🎧 주파수 처방전 (Sonic)", desc: "듣기만 해도 운이 좋아진다?", intent: "ms_sonic_cure" },
+            { id: "h_sonic", label: "🎧 주파수 가이드전 (Sonic)", desc: "듣기만 해도 운이 좋아진다?", intent: "ms_sonic_cure" },
             { id: "h_detox", label: "🧠 멘탈 디톡스 (Detox)", desc: "뇌파를 씻어내는 호흡법", intent: "ms_mental_detox" },
             { id: "h_music", label: "🎵 힐링 음악 (소닉 테라피)", desc: "그냥 두는 연습 듣기", intent: "play_healing_music" }
         ]
@@ -624,7 +624,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                     { id: "qk_11", label: "11. 🪞 이상 vs 현실 갭", desc: "되고 싶은 나 vs 지금의 나", intent: "p_11" },
                     { id: "qk_12", label: "12. 🌑 다크 코드 감지", desc: "반복되는 인생의 덫", intent: "p_12" },
                     { id: "qk_13", label: "13. 🧬 천재성 발현", desc: "자연스럽게 잘하는 것", intent: "p_13" },
-                    { id: "qk_14", label: "14. 🎭 동일시 진단", desc: "나를 가두는 꼬리표", intent: "p_14" },
+                    { id: "qk_14", label: "14. 🎭 동일시 분석", desc: "나를 가두는 꼬리표", intent: "p_14" },
                     { id: "qk_15", label: "15. 🕸️ 무의식 습관", desc: "자동 반응 패턴 포착", intent: "p_15" },
                     { id: "qk_16", label: "16. ⚖️ 내면의 재판관", desc: "스스로를 평가하는 목소리", intent: "p_16" },
                     { id: "qk_17", label: "17. 🎭 사회적 가면", desc: "남들에게 보여주는 모습", intent: "p_17" },
@@ -634,7 +634,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
             {
                 id: "phase_2",
                 label: "Phase 2: 리얼타임 스캔 (19~36)",
-                desc: "현재 에너지 상태 진단",
+                desc: "현재 에너지 상태 분석",
                 intent: "NAV_PHASE_2",
                 children: [
                     { id: "qk_19", label: "19. ☁️ 영혼의 날씨 예보", desc: "지금 내 마음의 기상도", intent: "ms_soul_weather" },

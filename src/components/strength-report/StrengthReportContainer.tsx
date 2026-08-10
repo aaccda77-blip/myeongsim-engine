@@ -285,7 +285,7 @@ export default function StrengthReportContainer() {
                 >
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-mono mb-3">
                         <Sparkles size={13} className="text-amber-400 animate-pulse" />
-                        <span>3세대 최신 심리 과학적 도구 & 기질 융합 역량 진단</span>
+                        <span>3세대 최신 심리 과학적 도구 & 기질 융합 역량 분석</span>
                     </div>
 
                     <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
@@ -445,7 +445,7 @@ export default function StrengthReportContainer() {
                             <p className="text-xs text-gray-300 leading-relaxed">
                                 본질 포스필드에서 가장 높은 에너지 축을 직무 메인 미션에 100% 집중 배치하세요.
                             </p>
-                            <p className="text-[10px] text-amber-400/80 pt-1 font-mono">👉 클릭 시 360° AI 가속 처방 호출</p>
+                            <p className="text-[10px] text-amber-400/80 pt-1 font-mono">👉 클릭 시 360° AI 가속 가이드 호출</p>
                         </div>
 
                         {/* STEP 02 */}
@@ -466,7 +466,7 @@ export default function StrengthReportContainer() {
                             <p className="text-xs text-gray-300 leading-relaxed">
                                 내가 취약한 에너지를 보완해 줄 수 있는 파트너와 협력 구조를 형성하세요.
                             </p>
-                            <p className="text-[10px] text-indigo-400/80 pt-1 font-mono">👉 클릭 시 360° AI 시너지 처방 호출</p>
+                            <p className="text-[10px] text-indigo-400/80 pt-1 font-mono">👉 클릭 시 360° AI 시너지 가이드 호출</p>
                         </div>
 
                         {/* STEP 03 */}
@@ -487,7 +487,7 @@ export default function StrengthReportContainer() {
                             <p className="text-xs text-gray-300 leading-relaxed">
                                 스트레스 발생 시 인지 탈융합 성찰로 다크코드를 해제하고 본래의 맑은 상태를 유지하세요.
                             </p>
-                            <p className="text-[10px] text-emerald-400/80 pt-1 font-mono">👉 클릭 시 360° AI 리셋 처방 호출</p>
+                            <p className="text-[10px] text-emerald-400/80 pt-1 font-mono">👉 클릭 시 360° AI 리셋 가이드 호출</p>
                         </div>
                     </div>
                 </motion.div>

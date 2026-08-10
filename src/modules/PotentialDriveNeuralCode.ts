@@ -1,6 +1,6 @@
 /**
  * 명심코칭: 시주(Potential Drive) 전용 뉴럴 코드 (Future Vision)
- * 60갑자별 최적화된 잠재력 및 미래 비전 진단 모듈
+ * 60갑자별 최적화된 잠재력 및 미래 비전 분석 모듈
  */
 
 export class PotentialDriveNeuralCode {

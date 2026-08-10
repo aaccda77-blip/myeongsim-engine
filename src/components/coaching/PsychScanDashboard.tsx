@@ -207,7 +207,7 @@ export default function PsychScanDashboard() {
               1단계: 심리데이터 스캔 및 성격 프로파일링
             </h2>
             <p className="text-xs text-slate-400 leading-relaxed">
-              당신의 생년월일과 성별(선천적 기질) 및 성격 모델(Big Five / MBTI)을 결합하여, 뇌과학과 인지행동 심리치료 기반의 다층 취약성 지표를 스캔합니다.
+              당신의 생년월일과 성별(선천적 기질) 및 성격 모델(Big Five / MBTI)을 결합하여, 뇌과학과 인지행동 심리코칭 기반의 다층 취약성 지표를 스캔합니다.
             </p>
           </div>
 
@@ -391,7 +391,7 @@ export default function PsychScanDashboard() {
             </div>
           </div>
 
-          {/* 5대 신경망 취약성 정밀 진단 레이아웃 */}
+          {/* 5대 신경망 취약성 정밀 분석 레이아웃 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* 왼쪽: 5대 위험 지표 차트 */}
@@ -473,7 +473,7 @@ export default function PsychScanDashboard() {
                 </div>
               </div>
               
-              {/* 특허 분석부 진단 소결론 */}
+              {/* 특허 분석부 분석 소결론 */}
               <div className="bg-[#090d16]/50 p-4 rounded-xl border border-slate-800/80 flex flex-col gap-2">
                 <span className="text-xs font-bold text-cyan-400 flex items-center gap-1 uppercase tracking-wider">
                   <Sparkles className="w-3.5 h-3.5" /> 특허 심리분석부(10) 스캔 결론

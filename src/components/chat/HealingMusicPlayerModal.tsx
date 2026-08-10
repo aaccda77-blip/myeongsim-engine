@@ -164,7 +164,7 @@ export default function HealingMusicPlayerModal({ isOpen, onClose }: HealingMusi
                             <p className="text-[9px] text-gray-500 mt-3 text-center leading-relaxed">
                                 🧠 <strong className="text-cyan-400/80">과학적 원리:</strong> 눈이 좌우로 움직이면 뇌의 '작업 기억(Working Memory)'이 활성화됩니다.<br />
                                 작업 기억은 용량이 제한되어 있어, 시선 추적에 집중하면 걱정/잡생각이 차지할 공간이 줄어듭니다.<br />
-                                또한 양측성 자극은 편도체(스트레스 중추)를 진정시켜 불안을 낮춥니다. <em className="text-cyan-300/60">(WHO 공인 심리치료 기법)</em>
+                                또한 양측성 자극은 편도체(스트레스 중추)를 진정시켜 불안을 낮춥니다. <em className="text-cyan-300/60">(WHO 공인 심리코칭 기법)</em>
                             </p>
                         </div>
 

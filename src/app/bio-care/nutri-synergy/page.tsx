@@ -139,8 +139,8 @@ export default function NutriSynergyPage() {
                 <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mt-6">
                     <p className="text-blue-200 text-xs leading-relaxed">
                         ⚕️ <strong>보건교육 목적 안내</strong><br />
-                        본 정보는 일반적인 건강 증진 교육 자료이며, 개인별 의학적 진단이나 처방을 대신할 수 없습니다.
-                        구체적인 복용량이나 치료 방법은 반드시 의사, 약사 등 의료 전문가와 상담하세요.
+                        본 정보는 일반적인 건강 증진 교육 자료이며, 개인별 의학적 분석이나 가이드을 대신할 수 없습니다.
+                        구체적인 복용량이나 코칭 방법은 반드시 의사, 약사 등 의료 전문가와 상담하세요.
                     </p>
                 </div>
             </main>

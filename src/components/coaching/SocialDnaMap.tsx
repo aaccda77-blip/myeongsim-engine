@@ -82,7 +82,7 @@ const DNA_DATABASE: Record<string, {
             environment: { label: '환경/지속가능성', icon: '🌍', color: '#7c3aed', bgColor: '#2e1065', score: 63, description: '감성적 글쓰기와 예술로 환경 의식을 조용히 스며들게 합니다.', strength: '감성 환경 캠페인', blindspot: '직접 행동보다 간접 영향 선호', realExample: '환경 주제 시창작, 감성 다큐멘터리' },
             creativity:  { label: '창의/혁신', icon: '✨', color: '#8b5cf6', bgColor: '#2e1065', score: 89, description: '섬세한 감수성과 집착에 가까운 몰입으로 타의 추종을 불허하는 작품을 만듭니다.', strength: '장인 창작', blindspot: '타인의 평가에 극도로 민감 → 공개 주저', realExample: '사회 참여 예술, 치유적 창작 워크숍 운영' },
             community:   { label: '커뮤니티/연결', icon: '🤝', color: '#c4b5fd', bgColor: '#2e1065', score: 57, description: '소규모 깊은 유대의 커뮤니티를 형성하지만 대규모 공동체 운영은 부담.', strength: '깊이 있는 연결', blindspot: '소수 중심 →대규모 임팩트 한계', realExample: '소그룹 독서 모임, 감성 커뮤니티 호스트' },
-            healing:     { label: '치유/돌봄', icon: '💚', color: '#a78bfa', bgColor: '#2e1065', score: 94, description: '가장 예민한 감수성으로 타인의 상처를 감지하고 정교하게 치유합니다.', strength: '정밀 공감 치유', blindspot: '치유자가 스스로 소진되는 역전사 외상', realExample: '상담사, 미술치료사, 위기개입 전문가' },
+            healing:     { label: '치유/돌봄', icon: '💚', color: '#a78bfa', bgColor: '#2e1065', score: 94, description: '가장 예민한 감수성으로 타인의 상처를 감지하고 정교하게 치유합니다.', strength: '정밀 공감 치유', blindspot: '치유자가 스스로 소진되는 역전사 외상', realExample: '상담사, 미술코칭사, 위기개입 전문가' },
             leadership:  { label: '리더십/변화', icon: '👑', color: '#6d28d9', bgColor: '#2e1065', score: 71, description: '조용히 타오르는 내적 신념으로 주변을 물들이는 영향력 있는 인플루언서.', strength: '내면 신념 리더십', blindspot: '전면에 서기를 피해 리더십이 빛을 못 봄', realExample: '사상적 리더, 조용한 변화 촉진자' },
         }
     },
@@ -111,7 +111,7 @@ const DNA_DATABASE: Record<string, {
     '庚': {
         tagline: '불순물을 제거하고 세상을 정제하는 강철',
         domains: {
-            education:   { label: '교육/성장', icon: '🌱', color: '#9ca3af', bgColor: '#111827', score: 74, description: '엄격한 기준과 체계적 프레임으로 실력 기반의 진짜 성장을 이끕니다.', strength: '기준 기반 교육', blindspot: '너무 엄격해 학습자 의욕 저하 가능', realExample: '전문 기술 훈련, 군사/체육 교육, 역량 진단 프로그램' },
+            education:   { label: '교육/성장', icon: '🌱', color: '#9ca3af', bgColor: '#111827', score: 74, description: '엄격한 기준과 체계적 프레임으로 실력 기반의 진짜 성장을 이끕니다.', strength: '기준 기반 교육', blindspot: '너무 엄격해 학습자 의욕 저하 가능', realExample: '전문 기술 훈련, 군사/체육 교육, 역량 분석 프로그램' },
             environment: { label: '환경/지속가능성', icon: '🌍', color: '#6b7280', bgColor: '#111827', score: 70, description: '비효율적 환경 파괴 시스템을 단호하게 개혁하는 정책형 환경 전사입니다.', strength: '구조적 환경 개혁', blindspot: '공감 없는 개혁 →저항 유발', realExample: '환경 규제 정책 설계, 불법 쓰레기 근절 캠페인' },
             creativity:  { label: '창의/혁신', icon: '✨', color: '#d1d5db', bgColor: '#111827', score: 65, description: '불필요한 것을 제거하는 미니멀 혁신으로 정제된 시스템을 만들어냅니다.', strength: '정제형 혁신', blindspot: '새로운 것의 가치를 빠르게 무시하는 경향', realExample: '비효율적 사회 시스템 재설계, 표준화 작업' },
             community:   { label: '커뮤니티/연결', icon: '🤝', color: '#e5e7eb', bgColor: '#111827', score: 54, description: '명확한 공동 목표 아래 강점 있는 멤버들을 조직화하여 성과를 냅니다.', strength: '목적형 조직화', blindspot: '따뜻한 연결보다 기능적 관계에 그침', realExample: 'タスク포스 결성, 사회 문제 해결형 프로젝트 팀' },
@@ -137,7 +137,7 @@ const DNA_DATABASE: Record<string, {
             environment: { label: '환경/지속가능성', icon: '🌍', color: '#3b82f6', bgColor: '#0c1a2e', score: 80, description: '환경 문제의 거대한 흐름과 패턴을 읽어 장기적 전략을 제시합니다.', strength: '장기 전략 수립', blindspot: '분석은 탁월하나 행동 전환 속도 느림', realExample: '기후 전략 연구, 글로벌 환경 정책 설계' },
             creativity:  { label: '창의/혁신', icon: '✨', color: '#93c5fd', bgColor: '#0c1a2e', score: 84, description: '기존 구조 전체를 뒤집는 패러다임 전환급 혁신 아이디어를 생산합니다.', strength: '패러다임 혁신', blindspot: '아이디어는 넘치나 실행 동반자 필요', realExample: '플랫폼 비즈니스 설계, 사회 시스템 재설계' },
             community:   { label: '커뮤니티/연결', icon: '🤝', color: '#bfdbfe', bgColor: '#0c1a2e', score: 75, description: '다양한 사람들을 깊이 이해하며 서로 다른 그룹을 연결하는 통합자입니다.', strength: '다양성 통합', blindspot: '과도한 포용으로 자신의 경계 상실', realExample: '다원화 사회 통합 프로젝트, 글로벌 연대 플랫폼' },
-            healing:     { label: '치유/돌봄', icon: '💚', color: '#60a5fa', bgColor: '#0c1a2e', score: 82, description: '상대의 마음 깊숙한 곳까지 공감하여 심층적인 치유를 이끌어냅니다.', strength: '심층 공감 치유', blindspot: '상대의 우울을 다 흡수하여 자신이 침잠', realExample: '트라우마 치유 전문가, 심리극 치료사' },
+            healing:     { label: '치유/돌봄', icon: '💚', color: '#60a5fa', bgColor: '#0c1a2e', score: 82, description: '상대의 마음 깊숙한 곳까지 공감하여 심층적인 치유를 이끌어냅니다.', strength: '심층 공감 치유', blindspot: '상대의 우울을 다 흡수하여 자신이 침잠', realExample: '트라우마 치유 전문가, 심리극 코칭사' },
             leadership:  { label: '리더십/변화', icon: '👑', color: '#1d4ed8', bgColor: '#0c1a2e', score: 78, description: '큰 흐름을 꿰뚫는 전략가로서 시대의 방향을 읽고 변화를 준비합니다.', strength: '전략적 변화 리더십', blindspot: '과잉 분석 → 행동 타이밍 놓침', realExample: '미래 전략가, 싱크탱크 리더, 사회 변화 설계자' },
         }
     },
@@ -148,7 +148,7 @@ const DNA_DATABASE: Record<string, {
             environment: { label: '환경/지속가능성', icon: '🌍', color: '#6366f1', bgColor: '#1e1b4b', score: 76, description: '물처럼 모든 환경에 스며들어 조용히 지속가능한 문화를 만듭니다.', strength: '일상 환경 문화 전파', blindspot: '가시적 성과 없어 기여가 보이지 않음', realExample: '생활 속 환경 문화 캠페인, 소셜 미디어 인식 확산' },
             creativity:  { label: '창의/혁신', icon: '✨', color: '#a5b4fc', bgColor: '#1e1b4b', score: 88, description: '경계를 넘나드는 유연한 사고로 예상치 못한 연결을 통해 혁신합니다.', strength: '크로스오버 혁신', blindspot: '아이디어가 산재해 실행력 약함', realExample: '분야를 넘나드는 융합 창작, 예술-기술 경계 작업' },
             community:   { label: '커뮤니티/연결', icon: '🤝', color: '#c7d2fe', bgColor: '#1e1b4b', score: 91, description: '어느 그룹에도 조용히 스며들어 내부를 연결하는 가장 유연한 연결자입니다.', strength: '경계 없는 연결', blindspot: '자아를 잃을 만큼 과도한 동화', realExample: '다문화 브릿지 활동, 세대 간 연결 프로젝트' },
-            healing:     { label: '치유/돌봄', icon: '💚', color: '#818cf8', bgColor: '#1e1b4b', score: 95, description: '비처럼 조용히 스며들어 상대가 모르는 사이 치유를 완성하는 최고의 치유자.', strength: '무의식적 치유', blindspot: '치유하다 자신의 경계를 잃고 오염됨', realExample: '자연 치유, 미술/음악 치료, 비언어적 공감 치유' },
+            healing:     { label: '치유/돌봄', icon: '💚', color: '#818cf8', bgColor: '#1e1b4b', score: 95, description: '비처럼 조용히 스며들어 상대가 모르는 사이 치유를 완성하는 최고의 치유자.', strength: '무의식적 치유', blindspot: '치유하다 자신의 경계를 잃고 오염됨', realExample: '자연 치유, 미술/음악 코칭, 비언어적 공감 치유' },
             leadership:  { label: '리더십/변화', icon: '👑', color: '#4338ca', bgColor: '#1e1b4b', score: 74, description: '보이지 않는 영향력으로 조용히 집단 전체의 방향을 바꾸는 소프트 파워 리더.', strength: '소프트 파워 리더십', blindspot: '리더로 인정받기 어려워 공신력 획득 어려움', realExample: '비공식 문화 리더, 사회 분위기 메이커' },
         }
     },

@@ -815,7 +815,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile, 
                                             >
                                                 <div className="space-y-1.5">
                                                     <div className="font-semibold text-amber-300 font-mono text-[9px] uppercase">
-                                                        [+] 가장 강한 에너지: {analysis.energy.max.label} 과부하 진단
+                                                        [+] 가장 강한 에너지: {analysis.energy.max.label} 과부하 분석
                                                     </div>
                                                     <p className="text-zinc-300 tracking-tight">
                                                         {ELEMENT_EXPLANATIONS[analysis.energy.max.label]?.max || '오행 정보를 빌드 중입니다.'}
@@ -834,7 +834,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile, 
                                     </AnimatePresence>
                                 </div>
 
-                                {/* Section 3: 나의 현재 상태 (자가진단 융합 자각 주파수 스캐너) */}
+                                {/* Section 3: 나의 현재 상태 (자가분석 융합 자각 주파수 스캐너) */}
                                 <div 
                                     onClick={() => toggleSection('state')}
                                     className={`p-4 rounded-xl border transition-all duration-300 cursor-pointer ${expandedSection === 'state' ? 'bg-zinc-900/60 border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.05)]' : 'bg-white/[0.02] border-white/5 hover:border-zinc-800 hover:bg-white/[0.04]'}`}
@@ -932,7 +932,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile, 
                                                             {LEVEL_EXPLANATIONS[scannedInfo.key]?.desc || '자각 지수 판정 정보를 로딩하고 있습니다.'}
                                                         </p>
                                                         
-                                                        {/* 재진단 기회 안내 (사용자에게 친절하게) */}
+                                                        {/* 재분석 기회 안내 (사용자에게 친절하게) */}
                                                         <div className="pt-2 text-[9px] text-zinc-600 font-mono flex items-center gap-1 select-none">
                                                             <span>※ 측정된 주파수는 당일 자각 로그로 고정 기록되어 보존됩니다.</span>
                                                         </div>
@@ -1070,7 +1070,7 @@ function EmptyState() {
     return (
         <div className="p-6 rounded-xl bg-white/[0.01] border border-white/5 text-center">
             <AlertCircle className="w-6 h-6 text-zinc-700 mx-auto mb-2" />
-            <p className="text-xs text-zinc-500">데이터가 존재하지 않습니다.<br />대화를 통해 진단을 진행해 주세요.</p>
+            <p className="text-xs text-zinc-500">데이터가 존재하지 않습니다.<br />대화를 통해 분석을 진행해 주세요.</p>
         </div>
     );
 }

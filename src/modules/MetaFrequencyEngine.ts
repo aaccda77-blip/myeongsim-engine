@@ -380,7 +380,7 @@ const TEN_GODS_META_CODES: Record<string, ThreeLayerCode> = {
     id: 4, codeName: '상관',
     darkCode: { tag: '비난/반항', desc: '불합리함에 대해 정제되지 않은 분노를 표출하여 상황을 악화시키는 상태' },
     neuralCode: { tag: '혁신/비판적 사고', desc: '기존 시스템의 오류를 정확히 짚어내어 창조적 파괴의 도구로 쓰는 상태' },
-    metaCode: { tag: '자비로운 개선', desc: '칼날 같은 비판조차 상대를 살리는 따뜻한 처방이 되는 고차원적 소통' },
+    metaCode: { tag: '자비로운 개선', desc: '칼날 같은 비판조차 상대를 살리는 따뜻한 가이드이 되는 고차원적 소통' },
   },
   '편재': {
     id: 5, codeName: '편재',

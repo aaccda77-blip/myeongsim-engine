@@ -74,7 +74,7 @@ export default function TermsPage() {
           <section className="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-2">
             <h2 className="font-bold text-sm text-amber-300">제 4 조 (서비스의 제공 및 변경)</h2>
             <p className="text-[11px] leading-normal">
-              1. 회사는 AI 기반 명심 주역코드 해독, Daily Scan 멘탈 자각 체크인, 890원 핀포인트 처방전 및 30일 무제한 코칭 패스 등 유/무상 콘텐츠를 제공합니다.<br />
+              1. 회사는 AI 기반 명심 주역코드 해독, Daily Scan 멘탈 자각 체크인, 890원 핀포인트 가이드전 및 30일 무제한 코칭 패스 등 유/무상 콘텐츠를 제공합니다.<br />
               2. 회사는 기술적 사양 변경, AI 엔진 업데이트 또는 사업 정책 전환에 따라 제공할 서비스의 내용을 변경할 수 있으며, 이 경우 즉시 변경 내용을 게시합니다.
             </p>
           </section>

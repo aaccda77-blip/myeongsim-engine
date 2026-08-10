@@ -2,10 +2,10 @@
  * 통합 심리 치유 아키타입 데이터베이스 (Integrated Therapy Archetypes DB)
  * 
  * 4대 심리 기법을 사용자 성향(Gene Key/오행)에 따라 자동 매칭:
- * - CBT (인지행동치료): 생각 교정
- * - DBT (변증법적 행동치료): 감정 조절
- * - ACT (수용전념치료): 수용과 행동
- * - MBCT (마음챙김 인지치료): 알아차림
+ * - CBT (인지행동코칭): 생각 교정
+ * - DBT (변증법적 행동코칭): 감정 조절
+ * - ACT (수용전념코칭): 수용과 행동
+ * - MBCT (마음챙김 인지코칭): 알아차림
  */
 
 export type TherapyType = 'CBT' | 'DBT' | 'ACT' | 'MBCT';
@@ -45,7 +45,7 @@ export interface TherapyArchetype {
 
 export const THERAPY_ARCHETYPES: Record<string, TherapyArchetype> = {
     // =========================================================================
-    // [ACT 처방형] - 회피/억압/통제 성향
+    // [ACT 가이드형] - 회피/억압/통제 성향
     // "싸우지 말고 수용하라"
     // =========================================================================
     "ARCH_ACT_CONTROLLER": {
@@ -103,7 +103,7 @@ export const THERAPY_ARCHETYPES: Record<string, TherapyArchetype> = {
     },
 
     // =========================================================================
-    // [DBT 처방형] - 감정 기복이 심한 성향
+    // [DBT 가이드형] - 감정 기복이 심한 성향
     // "감정을 견디고 조절하라"
     // =========================================================================
     "ARCH_DBT_CHALLENGER": {
@@ -188,7 +188,7 @@ export const THERAPY_ARCHETYPES: Record<string, TherapyArchetype> = {
     },
 
     // =========================================================================
-    // [MBCT 처방형] - 생각이 꼬리를 무는 성향
+    // [MBCT 가이드형] - 생각이 꼬리를 무는 성향
     // "생각에서 빠져나와라"
     // =========================================================================
     "ARCH_MBCT_WORRIER": {
@@ -273,7 +273,7 @@ export const THERAPY_ARCHETYPES: Record<string, TherapyArchetype> = {
     },
 
     // =========================================================================
-    // [CBT 처방형] - 인지 왜곡이 심한 성향
+    // [CBT 가이드형] - 인지 왜곡이 심한 성향
     // "생각을 교정하라"
     // =========================================================================
     "ARCH_CBT_CATASTROPHIZER": {
@@ -332,7 +332,7 @@ export const THERAPY_ARCHETYPES: Record<string, TherapyArchetype> = {
 };
 
 // =========================================================================
-// 사용자 성향에 따른 치료 기법 매칭 엔진
+// 사용자 성향에 따른 코칭 기법 매칭 엔진
 // =========================================================================
 
 export interface UserProfile {
@@ -342,7 +342,7 @@ export interface UserProfile {
 }
 
 /**
- * 사용자 프로필에 맞는 치료 아키타입 찾기
+ * 사용자 프로필에 맞는 코칭 아키타입 찾기
  */
 export function findTherapyArchetype(profile: UserProfile): TherapyArchetype[] {
     const results: TherapyArchetype[] = [];
@@ -388,7 +388,7 @@ export function findTherapyArchetype(profile: UserProfile): TherapyArchetype[] {
 }
 
 /**
- * 감정 유형에 따른 추천 치료법
+ * 감정 유형에 따른 추천 코칭법
  */
 export function getTherapyByEmotion(emotion: string): TherapyArchetype[] {
     const emotionMap: Record<string, string[]> = {

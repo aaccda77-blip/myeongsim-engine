@@ -52,7 +52,7 @@ export default function PreviewSummaryView() {
                     {/* Box 1 */}
                     <div className="p-5 border-b border-white/5">
                         <h4 className="text-primary-olive text-xs font-bold mb-2 flex items-center gap-1 font-sans">
-                            <span className="w-4 h-4 rounded border border-current flex items-center justify-center text-[10px]">S</span> 에너지 구조 진단
+                            <span className="w-4 h-4 rounded border border-current flex items-center justify-center text-[10px]">S</span> 에너지 구조 분석
                         </h4>
                         <div className="text-lg font-bold text-white mb-2 font-serif">&quot;왜 그럴까?&quot;</div>
                         <p className="text-xs text-gray-300 leading-relaxed font-sans">

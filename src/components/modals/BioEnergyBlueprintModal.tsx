@@ -205,13 +205,13 @@ const BioEnergyBlueprintModal: React.FC<BioEnergyBlueprintModalProps> = ({ isOpe
                                     </div>
                                     <div className="rounded-2xl bg-[#fbfbf2] border-l-4 border-[#4FD1C5] p-5">
                                         <p className="text-sm font-bold text-slate-800 mb-2">
-                                            "이것은 '치료약'이 아니라 '운영체제 업그레이드'입니다."
+                                            "이것은 '코칭약'이 아니라 '운영체제 업그레이드'입니다."
                                         </p>
                                         <p className="text-[12px] leading-relaxed text-gray-600 text-justify">
                                             본 가이드는 귀하의 타고난 에너지 성향을 분석하여, 부족한 기운을 생활 습관(영양, 타이밍)으로 보완하기 위한 <strong>건강 증진(Health Promotion) 프로그램</strong>입니다.
                                         </p>
                                         <ul className="mt-3 text-[11px] text-gray-500 list-disc pl-4 space-y-1">
-                                            <li>추천 영양 성분은 의약품이 아니며, 질병의 예방 및 치료를 위한 의학적 효능을 담보하지 않습니다.</li>
+                                            <li>추천 영양 성분은 의약품이 아니며, 질병의 예방 및 코칭를 위한 의학적 효능을 담보하지 않습니다.</li>
                                             <li>현재 기저질환으로 병원 진료 중이거나 복용 중인 의약품이 있다면, 반드시 담당 의사와 상담 후 섭취하십시오.</li>
                                         </ul>
                                     </div>
@@ -330,7 +330,7 @@ const BioEnergyBlueprintModal: React.FC<BioEnergyBlueprintModalProps> = ({ isOpe
                                     <div className="rounded-2xl bg-primary-gold/5 border border-primary-gold/20 p-5">
                                         <p className="text-primary-gold text-xs font-bold mb-2">🛡️ 안전 가이드</p>
                                         <p className="text-slate-300 text-[11px] leading-relaxed text-justify">
-                                            본 리포트는 <strong>건강 증진(Health Promotion)</strong>을 위한 생활 습관 가이드이며, 의학적 진단이 아닙니다. 질병 치료는 반드시 전문 의료진과 상담하십시오.
+                                            본 리포트는 <strong>건강 증진(Health Promotion)</strong>을 위한 생활 습관 가이드이며, 의학적 분석이 아닙니다. 질병 코칭는 반드시 전문 의료진과 상담하십시오.
                                         </p>
                                     </div>
                                 </div>

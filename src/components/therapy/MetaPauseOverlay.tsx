@@ -14,7 +14,7 @@ interface MetaPauseOverlayProps {
 /**
  * The Pause (멈춤의 미학)
  * 
- * 사용자가 Neural Code 처방을 완료한 후 표시되는
+ * 사용자가 Neural Code 가이드을 완료한 후 표시되는
  * Meta-Awareness 경험 오버레이
  * 
  * "알아차림의 알아차림"을 통해 관찰자 시점으로 이동시킴

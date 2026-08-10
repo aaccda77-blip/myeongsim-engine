@@ -22,7 +22,7 @@ export const ACTSandboxPanel: React.FC<ACTSandboxPanelProps> = ({
     const [simulatedConsoleLogs, setSimulatedConsoleLogs] = useState<string[]>([]);
     const [isTypingLog, setIsTypingLog] = useState(false);
 
-    // 2. 실시간 진단 업데이트
+    // 2. 실시간 분석 업데이트
     useEffect(() => {
         const mission = PsychDebuggingEngine.diagnose(metrics);
         setDiagnosedMission(mission);
@@ -117,7 +117,7 @@ export const ACTSandboxPanel: React.FC<ACTSandboxPanelProps> = ({
                 {/* Main Body */}
                 <div className="p-6 md:p-8 space-y-8">
                     <FramerAnimatePresence mode="wait">
-                        {/* 1. IDLE 모드: 실시간 진단기 및 뇌 회로 슬라이더 조절 시뮬레이션 */}
+                        {/* 1. IDLE 모드: 실시간 분석기 및 뇌 회로 슬라이더 조절 시뮬레이션 */}
                         {sandboxStep === 'IDLE' && (
                             <framerMotion.div
                                 key="sandbox-idle"
@@ -338,7 +338,7 @@ export const ACTSandboxPanel: React.FC<ACTSandboxPanelProps> = ({
                                     </div>
 
                                     <div className="p-4 bg-slate-950 rounded-xl text-xs text-gray-300 leading-relaxed border border-gray-800/80">
-                                        💡 **소버린 메타인지 진단 보고**: 3세대 심리치료의 핵심은 생각을 없애는 것이 아니라, 생각과 나 사이의 **간격(Gap)**을 만들고 내 가치에 맞는 사소한 행동을 바로 개시하는 데 있습니다. 당신은 오늘 대뇌 자가 복구 패치를 성공적으로 로드하셨습니다!
+                                        💡 **소버린 메타인지 분석 보고**: 3세대 심리코칭의 핵심은 생각을 없애는 것이 아니라, 생각과 나 사이의 **간격(Gap)**을 만들고 내 가치에 맞는 사소한 행동을 바로 개시하는 데 있습니다. 당신은 오늘 대뇌 자가 복구 패치를 성공적으로 로드하셨습니다!
                                     </div>
                                 </div>
 

@@ -232,8 +232,8 @@ export default function PremiumActionGuide({ content, profile, onNext, onPrev }:
 
     // Get dynamic message from profile
     const dynamicMessage = profile?.nativity?.dayMaster
-        ? `회원님의 [${getDayMasterElement(profile.nativity.dayMaster)}] 기운을 다스리기 위한 맞춤 처방입니다.`
-        : "당신의 에너지 균형을 위한 맞춤 처방입니다.";
+        ? `회원님의 [${getDayMasterElement(profile.nativity.dayMaster)}] 기운을 다스리기 위한 맞춤 코칭 지침입니다.`
+        : "당신의 에너지 균형을 위한 맞춤 코칭 지침입니다.";
 
     function getDayMasterElement(dm: string): string {
         if (dm.includes('갑') || dm.includes('을')) return '성장하는 목(木)';

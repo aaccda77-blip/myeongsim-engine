@@ -188,7 +188,7 @@ function BiorhythmBar({ type, label, value, color }: { type: 'physical'|'emotion
               {/* 스페셜 코칭 태그 */}
               <div className="mt-2 text-[9px] text-slate-500 font-bold border-t border-white/5 pt-2 flex items-center gap-1.5 relative z-10">
                 <Zap className="w-3 h-3 text-amber-400" />
-                Myeongsim OS / 진단 패치 완료
+                Myeongsim OS / 분석 패치 완료
               </div>
             </div>
           </motion.div>

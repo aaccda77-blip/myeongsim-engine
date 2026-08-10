@@ -56,7 +56,7 @@ export default function MyeongsimPhilosophyModal({ isOpen, onClose, userName = '
       iconBg: 'bg-purple-500/20 text-purple-300',
       tag: '04 // 제3세대 과학 심리학',
       title: '미신 탈피! 제3세대 최신 심리학 과학 융합',
-      desc: '단순 미신이나 막연한 운세가 아닌, ACT(수용전념치료)·CBT(인지행동치료) 등 제3세대 최신 과학 심리학 도구와 정밀 융합하여 실생활에 즉각 도움이 되도록 하였습니다.',
+      desc: '단순 미신이나 막연한 운세가 아닌, ACT(수용전념코칭)·CBT(인지행동코칭) 등 제3세대 최신 과학 심리학 도구와 정밀 융합하여 실생활에 즉각 도움이 되도록 하였습니다.',
     },
     {
       id: 5,

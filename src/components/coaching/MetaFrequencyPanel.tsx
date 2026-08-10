@@ -230,7 +230,7 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
                     </div>
                     {isSelected && (
                       <div className="text-[7px] text-amber-400/80 block text-right mt-1.5 font-mono select-none opacity-90 animate-pulse">
-                        ✨ 한 번 더 눌러 상세 처방
+                        ✨ 한 번 더 눌러 상세 가이드
                       </div>
                     )}
                   </motion.button>
@@ -442,7 +442,7 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
                   {modalData.tenGod} 에너지 해독
                 </h4>
                 <h3 className="text-[20px] font-black tracking-tight" style={{ color: LEVEL_CONFIG[modalData.level].color }}>
-                  {modalData.label} 상세 처방 보고서
+                  {modalData.label} 상세 가이드 보고서
                 </h3>
                 <div className="mt-1 text-[10px] text-slate-500 font-mono">
                   CODE NAME: {modalData.tag}
@@ -462,7 +462,7 @@ export default function MetaFrequencyPanel({ sajuData, harmony, biorhythm, bio, 
                   </p>
                 </div>
 
-                {/* 2. 에고 디버깅 처방 */}
+                {/* 2. 에고 디버깅 가이드 */}
                 <div className="bg-gradient-to-br from-indigo-950/20 to-slate-950 border border-indigo-500/20 rounded-2xl p-4">
                   <h5 className="text-[11px] font-bold text-indigo-300 mb-1.5 flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />

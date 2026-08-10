@@ -46,7 +46,7 @@ export class SelfCoachingModule {
             if (intent === 'ms_3d_full_scan') {
                 return {
                     type: 'COACHING_PROMPT',
-                    message: `🧬 **3D 정밀 진단: 전체 좌표 스캔**\n\n당신의 내면 에너지를 3차원 좌표계로 분석합니다:\n\n- **X축 (의식 코드)**: Dark → Neural → Meta 현재 위치\n- **Y축 (주파수)**: 생산적 vs 파괴적 행동 패턴\n- **Z축 (벡터)**: 에너지 폭발(Out) vs 함몰(In) 위험도\n\n전체 스캔을 시작하시겠습니까?`,
+                    message: `🧬 **3D 정밀 분석: 전체 좌표 스캔**\n\n당신의 내면 에너지를 3차원 좌표계로 분석합니다:\n\n- **X축 (의식 코드)**: Dark → Neural → Meta 현재 위치\n- **Y축 (주파수)**: 생산적 vs 파괴적 행동 패턴\n- **Z축 (벡터)**: 에너지 폭발(Out) vs 함몰(In) 위험도\n\n전체 스캔을 시작하시겠습니까?`,
                     options: [
                         { label: "🚀 전체 스캔 시작", value: "start_full_scan", trigger_mode: "immediate", next_prompt_guide: "Perform comprehensive 3D analysis: X-axis (consciousness level), Y-axis (frequency/behavior), Z-axis (energy vector). Provide detailed insights for each dimension." },
                         { label: "📊 개별 축 선택", value: "select_axis", trigger_mode: "immediate", next_prompt_guide: "Let user choose which axis to analyze first (X, Y, or Z)." }
@@ -59,7 +59,7 @@ export class SelfCoachingModule {
             if (intent === 'ms_3d_x_axis') {
                 return {
                     type: 'COACHING_PROMPT',
-                    message: `🧠 **X축 분석: 의식 코드 (Consciousness Level)**\n\n당신의 현재 의식 상태를 3단계로 진단합니다:\n\n- **Dark Code (어둠)**: 무의식적 반응, 피해자 모드\n- **Neural Code (각성)**: 자각, 관찰자 모드\n- **Meta Code (초월)**: 창조자, 의미 부여 모드\n\n최근 일주일간 당신의 의식 상태는?`,
+                    message: `🧠 **X축 분석: 의식 코드 (Consciousness Level)**\n\n당신의 현재 의식 상태를 3단계로 분석합니다:\n\n- **Dark Code (어둠)**: 무의식적 반응, 피해자 모드\n- **Neural Code (각성)**: 자각, 관찰자 모드\n- **Meta Code (초월)**: 창조자, 의미 부여 모드\n\n최근 일주일간 당신의 의식 상태는?`,
                     options: [
                         { label: "🌑 Dark: 자동반응 모드", value: "DARK_MODE", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "User is in Dark Code (reactive mode). Guide them to recognize automatic patterns and start observing." },
                         { label: "🧬 Neural: 관찰자 모드", value: "NEURAL_MODE", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: "User is in Neural Code (observer mode). Help them deepen awareness and find patterns." },
@@ -87,7 +87,7 @@ export class SelfCoachingModule {
             if (intent === 'ms_3d_z_axis') {
                 return {
                     type: 'COACHING_PROMPT',
-                    message: `⚡ **Z축 분석: 에너지 벡터 (Energy Direction)**\n\n당신의 에너지가 어느 방향으로 흐르는지 진단합니다:\n\n- **폭발 (Explosion)**: 과잉 표출, 번아웃 위험\n- **균형 (Balance)**: 적절한 흐름\n- **함몰 (Implosion)**: 억압, 우울 위험\n\n현재 당신의 에너지 방향은?`,
+                    message: `⚡ **Z축 분석: 에너지 벡터 (Energy Direction)**\n\n당신의 에너지가 어느 방향으로 흐르는지 분석합니다:\n\n- **폭발 (Explosion)**: 과잉 표출, 번아웃 위험\n- **균형 (Balance)**: 적절한 흐름\n- **함몰 (Implosion)**: 억압, 우울 위험\n\n현재 당신의 에너지 방향은?`,
                     options: [
                         { label: "💥 폭발: 과잉 표출", value: "EXPLOSION", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: "User's energy is exploding outward (burnout risk). Provide grounding and containment strategies." },
                         { label: "⚖️ 균형: 적절한 흐름", value: "BALANCE", trigger_mode: "CONSCIOUSNESS_LEVEL_3", next_prompt_guide: "User's energy is balanced. Help them maintain this equilibrium." },
@@ -103,7 +103,7 @@ export class SelfCoachingModule {
                     type: 'COACHING_PROMPT',
                     message: `🧬 **64비트 뉴럴 코드 (Gene Keys Decoder)**\n\n당신의 DNA에 각인된 64가지 원형 코드를 분석합니다.\n\n각 코드는 3단계로 구성됩니다:\n- **Dark Code**: 그림자 패턴\n- **Gift**: 재능\n- **Meta Code**: 초월적 선물\n\n어떤 코드를 먼저 해독하시겠습니까?`,
                     options: [
-                        { label: "🌑 Dark Code 진단", value: "decode_dark", trigger_mode: "immediate", next_prompt_guide: "Analyze user's shadow patterns using their Saju data. Identify recurring dark codes." },
+                        { label: "🌑 Dark Code 분석", value: "decode_dark", trigger_mode: "immediate", next_prompt_guide: "Analyze user's shadow patterns using their Saju data. Identify recurring dark codes." },
                         { label: "🎁 Gift 발견", value: "decode_gift", trigger_mode: "immediate", next_prompt_guide: "Identify user's natural talents and gifts using their Saju data." },
                         { label: "✨ Meta Code 각성", value: "decode_meta", trigger_mode: "immediate", next_prompt_guide: "Explore user's transcendent potential using their Saju data." },
                         { label: "🔮 전체 코드 맵", value: "full_code_map", trigger_mode: "immediate", next_prompt_guide: "Provide comprehensive 64-code analysis based on user's complete Saju chart." }
@@ -116,7 +116,7 @@ export class SelfCoachingModule {
             if (intent === 'ms_3s_protocol_start') {
                 return {
                     type: 'COACHING_PROMPT',
-                    message: `🚀 **3S 솔루션 프로토콜**\n\n진단 결과를 실행 가능한 행동으로 변환합니다:\n\n1. **Scan**: 현재 상태 스캔\n2. **Sync**: 목표와 동기화\n3. **Shift**: 즉각 실행\n\n어떤 영역부터 시작하시겠습니까?`,
+                    message: `🚀 **3S 솔루션 프로토콜**\n\n분석 결과를 실행 가능한 행동으로 변환합니다:\n\n1. **Scan**: 현재 상태 스캔\n2. **Sync**: 목표와 동기화\n3. **Shift**: 즉각 실행\n\n어떤 영역부터 시작하시겠습니까?`,
                     options: [
                         { label: "🧠 의식 전환 (Mindset Shift)", value: "3S_MINDSET", trigger_mode: "immediate", next_prompt_guide: "Guide user through 3S protocol for mindset transformation: Scan current beliefs → Sync with desired state → Shift with specific action." },
                         { label: "⚡ 에너지 최적화 (Energy Optimization)", value: "3S_ENERGY", trigger_mode: "immediate", next_prompt_guide: "Guide user through 3S protocol for energy optimization: Scan energy drains → Sync with vitality → Shift with recovery action." },
@@ -483,7 +483,7 @@ export class SelfCoachingModule {
         if (intent === 'saju_core_summary') {
             return {
                 type: 'COACHING_PROMPT',
-                message: `🔍 **[108 자각] 본질과의 갭 (Gap)**\n\n회원님의 타고난 엔진(일간)은 **'${myTrait}(${dayMaster})'**입니다. 이는 본래 거칠 것 없이 뻗어나가야 할 에너지입니다.\n\n하지만 지금 이 엔진을 얼마나 활용하고 계신가요? 혹시 현실의 벽에 부딪혀 스스로 **'시동을 꺼버린 것'**은 아닌지 진단이 필요합니다.\n\n지금 당신의 상태에 가장 가까운 말을 선택해주세요.`,
+                message: `🔍 **[108 자각] 본질과의 갭 (Gap)**\n\n회원님의 타고난 엔진(일간)은 **'${myTrait}(${dayMaster})'**입니다. 이는 본래 거칠 것 없이 뻗어나가야 할 에너지입니다.\n\n하지만 지금 이 엔진을 얼마나 활용하고 계신가요? 혹시 현실의 벽에 부딪혀 스스로 **'시동을 꺼버린 것'**은 아닌지 분석이 필요합니다.\n\n지금 당신의 상태에 가장 가까운 말을 선택해주세요.`,
                 options: [
                     {
                         label: "🌑 레벨 1: \"난 원래 이래\" (단념)",
@@ -821,7 +821,7 @@ export class SelfCoachingModule {
                     };
                     case 'assess_identification': return {
                         ...base,
-                        message: `🎭 **[108 자각] 동일시(Identification) 진단**\n\n"나는 ~~한 사람이야"라고 믿는 순간, 당신의 가능성은 그 틀 안에 갇히게 됩니다.\n\n지금 당신을 가장 꽉 묶고 있는 '꼬리표'는 무엇입니까?`,
+                        message: `🎭 **[108 자각] 동일시(Identification) 분석**\n\n"나는 ~~한 사람이야"라고 믿는 순간, 당신의 가능성은 그 틀 안에 갇히게 됩니다.\n\n지금 당신을 가장 꽉 묶고 있는 '꼬리표'는 무엇입니까?`,
                         options: [
                             { label: "🏷️ 역할에 갇힘 (엄마/아빠/팀장 등)", value: "L1_ROLE", trigger_mode: "CONSCIOUSNESS_LEVEL_1", next_prompt_guide: `[Diagnosis] Identified with Role. Coach: "You are playing a role, but you are NOT the role. Who is the actor?"` },
                             { label: "🤕 상처에 갇힘 (피해자/환자)", value: "L2_WOUND", trigger_mode: "CONSCIOUSNESS_LEVEL_2", next_prompt_guide: `[Acceptance] Identified with Wound. Coach: "The wound is part of your history, not your identity. Detach from the pain."` },

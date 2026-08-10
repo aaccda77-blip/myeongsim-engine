@@ -3970,7 +3970,7 @@ export function getDisclaimer(): ReportAsset {
 }
 
 // ============== 12운성 (Energy Cycle) 데이터베이스 ==============
-// 영혼의 에너지가 지금 '몇 살'인지, 어떤 상태인지를 진단
+// 영혼의 에너지가 지금 '몇 살'인지, 어떤 상태인지를 분석
 
 export interface EnergyCycleData {
     id: string;
@@ -4224,7 +4224,7 @@ export const ENERGY_CYCLE: Record<string, EnergyCycleData> = {
 };
 
 // ============== 공망 (Void Theory) 데이터베이스 ==============
-// 살면서 내가 유독 집착하지만 뜻대로 안 되는 영역을 진단
+// 살면서 내가 유독 집착하지만 뜻대로 안 되는 영역을 분석
 
 export interface VoidData {
     id: string;

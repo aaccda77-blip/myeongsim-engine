@@ -246,7 +246,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const prompt = `너는 사주 명리학과 후성유전학(Epigenetics), 그리고 현대 심리학을 결합하여 내담자의 성향을 진단하는 명심코칭의 인공지능 연구가야.
+    const prompt = `너는 사주 명리학과 후성유전학(Epigenetics), 그리고 현대 심리학을 결합하여 내담자의 성향을 분석하는 명심코칭의 인공지능 연구가야.
     
 사용자 정보에 따른 오늘의 맞춤형 성격유형검사(FPTI) 질문 5문항을 생성해줘.
 

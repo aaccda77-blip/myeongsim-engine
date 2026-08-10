@@ -1179,7 +1179,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                             <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-xl animate-ping opacity-50" />
                           </div>
                           <h1 className="text-lg sm:text-xl font-black bg-gradient-to-r from-amber-200 via-purple-200 to-indigo-100 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-tight">
-                            동양학·심리 과학 융합 의식지도 정밀 진단서
+                            동양학·심리 과학 융합 의식지도 정밀 분석서
                           </h1>
                           <p className="text-[9.5px] text-amber-300 font-mono tracking-widest uppercase font-bold">MYEONGSIM CONSCIOUSNESS REPORT</p>
                         </div>
@@ -1354,7 +1354,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                           <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-slate-950 p-2.5 space-y-2 shadow-lg">
                             <div className="relative p-2 rounded-xl bg-black/40 border border-white/5">
                               <p className="text-[8px] text-gray-400 leading-relaxed blur-[2.5px] select-none">
-                                해당 파동은 무의식 편도체 방어막과 맞물려 있으며, 1:1 심층 처방을 통해 에고의 불안을 해소하고 본래의 자각 상태로 즉시 재배선하는 솔루션을 포함합니다.
+                                해당 파동은 무의식 편도체 방어막과 맞물려 있으며, 1:1 심층 가이드을 통해 에고의 불안을 해소하고 본래의 자각 상태로 즉시 재배선하는 솔루션을 포함합니다.
                               </p>
                               <div className="absolute inset-0 bg-slate-950/60 flex items-center justify-center">
                                 <button
@@ -2412,7 +2412,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                               </p>
                               {isEgo && (
                                 <div className="border-t border-white/5 pt-2 mt-1">
-                                  <span className="text-amber-400 font-bold block text-[8px]">💡 자각 재배선 처방 가이드</span>
+                                  <span className="text-amber-400 font-bold block text-[8px]">💡 자각 재배선 가이드 가이드</span>
                                   <p className="text-gray-300 text-[8.2px] leading-normal mt-0.5 break-keep">
                                     "아하, 내 에고가 나를 지키려고 이렇게 애쓰고 있구나" 하고 내면의 긴장을 따뜻하게 알아차리고 3초 숨을 고르는 찰나의 순간, 이성적 관조를 담당하는 전전두엽이 개입합니다. ${awareScore}%의 가벼운 자각(알아차림)만 보태져도 ${darkScore}%의 단단한 다크코드 갑옷은 순식간에 녹아내려 고조된 자각 상태로 나아가게 됩니다.
                                   </p>

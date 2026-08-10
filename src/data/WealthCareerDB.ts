@@ -49,7 +49,7 @@ export const CAREER_MODES: Record<string, QuantumMode> = {
     'ms_career_energy': {
         title: "🔋 번아웃 없는 '무한 동력' (Energy Source)",
         subtitle: "무엇이 나를 다시 뛰게 하는가?",
-        core_concept: "지치지 않는 열정은 의지력이 아니라 **'최적화 키(Optimization Key)'**에서 나옵니다. 당신의 주파수를 충전시키는 활동과 환경을 처방해드립니다.",
+        core_concept: "지치지 않는 열정은 의지력이 아니라 **'최적화 키(Optimization Key)'**에서 나옵니다. 당신의 주파수를 충전시키는 활동과 환경을 가이드해드립니다.",
         saju_analysis_guide: "Identify 'Neural Temperature' and 'Optimization Key' element. If Activation needed -> Passion/Action/Daytime. If Deepening needed -> Wisdom/Rest/Night."
     },
     'career_timing_analysis': {

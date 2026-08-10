@@ -111,7 +111,7 @@ export class CommunicationEngineModule {
             title = "차가운 비평가";
             hiddenPsychology = "모순을 참지 못하고 완벽하게 통제하려는 강박 (또는 속을 알 수 없는 불안)";
             communicationRisk = "논리적 잣대로 상대의 감정을 베어버릴 수 있음";
-            strategyMethod = "은유적 거울 치료 + 논리의 맹점 찌르기";
+            strategyMethod = "은유적 거울 코칭 + 논리의 맹점 찌르기";
             strategyGoal = "자신의 날카로운 논리가 스스로를 가두고 있음을 깨닫게 유도";
             exampleGoodMent1 = "빈틈없는 논리입니다. 하지만 그 완벽한 논리가 이 문제와 관련된 사람들의 '감정'까지 모두 계산에 넣었습니까?";
             exampleGoodMent2 = "머리로는 완벽하게 이해하셨네요. 그렇다면 지금 마음속에서 느껴지는 불편함의 진짜 원인은 뭐라고 생각하시나요?";

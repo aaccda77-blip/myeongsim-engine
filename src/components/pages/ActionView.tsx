@@ -26,7 +26,7 @@ export default function ActionView() {
         <div className="h-full flex flex-col pt-8">
             <motion.div className="mb-6 text-center">
                 <span className="text-primary-gold text-xs font-bold tracking-widest uppercase">Final Page</span>
-                <h2 className="text-2xl font-serif text-white mt-2">나를 위한 처방</h2>
+                <h2 className="text-2xl font-serif text-white mt-2">나를 위한 가이드</h2>
             </motion.div>
 
             {/* Lucky Items */}

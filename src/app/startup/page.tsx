@@ -21,7 +21,7 @@ export default function StartupDashboard() {
         {
             id: 'dashboard',
             icon: 'dashboard',
-            label: '종합 진단 현황',
+            label: '종합 분석 현황',
             intent: null
         },
         {
@@ -43,11 +43,11 @@ export default function StartupDashboard() {
             icon: 'psychology',
             label: '창업자 리더십 & 마인드셋',
             title: '창업자 리더십 & 마인드셋',
-            desc: '완벽주의, 번아웃 등 대표자의 6대 핵심 인지 패턴을 정밀 진단하여 멘탈 회복력을 강화합니다.',
+            desc: '완벽주의, 번아웃 등 대표자의 6대 핵심 인지 패턴을 정밀 분석하여 멘탈 회복력을 강화합니다.',
             detail: '창업가는 극심한 불확실성과 결정 피로(Decision Fatigue) 속에서 조직을 이끌어야 합니다. 일간 및 인성 기전 기반의 의식 오류 패턴을 분석하여, 리더십 균열 시점을 사전 예방하고 지속 가능한 CEO 멘탈리티를 구축해 드립니다.',
             prompt: '창업자로서 저의 심리적 강점과 약점, 그리고 주의해야 할 번아웃 패턴을 분석해주세요.',
             highlights: [
-                { title: '6대 핵심 인지 패턴 정밀 진단', desc: '완벽주의, 번아웃, 결정 피로(Decision Fatigue) 등 대표자의 심리적 스트레스 기전 진단' },
+                { title: '6대 핵심 인지 패턴 정밀 분석', desc: '완벽주의, 번아웃, 결정 피로(Decision Fatigue) 등 대표자의 심리적 스트레스 기전 분석' },
                 { title: '리더십 균열 시점 예방 가이드', desc: '조직 확장 및 위기 상황 시 발동되는 무의식적 방어 기제 분석 및 멘탈 회복력 강화' },
                 { title: 'CEO 맞춤형 수석 리더십 프로필', desc: '지속 가능한 최고경영자 멘탈리티 유지를 위한 마인드 버그 디버깅 및 자기조율 전략' }
             ]
@@ -58,11 +58,11 @@ export default function StartupDashboard() {
             label: '기업 경영 모멘텀 & 전략',
             title: '기업 경영 모멘텀 & 전략',
             desc: '기업의 연간 성장 사이클을 분석하여, 공격적 확장과 조직 정실의 최적 타이밍을 제안합니다.',
-            detail: '세운과 대운의 거시적 경영 사이클을 분석하여, 올해 귀하의 기업이 맞이할 피벗 적기와 자금 집행 및 조직 확장 최적 타이밍을 정밀 진단합니다.',
+            detail: '세운과 대운의 거시적 경영 사이클을 분석하여, 올해 귀하의 기업이 맞이할 피벗 적기와 자금 집행 및 조직 확장 최적 타이밍을 정밀 분석합니다.',
             prompt: '올해 우리 회사의 사업 경영 모멘텀과 주요 전략적 타이밍을 분석해주세요.',
             highlights: [
                 { title: '연간 경영 모멘텀 타임라인', desc: '분기별/월별 사업 확장, 조직 재정비 및 리스크 방어 적기 도출' },
-                { title: '피벗 & 자금 집행 타이밍', desc: '자금 조달(IR) 및 B2B 대형 계약 체결 최적 구간 정밀 진단' },
+                { title: '피벗 & 자금 집행 타이밍', desc: '자금 조달(IR) 및 B2B 대형 계약 체결 최적 구간 정밀 분석' },
                 { title: '조직 확장 리스크 제어', desc: '비겁/형살 구간에 대비한 HR 조직 개편 및 법률적 리스크 사전 방어책 제안' }
             ]
         },
@@ -72,11 +72,11 @@ export default function StartupDashboard() {
             label: '공동 창업자 케미스트리 & 시너지',
             title: '공동 창업자 케미스트리 & 시너지',
             desc: '공동 창업자 간 기질 상성, 갈등 해결 스타일 및 리더십 파트너십의 지속 가능성을 평가합니다.',
-            detail: '공동 창업은 기업의 생존을 결정짓는 핵심 요소입니다. 파트너 간 궁합 및 오행·기질 모달리티 시너지를 분석하여, 서로의 리더십 공백을 보완하는 최상의 조직 케미스트리를 진단하고 갈등 예방 가이드를 제공합니다.',
+            detail: '공동 창업은 기업의 생존을 결정짓는 핵심 요소입니다. 파트너 간 궁합 및 오행·기질 모달리티 시너지를 분석하여, 서로의 리더십 공백을 보완하는 최상의 조직 케미스트리를 분석하고 갈등 예방 가이드를 제공합니다.',
             prompt: '공동 창업자와의 시너지와 협업 평가를 분석하고 싶습니다.',
             highlights: [
                 { title: '파트너 기질 상성 & 오행 시너지', desc: '공동 창업자 간 오행 상생상극 및 비겁·관성 시너지를 통한 역량 보완성 평가' },
-                { title: '갈등 해결 & 의사결정 스타일', desc: '위기 시 의사결정 충돌 가능성 진단 및 파트너십 지속 가능성 리포트 도출' },
+                { title: '갈등 해결 & 의사결정 스타일', desc: '위기 시 의사결정 충돌 가능성 분석 및 파트너십 지속 가능성 리포트 도출' },
                 { title: '리더십 역할 분담 시스템', desc: 'CEO, CTO, COO 등 핵심 C-Level 간 역할 충돌 방지를 위한 최적 R&R 방안 설계' }
             ]
         },
@@ -90,7 +90,7 @@ export default function StartupDashboard() {
             prompt: '저에게 가장 유리한 투자 유치 시점과 적합한 투자자 유형을 알려주세요.',
             highlights: [
                 { title: '자금 조달(IR) 최적 타임윈도우', desc: '재성(財) 및 관성(官) 에너지가 최고조에 달하는 IR 및 라운드 오픈 시점 정밀 도출' },
-                { title: '투자자(VC/엔젤) 페르소나 매칭', desc: '기업의 상성 데이터에 잘 부합하고 장기 시너지를 극대화할 최적 투자자 유형 진단' },
+                { title: '투자자(VC/엔젤) 페르소나 매칭', desc: '기업의 상성 데이터에 잘 부합하고 장기 시너지를 극대화할 최적 투자자 유형 분석' },
                 { title: '유동성 리스크 & 런웨이 방어 전략', desc: '자금 고갈 위험 구간 사전 인지 및 라운드 마감 타임라인 리스크 관리 제안' }
             ]
         },
@@ -104,7 +104,7 @@ export default function StartupDashboard() {
             prompt: '제 비즈니스 모델이 현재 시장 흐름에 적합한지 검증해주세요.',
             highlights: [
                 { title: '식신생재 & 재생관 타당성 검증', desc: '수익 창출 구조(식신생재) 및 시장 안착(재생관) 타당성의 명리·경영학 종합 검증' },
-                { title: '거시적 시장 사이클 부합도', desc: '현재 BM이 거시 경제 및 산업 생태계 사이클과 조화를 이루는지 적합도 정밀 진단' },
+                { title: '거시적 시장 사이클 부합도', desc: '현재 BM이 거시 경제 및 산업 생태계 사이클과 조화를 이루는지 적합도 정밀 분석' },
                 { title: 'BM 피벗 & 수익 모델 고도화 가이드', desc: '시장 정체 극복을 위한 비즈니스 모델 수정 방향성 및 차세대 수익 드라이버 제안' }
             ]
         }
@@ -197,7 +197,7 @@ export default function StartupDashboard() {
                                     <div className="space-y-4">
                                         <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                                             <span className="text-amber-400">📌</span>
-                                            본 진단에서 제공되는 3대 핵심 리포트
+                                            본 분석에서 제공되는 3대 핵심 리포트
                                         </h3>
                                         <div className="space-y-3">
                                             {selectedService.highlights ? (
@@ -224,7 +224,7 @@ export default function StartupDashboard() {
                                             className="w-full sm:w-auto bg-gradient-to-r from-[#3211d4] to-[#5b36ff] hover:from-[#3211d4]/90 hover:to-[#5b36ff]/90 text-white px-8 py-4 rounded-xl font-extrabold text-base md:text-lg shadow-xl shadow-[#3211d4]/30 transition-all flex items-center justify-center gap-3 group"
                                         >
                                             <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform text-amber-300">bolt</span>
-                                            <span>경영 모멘텀 정밀 진단 실행하기</span>
+                                            <span>경영 모멘텀 정밀 분석 실행하기</span>
                                             <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                         </button>
                                     </div>
@@ -377,16 +377,16 @@ export default function StartupDashboard() {
                                 점진적 성장기 • 안정적 확장 단계
                             </p>
                             <div className="mt-3 text-[9px] text-slate-500 font-bold uppercase tracking-tight">
-                                진단: 2일 전
+                                분석: 2일 전
                             </div>
                         </div>
                     </div>
 
                     <div className="pt-8 px-4 pb-10">
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">전문 진단 서비스</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">전문 분석 서비스</p>
                         <div className="space-y-2">
                             <a className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">analytics</span> 데이터 기반 전략 진단
+                                <span className="material-symbols-outlined text-[20px]">analytics</span> 데이터 기반 전략 분석
                             </a>
                             <a className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
                                 <span className="material-symbols-outlined text-[20px]">balance</span> 법률/행정 리스크 점검
@@ -436,7 +436,7 @@ export default function StartupDashboard() {
                                                 비즈니스 연간 경영 모멘텀 & 전략 분석
                                             </h3>
                                             <p className="text-base md:text-lg text-[#a19db9] leading-relaxed max-w-2xl">
-                                                선천적 사업 구조와 세운의 흐름을 다차원으로 분석하여, 귀하의 기업이 언제 과감하게 도약하고 언제 조직의 내실을 다져야 할지 정밀 진단합니다. 올해의 핵심 피벗(Pivot) 적기 및 최적의 자금/확장 타이밍을 확인하세요.
+                                                선천적 사업 구조와 세운의 흐름을 다차원으로 분석하여, 귀하의 기업이 언제 과감하게 도약하고 언제 조직의 내실을 다져야 할지 정밀 분석합니다. 올해의 핵심 피벗(Pivot) 적기 및 최적의 자금/확장 타이밍을 확인하세요.
                                             </p>
                                         </div>
                                         <div className="flex flex-wrap gap-4 pt-2">
@@ -444,7 +444,7 @@ export default function StartupDashboard() {
                                                 onClick={() => setIsExecutiveDashboardOpen(true)}
                                                 className="bg-[#3211d4] hover:bg-[#3211d4]/90 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-[#3211d4]/20 transition-all flex items-center gap-2"
                                             >
-                                                ⚡ 경영 모멘텀 정밀 진단 실행하기
+                                                ⚡ 경영 모멘텀 정밀 분석 실행하기
                                                 <span className="material-symbols-outlined">arrow_forward</span>
                                             </button>
                                             <button
@@ -500,7 +500,7 @@ export default function StartupDashboard() {
 
                     <section>
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-white">기타 전문 진단 서비스</h3>
+                            <h3 className="text-xl font-bold text-white">기타 전문 분석 서비스</h3>
                             <a className="text-sm font-bold text-[#3211d4] hover:underline cursor-pointer">전체 보기</a>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
