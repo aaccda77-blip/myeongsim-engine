@@ -3265,12 +3265,12 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                         idx === 1 ? 'text-blue-300' :
                                                         'text-emerald-300'
                                                     }`}>
-                                                        0${idx + 1}. ${m.time} | ${m.mode} (${m.state})
+                                                        0${idx + 1}. {m.time} | {m.mode} ({m.state})
                                                     </h5>
-                                                    <span className="text-[10px] font-mono text-slate-400">CHRONO CYCLE ${idx + 1}</span>
+                                                    <span className="text-[10px] font-mono text-slate-400">CHRONO CYCLE {idx + 1}</span>
                                                 </div>
                                                 <p className="text-xs text-slate-200 leading-relaxed pt-1 font-sans">
-                                                    ${m.action}
+                                                    {m.action}
                                                 </p>
                                             </div>
                                         ))}
@@ -3401,17 +3401,17 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                         idx === 1 ? 'text-emerald-300' :
                                                         'text-blue-300'
                                                     }`}>
-                                                        ${s.step} | ${s.title}
+                                                        {s.step} | {s.title}
                                                     </h5>
-                                                    <span className="text-[10px] font-mono text-slate-400">SHIFT PHASE ${idx + 1}</span>
+                                                    <span className="text-[10px] font-mono text-slate-400">SHIFT PHASE {idx + 1}</span>
                                                 </div>
                                                 <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                    ${s.desc}
+                                                    {s.desc}
                                                 </p>
                                                 {s.action && (
                                                     <div className="mt-3 pt-2 border-t border-emerald-500/20 text-xs font-semibold text-emerald-300 flex items-center gap-1.5">
                                                         <span className="material-symbols-outlined text-xs">rocket_launch</span>
-                                                        <span>실행 지침: ${s.action}</span>
+                                                        <span>실행 지침: {s.action}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -3535,14 +3535,14 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         {coaching.masterRoadmap?.bugs?.map((bug, idx) => (
                                             <div key={idx} className="p-5 rounded-xl bg-red-500/10 border border-red-500/30 space-y-2">
                                                 <div className="flex items-center justify-between">
-                                                    <h5 className="font-bold text-red-300 text-sm">${bug.id} | ${bug.name}</h5>
-                                                    <span className="text-[10px] font-mono text-red-400/80">RUNTIME ERROR ${idx + 1}</span>
+                                                    <h5 className="font-bold text-red-300 text-sm">{bug.id} | {bug.name}</h5>
+                                                    <span className="text-[10px] font-mono text-red-400/80">RUNTIME ERROR {idx + 1}</span>
                                                 </div>
                                                 <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                    <strong className="text-red-300">증상:</strong> ${bug.symptom}
+                                                    <strong className="text-red-300">증상:</strong> {bug.symptom}
                                                 </p>
                                                 <div className="mt-2 pt-2 border-t border-red-500/20 text-xs font-semibold text-amber-300">
-                                                    💊 디버깅 패치: ${bug.patch}
+                                                    💊 디버깅 패치: {bug.patch}
                                                 </div>
                                             </div>
                                         ))}
@@ -3550,17 +3550,17 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         {coaching.masterRoadmap?.leverages?.map((lev, idx) => (
                                             <div key={idx} className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
                                                 <div className="flex items-center justify-between">
-                                                    <h5 className="font-bold text-blue-300 text-sm">${lev.type} 레버리지 | ${lev.title}</h5>
+                                                    <h5 className="font-bold text-blue-300 text-sm">{lev.type} 레버리지 | {lev.title}</h5>
                                                     <span className="text-[10px] font-mono text-blue-400/80">${lev.type.toUpperCase()} LEVERAGE</span>
                                                 </div>
                                                 <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                    ${lev.desc}
+                                                    {lev.desc}
                                                 </p>
                                                 <ul className="mt-2 pt-2 border-t border-blue-500/20 space-y-1 text-xs text-slate-300">
                                                     {lev.items?.map((item, i) => (
                                                         <li key={i} className="flex items-center gap-1.5">
                                                             <span className="text-amber-300">•</span>
-                                                            ${item}
+                                                            {item}
                                                         </li>
                                                     ))}
                                                 </ul>
