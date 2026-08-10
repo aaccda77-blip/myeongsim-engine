@@ -94,7 +94,7 @@ export const THINKING_FORMULAS: ThinkingFormula[] = [
         name: "자금 조달 타이밍",
         formula_text: "검증된 트랙션 × 적절한 시기 = 투자 유치",
         description: "투자는 아이디어가 아니라 '증명된 성장'에 들어온다. PMF(Product Market Fit)를 먼저 달성하라.",
-        application_guide: "1. 매출 또는 사용자 성장 그래프 만들기\n2. MRR(월 반복 매출) 300만원 이상 달성\n3. 그 후 정부지원금/엔젤투자 순서로 접근",
+        application_guide: "1. 매출 또는 사용자 성장 그래프 만들기\n2. MRR(월 반복 매출) 30만원 이상 달성\n3. 그 후 정부지원금/엔젤투자 순서로 접근",
         related_strength: ['sustainability', 'structure']
     }
 ];

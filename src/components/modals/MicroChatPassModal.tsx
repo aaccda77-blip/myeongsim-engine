@@ -109,7 +109,7 @@ export default function MicroChatPassModal({
                             <span>📜 [명심코칭 오픈 & 특허 출원 기념 한정 혜택]</span>
                         </p>
                         <p className="text-[11px] text-gray-200 font-medium leading-[1.65]">
-                            특허 정식 출원 승인 시까지 특별 혜택가 <strong className="text-amber-300 font-bold">890원</strong>에 제공되며, 정식 등록 완료 후 <span className="text-amber-200 font-bold">B2C 99,000원</span> / <span className="text-amber-200 font-bold">B2B 기업용 3,000,000원</span>으로 정상 인상될 예정입니다.
+                            특허 정식 출원 승인 시까지 특별 혜택가 <strong className="text-amber-300 font-bold">890원</strong>에 제공되며, 정식 등록 완료 후 <span className="text-amber-200 font-bold">B2C 99,000원</span> / <span className="text-amber-200 font-bold">B2B 기업용 300,000원</span>으로 정상 인상될 예정입니다.
                         </p>
                     </div>
 

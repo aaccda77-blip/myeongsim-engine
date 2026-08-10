@@ -719,7 +719,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-amber-950/60 via-purple-950/60 to-slate-950 border-t border-amber-500/30 flex items-center justify-between text-xs gap-2 shrink-0">
                     <span className="text-gray-200 font-bold flex items-center gap-1.5 truncate text-[11px] sm:text-xs">
                         <Sparkles size={13} className="text-amber-400 shrink-0" />
-                        <span className="truncate">{userMessageCount < 3 ? `🎁 첫 3회 1:1 영혼 코칭 무료 체험 중 (${userMessageCount}/3회)` : `🔒 3회 무료 완료! [특허 출원 한정 890원 / 추후 B2C 9만9천원, B2B 300만원 인상 예정]` }</span>
+                        <span className="truncate">{userMessageCount < 3 ? `🎁 첫 3회 1:1 영혼 코칭 무료 체험 중 (${userMessageCount}/3회)` : `🔒 3회 무료 완료! [특허 출원 한정 890원 / 추후 B2C 9만9천원, B2B 30만원 인상 예정]` }</span>
                     </span>
                     <button
                         onClick={() => setShowMicroPassModal(true)}

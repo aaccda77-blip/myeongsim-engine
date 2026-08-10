@@ -233,7 +233,7 @@ export class StartupCoachingEngine {
                 actions: [
                     '나의 약점 보완할 파트너 1명 영입',
                     'K-Startup 정부지원금 신청',
-                    '월 매출 300만원 달성 후 투자 검토'
+                    '월 매출 30만원 달성 후 투자 검토'
                 ],
                 tools: ['K-Startup', '크몽', '원티드'],
                 estimated_time: '6~12개월',
