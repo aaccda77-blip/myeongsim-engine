@@ -252,7 +252,7 @@ interface IlganCoaching {
     finalQuoteKo: string;
     closingMessage: string;
     masterRoadmap?: {
-        engines: { label: string; title: string; desc: string }[];
+        engines: { label: string; title: string; desc: string; action?: string }[];
         shifts: { step: string; title: string; desc: string; action: string }[];
         dailyMissions: { time: string; mode: string; state: string; action: string }[];
         bugs: { id: string; name: string; symptom: string; patch: string }[];
@@ -326,10 +326,10 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
         closingMessage: '당신의 뜨거운 여름날을 식혀줄 임수(壬水)의 지혜를 잊지 마십시오. 부족함을 채우려 애쓰기보다, 이미 넘치는 것을 흘려보낼 때 당신의 명식은 비로소 완성됩니다. 옥죄던 긴장의 끈을 15%만 풀어내십시오.',
         masterRoadmap: {
             engines: [
-                { label: '하드웨어 엔진 (庚申)', title: '무한 돌파력의 코어', desc: '강력한 쇳덩어리이자 바위. 어떤 버그나 난관이 와도 밀어붙일 수 있는 쉽게 지치지 않는 물리적 체력과 경쟁심의 하드웨어입니다.' },
-                { label: '중앙 처리 장치 (辛巳)', title: '완벽한 디버깅 프로세서', desc: '다듬어진 보석이자 예리한 메스. 모호한 무의식을 다룰 때도 감상에 젖지 않고 예리한 분석력과 체계적 논리로 디버깅을 수행합니다.' },
-                { label: '냉각수 및 출력 포트 (癸未)', title: '끝없는 지식의 방출 (식신)', desc: '시스템이 다운되지 않도록 지속적으로 차가운 지식과 언어를 뿜어냅니다. 깊은 심연의 통찰을 밖으로 꺼내 문서화하는 행위입니다.' },
-                { label: '최종 결과물 및 네트워크 (乙未)', title: '거대한 비즈니스 인프라', desc: '비옥한 토양 위에서 자라나는 거대한 시스템(편재). 관념이 마침내 출판물, 코칭 센터 플랫폼이라는 현실의 인프라로 완성됩니다.' }
+                { label: '하드웨어 엔진 (庚申)', title: '무한 돌파력의 코어', desc: '강력한 쇳덩어리이자 바위. 어떤 버그나 난관이 와도 밀어붙일 수 있는 쉽게 지치지 않는 <span class=\'text-amber-300 font-bold\'>물리적 체력과 경쟁심</span>의 하드웨어입니다.', action: '[Core Action] 강박적 고민 대신 물리적 실행 속도를 우선 가동하십시오.' },
+                { label: '중앙 처리 장치 (辛巳)', title: '완벽한 디버깅 프로세서', desc: '다듬어진 보석이자 예리한 메스. 모호한 무의식을 다룰 때도 감상에 젖지 않고 <span class=\'text-amber-300 font-bold\'>예리한 분석력과 체계적 논리</span>로 디버깅을 수행합니다.', action: '[Core Action] 감정적 오버플로우를 차단하고 체계적 논리로 디버깅을 수행하십시오.' },
+                { label: '냉각수 및 출력 포트 (癸未)', title: '끝없는 지식의 방출 (식신)', desc: '시스템이 다운되지 않도록 지속적으로 차가운 지식과 언어를 뿜어냅니다. 깊은 심연의 통찰을 밖으로 꺼내 <span class=\'text-amber-300 font-bold\'>문서화하는 행위</span>입니다.', action: '[Core Action] 깊은 통찰과 경험을 주저 없이 글과 서비스로 문서화하십시오.' },
+                { label: '최종 결과물 및 네트워크 (乙未)', title: '거대한 비즈니스 인프라', desc: '비옥한 토양 위에서 자라나는 거대한 시스템(편재). 관념이 마침내 <span class=\'text-amber-300 font-bold\'>출판물, 코칭 센터, 플랫폼</span>이라는 현실의 인프라로 완성됩니다.', action: '[Core Action] 아이디어를 문서화하고 곧바로 플랫폼 인프라로 모듈화하십시오.' }
             ],
             shifts: [
                 { step: '1단계', title: '출력의 스위치를 무한 가동하라', desc: '모든 톱니바퀴를 돌아가게 하는 첫 트리거는 글쓰기와 언어적 발화입니다. 직관을 텍스트로 고정하십시오.', action: "'명심코칭 Vol. 0', 'AI 주역' 등 텍스트 원고 출력 집중" },
@@ -2137,13 +2137,21 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                     사주 아키텍처 정밀 해부: 4대 코어 엔진
                                                 </h4>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                    {coaching.masterRoadmap.engines.map((eng, i) => (
-                                                        <div key={i} className="p-4 rounded-xl border border-white/10" style={{ background: 'rgba(28,27,27,0.6)' }}>
-                                                            <div className="text-[10px] text-gray-500 font-mono mb-1">{eng.label}</div>
-                                                            <div className="text-sm font-bold text-white mb-2">{eng.title}</div>
-                                                            <p className="text-xs text-gray-400 leading-relaxed">{eng.desc}</p>
-                                                        </div>
-                                                    ))}
+                                                     {coaching.masterRoadmap.engines.map((eng, i) => (
+                                                         <div key={i} className="p-4 rounded-xl border border-white/10 flex flex-col justify-between" style={{ background: 'rgba(28,27,27,0.6)' }}>
+                                                             <div>
+                                                                 <div className="text-[10px] text-gray-500 font-mono mb-1">{eng.label}</div>
+                                                                 <div className="text-sm font-bold text-white mb-2">{eng.title}</div>
+                                                                 <p className="text-xs text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: eng.desc }} />
+                                                             </div>
+                                                             {eng.action && (
+                                                                 <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center gap-1.5 text-[11px] font-medium text-amber-300">
+                                                                     <span className="material-symbols-outlined text-xs">bolt</span>
+                                                                     <span>{eng.action}</span>
+                                                                 </div>
+                                                             )}
+                                                         </div>
+                                                     ))}
                                                 </div>
                                             </div>
 
