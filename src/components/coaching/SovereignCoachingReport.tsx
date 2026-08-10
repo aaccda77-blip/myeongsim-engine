@@ -432,9 +432,9 @@ const ILGAN_COACHING_DB: Record<string, IlganCoaching> = {
             ]
         },
         neuralPrompts: [
-            { id: '01', label: 'SOCRATES PROMPT', q: '"나의 이 확신은 진실에서 나온 것인가, 아니면 두려움에서 나온 방어막인가?"' },
-            { id: '02', label: 'RECURSIVE PROMPT', q: '"내가 고집하는 이 방식이 5년 뒤의 나를 위한 것인가, 아니면 지금의 자존심을 위한 것인가?"' },
-            { id: '03', label: 'META-COGNITION PROMPT', q: '"나는 지금 이끌고 있는가, 아니면 밀어붙이고 있는가?"' },
+            { id: '01', label: 'SOCRATES PROMPT', q: '"나의 이 <span class=\'text-amber-300 font-bold not-italic\'>확신</span>은 진실에서 나온 것인가, 아니면 두려움에서 나온 <span class=\'text-indigo-400 font-bold not-italic\'>방어막</span>인가?"' },
+            { id: '02', label: 'RECURSIVE PROMPT', q: '"내가 고집하는 이 방식이 <span class=\'text-amber-300 font-bold not-italic\'>5년 뒤의 나</span>를 위한 것인가, 아니면 지금의 <span class=\'text-red-400 font-bold not-italic\'>자존심</span>을 위한 것인가?"' },
+            { id: '03', label: 'META-COGNITION PROMPT', q: '"나는 지금 <span class=\'text-amber-300 font-bold not-italic\'>이끌고</span> 있는가, 아니면 <span class=\'text-red-400 font-bold not-italic\'>밀어붙이고</span> 있는가?"' },
         ],
         steps: [
             { label: 'STEP 01: 속도 조절 (CBT)', desc: '빠른 결정의 인지적 오류를 점검하십시오. 3초를 멈추고 상대의 관점을 먼저 물어보는 습관이 당신의 리더십을 완성합니다.' },
