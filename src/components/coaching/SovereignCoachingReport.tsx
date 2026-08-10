@@ -3253,41 +3253,27 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             {(isAllPassUnlocked) ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 생체시계 가이드
                                         </div>
 
-                                        {/* Scan Time */}
-                                        <div className="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-indigo-300 text-sm">01. SCAN TIME (08:00 - 12:00) | 세상의 소음을 끄는 시간</h5>
-                                                <span className="text-[10px] font-mono text-indigo-400/80">DEEP WORK SCAN</span>
+                                        {coaching.masterRoadmap?.dailyMissions?.map((m, idx) => (
+                                            <div key={idx} className={`p-5 rounded-xl border space-y-2 ${
+                                                idx === 0 ? 'bg-indigo-500/10 border-indigo-500/30' :
+                                                idx === 1 ? 'bg-blue-500/10 border-blue-500/30' :
+                                                'bg-emerald-500/10 border-emerald-500/30'
+                                            }`}>
+                                                <div className="flex items-center justify-between">
+                                                    <h5 className={`font-bold text-sm ${
+                                                        idx === 0 ? 'text-indigo-300' :
+                                                        idx === 1 ? 'text-blue-300' :
+                                                        'text-emerald-300'
+                                                    }`}>
+                                                        0${idx + 1}. ${m.time} | ${m.mode} (${m.state})
+                                                    </h5>
+                                                    <span className="text-[10px] font-mono text-slate-400">CHRONO CYCLE ${idx + 1}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-200 leading-relaxed pt-1 font-sans">
+                                                    ${m.action}
+                                                </p>
                                             </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 아침부터 타인의 SNS나 이메일을 보면 하루 전체가 피곤해질까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                당신의 뇌는 아침 시간에 가장 정밀하고 섬세한 빛을 발합니다. 이 소중한 시간에 남들의 이야기나 잡음에 의지력을 빼앗기지 마세요. 스마트폰 알림을 끄고 거친 원석 같은 논문과 지식을 정밀하게 읽어내려갈 때, 당신 내면의 거대한 중앙 처리 장치가 가장 우아하게 가동됩니다.
-                                            </p>
-                                        </div>
-
-                                        {/* Sync Time */}
-                                        <div className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-blue-300 text-sm">02. SYNC TIME (13:00 - 17:00) | 생각을 밖으로 꺼내는 시간</h5>
-                                                <span className="text-[10px] font-mono text-blue-400/80">TEXT COOLING SYNC</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"머릿속에 생각은 가득한데, 왜 마음이 답답하고 머리가 아플까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                오전에 모은 수많은 영감과 통찰이 뇌 안에 머물러 있으면 열기가 차올라 시스템이 과열됩니다. 이 열기를 식히는 가장 완벽한 방법은 '글을 쓰는 것'입니다. 완성도에 집착하지 말고 블로그나 책 원고로 생각을 밖으로 꺼내어 뿜어내세요. 키보드를 두드리는 순간, 꽉 막혔던 내면의 냉각수가 시원하게 흐르기 시작합니다.
-                                            </p>
-                                        </div>
-
-                                        {/* Shift Time */}
-                                        <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-emerald-300 text-sm">03. SHIFT TIME (19:00 - 22:00) | 나의 세상을 넓혀가는 시간</h5>
-                                                <span className="text-[10px] font-mono text-emerald-400/80">NETWORK INFRA SHIFT</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"하루의 마무리는 어떻게 해야 완벽한 성취감으로 채워질까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                저녁은 혼자만의 고뇌에서 벗어나 세상을 향해 당신의 가지를 뻗는 시간입니다. 출판사 세팅, 코칭 센터 구축, 시스템 백엔드 개발처럼 눈에 보이는 실제 결실을 만들어내세요. 담쟁이넝쿨이 담장을 넘어 퍼져나가듯, 당신이 만들어낸 현실의 인프라가 훗날 당신에게 거대한 자유를 안겨줄 것입니다.
-                                            </p>
-                                        </div>
+                                        ))}
                                     </motion.div>
                                 )}
                             </div>
@@ -3403,41 +3389,33 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             {(isAllPassUnlocked) ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 SHIFT 가이드
                                         </div>
 
-                                        {/* Step 1 */}
-                                        <div className="p-5 rounded-xl bg-green-500/10 border border-green-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-green-300 text-sm">1단계 | 출력의 스위치를 켜라: "완벽한 글 대신, 세상에 나온 글을 쓰세요"</h5>
-                                                <span className="text-[10px] font-mono text-green-400/80">TEXT OUTPUT SWITCH</span>
+                                        {coaching.masterRoadmap?.shifts?.map((s, idx) => (
+                                            <div key={idx} className={`p-5 rounded-xl border space-y-2 ${
+                                                idx === 0 ? 'bg-green-500/10 border-green-500/30' :
+                                                idx === 1 ? 'bg-emerald-500/10 border-emerald-500/30' :
+                                                'bg-blue-500/10 border-blue-500/30'
+                                            }`}>
+                                                <div className="flex items-center justify-between">
+                                                    <h5 className={`font-bold text-sm ${
+                                                        idx === 0 ? 'text-green-300' :
+                                                        idx === 1 ? 'text-emerald-300' :
+                                                        'text-blue-300'
+                                                    }`}>
+                                                        ${s.step} | ${s.title}
+                                                    </h5>
+                                                    <span className="text-[10px] font-mono text-slate-400">SHIFT PHASE ${idx + 1}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                    ${s.desc}
+                                                </p>
+                                                {s.action && (
+                                                    <div className="mt-3 pt-2 border-t border-emerald-500/20 text-xs font-semibold text-emerald-300 flex items-center gap-1.5">
+                                                        <span className="material-symbols-outlined text-xs">rocket_launch</span>
+                                                        <span>실행 지침: ${s.action}</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 우리는 머릿속으로 수없이 거대한 구상을 하면서도 한 줄을 쓰지 못할까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                생각은 머릿속에 머물러 있는 동안만 우아할 뿐, 밖으로 나오지 않으면 아무런 힘을 갖지 못합니다. 지금 당신에게 필요한 것은 완벽한 걸작이 아니라 <strong className="text-amber-300">'일단 세상 밖으로 꺼내어진 텍스트'</strong>입니다. 거친 원고라도 좋습니다. 당신의 직관을 키보드로 눌러 고정시키는 순간, 멈춰있던 인생의 톱니바퀴가 드디어 소리를 내며 돌아가기 시작합니다. 오늘 당장 단 한 단락이라도 당신의 지혜를 텍스트로 완성해보세요.
-                                            </p>
-                                        </div>
-
-                                        {/* Step 2 */}
-                                        <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-emerald-300 text-sm">2단계 | 인프라를 구축하라: "당신의 철학에 공식적인 집을 지어주세요"</h5>
-                                                <span className="text-[10px] font-mono text-emerald-400/80">PHYSICAL INFRASTRUCTURE</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"언제까지 내 귀한 생각들을 노트 한구석에만 묵혀두실 건가요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                세상은 당신의 내면에 무엇이 들었는지 다 알지 못합니다. 대중과 세상이 당신의 가치를 알아보게 하려면, 당신의 철학이 담길 <strong className="text-amber-300">공식적인 브랜드와 제도적 틀(출판사, 평생교육원, 플랫폼)</strong>이 필요합니다. 행정적 인프라를 세우는 과정은 복잡해 보이지만, 당신의 관념에 '현실의 몸'을 입혀주는 가장 숭고한 작업입니다. 이제 당신의 지혜에 당당한 집을 지어주고 세상의 공식적인 주권자로 서세요.
-                                            </p>
-                                        </div>
-
-                                        {/* Step 3 */}
-                                        <div className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-blue-300 text-sm">3단계 | AI와 기술을 레버리지하라: "당신이 자는 동안에도 일하는 시스템"</h5>
-                                                <span className="text-[10px] font-mono text-blue-400/80">AI & TECH LEVERAGE</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"내가 직접 몸으로 뛰지 않으면 멈춰버리는 일에 당신의 고귀한 에너지를 다 쓰지 마세요."</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                당신 안의 차가운 금(金)의 기운은 정밀함이자 자동화, 그리고 기술(AI)입니다. 오프라인이나 당신 한 사람의 노동력에 의존하던 단계를 넘어, 당신의 알고리즘을 디지털 공간에 탑재하세요. AI와 기술이 당신의 분신이 되어 24시간 사람들을 치유하고 길을 안내할 때, 당신은 비로소 자유로운 창조주이자 아키텍처로서 다음 미래를 설계할 수 있게 됩니다.
-                                            </p>
-                                        </div>
+                                        ))}
                                     </motion.div>
                                 )}
                             </div>
@@ -3554,41 +3532,40 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             {(isAllPassUnlocked) ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 디버깅 가이드
                                         </div>
 
-                                        {/* ERR_01 */}
-                                        <div className="p-5 rounded-xl bg-red-500/10 border border-red-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-red-300 text-sm">ERR_01 패치 | 계수(癸水) 증발 해제: "배운 것을 썩히지 말고 밖으로 흘려보내세요"</h5>
-                                                <span className="text-[10px] font-mono text-red-400/80">KNOWLEDGE PARALYSIS</span>
+                                        {coaching.masterRoadmap?.bugs?.map((bug, idx) => (
+                                            <div key={idx} className="p-5 rounded-xl bg-red-500/10 border border-red-500/30 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <h5 className="font-bold text-red-300 text-sm">${bug.id} | ${bug.name}</h5>
+                                                    <span className="text-[10px] font-mono text-red-400/80">RUNTIME ERROR ${idx + 1}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                    <strong className="text-red-300">증상:</strong> ${bug.symptom}
+                                                </p>
+                                                <div className="mt-2 pt-2 border-t border-red-500/20 text-xs font-semibold text-amber-300">
+                                                    💊 디버깅 패치: ${bug.patch}
+                                                </div>
                                             </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 책을 읽고 강의를 들을수록 마음은 더 불안하고 답답해질까요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                생각과 지식이 머릿속에 쌓이기만 하고 밖으로 나오지 못하면 내면의 냉각수(癸水)는 열기에 바짝 말라버립니다. 지식 과식증은 공부를 많이 해서가 아니라, 출력에 대한 두려움 때문에 생깁니다. 완벽한 작품을 만들 필요가 없습니다. 거칠고 부족하더라도 단 한 줄의 메모, 한 편의 글, 한 번의 말로 밖으로 꺼내어 뿜어내세요. 출력하는 순간 뇌의 막혔던 혈류가 뚫리고 진정한 통찰이 흘러나오기 시작합니다.
-                                            </p>
-                                        </div>
+                                        ))}
 
-                                        {/* ERR_02 */}
-                                        <div className="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-amber-300 text-sm">ERR_02 패치 | 경신(庚申) 과부하 해제: "당신은 모든 역할을 맡은 배우가 아닌 총감독입니다"</h5>
-                                                <span className="text-[10px] font-mono text-amber-400/80">CONTROL OVERLOAD</span>
+                                        {coaching.masterRoadmap?.leverages?.map((lev, idx) => (
+                                            <div key={idx} className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <h5 className="font-bold text-blue-300 text-sm">${lev.type} 레버리지 | ${lev.title}</h5>
+                                                    <span className="text-[10px] font-mono text-blue-400/80">${lev.type.toUpperCase()} LEVERAGE</span>
+                                                </div>
+                                                <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                    ${lev.desc}
+                                                </p>
+                                                <ul className="mt-2 pt-2 border-t border-blue-500/20 space-y-1 text-xs text-slate-300">
+                                                    {lev.items?.map((item, i) => (
+                                                        <li key={i} className="flex items-center gap-1.5">
+                                                            <span className="text-amber-300">•</span>
+                                                            ${item}
+                                                        </li>
+                                                    ))}
+                                                </ul>
                                             </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"내가 직접 다 확인하고 처리해야만 안심이 되는 그 마음, 얼마나 피곤하셨나요?"</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                거대한 바위 같은 완벽주의(庚申)는 세상을 돌파하는 무기가 되기도 하지만, 모든 것을 내 손으로 통제하려 들면 당신이라는 시스템 전체를 방전시켜 버립니다. 디테일에 집착하느라 진정 중요한 거시적 비전을 놓치지 마세요. 당신의 고귀한 에너지는 오직 '시스템의 코어 로직'을 설계하는 데만 쓰여야 합니다. 나머지는 내려놓아도 세상은 무너지지 않습니다.
-                                            </p>
-                                        </div>
-
-                                        {/* LEVERAGE GUIDE */}
-                                        <div className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-bold text-blue-300 text-sm">LEVERAGE GUIDE | 지렛대를 쥐어라: "AI와 타인의 손을 잡는 것은 완벽한 지혜입니다"</h5>
-                                                <span className="text-[10px] font-mono text-blue-400/80">SYSTEM LEVERAGE</span>
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-300 italic">"혼자서 모든 것을 버텨내는 것은 용기가 아니라, 스스로를 고통으로 몰아넣는 일입니다."</p>
-                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
-                                                자동화 AI(Cursor, n8n)를 구축하고, 행정이나 디자인 업무를 전문가에게 맡기는 것은 당신의 무능함이 아닙니다. 오히려 당신의 본질적 가치를 세상에 더 빠르게 퍼뜨리기 위한 <strong className="text-amber-300">'가장 우아한 지렛대(Leverage)'</strong>를 사용하는 것입니다. 반복되는 잡무는 기술과 사람에게 위임하세요. 당신이 코어 로직에 집중할 때, 당신의 비즈니스는 한 사람의 노동을 넘어 거대한 시스템으로 승화됩니다.
-                                            </p>
-                                        </div>
+                                        ))}
                                     </motion.div>
                                 )}
                             </div>
