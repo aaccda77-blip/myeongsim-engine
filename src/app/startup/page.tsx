@@ -3,12 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import ExecutiveDashboardModal from '@/components/startup/ExecutiveDashboardModal';
 
 export default function StartupDashboard() {
     const router = useRouter();
     const [activeMenu, setActiveMenu] = useState('dashboard');
     const [selectedService, setSelectedService] = useState<any>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isExecutiveDashboardOpen, setIsExecutiveDashboardOpen] = useState(false);
 
     const handleConsultation = (prompt: string) => {
         // [Fix] Intent 대신 실제 질문(Prompt)을 전달하여 챗봇이 바로 대답하게 함
@@ -218,7 +220,7 @@ export default function StartupDashboard() {
 
                                     <div className="pt-4">
                                         <button
-                                            onClick={() => handleConsultation(selectedService.prompt)}
+                                            onClick={() => setIsExecutiveDashboardOpen(true)}
                                             className="w-full sm:w-auto bg-gradient-to-r from-[#3211d4] to-[#5b36ff] hover:from-[#3211d4]/90 hover:to-[#5b36ff]/90 text-white px-8 py-4 rounded-xl font-extrabold text-base md:text-lg shadow-xl shadow-[#3211d4]/30 transition-all flex items-center justify-center gap-3 group"
                                         >
                                             <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform text-amber-300">bolt</span>
@@ -439,19 +441,16 @@ export default function StartupDashboard() {
                                         </div>
                                         <div className="flex flex-wrap gap-4 pt-2">
                                             <button
-                                                onClick={() => {
-                                                    const timingItem = menuItems.find(m => m.id === 'timing');
-                                                    if (timingItem) {
-                                                        setSelectedService(timingItem);
-                                                        setActiveMenu('timing');
-                                                    }
-                                                }}
+                                                onClick={() => setIsExecutiveDashboardOpen(true)}
                                                 className="bg-[#3211d4] hover:bg-[#3211d4]/90 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-[#3211d4]/20 transition-all flex items-center gap-2"
                                             >
-                                                정밀 진단 시작하기
+                                                ⚡ 경영 모멘텀 정밀 진단 실행하기
                                                 <span className="material-symbols-outlined">arrow_forward</span>
                                             </button>
-                                            <button className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all">
+                                            <button
+                                                onClick={() => setIsExecutiveDashboardOpen(true)}
+                                                className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all"
+                                            >
                                                 샘플 리포트 보기
                                             </button>
                                         </div>
@@ -546,6 +545,15 @@ export default function StartupDashboard() {
                     </div>
                 </footer>
             </main>
+
+            {/* [Executive Dashboard 1-Page Briefing Modal] */}
+            <ExecutiveDashboardModal
+                isOpen={isExecutiveDashboardOpen}
+                onClose={() => setIsExecutiveDashboardOpen(false)}
+                companyName="(주)명심코칭"
+                ceoName="이경윤 대표님"
+                onStartChat={handleConsultation}
+            />
         </div>
     );
-}
+}
