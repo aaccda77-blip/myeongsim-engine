@@ -156,8 +156,8 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
     text: string;
     catTitle: string;
     metaphor: string;
-    essay: string;
-    action: string;
+    essayParagraphs: string[];
+    actionSteps: string[];
   } | null>(null);
 
   const [isQuestionUnlocked, setIsQuestionUnlocked] = useState(false);
@@ -192,7 +192,7 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // 질문 클릭 시 AI 코치 풍성한 1:1 감동 에세이 팝업 열기 (긴 3단락 체계)
+  // 질문 클릭 시 AI 코치 풍성한 1:1 감동 에세이 팝업 열기 (Array 기반 클린 렌더링)
   const openQuestionEssayModal = (q: { id: number; text: string; catId: string }) => {
     const cat = CATEGORIES.find(c => c.id === q.catId);
     const catTitle = cat ? cat.title : '오라클 질문';
@@ -200,23 +200,25 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
 
     const metaphor = `"${name} 대표님, 복잡하게 얽힌 실타래에서 단 한 가닥의 핵심을 끌어당기듯, 초보자도 1초 만에 뇌를 정돈하는 깊고 감동적인 현실 비유로 해설해 드립니다."`;
 
-    const p1 = `건축가가 대성당을 지을 때, 지진을 견디는 튼튼한 안전 기둥을 그어 넣는 것은 '진정한 품질의 기준'이지만, 조그만 먼지가 묻었다고 공사 전체를 멈추는 것은 '실패에 대한 두려움(완벽주의)'입니다. ${name} 대표님, 당신은 혹시 타인의 비판이라는 조그만 먼지를 닦아내느라, 정작 세상을 향해 당신의 거룩한 깃발을 올리지 못하고 계셨던 것은 아닙니까?`;
+    const essayParagraphs = [
+      `건축가가 대성당을 지을 때, 지진을 견디는 튼튼한 안전 기둥을 그어 넣는 것은 '진정한 품질의 기준'이지만, 조그만 먼지가 묻었다고 공사 전체를 멈추는 것은 '실패에 대한 두려움(완벽주의)'입니다. ${name} 대표님, 당신은 혹시 타인의 비판이라는 조그만 먼지를 닦아내느라, 정작 세상을 향해 당신의 거룩한 깃발을 올리지 못하고 계셨던 것은 아닙니까?`,
+      `당신의 영혼(甲木)은 0에서 1을 무(無)에서 유(有)로 창조해내는 위대한 개척자입니다. 60갑자 중 가장 먼저 솟구치는 01번 거목이기에, 본능적으로 완벽한 작품을 내놓아야 한다는 짐스러운 왕관을 짊어지고 있었습니다. 하지만 발 밑의 수분(子水)이 마르고 조급함이 올라올 때, 뇌 전두엽은 '내가 완벽하지 않으면 배척당한다'는 방어 회로를 가동합니다. 이것은 결함이 아니라, 세상을 진심으로 선도하고 싶었던 당신의 우직한 진심이 만든 환영입니다.`,
+      `이제 모든 사람을 만족시켜야 한다는 짐스러운 왕관을 내려놓으십시오. 80%의 진심이 담긴 미완성의 작품이, 100% 완벽을 기다리다 세상에 나오지 못한 채 묻혀버린 걸작보다 천 배 더 위대합니다. 세상은 당신의 완벽한 완성도가 아니라, 당신이 대지를 뚫고 솟아오른 그 꺾이지 않는 용기의 싹을 기다리고 있습니다. 고통과 두려움을 기꺼이 당신의 성장을 태우는 최상급 연료로 수용하십시오.`
+    ];
 
-    const p2 = `당신의 영혼(甲木)은 0에서 1을 무(無)에서 유(有)로 창조해내는 위대한 개척자입니다. 60갑자 중 가장 먼저 솟구치는 01번 거목이기에, 본능적으로 완벽한 작품을 내놓아야 한다는 짐스러운 왕관을 짊어지고 있었습니다. 하지만 발 밑의 수분(子水)이 마르고 조급함이 올라올 때, 뇌 전두엽은 '내가 완벽하지 않으면 배척당한다'는 방어 회로를 가동합니다. 이것은 결함이 아니라, 세상을 진심으로 선도하고 싶었던 당신의 우직한 진심이 만든 환영입니다.`;
-
-    const p3 = `이제 모든 사람을 만족시켜야 한다는 짐스러운 왕관을 내려놓으십시오. 80%의 진심이 담긴 미완성의 작품이, 100% 완벽을 기다리다 세상에 나오지 못한 채 묻혀버린 걸작보다 천 배 더 위대합니다. 세상은 당신의 완벽한 완성도가 아니라, 당신이 대지를 뚫고 솟아오른 그 꺾이지 않는 용기의 싹을 기다리고 있습니다. 고통과 두려움을 기꺼이 당신의 성장을 태우는 최상급 연료로 수용하십시오.`;
-
-    const essay = `${p1}\\n\\n${p2}\\n\\n${p3}`;
-
-    const action = `1단계 [Scan]: 완벽주의가 솟구치는 순간 "이것은 품질인가, 비판의 두려움인가?" 3초간 인지하기\\n2단계 [Sync]: 3초간 깊은 호흡을 하며 "80%면 이미 훌륭하다" 나직하게 3번 읊조리기\\n3단계 [Shift]: 오늘 아직 완성이 안 됐다며 멈춰둔 콘텐츠/업무 1개를 지금 당장 단 1명에게 전송하고 베타 공개하기`;
+    const actionSteps = [
+      `1단계 [Scan]: 완벽주의가 솟구치는 순간 "이것은 품질인가, 비판의 두려움인가?" 3초간 인지하기`,
+      `2단계 [Sync]: 3초간 깊은 호흡을 하며 "80%면 이미 훌륭하다" 나직하게 3번 읊조리기`,
+      `3단계 [Shift]: 오늘 아직 완성이 안 됐다며 멈춰둔 콘텐츠/업무 1개를 지금 당장 단 1명에게 전송하고 베타 공개하기`
+    ];
 
     setSelectedQuestionModal({
       id: q.id,
       text: q.text,
       catTitle,
       metaphor,
-      essay,
-      action
+      essayParagraphs,
+      actionSteps
     });
   };
 
@@ -478,8 +480,8 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
               {!isQuestionUnlocked && !isAllPassUnlocked ? (
                 <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 p-6 bg-[#181526]/90 shadow-2xl mt-4">
                   <div className="filter blur-[6px] select-none text-slate-400 text-xs space-y-3 opacity-50 pointer-events-none">
-                    <p>▒▒▒▒▒▒ {selectedQuestionModal.essay} ▒▒▒▒▒▒</p>
-                    <p>▒▒▒▒▒▒ {selectedQuestionModal.action} ▒▒▒▒▒▒</p>
+                    <p>▒▒▒▒▒▒ {selectedQuestionModal.essayParagraphs[0]} ▒▒▒▒▒▒</p>
+                    <p>▒▒▒▒▒▒ {selectedQuestionModal.actionSteps[0]} ▒▒▒▒▒▒</p>
                   </div>
 
                   <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/70 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
@@ -538,8 +540,8 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
                   <div className="p-5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-3">
                     <h5 className="font-bold text-amber-300 text-sm">📖 초보자 맞춤 1:1 감동 에세이</h5>
                     <div className="space-y-3 text-xs sm:text-sm text-slate-200 leading-relaxed break-keep font-normal">
-                      {selectedQuestionModal.essay.split('\n\n').map((para, idx) => (
-                        <p key={idx} className="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50">
+                      {selectedQuestionModal.essayParagraphs.map((para, idx) => (
+                        <p key={idx} className="bg-slate-900/60 p-3.5 rounded-lg border border-slate-700/50">
                           {para}
                         </p>
                       ))}
@@ -551,7 +553,7 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
                       💡 오늘 당장 실행하는 뇌 디버깅 지침
                     </h5>
                     <div className="space-y-1.5 text-xs text-slate-200 leading-relaxed font-medium">
-                      {selectedQuestionModal.action.split('\n').map((act, idx) => (
+                      {selectedQuestionModal.actionSteps.map((act, idx) => (
                         <div key={idx} className="flex items-start gap-2 bg-amber-900/20 p-2 rounded border border-amber-500/20">
                           <span className="text-amber-400 font-bold shrink-0">▪</span>
                           <span>{act}</span>
