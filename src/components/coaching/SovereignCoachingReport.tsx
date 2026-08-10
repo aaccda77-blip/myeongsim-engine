@@ -1589,6 +1589,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const [isDailyEssayUnlocked, setIsDailyEssayUnlocked] = useState(false);
     const [isShiftEssayModalOpen, setIsShiftEssayModalOpen] = useState(false);
     const [isShiftEssayUnlocked, setIsShiftEssayUnlocked] = useState(false);
+    const [isRuntimeEssayModalOpen, setIsRuntimeEssayModalOpen] = useState(false);
+    const [isRuntimeEssayUnlocked, setIsRuntimeEssayUnlocked] = useState(false);
 
     // ── AI 코칭 리포트 관련 상태 ──
     type AiReport = {
@@ -1986,6 +1988,34 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                         </div>
                                                     )}
                                                 </div>
+                                            </div>
+
+                                            {/* ── [RUNTIME ERROR & LEVERAGE 890원 감동 에세이 CTA 바] ── */}
+                                            <div className="mt-4 p-4 rounded-2xl border border-red-500/30 bg-[#1e1317]/80 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="size-10 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-300 shrink-0">
+                                                        <span className="material-symbols-outlined text-xl">build</span>
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] font-extrabold text-red-400 uppercase tracking-widest">Runtime Debug Master</span>
+                                                            {(isRuntimeEssayUnlocked || isAllPassUnlocked) && (
+                                                                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold">
+                                                                    열람 완료
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <h5 className="text-xs font-bold text-white mt-0.5">뇌 과부하 해제 & 시스템 레버리지 세팅 해설서</h5>
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => setIsRuntimeEssayModalOpen(true)}
+                                                    className="w-full sm:w-auto shrink-0 bg-red-600 hover:bg-red-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">bolt</span>
+                                                    <span>{(isRuntimeEssayUnlocked || isAllPassUnlocked) ? '디버깅 해설서 읽기' : '🔓 890원에 뇌 과부하 해제 해설서 보기'}</span>
+                                                </button>
                                             </div>
                                         </div>
                                     </section>
@@ -2822,6 +2852,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                              setIsAllPassUnlocked(true);
                                                              setIsDailyEssayUnlocked(true);
                                                              setIsShiftEssayUnlocked(true);
+                                                             setIsRuntimeEssayUnlocked(true);
                                                              setIsUnlocking(false);
                                                          }, 700);
                                                      }}
@@ -3359,6 +3390,157 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             <p className="text-xs font-semibold text-slate-300 italic">"내가 직접 몸으로 뛰지 않으면 멈춰버리는 일에 당신의 고귀한 에너지를 다 쓰지 마세요."</p>
                                             <p className="text-xs text-slate-200 leading-relaxed pt-1">
                                                 당신 안의 차가운 금(金)의 기운은 정밀함이자 자동화, 그리고 기술(AI)입니다. 오프라인이나 당신 한 사람의 노동력에 의존하던 단계를 넘어, 당신의 알고리즘을 디지털 공간에 탑재하세요. AI와 기술이 당신의 분신이 되어 24시간 사람들을 치유하고 길을 안내할 때, 당신은 비로소 자유로운 창조주이자 아키텍처로서 다음 미래를 설계할 수 있게 됩니다.
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+
+            {/* ── [Runtime Error & Leverage Essay Paywall Modal (890원 / 1,900원 ALL-PASS)] ── */}
+            <AnimatePresence>
+                {isRuntimeEssayModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-2xl bg-[#131022] border border-red-500/40 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh] custom-scrollbar"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-start justify-between border-b border-white/10 pb-4 mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-300">
+                                        <span className="material-symbols-outlined text-xl">build</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
+                                            Runtime Debug Master Class
+                                        </span>
+                                        <h3 className="text-base md:text-lg font-bold text-white leading-snug mt-0.5">
+                                            AI 코치의 뇌 과부하 해제 & 지렛대(Leverage) 세팅 해설서
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsRuntimeEssayModalOpen(false)}
+                                    className="material-symbols-outlined text-slate-400 hover:text-white transition-colors"
+                                >
+                                    close
+                                </button>
+                            </div>
+
+                            {/* Free Preview Area */}
+                            <div className="space-y-4 text-slate-300 text-sm leading-relaxed font-sans pr-2 overflow-y-auto custom-scrollbar">
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-slate-200">
+                                    사주 오행의 기운이 한쪽으로 치우칠 때 발생하는 부작용(계수 증발, 경신 과부하)은 무능해서가 아니라 시스템의 런타임 에러(Runtime Error)일 뿐입니다. 에러를 패치하고 지렛대(Leverage)를 세우면 뇌의 과부하가 멈춥니다.
+                                </div>
+
+                                {!isRuntimeEssayUnlocked && !isAllPassUnlocked ? (
+                                    /* Paywall Locked Section */
+                                    <div className="relative overflow-hidden rounded-2xl border border-red-500/30 p-6 bg-[#181526]/90 shadow-2xl mt-4">
+                                        <div className="filter blur-[6px] select-none text-slate-500 text-xs space-y-3 opacity-60 pointer-events-none">
+                                            <p>▒▒▒▒▒▒ ERR_01 패치 | 계수(癸水) 증발 해제: "배운 것을 썩히지 말고 밖으로 흘려보내세요" ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ ERR_02 패치 | 경신(庚申) 과부하 해제: "당신은 모든 역할을 맡은 배우가 아닌 총감독입니다" ▒▒▒▒▒▒</p>
+                                            <p>▒▒▒▒▒▒ LEVERAGE GUIDE | 지렛대를 쥐어라: "AI와 타인의 손을 잡는 것은 완벽한 지혜입니다" ▒▒▒▒▒▒</p>
+                                        </div>
+
+                                        <div className="absolute inset-0 bg-gradient-to-b from-[#131022]/60 via-[#131022]/95 to-[#131022] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                                            <div className="size-14 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-white shadow-xl shadow-red-500/30 animate-bounce">
+                                                <span className="material-symbols-outlined text-2xl">lock</span>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-base font-extrabold text-white">뇌 과부하 해제 & 지렛대 세팅 해설서</h4>
+                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 전체 에세이를 해제하세요.</p>
+                                            </div>
+
+                                            <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsRuntimeEssayUnlocked(true);
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span>🔓 890원 단품 해제 (890pt)</span>
+                                                </button>
+
+                                                <button
+                                                    disabled={isUnlocking}
+                                                    onClick={() => {
+                                                        setIsUnlocking(true);
+                                                        setTimeout(() => {
+                                                            setIsPhase7Unlocked(true);
+                                                            setIsAllPassUnlocked(true);
+                                                            setIsDailyEssayUnlocked(true);
+                                                            setIsShiftEssayUnlocked(true);
+                                                            setIsRuntimeEssayUnlocked(true);
+                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
+                                                            setIsUnlocking(false);
+                                                        }, 700);
+                                                    }}
+                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">bolt</span>
+                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                </button>
+                                            </div>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Unlocked Full Essays */
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-6 pt-2"
+                                    >
+                                        <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                                            <span className="material-symbols-outlined text-sm">verified</span>
+                                            {(isAllPassUnlocked) ? '1,900pt ALL-PASS 결제 완료' : '890pt 단품 결제 완료'} • AI 코치 디버깅 가이드
+                                        </div>
+
+                                        {/* ERR_01 */}
+                                        <div className="p-5 rounded-xl bg-red-500/10 border border-red-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-red-300 text-sm">ERR_01 패치 | 계수(癸水) 증발 해제: "배운 것을 썩히지 말고 밖으로 흘려보내세요"</h5>
+                                                <span className="text-[10px] font-mono text-red-400/80">KNOWLEDGE PARALYSIS</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"왜 책을 읽고 강의를 들을수록 마음은 더 불안하고 답답해질까요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                생각과 지식이 머릿속에 쌓이기만 하고 밖으로 나오지 못하면 내면의 냉각수(癸水)는 열기에 바짝 말라버립니다. 지식 과식증은 공부를 많이 해서가 아니라, 출력에 대한 두려움 때문에 생깁니다. 완벽한 작품을 만들 필요가 없습니다. 거칠고 부족하더라도 단 한 줄의 메모, 한 편의 글, 한 번의 말로 밖으로 꺼내어 뿜어내세요. 출력하는 순간 뇌의 막혔던 혈류가 뚫리고 진정한 통찰이 흘러나오기 시작합니다.
+                                            </p>
+                                        </div>
+
+                                        {/* ERR_02 */}
+                                        <div className="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-amber-300 text-sm">ERR_02 패치 | 경신(庚申) 과부하 해제: "당신은 모든 역할을 맡은 배우가 아닌 총감독입니다"</h5>
+                                                <span className="text-[10px] font-mono text-amber-400/80">CONTROL OVERLOAD</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"내가 직접 다 확인하고 처리해야만 안심이 되는 그 마음, 얼마나 피곤하셨나요?"</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                거대한 바위 같은 완벽주의(庚申)는 세상을 돌파하는 무기가 되기도 하지만, 모든 것을 내 손으로 통제하려 들면 당신이라는 시스템 전체를 방전시켜 버립니다. 디테일에 집착하느라 진정 중요한 거시적 비전을 놓치지 마세요. 당신의 고귀한 에너지는 오직 '시스템의 코어 로직'을 설계하는 데만 쓰여야 합니다. 나머지는 내려놓아도 세상은 무너지지 않습니다.
+                                            </p>
+                                        </div>
+
+                                        {/* LEVERAGE GUIDE */}
+                                        <div className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-bold text-blue-300 text-sm">LEVERAGE GUIDE | 지렛대를 쥐어라: "AI와 타인의 손을 잡는 것은 완벽한 지혜입니다"</h5>
+                                                <span className="text-[10px] font-mono text-blue-400/80">SYSTEM LEVERAGE</span>
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-300 italic">"혼자서 모든 것을 버텨내는 것은 용기가 아니라, 스스로를 고통으로 몰아넣는 일입니다."</p>
+                                            <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                                                자동화 AI(Cursor, n8n)를 구축하고, 행정이나 디자인 업무를 전문가에게 맡기는 것은 당신의 무능함이 아닙니다. 오히려 당신의 본질적 가치를 세상에 더 빠르게 퍼뜨리기 위한 <strong className="text-amber-300">'가장 우아한 지렛대(Leverage)'</strong>를 사용하는 것입니다. 반복되는 잡무는 기술과 사람에게 위임하세요. 당신이 코어 로직에 집중할 때, 당신의 비즈니스는 한 사람의 노동을 넘어 거대한 시스템으로 승화됩니다.
                                             </p>
                                         </div>
                                     </motion.div>
