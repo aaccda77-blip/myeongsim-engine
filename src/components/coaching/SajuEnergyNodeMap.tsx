@@ -493,7 +493,7 @@ export default function SajuEnergyNodeMap({ tenGods, dayStem = '?', userName = '
                             ⚡ 명심 코치의 맞춤 코칭 지침
                           </p>
                           <p className="text-[12px] text-white font-semibold leading-[1.6] break-keep italic">
-                            "{defaultMeta.coaching}"
+                            {defaultMeta.coaching.startsWith('"') ? defaultMeta.coaching : `"${defaultMeta.coaching}"`}
                           </p>
                         </div>
                       </>
