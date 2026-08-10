@@ -102,6 +102,17 @@ export default function MicroChatPassModal({
                         내 안의 고민을 명심 멘토와 끊김 없이 해결해 보세요.
                     </p>
 
+                    
+                    {/* Patent Open Event Notice Box */}
+                    <div className="mb-5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-left space-y-1.5 shadow-inner">
+                        <p className="text-[11px] font-black text-amber-300 flex items-center gap-1.5">
+                            <span>📜 [명심코칭 오픈 & 특허 출원 기념 한정 혜택]</span>
+                        </p>
+                        <p className="text-[11px] text-gray-200 font-medium leading-[1.65]">
+                            특허 정식 출원 승인 시까지 특별 혜택가 <strong className="text-amber-300 font-bold">890원</strong>에 제공되며, 정식 등록 완료 후 <span className="text-amber-200 font-bold">B2C 99,000원</span> / <span className="text-amber-200 font-bold">B2B 기업용 3,000,000원</span>으로 정상 인상될 예정입니다.
+                        </p>
+                    </div>
+
                     {/* Benefit Feature Box */}
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-6 text-left space-y-2.5">
                         <div className="flex items-center gap-2.5 text-xs text-gray-200">
