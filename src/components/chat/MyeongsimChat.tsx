@@ -534,8 +534,24 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                             <Activity size={12} className="text-amber-400 animate-pulse shrink-0" />
                             <span className="truncate">3S 진도: {messages.length <= 2 ? '🛡️ SCAN (33%)' : messages.length <= 6 ? '🧠 SYNC (66%)' : '👑 SHIFT (100%)'}</span>
                         </span>
-                        <span className="text-cyan-300 hidden sm:inline-block whitespace-nowrap">
-                            🧠 432Hz Alpha 98.4%
+                        <span className="flex items-center gap-1">
+                            {isPaidUser ? (
+                                <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-sm">
+                                    👑 VVIP 무제한
+                                </span>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => userMessageCount >= 3 && setShowMicroPassModal(true)}
+                                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black border transition-all ${
+                                        userMessageCount >= 3
+                                            ? 'bg-rose-500/20 text-rose-300 border-rose-400/50 animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.4)] cursor-pointer'
+                                            : 'bg-amber-400/20 text-amber-300 border-amber-400/40'
+                                    }`}
+                                >
+                                    {userMessageCount >= 3 ? '🔒 무료 코칭 완료 (3/3회 - 잠금)' : `🎯 무료 코칭 [${userMessageCount}/3회 완료]`}
+                                </button>
+                            )}
                         </span>
                     </div>
                     <div className="w-full h-1 bg-slate-950 rounded-full overflow-hidden border border-white/10 flex">
@@ -966,6 +982,10 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 isOpen={showMindStateModal}
                 onClose={() => setShowMindStateModal(false)}
                 onSelectState={(moodLabel, promptText) => {
+                    if (userMessageCount >= 3 && !isPaidUser) {
+                        setShowMicroPassModal(true);
+                        return;
+                    }
                     setSelectedMood(moodLabel);
                     handleChipClick(promptText);
                     setShowMindStateModal(false);
@@ -977,6 +997,10 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 isOpen={showTrendingTopicModal}
                 onClose={() => setShowTrendingTopicModal(false)}
                 onSelectTopic={(topicPrompt) => {
+                    if (userMessageCount >= 3 && !isPaidUser) {
+                        setShowMicroPassModal(true);
+                        return;
+                    }
                     handleChipClick(topicPrompt);
                     setShowTrendingTopicModal(false);
                 }}

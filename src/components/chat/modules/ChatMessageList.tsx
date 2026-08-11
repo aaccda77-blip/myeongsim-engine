@@ -69,7 +69,7 @@ export default function ChatMessageList({
 
             {/* Chat Message Stream */}
             {messages.map((m, index) => {
-                const isBlurred = userMessageCount >= 3 && !isPaidUser && index >= 6;
+                const isBlurred = userMessageCount >= 3 && !isPaidUser && index >= 5;
                 return (
                     <motion.div
                         key={m.id}
