@@ -19,6 +19,17 @@ interface CoinParticle {
 
 const COIN_ICONS = ['🪙', '💰', '✨', '👑', '🪙', '💰'];
 
+export const triggerHapticVibration = () => {
+    try {
+        if (typeof window !== 'undefined' && 'navigator' in window && 'vibrate' in navigator) {
+            // Haptic pattern: 80ms pulse - 40ms pause - 80ms pulse - 40ms pause - 120ms pulse
+            navigator.vibrate([80, 40, 80, 40, 120]);
+        }
+    } catch (e) {
+        console.error('[Haptic Vibration Error]', e);
+    }
+};
+
 export const playCoinClinkingSound = () => {
     try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
@@ -66,6 +77,7 @@ export const CoinShowerEffect = forwardRef<CoinShowerRef>((_, ref) => {
         setCoins(newCoins);
         setIsActive(true);
         playCoinClinkingSound();
+        triggerHapticVibration();
 
         // Screen Shake Effect on body
         if (typeof document !== 'undefined') {
