@@ -66,6 +66,7 @@ const GeniusFullReportModal = dynamic(() => import('@/components/coaching/Genius
 const Myeongsim64KeysModal = dynamic(() => import('@/components/coaching/Myeongsim64KeysModal'), { ssr: false });
 const MyeongsimGeniusReportModal = dynamic(() => import('@/components/coaching/MyeongsimGeniusReportModal'), { ssr: false });
 const MyeongsimOracleCardModal = dynamic(() => import('@/components/coaching/MyeongsimOracleCardModal'), { ssr: false });
+const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/coaching/DarkCodeCompassionTransformerModal'), { ssr: false });
 
 
 
@@ -520,6 +521,7 @@ export default function DrillDownIconMenu({
     const [show64KeysModal, setShow64KeysModal] = useState(false);
     const [showMyeongsimGenius, setShowMyeongsimGenius] = useState(false);
     const [showMyeongsimOracle, setShowMyeongsimOracle] = useState(false);
+    const [showDarkCodeTransformer, setShowDarkCodeTransformer] = useState(false);
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
@@ -931,6 +933,12 @@ export default function DrillDownIconMenu({
             />
 
             {/* [NEW] Myeongsim 64Keys Report Modal (34 Pages Replication) */}
+            <DarkCodeCompassionTransformerModal
+                isOpen={showDarkCodeTransformer}
+                onClose={() => setShowDarkCodeTransformer(false)}
+                userName={userProfile?.userName || reportData?.userName}
+            />
+
             <Myeongsim64KeysModal
                 isOpen={show64KeysModal}
                 onClose={() => setShow64KeysModal(false)}
