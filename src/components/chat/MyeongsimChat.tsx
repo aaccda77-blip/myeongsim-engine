@@ -5,7 +5,7 @@ import { useChat } from 'ai/react';
 import { Send, User, Sparkles, CheckCircle2, Zap, Shield, BrainCircuit, Crown, MessageCircleHeart, Lock, Home, ArrowLeft, MessageSquarePlus, Volume2, VolumeX, Copy, Check, Heart, Smile, Mic, MicOff, Music, Activity, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useReportStore } from '@/store/useReportStore';
-import { getMindArchitectureTitle, getMotivationEngineTitle } from '@/constants/mindArchitecture';
+import { getMindArchitectureTitle, getMotivationEngineTitle, getDiscProtocolTitle, getBig5MatrixTitle } from '@/constants/mindArchitecture';
 import Footer from '@/components/Footer';
 import CompanyInfoModal from '../modals/CompanyInfoModal';
 import MicroChatPassModal from '../modals/MicroChatPassModal';
@@ -623,7 +623,13 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         {clientSajuData?.disc && (
                             <>
                                 <span className="text-amber-400/60">|</span>
-                                <span className="text-cyan-300 font-bold">DISC: {clientSajuData.disc}</span>
+                                <span className="text-cyan-300 font-bold">행동: {getDiscProtocolTitle(clientSajuData.disc)}</span>
+                            </>
+                        )}
+                        {clientSajuData?.big5 && (
+                            <>
+                                <span className="text-amber-400/60">|</span>
+                                <span className="text-sky-300 font-bold">멘탈: {getBig5MatrixTitle(clientSajuData.big5)}</span>
                             </>
                         )}
                         {clientSajuData?.energyLevel && (

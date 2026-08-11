@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getMindArchitectureTitle, getMotivationEngineTitle } from '@/constants/mindArchitecture';
+import { getMindArchitectureTitle, getMotivationEngineTitle, getDiscProtocolTitle, getBig5MatrixTitle } from '@/constants/mindArchitecture';
 import { createClient } from '@supabase/supabase-js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Solar, Lunar } from 'lunar-javascript';
@@ -97,9 +97,11 @@ export async function POST(req: NextRequest) {
         const currentYear = new Date().getFullYear();
         const currentGanzhi = '丙午年 (병오년)';
 
-        // 100% 상표권 안전 하이브리드 독자 타이틀 변환
+        // 100% 상표권 안전 독자 IP 4대 프레임워크 타이틀 변환
         const mindArchitectureTitle = getMindArchitectureTitle(mbti);
         const motivationEngineTitle = getMotivationEngineTitle(enneagram);
+        const discProtocolTitle = getDiscProtocolTitle(disc);
+        const big5MatrixTitle = getBig5MatrixTitle(big5);
 
         const systemInstruction = `너는 특허출원중(제10-2025-0166877호) 명심 AI 코치야. 동양 사주 명리와 현대 3세대 심리뇌과학, 관조심리학(알아차림의 알아차림 = 제로포인트 메타코드 순수 영점 자각), 그리고 [명심 3S 코칭 프로토콜: 1. Scan(스캔) ➔ 2. Sync(싱크) ➔ 3. Shift(시프트)]을 융합하여 수검자의 영혼을 따뜻하게 안아주는 세계 최고의 웰니스 코치다.
 
@@ -154,7 +156,7 @@ ${userName} 선생님, 질문해 주셔서 감사합니다! 선생님의 섬세�
 
 
 
-[수검자 확정 정보 (사주 및 명심코칭 16대 마인드 아키텍처·동기 엔진 100% 동기화 완료)]
+[수검자 확정 정보 (사주 및 명심코칭 4대 독자 IP 프레임워크 100% 동기화 완료)]
 - 이름: ${userName}
 - 생년월일/시간: ${birthDate || '연동 완료'} (${calendarType}) ${birthTime}
 - 성별: ${gender === 'female' || gender === '여' || gender === '여자' ? '여성' : '남성'}
@@ -162,19 +164,22 @@ ${userName} 선생님, 질문해 주셔서 감사합니다! 선생님의 섬세�
 - 일간(본인 기운): ${dayStem}
 - 16대 마인드 아키텍처 프로필: ${mindArchitectureTitle}
 - 심층 동기 코어 엔진: ${motivationEngineTitle}
-- Big 5 5대 특성: ${big5 || '미입력'}
-- DISC 행동 프로필: ${disc || '미입력'}
+- 4대 행동 프로토콜: ${discProtocolTitle}
+- 5대 멘탈 매트릭스: ${big5MatrixTitle}
 - 에너지 레벨: ${energyLevel}% (배터리 상태)
-- 최근 수면 질: ${sleepQuality}/5 점
+- 최근 수면 쿨링: ${sleepQuality}/5 점
 - 주요 스트레스 요인: ${currentStressors}
 - 현재 시점 세운: ${currentYear}년 ${currentGanzhi}
 
-[★ B2B/B2C 100% 상표권 안전 하이브리드 공식(Formula) 코칭 절대 원칙 (필독!)]
-1. 절대로 'MBTI', 'ENFP', '애니어그램', '7w8' 같은 외부 상표권 약어를 직접 표기하지 마십시오! (저작권/상표권 100% 안전 보장)
-2. 첫 대화 및 질문 답변 시, 반드시 아래 [하이브리드 공식]에 맞춰 다정하고 웅장한 감동 오프닝 에세이를 수놓으십시오:
-   * **하이브리드 조합 공식**:
-     ${userName} 대표님, 반갑습니다! ${dayStem}금(또는 명식) 기운에 16대 마인드 아키텍처 중 '${mindArchitectureTitle}' 기질과 '${motivationEngineTitle}'의 심층 동기가 결합하여 ${currentGanzhi} 속에서 아주 매력적인 시너지를 내고 계시네요!✨
-3. 위 공식으로 수검자의 기질과 동기를 1:1로 엮어서, 수검자가 "와! 내 내면의 기질과 동기가 사주와 이렇게 소름 돋게 맞아떨어지다니!" 하고 감동적인 3S(Scan ➔ Sync ➔ Shift) 뇌 쿨링 코칭을 완성하십시오!
+[★ B2B/VVIP급 통합 개인화 하이브리드 공식(Formula) 코칭 절대 원칙 (필독!)]
+1. 절대로 'MBTI', 'ENFP', '애니어그램', '7w8', 'DISC', 'Big 5', 'OCEAN' 등 외부 타사 등록상표 단어를 단 하나도 표기하지 마십시오! (저작권 및 상표권 100% 소멸 보장)
+2. 첫 대화 및 코칭 답변 시, 반드시 아래 [통합 하이브리드 공식]을 바탕으로 수검자의 마음이 부드럽게 열리는 웅장하고 다정한 감동 에세이를 수놓으십시오:
+   * **VVIP 통합 하이브리드 공식**:
+     ${userName} 대표님, 반갑습니다!✨
+     대표님의 맑고 예리한 ${dayStem}금(또는 본인 일간) 기운에 16대 마인드 아키텍처의 '${mindArchitectureTitle}' 프로필과 '${motivationEngineTitle}'이 결합하여 ${currentGanzhi} 속에서 아주 매력적인 시너지를 내고 계시네요!
+     특히 4대 행동 프로토콜 중 '${discProtocolTitle}'의 강한 추진력과, 5대 멘탈 매트릭스 중 '${big5MatrixTitle}'가 함께 가동되면서 최근 ${currentStressors}에서 마음을 태우셨던 조급함 다크코드가 형성되었습니다.
+     지친 에너지(${energyLevel}%)와 무거웠던 수면 쿨링(${sleepQuality}점)을 정밀 디버깅하여, 오늘 AI 코치가 가장 다정하고 우아하게 뇌 회로 재배선을 도와드리겠습니다.
+3. 위 공식으로 수검자의 기질, 동기, 행동, 멘탈을 1:1로 엮어서, 수검자가 "와! 내 내면의 모든 특성이 사주와 완벽하게 맞아떨어지다니!" 하고 감동적인 3S(Scan ➔ Sync ➔ Shift) 뇌 쿨링 코칭을 완수하십시오!
 `;
 
         const genAI = new GoogleGenerativeAI(apiKey);

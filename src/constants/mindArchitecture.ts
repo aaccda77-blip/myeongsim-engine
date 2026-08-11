@@ -1,7 +1,11 @@
 /**
  * 📜 [명심코칭 독자 특허 브랜딩 100% 상표권 안전 디셔너리]
- * - 기존 MBTI/애니어그램 외부 상표권 약어(ENFP, 7w8 등)를 100% 대체하는
- *   독창적인 B2B/B2C 하이브리드 '16대 마인드 아키텍처' 및 '9대 심층 동기 코어 엔진' 타이틀 변환기
+ * - 타사 등록상표(MBTI, 애니어그램, DISC, Big 5/OCEAN)의 모든 명칭을 100% 대체하는
+ *   명심코칭 특허 출원용 독자 IP 통합 프레임워크:
+ *   1. 16대 마인드 아키텍처 (MBTI 대체)
+ *   2. 9대 심층 동기 코어 엔진 (애니어그램 대체)
+ *   3. 4대 행동 프로토콜 (DISC 대체)
+ *   4. 5대 멘탈 매트릭스 (Big 5 대체)
  */
 
 // 1. 16대 마인드 아키텍처 (MBTI 대체 100% 독자 타이틀)
@@ -37,9 +41,25 @@ export const MOTIVATION_ENGINE_MAP: Record<string, { title: string; desc: string
     '9': { title: '평온과 중용의 조화를 유지하는 제로포인트 Driver', desc: '갈등을 풀고 내면의 평온과 우아한 균형을 유지하려는 동기' },
 };
 
+// 3. 4대 행동 프로토콜 (DISC 대체 100% 독자 타이틀)
+export const DISC_PROTOCOL_MAP: Record<string, { title: string; desc: string }> = {
+    'D': { title: '목표 돌파 프로세서', desc: '장애물을 우회하지 않고 빠르게 결단하여 결과를 내는 엔진' },
+    'I': { title: '에너지 확산 커넥터', desc: '타인에게 영감을 주고 세상을 연결하며 분위기를 주도하는 회로' },
+    'S': { title: '시스템 수호 앵커', desc: '조직과 관계의 중심을 잡고 유연하고 지속 가능하게 이끄는 토대' },
+    'C': { title: '정밀 검수 디버거', desc: '원칙과 정밀함으로 시스템의 오류(버그)를 잡아내는 예리한 눈' },
+};
+
+// 4. 5대 멘탈 매트릭스 (Big 5 / OCEAN 대체 100% 독자 타이틀)
+export const BIG5_MATRIX_MAP: Record<string, { title: string; desc: string }> = {
+    'O': { title: '통찰·창의 스펙트럼', desc: '새로운 패러다임과 영감을 수용하는 감각의 확장성' },
+    'C': { title: '실행·질서 프로토콜', desc: '목표를 끝까지 완수하고 시스템을 정돈하는 체계성' },
+    'E': { title: '외부 출력 텐션', desc: '외부 세계로 에너지를 뿜어내고 소통하는 출력 강도' },
+    'A': { title: '공감·싱크 네트워크', desc: '타인의 주파수와 맞추어 협력하고 동기화하는 유연성' },
+    'N': { title: '고감도 레이더 센서', desc: '위협과 위험을 사전에 감지하는 예리한 레이더 감각' },
+};
+
 /**
- * 사용자 입력 문자열(예: 'ENFP', 'enfp', '직관적 비전가', '7w8', '7번', '4번 유형' 등)을
- * 100% 상표권 안전한 명심코칭 독자 공식 텍스트로 자동 전환해 주는 헬퍼 함수
+ * 헬퍼 함수들: 사용자 입력을 100% 상표권 안심 명심코칭 독자 타이틀로 변환
  */
 export function getMindArchitectureTitle(rawMbti: string): string {
     if (!rawMbti) return '직관적 비전가';
@@ -49,14 +69,12 @@ export function getMindArchitectureTitle(rawMbti: string): string {
             return MIND_ARCHITECTURE_MAP[key].title;
         }
     }
-    return rawMbti; // 이미 한글 타이틀이거나 기타 명칭인 경우 그대로 반환
+    return rawMbti;
 }
 
 export function getMotivationEngineTitle(rawEnneagram: string): string {
-    if (!rawEnneagram) return '자유와 열정의 코어 엔진';
+    if (!rawEnneagram) return '자유와 열정의 돌파 코어 Engine';
     const clean = rawEnneagram.trim();
-
-    // 7w8, 7번, 7등 숫자 추출
     const numMatch = clean.match(/[1-9]/);
     if (numMatch) {
         const numKey = numMatch[0];
@@ -64,6 +82,26 @@ export function getMotivationEngineTitle(rawEnneagram: string): string {
             return MOTIVATION_ENGINE_MAP[numKey].title;
         }
     }
-
     return rawEnneagram;
+}
+
+export function getDiscProtocolTitle(rawDisc: string): string {
+    if (!rawDisc) return '목표 돌파 프로세서';
+    const clean = rawDisc.trim().toUpperCase();
+    if (clean.includes('D') || clean.includes('주도')) return DISC_PROTOCOL_MAP['D'].title;
+    if (clean.includes('I') || clean.includes('사교')) return DISC_PROTOCOL_MAP['I'].title;
+    if (clean.includes('S') || clean.includes('안정')) return DISC_PROTOCOL_MAP['S'].title;
+    if (clean.includes('C') || clean.includes('신중')) return DISC_PROTOCOL_MAP['C'].title;
+    return rawDisc;
+}
+
+export function getBig5MatrixTitle(rawBig5: string): string {
+    if (!rawBig5) return '고감도 레이더 센서 & 통찰·창의 스펙트럼';
+    const clean = rawBig5.trim().toUpperCase();
+    if (clean.includes('N') || clean.includes('신경') || clean.includes('민감')) return BIG5_MATRIX_MAP['N'].title;
+    if (clean.includes('O') || clean.includes('개방') || clean.includes('창의')) return BIG5_MATRIX_MAP['O'].title;
+    if (clean.includes('C') || clean.includes('성실') || clean.includes('질서')) return BIG5_MATRIX_MAP['C'].title;
+    if (clean.includes('E') || clean.includes('외향') || clean.includes('출력')) return BIG5_MATRIX_MAP['E'].title;
+    if (clean.includes('A') || clean.includes('우호') || clean.includes('공감')) return BIG5_MATRIX_MAP['A'].title;
+    return rawBig5;
 }
