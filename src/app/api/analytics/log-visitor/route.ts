@@ -5,6 +5,7 @@ interface VisitorStore {
     uniqueIps: Set<string>;
     pageviews: number;
     sources: Record<string, number>;
+    regions: Record<string, number>;
 }
 
 const visitorStore: VisitorStore = {
@@ -18,6 +19,15 @@ const visitorStore: VisitorStore = {
         '구글 / 유튜브': 0,
         '직접 접속 / 북마크': 0,
         '기타 웹사이트 유입': 0,
+    },
+    regions: {
+        '서울 / 수도권': 0,
+        '부산 / 경남': 0,
+        '대구 / 경북': 0,
+        '인천 / 경기': 0,
+        '대전 / 충청': 0,
+        '광주 / 전라': 0,
+        '해외 / 기타': 0,
     },
 };
 
@@ -43,6 +53,26 @@ function parseSource(referrer: string = '', search: string = ''): string {
     return '기타 웹사이트 유입';
 }
 
+function parseRegion(req: NextRequest): string {
+    const city = req.headers.get('x-vercel-ip-city');
+    const country = req.headers.get('x-vercel-ip-country');
+
+    if (city) {
+        const decodedCity = decodeURIComponent(city).toLowerCase();
+        if (decodedCity.includes('seoul')) return '서울 / 수도권';
+        if (decodedCity.includes('busan') || decodedCity.includes('ulsan') || decodedCity.includes('gyeongnam')) return '부산 / 경남';
+        if (decodedCity.includes('daegu') || decodedCity.includes('gyeongbuk')) return '대구 / 경북';
+        if (decodedCity.includes('incheon') || decodedCity.includes('suwon') || decodedCity.includes('seongnam') || decodedCity.includes('goyang')) return '인천 / 경기';
+        if (decodedCity.includes('gwangju') || decodedCity.includes('jeonju')) return '광주 / 전라';
+        if (decodedCity.includes('daejeon') || decodedCity.includes('cheongju')) return '대전 / 충청';
+        return '서울 / 수도권';
+    }
+    if (country && country !== 'KR') {
+        return '해외 / 기타';
+    }
+    return '서울 / 수도권';
+}
+
 export async function POST(req: NextRequest) {
     try {
         const todayStr = new Date().toISOString().split('T')[0];
@@ -58,6 +88,15 @@ export async function POST(req: NextRequest) {
                 '직접 접속 / 북마크': 0,
                 '기타 웹사이트 유입': 0,
             };
+            visitorStore.regions = {
+                '서울 / 수도권': 0,
+                '부산 / 경남': 0,
+                '대구 / 경북': 0,
+                '인천 / 경기': 0,
+                '대전 / 충청': 0,
+                '광주 / 전라': 0,
+                '해외 / 기타': 0,
+            };
         }
 
         const body = await req.json().catch(() => ({}));
@@ -66,6 +105,9 @@ export async function POST(req: NextRequest) {
 
         const sourceCategory = parseSource(reqReferrer, search);
         visitorStore.sources[sourceCategory] = (visitorStore.sources[sourceCategory] || 0) + 1;
+
+        const regionCategory = parseRegion(req);
+        visitorStore.regions[regionCategory] = (visitorStore.regions[regionCategory] || 0) + 1;
 
         const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'guest-ip';
         visitorStore.uniqueIps.add(ip);
@@ -76,6 +118,7 @@ export async function POST(req: NextRequest) {
             todayVisitors: visitorStore.uniqueIps.size,
             todayPageviews: visitorStore.pageviews,
             sources: visitorStore.sources,
+            regions: visitorStore.regions,
         });
     } catch (e: any) {
         return NextResponse.json({ error: e.message }, { status: 500 });
@@ -96,10 +139,20 @@ export async function GET() {
             '직접 접속 / 북마크': 0,
             '기타 웹사이트 유입': 0,
         };
+        visitorStore.regions = {
+            '서울 / 수도권': 0,
+            '부산 / 경남': 0,
+            '대구 / 경북': 0,
+            '인천 / 경기': 0,
+            '대전 / 충청': 0,
+            '광주 / 전라': 0,
+            '해외 / 기타': 0,
+        };
     }
     return NextResponse.json({
         todayVisitors: Math.max(1, visitorStore.uniqueIps.size),
         todayPageviews: Math.max(1, visitorStore.pageviews),
         sources: visitorStore.sources,
+        regions: visitorStore.regions,
     });
 }
