@@ -41,11 +41,12 @@ const visitorStore: VisitorStore = {
     },
     regions: {
         '서울 / 수도권': 0,
+        '인천 / 경기': 0,
+        '세종 / 대전 / 충청': 0,
         '부산 / 경남': 0,
         '대구 / 경북': 0,
-        '인천 / 경기': 0,
-        '대전 / 충청': 0,
         '광주 / 전라': 0,
+        '강원 / 제주': 0,
         '해외 / 기타': 0,
     },
     logs: [],
@@ -80,11 +81,12 @@ function parseRegion(req: NextRequest): string {
     if (city) {
         const decodedCity = decodeURIComponent(city).toLowerCase();
         if (decodedCity.includes('seoul')) return '서울 / 수도권';
-        if (decodedCity.includes('busan') || decodedCity.includes('ulsan') || decodedCity.includes('gyeongnam')) return '부산 / 경남';
-        if (decodedCity.includes('daegu') || decodedCity.includes('gyeongbuk')) return '대구 / 경북';
-        if (decodedCity.includes('incheon') || decodedCity.includes('suwon') || decodedCity.includes('seongnam') || decodedCity.includes('goyang')) return '인천 / 경기';
-        if (decodedCity.includes('gwangju') || decodedCity.includes('jeonju')) return '광주 / 전라';
-        if (decodedCity.includes('daejeon') || decodedCity.includes('cheongju')) return '대전 / 충청';
+        if (decodedCity.includes('incheon') || decodedCity.includes('suwon') || decodedCity.includes('seongnam') || decodedCity.includes('goyang') || decodedCity.includes('gyeonggi')) return '인천 / 경기';
+        if (decodedCity.includes('sejong') || decodedCity.includes('daejeon') || decodedCity.includes('cheongju') || decodedCity.includes('cheonan') || decodedCity.includes('sejong-si') || decodedCity.includes('chungnam') || decodedCity.includes('chungbuk')) return '세종 / 대전 / 충청';
+        if (decodedCity.includes('busan') || decodedCity.includes('ulsan') || decodedCity.includes('gyeongnam') || decodedCity.includes('changwon')) return '부산 / 경남';
+        if (decodedCity.includes('daegu') || decodedCity.includes('gyeongbuk') || decodedCity.includes('pohang')) return '대구 / 경북';
+        if (decodedCity.includes('gwangju') || decodedCity.includes('jeonju') || decodedCity.includes('jeonnam') || decodedCity.includes('jeonbuk')) return '광주 / 전라';
+        if (decodedCity.includes('gangwon') || decodedCity.includes('chuncheon') || decodedCity.includes('jeju')) return '강원 / 제주';
         return '서울 / 수도권';
     }
     if (country && country !== 'KR') {
@@ -128,11 +130,12 @@ export async function POST(req: NextRequest) {
             };
             visitorStore.regions = {
                 '서울 / 수도권': 0,
+                '인천 / 경기': 0,
+                '세종 / 대전 / 충청': 0,
                 '부산 / 경남': 0,
                 '대구 / 경북': 0,
-                '인천 / 경기': 0,
-                '대전 / 충청': 0,
                 '광주 / 전라': 0,
+                '강원 / 제주': 0,
                 '해외 / 기타': 0,
             };
             visitorStore.logs = [];
@@ -176,7 +179,6 @@ export async function POST(req: NextRequest) {
             log.isMember = Boolean(log.userId || log.email || (log.name && log.name !== '비회원 (게스트)'));
             log.pathname = pathname;
             
-            // Add page view if not immediately duplicate
             const lastPage = log.pagesViewed[log.pagesViewed.length - 1];
             if (!lastPage || lastPage.path !== pathname) {
                 log.pagesViewed.push({ path: pathname, time: nowTime });
@@ -231,17 +233,17 @@ export async function GET() {
         };
         visitorStore.regions = {
             '서울 / 수도권': 0,
+            '인천 / 경기': 0,
+            '세종 / 대전 / 충청': 0,
             '부산 / 경남': 0,
             '대구 / 경북': 0,
-            '인천 / 경기': 0,
-            '대전 / 충청': 0,
             '광주 / 전라': 0,
+            '강원 / 제주': 0,
             '해외 / 기타': 0,
         };
         visitorStore.logs = [];
     }
 
-    // Default sample fallback if server just restarted so admin never sees empty state
     if (visitorStore.logs.length === 0) {
         const nowTime = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
         visitorStore.logs = [

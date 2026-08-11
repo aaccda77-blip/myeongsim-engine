@@ -423,7 +423,7 @@ export default function AdminUsersPage() {
                                 '부산 / 경남': 0,
                                 '대구 / 경북': 0,
                                 '인천 / 경기': 0,
-                                '대전 / 충청': 0,
+                                '세종 / 대전 / 충청': 0,
                                 '광주 / 전라': 0,
                             }).map(([regionName, count]) => {
                                 const totalPV = Math.max(1, visitorStats.todayPageviews || 1);
