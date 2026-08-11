@@ -11,6 +11,16 @@ export class TextSanitizer {
     /** 치환 맵: [전통/학술 용어, 명심코칭 따뜻한 메타포 용어] */
     private static readonly REPLACEMENT_MAP: [RegExp, string][] = [
                 // === 0. IT/개발자 용어 100% 따뜻한 초보자 마음 언어로 정제 (사용자 직지 요청 반영) ===
+
+        [/\[Caretaker_Burnout\]/gi, '지친 마음의 상태(과잉 헌신과 소진)'],
+        [/Caretaker_Burnout/gi, '지친 마음의 상태(과잉 헌신과 소진)'],
+        [/Refusal of the Call/gi, '새로운 변화를 앞둔 마음의 망설임'],
+        [/Eco_Optimizer_Solution/gi, '조직 힐러형 에너지'],
+        [/\[Suspicion_OS\]/gi, '마음속 의심과 불안'],
+        [/Suspicion_OS/gi, '마음속 의심과 불안'],
+
+        [/\[Caretaker_Burnout\]/gi, '지친 마음의 상태(과잉 헌신과 소진)'],
+        [/Caretaker_Burnout/gi, '지친 마음의 상태(과잉 헌신과 소진)'],
         [/피드백\s*루프\s*파이프라인/gi, '마음을 열고 주변의 소중한 조언과 다른 의견을 따뜻하게 경청하는 대화의 장'],
         [/피드백루프\s*파이프라인/gi, '마음을 열고 주변의 소중한 조언과 다른 의견을 따뜻하게 경청하는 대화의 장'],
         [/신경망\s*베이스라인\s*과부하/gi, '지친 마음의 상태(그동안 홀로 짊어져 온 무게와 책임감이 커서 에너지가 소진된 상태)'],
@@ -182,8 +192,20 @@ export class TextSanitizer {
         result = result.replace(/\(본질 자아 에너지\(일주\)\)+/g, '(본질 자아 에너지(일주))');
         result = result.replace(/\(꿈과 미래 에너지\(시주\)\)+/g, '(꿈과 미래 에너지(시주))');
         result = result.replace(/어깨 위의 '보이지 않는 배낭'\(어깨 위의 '보이지 않는 배낭'\([^\)]*\)\)/g, "어깨 위의 보이지 않는 배낭");
+        result = result.replace(/\[\s*자유로운 준비 기간\s*\(\s*자유로운 준비 기간\s*\)\s*\]/g, '자유로운 준비 기간');
+        result = result.replace(/\(\s*자유로운 준비 기간\s*\(\s*자유로운 준비 기간\s*\)\s*\)/g, '(자유로운 준비 기간)');
+        result = result.replace(/\[\s*지친 마음의 상태\s*\(\s*지친 마음의 상태[^\)]*\)\s*\]/g, '지친 마음의 상태');
         result = result.replace(/\[\s*\[/g, '[').replace(/\]\s*\]/g, ']');
 
+        
+        // [Safety Fix] Deduplicate nested terms like (자유로운 준비 기간 (자유로운 준비 기간))
+        result = result.replace(/\[\s*자유로운 준비 기간\s*\(\s*자유로운 준비 기간\s*\)\s*\]/g, '자유로운 준비 기간');
+        result = result.replace(/\(\s*자유로운 준비 기간\s*\(\s*자유로운 준비 기간\s*\)\s*\)/g, '(자유로운 준비 기간)');
+        result = result.replace(/\[\s*지친 마음의 상태\s*\(\s*지친 마음의 상태[^\)]*\)\s*\]/g, '지친 마음의 상태');
+        result = result.replace(/\(\s*지친 마음의 상태\s*\(\s*지친 마음의 상태[^\)]*\)\s*\)/g, '(지친 마음의 상태)');
+        result = result.replace(/([가-힣\s]+)\(\1\)/g, '$1');
+        result = result.replace(/\(([가-힣\s]+)\(\1\)\)/g, '($1)');
+    
         return result;
     }
 }
