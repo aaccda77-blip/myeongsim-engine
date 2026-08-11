@@ -1802,7 +1802,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
 
                                     <h2 className="font-serif text-3xl sm:text-4xl font-black text-white leading-tight tracking-tight">
                                         🔬 명심(明心) 프리미엄<br />
-                                        <span className="bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(245,158,11,0.5)]">
+                                        <span className="bg-gradient-to-r from-amber-100 via-yellow-300 to-amber-400 bg-clip-text text-transparent filter drop-shadow-[0_0_30px_rgba(245,158,11,0.7)] font-serif">
                                             통합 코칭 리포트
                                         </span>
                                     </h2>
@@ -1866,8 +1866,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         ))}
                                     </div>
 
-                                    {/* 일간 하이라이트 */}
-                                    <div className="p-5 rounded-xl border border-white/10 mb-5 relative" style={{ background: 'rgba(32,31,31,0.7)' }}>
+                                    {/* 일간 하이라이트 (VVIP 럭셔리 카드) */}
+                                    <div className="p-6 rounded-3xl border-2 border-amber-400/40 mb-6 relative overflow-hidden bg-gradient-to-r from-amber-950/40 via-purple-950/30 to-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
                                         <div className="absolute top-3 right-3 opacity-10">
                                             <Gem size={40} className="text-yellow-400" />
                                         </div>
@@ -1883,8 +1883,8 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                         <p className="text-sm text-gray-200 leading-relaxed">{coaching.identity}</p>
                                     </div>
 
-                                    {/* 오행 분포 */}
-                                    <div className="p-5 rounded-xl space-y-3" style={{ background: 'rgba(14,14,14,0.8)' }}>
+                                    {/* 오행 분포 (VVIP 럭셔리 네온 바) */}
+                                    <div className="p-6 rounded-3xl border border-white/15 space-y-3.5 bg-slate-900/90 shadow-xl backdrop-blur-md">
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">
                                             📊 오행 분포 (FIVE ELEMENTS DISTRIBUTION)
                                         </p>
