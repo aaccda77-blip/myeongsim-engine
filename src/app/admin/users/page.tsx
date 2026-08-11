@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
     Users, Search, ShieldCheck, Clock, RefreshCw, Trash2, 
-    UserCheck, CreditCard, Sparkles, Filter, ChevronRight, Lock, Key, Calendar, Zap
+    UserCheck, CreditCard, Sparkles, Filter, ChevronRight, Lock, Key, Calendar, Zap, TrendingUp, Eye, UserPlus, DollarSign
 } from 'lucide-react';
 import MyeongsimSunLogo from '@/components/common/MyeongsimSunLogo';
 
@@ -125,13 +125,41 @@ export default function AdminUsersPage() {
         });
     }, [users, searchTerm, filterTier]);
 
+    const [visitorStats, setVisitorStats] = useState({ todayVisitors: 0, todayPageviews: 0 });
+
+    useEffect(() => {
+        const fetchVisitors = async () => {
+            try {
+                const res = await fetch('/api/analytics/log-visitor');
+                if (res.ok) {
+                    const data = await res.json();
+                    setVisitorStats(data);
+                }
+            } catch (e) {}
+        };
+        fetchVisitors();
+    }, []);
+
     // Stats
     const stats = useMemo(() => {
         const total = users.length;
         const active = users.filter(u => u.is_active).length;
         const pending = users.filter(u => !u.is_active).length;
         const microCount = users.filter(u => u.membership_tier?.includes('890') || u.payment_amount === 890).length;
-        return { total, active, pending, microCount };
+        
+        const todayStr = new Date().toISOString().split('T')[0];
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+
+        const todaySignups = users.filter(u => u.created_at && u.created_at.startsWith(todayStr)).length;
+        const thisMonthSignups = users.filter(u => {
+            if (!u.created_at) return false;
+            const d = new Date(u.created_at);
+            return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        }).length;
+        const totalRevenue = users.reduce((sum, u) => sum + (u.payment_amount || 0), 0);
+
+        return { total, active, pending, microCount, todaySignups, thisMonthSignups, totalRevenue };
     }, [users]);
 
     if (!isAuthenticated) {
@@ -194,35 +222,66 @@ export default function AdminUsersPage() {
                 </div>
             </div>
 
-            {/* Metrics Grid */}
-            <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-slate-900/80 border border-white/10 rounded-2xl p-5 shadow-lg">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-gray-400 font-medium">전체 가입자</span>
-                        <Users className="w-4 h-4 text-cyan-400" />
+            {/* Metrics Grid (방문자수 & 회원가입수 & 결제 종합 대시보드) */}
+            <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 mb-8">
+                {/* 오늘 실시간 방문자 */}
+                <div className="bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] text-cyan-300 font-bold">오늘 방문자</span>
+                        <Eye className="w-4 h-4 text-cyan-400 animate-pulse" />
                     </div>
-                    <p className="text-2xl font-black text-white">{stats.total} 명</p>
+                    <p className="text-xl font-black text-cyan-300">{visitorStats.todayVisitors || 1} 명</p>
+                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">페이지뷰: {visitorStats.todayPageviews || 1}회</span>
                 </div>
-                <div className="bg-slate-900/80 border border-green-500/30 rounded-2xl p-5 shadow-lg">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-green-300 font-medium">활성 회원</span>
+
+                {/* 오늘 신규 가입자 */}
+                <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] text-emerald-300 font-bold">오늘 신규 가입</span>
+                        <UserPlus className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <p className="text-xl font-black text-emerald-400">{stats.todaySignups} 명</p>
+                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">이번 달: {stats.thisMonthSignups}명</span>
+                </div>
+
+                {/* 전체 가입자 */}
+                <div className="bg-slate-900/90 border border-white/10 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] text-gray-300 font-bold">전체 누적 회원</span>
+                        <Users className="w-4 h-4 text-white" />
+                    </div>
+                    <p className="text-xl font-black text-white">{stats.total} 명</p>
+                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">DB 등록 기준</span>
+                </div>
+
+                {/* 승인 완료 활성 회원 */}
+                <div className="bg-slate-900/90 border border-green-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] text-green-300 font-bold">활성 유료 회원</span>
                         <UserCheck className="w-4 h-4 text-green-400" />
                     </div>
-                    <p className="text-2xl font-black text-green-400">{stats.active} 명</p>
+                    <p className="text-xl font-black text-green-400">{stats.active} 명</p>
+                    <span className="text-[10px] text-amber-300 font-mono mt-1 block">대기 중: {stats.pending}명</span>
                 </div>
-                <div className="bg-slate-900/80 border border-amber-500/30 rounded-2xl p-5 shadow-lg">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-amber-300 font-medium">승인 대기</span>
-                        <Clock className="w-4 h-4 text-amber-400" />
-                    </div>
-                    <p className="text-2xl font-black text-amber-300">{stats.pending} 명</p>
-                </div>
-                <div className="bg-slate-900/80 border border-yellow-500/30 rounded-2xl p-5 shadow-lg">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-yellow-300 font-medium">890원 수다 결제자</span>
+
+                {/* 890원 수다 결제자 */}
+                <div className="bg-slate-900/90 border border-yellow-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] text-yellow-300 font-bold">890원 수다권</span>
                         <Zap className="w-4 h-4 text-yellow-400" />
                     </div>
-                    <p className="text-2xl font-black text-yellow-300">{stats.microCount} 명</p>
+                    <p className="text-xl font-black text-yellow-300">{stats.microCount} 명</p>
+                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">마이크로 충전</span>
+                </div>
+
+                {/* 총 결제 매출 */}
+                <div className="bg-slate-900/90 border border-purple-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] text-purple-300 font-bold">누적 매출</span>
+                        <DollarSign className="w-4 h-4 text-purple-400" />
+                    </div>
+                    <p className="text-xl font-black text-purple-300">{stats.totalRevenue.toLocaleString()} 원</p>
+                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">결제 내역 합계</span>
                 </div>
             </div>
 

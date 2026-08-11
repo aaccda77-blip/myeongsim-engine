@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SafetyDisclaimerModal from "@/components/modals/SafetyDisclaimerModal";
 import GoogleAuthSync from "@/components/auth/GoogleAuthSync";
+import VisitorTracker from "@/components/analytics/VisitorTracker";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 // 1. 폰트 변수 선언
@@ -62,6 +63,7 @@ export default function RootLayout({
                     <SafetyDisclaimerModal />
                     {/* <PushTestButton /> - Debug Only */}
                     <GoogleAuthSync />
+        <VisitorTracker />
                     {children}
                 </LanguageProvider>
             </body>
