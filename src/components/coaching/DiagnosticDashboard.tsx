@@ -664,11 +664,23 @@ export default function DiagnosticDashboard({ sajuInfo, reportData: propReportDa
                                     {item.q}
                                 </h3>
                                 <p className="text-xs text-gray-500 leading-relaxed mb-3 break-keep">{item.desc}</p>
-                                <div className="p-3 bg-black/60 border border-white/5 rounded-lg hover:border-cyan-500/20 transition-colors">
-                                    <p className="text-[10px] font-mono text-gray-500 italic">
-                                        💭 이 질문을 마음에 품고 아래 AI 코치와 대화를 시작해 보십시오...
-                                    </p>
-                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const prompt = `"${item.q}" 질문에 대해 내 사주 일간(${dayStem})에 맞춘 3S 1:1 감동 에세이 코칭 해줘`;
+                                        if (onStartChat) onStartChat(prompt);
+                                        else router.push(`/myeongsim-chat?prompt=${encodeURIComponent(prompt)}`);
+                                    }}
+                                    className="w-full p-3.5 bg-gradient-to-r from-amber-950/80 via-yellow-950/60 to-amber-950/80 border border-amber-400/40 hover:border-amber-400 rounded-xl transition-all flex items-center justify-between group cursor-pointer active:scale-98 shadow-md hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] mt-2"
+                                >
+                                    <span className="text-xs font-bold text-amber-200 flex items-center gap-2">
+                                        <Sparkles size={14} className="text-amber-400 fill-amber-400 group-hover:rotate-12 transition-transform" />
+                                        <span>🔮 이 질문으로 1:1 감동 코칭 즉시 시작하기</span>
+                                    </span>
+                                    <span className="text-[11px] font-black text-slate-950 bg-amber-400 hover:bg-yellow-300 px-3 py-1 rounded-full flex items-center gap-1 shadow">
+                                        <span>질문 주입 ➔</span>
+                                    </span>
+                                </button>
                             </div>
                         </motion.div>
                     ))}
