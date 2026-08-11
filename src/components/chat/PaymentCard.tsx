@@ -17,13 +17,13 @@ export default function PaymentCard({ onDetailedReport }: PaymentCardProps) {
     const getSelectedPriceInfo = () => {
         switch (selectedTier) {
             case 'CHAT_3':
-                return { name: '💬 챗봇 대화 3회 충전', original: '9,900원', price: '890원', numPrice: 890, badge: '91% OFF' };
+                return { name: '💬 챗봇 대화 3회 충전', original: '890원', price: '890원', numPrice: 890, badge: '91% OFF' };
             case 'REPORT_BASE':
-                return { name: '📋 나의 리포트 (기본 분석 요약)', original: '9,900원', price: '890원', numPrice: 890, badge: '91% OFF' };
+                return { name: '📋 나의 리포트 (기본 분석 요약)', original: '890원', price: '890원', numPrice: 890, badge: '91% OFF' };
             case 'SOCIAL_FIVE':
                 return { name: '🔬 사회적기여 / 오행상생 리포트', original: '19,000원', price: '1,900원', numPrice: 1900, badge: '90% OFF' };
             case 'MASTER_CORE':
-                return { name: '🔮 명심 마스터코어 (4대 기질+3단계 제로포인트)', original: '29,000원', price: '3,900원', numPrice: 3900, badge: '86% 한정특가' };
+                return { name: '🔮 명심 마스터코어 (4대 기질+3단계 제로포인트)', original: '29,000원', price: '890원', numPrice: 890, badge: '86% 한정특가' };
         }
     };
 
@@ -92,7 +92,7 @@ export default function PaymentCard({ onDetailedReport }: PaymentCardProps) {
                             <span className="text-[10px] text-gray-400">끊김 없는 실시간 명심 코칭</span>
                         </div>
                         <div className="text-right">
-                            <span className="text-[10px] text-gray-500 line-through mr-1.5">9,900원</span>
+                            <span className="text-[10px] text-gray-500 line-through mr-1.5">890원</span>
                             <span className="text-base font-black font-mono text-amber-400">890<span className="text-xs font-normal">원</span></span>
                         </div>
                     </div>
@@ -109,7 +109,7 @@ export default function PaymentCard({ onDetailedReport }: PaymentCardProps) {
                             <span className="text-[10px] text-gray-400">기본 본질 자아 및 성향 해독</span>
                         </div>
                         <div className="text-right">
-                            <span className="text-[10px] text-gray-500 line-through mr-1.5">9,900원</span>
+                            <span className="text-[10px] text-gray-500 line-through mr-1.5">890원</span>
                             <span className="text-base font-black font-mono text-amber-400">890<span className="text-xs font-normal">원</span></span>
                         </div>
                     </div>
@@ -145,7 +145,7 @@ export default function PaymentCard({ onDetailedReport }: PaymentCardProps) {
                         </div>
                         <div className="text-right">
                             <span className="text-[10px] text-gray-400 line-through block">29,000원</span>
-                            <span className="text-lg font-black font-mono text-amber-300">3,900<span className="text-xs font-normal">원</span></span>
+                            <span className="text-lg font-black font-mono text-amber-300">890<span className="text-xs font-normal">원</span></span>
                         </div>
                     </div>
                 </div>

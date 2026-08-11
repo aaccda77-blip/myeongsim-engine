@@ -148,7 +148,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
                                             </div>
                                         </div>
 
-                                        {/* 3. 3,900원 마스터코어 */}
+                                        {/* 3. 890원 (3회 이용) 마스터코어 */}
                                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950 border border-amber-500/50 relative overflow-hidden">
                                             <div className="absolute top-0 right-0 bg-amber-500 text-black text-[9px] font-black px-2 py-0.5 rounded-bl-lg">
                                                 특허출원중 86% OFF
@@ -159,7 +159,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
                                                 <div className="text-[10px] text-amber-200/80">단발성 1회 정밀 해독</div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-amber-400 font-black text-lg">3,900원</div>
+                                                <div className="text-amber-400 font-black text-lg">890원 (3회 이용)</div>
                                             </div>
                                         </div>
                                     </div>

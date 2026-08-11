@@ -33,15 +33,15 @@ export async function POST(request: NextRequest) {
         switch (tier) {
             case 'TRIAL_30M':
                 expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
-                paymentAmount = 3900;
+                paymentAmount = 890;
                 break;
             case 'PASS_24H':
                 expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-                paymentAmount = 9900;
+                paymentAmount = 890;
                 break;
             case 'VIP_7D':
                 expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-                paymentAmount = 49000;
+                paymentAmount = 890;
                 break;
         }
 

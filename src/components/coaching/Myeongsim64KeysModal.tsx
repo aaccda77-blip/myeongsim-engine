@@ -1417,7 +1417,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                             </button>
                           </div>
 
-                          {/* 24K 럭셔리 3,900원 AI 코치 해설 CTA 카드 */}
+                          {/* 24K 럭셔리 890원 AI 코치 해설 CTA 카드 */}
                           <button
                             disabled={docentLoading}
                             onClick={() => handleDocentRequest({
@@ -1437,7 +1437,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                               <span className="shrink-0 flex items-center gap-1">
                                 <span className="line-through text-gray-500 text-[9px]">29,000원</span>
                                 <span className="bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-black text-[9.5px] px-2 py-0.5 rounded-full shadow">
-                                  특허출원중 한시적 3,900원 ➔
+                                  특허출원중 한시적 890원 ➔
                                 </span>
                               </span>
                             </div>

@@ -6,7 +6,7 @@ import { Lock, Sparkles, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface TeaserBlurPaywallProps {
   title: string;
-  price: number; // e.g. 890, 990, 1900
+  price?: number; // e.g. 890, 990, 1900
   originalPrice?: number; // e.g. 9900
   freePreviewText?: string;
   freePreviewComponent?: React.ReactNode;
@@ -17,8 +17,7 @@ interface TeaserBlurPaywallProps {
 
 export default function TeaserBlurPaywall({
   title,
-  price,
-  originalPrice = 9900,
+  price = 890, originalPrice = 9900,
   freePreviewText,
   freePreviewComponent,
   lockedComponent,
@@ -108,7 +107,7 @@ export default function TeaserBlurPaywall({
 
               <div className="mt-2 text-[10px] text-amber-300/80 flex items-center gap-1">
                 <Zap size={11} className="fill-amber-300 text-amber-300" />
-                <span>오늘 결제 시 890원 100% 환급 할인 쿠폰 즉시 발급</span>
+                <span>오늘 결제 시 890원 3회 이용권 할인 쿠폰 즉시 발급</span>
               </div>
             </motion.div>
           </>

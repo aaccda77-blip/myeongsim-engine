@@ -271,7 +271,7 @@ export default function AdminPage() {
                                                 className={`flex-1 bg-black/50 border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 ${isPending ? 'border-yellow-500/50 ring-1 ring-yellow-500/20' : 'border-white/20'}`}
                                             >
                                                 <option value="">이용권 선택 (충전/연장)</option>
-                                                <option value="CHAT_3">⚡ 890원 수다 3회 즉시 충전 (890원)</option>
+                                                <option value="CHAT_3">⚡ 890원 전 컨텐츠 3회 이용권 (890원)</option>
                                             </select>
                                             <button
                                                 onClick={() => selectedTier && approveUser(user.id, selectedTier)}

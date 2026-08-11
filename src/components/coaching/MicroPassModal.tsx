@@ -118,7 +118,7 @@ export const MicroPassModal: React.FC<MicroPassModalProps> = ({
                             {/* Pricing & CTA */}
                             <div className="space-y-3 pt-1">
                                 <div className="flex justify-between items-baseline px-1">
-                                    <span className="text-xs text-gray-400 line-through">정가 9,900원</span>
+                                    <span className="text-xs text-gray-400 line-through">정가 890원</span>
                                     <div className="text-right">
                                         <span className="text-xs font-bold text-amber-400 mr-1.5">[90% OFF]</span>
                                         <span className="text-2xl font-black font-mono text-white">890</span>

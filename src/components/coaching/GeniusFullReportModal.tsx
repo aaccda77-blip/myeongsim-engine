@@ -120,7 +120,7 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
           <p className="text-[10px] text-gray-500 mb-4">Page {currentPage} ~ {8} / 총 40페이지 분량 잠금 해제</p>
 
           <div className="flex items-baseline justify-center gap-2 mb-4">
-            <span className="text-xs text-gray-400 line-through font-mono">정가 9,900원</span>
+            <span className="text-xs text-gray-400 line-through font-mono">정가 890원 (3회 이용권)</span>
             <span className="text-amber-400 font-extrabold text-xs">[91% OFF]</span>
             <span className="text-3xl font-black font-mono text-white">890</span>
             <span className="text-sm font-bold text-gray-300">원</span>

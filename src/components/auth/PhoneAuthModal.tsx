@@ -93,8 +93,8 @@ export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, select
                     'TRIAL': '💬 890원 대화 3회 충전',
                     'PASS_24H': '🔬 1,900원 오행 리포트',
                     'PASS': '🔬 1,900원 오행 리포트',
-                    'VIP_7D': '🔮 3,900원 마스터코어',
-                    'VIP': '🔮 3,900원 마스터코어',
+                    'VIP_7D': '🔮 890원 (3회 이용) 마스터코어',
+                    'VIP': '🔮 890원 (3회 이용) 마스터코어',
                     'FREE': '기본 무료 대화'
                 };
 
