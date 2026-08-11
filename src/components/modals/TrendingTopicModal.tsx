@@ -107,7 +107,7 @@ export default function TrendingTopicModal({
                     initial={{ opacity: 0, scale: 0.95, y: 15 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                    className="relative w-full max-w-2xl rounded-[32px] bg-gradient-to-b from-[#0a0f24] via-[#060a19] to-black border-2 border-indigo-500/50 shadow-[0_0_80px_rgba(99,102,241,0.3)] p-5 sm:p-7 overflow-hidden text-left text-white my-auto max-h-[92vh] flex flex-col"
+                    className="relative w-full max-w-2xl rounded-[28px] sm:rounded-[32px] bg-gradient-to-b from-[#0a0f24] via-[#060a19] to-black border-2 border-indigo-500/50 shadow-[0_0_80px_rgba(99,102,241,0.3)] p-4 sm:p-6 text-left text-white my-auto max-h-[90vh] flex flex-col overflow-hidden"
                 >
                     {/* Background Indigo Radial Glow */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
