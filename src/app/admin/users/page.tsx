@@ -1,6 +1,8 @@
 'use client';
+import VisitorDetailModal from '@/components/modals/VisitorDetailModal';
 
-import React, { useState, useEffect, useMemo } from 'react';
+
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
     Users, Search, ShieldCheck, Clock, RefreshCw, Trash2, Compass, Share2, Shield, Lock, AlertTriangle, CheckCircle2, MapPin, PieChart, UserCheck2, 
     UserCheck, CreditCard, Sparkles, Filter, ChevronRight, Key, Calendar, Zap, TrendingUp, Eye, UserPlus, DollarSign
@@ -125,31 +127,34 @@ export default function AdminUsersPage() {
         });
     }, [users, searchTerm, filterTier]);
 
-    const [visitorStats, setVisitorStats] = useState<{ todayVisitors: number; todayPageviews: number; sources?: Record<string, number>; regions?: Record<string, number> }>({ todayVisitors: 0, todayPageviews: 0, sources: {}, regions: {} });
+    const [visitorStats, setVisitorStats] = useState<{ todayVisitors: number; todayPageviews: number; sources?: Record<string, number>; regions?: Record<string, number>; logs?: any[] }>({ todayVisitors: 0, todayPageviews: 0, sources: {}, regions: {}, logs: [] });
+    const [showVisitorModal, setShowVisitorModal] = useState(false);
     const [securityData, setSecurityData] = useState<{ systemStatus?: string; statusMessage?: string; activeDefenses?: any[]; failedLoginCount?: number; recentLogs?: any[] }>({});
 
+    const fetchVisitors = useCallback(async () => {
+        try {
+            const res = await fetch('/api/analytics/log-visitor');
+            if (res.ok) {
+                const data = await res.json();
+                setVisitorStats(data);
+            }
+        } catch (e) {}
+    }, []);
+
+    const fetchSecurity = useCallback(async () => {
+        try {
+            const res = await fetch('/api/admin/security-status');
+            if (res.ok) {
+                const data = await res.json();
+                setSecurityData(data);
+            }
+        } catch (e) {}
+    }, []);
+
     useEffect(() => {
-        const fetchVisitors = async () => {
-            try {
-                const res = await fetch('/api/analytics/log-visitor');
-                if (res.ok) {
-                    const data = await res.json();
-                    setVisitorStats(data);
-                }
-            } catch (e) {}
-        };
-        const fetchSecurity = async () => {
-            try {
-                const res = await fetch('/api/admin/security-status');
-                if (res.ok) {
-                    const data = await res.json();
-                    setSecurityData(data);
-                }
-            } catch (e) {}
-        };
         fetchVisitors();
         fetchSecurity();
-    }, []);
+    }, [fetchVisitors, fetchSecurity]);
 
     // 👥 성별 및 연령대 인구통계 분석
     const demographicStats = useMemo(() => {
@@ -282,13 +287,22 @@ export default function AdminUsersPage() {
             {/* Metrics Grid (방문자수 & 회원가입수 & 결제 종합 대시보드) */}
             <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 mb-8">
                 {/* 오늘 실시간 방문자 */}
-                <div className="bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                <div 
+                    onClick={() => setShowVisitorModal(true)}
+                    className="bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-400 rounded-2xl p-4 shadow-lg backdrop-blur-md cursor-pointer hover:scale-[1.03] hover:bg-cyan-950/40 transition-all duration-300 group"
+                    title="클릭하여 오늘 방문자 아이디, 지역, 성별, 유입경로, 열람페이지 실시간 상세 보기"
+                >
                     <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] text-cyan-300 font-bold">오늘 방문자</span>
-                        <Eye className="w-4 h-4 text-cyan-400 animate-pulse" />
+                        <span className="text-[11px] text-cyan-300 font-bold group-hover:underline flex items-center gap-1">
+                            오늘 방문자 <span className="text-[9px] bg-cyan-500/20 text-cyan-300 px-1 rounded">상세🔍</span>
+                        </span>
+                        <Eye className="w-4 h-4 text-cyan-400 animate-pulse group-hover:scale-110 transition" />
                     </div>
                     <p className="text-xl font-black text-cyan-300">{visitorStats.todayVisitors || 1} 명</p>
-                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">페이지뷰: {visitorStats.todayPageviews || 1}회</span>
+                    <div className="text-[10px] text-gray-400 font-mono mt-1 flex items-center justify-between">
+                        <span>페이지뷰: {visitorStats.todayPageviews || 1}회</span>
+                        <span className="text-cyan-400 font-bold underline text-[9px]">클릭 모니터링</span>
+                    </div>
                 </div>
 
                 {/* 오늘 신규 가입자 */}
@@ -661,6 +675,14 @@ export default function AdminUsersPage() {
                     </table>
                 </div>
             </div>
+            <VisitorDetailModal
+                isOpen={showVisitorModal}
+                onClose={() => setShowVisitorModal(false)}
+                logs={visitorStats.logs || []}
+                todayVisitorsCount={visitorStats.todayVisitors || 1}
+                todayPageviewsCount={visitorStats.todayPageviews || 1}
+                onRefresh={fetchVisitors}
+            />
         </div>
     );
 }

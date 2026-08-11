@@ -528,7 +528,7 @@ export default function MyeongsimCoachingDashboard({
         subtitle: trans.title,
         content: (
           <div className="space-y-4 font-sans text-left">
-            <p className="text-xs text-slate-500 leading-relaxed font-medium">명국성도의 여덟 글자는 평생 자네를 수호하는 고유한 기질의 원천이자 마음의 소스코드라네.</p>
+            <p className="text-xs text-slate-500 leading-relaxed font-medium">명국성도의 여덟 글자는 대표님을 수호하는 고유한 기질의 원천이자 마음의 소스코드입니다.</p>
             {isGM && (
               <div className="bg-purple-50/50 border border-purple-200/50 p-4 rounded-xl">
                 <span className="block font-bold text-purple-800 text-xs mb-1">🌌 공망(Void) 코칭 솔루션</span>
@@ -1165,6 +1165,12 @@ export default function MyeongsimCoachingDashboard({
     return Math.max(18, Math.min(96, rawGap));
   }, [elements, tenGods]);
 
+  const gapColorClass = useMemo(() => {
+    if (gapScore <= 30) return 'text-emerald-500';
+    if (gapScore <= 60) return 'text-amber-500';
+    return 'text-rose-500';
+  }, [gapScore]);
+
   
   // 🌌 5대 십성 그룹별 공망 여부 계산
   const sipsinGongmang = useMemo(() => {
@@ -1222,7 +1228,7 @@ export default function MyeongsimCoachingDashboard({
               <span className="block font-bold text-purple-800 text-xs mb-1">🌌 공망(Void) 코칭 솔루션</span>
               <p className="text-[#4A4744] text-xs leading-relaxed font-semibold italic">
                 "현재 이 영역은 밑빠진 독처럼 채워도 채워지지 않는 공허함(공망)을 느끼기 쉬운 주파수입니다. 
-                하지만 명심하시게. 비워져 있다는 것은 우주만큼 무한히 담을 수 있다는 뜻이라네. 
+                하지만 비워져 있다는 것은 우주만큼 무한히 담을 수 있다는 뜻입니다. 
                 집착을 내려놓고 마음을 편안하게 비울 때, 오히려 이 영역에서 남들이 흉내 낼 수 없는 비범한 천재성이 폭발할 걸세!"
               </p>
             </div>
@@ -1243,16 +1249,16 @@ export default function MyeongsimCoachingDashboard({
           <div className="bg-emerald-50/50 border border-emerald-200/50 p-5 rounded-2xl">
             <span className="block font-bold text-emerald-800 text-xs mb-1">🌈 오행구족 조화파 분석</span>
             <p className="text-[#4A4744] text-sm leading-relaxed">
-              자네가 입력한 <strong>경신년 계미월 신사일 을미시</strong> 사주는 목(木), 화(火), 토(土), 금(金), 수(水) 다섯 가지 우주적 에너지가 단 하나도 빠짐없이 균형 있게 골고루 들어있는 <strong>오행구족(五行具足)</strong> 명식이라네! 
+              대표님께서 입력하신 <strong>경신년 계미월 신사일 을미시</strong> 사주는 목(木), 화(火), 토(土), 금(金), 수(水) 다섯 가지 우주적 에너지가 단 하나도 빠짐없이 균형 있게 골고루 들어있는 <strong>오행구족(五行具足)</strong> 명식입니다! 
             </p>
             <p className="text-[#4A4744] text-xs leading-relaxed mt-2 italic font-semibold text-emerald-950">
-              "사주에 빠진 기운이 없다는 것은 삶의 큰 굴곡이 적고, 어떤 가혹한 환경 변화나 스트레스 속에서도 스스로 중심을 되찾는 강인한 회복 탄력성과 뛰어난 적응력을 타고났음을 뜻하지. 모나거나 치우침 없이 세상을 넓게 수용하고 중재하는 거대한 포용력이 바로 자네의 핵심 무기라네."
+              "사주에 빠진 기운이 없다는 것은 삶의 큰 굴곡이 적고, 어떤 가혹한 환경 변화나 스트레스 속에서도 스스로 중심을 되찾는 강인한 회복 탄력성과 뛰어난 적응력을 타고났음을 뜻합니다. 모나거나 치우침 없이 세상을 넓게 수용하고 중재하는 거대한 포용력이 바로 대표님의 핵심 무기입니다."
             </p>
           </div>
           <div className="bg-white p-3.5 rounded-xl border border-slate-100 space-y-1">
             <span className="block font-bold text-slate-800 text-xs">💡 조화파를 위한 명심 코칭 조언</span>
             <p className="text-slate-600 text-xs leading-relaxed">
-              에너지가 한 곳으로 지나치게 쏠려 있지 않고 순환이 잘 되기 때문에, 억지로 남들처럼 유별나거나 뾰족하게 튀려고 애쓸 필요가 전혀 없네. 둥글고 원만하게 사람들을 감싸 안는 조화로운 주권이야말로 세상이 자네에게 기대하는 큰 덕목이라네. 자네가 가진 넉넉함과 안도감의 기류를 온전히 신뢰하시게.
+              에너지가 한 곳으로 지나치게 쏠려 있지 않고 순환이 잘 되기 때문에, 억지로 남들처럼 유별나거나 뾰족하게 튀려고 애쓸 필요가 전혀 없습니다. 둥글고 원만하게 사람들을 감싸 안는 조화로운 주권이야말로 세상이 대표님에게 기대하는 큰 덕목입니다. 대표님이 가진 넉넉함과 안도감의 기류를 온전히 신뢰해 보세요.
             </p>
           </div>
         </div>
@@ -1282,16 +1288,16 @@ export default function MyeongsimCoachingDashboard({
           <div className="bg-amber-50/50 border border-amber-200/50 p-5 rounded-2xl">
             <span className="block font-bold text-amber-800 text-xs mb-1">⚡ 쏠림 기질 스페셜리스트 분석</span>
             <p className="text-[#4A4744] text-sm leading-relaxed">
-              자네는 사주의 특정 영역({dominantSipsin})에 에너지가 아주 강렬하게 쏠려 있는 <strong>독특한 기류</strong>를 가졌네.
+              대표님께서는 사주의 특정 영역({dominantSipsin})에 에너지가 아주 강렬하게 쏠려 있는 <strong>독특한 기류</strong>를 타고나셨습니다.
             </p>
             <p className="text-[#4A4744] text-xs leading-relaxed mt-2 italic font-semibold text-amber-950">
-              "십성의 쏠림이나 불균형은 결코 흉이 아니라네. 현대 사회와 비즈니스 환경에서는 모든 분야를 어중간하게 아는 것보다, 한 분야에 미친 듯이 몰입하여 끝장을 보는 '오타쿠적 스페셜리스트'가 세상을 바꾼다네! 자네의 뾰족하게 날이 서 있는 재능은 하늘이 자네에게 준 강력한 특화 무기이니, 억지로 남들처럼 둥글어지거나 무던해지려고 스스로를 깎아내지 마시게."
+              "십성의 쏠림이나 불균형은 결코 흉이 아닙니다. 현대 사회와 비즈니스 환경에서는 모든 분야를 어중간하게 아는 것보다, 한 분야에 몰입하여 끝장을 보는 '스페셜리스트'가 세상을 바꿉니다! 대표님의 날이 서 있는 재능은 하늘이 준 강력한 특화 무기이니, 억지로 남들처럼 둥글어지려고 스스로를 깎아내지 마세요."
             </p>
           </div>
           <div className="bg-white p-3.5 rounded-xl border border-slate-100 space-y-1">
             <span className="block font-bold text-slate-800 text-xs">💡 스페셜리스트를 위한 명심 코칭 조언</span>
             <p className="text-slate-600 text-xs leading-relaxed">
-              특화된 기운을 자신의 주 무대로 삼되, 빠져 있는 결핍 오행이 주는 취약성(충동성이나 과사고)만 자아 성찰을 통해 잔잔하게 인지하고 보완해주면 되네. 자네의 그 남다른 뾰족함이야말로 가장 위대한 차별성이라네.
+              특화된 기운을 자신의 주 무대로 삼되, 빠져 있는 결핍 오행이 주는 취약성(충동성이나 과사고)만 자아 성찰을 통해 인지하고 보완해주시면 됩니다. 대표님의 그 남다른 특별함이야말로 가장 위대한 차별성입니다.
             </p>
           </div>
         </div>
@@ -1348,19 +1354,19 @@ export default function MyeongsimCoachingDashboard({
     // 갭 점수별 동적 해설 문구
     let scoreFeedback = '';
     if (gapScore <= 30) {
-      scoreFeedback = '현재 자네의 내면 갭 점수는 ' + gapScore + '점(안정)이라네. 겉마음과 속마음의 에너지가 아주 평화롭게 균형을 이루고 있군. 세상에 보여주는 모습과 본래 타고난 기질이 일치하여 마음에 걸림이 없고 투명한 상태일세. 이 고요한 평온함을 깊이 누리며 한걸음씩 나아가시게.';
+      scoreFeedback = '현재 대표님의 내면 갭 점수는 ' + gapScore + '점(안정)입니다. 겉마음과 속마음의 에너지가 평화롭게 균형을 이루고 계십니다. 세상에 보여주는 모습과 본래 타고난 기질이 일치하여 마음에 걸림이 없고 투명한 상태입니다. 이 고요한 평온함을 누리며 한걸음씩 나아가 보세요.';
     } else if (gapScore <= 60) {
-      scoreFeedback = '현재 자네의 내면 갭 점수는 ' + gapScore + '점(경계)이라네. 사회적인 역할이나 관계 속의 책임을 다하느라 본래의 솔직한 기질을 조금 억누르며, 무의식 속에서 은근히 많은 에너지를 소모하고 있음을 의미하네. 마음속 피로가 조금씩 누적되고 있으니 지친 자신을 따뜻하게 위로해주시게.';
+      scoreFeedback = '현재 대표님의 내면 갭 점수는 ' + gapScore + '점(경계)입니다. 사회적인 역할이나 관계 속의 책임을 다하느라 본래의 솔직한 기질을 조금 억누르며, 무의식 속에서 은근히 많은 에너지를 소모하고 계심을 의미합니다. 마음속 피로가 조금씩 누적되고 있으니 지친 자신을 따뜻하게 위로해 보세요.';
     } else {
-      scoreFeedback = '현재 자네의 내면 갭 점수는 ' + gapScore + '점(요망)이라네. 세상이 기대하는 완벽한 페르소나(가면)를 유지하느라 내면에 심각한 에너지 불균형과 정신적 과부하가 걸려 있는 상태일세. 겉을 채우느라 속을 비워두진 않았는지 되돌아보고, 지금이야말로 스스로를 지키기 위해 멈춰야 할 때라네.';
+      scoreFeedback = '현재 대표님의 내면 갭 점수는 ' + gapScore + '점(요망)입니다. 세상이 기대하는 완벽한 페르소나(가면)를 유지하느라 내면에 에너지 불균형과 정신적 과부하가 걸려 있는 상태입니다. 겉을 채우느라 속을 비워두진 않았는지 되돌아보고, 지금이야말로 스스로를 지키기 위해 멈춰 서야 할 때입니다.';
     }
 
     const sipsinArr = [
-      { key: 'self', name: '비겁(🛡️ - 나를 지키는 주권)', val: tenGods.self, tip: '자네는 내면에 스스로를 지키려는 방어막(비겁)이 지나치게 견고하여, 남에게 짐을 나누기보다 혼자 모든 것을 짊어지려다 탈진하기 쉬운 성향이 있네. "타인의 조언 경청하기"와 의도적으로 타인에게 도움을 한 가지 요청하는 훈련을 권장하네.' },
-      { key: 'output', name: '식상(💧 - 맑은 지혜와 표현)', val: tenGods.output, tip: '자네는 생각이나 감정을 말과 행동으로 표현하려는 욕구(식상)가 풍부하여 쉽게 감정이 소모되거나 기복이 커지기 쉽다네. 감정이 요동칠 때 단 5초간 말하기를 멈추고 혀끝을 천장에 대어 에너지를 안으로 거두어들이는 훈련이 마음을 고요하게 해줄 걸세.' },
-      { key: 'wealth', name: '재성(🪙 - 추구하는 재물과 결과)', val: tenGods.wealth, tip: '자네는 일의 결과를 서둘러 완성하고 통제하려는 성향(재성)이 과도해져, 조급함과 불면증이 뇌의 깊은 휴식을 방해하기 쉬운 기류를 가졌네. 잠들기 전 10분 동안 통제할 수 없는 내일의 일들은 모두 내려놓고, 오직 숨결에 주의를 모으는 훈련을 진행하시게.' },
-      { key: 'power', name: '관성(⚖️ - 삶을 규율하는 통제와 평가)', val: tenGods.power, tip: '자네는 사회적 규범, 시선, 타인의 평가를 과하게 신경 쓰며 스스로를 엄격한 틀에 가두는 기운(관성)의 압박이 깊네. 번아웃이 오기 쉬우니 "지금의 사회적 역할은 연극 속 배역일 뿐"이라고 하루 세 번 인지적으로 자아를 분리(디커플링)해 보게.' },
-      { key: 'resource', name: '인성(📚 - 깊은 학문과 통찰)', val: tenGods.resource, tip: '자네는 인풋과 생각, 고민이 머릿속에 너무 많이 고여 있어(인성) 정작 행동으로 나아가지 못하고 생각의 감옥에 갇히는 특징이 있네. 무언가 망설여질 때 5, 4, 3, 2, 1 카운트다운을 외치고 즉시 발걸음을 떼는 행동 개시 솔루션이 특효약이라네.' }
+      { key: 'self', name: '비겁(🛡️ - 나를 지키는 주권)', val: tenGods.self, tip: '대표님께서는 내면에 스스로를 지키려는 방어막(비겁)이 견고하여, 남에게 짐을 나누기보다 혼자 모든 것을 짊어지려다 탈진하기 쉬운 성향이 있으십니다. "타인의 조언 경청하기"와 의도적으로 타인에게 도움을 한 가지 요청하는 훈련을 권장해 드립니다.' },
+      { key: 'output', name: '식상(💧 - 맑은 지혜와 표현)', val: tenGods.output, tip: '대표님께서는 생각이나 감정을 말과 행동으로 표현하려는 욕구(식상)가 풍부하여 감정이 소모되거나 기복이 커지기 쉬우십니다. 감정이 요동칠 때 단 5초간 말하기를 멈추고 혀끝을 천장에 대어 에너지를 안으로 거두어들이는 훈련이 마음을 고요하게 도와드립니다.' },
+      { key: 'wealth', name: '재성(🪙 - 추구하는 재물과 결과)', val: tenGods.wealth, tip: '대표님께서는 일의 결과를 서둘러 완성하고 통제하려는 성향(재성)이 높아져, 조급함과 불면증이 뇌의 깊은 휴식을 방해하기 쉬우십니다. 잠들기 전 10분 동안 통제할 수 없는 내일의 일들은 모두 내려놓고, 오직 숨결에 주의를 모으는 훈련을 진행해 보세요.' },
+      { key: 'power', name: '관성(⚖️ - 삶을 규율하는 통제와 평가)', val: tenGods.power, tip: '대표님께서는 사회적 규범, 시선, 타인의 평가를 신경 쓰며 스스로를 엄격한 틀에 가두는 기운(관성)의 압박이 있으십니다. 번아웃이 오기 쉬우니 "지금의 사회적 역할은 연극 속 배역일 뿐"이라고 하루 세 번 인지적으로 자아를 분리(디커플링)해 보세요.' },
+      { key: 'resource', name: '인성(📚 - 깊은 학문과 통찰)', val: tenGods.resource, tip: '대표님께서는 생각과 고민이 머릿속에 너무 많이 고여 있어(인성) 정작 행동으로 나아가지 못하고 생각에 갇히는 특징이 있으십니다. 무언가 망설여질 때 5, 4, 3, 2, 1 카운트다운을 외치고 즉시 발걸음을 떼는 행동 개시 솔루션을 추천합니다.' }
     ];
     sipsinArr.sort((a, b) => b.val - a.val);
     const dominantSipsin = sipsinArr[0];
@@ -1368,7 +1374,7 @@ export default function MyeongsimCoachingDashboard({
     const dmChar = (dayGan || '甲')[0];
     let elementSolution = '';
     if (dmChar === '甲' || dmChar === '乙' || dmChar === '갑' || dmChar === '을') {
-      elementSolution = '초록색 엽록소가 가득한 식물을 책상 위에 두고, 스트레스가 밀려올 때 잎사귀의 무늬를 가만히 1분간 응시하며 머리를 비워내 보시게. 목(木)의 싱그러움이 자네를 회복시켜 줄 걸세.';
+      elementSolution = '초록색 엽록소가 가득한 식물을 책상 위에 두고, 스트레스가 밀려올 때 잎사귀의 무늬를 가만히 1분간 응시하며 머리를 비워내 보세요. 목(木)의 싱그러움이 대표님을 회복시켜 드릴 것입니다.';
     } else if (dmChar === '丙' || dmChar === '丁' || dmChar === '병' || dmChar === '정') {
       elementSolution = '방에 은은한 붉은 캔들이나 조명을 켜 두고, 흔들리는 불꽃을 멍하니 바라보는 불멍 호흡을 매주 10분씩 실행하시게. 과열된 감정의 화(火)를 평화롭게 다스려 줄 걸세.';
     } else if (dmChar === '戊' || dmChar === '己' || dmChar === '무' || dmChar === '기') {
@@ -1376,7 +1382,7 @@ export default function MyeongsimCoachingDashboard({
     } else if (dmChar === '庚' || dmChar === '辛' || dmChar === '경' || dmChar === '신') {
       elementSolution = '정갈하게 방을 청소해 불필요한 물건을 과감히 처분하고, 싱잉볼 사운드나 맑은 종소리를 감상하시게. 금(金) 특유의 예리한 긴장감을 부드러운 파동으로 이완해 줄 걸세.';
     } else {
-      elementSolution = '미온수로 따뜻하게 통목욕을 하거나, 샤워할 때 물줄기가 정수리부터 자네 몸을 타고 흐르며 온갖 잡념과 피로를 대지로 씻어내린다고 깊이 심상화하시게. 수(水)의 맑은 순환이 일어날 걸세.';
+      elementSolution = '미온수로 따뜻하게 통목욕을 하거나, 샤워할 때 물줄기가 정수리부터 대표님 몸을 타고 흐르며 온갖 잡념과 피로를 대지로 씻어내린다고 깊이 심상화해 보세요. 수(水)의 맑은 순환이 일어날 것입니다.';
     }
 
     setActiveModalData({
@@ -1390,11 +1396,11 @@ export default function MyeongsimCoachingDashboard({
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 p-5 rounded-2xl shadow-sm space-y-3">
             <span className="block font-bold text-amber-900 text-xs">📊 초보자를 위한 갭(Gap) 점수 풀이</span>
             <p className="text-[#4A4744] text-sm leading-relaxed">
-              갭 점수란 자네가 타고난 <strong>'본래의 속마음(기질)'</strong>과 세상에 보여주고 있는 <strong>'겉마음(사회적 페르소나)'</strong> 사이의 에너지 격차를 뜻하네.
+              갭 점수란 대표님께서 타고난 <strong>'본래의 속마음(기질)'</strong>과 세상에 보여주고 계신 <strong>'겉마음(사회적 페르소나)'</strong> 사이의 에너지 격차를 뜻합니다.
             </p>
             <div className="bg-white/80 p-3.5 rounded-xl border border-amber-100 text-xs text-slate-700 leading-loose">
               📍 <strong>0 ~ 30점 (안정):</strong> 겉과 속이 매우 일치하여 편안하고 솔직하게 자아를 표현하고 있네.<br />
-              📍 <strong>31 ~ 60점 (경계):</strong> 사회생활을 위해 본래 기질을 조금 억누르고 있어 은근한 심적 피로감이 쌓이는 중이라네.<br />
+              📍 <strong>31 ~ 60점 (경계):</strong> 사회생활을 위해 본래 기질을 조금 억누르고 있어 은근한 심적 피로감이 쌓이는 중입니다.<br />
               📍 <strong>61 ~ 100점 (요망):</strong> 페르소나의 무게가 너무 무거워 내면 갈등과 정신적 과부하가 걸리기 쉬운 상태일세.
             </div>
             <p className="text-sm font-semibold text-amber-950 mt-1 border-t border-amber-200/40 pt-2 leading-relaxed">
@@ -1407,7 +1413,7 @@ export default function MyeongsimCoachingDashboard({
               👁️ 1:1 사주 기질 기반 명심 코칭 솔루션
             </span>
             <p className="text-[#4A4744] text-sm leading-relaxed">
-              사주 분석을 통해 내면 갈등을 일으키는 엉킨 실타래를 직시하고, 이를 조율하기 위한 자네만의 맞춤 행동과 공간 조율 기법을 조언하네.
+              사주 분석을 통해 내면 갈등을 일으키는 엉킨 실타래를 직시하고, 이를 조율하기 위한 대표님만의 맞춤 행동과 공간 조율 기법을 조언해 드립니다.
             </p>
 
             <div className="space-y-3">
@@ -1442,9 +1448,9 @@ export default function MyeongsimCoachingDashboard({
           </div>
 
           <div className="bg-white border-l-4 border-amber-500 p-5 rounded-r-2xl shadow-sm space-y-2">
-            <span className="block font-bold text-amber-900 text-xs">🌿 자네의 운명 흐름에 띄우는 편지</span>
+            <span className="block font-bold text-amber-900 text-xs">🌿 대표님의 운명 흐름에 띄우는 메타 코칭 편지</span>
             <p className="text-[#3A3837] text-sm leading-relaxed italic font-medium">
-              "자네는 사주에서 일지 {dayJiFull} {dayJiSipsin}이 주는 깊은 성향과 월지 {monthJiFull} {monthJiSipsin}의 운명적 에너지 흐름 속에서 늘 남몰래 번민하고 치열하게 고민해 왔을 것이네. 세상이 자네에게 요구하는 기준을 맞추느라(겉마음), 원래 자유롭고 지혜롭게 흘러야 할 내면의 우주(속마음)를 너무 조여매고 있었던 것은 아닌지 가만히 돌아보게나. 이제 그만 세상의 채찍질을 내려놓고, 자네 본연의 호흡이 지닌 맑은 리듬으로 천천히 돌아오시게. 자네는 무언가를 완벽히 입증해내지 않아도, 지금 숨 쉬고 있는 그대로 이미 더없이 온전하고 위대하다네."
+              "대표님께서는 사주에서 일지 {dayJiFull} {dayJiSipsin}이 주는 깊은 성향과 월지 {monthJiFull} {monthJiSipsin}의 운명적 에너지 흐름 속에서 늘 치열하게 고민해 오셨을 것입니다. 세상이 대표님에게 요구하는 기준을 맞추느라(겉마음), 원래 자유롭고 지혜롭게 흘러야 할 내면의 우주(속마음)를 너무 조여매고 계셨던 것은 아닌지 가만히 돌아보세요. 이제 세상의 채찍질을 내려놓고, 대표님 본연의 호흡이 지닌 맑은 리듬으로 천천히 돌아오시기 바랍니다. 대표님께서는 무언가를 완벽히 입증해내지 않아도, 지금 숨 쉬고 계신 그대로 이미 더없이 온전하고 훌륭하십니다."
             </p>
           </div>
         </div>
@@ -1481,10 +1487,10 @@ export default function MyeongsimCoachingDashboard({
               Void Cycle Solution
             </span>
             <h4 className="text-lg font-black text-white leading-snug">
-              아이고, 자네! {item.month}({item.ji}월)은 하늘이 자네에게 준 '마음 청소 기간'이자 '영혼의 방학'이라네.
+              대표님, {item.month}({item.ji}월)은 하늘이 대표님에게 준 '마음 청소 기간'이자 '영혼의 휴식'입니다.
             </h4>
             <p className="text-xs text-purple-200/90 leading-relaxed mt-2.5">
-              사주명리학에서 <strong>공망(空亡)</strong>이란 말 그대로 '구멍이 나 비어 있다'는 뜻일세. 초보자들은 이 단어만 들으면 가슴이 덜컥 내려앉지만, 실은 전혀 겁먹을 필요가 없다네! 밑 빠진 독처럼 채워도 채워지지 않는 이 시기는, 우주가 자네에게 <strong>"억지로 움켜쥐려 힘쓰지 말고, 잠시 손을 풀고 쉬어가라"</strong>며 마련해 준 특별한 '영혼의 안식년'이자 '성장의 징검다리'일세.
+              사주명리학에서 <strong>공망(空亡)</strong>이란 말 그대로 '구멍이 나 비어 있다'는 뜻입니다. 초보자들은 이 단어만 들으면 가슴이 내려앉지만, 전혀 걱정하실 필요가 없습니다! 밑 빠진 독처럼 채워도 채워지지 않는 이 시기는, 우주가 대표님에게 <strong>"억지로 움켜쥐려 힘쓰지 말고, 잠시 손을 풀고 쉬어가라"</strong>며 마련해 준 특별한 '영혼의 휴식년'이자 '성장의 징검다리'입니다.
             </p>
           </div>
 
@@ -1493,7 +1499,7 @@ export default function MyeongsimCoachingDashboard({
             <div className="border-b border-purple-100 pb-3">
               <span className="block text-xs font-bold text-purple-800 mb-1">🔍 1:1 사주 맞춤형 족집게 디코딩</span>
               <p className="text-sm text-slate-700 leading-relaxed">
-                자네의 <strong>{dayGan}{dayJi} 일주</strong> 기류에 비추어 볼 때, 이 {item.month}은 지지 <strong>{item.ji}({animal})</strong>과 결합하여 <strong>{monthSipsin}</strong>의 에너지 작용이 공망을 겪게 되네. 이는 평소보다 재물이나 일적인 성취에 집착할수록 밑 빠진 독에 물을 붓듯 허무함을 느끼기 쉽다는 뜻이라네.
+                대표님의 <strong>{dayGan}{dayJi} 일주</strong> 기류에 비추어 볼 때, 이 {item.month}월은 지지 <strong>{item.ji}({animal})</strong>과 결합하여 <strong>{monthSipsin}</strong>의 에너지 작용이 공망을 겪게 됩니다. 이는 평소보다 재물이나 일적인 성취에 집착할수록 허무함을 느끼기 쉽다는 뜻입니다.
               </p>
             </div>
 
@@ -1519,7 +1525,7 @@ export default function MyeongsimCoachingDashboard({
                 <div className="bg-amber-50/50 p-3.5 rounded-xl border border-amber-100">
                   <span className="block font-black text-amber-950 text-xs mb-1">🧘 3. 에고 비우기 3분 호흡법</span>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
-                    하루에 한 번, 내면에 스쳐 지나가는 욕심과 불안감을 내쉬는 호흡에 태워 멀리 날려보내는 '비움 명상 리추얼'을 단 3분간 실행해 보게나.
+                    하루에 한 번, 내면에 스쳐 지나가는 욕심과 불안감을 내쉬는 호흡에 태워 멀리 날려보내는 '비움 명상 리추얼'을 단 3분간 실행해 보세요.
                   </p>
                 </div>
 
@@ -1535,9 +1541,9 @@ export default function MyeongsimCoachingDashboard({
 
           {/* 감동 멘토링 편지 */}
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 p-5 rounded-r-2xl shadow-sm">
-            <span className="block font-bold text-amber-900 text-xs mb-1">✉️ 자네에게 띄우는 감동의 편지</span>
+            <span className="block font-bold text-amber-900 text-xs mb-1">✉️ 대표님께 띄우는 감동의 메타 코칭 편지</span>
             <p className="text-[#3A3837] text-xs leading-relaxed italic font-medium">
-              "자네, 겨울철 앙상해진 나뭇가지를 본 적이 있는가? 나뭇잎을 다 떨어뜨린 그 모습이 흉해 보일지 몰라도, 사실 나무는 그 비워냄을 통해 매서운 겨울바람을 견디고 따뜻한 봄에 더 풍요로운 새싹을 틔울 준비를 하는 것이라네. 지금 자네의 인생 시계에서 {item.month}은 바로 그 '아름다운 비움의 계절'일세. 조급해하지 마시게. 남들과 비교하며 자신을 채찍질하지도 마시게. 이번 달만큼은 자네의 지친 몸과 영혼을 안아주고 맛있는 밥 한 끼 사주며 다독여 주게나. 비워진 그릇에 우주가 머지않아 더 값진 지혜와 축복을 가득 채워줄 것임을 내가 보증하겠네."
+              "대표님, 겨울철 나뭇가지를 본 적이 있으신가요? 나뭇잎을 다 떨어뜨린 그 모습이 퀭해 보일지 몰라도, 나무는 비워냄을 통해 겨울바람을 견디고 봄에 더 풍요로운 새싹을 틔울 준비를 하는 것입니다. 지금 대표님의 인생 시계에서 {item.month}월은 바로 그 '아름다운 비움의 계절'입니다. 조급해하지 마세요. 남들과 비교하며 자신을 채찍질하지도 마세요. 이번 달만큼은 대표님의 지친 몸과 영혼을 안아주고 따뜻하게 다독여 주시기 바랍니다. 비워진 그릇에 곧 더 값진 지혜와 결실이 채워질 것입니다."
             </p>
           </div>
         </div>
@@ -1547,17 +1553,17 @@ export default function MyeongsimCoachingDashboard({
       const statusText = item.status === 'success' ? '대길(大吉)의 기류가 흐르는 시기' : item.status === 'danger' ? '매사 돌다리도 두드려야 하는 조심의 시기' : '무난하고 평온하게 흘러가는 보통의 시기';
       const statusIcon = item.status === 'success' ? '🚀' : item.status === 'danger' ? '🛡️' : '✨';
       const detailFeedback = item.status === 'success' 
-        ? '이 달은 자네가 가진 재능과 운의 파도가 가장 높게 치솟는 최고의 타이밍일세! 가슴 속에 품어왔던 아이디어나 비즈니스 계획이 있다면 과감하게 도전을 밀어붙여 보시게. 하늘이 자네의 발걸음을 힘차게 밀어줄 것이니 머뭇거릴 틈이 없다네.'
+        ? '이 달은 대표님께서 가진 재능과 운의 파도가 가장 높게 치솟는 최고의 타이밍입니다! 가슴 속에 품어왔던 아이디어나 비즈니스 계획이 있다면 과감하게 도전을 밀어붙여 보세요. 하늘이 대표님의 발걸음을 힘차게 밀어줄 것입니다.'
         : item.status === 'danger'
-        ? '이 달은 하늘의 기류가 잠시 숨을 고르며 거친 비바람을 보내는 시기일세. 무리한 확장이나 계약서 작성, 과도한 지출은 피하시고, 현상을 유지하며 스스로의 마음을 다스리는 보수적 전략이 최고라네. 이럴 때일수록 틈틈이 휴식을 취해주시게.'
-        : '이 달은 잔잔한 호수처럼 평화롭고 무난한 흐름이라네. 큰 무리 없이 일상이 순탄하게 흘러갈 것이니, 일상의 사소한 행복을 즐기고 평범함의 위대함을 감사하며 성실히 자리를 지키면 대길의 계절로 향하는 징검다리가 되어줄 걸세.';
+        ? '이 달은 하늘의 기류가 잠시 숨을 고르며 비바람을 보내는 시기입니다. 무리한 확장이나 계약서 작성, 과도한 지출은 피하시고, 현상을 유지하며 스스로의 마음을 다스리는 보수적 전략을 권장합니다. 틈틈이 휴식을 취해 주세요.'
+        : '이 달은 잔잔한 호수처럼 평화롭고 무난한 흐름입니다. 큰 무리 없이 일상이 순탄하게 흘러갈 것이니, 일상의 행복을 즐기고 평범함의 위대함에 감사하며 자리를 지키시면 대길의 계절로 향하는 징검다리가 되어줄 것입니다.';
 
       modalContent = (
         <div className="space-y-4 font-sans text-left">
           <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
             <span className="block font-bold text-slate-800 text-xs mb-1">📊 {item.month} 흐름도 분석</span>
             <p className="text-[#4A4744] text-sm leading-relaxed">
-              자네의 오행 원소(일간 중심) 순환 알고리즘에 기초한 {item.month} 운명지표는 <strong>{item.score}점</strong>으로 <strong>{statusText}</strong>에 해당하네.
+              대표님의 오행 원소(일간 중심) 순환 알고리즘에 기초한 {item.month}월 운명지표는 <strong>{item.score}점</strong>으로 <strong>{statusText}</strong>에 해당합니다.
             </p>
             <p className="text-xs text-slate-500 leading-relaxed mt-3 pt-3 border-t border-slate-200">
               {statusIcon} <strong>코칭 솔루션:</strong> {detailFeedback}
@@ -1986,7 +1992,7 @@ export default function MyeongsimCoachingDashboard({
               {/* 오각형 레이다 차트 (네이티브 SVG 동적 좌표 연산 & 텍스트 오버플로우 방지) */}
               <div className="bg-slate-900/90 p-5 sm:p-7 rounded-2xl border border-slate-800 flex flex-col items-center justify-center shadow-xl min-w-0 overflow-hidden relative">
                 <h4 className="text-sm font-black text-slate-200 mb-3 flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-amber-400" /> 자네의 십성(十星) 강점 분포도
+                  <Sparkles size={14} className="text-amber-400" /> 대표님의 십성(十星) 강점 분포도
                 </h4>
                 <div className="relative w-full max-w-[280px] aspect-square flex items-center justify-center my-2">
                   <svg viewBox="-30 -15 160 130" className="w-full h-full">
@@ -2036,7 +2042,7 @@ export default function MyeongsimCoachingDashboard({
             {/* 긴급 디코딩 안내문 배너 */}
             <div className="mt-6 bg-amber-950/40 border border-amber-500/30 p-4 rounded-xl relative z-10">
               <p className="text-xs sm:text-sm text-amber-200 leading-relaxed font-medium">
-                ⚠️ <span className="font-bold text-amber-400">기질 디버깅 조언:</span> 자네의 기질에 비추어볼 때, 외부적 통제(관성)가 들어올 때 스트레스 지수가 치솟을 수 있네. 겉마음의 포용력과 내적 자각의 조율이 꼭 필요하네.
+                ⚠️ <span className="font-bold text-amber-400">기질 디버깅 조언:</span> 대표님의 기질에 비추어볼 때, 외부적 통제(관성)가 들어올 때 스트레스 지수가 치솟을 수 있네. 겉마음의 포용력과 내적 자각의 조율이 꼭 필요합니다.
               </p>
             </div>
           </div>
@@ -2075,11 +2081,11 @@ export default function MyeongsimCoachingDashboard({
               onClick={handleGapScoreClick}
               className="flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-[#EBE7DC] pt-6 md:pt-0 md:pl-8 cursor-pointer group hover:bg-[#FAF9F5] p-4 rounded-2xl transition-all duration-300"
             >
-              <h3 className="text-sm font-bold text-[#5C5856] mb-4 group-hover:text-amber-700 transition-colors">자네의 겉과 속 갭(Gap) 점수</h3>
+              <h3 className="text-sm font-bold text-[#5C5856] mb-4 group-hover:text-amber-700 transition-colors">대표님의 겉과 속 갭(Gap) 점수</h3>
               <div className="relative w-36 h-36 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                   <circle className="text-[#F4F1E9]" strokeWidth="3.5" stroke="currentColor" fill="none" cx="18" cy="18" r="15.915" />
-                  <circle className="text-red-500 transition-all duration-1000" 
+                  <circle className={`${gapColorClass} transition-all duration-1000`} 
                           strokeDasharray={`${gapScore}, 100`} 
                           strokeWidth="3.5" 
                           strokeLinecap="round" 
@@ -2093,7 +2099,7 @@ export default function MyeongsimCoachingDashboard({
                 </div>
               </div>
               <p className="text-xs text-center text-[#6E6A66] leading-relaxed mt-4 max-w-xs font-medium">
-                100점 만점 기준 · 높을수록 피로도와 내면의 갈등이 깊음을 뜻하네. <span className="text-red-500 font-bold underline group-hover:text-red-600">명심 코칭 솔루션 가이드</span>가 추천되네.
+                100점 만점 기준 · 높을수록 피로도와 내면의 갈등이 깊음을 뜻하네. <span className="text-red-500 font-bold underline group-hover:text-red-600">명심 코칭 솔루션 가이드</span>가 추천해 드립니다.
               </p>
             </div>
           </div>
@@ -2201,7 +2207,7 @@ export default function MyeongsimCoachingDashboard({
               3. 월별 재물/성취 에너지 흐름도 바 차트
               ========================================== */}
           <div className="w-full bg-[#FFFDF9] p-6 rounded-3xl border border-[#EBE7DC] shadow-sm mb-8">
-            <h3 className="text-lg font-bold text-[#2C2A29] mb-6 flex items-center gap-2 font-serif">
+            <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2 font-serif">
               <TrendingUp className="w-5 h-5 text-amber-600" /> 2026년 대운 커스터마이징 재물/성취 에너지 흐름도
             </h3>
             
@@ -2519,7 +2525,7 @@ export default function MyeongsimCoachingDashboard({
                   <div className="p-6 bg-white min-h-[300px] flex flex-col items-center justify-center">
                     <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                     <p className="text-base font-bold text-amber-800 font-serif animate-pulse">
-                      명심코칭 AI 엔진이 자네의 무의식 알고리즘을 해석하고 있네...
+                      명심코칭 AI 엔진이 대표님의 무의식 알고리즘을 해석하고 있습니다...
                     </p>
                     <p className="text-xs text-gray-400 mt-2">잠시만 기다려주시면 평생 소장 가능한 리포트가 기록됩니다.</p>
                   </div>
