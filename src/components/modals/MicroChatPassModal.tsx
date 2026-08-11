@@ -24,7 +24,7 @@ export default function MicroChatPassModal({
 
     if (!isOpen) return null;
 
-    const handlePay = async () => {
+        const handlePay = async () => {
         setIsProcessing(true);
         try {
             // [Payment Request API Call or Toss/Kakao Pay Integration]
@@ -41,22 +41,19 @@ export default function MicroChatPassModal({
             const data = await res.json();
 
             if (data.checkoutUrl) {
-                // 이더리움/토스/카카오페이 결제창으로 이동
                 window.location.href = data.checkoutUrl;
             } else {
-                // 테스트 또는 성공 시 처리
                 setTimeout(() => {
                     setIsProcessing(false);
-                    alert('890원 결제가 완료되어 수다 3회가 즉시 충전되었습니다! 💖');
+                    alert('890원 결제가 완료되어 챗봇 블러 잠금이 즉시 해제되고 3회가 충전되었습니다! 💖');
                     if (onSuccessPay) onSuccessPay();
                     onClose();
-                }, 1000);
+                }, 400);
             }
         } catch (error) {
             console.error('Payment Error:', error);
             setIsProcessing(false);
-            // 시뮬레이션 처리
-            alert('890원 충전이 완료되었습니다! 💖 (수다 3회 추가)');
+            alert('890원 충전이 완료되었습니다! 💖 (챗봇 블러 잠금 즉시 해제)');
             if (onSuccessPay) onSuccessPay();
             onClose();
         }

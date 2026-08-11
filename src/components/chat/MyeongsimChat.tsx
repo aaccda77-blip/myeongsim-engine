@@ -62,7 +62,12 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [showMicroPassModal, setShowMicroPassModal] = useState<boolean>(false);
     const [showMindStateModal, setShowMindStateModal] = useState<boolean>(false);
     const [showTrendingTopicModal, setShowTrendingTopicModal] = useState<boolean>(false);
-    const [isPaidUser, setIsPaidUser] = useState<boolean>(false);
+    const [isPaidUser, setIsPaidUser] = useState<boolean>(() => {
+            if (typeof window !== 'undefined') {
+                return localStorage.getItem('myeongsim_paid_user') === 'true';
+            }
+            return false;
+        });
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioCtxRef = useRef<AudioContext | null>(null);
@@ -912,10 +917,44 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 <a href="/privacy" className="hover:text-gray-300 transition-colors font-bold cursor-pointer">개인정보처리방침</a>
             </div>
 
-            {/* 회사 정보 팝업 모달 */}
+                        {/* 회사 정보 팝업 모달 */}
             <CompanyInfoModal 
                 isOpen={showCompanyModal} 
                 onClose={() => setShowCompanyModal(false)} 
+            />
+
+            {/* 890원 수다 3회 충전 팝업 모달 */}
+            <MicroChatPassModal
+                isOpen={showMicroPassModal}
+                onClose={() => setShowMicroPassModal(false)}
+                onSuccessPay={() => {
+                    setIsPaidUser(true);
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_paid_user', 'true');
+                    }
+                    setShowMicroPassModal(false);
+                }}
+            />
+
+            {/* 8대 마음상태 세밀 조율 모달 */}
+            <MindStateSelectorModal
+                isOpen={showMindStateModal}
+                onClose={() => setShowMindStateModal(false)}
+                onSelectState={(moodLabel, promptText) => {
+                    setSelectedMood(moodLabel);
+                    handleChipClick(promptText);
+                    setShowMindStateModal(false);
+                }}
+            />
+
+            {/* 2026 트렌딩 핫이슈 주제 8선 모달 */}
+            <TrendingTopicModal
+                isOpen={showTrendingTopicModal}
+                onClose={() => setShowTrendingTopicModal(false)}
+                onSelectTopic={(topicPrompt) => {
+                    handleChipClick(topicPrompt);
+                    setShowTrendingTopicModal(false);
+                }}
             />
 
             {/* ── 6. 3세대 현장 코칭심리학 8대 과학적 도구 상세 모달 ── */}
