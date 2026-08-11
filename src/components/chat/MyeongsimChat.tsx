@@ -5,6 +5,7 @@ import { useChat } from 'ai/react';
 import { Send, User, Sparkles, CheckCircle2, Zap, Shield, BrainCircuit, Crown, MessageCircleHeart, Lock, Home, ArrowLeft, MessageSquarePlus, Volume2, VolumeX, Copy, Check, Heart, Smile, Mic, MicOff, Music, Activity, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useReportStore } from '@/store/useReportStore';
+import { getMindArchitectureTitle, getMotivationEngineTitle } from '@/constants/mindArchitecture';
 import Footer from '@/components/Footer';
 import CompanyInfoModal from '../modals/CompanyInfoModal';
 import MicroChatPassModal from '../modals/MicroChatPassModal';
@@ -610,13 +611,13 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         {clientSajuData?.mbti && (
                             <>
                                 <span className="text-amber-400/60">|</span>
-                                <span className="text-emerald-300 font-bold">MBTI: {clientSajuData.mbti}</span>
+                                <span className="text-emerald-300 font-bold">16대 마인드: {getMindArchitectureTitle(clientSajuData.mbti)}</span>
                             </>
                         )}
                         {clientSajuData?.enneagram && (
                             <>
                                 <span className="text-amber-400/60">|</span>
-                                <span className="text-purple-300 font-bold">애니어그램: {clientSajuData.enneagram}</span>
+                                <span className="text-purple-300 font-bold">코어 엔진: {getMotivationEngineTitle(clientSajuData.enneagram)}</span>
                             </>
                         )}
                         {clientSajuData?.disc && (
