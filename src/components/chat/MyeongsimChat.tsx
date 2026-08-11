@@ -17,7 +17,7 @@ import ChatTrendingChipsBar from './modules/ChatTrendingChipsBar';
 
 const PSYCH_PROTOCOLS = [
     { code: 'MBCT', name: '마음챙김 인지코칭', desc: 'Mindfulness-Based Cognitive Therapy: 뇌 편도체 반응 진정 및 자각의 알아차림 (Zero-Point)', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/50' },
-    { code: 'CBT', name: '인지행동코칭', desc: 'Cognitive Behavioral Therapy: 부정적 자동적 사고(다크코드) 식별 및 현실적 뇌회로 재구성', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/50' },
+    { code: 'CFT', name: '자비중심코칭', desc: 'Compassion-Focused Therapy: 자기 자비 및 위협 계통 진정, 다정한 내면 수용 (제3세대 뇌과학)', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/50' },
     { code: 'ACT', name: '수용전념코칭', desc: 'Acceptance & Commitment Therapy: 생각을 사실과 분리하는 인지 탈융합 (Cognitive Defusion)', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50' },
     { code: 'DBT', name: '변증법적 행동코칭', desc: 'Dialectical Behavior Therapy: 극단적 감정 폭주 차단, 중용의 지혜 및 현명한 마음(Wise Mind) 조율', badge: 'bg-amber-500/20 text-amber-300 border-amber-400/50' },
     { code: 'MBSR', name: '스트레스 감세', desc: 'Mindfulness-Based Stress Reduction: 자율신경계 밸런싱 및 뇌 신경가소성(Neuroplasticity) 재배선', badge: 'bg-purple-500/20 text-purple-300 border-purple-400/50' },
@@ -556,7 +556,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                             <h3 className="text-lg font-black text-white">안녕하세요! 영혼의 AI 코치입니다 ✨</h3>
                             <p className="text-xs sm:text-sm text-gray-300 leading-relaxed break-keep font-medium">
                                 연동된 생년월일과 사주팔자를 바탕으로<br />
-                                <strong>3세대 현장 코칭심리학(ACT·CBT·MBCT·IFS) 8대 과학적 도구</strong>를 가동하여 1:1 핑퐁 코칭을 진행합니다.
+                                <strong>3세대 현장 코칭심리학(ACT·CFT·MBCT·IFS) 8대 과학적 도구</strong>를 가동하여 1:1 핑퐁 코칭을 진행합니다.
                             </p>
                         </div>
 
@@ -670,7 +670,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                     <div className="flex items-center justify-between gap-2 text-[10px] font-mono pt-3 border-t border-white/10 mt-3 flex-wrap">
                                         <div className="flex items-center gap-1.5 text-cyan-300 font-bold">
                                             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" />
-                                            <span>🔬 3세대 현장 코칭심리학 메커니즘 (ACT · CBT · MBCT · IFS)</span>
+                                            <span>🔬 3세대 현장 코칭심리학 메커니즘 (ACT · CFT · MBCT · IFS)</span>
                                         </div>
 
                                         <div className="flex items-center gap-1.5 ml-auto">

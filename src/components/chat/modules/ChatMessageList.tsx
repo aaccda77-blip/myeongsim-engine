@@ -49,7 +49,7 @@ export default function ChatMessageList({
                         <h3 className="text-lg font-black text-white">안녕하세요! 영혼의 AI 코치입니다 ✨</h3>
                         <p className="text-xs sm:text-sm text-gray-300 leading-relaxed break-keep font-medium">
                             연동된 생년월일과 사주팔자를 바탕으로<br />
-                            <strong>3세대 현장 코칭심리학(ACT·CBT·MBCT·IFS) 8대 과학적 도구</strong>를 가동하여 1:1 핑퐁 코칭을 진행합니다.
+                            <strong>3세대 현장 코칭심리학(ACT·CFT·MBCT·IFS) 8대 과학적 도구</strong>를 가동하여 1:1 핑퐁 코칭을 진행합니다.
                         </p>
                     </div>
 
@@ -108,7 +108,7 @@ export default function ChatMessageList({
                                 <div className="flex items-center justify-between gap-2 text-[10px] font-mono pt-3 border-t border-white/10 mt-3 flex-wrap">
                                     <div className="flex items-center gap-1.5 text-cyan-300 font-bold">
                                         <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" />
-                                        <span>🔬 3세대 현장 코칭심리학 메커니즘 (ACT · CBT · MBCT · IFS)</span>
+                                        <span>🔬 3세대 현장 코칭심리학 메커니즘 (ACT · CFT · MBCT · IFS)</span>
                                     </div>
 
                                     <div className="flex items-center gap-1.5 ml-auto">

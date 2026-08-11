@@ -84,8 +84,8 @@ export default function SocialAntiPatternAnalysis({ dayStem, userName = '사용�
         `2단계 [수용]: 80%의 결실도 충분히 훌륭함을 스스로에게 다정하게 칭찬해 주기`,
         `3단계 [실천]: 내가 진정 사랑하는 가치를 위해 오늘 1분 작은 실천 하나를 이루기`
       ];
-    } else     if (key === 'CBT') {
-      category = 'CBT (인지행동 코칭) 1:1 감동 해설';
+    } else     if (key === 'CFT' || key === 'CBT') {
+      category = 'CFT (자비중심 코칭) 1:1 감동 해설';
       introMetaphor = `"${name} 대표님, '내 생각만 옳다'는 단단한 이분법을 내려놓을 때 세상의 모든 지혜와 조력자가 나에게 흐르기 시작합니다."`;
       essayParagraphs = [
         `내 방식만이 유일한 정답이라는 이분법적 생각은 폭풍우 속에서 나를 보호하려던 생존 방어 외투였습니다. 하지만 상대의 생각 속에도 나를 도울 50%의 소중한 지혜가 숨겨져 있습니다.`,
@@ -416,12 +416,12 @@ export default function SocialAntiPatternAnalysis({ dayStem, userName = '사용�
               exit={{ opacity: 0, x: -20 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* CBT */}
-                <div onClick={() => openCoachingModal("CBT", "CBT 인지행동 코칭")} className="bg-slate-800/50 border border-blue-500/30 p-5 rounded-2xl hover:border-blue-400 transition-all cursor-pointer shadow-md group relative overflow-hidden">
+                {/* CFT */}
+                <div onClick={() => openCoachingModal("CFT", "CFT 자비중심 코칭")} className="bg-slate-800/50 border border-blue-500/30 p-5 rounded-2xl hover:border-blue-400 transition-all cursor-pointer shadow-md group relative overflow-hidden">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-blue-400 font-black text-sm flex items-center">
-                      <span className="bg-blue-900/70 text-blue-300 text-xs px-2 py-0.5 rounded mr-2 border border-blue-700/50">CBT</span>
-                      인지행동 코칭
+                      <span className="bg-blue-900/70 text-blue-300 text-xs px-2 py-0.5 rounded mr-2 border border-blue-700/50">CFT</span>
+                      자비중심 코칭
                     </h4>
                     <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                       <span>👆 클릭 시 AI 감동 에세이</span>
