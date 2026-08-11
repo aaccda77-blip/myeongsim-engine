@@ -10,6 +10,8 @@ import {
 import MyeongsimSunLogo from '@/components/common/MyeongsimSunLogo';
 
 interface Subscriber {
+    name?: string;
+    phone?: string;
     id: string;
     phone_hash: string;
     created_at: string;
@@ -75,16 +77,26 @@ export default function AdminUsersPage() {
         }
     };
 
-    const approveUser = async (userId: string, tier: string) => {
+    const approveUser = async (userId: string, rawTier: string) => {
         try {
+            // Map display string to backend enum ('CHAT_3', 'TRIAL_30M', etc.)
+            let mappedTier: 'CHAT_3' | 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' = 'CHAT_3';
+            if (rawTier.includes('890') || rawTier.includes('3회') || rawTier === 'CHAT_3') {
+                mappedTier = 'CHAT_3';
+            } else if (rawTier.includes('무료') || rawTier.includes('TRIAL')) {
+                mappedTier = 'TRIAL_30M';
+            } else if (rawTier.includes('24시간')) {
+                mappedTier = 'PASS_24H';
+            }
+
             const response = await fetch('/api/admin/users/approve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, tier })
+                body: JSON.stringify({ userId, tier: mappedTier })
             });
             const data = await response.json();
             if (data.success) {
-                alert(`성공: [${tier}] 권한이 승인되었습니다!`);
+                alert(`성공: 890원 무통장 입금 승인이 완료되었습니다! 3회 코칭 이용권이 활성화되었습니다. ✨`);
                 fetchUsers();
             } else {
                 alert('승인 실패: ' + (data.error || '알 수 없는 오류'));
@@ -594,15 +606,15 @@ export default function AdminUsersPage() {
                                 </tr>
                             ) : (
                                 filteredUsers.map((u, idx) => {
-                                    const displayName = u.phone_hash && u.phone_hash.length > 20
-                                        ? `👤 가입자 #${idx + 1} (${u.phone_hash.slice(0, 8)})`
-                                        : `👤 가입자 #${idx + 1} (${u.id.slice(0, 8)})`;
+                                    const displayName = u.name ? `👤 ${u.name}` : `👤 가입자 #${idx + 1}`;
+                                    const maskedPhone = u.phone ? `🔒 ${u.phone}` : (u.phone_hash ? `🔒 010-****-${u.phone_hash.slice(-4)}` : '🔒 개인정보 암호화 보호');
 
                                     return (
                                         <tr key={u.id} className="hover:bg-slate-800/50 transition-colors">
                                             <td className="p-4">
                                                 <div className="font-bold text-sm text-amber-300 flex items-center gap-1.5">
                                                     <span>{displayName}</span>
+                                                    <span className="text-[10px] bg-slate-800 text-cyan-300 font-mono px-2 py-0.5 rounded border border-cyan-500/30">{maskedPhone}</span>
                                                 </div>
                                                 <div className="text-[10px] text-gray-400 font-mono mt-1 flex items-center gap-2">
                                                     <span>ID: {u.id.slice(0, 13)}...</span>
