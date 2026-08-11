@@ -5,8 +5,8 @@ import { removePendingWireTransfer } from '@/lib/pendingWireTransfers';
 import { z } from 'zod';
 
 const ApproveSchema = z.object({
-    userId: z.string().min(1), // Accept valid string or UUID
-    tier: z.enum(['TRIAL_30M', 'PASS_24H', 'VIP_7D', 'CHAT_3'])
+    userId: z.string().min(1),
+    tier: z.string().optional()
 });
 
 export async function POST(request: NextRequest) {
@@ -23,10 +23,23 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid Input', details: result.error.issues }, { status: 400 });
         }
 
-        const { userId, tier } = result.data;
+        const { userId, tier: rawTier = '' } = result.data;
         const now = new Date();
         let expiresAt: Date | null = null;
         let paymentAmount = 890;
+        let tier: 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' | 'CHAT_3' = 'CHAT_3';
+
+        // Flexible Tier Normalization
+        const rawTierStr = String(rawTier).toUpperCase();
+        if (rawTierStr.includes('TRIAL') || rawTierStr.includes('30분')) {
+            tier = 'TRIAL_30M';
+        } else if (rawTierStr.includes('PASS') || rawTierStr.includes('24시간')) {
+            tier = 'PASS_24H';
+        } else if (rawTierStr.includes('VIP') || rawTierStr.includes('7일')) {
+            tier = 'VIP_7D';
+        } else {
+            tier = 'CHAT_3'; // Default 890 KRW 3-Turn Access
+        }
 
         switch (tier) {
             case 'TRIAL_30M':
@@ -47,7 +60,7 @@ export async function POST(request: NextRequest) {
                 break;
         }
 
-        console.log(`[Admin] Approving User: ${userId}, Tier: ${tier}`);
+        console.log(`[Admin] Approving User: ${userId}, Tier: ${tier} (raw: ${rawTier})`);
 
         // Try updating Supabase users
         const { data, error } = await supabaseAdmin
@@ -67,7 +80,7 @@ export async function POST(request: NextRequest) {
         // Also clean up from pending memory store
         removePendingWireTransfer(userId);
 
-        return NextResponse.json({ success: true, expiresAt: expiresAt!.toISOString() });
+        return NextResponse.json({ success: true, tier, expiresAt: expiresAt!.toISOString() });
 
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
