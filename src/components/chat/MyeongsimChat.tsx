@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useChat } from 'ai/react';
-import { Send, User, Sparkles, Zap, Shield, BrainCircuit, Crown, MessageCircleHeart, Lock, Home, ArrowLeft, MessageSquarePlus, Volume2, VolumeX, Copy, Check, Heart, Smile, Mic, MicOff, Music, Activity, FileText } from 'lucide-react';
+import { Send, User, Sparkles, CheckCircle2, Zap, Shield, BrainCircuit, Crown, MessageCircleHeart, Lock, Home, ArrowLeft, MessageSquarePlus, Volume2, VolumeX, Copy, Check, Heart, Smile, Mic, MicOff, Music, Activity, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useReportStore } from '@/store/useReportStore';
 import Footer from '@/components/Footer';
@@ -77,24 +77,55 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const coinShowerRef = useRef<CoinShowerRef>(null);
 
     const clientSajuData = useMemo(() => {
+        let metaData: any = {};
+        let psychData: any = {};
+
         if (reportData) {
-            return {
-                userName: reportData.userName || (reportData as any).name,
-                birthDate: reportData.birthDate || (reportData as any).birth_date,
-                birthTime: reportData.birthTime || (reportData as any).birth_time,
-                calendarType: (reportData as any).calendarType || (reportData as any).calendar_type || 'solar',
-                gender: reportData.gender,
-                dayMaster: reportData.saju?.dayMaster,
-                fourPillars: reportData.saju?.fourPillars,
-            };
+            metaData = reportData.meta || {};
+            psychData = (reportData as any).psych || {};
         }
+
         if (typeof window !== 'undefined') {
             try {
-                const raw = localStorage.getItem('user_saju_info') || localStorage.getItem('myeongsim_user_profile');
-                if (raw) return JSON.parse(raw);
+                const rawOnboarding = localStorage.getItem('user_onboarding_data');
+                if (rawOnboarding) {
+                    const parsed = JSON.parse(rawOnboarding);
+                    metaData = { ...metaData, ...parsed, ...(parsed.meta || {}) };
+                    psychData = { ...psychData, ...parsed, ...(parsed.psych || {}) };
+                }
+                const storeRaw = localStorage.getItem('myeongsim_report_store');
+                if (storeRaw) {
+                    const parsed = JSON.parse(storeRaw);
+                    const stateData = parsed.state?.reportData || parsed;
+                    metaData = { ...metaData, ...(stateData.meta || {}) };
+                    psychData = { ...psychData, ...(stateData.psych || {}) };
+                }
+                const rawSaju = localStorage.getItem('user_saju_info');
+                if (rawSaju) {
+                    const parsed = JSON.parse(rawSaju);
+                    metaData = { ...metaData, ...parsed };
+                }
             } catch (e) {}
         }
-        return null;
+
+        return {
+            userName: reportData?.userName || (reportData as any)?.name || metaData?.userName || '명심가',
+            birthDate: reportData?.birthDate || (reportData as any)?.birth_date || metaData?.birthDate || '',
+            birthTime: reportData?.birthTime || (reportData as any)?.birth_time || metaData?.birthTime || '12:00',
+            calendarType: (reportData as any)?.calendarType || (reportData as any)?.calendar_type || metaData?.calendarType || 'solar',
+            gender: reportData?.gender || metaData?.gender || 'female',
+            dayMaster: reportData?.saju?.dayMaster || metaData?.dayMaster || '辛',
+            fourPillars: reportData?.saju?.fourPillars,
+            meta: metaData,
+            psych: psychData,
+            mbti: metaData?.mbti || psychData?.mbti || metaData?.personalityType || '',
+            enneagram: metaData?.enneagram || psychData?.enneagram || '',
+            big5: metaData?.big5 || metaData?.bigFive || psychData?.big5 || '',
+            disc: metaData?.disc || psychData?.disc || '',
+            stressFactors: metaData?.stressFactors || metaData?.current_stressors || [],
+            sleepQuality: metaData?.sleepQuality || metaData?.sleep_quality || 3,
+            energyLevel: metaData?.energyLevel || metaData?.energy_level || 50,
+        };
     }, [reportData]);
 
     const { messages, setMessages, input, setInput, handleInputChange, handleSubmit, isLoading, append } = useChat({
@@ -564,6 +595,54 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     </div>
                 </div>
             </header>
+
+            {/* ── [ONBOARDING SYNC CONFIRMATION BANNER] 4단계 온보딩 데이터(MBTI, 애니어그램, 수면, 에너지, 스트레스) 100% 연동 확인 배너 ── */}
+            <div className="bg-gradient-to-r from-amber-950/90 via-purple-950/80 to-slate-950 border-b border-amber-400/40 px-3 sm:px-5 py-2 flex items-center justify-between gap-2 shrink-0 z-10 shadow-lg backdrop-blur-md">
+                <div className="flex items-center gap-2 min-w-0 overflow-x-auto no-scrollbar py-0.5">
+                    <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-[10px] sm:text-xs shrink-0 shadow-sm flex items-center gap-1">
+                        <CheckCircle2 size={12} className="fill-slate-950 text-amber-400 shrink-0" />
+                        <span>기질·심리지표 동기화 완료</span>
+                    </span>
+                    <div className="text-[11px] sm:text-xs text-amber-200 font-medium whitespace-nowrap flex items-center gap-1.5 font-mono">
+                        <span className="font-bold text-white">{clientSajuData?.userName || '회원'}님</span>
+                        <span className="text-amber-400/60">|</span>
+                        <span className="text-yellow-300 font-bold">{clientSajuData?.dayMaster ? `${clientSajuData.dayMaster}일간` : '사주 분석'}</span>
+                        {clientSajuData?.mbti && (
+                            <>
+                                <span className="text-amber-400/60">|</span>
+                                <span className="text-emerald-300 font-bold">MBTI: {clientSajuData.mbti}</span>
+                            </>
+                        )}
+                        {clientSajuData?.enneagram && (
+                            <>
+                                <span className="text-amber-400/60">|</span>
+                                <span className="text-purple-300 font-bold">애니어그램: {clientSajuData.enneagram}</span>
+                            </>
+                        )}
+                        {clientSajuData?.disc && (
+                            <>
+                                <span className="text-amber-400/60">|</span>
+                                <span className="text-cyan-300 font-bold">DISC: {clientSajuData.disc}</span>
+                            </>
+                        )}
+                        {clientSajuData?.energyLevel && (
+                            <>
+                                <span className="text-amber-400/60">|</span>
+                                <span className="text-amber-300">에너지 {clientSajuData.energyLevel}%</span>
+                            </>
+                        )}
+                        {clientSajuData?.sleepQuality && (
+                            <>
+                                <span className="text-amber-400/60">|</span>
+                                <span className="text-sky-300">수면 {clientSajuData.sleepQuality}점</span>
+                            </>
+                        )}
+                    </div>
+                </div>
+                <span className="text-[10px] text-emerald-400 font-mono font-bold shrink-0 hidden md:inline-flex items-center gap-1">
+                    <span>⚡ AI 1:1 맞춤 연결됨</span>
+                </span>
+            </div>
 
             {/* ── 2. 메시지 영역 ── */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 no-scrollbar relative min-h-0">

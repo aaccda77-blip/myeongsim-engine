@@ -50,9 +50,19 @@ export async function POST(req: NextRequest) {
         const birthTime = clientSajuData?.birthTime || dbUserData?.birth_time || '12:00';
         const calendarType = clientSajuData?.calendarType || dbUserData?.calendar_type || 'solar';
         const gender = clientSajuData?.gender || dbUserData?.gender || 'female';
-        const energyLevel = dbUserData?.energy_level ?? '80';
-        const sleepQuality = dbUserData?.sleep_quality ?? '4';
-        const currentStressors = Array.isArray(dbUserData?.current_stressors) ? dbUserData.current_stressors.join(', ') : '없음';
+        const energyLevel = clientSajuData?.energyLevel || clientSajuData?.meta?.energyLevel || dbUserData?.energy_level || '50';
+        const sleepQuality = clientSajuData?.sleepQuality || clientSajuData?.meta?.sleepQuality || dbUserData?.sleep_quality || '3';
+        const currentStressors = Array.isArray(clientSajuData?.stressFactors) 
+            ? clientSajuData.stressFactors.join(', ') 
+            : (Array.isArray(clientSajuData?.meta?.stressFactors) 
+                ? clientSajuData.meta.stressFactors.join(', ') 
+                : (Array.isArray(dbUserData?.current_stressors) ? dbUserData.current_stressors.join(', ') : '없음'));
+
+        // [ONBOARDING SYNC] 심리 지표 4대 프로토콜 100% 수용
+        const mbti = clientSajuData?.mbti || clientSajuData?.meta?.mbti || clientSajuData?.psych?.mbti || dbUserData?.mbti || '';
+        const enneagram = clientSajuData?.enneagram || clientSajuData?.meta?.enneagram || clientSajuData?.psych?.enneagram || dbUserData?.enneagram || '';
+        const big5 = clientSajuData?.big5 || clientSajuData?.meta?.big5 || clientSajuData?.psych?.big5 || dbUserData?.big5 || '';
+        const disc = clientSajuData?.disc || clientSajuData?.meta?.disc || clientSajuData?.psych?.disc || dbUserData?.disc || '';
 
         let sajuString = '계산 불가';
         let dayStem = clientSajuData?.dayMaster || '辛';
@@ -137,16 +147,23 @@ ${userName} 선생님, 질문해 주셔서 감사합니다! 선생님의 섬세�
 1. 수검자가 텍스트를 남길 때, 문장 뒤에 숨겨진 조급함, 가슴의 서늘함, 뇌의 과열, 무거운 책임감을 오감(시각·청각·촉각·공감)으로 사전에 알아차리고 따뜻하게 공감하십시오.
 2. 수검자를 이름(예: ${userName} 선생님) 또는 대표님으로 부르며, 한 치의 허술함 없는 '대형 비즈니스 아키텍트이자 1:1 영혼 멘토'로서 웅장하면서도 미소 짓게 만드는 명품 답변을 제공하십시오.
 
-[수검자 확정 정보 (사주 및 생년월일 데이터 100% 동기화 완료)]
+[수검자 확정 정보 (사주 및 4단계 온보딩 심리지표 100% 동기화 완료)]
 - 이름: ${userName}
 - 생년월일/시간: ${birthDate || '연동 완료'} (${calendarType}) ${birthTime}
 - 성별: ${gender === 'female' || gender === '여' || gender === '여자' ? '여성' : '남성'}
 - 사주 8글자 명식: ${sajuString}
 - 일간(본인 기운): ${dayStem}
-- 에너지 레벨: ${energyLevel}%
-- 수면 질: ${sleepQuality}/5
-- 현재 스트레스 요인: ${currentStressors}
+- 16가지 성격유형 (MBTI): ${mbti || '미입력 (기질로 자동 융합 추론)'}
+- 애니어그램 (핵심 동기): ${enneagram || '미입력 (기질로 자동 융합 추론)'}
+- Big 5 5대 특성: ${big5 || '미입력'}
+- DISC 행동 유형: ${disc || '미입력'}
+- 에너지 레벨: ${energyLevel}% (배터리 상태)
+- 최근 수면 질: ${sleepQuality}/5 점
+- 주요 스트레스 요인: ${currentStressors}
 - 현재 시점 세운: ${currentYear}년 ${currentGanzhi}
+
+[★ MBTI & 애니어그램 융합 코칭 지침]
+수검자가 입력한 MBTI(${mbti || '기질'})와 애니어그램(${enneagram || '동기'})이 있다면, 해당 심리 유형의 특징(예: ENFP의 풍부한 아이디어와 감성, 7w8의 자유로운 추진력 등)을 수검자의 사주 일간(${dayStem}) 기운과 1:1로 결합하여 "선생님의 MBTI(${mbti})와 애니어그램(${enneagram}) 성향이 사주 일간 ${dayStem}기운과 이렇게 완벽히 맞아떨어지네요!" 하고 첫 대화부터 언급하여 깊은 신뢰와 소름 돋는 감동을 전하십시오!
 `;
 
         const genAI = new GoogleGenerativeAI(apiKey);
