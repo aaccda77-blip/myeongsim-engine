@@ -65,11 +65,31 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [showMindStateModal, setShowMindStateModal] = useState<boolean>(false);
     const [showTrendingTopicModal, setShowTrendingTopicModal] = useState<boolean>(false);
     const [isPaidUser, setIsPaidUser] = useState<boolean>(() => {
-            if (typeof window !== 'undefined') {
-                return localStorage.getItem('myeongsim_paid_user') === 'true';
-            }
-            return false;
-        });
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('myeongsim_paid_user') === 'true';
+        }
+        return false;
+    });
+    const [isPendingApproval, setIsPendingApproval] = useState<boolean>(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('myeongsim_pending_approval') === 'true';
+        }
+        return false;
+    });
+    const [depositorName, setDepositorName] = useState<string>(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('myeongsim_depositor_name') || '';
+        }
+        return '';
+    });
+    const [cumulativeCount, setCumulativeCount] = useState<number>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('myeongsim_total_user_messages');
+            return saved ? parseInt(saved, 10) : 0;
+        }
+        return 0;
+    });
+    const [isCheckingApproval, setIsCheckingApproval] = useState<boolean>(false);
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioCtxRef = useRef<AudioContext | null>(null);
@@ -137,9 +157,50 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
         }
     });
 
-    const userMessageCount = useMemo(() => {
+    const sessionUserCount = useMemo(() => {
         return (messages || []).filter(m => m.role === 'user').length;
     }, [messages]);
+
+    const userMessageCount = useMemo(() => {
+        return Math.max(sessionUserCount, cumulativeCount);
+    }, [sessionUserCount, cumulativeCount]);
+
+    // Update cumulative count in localStorage when user sends a message
+    useEffect(() => {
+        if (sessionUserCount > 0 && typeof window !== 'undefined') {
+            const currentTotal = Math.max(sessionUserCount, cumulativeCount);
+            localStorage.setItem('myeongsim_total_user_messages', currentTotal.toString());
+        }
+    }, [sessionUserCount, cumulativeCount]);
+
+    // Function to check approval status from server
+    const checkApprovalStatus = async () => {
+        if (typeof window === 'undefined') return;
+        setIsCheckingApproval(true);
+        try {
+            const savedName = localStorage.getItem('myeongsim_depositor_name') || depositorName;
+            const res = await fetch(`/api/payment/check-approval?name=${encodeURIComponent(savedName)}&userId=${encodeURIComponent(userId)}`);
+            const data = await res.json();
+            
+            if (data.approved) {
+                localStorage.setItem('myeongsim_paid_user', 'true');
+                localStorage.removeItem('myeongsim_pending_approval');
+                localStorage.setItem('myeongsim_total_user_messages', '0');
+                setIsPaidUser(true);
+                setIsPendingApproval(false);
+                setCumulativeCount(0);
+                alert('🎉 무통장 입금 승인이 확인되었습니다! 1:1 맞춤 챗봇 코칭 3회가 충전되었습니다.');
+            } else if (data.isPending) {
+                alert('⏳ 아직 입금 확인 중입니다. 담당자가 1~5분 이내 입금 확인 후 승인해 드립니다.');
+            } else {
+                alert('승인 내역을 확인하지 못했습니다. 입금자 성함을 다시 확인해 주세요.');
+            }
+        } catch (e) {
+            console.error('Check approval error:', e);
+        } finally {
+            setIsCheckingApproval(false);
+        }
+    };
 
     
     const MOOD_CHIP_MAP: Record<string, string[]> = {
@@ -857,8 +918,8 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     </motion.div>
                 )}
                 
-                {/* ── 3회 무료 완료 후 챗봇 내 890원 블러 잠금 마케팅 카드 (Paywall Lock Card) ── */}
-                {userMessageCount >= 3 && !isPaidUser && (
+                {/* ── 3회 무료 완료 후 또는 승인 대기 중 챗봇 내 890원 블러 잠금 마케팅 카드 ── */}
+                {(userMessageCount >= 3 || isPendingApproval) && !isPaidUser && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -878,12 +939,31 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         </div>
 
                         {/* Main Title */}
-                        <h3 className="text-lg sm:text-xl font-black text-white mb-2 leading-snug break-keep">
-                            ☕ 890원으로<br />
-                            <span className="text-amber-300 underline decoration-amber-400/50 decoration-wavy underline-offset-4 font-black">
-                                1:1 맞춤 영혼 코칭 3회 더 이어가기
-                            </span>
-                        </h3>
+                        {isPendingApproval ? (
+                            <div className="space-y-3 mb-4">
+                                <h3 className="text-lg sm:text-xl font-black text-emerald-300 mb-1 leading-snug break-keep">
+                                    ⏳ 무통장 입금 승인 확인 중입니다
+                                </h3>
+                                <p className="text-xs text-gray-200 leading-relaxed">
+                                    입금자 <strong className="text-amber-300">[{depositorName || '고객님'}]</strong> 성함으로 890원 입금 승인이 신청되었습니다.<br />
+                                    담당자 확인 후 <span className="text-emerald-300 font-bold">1~5분 이내 3회 수다권</span>이 자동 개방됩니다.
+                                </p>
+                                <button
+                                    onClick={checkApprovalStatus}
+                                    disabled={isCheckingApproval}
+                                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                                >
+                                    <span>{isCheckingApproval ? '승인 상태 확인 중...' : '🔄 1초 입금 승인 상태 확인하기'}</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <h3 className="text-lg sm:text-xl font-black text-white mb-2 leading-snug break-keep">
+                                ☕ 890원으로<br />
+                                <span className="text-amber-300 underline decoration-amber-400/50 decoration-wavy underline-offset-4 font-black">
+                                    1:1 맞춤 영혼 코칭 3회 더 이어가기
+                                </span>
+                            </h3>
+                        )}
 
                         <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-md mx-auto mb-4 font-medium break-keep">
                             커피 한 잔보다 가벼운 금액으로,<br />
