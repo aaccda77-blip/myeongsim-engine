@@ -544,20 +544,36 @@ export default function DiagnosticDashboard({ sajuInfo, reportData: propReportDa
                         {ilgan.darkCodes.map(item => {
                             const val = stressLevels[item.key];
                             return (
-                                <div key={item.label}>
-                                    <div className="flex justify-between items-end mb-2">
-                                        <h4 className="text-sm font-bold text-white font-mono">{item.label}</h4>
-                                        <span className="text-lg font-bold text-cyan-400">{val.toFixed(0)}%</span>
+                                <div key={item.label} className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-amber-400/40 transition-all">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <span>{item.label}</span>
+                                        </h4>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-black text-amber-300 font-mono">{val.toFixed(0)}%</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const prompt = `내 안의 ${item.label} 다크코드를 80% 미학과 3세대 뇌과학(ACT)으로 정밀 뇌 쿨링 해줘`;
+                                                    if (onStartChat) onStartChat(prompt);
+                                                    else router.push(`/myeongsim-chat?prompt=${encodeURIComponent(prompt)}`);
+                                                }}
+                                                className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black transition-all flex items-center gap-1 active:scale-95 cursor-pointer shadow-md hover:scale-105"
+                                            >
+                                                <Zap size={11} className="fill-slate-950" />
+                                                <span>1:1 뇌 쿨링 ➔</span>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="h-2.5 w-full bg-gray-900 rounded-full overflow-hidden mb-2">
+                                    <div className="h-2 w-full bg-gray-900 rounded-full overflow-hidden mb-2.5">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             whileInView={{ width: `${val}%` }}
                                             transition={{ duration: 1, ease: 'easeOut' }}
-                                            className={`h-full bg-gradient-to-r ${item.color} shadow-[0_0_10px_rgba(34,211,238,0.4)]`}
+                                            className={`h-full bg-gradient-to-r ${item.color} shadow-[0_0_10px_rgba(245,158,11,0.4)]`}
                                         />
                                     </div>
-                                    <p className="text-[10px] text-gray-500 leading-relaxed break-keep">{item.desc}</p>
+                                    <p className="text-xs text-gray-300 leading-relaxed break-keep font-medium">{item.desc}</p>
                                 </div>
                             );
                         })}
@@ -568,9 +584,9 @@ export default function DiagnosticDashboard({ sajuInfo, reportData: propReportDa
             {/* ── Section 3: 로드맵 — 일간별 완전 동적 */}
             <div className="pt-8">
                 <div className="mb-6">
-                    <h2 className="text-[10px] font-mono text-teal-400 tracking-[0.3em] mb-1">03 // 전략_기획</h2>
+                    <h2 className="text-[10px] font-mono text-teal-400 tracking-[0.3em] mb-1">03 // 뇌회로 재배선</h2>
                     <h1 className="text-2xl font-black text-white">
-                        뉴럴 코드 패치 // <span className="text-teal-400">{dayStem} 맞춤 로드맵</span>
+                        3S 행동 실천 // <span className="text-teal-400">{dayStem}일간 맞춤 뇌 쿨링 로드맵</span>
                     </h1>
                 </div>
                 <div className="p-6 rounded-2xl bg-[#0a0f16] border border-white/5 relative">
