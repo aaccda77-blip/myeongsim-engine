@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-    Users, Search, ShieldCheck, Clock, RefreshCw, Trash2, 
+    Users, Search, ShieldCheck, Clock, RefreshCw, Trash2, Compass, Share2, 
     UserCheck, CreditCard, Sparkles, Filter, ChevronRight, Lock, Key, Calendar, Zap, TrendingUp, Eye, UserPlus, DollarSign
 } from 'lucide-react';
 import MyeongsimSunLogo from '@/components/common/MyeongsimSunLogo';
@@ -125,7 +125,7 @@ export default function AdminUsersPage() {
         });
     }, [users, searchTerm, filterTier]);
 
-    const [visitorStats, setVisitorStats] = useState({ todayVisitors: 0, todayPageviews: 0 });
+    const [visitorStats, setVisitorStats] = useState<{ todayVisitors: number; todayPageviews: number; sources?: Record<string, number> }>({ todayVisitors: 0, todayPageviews: 0, sources: {} });
 
     useEffect(() => {
         const fetchVisitors = async () => {
@@ -282,6 +282,54 @@ export default function AdminUsersPage() {
                     </div>
                     <p className="text-xl font-black text-purple-300">{stats.totalRevenue.toLocaleString()} 원</p>
                     <span className="text-[10px] text-gray-400 font-mono mt-1 block">결제 내역 합계</span>
+                </div>
+            </div>
+
+            {/* 🌐 실시간 유입 경로 (Referrer & Traffic Analytics) */}
+            <div className="max-w-7xl mx-auto bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-5 mb-8 shadow-xl backdrop-blur-md">
+                <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+                    <div className="flex items-center gap-2">
+                        <Compass className="w-5 h-5 text-indigo-400 animate-spin-slow" />
+                        <h2 className="text-sm sm:text-base font-bold text-white">🌐 실시간 유입 경로 분이 (Traffic Sources)</h2>
+                    </div>
+                    <span className="text-xs text-indigo-300 font-mono">UTM 및 웹 Referrer 자동 감지</span>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {Object.entries(visitorStats.sources || {
+                        '네이버 (블로그/검색)': 0,
+                        '카카오톡 / 카카오': 0,
+                        '인스타그램 / FB': 0,
+                        '구글 / 유튜브': 0,
+                        '직접 접속 / 북마크': 1,
+                        '기타 웹사이트 유입': 0,
+                    }).map(([sourceName, count]) => {
+                        const totalPV = Math.max(1, visitorStats.todayPageviews || 1);
+                        const percent = Math.round(((count || 0) / totalPV) * 100);
+
+                        return (
+                            <div key={sourceName} className="bg-slate-950/70 border border-white/10 rounded-xl p-3.5 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="text-[11px] font-bold text-gray-300 truncate">{sourceName}</span>
+                                    </div>
+                                    <p className="text-lg font-black text-indigo-300">{count} 회</p>
+                                </div>
+                                <div className="mt-2">
+                                    <div className="flex justify-between text-[9px] text-gray-400 font-mono mb-1">
+                                        <span>점유율</span>
+                                        <span>{percent}%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-all rounded-full"
+                                            style={{ width: `${Math.max(5, percent)}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
