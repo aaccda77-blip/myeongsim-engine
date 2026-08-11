@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { Activity, ShieldAlert, Zap, Database } from 'lucide-react';
+import { Activity, ShieldAlert, Zap, Database, Crown, Sparkles, ArrowRight } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 
@@ -601,9 +601,23 @@ export default function DiagnosticDashboard({ sajuInfo, reportData: propReportDa
                                     <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
                                 </div>
                                 <div className="flex-1 bg-black/40 border border-white/5 p-4 rounded-xl hover:border-cyan-500/30 transition-colors">
-                                    <h4 className="text-sm font-bold text-white mb-3 flex justify-between items-center">
-                                        <span className="break-keep">{node.title}</span>
-                                        <span className="text-[10px] text-gray-600 font-mono ml-2 shrink-0">STEP_0{i + 1}</span>
+                                    <h4 className="text-sm font-bold text-white mb-3 flex justify-between items-center flex-wrap gap-2">
+                                        <span className="break-keep text-amber-200">{node.title}</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500 font-mono shrink-0">STEP_0{i + 1}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const prompt = `${dayStem}일간 맞춤 3S 로드맵 [${node.type}: ${node.title}] 1:1 실천 코칭 해줘`;
+                                                    if (onStartChat) onStartChat(prompt);
+                                                    else router.push(`/myeongsim-chat?prompt=${encodeURIComponent(prompt)}`);
+                                                }}
+                                                className="px-2.5 py-1 rounded-full bg-teal-950/60 hover:bg-teal-900 border border-teal-500/40 text-teal-300 text-[10px] font-black transition-all flex items-center gap-1 active:scale-95 cursor-pointer shadow-sm hover:scale-105"
+                                            >
+                                                <Zap size={11} />
+                                                <span>1:1 코칭 가동 ➔</span>
+                                            </button>
+                                        </div>
                                     </h4>
                                     <ul className="space-y-1.5">
                                         {node.items.map((item, ii) => (
@@ -622,14 +636,14 @@ export default function DiagnosticDashboard({ sajuInfo, reportData: propReportDa
             {/* ── Section 4: 자각 세션 — 일간별 완전 개인화 질문 */}
             <div className="pt-8 pb-10">
                 <div className="mb-6">
-                    <h2 className="text-[10px] font-mono text-cyan-500 tracking-[0.3em] mb-1">04 // 자각_세션</h2>
+                    <h2 className="text-[10px] font-mono text-cyan-500 tracking-[0.3em] mb-1">04 // 영점 자각</h2>
                     <h1 className="text-2xl font-black text-white flex flex-wrap gap-2 items-center">
-                        핵심 질문 // <span className="text-cyan-400">{dayStem} 디버깅 모드</span>
-                        <ShieldAlert className="w-6 h-6 text-cyan-400 ml-2" />
+                        다정한 내면 질문 // <span className="text-cyan-400">{dayStem}일간 영점 각성 질문</span>
+                        <Crown className="w-6 h-6 text-amber-400 ml-2 animate-pulse" />
                     </h1>
                     <p className="text-[11px] text-gray-500 mt-2 font-mono break-keep">
                         아래 질문은 <span className="text-yellow-400 font-bold">{dayStem}</span> 일간의 핵심 인지 패턴을 분석하여
-                        자동 생성된 맞춤형 산파술적 질문입니다.
+                        나를 깊이 있게 돌아보는 1:1 관조심리학 질문입니다.
                     </p>
                 </div>
 
