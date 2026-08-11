@@ -828,44 +828,65 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 </div>
             )}
 
-            {/* ── 4. 실시간 감정 스위치 & 추천 대화 칩 (모바일 슬림화) ── */}
-            <div className="p-2 sm:p-3 border-t border-white/10 bg-slate-950/90 flex flex-col gap-1.5 shrink-0">
+            {/* ── 4. 실시간 감정 스위치 & 추천 대화 칩 (세밀 팝업창 100% 연동) ── */}
+            <div className="p-2 sm:p-3 border-t border-white/10 bg-slate-950/90 flex flex-col gap-2 shrink-0">
+                {/* 1) 마음 상태 행: 팝업 트리거 버튼 & 4대 대표 감정 칩 */}
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                    <span className="text-[10px] sm:text-[11px] text-amber-400 font-extrabold shrink-0 flex items-center gap-1 font-mono whitespace-nowrap">
-                        <Smile size={12} className="text-amber-400" />
-                        마음 상태:
-                    </span>
+                    <button
+                        type="button"
+                        onClick={() => setShowMindStateModal(true)}
+                        className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 text-[10px] sm:text-[11px] font-black shrink-0 flex items-center gap-1 shadow-md active:scale-95 cursor-pointer whitespace-nowrap animate-pulse"
+                    >
+                        <Smile size={12} className="text-slate-950 fill-slate-950" />
+                        <span>🎯 8대 세밀 감정 팝업창</span>
+                    </button>
+                    
                     {[
-                        { label: '🛡️ 불안·완벽주의', prompt: '지금 내 안의 불안과 완벽주의를 ACT 인지탈융합으로 다정하게 안아줘' },
-                        { label: '🔥 조바심·스트레스', prompt: '사업이나 일에서 조바심이 나는데 MBSR 스트레스 감세로 조율해줘' },
-                        { label: '🌧️ 무기력·혼란', prompt: '에너지가 다운되어 있는데 내 사주 2026년 병오년 활력 기운을 재배선해줘' },
-                        { label: '👑 평온·영점 각성', prompt: '오늘의 432Hz 제로포인트 영점 자각 명상 가이드을 알려줘' },
+                        { label: '🛡️ 완벽주의·마비', prompt: '내 안의 완벽주의 다크코드를 80% 미학으로 뇌 쿨링(ACT) 해줘' },
+                        { label: '🔥 번아웃·조바심', prompt: '엔진 과열로 가슴이 답답하고 번아웃 오는데 메타인지로 정밀 교정해줘' },
+                        { label: '🌧️ 무기력·고갈', prompt: '에너지가 완전히 고갈되어 아무것도 못하겠는데 2026년 활력 기운 재배선해줘' },
+                        { label: '👑 평온·영점 각성', prompt: '오늘의 432Hz 제로포인트 순수 자각 명상 가이드를 알려줘' },
                     ].map((emo, idx) => (
                         <button
                             key={idx}
                             type="button"
-                            onClick={() => handleChipClick(emo.prompt)}
-                            className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/5 hover:bg-amber-400/20 border border-white/10 hover:border-amber-400/50 text-gray-300 hover:text-amber-200 text-[10px] sm:text-[11px] font-bold transition-all shrink-0 active:scale-95 cursor-pointer whitespace-nowrap"
+                            onClick={() => {
+                                setSelectedMood(emo.label);
+                                setShowMindStateModal(true);
+                            }}
+                            className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-amber-400/20 border border-white/15 hover:border-amber-400/60 text-gray-200 hover:text-amber-200 text-[10px] sm:text-[11px] font-bold transition-all shrink-0 active:scale-95 cursor-pointer whitespace-nowrap flex items-center gap-1"
                         >
-                            {emo.label}
+                            <span>{emo.label}</span>
+                            <span className="text-[9px] text-amber-300/80 font-mono">✨팝업</span>
                         </button>
                     ))}
                 </div>
 
+                {/* 2) 2026 트렌딩 핫이슈 주제 행: 팝업 트리거 버튼 & 8대 주제 칩 */}
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                    <button
+                        type="button"
+                        onClick={() => setShowTrendingTopicModal(true)}
+                        className="px-3 py-1.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white text-[10px] sm:text-xs font-black shadow-lg shrink-0 flex items-center gap-1.5 active:scale-95 cursor-pointer whitespace-nowrap"
+                    >
+                        <Sparkles size={13} className="text-yellow-300 animate-spin" />
+                        <span>🔥 2026 핫이슈 주제 8선 팝업창</span>
+                    </button>
+
                     {[
-                        '💼 "내 사주 기반 2026년 사업 확장운 정밀 분석해줘"',
-                        '🧠 "불안과 완벽주의 다크코드 인지탈융합(ACT) 해줘"',
-                        '🧘‍♀️ "1분 3S 스위치 실천법 물어보기"',
-                        '🔮 "나의 다음 운율 주파수 확인하기"'
+                        '💰 "사주 기반 재물·사업 890원 ➔ B2B 30만원 스케일업 정밀 분석"',
+                        '🌙 "밤/새벽 집중형 vs 낮 활동형 듀얼트랙 시간대 처방"',
+                        '🧠 "64괘 뇌 신경망 3S 1분 리셋 알고리즘"',
+                        '🔮 "내 일간 기질에 맞는 80% 미학 실천 가이드"'
                     ].map((chip, idx) => (
                         <button
                             key={idx}
                             type="button"
-                            onClick={() => handleChipClick(chip)}
-                            className="text-[10px] sm:text-xs font-extrabold px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-indigo-950/90 to-purple-950/90 hover:from-indigo-900 hover:to-purple-900 border border-indigo-500/40 text-indigo-200 hover:text-white transition-all whitespace-nowrap shrink-0 shadow-md active:scale-95 cursor-pointer flex items-center gap-1"
+                            onClick={() => setShowTrendingTopicModal(true)}
+                            className="text-[10px] sm:text-xs font-extrabold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-indigo-500/40 text-indigo-200 hover:text-white transition-all whitespace-nowrap shrink-0 shadow-md active:scale-95 cursor-pointer flex items-center gap-1"
                         >
-                            {chip}
+                            <span>{chip}</span>
+                            <span className="text-[9px] text-cyan-300 font-mono">🔍팝업</span>
                         </button>
                     ))}
                 </div>
