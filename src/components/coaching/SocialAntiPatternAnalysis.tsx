@@ -84,6 +84,58 @@ export default function SocialAntiPatternAnalysis({ dayStem, userName = '사용�
         `2단계 [수용]: 80%의 결실도 충분히 훌륭함을 스스로에게 다정하게 칭찬해 주기`,
         `3단계 [실천]: 내가 진정 사랑하는 가치를 위해 오늘 1분 작은 실천 하나를 이루기`
       ];
+    } else     if (key === 'CBT') {
+      category = 'CBT (인지행동 코칭) 1:1 감동 해설';
+      introMetaphor = `"${name} 대표님, '내 생각만 옳다'는 단단한 이분법을 내려놓을 때 세상의 모든 지혜와 조력자가 나에게 흐르기 시작합니다."`;
+      essayParagraphs = [
+        `내 방식만이 유일한 정답이라는 이분법적 생각은 폭풍우 속에서 나를 보호하려던 생존 방어 외투였습니다. 하지만 상대의 생각 속에도 나를 도울 50%의 소중한 지혜가 숨겨져 있습니다.`,
+        `나와 다른 타인의 조언을 나에 대한 공격이 아니라, 내가 미처 보지 못한 맹점을 비춰주는 고마운 돋보기로 여겨보세요.`,
+        `내 주장을 100% 관철하려 애쓰지 않을 때, 비로소 마음의 과열이 꺼지고 거대한 협력의 기회가 열립니다.`
+      ];
+      actionSteps = [
+        `1단계 [Scan]: "내 생각이 틀릴 수도 있지 않을까?" 가만히 질문해 보기`,
+        `2단계 [Sync]: 상대방 의견에서 배울 점 1가지를 메모에 담아보기`,
+        `3단계 [Shift]: 상대방의 멋진 제안을 기꺼이 채택하고 손잡기`
+      ];
+    } else if (key === 'MBCT') {
+      category = 'MBCT (마음챙김 인지 코칭) 1:1 감동 해설';
+      introMetaphor = `"${name} 대표님, 거친 폭풍우 속에서도 바닷속 깊은 제로포인트의 알아차림은 언제나 고요합니다."`;
+      essayParagraphs = [
+        `마음이 조급하여 무작정 앞으로 돌진하고 싶을 때, 가만히 멈추어 3초간 숨을 내쉬며 발바닥이 대지에 닿아있는 안도감을 느껴보세요.`,
+        `머릿속을 맴도는 조급함과 불안은 나를 스쳐 지나가는 구름일 뿐, 하늘 자체인 내 영혼의 본성은 온전히 평온합니다.`,
+        `지금 이 순간의 현존으로 돌아올 때, 내 삶을 흔들던 모든 조급함은 연기처럼 사라집니다.`
+      ];
+      actionSteps = [
+        `1단계 [Scan]: 가슴이 답답할 때 3초간 천천히 깊은 호흡하기`,
+        `2단계 [Sync]: 발바닥에 닿는 대지의 시원한 촉각에 뇌 집중하기`,
+        `3단계 [Shift]: 조급함을 내려놓고 편안한 온기로 다음 행동 시작하기`
+      ];
+    } else if (key === 'DBT') {
+      category = 'DBT (변증법적 행동 코칭) 1:1 감동 해설';
+      introMetaphor = `"${name} 대표님, 감정의 폭주를 가라앉히고 차가운 지혜와 따뜻한 감성이 만나는 현명한 마음(Wise Mind)을 회복하세요."`;
+      essayParagraphs = [
+        `분노나 서운함이 솟구칠 때 즉각 반응하지 마세요. 마음의 열기가 서서히 잦아들 때까지 3분의 시원한 타임아웃을 나에게 선물해 보세요.`,
+        `뜨거운 감정도, 차가운 논리도 아닙니다. 그 둘이 부드럽게 융합되어 만나는 '현명한 마음(Wise Mind)'이 당신의 진짜 통치권입니다.`,
+        `감정의 파도에 휘말리지 않고 파도를 타는 우아한 서퍼처럼, 나 자신을 온전히 안아주고 자유를 얻으십시오.`
+      ];
+      actionSteps = [
+        `1단계 [Scan]: 감정이 가빠질 때 3분간 차가운 물을 마시며 멈추기`,
+        `2단계 [Sync]: 감정과 논리가 조화를 이루는 현명한 지혜 선택하기`,
+        `3단계 [Shift]: 가장 온화하고 우아한 언어로 내 진심 전하기`
+      ];
+    } else if (key === 'ACT') {
+      category = 'ACT (수용전념 코칭) 1:1 감동 해설';
+      introMetaphor = `"${name} 대표님, 완벽해야 한다는 불안은 나를 지켜주려 애쓰던 다정한 내면의 생존 보호자(Protector)였습니다."`;
+      essayParagraphs = [
+        `완벽해야 한다는 불안은 나를 해치려는 적이 아닙니다. 내 영혼을 안전하게 지켜주려 애쓰던 다정한 내면의 파수꾼입니다.`,
+        `불안을 억지로 없애려 싸우지 마세요. '불안아, 와줘서 고마워. 하지만 난 내가 진정 사랑하는 일을 하러 갈게' 하고 다정하게 인정해 주세요.`,
+        `80%의 결실도 충분히 훌륭함을 수용하고, 내가 가치 있게 여기는 소중한 사람들과의 행복을 향해 전념하여 한 걸음 내디디십시오.`
+      ];
+      actionSteps = [
+        `1단계 [Scan]: "완벽해야 해" 생각이 들 때 내면의 파수꾼에게 감사 인사하기`,
+        `2단계 [Sync]: 80%의 결실도 충분히 훌륭함을 스스로 다정하게 인정하기`,
+        `3단계 [Shift]: 내가 진정 사랑하는 가치를 위해 오늘 1분 실천 행동하기`
+      ];
     } else if (key === 'DARK') {
       category = 'DARK CODE (생존 방어 스키마) 자비 수용';
       introMetaphor = `"${name} 대표님, 타협을 패배라 여기며 홀로 모든 폭풍을 막아서던 가뭄 속 거목의 지친 잎사귀를 기억하십니까?"`;
@@ -365,43 +417,63 @@ export default function SocialAntiPatternAnalysis({ dayStem, userName = '사용�
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* CBT */}
-                <div onClick={() => openCoachingModal("CBT", "CBT 인지행동 코칭")} className="bg-slate-800/50 border border-blue-500/20 p-5 rounded-xl hover:border-blue-500/50 transition-colors cursor-pointer shadow-md">
-                  <h4 className="text-blue-400 font-bold mb-2 flex items-center">
-                    <span className="bg-blue-900/70 text-xs px-2 py-1 rounded mr-2">CBT</span>
-                    인지행동 코칭
-                  </h4>
-                  <div className="mb-2 text-sm font-semibold text-slate-200">{coachingData.psychology.cbt.title}</div>
-                  <p className="text-sm text-slate-400 leading-relaxed">{coachingData.psychology.cbt.desc}</p>
+                <div onClick={() => openCoachingModal("CBT", "CBT 인지행동 코칭")} className="bg-slate-800/50 border border-blue-500/30 p-5 rounded-2xl hover:border-blue-400 transition-all cursor-pointer shadow-md group relative overflow-hidden">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-blue-400 font-black text-sm flex items-center">
+                      <span className="bg-blue-900/70 text-blue-300 text-xs px-2 py-0.5 rounded mr-2 border border-blue-700/50">CBT</span>
+                      인지행동 코칭
+                    </h4>
+                    <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                      <span>👆 클릭 시 AI 감동 에세이</span>
+                    </span>
+                  </div>
+                  <div className="mb-2 text-xs sm:text-sm font-bold text-slate-100">{coachingData.psychology.cbt.title}</div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">"내 생각만 옳다"는 경직된 마음을 부드럽게 풀고, 타인의 다른 생각 속에 숨겨진 지혜의 불빛을 따뜻하게 발견합니다.</p>
                 </div>
 
                 {/* MBCT */}
-                <div onClick={() => openCoachingModal("MBCT", "MBCT 마음챙김 인지 코칭")} className="bg-slate-800/50 border border-teal-500/20 p-5 rounded-xl hover:border-teal-500/50 transition-colors cursor-pointer shadow-md">
-                  <h4 className="text-teal-400 font-bold mb-2 flex items-center">
-                    <span className="bg-teal-900/70 text-xs px-2 py-1 rounded mr-2">MBCT</span>
-                    마음챙김 인지 코칭
-                  </h4>
-                  <div className="mb-2 text-sm font-semibold text-slate-200">{coachingData.psychology.mbct.title}</div>
-                  <p className="text-sm text-slate-400 leading-relaxed">{coachingData.psychology.mbct.desc}</p>
+                <div onClick={() => openCoachingModal("MBCT", "MBCT 마음챙김 인지 코칭")} className="bg-slate-800/50 border border-teal-500/30 p-5 rounded-2xl hover:border-teal-400 transition-all cursor-pointer shadow-md group relative overflow-hidden">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-teal-400 font-black text-sm flex items-center">
+                      <span className="bg-teal-900/70 text-teal-300 text-xs px-2 py-0.5 rounded mr-2 border border-teal-700/50">MBCT</span>
+                      마음챙김 인지 코칭
+                    </h4>
+                    <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                      <span>👆 클릭 시 AI 감동 에세이</span>
+                    </span>
+                  </div>
+                  <div className="mb-2 text-xs sm:text-sm font-bold text-slate-100">{coachingData.psychology.mbct.title}</div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">돌진하려는 조급함이 올라올 때 가만히 멈추어 3초간 호흡하며 대지의 시원한 안도감으로 뇌를 보살핍니다.</p>
                 </div>
 
                 {/* DBT */}
-                <div onClick={() => openCoachingModal("DBT", "DBT 변증법적 행동 코칭")} className="bg-slate-800/50 border border-orange-500/20 p-5 rounded-xl hover:border-orange-500/50 transition-colors cursor-pointer shadow-md">
-                  <h4 className="text-orange-400 font-bold mb-2 flex items-center">
-                    <span className="bg-orange-900/70 text-xs px-2 py-1 rounded mr-2">DBT</span>
-                    변증법적 행동 코칭
-                  </h4>
-                  <div className="mb-2 text-sm font-semibold text-slate-200">{coachingData.psychology.dbt.title}</div>
-                  <p className="text-sm text-slate-400 leading-relaxed">{coachingData.psychology.dbt.desc}</p>
+                <div onClick={() => openCoachingModal("DBT", "DBT 변증법적 행동 코칭")} className="bg-slate-800/50 border border-orange-500/30 p-5 rounded-2xl hover:border-orange-400 transition-all cursor-pointer shadow-md group relative overflow-hidden">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-orange-400 font-black text-sm flex items-center">
+                      <span className="bg-orange-900/70 text-orange-300 text-xs px-2 py-0.5 rounded mr-2 border border-orange-700/50">DBT</span>
+                      변증법적 행동 코칭
+                    </h4>
+                    <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                      <span>👆 클릭 시 AI 감동 에세이</span>
+                    </span>
+                  </div>
+                  <div className="mb-2 text-xs sm:text-sm font-bold text-slate-100">{coachingData.psychology.dbt.title}</div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">분노나 서운함의 열기가 식어 고요해질 때까지 3분의 휴식을 주고 현명한 마음(Wise Mind)의 중심을 회복합니다.</p>
                 </div>
 
                 {/* ACT */}
-                <div onClick={() => openCoachingModal("ACT", "ACT 수용전념 코칭")} className="bg-slate-800/50 border border-purple-500/20 p-5 rounded-xl hover:border-purple-500/50 transition-colors cursor-pointer shadow-md">
-                  <h4 className="text-purple-400 font-bold mb-2 flex items-center">
-                    <span className="bg-purple-900/70 text-xs px-2 py-1 rounded mr-2">ACT</span>
-                    수용전념 코칭
-                  </h4>
-                  <div className="mb-2 text-sm font-semibold text-slate-200">{coachingData.psychology.act.title}</div>
-                  <p className="text-sm text-slate-400 leading-relaxed">{coachingData.psychology.act.desc}</p>
+                <div onClick={() => openCoachingModal("ACT", "ACT 수용전념 코칭")} className="bg-slate-800/50 border border-purple-500/30 p-5 rounded-2xl hover:border-purple-400 transition-all cursor-pointer shadow-md group relative overflow-hidden">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-purple-400 font-black text-sm flex items-center">
+                      <span className="bg-purple-900/70 text-purple-300 text-xs px-2 py-0.5 rounded mr-2 border border-purple-700/50">ACT</span>
+                      수용전념 코칭
+                    </h4>
+                    <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                      <span>👆 클릭 시 AI 감동 에세이</span>
+                    </span>
+                  </div>
+                  <div className="mb-2 text-xs sm:text-sm font-bold text-slate-100">{coachingData.psychology.act.title}</div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">"완벽해야 해"라는 불안을 생존 보호자로 감사히 인정하고, 내가 진짜 사랑하는 가치에 전념하여 1분 실천을 만듭니다.</p>
                 </div>
               </div>
             </motion.div>
