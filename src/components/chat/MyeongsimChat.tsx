@@ -13,6 +13,7 @@ import TrendingTopicModal from '../modals/TrendingTopicModal';
 import ChatMessageList from './modules/ChatMessageList';
 import ChatMoodSwitchBar from './modules/ChatMoodSwitchBar';
 import ChatTrendingChipsBar from './modules/ChatTrendingChipsBar';
+import { CoinShowerEffect, CoinShowerRef } from '@/components/effects/CoinShowerEffect';
 
 
 const PSYCH_PROTOCOLS = [
@@ -73,6 +74,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const audioCtxRef = useRef<AudioContext | null>(null);
     const oscRef = useRef<OscillatorNode | null>(null);
     const reportData = useReportStore((s) => s.reportData);
+    const coinShowerRef = useRef<CoinShowerRef>(null);
 
     const clientSajuData = useMemo(() => {
         if (reportData) {
@@ -168,6 +170,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
             return;
         }
         handleSubmit(e);
+        coinShowerRef.current?.triggerCoinShower();
     };
 
     const handleChipClick = (chipText: string) => {
@@ -182,6 +185,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
             role: 'user',
             content: cleanPrompt
         });
+        coinShowerRef.current?.triggerCoinShower();
     };
 
     const handlePrescriptionClick = () => {
@@ -1087,6 +1091,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     </motion.div>
                 </div>
             )}
+            <CoinShowerEffect ref={coinShowerRef} />
         </div>
     );
 }
