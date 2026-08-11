@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { ChevronRight, BarChart3, Sparkles } from 'lucide-react';
 
 /**
  * [MODULE] 월간 명심 리포트 — 나의 마음 변화 리포트

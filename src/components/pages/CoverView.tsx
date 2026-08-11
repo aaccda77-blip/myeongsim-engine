@@ -1,7 +1,7 @@
 import { useReportStore } from '@/store/useReportStore';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Check, ChevronRight, Loader2, Sparkles, Map, Info } from 'lucide-react';
+import { Camera, Check, ChevronRight, Loader2, Sparkles, Map, Info, Crown, Target, ArrowRight } from 'lucide-react';
 import { NeuralBlueprintMapper } from '@/modules/NeuralBlueprintMapper';
 import { useEffect, useState } from 'react';
 import { calculateSaju } from '@/utils/SajuCalculator';
