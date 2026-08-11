@@ -6,7 +6,7 @@ import { z } from 'zod';
 // [SECURITY] Strict Schema Validation (Zod)
 const ApproveSchema = z.object({
     userId: z.string().uuid(),
-    tier: z.enum(['TRIAL_30M', 'PASS_24H', 'VIP_7D'])
+    tier: z.enum(['TRIAL_30M', 'PASS_24H', 'VIP_7D', 'CHAT_3'])
 });
 
 export async function POST(request: NextRequest) {
