@@ -2749,7 +2749,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             </p>
                                         </div>
 
-                                        <SelfCoaching100 />
+                                        <SelfCoaching100 dayStem={sajuInfo?.dayStem} userName={sajuInfo?.name} sajuInfo={sajuInfo} />
                                     </div>
                                 </section>
 

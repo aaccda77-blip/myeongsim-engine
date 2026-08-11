@@ -6,7 +6,89 @@ import { Sparkles, Copy, CheckCircle2, ChevronDown, ChevronRight, ChevronLeft, D
 
 interface Props {
   dayStem?: string;
+  userName?: string;
+  sajuInfo?: any;
 }
+
+
+const ILGAN_ESSAY_MAP: Record<string, {
+    title: string;
+    nature: string;
+    element: string;
+    supporter: string;
+    advice: string;
+}> = {
+    '甲': {
+        title: '甲木(갑목) 선구자',
+        nature: '0에서 1을 창조해내는 우직한 거목',
+        element: '木(목)',
+        supporter: '대지의 수분(水)과 온기',
+        advice: '앞만 보고 달리던 마음을 잠시 머물게 하여 주변의 소중한 사람들과 함께 숨을 쉬십시오.'
+    },
+    '乙': {
+        title: '乙木(을목) 연결자',
+        nature: '바람에 흔들리되 결코 꺾이지 않는 부드러운 화초',
+        element: '木(목)',
+        supporter: '따스한 햇살(火)과 대지(土)',
+        advice: '세상과 친절히 연결되되, 남 눈치 보지 않고 내 마음의 뿌리(자아)를 지키십시오.'
+    },
+    '丙': {
+        title: '丙火(병화) 태양',
+        nature: '온 세상을 따뜻하고 밝게 비추는 태양',
+        element: '火(화)',
+        supporter: '맑은 하늘과 차분한 냉각수',
+        advice: '스스로를 과도하게 태우지 않도록 하루 15분 마음을 식혀주는 뇌 쿨링을 선물하십시오.'
+    },
+    '丁': {
+        title: '丁火(정화) 은빛 촛불',
+        nature: '어둠 속을 섬세히 밝히는 통찰의 촛불',
+        element: '火(화)',
+        supporter: '마르지 않는 땔나무(木)',
+        advice: '혼자 속으로 삭이며 자책하지 말고, 다정한 언어로 속마음을 편안하게 표현하십시오.'
+    },
+    '戊': {
+        title: '戊土(무토) 웅장한 대지',
+        nature: '모든 것을 넉넉하게 안아주는 넓은 산과 대지',
+        element: '土(토)',
+        supporter: '따뜻한 온기(火)',
+        advice: '남의 짐을 다 짊어지려 하지 말고, 나 자신의 평온과 코어 가치를 1번으로 지키십시오.'
+    },
+    '己': {
+        title: '己土(기토) 비옥한 전답',
+        nature: '곡식을 정성껏 키워내는 비옥한 전답',
+        element: '土(토)',
+        supporter: '촉촉한 이슬과 햇살',
+        advice: '마음속에 품은 좋은 생각을 80% 미학으로 세상에 용기 있게 내어놓으십시오.'
+    },
+    '庚': {
+        title: '庚金(경금) 강철 명검',
+        nature: '단단하고 과감한 결단력을 지닌 강철',
+        element: '金(금)',
+        supporter: '단련의 불꽃(火)',
+        advice: '"내가 항상 강해야 한다"는 부담을 내려놓고, 부드럽고 다정한 유연함을 품으십시오.'
+    },
+    '辛': {
+        title: '辛金(신금) 빛나는 보석',
+        nature: '섬세하고 예리하게 빛나는 정교한 보석',
+        element: '金(금)',
+        supporter: '맑게 씻어주는 깨끗한 물',
+        advice: '100점 완벽주의 마비에 갇히지 말고 80% 미학으로 가볍게 시작하여 빛을 나누십시오.'
+    },
+    '壬': {
+        title: '壬水(임수) 도도한 강물',
+        nature: '깊고 거대하게 흐르는 드넓은 지혜의 강물',
+        element: '水(수)',
+        supporter: '막힘없는 탁 트인 물길',
+        advice: '생각의 깊이에만 잠겨있지 말고, 오늘 당장 작은 실천 하나를 세상에 흘려보내십시오.'
+    },
+    '癸': {
+        title: '癸水(계수) 맑은 이슬',
+        nature: '만물을 촉촉하게 적시는 다정한 이슬비',
+        element: '水(수)',
+        supporter: '맑고 고요한 영혼의 샘물',
+        advice: '남의 감정까지 내 것으로 짊어지지 말고, 나 자신의 마음에 먼저 다정한 온기를 건네십시오.'
+    },
+};
 
 // ── 카테고리 데이터 정의 ──
 const CATEGORIES = [
@@ -145,7 +227,7 @@ const QUESTIONS_DB = [
   { id: 100, catId: "cat10", text: "그리고 마지막으로, 지금 당신은 '명심(明心)'하고 있습니까?" },
 ];
 
-export default function SelfCoaching100({ dayStem = '甲' }: Props) {
+export default function SelfCoaching100({ dayStem = '甲', userName, sajuInfo }: Props) {
   const [activeTab, setActiveTab] = useState('cat1');
   const [randomQuestion, setRandomQuestion] = useState<{ id: number; text: string; catId: string } | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
@@ -192,24 +274,27 @@ export default function SelfCoaching100({ dayStem = '甲' }: Props) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // 질문 클릭 시 AI 코치 풍성한 1:1 감동 에세이 팝업 열기 (Array 기반 클린 렌더링)
+  // 질문 클릭 시 AI 코치 풍성한 1:1 감동 에세이 팝업 열기 (사용자 생년월일/일간 연동)
   const openQuestionEssayModal = (q: { id: number; text: string; catId: string }) => {
     const cat = CATEGORIES.find(c => c.id === q.catId);
     const catTitle = cat ? cat.title : '오라클 질문';
-    const name = dayStem === '甲' ? '甲木(갑목) 선구자' : dayStem === '乙' ? '乙木(을목) 연결자' : '명심 아키텍트';
+    
+    const stemKey = (dayStem && dayStem in ILGAN_ESSAY_MAP) ? dayStem : '甲';
+    const ilganProfile = ILGAN_ESSAY_MAP[stemKey] || ILGAN_ESSAY_MAP['甲'];
+    const displayName = userName ? `${userName} (${ilganProfile.title})` : ilganProfile.title;
 
-    const metaphor = `"${name} 대표님, 복잡하게 얽힌 실타래에서 단 한 가닥의 핵심을 끌어당기듯, 초보자도 1초 만에 뇌를 정돈하는 깊고 감동적인 현실 비유로 해설해 드립니다."`;
+    const metaphor = `"${displayName}님, 복잡하게 얽힌 마음의 타래에서 단 한 가닥의 핵심을 끌어당기듯, 초보자도 1초 만에 뇌를 정돈하는 ${ilganProfile.element} 기운 맞춤 해설을 전합니다."`;
 
     const essayParagraphs = [
-      `건축가가 대성당을 지을 때, 지진을 견디는 튼튼한 안전 기둥을 그어 넣는 것은 '진정한 품질의 기준'이지만, 조그만 먼지가 묻었다고 공사 전체를 멈추는 것은 '실패에 대한 두려움(완벽주의)'입니다. ${name} 대표님, 당신은 혹시 타인의 비판이라는 조그만 먼지를 닦아내느라, 정작 세상을 향해 당신의 거룩한 깃발을 올리지 못하고 계셨던 것은 아닙니까?`,
-      `당신의 영혼(甲木)은 0에서 1을 무(無)에서 유(有)로 창조해내는 위대한 개척자입니다. 60갑자 중 가장 먼저 솟구치는 01번 거목이기에, 본능적으로 완벽한 작품을 내놓아야 한다는 짐스러운 왕관을 짊어지고 있었습니다. 하지만 발 밑의 수분(子水)이 마르고 조급함이 올라올 때, 뇌 전두엽은 '내가 완벽하지 않으면 배척당한다'는 방어 회로를 가동합니다. 이것은 결함이 아니라, 세상을 진심으로 선도하고 싶었던 당신의 우직한 진심이 만든 환영입니다.`,
-      `이제 모든 사람을 만족시켜야 한다는 짐스러운 왕관을 내려놓으십시오. 80%의 진심이 담긴 미완성의 작품이, 100% 완벽을 기다리다 세상에 나오지 못한 채 묻혀버린 걸작보다 천 배 더 위대합니다. 세상은 당신의 완벽한 완성도가 아니라, 당신이 대지를 뚫고 솟아오른 그 꺾이지 않는 용기의 싹을 기다리고 있습니다. 고통과 두려움을 기꺼이 당신의 성장을 태우는 최상급 연료로 수용하십시오.`
+      `건축가가 대성당을 지을 때, 지진을 견디는 튼튼한 안전 기둥을 세우는 것은 '진정한 가치의 기준'이지만, 조그만 먼지가 묻었다고 공사 전체를 멈추는 것은 '완벽주의 두려움'입니다. ${displayName}님, 당신은 혹시 주변의 시선이나 비판이라는 조그만 먼지를 닦아내느라, 정작 세상을 향해 당신의 거룩한 깃발을 올리지 못하고 계셨던 것은 아닙니까?`,
+      `당신의 영혼은 '${ilganProfile.nature}'의 타고난 고유 기운을 가지고 있습니다. ${ilganProfile.supporter}의 기운이 마음속에 감돌 때, 뇌 전두엽은 비로소 불안을 내려놓고 가장 창의적인 80% 미학의 영감을 배출합니다. 이번 질문("${q.text}")은 당신의 내면이 보내는 가장 진실한 '알아차림(메타인지)'의 초청장입니다.`,
+      `이제 모든 사람을 만족시켜야 한다는 무거운 자책을 내려놓으십시오. 80%의 진심이 담긴 가벼운 시작이, 100% 완벽을 기다리다 묻혀버린 걸작보다 천 배 더 위대합니다. ${ilganProfile.advice}`
     ];
 
     const actionSteps = [
-      `1단계 [Scan]: 완벽주의가 솟구치는 순간 "이것은 품질인가, 비판의 두려움인가?" 3초간 인지하기`,
-      `2단계 [Sync]: 3초간 깊은 호흡을 하며 "80%면 이미 훌륭하다" 나직하게 3번 읊조리기`,
-      `3단계 [Shift]: 오늘 아직 완성이 안 됐다며 멈춰둔 콘텐츠/업무 1개를 지금 당장 단 1명에게 전송하고 베타 공개하기`
+      `1단계 [Scan]: 완벽주의나 불안이 솟구치는 순간 "이것은 내 진짜 가치인가, 두려움인가?" 3초간 인지하기`,
+      `2단계 [Sync]: 깊은 호흡을 내쉬며 "${ilganProfile.title}로서 내 템포대로 나아간다" 나직하게 3번 읊조리기`,
+      `3단계 [Shift]: 오늘 아직 완성이 안 됐다며 멈춰둔 작은 실천 1가지를 지금 당장 실행하고 세상에 공유하기`
     ];
 
     setSelectedQuestionModal({
