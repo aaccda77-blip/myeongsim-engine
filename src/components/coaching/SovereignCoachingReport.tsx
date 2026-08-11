@@ -11,7 +11,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, ChevronDown, ChevronUp, Diamond, Gem } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, Diamond, Gem, Crown, Sparkles } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 import DiagnosticDashboard from './DiagnosticDashboard';
@@ -1788,43 +1788,57 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                             {activeTab === 'document' ? (
                                 <div className="px-5 pb-24 space-y-10 pt-6">
 
-                                {/* ── Hero ── */}
-                                <section className="space-y-4 relative overflow-hidden">
-                                    <div className="absolute top-0 left-1/4 w-64 h-64 rounded-full opacity-10 blur-[80px]"
-                                        style={{ background: 'radial-gradient(circle, #f2ca50 0%, transparent 70%)' }} />
-                                    <div className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-yellow-400 border border-yellow-400/30 bg-yellow-400/5">
-                                        Master Edition
+                                {/* ── Hero (최고급 럭셔리 마스터 에디션 비주얼) ── */}
+                                <section className="space-y-6 relative overflow-hidden">
+                                    <div className="absolute top-0 left-1/4 w-80 h-80 rounded-full opacity-20 blur-[100px] pointer-events-none"
+                                        style={{ background: 'radial-gradient(circle, #f59e0b 0%, #7c3aed 50%, transparent 70%)' }} />
+
+                                    <div className="flex items-center gap-2">
+                                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-black uppercase tracking-[0.2em] bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-purple-500/20 text-amber-300 border-2 border-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.3)] animate-pulse">
+                                            <Crown size={13} className="text-amber-400" />
+                                            MASTER SOVEREIGN EDITION
+                                        </span>
                                     </div>
-                                    <h2 className="font-serif text-3xl font-bold text-white leading-tight">
+
+                                    <h2 className="font-serif text-3xl sm:text-4xl font-black text-white leading-tight tracking-tight">
                                         🔬 명심(明心) 프리미엄<br />
-                                        <span style={{ background: 'linear-gradient(135deg, #f2ca50 0%, #d4af37 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                        <span className="bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(245,158,11,0.5)]">
                                             통합 코칭 리포트
                                         </span>
                                     </h2>
-                                    <p className="text-xs text-gray-400 font-medium tracking-wide">4D-자각 매트릭스 × CAFE (Cognitive Awareness & Flow Engine) 파이프라인</p>
-                                    <div className="border-l-2 border-yellow-400/40 pl-5 py-2 my-4">
-                                        <p className="font-serif text-base italic text-gray-200 leading-relaxed">
+
+                                    <p className="text-xs sm:text-sm text-gray-300 font-extrabold tracking-wide flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                                        4D-자각 매트릭스 × CAFE (Cognitive Awareness & Flow Engine) 파이프라인
+                                    </p>
+
+                                    {/* Quote Box with Golden Quest Border */}
+                                    <div className="border-l-4 border-amber-400 bg-gradient-to-r from-amber-950/70 via-purple-950/60 to-slate-950 p-5 sm:p-6 rounded-r-3xl shadow-[0_0_35px_rgba(245,158,11,0.2)] border-t border-b border-r border-amber-400/30">
+                                        <p className="font-serif text-base sm:text-lg italic text-amber-100 leading-relaxed font-semibold">
                                             {getDynamicHeroQuote(sajuInfo, coaching)}
                                         </p>
                                     </div>
-                                    <div className="p-4 rounded-xl border border-white/10" style={{ background: 'rgba(42,42,42,0.6)' }}>
-                                        <p className="text-xs text-gray-300 leading-relaxed">
-                                            자각의 주체이신 <strong className="text-white font-bold">{sajuInfo.name || '당신'}님</strong>을 위해, 명식({sajuInfo.dayPillar || sajuInfo.dayStem})에 프로그래밍된 가장 깊은 코드를 해독했습니다.
-                                            이 리포트는 단순한 운세 풀이를 넘어 당신의 <strong className="text-yellow-400 font-bold">{coaching.ilganLabel || '선천적 하드웨어(명식 기전)'}</strong>와
-                                            정신적 소프트웨어(인지 패턴) 사이의 충돌 지점을 정밀 타격하는 1:1 맞춤형 전략 코칭 가이드입니다.
+
+                                    {/* User Specific Explanation Card */}
+                                    <div className="p-5 rounded-3xl bg-slate-900/90 border-2 border-amber-400/40 shadow-xl backdrop-blur-md relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                                        <p className="text-xs sm:text-sm text-gray-200 leading-relaxed font-medium">
+                                            자각의 주체이신 <strong className="text-amber-300 font-black text-sm sm:text-base">{sajuInfo.name || '당신'}님</strong>을 위해, 명식({sajuInfo.dayPillar || sajuInfo.dayStem})에 프로그래밍된 가장 깊은 코드를 해독했습니다.<br />
+                                            이 리포트는 단순한 운세 풀이를 넘어 당신의 <strong className="text-amber-300 font-black underline underline-offset-4 decoration-amber-400/50">{coaching.ilganLabel || '선천적 본연의 기질'}</strong>와
+                                            정신적 사고 패턴 사이의 연결 고리를 밝혀주는 1:1 맞춤형 전략 코칭 가이드입니다.
                                         </p>
                                     </div>
                                 </section>
 
-                                {/* ── Phase 0: CAFE ── */}
-                                <section>
+                                {/* ── Phase 0: CAFE (사주 4기둥 메탈릭 골드 카드) ── */}
+                                <section className="space-y-6">
                                     <SectionHeader phase="Phase 0" title="CAFE (Cognitive Awareness & Flow Engine) 파이프라인 시뮬레이션" />
-                                    <p className="font-serif text-sm text-gray-400 mb-5 italic">
-                                        "명식에 프로그래밍된 거대한 역학적 물리법칙"
+                                    <p className="font-serif text-sm text-amber-200/90 mb-5 italic font-semibold">
+                                        "명식에 프로그래밍된 거대한 우주 오행의 역학적 기전"
                                     </p>
 
-                                    {/* 사주 기둥 */}
-                                    <div className="grid grid-cols-4 gap-2 text-center mb-4">
+                                    {/* 사주 4기둥 메탈릭 카드 */}
+                                    <div className="grid grid-cols-4 gap-2.5 sm:gap-4 text-center mb-6">
                                         {[
                                             { label: '시(時)', val: sajuInfo.timePillar, active: false },
                                             { label: '일(日)', val: sajuInfo.dayPillar, active: true },
@@ -1832,10 +1846,22 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             { label: '년(年)', val: sajuInfo.yearPillar, active: false },
                                         ].map(p => (
                                             <div key={p.label}
-                                                className={`p-3 rounded-xl space-y-1 ${p.active ? 'border-2 border-yellow-400/40 ring-1 ring-yellow-400/20' : 'border border-white/10'}`}
-                                                style={{ background: p.active ? 'rgba(42,42,42,0.8)' : 'rgba(28,27,27,0.8)' }}>
-                                                <div className={`text-[10px] font-bold ${p.active ? 'text-yellow-400' : 'text-gray-500'}`}>{p.label}</div>
-                                                <div className={`text-xl font-serif font-bold ${p.active ? 'text-yellow-400' : 'text-white'}`}>{p.val}</div>
+                                                className={`p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl transition-all relative overflow-hidden shadow-lg ${
+                                                    p.active
+                                                        ? 'bg-gradient-to-br from-amber-950/95 via-yellow-950/90 to-purple-950/95 border-2 border-amber-400 shadow-[0_0_35px_rgba(245,158,11,0.4)] scale-105 ring-2 ring-amber-300/40 z-10'
+                                                        : 'bg-slate-900/80 border border-white/15 hover:border-amber-400/50 hover:scale-[1.02]'
+                                                }`}>
+                                                {p.active && (
+                                                    <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 text-[9px] sm:text-[10px] font-black bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded-full font-mono shadow-sm">
+                                                        👑 메인 코어
+                                                    </span>
+                                                )}
+                                                <div className={`text-xs sm:text-sm font-black mb-1 ${p.active ? 'text-amber-300' : 'text-gray-400'}`}>
+                                                    {p.label}
+                                                </div>
+                                                <div className={`text-xl sm:text-3xl font-serif font-black tracking-widest ${p.active ? 'text-amber-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]' : 'text-white'}`}>
+                                                    {p.val || '未'}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
