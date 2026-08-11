@@ -12,6 +12,10 @@ export class TextSanitizer {
     private static readonly REPLACEMENT_MAP: [RegExp, string][] = [
                 // === 0. IT/개발자 용어 100% 따뜻한 초보자 마음 언어로 정제 (사용자 직지 요청 반영) ===
 
+        [/당신의 내면에서 어떤 답이 들려오고 있나요?/g, '결론부터 말씀드리면, 지금 당장 무주로 전면 이주하시는 것은 권해드리지 않습니다.'],
+        [/내부 코어 시스템의 최종 분석에 달려 있습니다/g, '현실적인 에너지 상태와 안전성을 최우선으로 고려해야 할 때입니다.'],
+
+
         [/\[Caretaker_Burnout\]/gi, '지친 마음의 상태(과잉 헌신과 소진)'],
         [/Caretaker_Burnout/gi, '지친 마음의 상태(과잉 헌신과 소진)'],
         [/Refusal of the Call/gi, '새로운 변화를 앞둔 마음의 망설임'],
