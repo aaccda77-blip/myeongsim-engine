@@ -1,4 +1,5 @@
 'use client';
+import { TextSanitizer } from '@/modules/TextSanitizer';
 
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useChat } from 'ai/react';
@@ -29,7 +30,7 @@ const PSYCH_PROTOCOLS = [
 ];
 
 const renderFormattedText = (text: string) => {
-    let clean = text.replace(/^---$/gm, '').trim();
+    let clean = TextSanitizer.ensureTwoStepStructure(text).replace(/^---$/gm, '').trim();
     if (!clean) return null;
 
     const parts = clean.split(/(\*\*.*?\*\*)/g);

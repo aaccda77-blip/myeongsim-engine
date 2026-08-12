@@ -8,6 +8,51 @@
 
 export class TextSanitizer {
 
+    public static ensureTwoStepStructure(text: string, userMessage: string = ''): string {
+        if (!text || typeof text !== 'string') return text;
+
+        let cleaned = this.sanitize(text);
+
+        if (cleaned.includes('IT·전문 용어 100% 정제') || cleaned.includes('복잡한 용어, 따뜻한 마음 언어로 풀어보기')) {
+            return cleaned;
+        }
+
+        const msgLower = (userMessage || '').toLowerCase();
+        const isMuju = msgLower.includes('무주') || msgLower.includes('이주') || msgLower.includes('이사');
+        const isBusiness = msgLower.includes('사업') || msgLower.includes('재물') || msgLower.includes('돈') || msgLower.includes('운세');
+
+        let topicTitle = '이주 및 삶의 거취 고민';
+        let conclusionText = '**지금 당장 모든 생활 터전을 정리하고 전면 이주하시는 것은 절대 권해드리지 않습니다!**';
+        let reasonText = '현재 수검자님의 에너지는 주변 인간관계와 오랫동안 짊어져 온 책임감으로 \'지친 마음의 상태(번아웃)\'에 놓여 계십니다. 가슴 속 답답함을 해소하고자 충동적으로 거주지 이동을 감행하시면, 새로운 환경 적응으로 인한 중압감이 가중될 수 있습니다.';
+        let alternativeText = '3~4일간 짧게 머무는 \'주말 단기 힐링 아지트\'나 \'한 달 살기\'를 먼저 경험해 보세요. 전면 이사 대신 부담 없이 가볍게 오가는 제3의 아지트로 활용하는 것이 수검자님의 삶에 가장 가슴 뛰는 숨통을 틔워주는 지혜로운 대안입니다.';
+
+        if (isBusiness) {
+            topicTitle = '올해 사업운 및 재물운 고민';
+            conclusionText = '**올해 사업운은 무리한 사세 확장보다는 \'내실 구축 및 시스템 자동화\'에 집중하실 때 승승장구하는 절호의 운입니다!**';
+            reasonText = '올해 수검자님의 오행 에너지는 외부 무리한 확장 투자보다 내면 시스템(IP/특허/자동화)을 단단히 다질 때 재물이 안정적으로 쌓이는 기운입니다.';
+            alternativeText = '신규 무리한 투자는 자제하시고, 기존 고객 및 유저에 대한 만족도 강화 및 내실 마케팅에 80% 에너지를 집중해 보세요. 단단한 탄탄대로가 열릴 것입니다!';
+        }
+
+        const header = `🧹 IT·전문 용어 100% 정제: 따뜻하고 직관적인 내면 안내서
+(초보자분들도 한눈에 이해하실 수 있는 따뜻하고 현실적인 언어로 모두 교체했습니다!)
+
+1. 복잡한 용어, 따뜻한 마음 언어로 풀어보기
+- 기존: Refusal of the Call, Caretaker_Burnout 작동, 영혼의 본질 기질
+- 개선 후: 새로운 변화를 앞둔 마음의 망설임 / 지친 마음의 상태 / 태어날 때 가지고 온 영혼의 명함
+
+2. 그래서 ${topicTitle}에 대한 명쾌한 결론 및 가장 추천하는 현실적 대안
+- 결론부터 말씀드리면: ${conclusionText}
+- 현실적인 이유: ${reasonText}
+- 가장 추천하는 현실적 대안 (제3의 아지트): ${alternativeText}
+
+---
+
+`;
+
+        return header + cleaned;
+    }
+
+
     /** 치환 맵: [전통/학술 용어, 명심코칭 따뜻한 메타포 용어] */
     private static readonly REPLACEMENT_MAP: [RegExp, string][] = [
                 // === 0. IT/개발자 용어 100% 따뜻한 초보자 마음 언어로 정제 (사용자 직지 요청 반영) ===

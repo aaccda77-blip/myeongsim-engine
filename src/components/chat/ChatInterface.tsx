@@ -1,4 +1,5 @@
 'use client';
+import { TextSanitizer } from '@/modules/TextSanitizer';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Send, User, Bot, X, Loader2, Lock, FileText, Check, Trash2, ArrowUp, Zap, Volume2, CircleStop } from 'lucide-react';
