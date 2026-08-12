@@ -1,5 +1,8 @@
 'use client';
+import DrillDownIconMenu from './DrillDownIconMenu';
 import { TextSanitizer } from '@/modules/TextSanitizer';
+import dynamic from 'next/dynamic';
+const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/coaching/DarkCodeCompassionTransformerModal'), { ssr: false });
 
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useChat } from 'ai/react';
@@ -64,6 +67,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [showCompanyModal, setShowCompanyModal] = useState<boolean>(false);
     const [showMicroPassModal, setShowMicroPassModal] = useState<boolean>(false);
     const [showMindStateModal, setShowMindStateModal] = useState<boolean>(false);
+    const [showDarkCodeModal, setShowDarkCodeModal] = useState<boolean>(false);
     const [showTrendingTopicModal, setShowTrendingTopicModal] = useState<boolean>(false);
     const [isPaidUser, setIsPaidUser] = useState<boolean>(() => {
         if (typeof window !== 'undefined') {
@@ -586,6 +590,16 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         >
                             <Music size={13} className={isBgmPlaying ? 'animate-spin' : ''} />
                             <span className="text-[11px] sm:text-xs">{isBgmPlaying ? '432Hz 켜짐' : '432Hz'}</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setShowDarkCodeModal(true)}
+                            title="책 3장 연동 다크코드 자비 변환기 & 음성 안식 스캔"
+                            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-950/70 hover:bg-purple-900/90 border border-purple-400/50 text-purple-200 hover:text-white text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
+                        >
+                            <Shield className="w-3.5 h-3.5 text-purple-300 animate-pulse" />
+                            <span>🛡️ 다크코드 변환</span>
                         </button>
 
                         <button
@@ -1283,6 +1297,11 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 </div>
             )}
             <CoinShowerEffect ref={coinShowerRef} />
+        <DarkCodeCompassionTransformerModal
+                isOpen={showDarkCodeModal}
+                onClose={() => setShowDarkCodeModal(false)}
+                userName={clientSajuData?.userName || '명심가'}
+            />
         </div>
     );
 }
