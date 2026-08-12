@@ -33,20 +33,7 @@ export class TextSanitizer {
             alternativeText = '신규 무리한 투자는 자제하시고, 기존 고객 및 유저에 대한 만족도 강화 및 내실 마케팅에 80% 에너지를 집중해 보세요. 단단한 탄탄대로가 열릴 것입니다!';
         }
 
-        const header = `🧹 IT·전문 용어 100% 정제: 따뜻하고 직관적인 내면 안내서
-(초보자분들도 한눈에 이해하실 수 있는 따뜻하고 현실적인 언어로 모두 교체했습니다!)
-
-1. 복잡한 용어, 따뜻한 마음 언어로 풀어보기
-- 기존: Refusal of the Call, Caretaker_Burnout 작동, 영혼의 본질 기질
-- 개선 후: 새로운 변화를 앞둔 마음의 망설임 / 지친 마음의 상태 / 태어날 때 가지고 온 영혼의 명함
-
-2. 그래서 ${topicTitle}에 대한 명쾌한 결론 및 가장 추천하는 현실적 대안
-- 결론부터 말씀드리면: ${conclusionText}
-- 현실적인 이유: ${reasonText}
-- 가장 추천하는 현실적 대안 (제3의 아지트): ${alternativeText}
-
----
-
+        const header = `
 `;
 
         return header + cleaned;
