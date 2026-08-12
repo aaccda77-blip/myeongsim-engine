@@ -1,15 +1,34 @@
-export class KarmicLoopModule {
-    /**
-     * Injects a prompt for the AI to detect deeply ingrained, recurring behavioral or emotional karmic loops
-     * based on the retrieved Episodic/Long-Term Memory history string.
-     */
-    static buildKarmicLoopPrompt(): string {
-        return `
-[🔄 ULTRA-PREMIUM: Karmic Loop (카르마 패턴 감지 모듈) 가동]
-위에서 제공된 '[Episodic Memory]' 기록을 시간축 위주로 꼼꼼히 살피고, 사용자의 말이나 상황 속에 **반복적으로 등장하는 패턴(Karmic Loop)**이 있는지 판단해 보세요. (예: 매번 계절이 바뀔 때 우울감을 느낌, 인간관계에서 특정 유형의 사람에게 휘둘림, 성공 직전에 항상 불안해하며 자멸함 등)
+/**
+ * KarmicLoopModule.ts - 반복 질문 감지 및 1초 단칼 직언 유도 모듈
+ */
 
-*   만약 이러한 반복되는 메커니즘을 발견했다면, 대화 중에 "대표님, 예전 기록을 보니 신기하게도 비슷한 상황에서 이 고민을 반복하고 계신 것 같습니다. 어쩌면 우리는 지금 대표님의 오랜 카르마적 패턴을 마주하고 있는지도 모릅니다. 이번 기회에 이 순환의 고리를 끊어볼까요?" 라는 식으로 매우 **영적(Spiritual)이면서도 통찰력 있게 직면(Confrontation)** 시켜 주어야 합니다.
-*   패턴이 없거나 단편적인 기록일 경우에는 억지로 이야기하지 마십시오.
+export class KarmicLoopModule {
+    public static buildKarmicLoopPrompt(): string {
+        return this.generateKarmicPrompt(true);
+    }
+
+    public static generateKarmicPrompt(hasRepeatQuestions: boolean = false): string {
+        return `
+# ⚡ [반복 질문 감지 및 100% 명쾌 단칼 직언 프로토콜]
+🚨 **CRITICAL SYSTEM DIRECTIVE**:
+사용자가 같은 질문(예: "무주 가라는 거야 말라는 거야?", "내 사업운 어때?")을 반복해서 물어볼 때:
+
+1. **절대 훈계 금지**: "카르마적 패턴에 갇혔다", "왜 자꾸 같은 질문을 반복하느냐", "내면의 답을 찾아라"라며 수검자를 지적하거나 회피하지 마십시오!
+2. **반복 질문의 원인**: 수검자가 질문을 반복하는 이유는 이전 답변이 우유부단하여 답답했기 때문입니다.
+3. **명쾌한 단칼 결론 제공**: 무조건 "결론부터 말씀드리면: [1초 단칼 판단]"과 함께 현실적인 이유, 그리고 선택의 숨통을 틔워주는 제3의 대안을 2단계 양식으로 명확히 직언하십시오!
+
+[반복 질문 대응 2단계 출력 템플릿]:
+🧹 IT·전문 용어 100% 정제: 따뜻하고 직관적인 내면 안내서
+(초보자분들도 한눈에 이해하실 수 있는 따뜻하고 현실적인 언어로 모두 교체했습니다!)
+
+1. 복잡한 용어, 따뜻한 마음 언어로 풀어보기
+- 기존: 반복되는 시뮬레이션 루프, 카르마적 패턴, 다크 코드
+- 개선 후: 답답함 해소를 향한 마음의 열망 / 반복되는 마음의 습관 / 내면의 보호 장치
+
+2. 그래서 [수검자의 핵심 질문]에 대한 명쾌한 결론 및 가장 추천하는 현실적 대안
+- 결론부터 말씀드리면: [솔직하고 명쾌한 1초 단칼 판단]
+- 현실적인 이유: [상황에 대한 지혜롭고 정직한 이유]
+- 가장 추천하는 현실적 대안 (제3의 솔루션/아지트): [숨통을 틔워주는 제3의 현실적 대안]
 `;
     }
 }

@@ -12,6 +12,14 @@ export class TextSanitizer {
     private static readonly REPLACEMENT_MAP: [RegExp, string][] = [
                 // === 0. IT/개발자 용어 100% 따뜻한 초보자 마음 언어로 정제 (사용자 직지 요청 반영) ===
 
+        
+        // === 0.2 Asterisk **** Bug Clean ===
+        [/\*\*\*\*/g, '내면의'],
+        [/\*\*\*/g, '내면의'],
+        [/\(Karmic Loop\)/gi, ''],
+        [/카르마적 패턴\(Karmic Loop\)/gi, '반복되는 마음의 습관'],
+        [/아카식 레코드\(Akashic Records\)/gi, '지혜의 내면 기록함'],
+
         // === 0.1 ALL English Code Tags Wildcard Catch & Clean ===
         [/\[Victim_Ending\]/gi, '피해 의식과 억울함'],
         [/\[Peter_Pan_Bug\]/gi, '미성숙한 기대'],
