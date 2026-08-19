@@ -210,10 +210,8 @@ function buildCardForGate(
   const sajuPillarText = `${sajuInfo.dayPillarKo}(${sajuInfo.dayPillarHanja})일주`;
   const sajuElementText = `${sajuInfo.ganName}`;
 
-  // 🌟 [40번 뇌수해 40.2 특화 정밀 매핑 - 글자 하나 빠짐없이 100% 원문 반영]
+  // 🌟 [40번 뇌수해 40.2 특화 정밀 매핑 - 정제된 3단계 코칭 카드 형식]
   if (safeGate === 40) {
-    const isSinsa = sajuInfo.dayPillarKo.includes('신사') || sajuInfo.monthPillarKo.includes('계미') || sajuInfo.yearPillarKo.includes('경신');
-    
     return {
       id: `gate_${safeGate}_line_${safeLine}_${categoryTitle}`,
       gateNum: 40,
@@ -227,30 +225,30 @@ function buildCardForGate(
       oneLiner: "사람들을 속박에서 해방시키는 솔루션으로 얻는 최고의 풍요",
       hexLines: [false, false, true, false, true, false],
       hexagramVerse: "田獲三狐, 得黃矢, 貞吉 (사냥에서 문제를 일으키는 세 마리 여우를 잡고, 바른 황금 화살을 얻으니 바르고 길하다.)",
-      hexagramMeaning: `1. 괘 번호 및 괘명 검증: 정확히 일치 (100%)\n64괘 표준 순서 (문왕괘 서열): 40번 = 뇌수해 (雷水解)\n\n· 상괘: 진뢰(震雷 ☳, 우레/행동/돌파)\n· 하괘: 감수(坎水 ☵, 험난함/속박/지혜)\n· 괘의 본질: "봄비와 천둥이 험난한 겨울의 얼음을 녹여 만물을 속박에서 해방시킨다(雷雨作 解)."\n→ 화면의 "사람들을 속박에서 해방시키는 솔루션" 정의와 정확히 일치합니다.\n\n2. 40.2 (2효) 및 코드 해석 검증\n주역 40.2(九二) 효사: "田獲三狐, 得黃矢, 貞吉"\n· 해석: 얽매인 난제(다크코드)를 정확한 지혜로 해결하여 정당한 수확과 풍요(뉴럴·메타코드)를 얻는 효입니다.\n· 다크코드(과거의 방어기제): 40번 명심 천명 코드의 근본 다크코드인 '에너지 소진(Exhaustion)과 과부하'와 정확히 연결됩니다. (돈·성과 집착으로 인한 건강/영혼 손실)\n· 뉴럴·메타코드(천부적 주권 무기 & 초의식): 40번 천명 코드의 뉴럴코드인 '단호한 결의(Resolve)' 및 메타코드인 '신성한 자유(Divine Will)'와 일치하여, 얽매임을 풀고 진정한 자유와 풍요를 완성하는 구조입니다.`,
-      sajuAlignment: `3. 사주 원국(${sajuInfo.yearPillarKo}년 ${sajuInfo.monthPillarKo}월 ${sajuInfo.dayPillarKo}일 ${sajuInfo.timePillarKo}시)과의 4주 8자 정합성\n\n[조후와 통관의 매듭을 푸는 상(解)]\n${sajuInfo.yearPillarKo}(${sajuInfo.yearPillarHanja})년 ${sajuInfo.monthPillarKo}(${sajuInfo.monthPillarHanja})월 ${sajuInfo.dayPillarKo}(${sajuInfo.dayPillarHanja})일 ${sajuInfo.timePillarKo}(${sajuInfo.timePillarHanja})시 4주 원국에서, 월주의 환경적 기운과 시주의 결실 글자는 일주의 막힌 기운을 뚫고 생명력을 틔우는 핵심 통로입니다.\n\n[코칭/솔루션 알고리즘]\n타인의 억압된 문제와 병목(坎/속박)을 명쾌한 분석과 솔루션(震/번개)으로 풀어내어 현실적 결실(시주 결실 에너지)로 전환하는 ${userName} 님의 4주 명식 지향점과 뇌수해 40.2의 메타코드가 일관되게 맞물려 있습니다.`,
-      darkCode: "돈과 성과에 집착하다 정작 내 건강과 영혼의 평화를 잃는 위험",
+      hexagramMeaning: `[🌿 1. 본질 (Essence)]\n봄비와 천둥이 얼어붙은 겨울 대지를 녹여 만물을 속박에서 해방시키듯, 삶의 얽힌 매듭을 끊고 자유와 실행력을 회복하는 시기입니다.\n\n[🛡️ 2. 다크코드 (Shadow)]\n성과와 증명에 과도하게 집착하다 정작 건강과 영혼의 평화를 잃는 에너지 고갈과 번아웃의 위험을 경계해야 합니다.\n\n[✨ 3. 솔루션 & 뉴럴코드 (Solution)]\n주역의 '황금 화살(黃矢)'처럼 문제의 핵심 급소를 정확히 정조준하여, 단호한 우선순위 정리로 불필요한 속박을 풀고 최고의 가치와 풍요를 완성합니다.`,
+      sajuAlignment: `${userName} 님의 사주 4주 원국(${sajuInfo.yearPillarKo}년·${sajuInfo.monthPillarKo}월·${sajuInfo.dayPillarKo}일·${sajuInfo.timePillarKo}시)에서, 일주(${sajuInfo.dayPillarKo})의 고유한 ${sajuInfo.ganName} 기운과 월주·시주의 환경이 맞물려 타인의 억압된 문제와 병목을 명쾌하게 해소하고 정당한 결실로 치환하는 천명 메커니즘과 일관되게 정합합니다.`,
+      darkCode: "성과와 증명에 집착하다 정작 내 건강과 영혼의 평화를 잃는 에너지 고갈",
       neuralCode: "물질적 번영과 영적 자유가 완벽하게 일치하는 풍요의 완성",
-      metaCode: "【퀀텀풍요 (Quantum Abundance)】 영적 대자유와 현실적 번영이 완전한 일치를 이루는 축복",
-      actionTip: "확보된 부와 에너지를 다시 나만의 불가침 안식처에 보관하세요.",
-      easyMetaphor: "🌱 봄비와 천둥이 험난한 겨울 얼음을 녹여 만물을 속박에서 해방시키듯, 사람들의 막힌 문제를 풀어주고 최고의 풍요를 얻는 빛입니다.",
-      easyDarkTitle: "성과 집착과 소진 (Exhaustion)",
-      easyDarkDesc: "돈과 성과에 집착하다 정작 내 건강과 영혼의 평화를 잃고 에너지가 고갈되는 무의식적 위험입니다.",
-      easyNeuralTitle: "단호한 결의와 해방 (Resolve)",
-      easyNeuralDesc: "물질적 번영과 영적 자유가 완벽하게 일치하여 얽매인 난제를 명쾌하게 풀어내는 주권 무기입니다.",
-      easyMetaTitle: "【신성한 자유 (Divine Will)】",
-      easyMetaDesc: "영적 대자유와 현실적 번영이 완전한 일치를 이루어 온 우주와 함께 흐르는 최고의 퀀텀 풍요입니다.",
+      metaCode: "【천명 번영 (Abundance Sovereignty)】 영적 대자유와 현실적 가치가 완전한 일치를 이루는 축복",
+      actionTip: "확보된 부와 에너지를 다시 나만의 불가침 안식처에 안전하게 보관하세요.",
+      easyMetaphor: "🌱 봄비와 천둥이 험난한 겨울 얼음을 녹여 만물을 속박에서 해방시키듯, 사람들의 막힌 문제를 풀어주고 최고의 풍요를 얻는 지혜입니다.",
+      easyDarkTitle: "성과 집착과 에너지 고갈",
+      easyDarkDesc: "성과 증명에 매달리다 건강과 평화를 잃고 에너지가 방전되는 무의식적 방어기제입니다.",
+      easyNeuralTitle: "단호한 결의와 해방",
+      easyNeuralDesc: "불필요한 얽매임을 풀고 진정한 자유와 풍요를 완성하는 명쾌한 주권 무기입니다.",
+      easyMetaTitle: "【신성한 대자유】",
+      easyMetaDesc: "영적 대자유와 현실적 번영이 완전한 일치를 이루어 온 우주와 함께 흐르는 최고의 풍요입니다.",
       easyAction: "확보된 부와 에너지를 다시 나만의 불가침 안식처에 안전하게 보관하세요.",
       darkEssayTitle: `남들의 속도와 성과 집착에 지친 ${userName} 님의 가슴을 안아주세요`,
-      darkEssayContent: `${userName} 님, 그동안 남들의 기대와 성과를 증명하느라 얼마나 스스로를 소진(Exhaustion)시켰나요?\n\n당신의 영혼은 무리하게 자신을 갈아 넣을 때가 아니라, 뇌수해의 봄비처럼 편안하게 힘을 뺄 때 가장 거대한 풍요를 이룹니다.\n\n안심하고 긴장을 내려놓으세요. 당신은 이미 충분히 안전합니다.`,
+      darkEssayContent: `${userName} 님, 그동안 남들의 기대와 성과를 증명하느라 얼마나 스스로를 소진시켰나요?\n\n당신의 영혼은 무리하게 자신을 갈아 넣을 때가 아니라, 뇌수해의 봄비처럼 편안하게 힘을 뺄 때 가장 거대한 풍요를 이룹니다.\n\n안심하고 긴장을 내려놓으세요. 당신은 이미 충분히 안전합니다.`,
       darkAffirmation: `"내가 서두르거나 소진되지 않아도, 바른 황금 화살은 이미 내 손에 쥐어져 있다."`,
       neuralEssayTitle: `뇌수해(雷水解)의 명쾌한 지혜로 완성하는 ${userName} 님의 왕국`,
       neuralEssayContent: `${userName} 님의 진짜 위대함은 타인의 얽힌 난제와 병목을 시원하게 풀어주는 솔루션에 있습니다. 당신이 사람들을 해방시킬 때, 세상은 당신에게 최고의 결실과 물질적 번영을 보답합니다.`,
       neuralAffirmation: `"나는 얽매임을 풀고 진정한 자유와 풍요를 완성하는 위대한 천명 연금술사다."`,
       metaEssayTitle: `영적 대자유와 현실적 번영이 ${userName} 님 안에서 하나 됩니다`,
-      metaEssayContent: `${userName} 님이 내면의 제로포인트 평화에 머무를 때 온 우주의 신성한 의지(Divine Will)가 당신을 통해 일합니다. 안심하고 숨을 내쉬세요.`,
+      metaEssayContent: `${userName} 님이 내면의 제로포인트 평화에 머무를 때 온 우주의 지혜가 당신을 통해 일합니다. 안심하고 숨을 내쉬세요.`,
       metaAffirmation: `"나는 애쓰지 않는다. 온 우주가 내 존재 자체를 가장 완벽한 퀀텀 풍요로 이끌고 있다."`,
-      solutionWhy: "확보된 부와 에너지를 다시 나만의 안식처에 보관해야 에너지 누수를 막고 퀀텀 도약이 가능해집니다.",
+      solutionWhy: "확보된 부와 에너지를 다시 나만의 안식처에 보관해야 에너지 누수를 막고 지속 가능한 도약이 가능해집니다.",
       solutionSteps: [
         "Step 1: 타인의 병목을 풀어줄 나만의 명쾌한 1순위 솔루션 정리하기",
         "Step 2: 10분 타이머를 맞추고 침범받지 않는 공간에서 초몰입 실행",
