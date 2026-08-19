@@ -2451,7 +2451,8 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         lx -= 6; // 좌상단 수
                                                     }
 
-                                                    const isHighlight = axis.score >= 80;
+                                                    const isExcess = axis.score > 70;
+                                                    const isDeficit = axis.score < 40;
 
                                                     return (
                                                         <g key={i}>
@@ -2461,7 +2462,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                                 textAnchor="middle"
                                                                 dominantBaseline="central"
                                                                 className={`text-[11px] font-black ${
-                                                                    isHighlight ? 'fill-amber-300 font-bold' : 'fill-slate-300'
+                                                                    isExcess ? 'fill-amber-300 font-bold' : isDeficit ? 'fill-cyan-300 font-bold' : 'fill-slate-300'
                                                                 }`}
                                                             >
                                                                 {axis.label.split(' ')[0]}
@@ -2472,7 +2473,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                                 textAnchor="middle"
                                                                 dominantBaseline="central"
                                                                 className={`text-[10px] font-mono font-bold ${
-                                                                    isHighlight ? 'fill-amber-400' : 'fill-slate-400'
+                                                                    isExcess ? 'fill-amber-400' : isDeficit ? 'fill-cyan-400' : 'fill-slate-400'
                                                                 }`}
                                                             >
                                                                 {axis.score}점
@@ -2483,25 +2484,30 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                             </svg>
                                         </div>
 
-                                        {/* Radar Legend / Axis Breakdown */}
+                                        {/* Radar Legend / Axis Breakdown - 40~70% 밴드와 100% 정합하는 배지 판정 */}
                                         <div className="flex-1 w-full space-y-1.5 text-xs font-sans">
-                                            {sajuRarityInfo.radarAxes.map((axis, idx) => (
-                                                <div key={idx} className="flex items-center justify-between p-1.5 px-2.5 rounded-xl bg-slate-950/80 border border-slate-800">
-                                                    <span className="text-gray-300 font-medium">{axis.label}</span>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                                                            axis.score >= 80 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' :
-                                                            axis.score <= 50 ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' :
-                                                            'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                                                        }`}>
-                                                            {axis.score >= 80 ? '과각성/핵심' : axis.score <= 50 ? '보완영역' : '안정적정'}
-                                                        </span>
-                                                        <span className="font-mono font-bold text-white text-xs w-8 text-right">
-                                                            {axis.score}점
-                                                        </span>
+                                            {sajuRarityInfo.radarAxes.map((axis, idx) => {
+                                                const isExcess = axis.score > 70;
+                                                const isDeficit = axis.score < 40;
+
+                                                return (
+                                                    <div key={idx} className="flex items-center justify-between p-1.5 px-2.5 rounded-xl bg-slate-950/80 border border-slate-800">
+                                                        <span className="text-gray-300 font-medium">{axis.label}</span>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                                                                isExcess ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' :
+                                                                isDeficit ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' :
+                                                                'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                                            }`}>
+                                                                {isExcess ? '과각성/핵심' : isDeficit ? '보완영역' : '안정적정'}
+                                                            </span>
+                                                            <span className="font-mono font-bold text-white text-xs w-8 text-right">
+                                                                {axis.score}점
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 </div>

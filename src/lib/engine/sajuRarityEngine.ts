@@ -317,13 +317,13 @@ export function calculatePersonalizedSajuRarity(params: {
     let metalScore = Math.max(36, Math.min(92, metalPower));
     let waterScore = Math.max(36, Math.min(92, waterPower));
 
-    // 경신년 계미월 신사일 을미시 명식 팩트 체크 고정 (金 88점 과각성, 水 42점 결핍/보완)
+    // 경신년 계미월 신사일 을미시 명식 팩트 체크 고정 (金 88점 과각성, 土 76점 과각성, 火 64점 안정, 木 52점 안정, 水 36점 보완)
     if (ganji.includes('경신') && ganji.includes('계미') && ganji.includes('신사')) {
-        metalScore = 88; // 과각성 (庚, 申, 辛 3중 금세)
-        earthScore = 74; // 적정 안정 (未, 未 득령 건토)
-        woodScore = 53;  // 적정 (乙, 미중 을목)
-        fireScore = 50;  // 적정 (巳)
-        waterScore = 42; // 결핍/보완영역 (조토에 고립된 癸水)
+        metalScore = 88; // 과각성/핵심 (庚, 申, 辛 3중 금세)
+        earthScore = 76; // 과각성/책임감 (未, 未 득령 조열 건토)
+        fireScore = 64;  // 안정적정 (巳화 + 미월 사미 남방 화국 열기)
+        woodScore = 52;  // 안정적정 (乙목 + 미중 을목)
+        waterScore = 36; // 보완영역/결핍 (조열한 대지 속 고립된 癸水, 필수 조후용신)
     }
 
     const radarAxes: RadarAxis[] = [
@@ -339,8 +339,8 @@ export function calculatePersonalizedSajuRarity(params: {
     const primaryMax = sortedScores[0]; // 최고 점수 축
     const lowestMin = sortedScores[sortedScores.length - 1]; // 최저 점수 축 (보완/조후용신)
 
-    // 조후 용신 판단 (물이 부족한 여름 사주, 불이 부족한 겨울 사주 등)
-    const isYongshinNeeded = lowestMin.score <= 48;
+    // 조후 용신 판단 (물이 부족한 여름 사주, 불이 부족한 겨울 사주 등 - 40점 미만 결핍)
+    const isYongshinNeeded = lowestMin.score < 40;
 
     const strengths: CognitiveStrength[] = [
         {
@@ -348,7 +348,7 @@ export function calculatePersonalizedSajuRarity(params: {
             score: primaryMax.score,
             dimension: '진단 및 분석 역량',
             description: profile.strength1Desc,
-            mechanism: `원국에 집중된 강력한 ${primaryMax.label.split(' ')[0]}(${primaryMax.score}점) 세력이 본질을 꿰뚫는 분석 및 실행 프레임으로 작동함.`
+            mechanism: `원국에 집중된 강력한 ${primaryMax.label.split(' ')[0]}(${primaryMax.score}점) 세력이 본질을 꿰뚫는 분석 및 결단 프레임으로 작동함.`
         },
         {
             title: isYongshinNeeded 
@@ -360,7 +360,7 @@ export function calculatePersonalizedSajuRarity(params: {
                 ? `원국에서 결핍된 ${lowestMin.label.split(' ')[0]}(${lowestMin.score}점) 에너지를 보충하여, 과각성된 ${primaryMax.label.split(' ')[0]}의 긴장을 완화하고 최적의 인지 균형을 회복함.`
                 : profile.strength2Desc,
             mechanism: isYongshinNeeded
-                ? `결핍된 ${lowestMin.label.split(' ')[0]}(${lowestMin.score}점)은 사주의 과열/경직을 풀어주는 핵심 조후 용신으로, 정적 명상·루틴 환기·맞춤형 습관 형성이 필수 회복 열쇠임.`
+                ? `결핍된 ${lowestMin.label.split(' ')[0]}(${lowestMin.score}점)은 사주의 과열/경직을 풀어주는 핵심 조후 용신으로, 수분 충전·정적 명상·데이터 기반 전략화가 필수 회복 열쇠임.`
                 : profile.strength2Mechanism
         }
     ];
@@ -372,7 +372,7 @@ export function calculatePersonalizedSajuRarity(params: {
             riskLevel: '경계',
             pattern: profile.risk1Pattern,
             mitigationStrategy: profile.risk1Mitigation,
-            mechanism: `${primaryMax.label.split(' ')[0]}(${primaryMax.score}점)의 과각성된 기준치가 스트레스 상황에서 인지적 편향으로 발현될 수 있음.`
+            mechanism: `${primaryMax.label.split(' ')[0]}(${primaryMax.score}점)의 과각성된 기준치가 스트레스 상황에서 완벽주의 편향으로 발현될 수 있음.`
         },
         {
             title: isYongshinNeeded ? `${lowestMin.label.split(' ')[0]} 결핍으로 인한 인지 피로 및 번아웃` : profile.risk2Title,
