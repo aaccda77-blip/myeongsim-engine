@@ -248,39 +248,53 @@ export function calculatePersonalizedSajuRarity(params: {
 
     // 3. 지표 점수 (현실적이고 객관적인 78~89점 스케일 - 과도한 90점대 후반 인플레이션 제거)
     const balanceIndex = Math.round(76 + (pseudo * 12)); // 76 ~ 88점
-    const focusExecutiveScore = Math.round(82 + (((seed >> 2) % 100) / 100) * 8); // 82 ~ 90점
-    const systemInnovationScore = Math.round(80 + (((seed >> 4) % 100) / 100) * 8); // 80 ~ 88점
-    const riskSensitivityScore = Math.round(72 + (((seed >> 6) % 100) / 100) * 10); // 72 ~ 82점 (리스크 수치)
 
     // 4. 5대 오행 방사형 레이더 차트 데이터 (자연스러운 비대칭 다각형 생성)
-    let woodScore = 55 + ((seed >> 1) % 20);
-    let fireScore = 52 + ((seed >> 2) % 20);
-    let earthScore = 58 + ((seed >> 3) % 20);
-    let metalScore = 56 + ((seed >> 4) % 20);
-    let waterScore = 54 + ((seed >> 5) % 20);
+    let woodScore = 55 + ((seed >> 1) % 15);
+    let fireScore = 52 + ((seed >> 2) % 15);
+    let earthScore = 58 + ((seed >> 3) % 15);
+    let metalScore = 56 + ((seed >> 4) % 15);
+    let waterScore = 54 + ((seed >> 5) % 15);
 
-    // 일간 고유 오행은 강점 축(80~90점대)으로 솟아오르고, 약한 오행은 45~60점으로 보완점 노출
+    let primaryScore = 87;
+    let secondaryScore = 80;
+
+    // 일간 고유 오행은 강점 축(80~90점대)으로 솟아오르고, 약한 오행은 45~55점으로 보완점 노출
     if (profile.elementSymbol === '木') {
         woodScore = 88;
         earthScore = 78;
         metalScore = 48; // 보완 영역
+        primaryScore = woodScore;
+        secondaryScore = earthScore;
     } else if (profile.elementSymbol === '火') {
         fireScore = 89;
         woodScore = 76;
         waterScore = 46; // 보완 영역
+        primaryScore = fireScore;
+        secondaryScore = woodScore;
     } else if (profile.elementSymbol === '土') {
         earthScore = 87;
-        metalScore = 79;
+        metalScore = 80;
         woodScore = 50; // 보완 영역
+        primaryScore = earthScore;
+        secondaryScore = metalScore;
     } else if (profile.elementSymbol === '金') {
-        metalScore = 89;
-        waterScore = 82;
+        metalScore = 88;
+        waterScore = 81;
         fireScore = 47; // 보완 영역
+        primaryScore = metalScore;
+        secondaryScore = waterScore;
     } else if (profile.elementSymbol === '水') {
-        waterScore = 90;
-        woodScore = 80;
+        waterScore = 89;
+        woodScore = 79;
         earthScore = 49; // 보완 영역
+        primaryScore = waterScore;
+        secondaryScore = woodScore;
     }
+
+    const focusExecutiveScore = primaryScore; // 1번 강점 점수와 레이더 주오행 점수 1:1 일치
+    const systemInnovationScore = secondaryScore; // 2번 강점 점수와 레이더 차상위 오행 점수 1:1 일치
+    const riskSensitivityScore = Math.round(74 + (((seed >> 6) % 100) / 100) * 8); // 74 ~ 82점 (리스크 수치)
 
     const radarAxes: RadarAxis[] = [
         { label: '목(木) 추진력', code: 'wood', score: woodScore, optimalMin: 40, optimalMax: 70 },
@@ -320,7 +334,7 @@ export function calculatePersonalizedSajuRarity(params: {
         },
         {
             title: profile.risk2Title,
-            score: Math.max(65, riskSensitivityScore - 4),
+            score: Math.max(65, riskSensitivityScore - 5),
             riskLevel: '주의',
             pattern: profile.risk2Pattern,
             mitigationStrategy: profile.risk2Mitigation,
