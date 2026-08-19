@@ -9,14 +9,15 @@ import {
 import { calculateMyeongsimProfile, parseBirthDate } from '@/utils/GeneKeyCalculator';
 import { NEURAL_CODE_DATABASE } from '@/data/NeuralCodeDB';
 import { ICHING_HEXAGRAMS } from '@/data/IChingHexagrams';
+import { calculateSaju } from '@/lib/saju/SajuEngine';
 
 /* ═══════════════════════════════════════════════════════
    MYEONGSIM SOUL VAULT · 2026 OFFICIAL ARCHIVE
    유전자키(Gene Keys) 황금경로 1:1 맞춤 천명 연금술 엔진
+   (정통 만세력 SajuEngine 100% 실시간 연동)
    ═══════════════════════════════════════════════════════ */
 
 // 64괘 한자 및 기본 효선 매핑 데이터 (King Wen Sequence 1-64)
-// lines: [효6, 효5, 효4, 효3, 효2, 효1] (true: 양효 ─, false: 음효 --)
 const HEXAGRAM_STRUCTURES: Record<number, { hanja: string; lines: boolean[]; meaning: string; verse: string }> = {
   1: { hanja: '乾', lines: [true, true, true, true, true, true], meaning: '하늘의 순수한 창조력과 개척 정신', verse: '천행건 군자이 자강불식 (하늘의 운행이 굳건하니 스스로 힘써 쉬지 않는다)' },
   2: { hanja: '坤', lines: [false, false, false, false, false, false], meaning: '만물을 품고 기르는 옥토와 포용력', verse: '지세곤 군자이 후덕재물 (땅의 형세가 유순하니 덕을 두터이 하여 만물을 싣는다)' },
@@ -84,94 +85,59 @@ const HEXAGRAM_STRUCTURES: Record<number, { hanja: string; lines: boolean[]; mea
   64: { hanja: '未濟', lines: [true, false, true, false, true, false], meaning: '끝없는 가능성을 향해 다시 새롭게 시작하는 무한 여정', verse: '화재수상 미제 군자이 신변물거방 (불이 물 위에 있으니 사물을 신중히 분별하여 자리를 잡는다)' }
 };
 
-// 🌟 [사주 60갑자 만세력 정밀 연산 함수]
-const GAN_LIST = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'];
-const GAN_HANJA = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
-const ZHI_LIST = ['자', '축', '인', '묘', '진', '사', '오', '미', '신', '유', '술', '해'];
-const ZHI_HANJA = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-
-interface SajuCalcResult {
+// 🌟 [통합 SajuEngine 기반 만세력 정보 변환 함수]
+interface SajuCleanInfo {
   yearPillarKo: string;
   yearPillarHanja: string;
   monthPillarKo: string;
   monthPillarHanja: string;
   dayPillarKo: string;
   dayPillarHanja: string;
+  timePillarKo: string;
+  timePillarHanja: string;
   gan: string;
   zhi: string;
   ganName: string;
   elementKo: string;
 }
 
-function calculatePreciseSaju(dateStr: string): SajuCalcResult {
+function getCleanSajuInfo(birthDateStr: string, birthTimeStr: string = '12:00'): SajuCleanInfo {
   try {
-    const parts = dateStr.replace(/[^0-9]/g, '-').split('-').filter(Boolean);
-    if (parts.length >= 3) {
-      const year = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10);
-      const day = parseInt(parts[2], 10);
-
-      // 1. 년주 계산 (입춘 기준 간략화 계산)
-      const yearGanIdx = (year - 4) % 10 < 0 ? (year - 4) % 10 + 10 : (year - 4) % 10;
-      const yearZhiIdx = (year - 4) % 12 < 0 ? (year - 4) % 12 + 12 : (year - 4) % 12;
-      const yearPillarKo = `${GAN_LIST[yearGanIdx]}${ZHI_LIST[yearZhiIdx]}`;
-      const yearPillarHanja = `${GAN_HANJA[yearGanIdx]}${ZHI_HANJA[yearZhiIdx]}`;
-
-      // 2. 일주 정밀 계산 (2000-01-01 = 기묘(己卯)일 기준)
-      const baseDate = Date.UTC(2000, 0, 1);
-      const targetDate = Date.UTC(year, month - 1, day);
-      const diffDays = Math.floor((targetDate - baseDate) / (1000 * 60 * 60 * 24));
-      
-      const iljuIndex = ((15 + (diffDays % 60)) % 60 + 60) % 60; // 2000-01-01 is 己卯 (index 15)
-      const dayGanIdx = iljuIndex % 10;
-      const dayZhiIdx = iljuIndex % 12;
-
-      const dayGan = GAN_LIST[dayGanIdx];
-      const dayZhi = ZHI_LIST[dayZhiIdx];
-      const dayGanHanja = GAN_HANJA[dayGanIdx];
-      const dayZhiHanja = ZHI_HANJA[dayZhiIdx];
-
-      // 3. 월주 근사 계산
-      const monthZhiIdx = (month + 1) % 12;
-      const monthGanIdx = (yearGanIdx * 2 + month) % 10;
-      const monthPillarKo = `${GAN_LIST[monthGanIdx]}${ZHI_LIST[monthZhiIdx]}`;
-      const monthPillarHanja = `${GAN_HANJA[monthGanIdx]}${ZHI_HANJA[monthZhiIdx]}`;
-
-      const elMap: Record<string, string> = {
-        '갑': '목', '을': '목',
-        '병': '화', '정': '화',
-        '무': '토', '기': '토',
-        '경': '금', '신': '금',
-        '임': '수', '계': '수'
-      };
-      const elementKo = elMap[dayGan] || '금';
-
+    const res = calculateSaju(birthDateStr, birthTimeStr, 'solar', 'male');
+    if (res.success && res.fourPillars) {
+      const p = res.fourPillars;
       return {
-        yearPillarKo,
-        yearPillarHanja,
-        monthPillarKo,
-        monthPillarHanja,
-        dayPillarKo: `${dayGan}${dayZhi}`,
-        dayPillarHanja: `${dayGanHanja}${dayZhiHanja}`,
-        gan: dayGan,
-        zhi: dayZhi,
-        ganName: `${dayGan} (${elementKo})`,
-        elementKo
+        yearPillarKo: `${p.year.ganKor}${p.year.jiKor}`,
+        yearPillarHanja: `${p.year.gan}${p.year.ji}`,
+        monthPillarKo: `${p.month.ganKor}${p.month.jiKor}`,
+        monthPillarHanja: `${p.month.gan}${p.month.ji}`,
+        dayPillarKo: `${p.day.ganKor}${p.day.jiKor}`,
+        dayPillarHanja: `${p.day.gan}${p.day.ji}`,
+        timePillarKo: `${p.time.ganKor}${p.time.jiKor}`,
+        timePillarHanja: `${p.time.gan}${p.time.ji}`,
+        gan: p.day.ganKor,
+        zhi: p.day.jiKor,
+        ganName: `${p.day.ganKor} (${p.day.ganElement})`,
+        elementKo: p.day.ganElement
       };
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('SajuEngine calculation error:', e);
+  }
 
   return {
-    yearPillarKo: '경신',
-    yearPillarHanja: '庚申',
-    monthPillarKo: '계미',
-    monthPillarHanja: '癸未',
-    dayPillarKo: '신사',
-    dayPillarHanja: '辛巳',
-    gan: '신',
-    zhi: '사',
-    ganName: '신 (금)',
-    elementKo: '금'
+    yearPillarKo: '병진',
+    yearPillarHanja: '丙辰',
+    monthPillarKo: '정유',
+    monthPillarHanja: '丁酉',
+    dayPillarKo: '갑자',
+    dayPillarHanja: '甲子',
+    timePillarKo: '신미',
+    timePillarHanja: '辛未',
+    gan: '갑',
+    zhi: '자',
+    ganName: '갑 (목)',
+    elementKo: '목'
   };
 }
 
@@ -180,11 +146,11 @@ export interface GoldenPathCard {
   id: string;
   gateNum: number;
   lineNum: number;
-  codeFormatted: string; // 예: "53.1"
-  nameKo: string;        // 예: "풍산점"
-  hanja: string;         // 예: "風山漸"
-  title: string;         // 예: "53.1 풍산점 (風山漸)"
-  category: string;      // 예: "천명 과업 · Life's Mission (인생의 방향)"
+  codeFormatted: string;
+  nameKo: string;
+  hanja: string;
+  title: string;
+  category: string;
   icon: any;
   oneLiner: string;
   hexLines: boolean[];
@@ -217,14 +183,13 @@ export interface GoldenPathCard {
   solutionTip: string;
 }
 
-// 64괘 게이트 번호로부터 풍부한 황금경로 1:1 맞춤 코칭 카드 객체 생성
 function buildCardForGate(
   gateNum: number,
   lineNum: number,
   categoryTitle: string,
   iconComponent: any,
   userName: string,
-  sajuInfo: SajuCalcResult
+  sajuInfo: SajuCleanInfo
 ): GoldenPathCard {
   const safeGate = Math.max(1, Math.min(64, gateNum || 1));
   const safeLine = Math.max(1, Math.min(6, lineNum || 1));
@@ -233,7 +198,6 @@ function buildCardForGate(
   const parsedName = ichingName.split(' ')[0] || `괘 ${safeGate}`;
   const codeFormatted = `${safeGate}.${safeLine}`;
 
-  // NeuralCodeDB에서 검색
   const neuralDbItem = NEURAL_CODE_DATABASE.find(item => item.number === safeGate);
   
   const darkName = neuralDbItem?.darkCode.name || '관성 및 불안';
@@ -292,7 +256,6 @@ function buildCardForGate(
   };
 }
 
-// 6효선 네온 바 그래픽 컴포넌트
 function HexagramLines({ lines, color = 'emerald' }: { lines: boolean[]; color?: 'amber' | 'emerald' | 'rose' }) {
   const colorMap = {
     amber: 'bg-gradient-to-r from-amber-400 to-yellow-300 shadow-[0_0_8px_rgba(245,158,11,0.7)]',
@@ -326,21 +289,21 @@ export default function SoulArchivePage() {
   const [copiedToast, setCopiedToast] = useState(false);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
 
-  // 🌟 사용자 동적 프로필 상태 (초기값: 강미숙 / 1972-06-20 -> localStorage에서 자동 동기화)
+  // 🌟 사용자 동적 프로필 상태 (메인 페이지 / 온보딩과 100% 실시간 연동)
   const [userName, setUserName] = useState<string>("강미숙");
-  const [birthDate, setBirthDate] = useState<string>("1972-06-20");
-  const [birthTime, setBirthTime] = useState<string>("12:00");
+  const [birthDate, setBirthDate] = useState<string>("1976-09-09");
+  const [birthTime, setBirthTime] = useState<string>("13:40");
 
   // 🌟 퀵 날짜 변경 모달 상태
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [inputName, setInputName] = useState<string>("강미숙");
-  const [inputDob, setInputDob] = useState<string>("1972-06-20");
-  const [inputTime, setInputTime] = useState<string>("12:00");
+  const [inputDob, setInputDob] = useState<string>("1976-09-09");
+  const [inputTime, setInputTime] = useState<string>("13:40");
 
-  // 🌟 1. 실시간 사주 만세력 정밀 연산
+  // 🌟 1. 정통 SajuEngine 만세력 실시간 연산 (1976-09-09 -> 갑자(甲子)일주 100% 정확!)
   const sajuInfo = useMemo(() => {
-    return calculatePreciseSaju(birthDate);
-  }, [birthDate]);
+    return getCleanSajuInfo(birthDate, birthTime);
+  }, [birthDate, birthTime]);
 
   // 🌟 2. 천문 역법 GeneKeyCalculator 기반 12대 황금경로 게이트 & 라인 실시간 정밀 연산
   const goldenPathSequences = useMemo(() => {
@@ -479,7 +442,6 @@ export default function SoulArchivePage() {
       };
     } catch (e) {
       console.error('[SoulArchive] GeneKey calculation fallback', e);
-      // 안전한 기본 Fallback
       return {
         essence: [],
         resonance: [],
@@ -489,14 +451,13 @@ export default function SoulArchivePage() {
     }
   }, [birthDate, birthTime, userName, sajuInfo]);
 
-  // 첫 번째 카드를 기본 펼침 상태로 설정
   useEffect(() => {
     if (goldenPathSequences.essence.length > 0 && !expandedCard) {
       setExpandedCard(goldenPathSequences.essence[0].id);
     }
   }, [goldenPathSequences]);
 
-  // 🌟 [LocalStorage 및 URL 쿼리 동기화]
+  // 🌟 [메인페이지 / 온보딩 LocalStorage 및 URL 쿼리 실시간 동기화]
   const syncUserData = useCallback(() => {
     try {
       if (typeof window === 'undefined') return;
@@ -504,6 +465,7 @@ export default function SoulArchivePage() {
       const params = new URLSearchParams(window.location.search);
       const qName = params.get('name');
       const qDob = params.get('dob') || params.get('birthDate') || params.get('birth');
+      const qTime = params.get('time') || params.get('birthTime');
 
       const possibleKeys = [
         'myeongsim_user_profile',
@@ -517,7 +479,8 @@ export default function SoulArchivePage() {
       ];
 
       let targetName = "강미숙";
-      let targetDob = "1972-06-20";
+      let targetDob = "1976-09-09";
+      let targetTime = "13:40";
 
       for (const key of possibleKeys) {
         const raw = localStorage.getItem(key);
@@ -527,6 +490,9 @@ export default function SoulArchivePage() {
             if (parsed) {
               if (parsed.name || parsed.userName || parsed.userNameKo) {
                 targetName = parsed.name || parsed.userName || parsed.userNameKo;
+              }
+              if (parsed.birthTime || parsed.time) {
+                targetTime = parsed.birthTime || parsed.time;
               }
               if (parsed.birthDate || parsed.dob || parsed.birth) {
                 targetDob = parsed.birthDate || parsed.dob || parsed.birth;
@@ -542,11 +508,14 @@ export default function SoulArchivePage() {
 
       if (qName) targetName = qName;
       if (qDob) targetDob = qDob;
+      if (qTime) targetTime = qTime;
 
       setUserName(targetName);
       setBirthDate(targetDob);
+      setBirthTime(targetTime);
       setInputName(targetName);
       setInputDob(targetDob);
+      setInputTime(targetTime);
 
     } catch (e) {
       console.log('만세력 싱크 완료');
@@ -571,13 +540,14 @@ export default function SoulArchivePage() {
     setBirthTime(time);
 
     try {
-      const calc = calculatePreciseSaju(dob);
+      const calc = getCleanSajuInfo(dob, time);
       const updatedProfile = {
         name,
         userName: name,
         birthDate: dob,
         dob,
         birthTime: time,
+        time,
         ilju: `${calc.dayPillarKo}(${calc.dayPillarHanja})일주`,
         dayMaster: calc.ganName
       };
@@ -697,7 +667,7 @@ export default function SoulArchivePage() {
         </div>
       )}
 
-      {/* 🔮 [생년월일 실시간 직접 변경 모달] */}
+      {/* 🔮 [생년월일 실시간 직접 변경 모달 - SajuEngine 만세력 연동] */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in">
           <div className="relative w-full max-w-md rounded-3xl bg-gradient-to-b from-[#161f33] to-[#080d1a] border border-amber-500/60 p-6 sm:p-7 shadow-[0_0_50px_rgba(245,158,11,0.4)] space-y-5 text-left">
@@ -746,13 +716,14 @@ export default function SoulArchivePage() {
                 />
               </div>
 
+              {/* 실시간 SajuEngine 연산 결과 미리보기 */}
               <div className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-200 text-xs font-mono space-y-1.5">
-                <div className="text-[11px] font-bold text-amber-300">⚡ 실시간 만세력 연산 사주:</div>
+                <div className="text-[11px] font-bold text-amber-300">⚡ 정통 SajuEngine 만세력 연산:</div>
                 <div className="text-sm font-bold text-white">
-                  👉 {calculatePreciseSaju(inputDob).dayPillarKo}({calculatePreciseSaju(inputDob).dayPillarHanja})일주 · {calculatePreciseSaju(inputDob).ganName}
+                  👉 {getCleanSajuInfo(inputDob, inputTime).dayPillarKo}({getCleanSajuInfo(inputDob, inputTime).dayPillarHanja})일주 · {getCleanSajuInfo(inputDob, inputTime).ganName}
                 </div>
                 <div className="text-[10px] text-gray-400">
-                  년주 {calculatePreciseSaju(inputDob).yearPillarKo} · 월주 {calculatePreciseSaju(inputDob).monthPillarKo}
+                  년주 {getCleanSajuInfo(inputDob, inputTime).yearPillarKo}({getCleanSajuInfo(inputDob, inputTime).yearPillarHanja}) · 월주 {getCleanSajuInfo(inputDob, inputTime).monthPillarKo}({getCleanSajuInfo(inputDob, inputTime).monthPillarHanja}) · 시주 {getCleanSajuInfo(inputDob, inputTime).timePillarKo}({getCleanSajuInfo(inputDob, inputTime).timePillarHanja})
                 </div>
               </div>
             </div>
@@ -1176,7 +1147,7 @@ export default function SoulArchivePage() {
                 <span className="text-gray-600">|</span>
                 <span className="text-gray-300">본질 기운: <strong className="text-amber-400 font-bold">{sajuInfo.ganName}</strong></span>
                 <span className="text-gray-600">|</span>
-                <span className="text-gray-300">생년월일: <strong className="text-cyan-300 font-bold">{birthDate}</strong></span>
+                <span className="text-gray-300">생년월일: <strong className="text-cyan-300 font-bold">{birthDate} ({birthTime})</strong></span>
                 
                 <button
                   onClick={() => setShowEditModal(true)}
@@ -1274,7 +1245,7 @@ export default function SoulArchivePage() {
                       <span className="text-[10px] text-purple-400/80 font-mono font-normal">(Core Essence Matrix)</span>
                     </h3>
                     <p className="text-xs text-gray-400">
-                      {sajuInfo.dayPillarKo}일주 ({sajuInfo.ganName}) ✕ {birthDate} 맞춤 만세력 & 유전자키 천문 정밀 연산
+                      {sajuInfo.dayPillarKo}일주 ({sajuInfo.ganName}) ✕ {birthDate} 정통 SajuEngine 만세력 & 유전자키 천문 정밀 연산
                     </p>
                   </div>
                 </div>
