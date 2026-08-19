@@ -247,60 +247,77 @@ export function calculatePersonalizedSajuRarity(params: {
     const profile = getDayMasterProfile(dm, ganji);
     const balanceIndex = Math.round(76 + (pseudo * 12)); // 76 ~ 88점
 
-    // 3. 🌟 사주 원국 물리적 에너지 세력 정밀 파서 (Saju True Physics Engine)
-    // - 천간(10점) + 지지(12점, 월지 득령 28점) + 통근/생극제화 물리적 세력
+    // 3. 🌟 범용 518,400 사주 원국 물리적 에너지 세력 파서 (Universal 8-Pillars Physics Engine)
+    // 기본 바탕 에너지 각 오행 35점
     let woodPower = 35;
     let firePower = 35;
     let earthPower = 35;
     let metalPower = 35;
     let waterPower = 35;
 
-    // 천간 오행 스캔
-    if (ganji.includes('갑') || ganji.includes('甲')) woodPower += 10;
-    if (ganji.includes('을') || ganji.includes('乙')) woodPower += 10;
-    if (ganji.includes('병') || ganji.includes('丙')) firePower += 10;
-    if (ganji.includes('정') || ganji.includes('丁')) firePower += 10;
-    if (ganji.includes('무') || ganji.includes('戊')) earthPower += 10;
-    if (ganji.includes('기') || ganji.includes('己')) earthPower += 10;
-    if (ganji.includes('경') || ganji.includes('庚')) metalPower += 12;
-    if (ganji.includes('신') || ganji.includes('辛')) metalPower += 10;
-    if (ganji.includes('임') || ganji.includes('壬')) waterPower += 10;
-    if (ganji.includes('계') || ganji.includes('癸')) waterPower += 8;
-
-    // 지지 오행 스캔 (월지 미토 득령, 간여지동 경신 득세 등)
-    if (ganji.includes('경신') || ganji.includes('庚申')) {
-        metalPower += 22; // 강력한 금 간여지동 득세
+    // A. 10천간 스캔 (년간, 월간, 일간, 시간 표출 에너지 +10)
+    for (const char of ganji) {
+        if (char === '甲' || char === '갑' || char === '乙' || char === '을') woodPower += 10;
+        else if (char === '丙' || char === '병' || char === '丁' || char === '정') firePower += 10;
+        else if (char === '戊' || char === '무' || char === '己' || char === '기') earthPower += 10;
+        else if (char === '庚' || char === '경' || char === '辛' || char === '신') metalPower += 10;
+        else if (char === '壬' || char === '임' || char === '癸' || char === '계') waterPower += 10;
     }
-    if (ganji.includes('미') || ganji.includes('未')) {
-        earthPower += 24; // 월지/시지 조열한 미토 득령
-        woodPower += 5; // 미중 을목 통근
-        waterPower -= 6; // 조토 극수(물 증발/결핍)
+
+    // B. 12지지 스캔 (통근 및 지지 세력)
+    for (const char of ganji) {
+        if (char === '寅' || char === '인' || char === '卯' || char === '묘') woodPower += 14;
+        else if (char === '巳' || char === '사' || char === '午' || char === '오') firePower += 14;
+        else if (char === '辰' || char === '진' || char === '戌' || char === '술' || char === '丑' || char === '축' || char === '未' || char === '미') earthPower += 14;
+        else if (char === '申' || char === '신' || char === '酉' || char === '유') metalPower += 14;
+        else if (char === '亥' || char === '해' || char === '子' || char === '자') waterPower += 14;
     }
-    if (ganji.includes('사') || ganji.includes('巳')) {
-        firePower += 12;
-        metalPower += 4; // 사중 경금
+
+    // C. 월령 득령(월지) 및 사주 조후 가중치 정밀 분석
+    const isSummerMonth = ganji.includes('사월') || ganji.includes('오월') || ganji.includes('미월') || ganji.includes('巳') || ganji.includes('午') || ganji.includes('未');
+    const isWinterMonth = ganji.includes('해월') || ganji.includes('자월') || ganji.includes('축월') || ganji.includes('亥') || ganji.includes('子') || ganji.includes('丑');
+    const isSpringMonth = ganji.includes('인월') || ganji.includes('묘월') || ganji.includes('진월') || ganji.includes('寅') || ganji.includes('卯') || ganji.includes('辰');
+    const isAutumnMonth = ganji.includes('신월') || ganji.includes('유월') || ganji.includes('술월') || ganji.includes('申') || ganji.includes('酉') || ganji.includes('戌');
+
+    if (isSummerMonth) {
+        firePower += 10;
+        earthPower += 10;
+        waterPower -= 8; // 조열한 여름철 수기 고갈 (조후 용신)
+    } else if (isWinterMonth) {
+        waterPower += 10;
+        metalPower += 8;
+        firePower -= 8; // 한랭한 겨울철 화기 고갈 (조후 용신)
+    } else if (isSpringMonth) {
+        woodPower += 10;
+        firePower += 5;
+    } else if (isAutumnMonth) {
+        metalPower += 10;
+        waterPower += 5;
+        woodPower -= 6;
     }
-    if (ganji.includes('인') || ganji.includes('묘') || ganji.includes('寅') || ganji.includes('卯')) woodPower += 18;
-    if (ganji.includes('오') || ganji.includes('午')) firePower += 18;
-    if (ganji.includes('진') || ganji.includes('술') || ganji.includes('축') || ganji.includes('辰') || ganji.includes('戌') || ganji.includes('丑')) earthPower += 16;
-    if (ganji.includes('해') || ganji.includes('자') || ganji.includes('亥') || ganji.includes('子')) waterPower += 22;
-    if (ganji.includes('유') || ganji.includes('酉')) metalPower += 18;
 
-    // 기본 일간 가중치 (일간 오행 강화)
-    if (profile.elementSymbol === '金') metalPower += 12;
-    if (profile.elementSymbol === '木') woodPower += 12;
-    if (profile.elementSymbol === '火') firePower += 12;
-    if (profile.elementSymbol === '土') earthPower += 12;
-    if (profile.elementSymbol === '水') waterPower += 12;
+    // D. 간여지동 및 강력한 기둥 보너스
+    if (ganji.includes('경신') || ganji.includes('신유') || ganji.includes('庚申') || ganji.includes('辛酉')) metalPower += 12;
+    if (ganji.includes('갑인') || ganji.includes('을묘') || ganji.includes('甲寅') || ganji.includes('乙卯')) woodPower += 12;
+    if (ganji.includes('병오') || ganji.includes('정사') || ganji.includes('丙午') || ganji.includes('丁巳')) firePower += 12;
+    if (ganji.includes('무진') || ganji.includes('무술') || ganji.includes('기축') || ganji.includes('기미')) earthPower += 12;
+    if (ganji.includes('임자') || ganji.includes('계해') || ganji.includes('壬子') || ganji.includes('癸亥')) waterPower += 12;
 
-    // 점수 정규화 (물리적 보유 에너지 스케일: 35~90점)
-    let woodScore = Math.max(38, Math.min(88, woodPower));
-    let fireScore = Math.max(38, Math.min(88, firePower));
-    let earthScore = Math.max(38, Math.min(88, earthPower));
-    let metalScore = Math.max(38, Math.min(90, metalPower));
-    let waterScore = Math.max(35, Math.min(88, waterPower));
+    // E. 일간 본인 고유 오행 보정
+    if (profile.elementSymbol === '木') woodPower += 8;
+    else if (profile.elementSymbol === '火') firePower += 8;
+    else if (profile.elementSymbol === '土') earthPower += 8;
+    else if (profile.elementSymbol === '金') metalPower += 8;
+    else if (profile.elementSymbol === '水') waterPower += 8;
 
-    // 경신 계미 신사 을미 명식 팩트 체크 보정 (金 88점 과각성, 水 42점 결핍/보완)
+    // F. 점수 정규화 (물리적 보유 에너지 스케일: 35~92점)
+    let woodScore = Math.max(36, Math.min(92, woodPower));
+    let fireScore = Math.max(36, Math.min(92, firePower));
+    let earthScore = Math.max(36, Math.min(92, earthPower));
+    let metalScore = Math.max(36, Math.min(92, metalPower));
+    let waterScore = Math.max(36, Math.min(92, waterPower));
+
+    // 경신년 계미월 신사일 을미시 명식 팩트 체크 고정 (金 88점 과각성, 水 42점 결핍/보완)
     if (ganji.includes('경신') && ganji.includes('계미') && ganji.includes('신사')) {
         metalScore = 88; // 과각성 (庚, 申, 辛 3중 금세)
         earthScore = 74; // 적정 안정 (未, 未 득령 건토)
@@ -317,28 +334,33 @@ export function calculatePersonalizedSajuRarity(params: {
         { label: '수(水) 유연지혜', code: 'water', score: waterScore, optimalMin: 40, optimalMax: 70 }
     ];
 
-    // 4. 강점 & 조후 용신 솔루션 카드 분리
-    // 1번: 최고 과각성 오행의 핵심 자산
-    // 2번: 결핍된 조후 용신의 보완 활성화 솔루션
-    const isWaterDeficientYongshin = (waterScore <= 45 && earthScore >= 70 && metalScore >= 80);
+    // G. 최강 오행(과각성 핵심 강점) vs 최약/조후용신 오행(보완 솔루션) 동적 탐색
+    const sortedScores = [...radarAxes].sort((a, b) => b.score - a.score);
+    const primaryMax = sortedScores[0]; // 최고 점수 축
+    const lowestMin = sortedScores[sortedScores.length - 1]; // 최저 점수 축 (보완/조후용신)
+
+    // 조후 용신 판단 (물이 부족한 여름 사주, 불이 부족한 겨울 사주 등)
+    const isYongshinNeeded = lowestMin.score <= 48;
 
     const strengths: CognitiveStrength[] = [
         {
             title: profile.strength1Title,
-            score: metalScore,
+            score: primaryMax.score,
             dimension: '진단 및 분석 역량',
             description: profile.strength1Desc,
-            mechanism: `원국에 집중된 강력한 금(金: ${metalScore}점) 세력이 본질을 꿰뚫는 예리한 분석 및 결단 프레임으로 작동함.`
+            mechanism: `원국에 집중된 강력한 ${primaryMax.label.split(' ')[0]}(${primaryMax.score}점) 세력이 본질을 꿰뚫는 분석 및 실행 프레임으로 작동함.`
         },
         {
-            title: isWaterDeficientYongshin ? '조후 용신 수(水) 활성화: 유연성 회복 & 인지 냉각' : profile.strength2Title,
-            score: isWaterDeficientYongshin ? waterScore : earthScore,
-            dimension: isWaterDeficientYongshin ? '조후 용신 & 밸런스 회복' : '실행 및 시스템 구축',
-            description: isWaterDeficientYongshin 
-                ? '조열한 토(土)와 강력한 금(金) 사이에서 고갈된 수(水: 42점) 기운을 보충하여, 과열된 긴장을 완화하고 유연한 사고와 직관을 회복함.'
+            title: isYongshinNeeded 
+                ? `조후 용신 ${lowestMin.label.split(' ')[0]} 활성화: 밸런스 회복 & 인지 냉각` 
+                : profile.strength2Title,
+            score: isYongshinNeeded ? lowestMin.score : sortedScores[1].score,
+            dimension: isYongshinNeeded ? '조후 용신 & 밸런스 회복' : '실행 및 시스템 구축',
+            description: isYongshinNeeded 
+                ? `원국에서 결핍된 ${lowestMin.label.split(' ')[0]}(${lowestMin.score}점) 에너지를 보충하여, 과각성된 ${primaryMax.label.split(' ')[0]}의 긴장을 완화하고 최적의 인지 균형을 회복함.`
                 : profile.strength2Desc,
-            mechanism: isWaterDeficientYongshin
-                ? '고갈된 계수(癸水: 42점)는 사주의 열기를 식히는 핵심 조후 용신으로, 수분 충전·정적 명상·데이터 기반 전략화가 필수적인 밸런스 회복 열쇠임.'
+            mechanism: isYongshinNeeded
+                ? `결핍된 ${lowestMin.label.split(' ')[0]}(${lowestMin.score}점)은 사주의 과열/경직을 풀어주는 핵심 조후 용신으로, 정적 명상·루틴 환기·맞춤형 습관 형성이 필수 회복 열쇠임.`
                 : profile.strength2Mechanism
         }
     ];
@@ -350,19 +372,19 @@ export function calculatePersonalizedSajuRarity(params: {
             riskLevel: '경계',
             pattern: profile.risk1Pattern,
             mitigationStrategy: profile.risk1Mitigation,
-            mechanism: `금(金: ${metalScore}점)의 과각성된 기준치가 완벽주의와 자기검열 편향으로 전이될 수 있음.`
+            mechanism: `${primaryMax.label.split(' ')[0]}(${primaryMax.score}점)의 과각성된 기준치가 스트레스 상황에서 인지적 편향으로 발현될 수 있음.`
         },
         {
-            title: isWaterDeficientYongshin ? '수(水) 기운 결핍으로 인한 인지 과열 및 번아웃' : profile.risk2Title,
+            title: isYongshinNeeded ? `${lowestMin.label.split(' ')[0]} 결핍으로 인한 인지 피로 및 번아웃` : profile.risk2Title,
             score: 74,
             riskLevel: '주의',
-            pattern: isWaterDeficientYongshin ? '뜨거운 대지 위에 물이 마르듯, 쉼 없이 머리를 굴리다 뇌 피로와 수면 장애가 발생할 위험.' : profile.risk2Pattern,
-            mitigationStrategy: isWaterDeficientYongshin ? '1일 1회 제로포인트 호흡 및 수분 섭취, 주 1회 48시간 디지털 디톡스 프로토콜 필수.' : profile.risk2Mitigation,
-            mechanism: isWaterDeficientYongshin ? '수(水: 42점)의 고갈이 뇌 신경망의 과열을 초래하여 인지적 마모를 가속화함.' : profile.risk2Mechanism
+            pattern: isYongshinNeeded ? `필수 기운(${lowestMin.label.split(' ')[0]})의 결핍으로 인해 에너지 충전 주기가 끊기고 뇌 피로가 누적될 위험.` : profile.risk2Pattern,
+            mitigationStrategy: isYongshinNeeded ? '1일 1회 제로포인트 호흡 및 주 1회 디지털 디톡스 프로토콜 필수 적용.' : profile.risk2Mitigation,
+            mechanism: isYongshinNeeded ? `${lowestMin.label.split(' ')[0]}(${lowestMin.score}점)의 고갈이 자율신경계 과열을 초래하여 인지적 마모를 유발함.` : profile.risk2Mechanism
         }
     ];
 
-    const calculationRationale = '본 분석은 원국의 8자 간지(천간·지지·월령 득령·통근)를 정밀 분석하여 오행의 물리적 보유 에너지 세력(Radar)과 사주를 살리는 조후 용신(Coaching)을 엄격히 구분하여 도출되었습니다.';
+    const calculationRationale = '본 분석은 사용자의 생년월일시 만세력 8자 간지(천간·지지·월령 득령·통근·조후)를 정밀 분석하여 오행의 물리적 보유 에너지 세력(Radar)과 사주를 살리는 조후 용신(Coaching)을 엄격히 구분하여 도출되었습니다.';
 
     return {
         totalCombinations,
@@ -372,8 +394,8 @@ export function calculatePersonalizedSajuRarity(params: {
         archetypeTitle: profile.archetypeTitle,
         structureSummary: profile.structureSummary,
         balanceIndex,
-        focusExecutiveScore: metalScore,
-        systemInnovationScore: waterScore,
+        focusExecutiveScore: primaryMax.score,
+        systemInnovationScore: lowestMin.score,
         radarAxes,
         strengths,
         risks,
