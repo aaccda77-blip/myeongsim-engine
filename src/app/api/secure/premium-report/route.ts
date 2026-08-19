@@ -15,21 +15,23 @@ export async function POST(request: NextRequest) {
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-        // 사주 정보 추출
-        const dayPillarGan = saju?.dayPillar?.stem || '辛';
-        const dayPillarJi = saju?.dayPillar?.branch || '巳';
+        // 사주 정보 추출 (다양한 페이로드 객체 구조 100% 지원)
+        const fp = saju?.fourPillars || saju;
+        
+        const dayPillarGan = saju?.dayPillar?.stem || fp?.day?.ganKor || fp?.day?.gan?.char || fp?.day?.gan || saju?.dayMasterChar || '甲';
+        const dayPillarJi = saju?.dayPillar?.branch || fp?.day?.jiKor || fp?.day?.ji?.char || fp?.day?.ji || '子';
         const dayPillar = `${dayPillarGan}${dayPillarJi}`;
 
-        const yearPillarGan = saju?.yearPillar?.gan?.char || saju?.yearPillar?.gan || '庚';
-        const yearPillarJi = saju?.yearPillar?.ji?.char || saju?.yearPillar?.ji || '申';
+        const yearPillarGan = saju?.yearPillar?.gan?.char || saju?.yearPillar?.gan || fp?.year?.ganKor || fp?.year?.gan?.char || fp?.year?.gan || '甲';
+        const yearPillarJi = saju?.yearPillar?.ji?.char || saju?.yearPillar?.ji || fp?.year?.jiKor || fp?.year?.ji?.char || fp?.year?.ji || '子';
         const yearPillar = `${yearPillarGan}${yearPillarJi}`;
 
-        const monthPillarGan = saju?.monthPillar?.gan?.char || saju?.monthPillar?.gan || '癸';
-        const monthPillarJi = saju?.monthPillar?.ji?.char || saju?.monthPillar?.ji || '未';
+        const monthPillarGan = saju?.monthPillar?.gan?.char || saju?.monthPillar?.gan || fp?.month?.ganKor || fp?.month?.gan?.char || fp?.month?.gan || '甲';
+        const monthPillarJi = saju?.monthPillar?.ji?.char || saju?.monthPillar?.ji || fp?.month?.jiKor || fp?.month?.ji?.char || fp?.month?.ji || '子';
         const monthPillar = `${monthPillarGan}${monthPillarJi}`;
 
-        const hourPillarGan = saju?.hourPillar?.gan?.char || saju?.hourPillar?.gan || '乙';
-        const hourPillarJi = saju?.hourPillar?.ji?.char || saju?.hourPillar?.ji || '未';
+        const hourPillarGan = saju?.hourPillar?.gan?.char || saju?.hourPillar?.gan || fp?.time?.ganKor || fp?.time?.gan?.char || fp?.time?.gan || '甲';
+        const hourPillarJi = saju?.hourPillar?.ji?.char || saju?.hourPillar?.ji || fp?.time?.jiKor || fp?.time?.ji?.char || fp?.time?.ji || '子';
         const hourPillar = `${hourPillarGan}${hourPillarJi}`;
 
         const gongmangList = saju?.gongmang || ['申', '酉'];

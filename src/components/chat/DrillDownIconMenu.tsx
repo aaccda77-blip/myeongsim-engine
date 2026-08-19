@@ -56,6 +56,7 @@ const MptiPlannerModal = dynamic(() => import('@/components/coaching/MptiPlanner
 // [NEW] 108 자각 백서 프리미엄 독립 모달 임포트
 const Healing108CoachingReport = dynamic(() => import('@/components/coaching/Healing108CoachingReport'), { ssr: false });
 const Sovereign3SProtocolModal = dynamic(() => import('@/components/coaching/Sovereign3SProtocolModal'), { ssr: false });
+const ZeroPoint3SMatrixModal = dynamic(() => import('@/components/coaching/ZeroPoint3SMatrixModal'), { ssr: false });
 const MindResetModal = dynamic(() => import('@/components/coaching/MindResetModal'), { ssr: false });
 const MyeongsimOSDashboard = dynamic(() => import('@/components/os/MyeongsimOSDashboard'), { ssr: false });
 const DecodeReportModal = dynamic(() => import('@/components/coaching/DecodeReportModal'), { ssr: false });
@@ -512,7 +513,8 @@ export default function DrillDownIconMenu({
     const [showHealing108NewReport, setShowHealing108NewReport] = useState(false); // [NEW] 108 자각 new 대시보드
     const [showMyeongsimOS, setShowMyeongsimOS] = useState(false); // [NEW] 명심 OS 대시보드
     const [showMirrorRoom, setShowMirrorRoom] = useState(false); // [NEW] 거울의방 모달 상태
-    const [showSovereign3S, setShowSovereign3S] = useState(false); // [NEW] 소버린 3S 셋업프로토콜
+    const [showSovereign3S, setShowSovereign3S] = useState(false);
+    const [showZeroPointMatrix, setShowZeroPointMatrix] = useState(false); // [NEW] 소버린 3S 셋업프로토콜
     const [showMindReset, setShowMindReset] = useState(false); // [NEW] 5D 마음 리셋 디버깅
     const [showDecodeReport, setShowDecodeReport] = useState(false);
     const [showPremiumReport, setShowPremiumReport] = useState(false);
@@ -1140,6 +1142,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* [NEW] 제로포인트 3S 융합 진단 메뉴 (나의 리포트 바로 옆) */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowZeroPointMatrix(true)}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.2))',
+                        border: '1px solid rgba(16, 185, 129, 0.4)',
+                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.25)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🌌</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#34d399', fontWeight: 'bold' }}>제로포인트 3S</div>
+                        <div style={styles.neuroTrigger}>3대 코드 융합 진단</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 명심 마스터 코어 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => { window.location.href = '/master-core'; }}>
@@ -1386,7 +1409,7 @@ export default function DrillDownIconMenu({
                         </div>
                         <div>
                             <div style={{ ...styles.iconLabel, color: '#22d3ee' }}>소버린 3S</div>
-                            <div style={styles.neuroTrigger}>보건 시스템 스캔</div>
+                            <div style={styles.neuroTrigger}>마인드 웰니스 복원 스캔</div>
                         </div>
                     </button>
                 )}
@@ -1972,6 +1995,9 @@ export default function DrillDownIconMenu({
             </AnimatePresence>
 
 
+
+            {/* [NEW] 제로포인트 3S 융합 진단 모달 */}
+            <ZeroPoint3SMatrixModal isOpen={showZeroPointMatrix} onClose={() => setShowZeroPointMatrix(false)} />
 
             {/* [NEW] 소버린 3S 프로토콜 모달 */}
             <Sovereign3SProtocolModal

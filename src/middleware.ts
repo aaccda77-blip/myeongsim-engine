@@ -78,6 +78,41 @@ function checkRateLimit(request: NextRequest): NextResponse | null {
 import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // [GATEWAY BYPASS LIST]
+    const isGateBypass = 
+        pathname === '/' ||
+        pathname === '/gate' ||
+        pathname.startsWith('/api/gate') ||
+        pathname === '/admin/login' ||
+        pathname.startsWith('/api/admin/login') ||
+        pathname.startsWith('/_next') ||
+        pathname === '/favicon.ico' ||
+        /\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$/.test(pathname);
+
+    if (!isGateBypass) {
+        const siteAccessCookie = request.cookies.get('myeongsim_site_access')?.value || request.cookies.get('myeongsim_site_access_client')?.value;
+        const adminSessionCookie = request.cookies.get('admin_session')?.value;
+
+        const hasAccess = siteAccessCookie === 'granted' || !!adminSessionCookie;
+
+        if (!hasAccess) {
+            // If it's an API request, return 401
+            if (pathname.startsWith('/api')) {
+                return NextResponse.json(
+                    { error: 'Site Under Construction', message: '아직 앱 스타트 준비 중입니다.' },
+                    { status: 401 }
+                );
+            }
+            // Redirect to /gate
+            const gateUrl = new URL('/gate', request.url);
+            if (pathname !== '/') {
+                gateUrl.searchParams.set('redirect', pathname);
+            }
+            return NextResponse.redirect(gateUrl);
+        }
+    }
     let response = NextResponse.next({
         request: {
             headers: request.headers,

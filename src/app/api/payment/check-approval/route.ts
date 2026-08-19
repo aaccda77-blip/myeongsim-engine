@@ -5,25 +5,43 @@ import { getPendingWireTransfers } from '@/lib/pendingWireTransfers';
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
-        const name = searchParams.get('name') || '';
-        const userId = searchParams.get('userId') || '';
+        const name = (searchParams.get('name') || '').trim();
+        const userId = (searchParams.get('userId') || '').trim();
 
         if (!name && !userId) {
             return NextResponse.json({ approved: false, message: '이름 또는 사용자 ID가 필요합니다.' });
         }
 
-        // 1. Check in Supabase `users` table
+        // 1. Check in-memory pending store FIRST (Ultra Fast)
+        const pendingItems = getPendingWireTransfers();
+        const pending = pendingItems.find(p => 
+            (userId && p.id === userId) || 
+            (userId && p.userId === userId) ||
+            (name && p.depositorName === name) ||
+            (name && p.depositorName.includes(name))
+        );
+
+        if (pending && pending.is_active) {
+            return NextResponse.json({
+                approved: true,
+                chatTurnsLeft: 3,
+                tier: 'CHAT_3',
+                message: '승인이 완료되었습니다! 3회 코칭이 즉시 활성화되었습니다.'
+            });
+        }
+
+        // 2. Check in Supabase `users` table
         if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
             let query = supabaseAdmin.from('users').select('*');
             if (userId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)) {
-                query = query.eq('id', userId);
+                query = query.or(`id.eq.${userId},name.ilike.%${name}%`);
             } else if (name) {
-                query = query.ilike('name', `%${name.trim()}%`);
+                query = query.ilike('name', `%${name}%`);
             }
 
             const { data, error } = await query;
             if (!error && data && data.length > 0) {
-                const approvedUser = data.find(u => u.is_active || u.chat_turns_left > 0);
+                const approvedUser = data.find(u => u.is_active === true || u.chat_turns_left > 0);
                 if (approvedUser) {
                     return NextResponse.json({
                         approved: true,
@@ -35,18 +53,7 @@ export async function GET(req: NextRequest) {
             }
         }
 
-        // 2. Check in-memory pending store
-        const pendingItems = getPendingWireTransfers();
-        const pending = pendingItems.find(p => p.id === userId || p.depositorName === name.trim());
-        if (pending) {
-            if (pending.is_active) {
-                return NextResponse.json({
-                    approved: true,
-                    chatTurnsLeft: 3,
-                    tier: 'CHAT_3',
-                    message: '승인이 완료되었습니다!'
-                });
-            }
+        if (pending && !pending.is_active) {
             return NextResponse.json({
                 approved: false,
                 isPending: true,

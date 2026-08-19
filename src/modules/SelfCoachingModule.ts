@@ -101,14 +101,14 @@ export class SelfCoachingModule {
             if (intent === 'ms_64_neural_code') {
                 return {
                     type: 'COACHING_PROMPT',
-                    message: `🧬 **64비트 뉴럴 코드 (Gene Keys Decoder)**\n\n당신의 DNA에 각인된 64가지 원형 코드를 분석합니다.\n\n각 코드는 3단계로 구성됩니다:\n- **Dark Code**: 그림자 패턴\n- **Gift**: 재능\n- **Meta Code**: 초월적 선물\n\n어떤 코드를 먼저 해독하시겠습니까?`,
+                    message: `🧬 **64비트 뉴럴 코드 (Myeongsim Neural Codes Decoder)**\n\n당신의 DNA에 각인된 64가지 원형 코드를 분석합니다.\n\n각 코드는 3단계로 구성됩니다:\n- **Dark Code**: 그림자 패턴\n- **Gift**: 재능\n- **Meta Code**: 초월적 선물\n\n어떤 코드를 먼저 해독하시겠습니까?`,
                     options: [
                         { label: "🌑 Dark Code 분석", value: "decode_dark", trigger_mode: "immediate", next_prompt_guide: "Analyze user's shadow patterns using their Saju data. Identify recurring dark codes." },
                         { label: "🎁 Gift 발견", value: "decode_gift", trigger_mode: "immediate", next_prompt_guide: "Identify user's natural talents and gifts using their Saju data." },
                         { label: "✨ Meta Code 각성", value: "decode_meta", trigger_mode: "immediate", next_prompt_guide: "Explore user's transcendent potential using their Saju data." },
                         { label: "🔮 전체 코드 맵", value: "full_code_map", trigger_mode: "immediate", next_prompt_guide: "Provide comprehensive 64-code analysis based on user's complete Saju chart." }
                     ],
-                    system_prompt_injection: `[64 Neural Code Protocol] Gene Keys analysis. DayMaster: ${dayMasterChar}.`
+                    system_prompt_injection: `[64 Neural Code Protocol] Myeongsim Neural Codes analysis. DayMaster: ${dayMasterChar}.`
                 };
             }
 

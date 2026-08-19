@@ -45,7 +45,7 @@ export const assembleFullReport = (userName: string, iljuId: string = "GAP_JA") 
 
     // --- PART 2: THE NEURAL KEYS (20 Pages) ---
     report += `\n---\n\n`;
-    report += `## PART 2. 유전자 키와 의식의 진화 (Neural Keys)\n\n`;
+    report += `## PART 2. 명심 뉴럴코드와 의식의 진화 (Neural Keys)\n\n`;
     report += `당신의 DNA에 각인된 3단계 의식 수준을 해독합니다.\n\n`;
 
     report += `### 🌑 1단계: 그림자 (The Shadow) - ${iljuData.dark_code?.name || ''}\n`;

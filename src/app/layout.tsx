@@ -4,6 +4,7 @@ import "./globals.css";
 import SafetyDisclaimerModal from "@/components/modals/SafetyDisclaimerModal";
 import GoogleAuthSync from "@/components/auth/GoogleAuthSync";
 import VisitorTracker from "@/components/analytics/VisitorTracker";
+import SiteAccessGateOverlay from "@/components/auth/SiteAccessGateOverlay";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 // 1. 폰트 변수 선언
@@ -64,6 +65,7 @@ export default function RootLayout({
                     {/* <PushTestButton /> - Debug Only */}
                     <GoogleAuthSync />
         <VisitorTracker />
+                    <SiteAccessGateOverlay />
                     {children}
                 </LanguageProvider>
             </body>

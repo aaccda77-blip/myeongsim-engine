@@ -166,7 +166,7 @@ export class TextSanitizer {
         [/운세/g, '인생의 흐름과 계절'],
         [/만세력/g, '시간의 에너 지 지도'],
 
-        // === 진키 / Gene Keys ===
+        // === 진키 / Myeongsim Neural Codes ===
         [/Gene\s*Keys?/gi, '무의식 보석 코드'],
         [/진\s*키/g, '무의식 보석 코드'],
         [/Shadow/gi, '마음의 먹구름(다크 코드)'],

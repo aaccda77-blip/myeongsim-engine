@@ -1,5 +1,5 @@
 /**
- * GeneKeyCalculator.ts - 천문 역법 엔진 (Gene Keys / Human Design Calculator)
+ * GeneKeyCalculator.ts - 천문 역법 엔진 (Myeongsim Neural Codes / Human Design Calculator)
  * 
  * 목적: 생년월일시를 바탕으로 행성 위치를 계산하고, 64 Gate + 6 Line으로 변환
  * 특징:
@@ -108,7 +108,7 @@ const RAVE_MANDALA_GATES: [number, number][] = [
 
 /**
  * 황경(Longitude)을 Gate + Line으로 변환
- * 정확한 Human Design / Gene Keys 휠 매핑
+ * 정확한 Human Design / Myeongsim Neural Codes 휠 매핑
  */
 function longitudeToGate(longitude: number, offset: number = 1.82): GatePosition {
     // 0-360 범위로 정규화 및 오프셋 적용

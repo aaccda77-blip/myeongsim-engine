@@ -9,6 +9,7 @@ interface MicroChatPassModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccessPay?: () => void;
+    onCheckApproval?: () => void;
     userId?: string;
 }
 
@@ -16,6 +17,7 @@ export default function MicroChatPassModal({
     isOpen,
     onClose,
     onSuccessPay,
+    onCheckApproval,
     userId = 'guest-id'
 }: MicroChatPassModalProps) {
     const [isProcessing, setIsProcessing] = useState(false);
@@ -58,9 +60,15 @@ export default function MicroChatPassModal({
                 })
             });
 
+            const data = await res.json();
+            const recordId = data.pendingItem?.id || userId;
+
             if (typeof window !== 'undefined') {
                 localStorage.setItem('myeongsim_pending_approval', 'true');
                 localStorage.setItem('myeongsim_depositor_name', depositorName.trim());
+                if (recordId) {
+                    localStorage.setItem('myeongsim_pending_user_id', recordId);
+                }
             }
 
             setIsProcessing(false);
@@ -175,10 +183,13 @@ export default function MicroChatPassModal({
                                 담당자가 입금 확인 후 <span className="text-emerald-300 font-bold">1~5분 이내 3회 수다권</span>을 자동 승인해 드립니다.
                             </p>
                             <button
-                                onClick={onClose}
-                                className="mt-2 w-full py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 rounded-xl text-xs font-bold"
+                                onClick={() => {
+                                    if (onCheckApproval) onCheckApproval();
+                                    onClose();
+                                }}
+                                className="mt-2 w-full py-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer"
                             >
-                                확인 및 닫기
+                                🔄 입금 승인 확인 & 닫기
                             </button>
                         </div>
                     )}

@@ -364,7 +364,7 @@ export default function Sovereign3SProtocolModal({ isOpen, onClose, userProfile 
                                     💡 [책 기반 실질적 도움] 그래서 이 스캔이 내게 어떤 유익을 주는가?
                                 </h4>
                                 <p className="text-xs text-slate-300 leading-relaxed">
-                                    "우울과 불안은 못난 성격 때문이 아닙니다. {userName}님의 고성능 덤프트럭 하드웨어({sajuCore})가 생각을 정제하는 편인 엔진을 돌리다 뇌에 과부하가 걸린 신호입니다. <strong>자책하지 말고 3S 프로토콜(SCAN-SYNC-SHIFT)을 눌러 오늘 1가지 실천으로 즉시 전환하세요.</strong>"
+                                    "우울과 불안은 못난 성격 때문이 아닙니다. {userName}님의 고성능 초정밀 다이아몬드 지성 코어({sajuCore})가 생각을 정제하는 편인 엔진을 돌리다 뇌에 과부하가 걸린 신호입니다. <strong>자책하지 말고 3S 프로토콜(SCAN-SYNC-SHIFT)을 눌러 오늘 1가지 실천으로 즉시 전환하세요.</strong>"
                                 </p>
                             </div>
                         </div>

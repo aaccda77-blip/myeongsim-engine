@@ -27,20 +27,32 @@ export async function GET(request: NextRequest) {
     // Merge in-memory pending wire transfers
     const pendingMemoryItems = getPendingWireTransfers();
     pendingMemoryItems.forEach(pending => {
-        const exists = users.some(u => u.id === pending.id || u.name === pending.depositorName);
-        if (!exists) {
+        const existingIndex = users.findIndex(u => u.id === pending.id || u.name === pending.depositorName);
+        if (existingIndex === -1) {
             users.unshift({
                 id: pending.id,
                 email: '무통장 입금 신청',
                 name: pending.depositorName,
                 phone: pending.maskedPhone,
-                membership_tier: pending.membership_tier,
-                is_active: false,
-                payment_amount: pending.amount,
+                membership_tier: pending.membership_tier || 'CHAT_3',
+                is_active: pending.is_active || false,
+                payment_amount: pending.amount || 890,
                 chat_turns_left: 3,
                 created_at: pending.created_at,
             });
+        } else if (pending.is_active) {
+            users[existingIndex].is_active = true;
         }
+    });
+
+    // 승인 대기(is_active === false) 회원 무조건 최상단(#1 순위)으로 정렬
+    users.sort((a, b) => {
+        const pendingA = a.is_active === false ? 1 : 0;
+        const pendingB = b.is_active === false ? 1 : 0;
+        if (pendingA !== pendingB) {
+            return pendingB - pendingA; // is_active === false 우선 노출
+        }
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     });
 
     // PRIVACY ENCRYPTION: Mask all phone numbers in admin API response
@@ -48,6 +60,7 @@ export async function GET(request: NextRequest) {
         const rawPhone = user.phone || user.depositorName || user.name || '';
         return {
             ...user,
+            name: user.name || user.depositorName || '입금 신청자',
             phone: maskPhoneNumber(rawPhone),
             originalPhoneMasked: maskPhoneNumber(rawPhone),
         };

@@ -1,180 +1,179 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Check, Clock, Sparkles, ChevronDown, ChevronUp, Calendar, Target, Award } from 'lucide-react';
-import { AccountabilityService } from '@/modules/AccountabilityService';
+import { Sparkles, Clock, Brain, CheckCircle2, Circle, Flame, ChevronRight, Trophy } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-interface MissionStep {
-    day: string; // "1일차"
-    time: string; // "아침"
-    action: string; // "창문 열고 호흡하기"
-    duration: string; // "5분"
-    benefit: string; // "전두엽 활성화"
+export interface ActionPlanItem {
+    day: string;
+    time?: string;
+    action: string;
+    duration: string;
+    benefit: string;
 }
 
 interface ActionPlanCardProps {
-    plan: MissionStep[];
+    plan: ActionPlanItem[];
 }
 
-const ActionPlanCard: React.FC<ActionPlanCardProps> = ({ plan }) => {
-    const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-    const [expanded, setExpanded] = useState<boolean>(true);
-    const [hasCommitted, setHasCommitted] = useState(false);
+export default function ActionPlanCard({ plan }: ActionPlanCardProps) {
+    if (!plan || !Array.isArray(plan) || plan.length === 0) return null;
 
-    const handleCommit = () => {
-        if (plan.length > 0) {
-            AccountabilityService.saveMission(plan[0].action); // Save the first mission for check-in
-            setHasCommitted(true);
+    const [completedDays, setCompletedDays] = useState<number[]>([]);
+
+    const toggleComplete = (idx: number) => {
+        if (completedDays.includes(idx)) {
+            setCompletedDays(completedDays.filter(i => i !== idx));
+        } else {
+            const next = [...completedDays, idx];
+            setCompletedDays(next);
+
+            // Trigger Confetti Burst
+            try {
+                confetti({
+                    particleCount: 70,
+                    spread: 60,
+                    origin: { y: 0.8 },
+                    colors: ['#F59E0B', '#10B981', '#6366F1', '#EC4899', '#FBBF24']
+                });
+            } catch (e) {
+                // Ignore if canvas-confetti is not loaded
+            }
         }
     };
 
-    const toggleComplete = (idx: number) => {
-        setCompletedSteps(prev => {
-            const isCurrentlyCompleted = prev.includes(idx);
-            if (!isCurrentlyCompleted) {
-                confetti({
-                    particleCount: 50,
-                    spread: 60,
-                    origin: { y: 0.7 }
-                });
-            }
-            return isCurrentlyCompleted ? prev.filter(i => i !== idx) : [...prev, idx];
-        });
+    const progressPercent = Math.round((completedDays.length / plan.length) * 100);
+
+    const getTimeBadge = (time?: string) => {
+        if (!time) return { label: '아침', bg: 'bg-amber-500/20 text-amber-300 border-amber-500/30' };
+        if (time.includes('아침') || time.includes('오전')) {
+            return { label: time, bg: 'bg-amber-500/20 text-amber-300 border-amber-500/30' };
+        }
+        if (time.includes('점심') || time.includes('오후')) {
+            return { label: time, bg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' };
+        }
+        return { label: time, bg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' };
     };
 
-    if (!plan || plan.length === 0) return null;
-
     return (
-        <div className="w-full max-w-md mx-auto my-4 overflow-hidden rounded-2xl bg-gray-900/90 border border-gray-700/50 shadow-2xl backdrop-blur-md animate-fade-in-up">
+        <div className="w-full my-4 rounded-3xl bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95 border-2 border-amber-400/40 p-5 sm:p-6 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl relative overflow-hidden transition-all duration-300 hover:border-amber-400/60 font-sans">
+            {/* Background Ambient Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-600/10 rounded-full blur-2xl pointer-events-none" />
+
             {/* Header */}
-            <div
-                className="bg-gradient-to-r from-gray-800 to-gray-900 p-4 flex items-center justify-between cursor-pointer border-b border-gray-700/50"
-                onClick={() => setExpanded(!expanded)}
-            >
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary-gold/20 flex items-center justify-center border border-primary-gold/30">
-                        <Calendar className="w-5 h-5 text-primary-gold" />
+            <div className="relative z-10 flex items-center justify-between pb-4 border-b border-slate-700/60">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+                        <Flame className="w-5 h-5 fill-slate-950 stroke-[2]" />
                     </div>
                     <div>
-                        <h3 className="text-white font-bold text-lg leading-none">3일 실천 플랜</h3>
-                        <p className="text-xs text-primary-gold/80 mt-1 font-medium">Small Steps, Big Change</p>
-                    </div>
-                </div>
-                <button className="text-gray-400 hover:text-white transition-colors">
-                    {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                </button>
-            </div>
-
-            {/* Content Timeline */}
-            {expanded && (
-                <div className="p-5 space-y-6 relative">
-                    {/* Vertical Connecting Line */}
-                    <div className="absolute left-[29px] top-8 bottom-8 w-0.5 bg-gradient-to-b from-primary-gold/50 via-gray-700 to-transparent z-0"></div>
-
-                    {plan.map((step, idx) => {
-                        const isCompleted = completedSteps.includes(idx);
-                        return (
-                            <div key={idx} className="relative z-10 pl-2">
-                                <div className="flex gap-4 group">
-                                    {/* Timeline Node */}
-                                    <div className="flex flex-col items-center gap-2">
-                                        <button
-                                            onClick={() => toggleComplete(idx)}
-                                            className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300 shadow-lg ${isCompleted
-                                                ? 'bg-primary-gold border-primary-gold scale-110'
-                                                : 'bg-gray-800 border-gray-600 hover:border-primary-gold/70'
-                                                }`}
-                                        >
-                                            {isCompleted ? <Check className="w-4 h-4 text-black font-bold" /> : <span className="text-xs text-gray-500 font-mono">{idx + 1}</span>}
-                                        </button>
-                                        {/* Day Badge */}
-                                        <div className="text-[10px] font-bold text-gray-500 bg-gray-900 px-1.5 py-0.5 rounded border border-gray-800">
-                                            DAY {idx + 1}
-                                        </div>
-                                    </div>
-
-                                    {/* Card Body */}
-                                    <div
-                                        className={`flex-1 rounded-xl p-4 border transition-all duration-300 ${isCompleted
-                                            ? 'bg-primary-gold/5 border-primary-gold/30'
-                                            : 'bg-gray-800/50 border-gray-700 hover:border-gray-600'
-                                            }`}
-                                    >
-                                        <div className="flex justify-between items-start mb-2">
-                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${step.time?.includes('아침') ? 'bg-orange-900/40 text-orange-300' :
-                                                step.time?.includes('저녁') ? 'bg-indigo-900/40 text-indigo-300' :
-                                                    'bg-gray-700 text-gray-300'
-                                                }`}>
-                                                {step.time}
-                                            </span>
-                                            <div className="flex items-center gap-1 text-xs text-gray-400">
-                                                <Clock className="w-3 h-3" />
-                                                {step.duration}
-                                            </div>
-                                        </div>
-
-                                        <h4 className={`text-sm md:text-base font-bold mb-2 transition-colors ${isCompleted ? 'text-primary-gold line-through decoration-primary-gold/50' : 'text-gray-100'}`}>
-                                            {step.action}
-                                        </h4>
-
-                                        <div className="flex items-start gap-2 bg-black/20 p-2 rounded-lg">
-                                            <Sparkles className="w-3.5 h-3.5 text-purple-400 mt-0.5 shrink-0" />
-                                            <p className="text-xs text-purple-200/80 leading-relaxed">
-                                                {step.benefit}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/* Footer Progress */}
-            {expanded && (
-                <div className="px-5 pb-5 pt-2">
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                        <span>Progress</span>
-                        <span>{Math.round((completedSteps.length / plan.length) * 100)}%</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-gradient-to-r from-primary-gold to-yellow-300 transition-all duration-500 ease-out"
-                            style={{ width: `${(completedSteps.length / plan.length) * 100}%` }}
-                        ></div>
-                    </div>
-                </div>
-            )}
-
-            {/* Commit Button */}
-            {expanded && !hasCommitted && (
-                <div className="px-5 pb-5">
-                    <button
-                        onClick={handleCommit}
-                        className="w-full py-3 rounded-xl bg-primary-gold text-black font-bold flex items-center justify-center gap-2 hover:bg-yellow-400 transition shadow-lg shadow-primary-gold/20"
-                    >
-                        <Target className="w-4 h-4" />
-                        이 플랜으로 시작하기
-                    </button>
-                    <p className="text-[10px] text-gray-500 text-center mt-2">
-                        * 내일 앱을 켜면 실천 여부를 확인해드립니다.
-                    </p>
-                </div>
-            )}
-
-            {/* Commit Success Message */}
-            {expanded && hasCommitted && (
-                <div className="px-5 pb-5 text-center">
-                    <div className="py-2 px-4 bg-green-500/10 border border-green-500/30 rounded-xl inline-block mx-auto">
-                        <p className="text-green-400 text-xs font-bold flex items-center gap-2">
-                            <Check className="w-3 h-3" />
-                            미션이 등록되었습니다!
+                        <div className="flex items-center gap-2">
+                            <h4 className="text-base sm:text-lg font-black text-white tracking-tight">
+                                3일 신경망 재배선 실천 퀘스트
+                            </h4>
+                            <span className="px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/40 text-amber-300 text-[10px] font-black uppercase font-mono">
+                                3-Day Quest
+                            </span>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                            뇌의 무의식 저항을 줄이고 행동을 활성화하는 맞춤 루틴
                         </p>
                     </div>
                 </div>
-            )}
+
+                {/* Progress Badge */}
+                <div className="text-right">
+                    <div className="text-xs font-bold text-amber-400 font-mono">
+                        {completedDays.length} / {plan.length} 완료 ({progressPercent}%)
+                    </div>
+                    <div className="w-20 h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1 border border-slate-700">
+                        <div
+                            className="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-500 rounded-full"
+                            style={{ width: `${progressPercent}%` }}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Plan List */}
+            <div className="relative z-10 space-y-3 mt-4">
+                {plan.map((item, idx) => {
+                    const isDone = completedDays.includes(idx);
+                    const timeBadge = getTimeBadge(item.time);
+
+                    return (
+                        <div
+                            key={idx}
+                            onClick={() => toggleComplete(idx)}
+                            className={`group relative p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                                isDone
+                                    ? 'bg-emerald-950/20 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                                    : 'bg-slate-800/60 hover:bg-slate-800/90 border-slate-700/80 hover:border-amber-400/40'
+                            }`}
+                        >
+                            <div className="flex items-start gap-3.5">
+                                {/* Checkbox Icon */}
+                                <button
+                                    type="button"
+                                    className="mt-0.5 text-slate-400 group-hover:text-amber-400 transition-colors shrink-0"
+                                    aria-label="미션 완료 체크"
+                                >
+                                    {isDone ? (
+                                        <CheckCircle2 className="w-6 h-6 text-emerald-400 fill-emerald-400/20" />
+                                    ) : (
+                                        <Circle className="w-6 h-6 text-slate-500 group-hover:text-amber-400" />
+                                    )}
+                                </button>
+
+                                {/* Content */}
+                                <div className="flex-1 min-w-0">
+                                    {/* Badges Row */}
+                                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                        <span className="px-2 py-0.5 rounded-lg bg-amber-400/20 border border-amber-400/30 text-amber-300 text-xs font-black">
+                                            {item.day || `${idx + 1}일차`}
+                                        </span>
+                                        {item.time && (
+                                            <span className={`px-2 py-0.5 rounded-lg border text-[11px] font-bold ${timeBadge.bg}`}>
+                                                {timeBadge.label}
+                                            </span>
+                                        )}
+                                        {item.duration && (
+                                            <span className="inline-flex items-center gap-1 text-[11px] text-gray-400 bg-slate-900/60 px-2 py-0.5 rounded-md border border-slate-700/60 font-mono">
+                                                <Clock className="w-3 h-3 text-amber-400" />
+                                                {item.duration}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Action Text */}
+                                    <p className={`text-sm font-bold leading-relaxed break-keep ${
+                                        isDone ? 'text-gray-400 line-through' : 'text-white'
+                                    }`}>
+                                        {item.action}
+                                    </p>
+
+                                    {/* Benefit */}
+                                    {item.benefit && (
+                                        <div className="inline-flex items-center gap-1.5 mt-2 text-xs text-amber-200/90 bg-amber-950/30 px-2.5 py-1 rounded-xl border border-amber-500/20">
+                                            <Brain className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                            <span>{item.benefit}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Bottom Motivation */}
+            <div className="relative z-10 mt-4 pt-3.5 border-t border-slate-800/80 flex items-center justify-between text-xs text-gray-400">
+                <div className="flex items-center gap-1.5 text-amber-300/80 font-medium">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>완벽하지 않아도 괜찮습니다. 지금 작은 1가지를 실천해 보세요!</span>
+                </div>
+            </div>
         </div>
     );
-};
-
-export default ActionPlanCard;
+}

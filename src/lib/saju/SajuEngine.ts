@@ -300,6 +300,37 @@ export function generateSajuPromptBlock(result: SajuResult): string {
     const p = result.fourPillars;
     const info = result.inputInfo;
 
+    // 역학적 화학반응 & 비즈니스 힌트 자동 생성 (2026년 丙午년 세운 기준 정밀 분석)
+    const combinedHints: string[] = [];
+    
+    // 현재 세운(2026년 丙午년)과 원국의 상호작용
+    const currentYearNum = new Date().getFullYear(); // 2026
+    const seunGan = result.currentSeun ? result.currentSeun.substring(0, 1) : '丙';
+    const seunJi = result.currentSeun ? result.currentSeun.substring(1, 2) : '午';
+
+    // 천간합 파싱
+    const gans = [p.year.gan, p.month.gan, p.day.gan, p.time.gan];
+    if (gans.includes('甲') && gans.includes('己')) combinedHints.push("甲己合 (갑기합: 신뢰 기반 자산 계약 및 메커니즘 수용)");
+    if (gans.includes('乙') && gans.includes('庚')) combinedHints.push("乙庚合 (을경합: 견고한 시스템 제어 및 정밀 유통 구조 결합)");
+    if (gans.includes('丙') && gans.includes('辛')) combinedHints.push("丙辛合 (병신합: 공식 대형 제휴 및 정식 브랜드 명예 상승)");
+    if (gans.includes('丁') && gans.includes('壬')) combinedHints.push("丁壬合 (정임합: 지적 자산 및 마인드 솔루션 창의적 융합)");
+    if (gans.includes('戊') && gans.includes('癸')) combinedHints.push("戊癸合 (무계합: 플랫폼 생태계 구축 및 데이터 기반 전환)");
+
+    // 지지 방합/삼합 파싱
+    const jis = [p.year.ji, p.month.ji, p.day.ji, p.time.ji];
+    if (jis.includes('申') && jis.includes('子') && jis.includes('辰')) {
+        combinedHints.push("申子辰 삼합 (수국: 지식·콘텐츠 및 웰니스 유통 네트워크 대확장)");
+    }
+    if (jis.includes('亥') && jis.includes('卯') && jis.includes('未')) {
+        combinedHints.push("亥卯未 삼합 (목국: 창의적 사업 영역 및 추진력 대폭발)");
+    }
+    if (jis.includes('寅') && jis.includes('午') && jis.includes('戌')) {
+        combinedHints.push("寅午戌 삼합 (화국: 브랜드 열기와 파급력의 거대한 확산)");
+    }
+    if (jis.includes('巳') && jis.includes('酉') && jis.includes('丑')) {
+        combinedHints.push("巳酉丑 삼합 (금국: 정교한 규범과 결실 중심 메커니즘 완성)");
+    }
+
     return `
 :::SAJU_DATA_TRUTH:::
 ## 사용자 사주 정보 (정확한 데이터)
@@ -315,10 +346,14 @@ export function generateSajuPromptBlock(result: SajuResult): string {
 | **일주 (Day)** | **${p.day.gan}${p.day.ji}** | **${p.day.ganKor}${p.day.jiKor}** | **본인 (가장 중요)** 🌟 |
 | 시주 (Time) | ${p.time.gan}${p.time.ji} | ${p.time.ganKor}${p.time.jiKor} | 자녀, 말년 운 |
 
-## 핵심 정보
+## 핵심 운세 정보 (현재 시점)
+- **현재 연도**: ${currentYearNum}년 (丙午년 병오년)
 - **일간 (Day Master)**: ${result.dayMaster} (${result.dayMasterChar})
-- 현재 세운 (올해): ${result.currentSeun || '정보 없음'}
-- 현재 대운: ${result.currentDaewoon || '정보 없음'}
+- **현재 세운 (올해)**: 2026년 丙午(병오)년
+- **현재 대운**: ${result.currentDaewoon || '정보 없음'}
+
+## 🎯 2026년 비즈니스 & 현실 운세 해석 힌트 (사주 화학 반응)
+${combinedHints.length > 0 ? combinedHints.map(h => `- ${h}`).join('\n') : '- 특이 화학반응 분석 완료'}
 
 ## 사용자의 전체 대운 흐름 (장기 심리 발달 단계)
 > **AI 지시사항**: 대운(10년 주기)의 연도(시작~종료 년도)를 말할 때는 **아래 대운 리스트의 연도를 그대로 사용하세요.** 절대 스스로 년도를 계산하거나 임의로 지어내지 마세요.

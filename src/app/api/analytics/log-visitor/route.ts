@@ -244,41 +244,11 @@ export async function GET() {
         visitorStore.logs = [];
     }
 
-    if (visitorStore.logs.length === 0) {
-        const nowTime = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
-        visitorStore.logs = [
-            {
-                id: 'v_live_001',
-                ip: '112.154.42.18',
-                userId: 'user_kms_2026',
-                email: 'kangms@mindflow.kr',
-                name: '강미숙 대표님',
-                isMember: true,
-                gender: '여성',
-                ageGroup: '40대',
-                region: '서울 / 수도권',
-                source: '네이버 (블로그/검색)',
-                pathname: '/myeongsim-chat',
-                pagesViewed: [
-                    { path: '/', time: '14:02:10' },
-                    { path: '/intro', time: '14:03:45' },
-                    { path: '/myeongsim-chat', time: '14:05:12' },
-                    { path: '/admin/users', time: nowTime }
-                ],
-                pageviewCount: 4,
-                firstSeenAt: '14:02:10',
-                lastSeenAt: nowTime,
-            }
-        ];
-        visitorStore.uniqueIps.add('112.154.42.18');
-        visitorStore.pageviews = 4;
-        visitorStore.sources['네이버 (블로그/검색)'] = 4;
-        visitorStore.regions['서울 / 수도권'] = 4;
-    }
+    // 더미 데이터 없음 - 실제 방문 기록만 표시 (팩트 기반)
 
     return NextResponse.json({
-        todayVisitors: Math.max(1, visitorStore.uniqueIps.size),
-        todayPageviews: Math.max(1, visitorStore.pageviews),
+        todayVisitors: visitorStore.uniqueIps.size,
+        todayPageviews: visitorStore.pageviews,
         sources: visitorStore.sources,
         regions: visitorStore.regions,
         logs: visitorStore.logs,

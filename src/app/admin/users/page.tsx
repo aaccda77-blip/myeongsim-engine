@@ -128,14 +128,30 @@ export default function AdminUsersPage() {
 
     // Filtered Users
     const filteredUsers = useMemo(() => {
-        return users.filter(u => {
-            const matchSearch = u.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                (u.phone_hash && u.phone_hash.includes(searchTerm));
+        const list = users.filter(u => {
+            const searchLower = searchTerm.toLowerCase().trim();
+            const matchSearch = !searchLower ||
+                                (u.id && u.id.toLowerCase().includes(searchLower)) ||
+                                (u.name && u.name.toLowerCase().includes(searchLower)) ||
+                                (u.phone && u.phone.includes(searchLower)) ||
+                                (u.phone_hash && u.phone_hash.includes(searchLower)) ||
+                                (u.membership_tier && u.membership_tier.toLowerCase().includes(searchLower));
+
             if (filterTier === 'ALL') return matchSearch;
             if (filterTier === 'ACTIVE') return matchSearch && u.is_active;
             if (filterTier === 'PENDING') return matchSearch && !u.is_active;
-            if (filterTier === 'MICRO') return matchSearch && u.membership_tier?.includes('890');
+            if (filterTier === 'MICRO') return matchSearch && (u.membership_tier?.includes('890') || u.payment_amount === 890 || u.membership_tier === 'CHAT_3');
             return matchSearch && u.membership_tier === filterTier;
+        });
+
+        // 승인 대기(is_active === false) 회원 최상단(#1 순위) 배치 정렬
+        return list.sort((a, b) => {
+            const pendingA = a.is_active === false ? 1 : 0;
+            const pendingB = b.is_active === false ? 1 : 0;
+            if (pendingA !== pendingB) {
+                return pendingB - pendingA;
+            }
+            return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
         });
     }, [users, searchTerm, filterTier]);
 
@@ -606,8 +622,8 @@ export default function AdminUsersPage() {
                                 </tr>
                             ) : (
                                 filteredUsers.map((u, idx) => {
-                                    const displayName = u.name ? `👤 ${u.name}` : `👤 가입자 #${idx + 1}`;
-                                    const maskedPhone = u.phone ? `🔒 ${u.phone}` : (u.phone_hash ? `🔒 010-****-${u.phone_hash.slice(-4)}` : '🔒 개인정보 암호화 보호');
+                                    const displayName = u.name ? `👤 ${u.name}` : '👤 무통장 입금 신청자';
+                                    const maskedPhone = u.phone ? `🔒 ${u.phone}` : (u.phone_hash ? `🔒 010-****-${u.phone_hash.slice(-4)}` : '🔒 개인정보 보호');
 
                                     return (
                                         <tr key={u.id} className="hover:bg-slate-800/50 transition-colors">

@@ -1,5 +1,5 @@
 /**
- * /api/gene-keys - Gene Keys Activation Sequence 서버 계산 API
+ * /api/gene-keys - Myeongsim Neural Codes Activation Sequence 서버 계산 API
  * 
  * 생년월일시를 받아 GeneKeyCalculator를 실행하고 결과 반환
  * astronomy-engine은 클라이언트에서 실행 불가하므로 서버에서 처리
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         // 생년월일시 파싱
         const birthDateObj = parseBirthDate(birthDate, birthTime, timezone);
 
-        // Gene Keys 프로필 계산
+        // Myeongsim Neural Codes 프로필 계산
         const profile: MyeongsimProfile = calculateMyeongsimProfile(birthDateObj);
 
         // Activation Sequence (4개 핵심 코드)
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error('[API /gene-keys] Error:', error);
         return NextResponse.json(
-            { error: 'Failed to calculate Gene Keys profile', details: String(error) },
+            { error: 'Failed to calculate Myeongsim Neural Codes profile', details: String(error) },
             { status: 500 }
         );
     }

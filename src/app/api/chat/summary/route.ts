@@ -35,7 +35,7 @@ export const POST = requireAuth(async (req: Request, auth) => {
         if (!apiKey) throw new Error('GEMINI_API_KEY is missing');
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const prompt = `
 당신은 베테랑상담 전문가입니다. 다음의 상담 내용을 분석하여, '다음 상담(Next Session)'에 참고할 수 있는 핵심 요약본을 작성해주세요.

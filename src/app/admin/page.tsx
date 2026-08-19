@@ -22,6 +22,48 @@ export default function AdminPage() {
     const [loading, setLoading] = useState(false);
     const [selectedTiers, setSelectedTiers] = useState<Record<string, string>>({});
 
+    // 🔴 [실시간 동시 접속자 수 현황 카운트]
+    const [onlineUserCount, setOnlineUserCount] = useState<number>(1);
+
+    useEffect(() => {
+        if (!isAuthenticated) return;
+
+        // Supabase Presence 채널을 통한 실시간 접속자 추적
+        const presenceChannel = supabase.channel('online-users-presence', {
+            config: {
+                presence: {
+                    key: 'admin-tracker'
+                }
+            }
+        });
+
+        presenceChannel
+            .on('presence', { event: 'sync' }, () => {
+                const state = presenceChannel.presenceState();
+                const count = Object.keys(state).length;
+                console.log('🔴 [Presence] Realtime Online Users Count:', count, state);
+                setOnlineUserCount(Math.max(1, count));
+            })
+            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                console.log('🟢 [Presence] User Joined:', key, newPresences);
+            })
+            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                console.log('🔴 [Presence] User Left:', key, leftPresences);
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await presenceChannel.track({
+                        online_at: new Date().toISOString(),
+                        role: 'admin'
+                    });
+                }
+            });
+
+        return () => {
+            supabase.removeChannel(presenceChannel);
+        };
+    }, [isAuthenticated]);
+
 
 
     const handleLogin = async () => {
@@ -151,10 +193,16 @@ export default function AdminPage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 p-6">
             <div className="max-w-6xl mx-auto">
                 <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 mb-6">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <Shield className="w-6 h-6 text-indigo-400" />
                             <h1 className="text-2xl font-bold text-white">회원 관리 대시보드</h1>
+                            
+                            {/* 🔴 [실시간 동시 접속자 수 뱃지] */}
+                            <div className="flex items-center gap-2 bg-red-950/80 border border-red-500/50 px-3.5 py-1.5 rounded-full text-red-200 text-xs font-bold shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse">
+                                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                                <span>🔴 실시간 동시 접속자: <strong className="text-white text-sm font-mono font-black ml-1">{onlineUserCount}명</strong> (Live)</span>
+                            </div>
                         </div>
                         <div className="flex items-center gap-2">
                             <a
@@ -190,17 +238,17 @@ export default function AdminPage() {
                 ) : (
                     <div className="grid gap-4">
                         {users.sort((a, b) => {
-                            const isPendingA = a.membership_tier && a.membership_tier !== 'FREE' && (!a.expires_at || new Date(a.expires_at) < new Date());
-                            const isPendingB = b.membership_tier && b.membership_tier !== 'FREE' && (!b.expires_at || new Date(b.expires_at) < new Date());
+                            const isPendingA = a.is_active === false || (a.membership_tier && a.membership_tier !== 'FREE' && (!a.expires_at || new Date(a.expires_at) < new Date()));
+                            const isPendingB = b.is_active === false || (b.membership_tier && b.membership_tier !== 'FREE' && (!b.expires_at || new Date(b.expires_at) < new Date()));
 
                             if (isPendingA && !isPendingB) return -1;
                             if (!isPendingA && isPendingB) return 1;
 
                             return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
                         }).map((user) => {
-                            const isActive = user.expires_at && new Date(user.expires_at) > new Date();
+                            const isActive = user.is_active && user.expires_at && new Date(user.expires_at) > new Date();
                             const isExpired = user.expires_at && new Date(user.expires_at) < new Date();
-                            const isPending = user.membership_tier && user.membership_tier !== 'FREE' && !isActive;
+                            const isPending = user.is_active === false || (user.membership_tier && user.membership_tier !== 'FREE' && !isActive);
 
                             const requestedTier = (() => {
                                 const t = user.membership_tier;

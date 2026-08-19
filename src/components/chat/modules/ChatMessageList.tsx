@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import ActionPlanCard from '../ActionPlanCard';
+import { TextSanitizer } from '@/modules/TextSanitizer';
 import { motion } from 'framer-motion';
 import { Sparkles, Activity, Volume2, VolumeX, FileText, Copy, Check, Lock, Zap } from 'lucide-react';
 
@@ -100,8 +102,37 @@ export default function ChatMessageList({
                             }`}
                         >
                             <div className="whitespace-pre-wrap break-words font-medium space-y-2">
-                                {m.content}
+                                {m.role === 'assistant' ? TextSanitizer.sanitize(m.content) : m.content}
                             </div>
+
+                            {/* [VISUAL ACTION PLAN CARD] Rendered directly under assistant message */}
+                            {m.role === 'assistant' && (() => {
+                                let plan = null;
+                                if (m.content.includes(':::DATA_SEPARATOR:::')) {
+                                    try {
+                                        const jsonStr = m.content.split(':::DATA_SEPARATOR:::')[1];
+                                        const parsed = JSON.parse(jsonStr);
+                                        if (parsed.action_plan && Array.isArray(parsed.action_plan)) {
+                                            plan = parsed.action_plan;
+                                        }
+                                    } catch (e) {}
+                                }
+                                if (!plan) {
+                                    const actionPlanMatch = m.content.match(/"action_plan":\s*(\[[\s\S]*?\])/);
+                                    if (actionPlanMatch) {
+                                        try {
+                                            const parsed = JSON.parse(actionPlanMatch[1]);
+                                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                                plan = parsed;
+                                            }
+                                        } catch (e) {}
+                                    }
+                                }
+                                if (plan && plan.length > 0) {
+                                    return <ActionPlanCard plan={plan} />;
+                                }
+                                return null;
+                            })()}
 
                             {/* Assistant Footer Actions */}
                             {m.role === 'assistant' && (

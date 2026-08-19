@@ -206,7 +206,7 @@ export interface UserReportProfile {
         daewoon: DaewoonPeriod[];
     };
 
-    // Gene Keys 분석 결과
+    // Myeongsim Neural Codes 분석 결과
     gene_keys: {
         life_work: number;      // 삶의 과업 코드
         evolution: number;      // 진화 코드

@@ -149,7 +149,7 @@ export function useMyeongsimProfile() {
                     console.error('[useMyeongsimProfile] API failed:', await response.text());
                 }
             } catch (apiError) {
-                console.error('[useMyeongsimProfile] Gene Keys API error:', apiError);
+                console.error('[useMyeongsimProfile] Myeongsim Neural Codes API error:', apiError);
             }
 
             setProfile({
@@ -214,4 +214,4 @@ export function useMyeongsimProfile() {
 }
 
 // NOTE: calculateDualEngineProfile 함수는 /api/gene-keys API route로 이동됨
-// 서버에서 Gene Keys 계산이 필요하면 /api/gene-keys 엔드포인트를 사용하세요
+// 서버에서 Myeongsim Neural Codes 계산이 필요하면 /api/gene-keys 엔드포인트를 사용하세요

@@ -17,7 +17,7 @@ import { calculateMyeongsimProfile, parseBirthDate, MyeongsimProfile } from '@/u
  * 
  * GeneKeyCalculator + Saju 듀얼 엔진 데이터 통합 표시
  * Part 1: The Core (본질)
- * Part 2: Neural Keys (유전자 키)
+ * Part 2: Neural Keys (명심 뉴럴코드)
  * Part 3: Chronos (시간 흐름)
  * Part 4: Life Strategy (인생 전략)
  */
@@ -57,7 +57,7 @@ export default function SoulArchiveReport() {
     const { reportData } = useReportStore();
     const [activePart, setActivePart] = useState('core');
 
-    // Gene Keys / 명심코칭 프로필 훅 (생년월일 기반 Gate.Line 계산)
+    // Myeongsim Neural Codes / 명심코칭 프로필 훅 (생년월일 기반 Gate.Line 계산)
     const myeongsimProfile = useMyeongsimProfile();
 
     // [FIX] 생년월일 데이터 가져오기 (reportData 또는 sessionStorage에서)
@@ -89,10 +89,10 @@ export default function SoulArchiveReport() {
         return null;
     }, [reportData?.birthDate]);
 
-    // [FIX] 생년월일 데이터가 있을 때 자동으로 Gene Keys 계산 수행
+    // [FIX] 생년월일 데이터가 있을 때 자동으로 Myeongsim Neural Codes 계산 수행
     useEffect(() => {
         if (effectiveBirthDate && !myeongsimProfile.profile?.isCalculated && !myeongsimProfile.isLoading) {
-            console.log('[SoulArchiveReport] Triggering Gene Keys calculation for:', effectiveBirthDate);
+            console.log('[SoulArchiveReport] Triggering Myeongsim Neural Codes calculation for:', effectiveBirthDate);
             myeongsimProfile.calculate(
                 effectiveBirthDate,
                 reportData?.birthTime || '12:00',
@@ -139,7 +139,7 @@ export default function SoulArchiveReport() {
         fusion: {
             dayMaster: reportData.saju.dayMaster,
             dayMasterElement: ELEMENT_MAP[reportData.saju.dayMaster] || '?',
-            // Gene Keys 계산기에서 가져온 실제 Gate.Line 값 사용
+            // Myeongsim Neural Codes 계산기에서 가져온 실제 Gate.Line 값 사용
             lifeOSGate: myeongsimProfile.profile?.fusion?.lifeOSGate || '라이프코드 1.1',
             growthTriggerGate: myeongsimProfile.profile?.fusion?.growthTriggerGate || '라이프코드 2.1',
             bioEngineGate: myeongsimProfile.profile?.fusion?.bioEngineGate || '라이프코드 3.1',
@@ -147,7 +147,7 @@ export default function SoulArchiveReport() {
             summary: `${ELEMENT_MAP[reportData.saju.dayMaster] || ''} 에너지를 가진 ${reportData.saju.dayMaster} 코어 타입으로, ${reportData.saju.dayMasterTrait || '특별한 재능'}을 가진 프로필입니다.`
         },
         saju: reportData.saju,
-        astro: myeongsimProfile.profile?.astro, // Gene Keys 전체 데이터
+        astro: myeongsimProfile.profile?.astro, // Myeongsim Neural Codes 전체 데이터
         error: null
     } : null;
 

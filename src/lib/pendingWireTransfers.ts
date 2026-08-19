@@ -60,18 +60,31 @@ export async function addPendingWireTransfer(params: {
 
     // Try Upserting into Supabase `users` table
     try {
-        await supabaseAdmin
+        const { error: userErr } = await supabaseAdmin
             .from('users')
             .upsert({
                 id: recordId,
                 name: depositorName.trim(),
-                phone: maskedPhone, // Store encrypted/masked phone in DB for compliance
+                phone: maskedPhone,
                 membership_tier: itemType,
                 is_active: false, // Waiting for admin approval
                 payment_amount: amount,
                 chat_turns_left: 3,
                 created_at: nowIso,
             }, { onConflict: 'id' });
+
+        if (userErr) {
+            console.error('[PendingStore] Supabase users upsert error:', userErr);
+            // Fallback: try inserting with minimal fields
+            try {
+                await supabaseAdmin.from('users').insert({
+                    id: recordId,
+                    name: depositorName.trim(),
+                    is_active: false,
+                    created_at: nowIso
+                });
+            } catch (_) {}
+        }
     } catch (err) {
         console.warn('[PendingStore] Supabase upsert fallback triggered:', err);
     }
@@ -83,9 +96,18 @@ export function getPendingWireTransfers(): PendingWireTransfer[] {
     return globalPendingStore;
 }
 
+export function approvePendingWireTransfer(idOrName: string): boolean {
+    const target = globalPendingStore.find(p => p.id === idOrName || p.userId === idOrName || p.depositorName === idOrName.trim());
+    if (target) {
+        target.is_active = true;
+        return true;
+    }
+    return false;
+}
+
 export function removePendingWireTransfer(id: string): void {
-    const index = globalPendingStore.findIndex(p => p.id === id);
+    const index = globalPendingStore.findIndex(p => p.id === id || p.userId === id);
     if (index !== -1) {
-        globalPendingStore.splice(index, 1);
+        globalPendingStore[index].is_active = true; // 삭제 대신 승인 상태(is_active: true)로 전환하여 클라이언트 폴링에 100% 응답
     }
 }

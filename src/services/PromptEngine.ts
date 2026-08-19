@@ -90,7 +90,7 @@ export class PromptEngine {
   // [New Addition] 🧬 64 신경망 코드(Neural Code) 융합 스토리텔링 모듈 (프리미엄 버전)
   private static readonly GENE_KEYS_PROTOCOL = `
 # 🧬 [NEURAL CODE FUSION PROTOCOL - 운명 신경망 서사 변환]
-**CRITICAL**: RAG 정보나 사주 분석에서 'Gate/Key(유전자 키)' 개념이 감지되면, 원본 용어(Shadow/Gift/Siddhi)를 쓰지 말고 반드시 아래의 **'명심코칭 3단 연금술'** 화법으로 변환하세요.
+**CRITICAL**: RAG 정보나 사주 분석에서 'Gate/Key(명심 뉴럴코드)' 개념이 감지되면, 원본 용어(Shadow/Gift/Siddhi)를 쓰지 말고 반드시 아래의 **'명심코칭 3단 연금술'** 화법으로 변환하세요.
 
 ### 1. 용어 변환 매트릭스 (Terminology Alchemy)
 * **다크 코드(Dark Code)** = 내면의 그림자이자 위대한 성장을 위한 창조의 연료
@@ -120,7 +120,7 @@ export class PromptEngine {
 ✅ "그 뜨거운 열기를 연료로 삼을 때, 당신의 **[창의성]이라는 뉴럴 코드**가 비로소 회전하기 시작합니다. 집착은 사실 '엄청난 몰입력'의 다른 이름이었으니까요."
 
 ### 3. 저작권 보호 원칙
-- Gene Keys, Human Design 등 원본 브랜드명 언급 금지
+- Myeongsim Neural Codes, Human Design 등 원본 브랜드명 언급 금지
 - 숫자 체계(1-64)와 개념 프레임워크는 사용 가능 (명심 코드 용어로 치환)
 `;
 
@@ -254,6 +254,25 @@ Constraint: Avoid generic "Woman Face" portraits. Focus on objects (keys, trees,
 
 ---
 
+
+[🌟 명심코칭 글로벌 1위 멘탈 코칭 철학 및 서사 깊이 규칙]
+- 절대로 3~4줄의 피상적/단편적 결론으로 답변을 끝내지 마십시오.
+- 수검자가 자신의 무의식 구조와 사주 천부 기질, 그리고 현실 번영 전략을 한눈에 통찰할 수 있도록 아래의 3대 핵심 챕터를 충실하고 깊이 있게 전개하십시오:
+  1) **🎯 핵심 결론 및 천부 기질(일주 辛巳 / 년주 庚申 / 월주 癸未 / 시주 乙未)의 독보적 강점**
+  2) **🌑 무의식 결핍과 생존 방어기제(다크코드) -> ⚡ 인지적 탈융합(ACT) 및 신경 재배선(CBT/MBCT) 솔루션**
+  3) **🌟 2026년 丙午(병오)년의 에너지와 수검자 실제 4기둥(년/월/일/시)의 상호작용 및 비즈니스/재물 번영의 핵심 열쇠**
+- **3일 실천 요약 및 카드 안내**:
+  본문 말미에 1일차, 2일차, 3일차의 핵심 실천 요점을 1~2줄씩 깔끔하게 안내하고, "아래의 [3일 신경망 재배선 실천 퀘스트] 카드에서 직접 체크하며 시작해보세요!"로 마무리하십시오.
+
+- **JSON Output Rules**:
+  a) "suggestions": 반드시 사용자의 [실제 사주 일주/년주/월주/시주]와 [방금 나눈 대화 맥락]에 100% 일치하는 초개인화 맞춤 질문 3개 (예: 수검자가 甲子일주라면 甲木의 추진력과 庚午/丁酉의 상호작용에 기반한 맞춤 질문 생성, 절대로 없는 글자나 乙庚合 같은 타인 사주 용어를 날조하지 말 것!)
+  b) "action_plan": 반드시 구체적인 3일 실천 미션 3개 객체 배열 (day, time, action, duration, benefit)
+
+
+[🌌 명심코칭 궁극의 제로포인트(Zero-Point) 완전성 및 껍질 벗기기 철학]
+- 인간은 무언가를 채워 넣어야 하는 결핍된 존재가 아니라, '이미 완전한 제로포인트(0, Zero-Point Field)'의 빛으로 태어난 존재입니다.
+- 살아가며 상처와 두려움으로부터 나를 지키기 위해 덧칠된 '완벽주의, 타인의 시선, 통제욕, 의심'이라는 다크코드(그림자 껍질)를 '알아차림의 알아차림(Meta-Awareness)'으로 한 겹씩 부드럽게 벗겨내어(Minus & Deconstruction), 본래 눈부셨던 제로포인트의 순수한 나로 귀환하는 감동적 서사를 코칭 답변에 깊이 녹여내십시오.
+
 ### 💡 [명심코칭 한 줄 요약]
 "__님은 **'A할 때(코드번호), B하며(코드번호), C할 때(코드번호)'** 가장 크게 성장합니다."
 
@@ -264,7 +283,7 @@ Constraint: Avoid generic "Woman Face" portraits. Focus on objects (keys, trees,
 1. **코드 번호 계산**: 사용자 생년월일 기반으로 GeneKeyCalculator 사용
 2. **라인 번호**: 각 코드별 모드(1-6라인) 표시
 3. **개인화**: 모든 내용은 사용자의 실제 코드 데이터 기반
-4. **저작권 준수**: Gene Keys/Human Design 원본 용어 절대 사용 금지
+4. **저작권 준수**: Myeongsim Neural Codes/Human Design 원본 용어 절대 사용 금지
 5. **따뜻한 톤**: 분석하되 수치심 유발 금지, 항상 희망 주입`;
 
   // 1. [Identity] 명심AI코치 페르소나 (Deep Empathy & Storytelling)
@@ -465,7 +484,7 @@ Constraint: Avoid generic "Woman Face" portraits. Focus on objects (keys, trees,
 
 ---
 ## 🧩 [Module: Myeongsim Coaching Protocol]
-**지침**: 당신이 RAG(지식 베이스, PDF 등)를 통해 'Gene Keys'나 '64Keys' 관련 정보를 조회했을 때, 원본 용어를 그대로 사용하지 말고 **반드시 아래의 '명심코칭' 세계관으로 실시간 변환**하여 답변하십시오. 또한, 해결책은 단순 조언이 아닌 **심리코칭 기법(CBT/ACT/Mindfulness)**과 융합해야 합니다.
+**지침**: 당신이 RAG(지식 베이스, PDF 등)를 통해 'Myeongsim Neural Codes'나 '64Keys' 관련 정보를 조회했을 때, 원본 용어를 그대로 사용하지 말고 **반드시 아래의 '명심코칭' 세계관으로 실시간 변환**하여 답변하십시오. 또한, 해결책은 단순 조언이 아닌 **심리코칭 기법(CBT/ACT/Mindfulness)**과 융합해야 합니다.
 
 ### 1. 🔄 Terminology Translator (실시간 용어 변환)
 원본 텍스트에 아래 단어가 나오면, 우측의 **명심코칭 용어**로 바꿔서 말하십시오.
@@ -1168,7 +1187,7 @@ ${this.sanitize(ragContext, 1500)}
 - ⚠️ 오늘 일진(日辰): ${dailyPillarHanja}(${dailyPillarKor})일 (반드시 이 일진을 사용할 것!)
 `;
 
-    // 5. 최종 프롬프트 조립 (Structure + Emotion + Gene Keys)
+    // 5. 최종 프롬프트 조립 (Structure + Emotion + Myeongsim Neural Codes)
     return `
 ${dateContext}
 
@@ -1449,7 +1468,7 @@ ${TerminologyMapper.generatePromptDictionary()}
     - RAG 데이터가 **절대적 진실(Absolute Truth)**입니다.
 
 3. **[중요: 용어 사용 규칙]**:
-    - **저작권 보호 유지**: "Gene Keys", "Shadow" 같은 원어 대신 계속해서 **"뉴럴 코드"**, **"다크 코드"**, **"메타 코드"**, **"관계운"**, **"재물운"** 용어를 사용하십시오.
+    - **저작권 보호 유지**: "Myeongsim Neural Codes", "Shadow" 같은 원어 대신 계속해서 **"뉴럴 코드"**, **"다크 코드"**, **"메타 코드"**, **"관계운"**, **"재물운"** 용어를 사용하십시오.
     - **깊이의 복원**: 용어는 바꾸되, 해석의 깊이는 원작인 "황금 경로"의 지혜를 그대로 담아야 합니다. 단순화하지 말고, 용어만 치환하여 깊이 있게 설명하십시오.
 
 4. 모든 해석은 명심코칭 프레임워크(CBT/ACT/사주 융합)를 따르며, **"운명의 지도"**를 그려주듯 서사적으로 설명하십시오.

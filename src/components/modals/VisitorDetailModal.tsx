@@ -17,8 +17,8 @@ export default function VisitorDetailModal({
     isOpen,
     onClose,
     logs = [],
-    todayVisitorsCount = 1,
-    todayPageviewsCount = 1,
+    todayVisitorsCount = 0,
+    todayPageviewsCount = 0,
     onRefresh,
 }: VisitorDetailModalProps) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -111,7 +111,7 @@ export default function VisitorDetailModal({
                     <div className="p-3 bg-zinc-900/80 rounded-xl border border-purple-500/20">
                         <span className="text-[11px] text-zinc-400 block font-medium">최신 동선 추적</span>
                         <span className="text-xs font-bold text-purple-300 truncate block mt-1">
-                            {logs[0] ? `${logs[0].name} (${logs[0].pathname})` : '대기 중'}
+                            {logs[0] ? `${logs[0].name} (${logs[0].pathname})` : '오늘 방문자 없음'}
                         </span>
                     </div>
                 </div>
@@ -163,8 +163,10 @@ export default function VisitorDetailModal({
                     {/* Left: Visitor List */}
                     <div className="md:col-span-5 overflow-y-auto max-h-[500px] md:max-h-full p-4 space-y-2.5">
                         {filteredLogs.length === 0 ? (
-                            <div className="text-center py-12 text-zinc-500 text-xs">
-                                조건에 일치하는 실시간 방문자 기록이 없습니다.
+                            <div className="text-center py-16 text-zinc-500">
+                                <div className="text-3xl mb-3">🌙</div>
+                                <div className="text-sm font-semibold text-zinc-400">오늘 방문자 없음</div>
+                                <div className="text-xs mt-1">실제 방문자가 접속하면 여기에 실시간으로 표시됩니다.</div>
                             </div>
                         ) : (
                             filteredLogs.map(log => {

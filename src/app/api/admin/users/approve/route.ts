@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
             }, { onConflict: 'id' })
             .select();
 
-        // Also clean up from pending memory store
+        // Mark as approved in pending memory store as well
         removePendingWireTransfer(userId);
 
         return NextResponse.json({ success: true, tier, expiresAt: expiresAt!.toISOString() });

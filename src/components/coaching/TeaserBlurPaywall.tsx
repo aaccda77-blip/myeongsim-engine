@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Sparkles, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Lock, Sparkles, CheckCircle2, Building2 } from 'lucide-react';
+import { getContentLockStatus, incrementContentViewCount } from '@/lib/contentLockManager';
 
 interface TeaserBlurPaywallProps {
   title: string;
-  price?: number; // e.g. 890, 990, 1900
-  originalPrice?: number; // e.g. 9900
   freePreviewText?: string;
   freePreviewComponent?: React.ReactNode;
   lockedComponent: React.ReactNode;
@@ -17,23 +16,36 @@ interface TeaserBlurPaywallProps {
 
 export default function TeaserBlurPaywall({
   title,
-  price = 890, originalPrice = 9900,
   freePreviewText,
   freePreviewComponent,
   lockedComponent,
   onUnlock,
   isUnlockedDefault = false,
 }: TeaserBlurPaywallProps) {
-  const [isUnlocked, setIsUnlocked] = useState(isUnlockedDefault);
+  const [lockStatus, setLockStatus] = useState({ isLocked: false, isApproved: false, remainingViews: 3 });
+  const [hasRequestedApproval, setHasRequestedApproval] = useState(false);
 
-  const handleUnlockClick = () => {
-    if (onUnlock) {
-      onUnlock();
-    } else {
-      // Simulate micro-paywall unlock
-      setIsUnlocked(true);
+  useEffect(() => {
+    // 모달/리포트가 열릴 때마다 뷰 카운트 1 증가 후 열람 잠금 상태 확인
+    const updatedStatus = incrementContentViewCount();
+    setLockStatus(updatedStatus);
+  }, []);
+
+  const handleRequestApproval = async () => {
+    setHasRequestedApproval(true);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('myeongsim_approval_requested', 'true');
+      const userId = localStorage.getItem('myeongsim_user_id') || `guest-${Date.now()}`;
+      const userName = localStorage.getItem('myeongsim_user_name') || '수검자';
+      fetch('/api/payment/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, userName, tier: 'CHAT_3', amount: 890 })
+      }).catch(e => console.error("Payment request error:", e));
     }
   };
+
+  const isActuallyLocked = !isUnlockedDefault && !lockStatus.isApproved && lockStatus.isLocked;
 
   return (
     <div className="w-full relative space-y-4 text-left font-sans">
@@ -43,10 +55,10 @@ export default function TeaserBlurPaywall({
           <div className="flex items-center justify-between">
             <span className="text-xs font-black text-amber-300 flex items-center gap-1.5">
               <Sparkles size={14} className="text-amber-400" />
-              [무료 공개] {title} 핵심 자각 요약
+              [무료 요약] {title} 핵심 미리보기
             </span>
-            <span className="text-[10px] text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
-              0원 즉시 열람
+            <span className="text-[10px] text-amber-300 bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold">
+              {lockStatus.isApproved ? '관리자 승인 완료' : `열람 가능 ${lockStatus.remainingViews}회 남아있음`}
             </span>
           </div>
 
@@ -61,54 +73,47 @@ export default function TeaserBlurPaywall({
       )}
 
       {/* 2. Locked / Unlocked Content Area */}
-      <div className="relative rounded-2xl overflow-hidden min-h-[160px]">
-        {!isUnlocked ? (
+      <div className="relative rounded-2xl overflow-hidden min-h-[180px]">
+        {isActuallyLocked ? (
           <>
-            {/* Blurred Content Background */}
-            <div className="filter blur-md opacity-30 select-none pointer-events-none p-4 space-y-4 max-h-[280px] overflow-hidden bg-black/40 rounded-2xl border border-white/5">
+            {/* Blurred Content Background (마케팅을 활용한 딥 글래스모피즘 블러 효과) */}
+            <div className="filter blur-xl opacity-20 select-none pointer-events-none p-5 space-y-4 max-h-[320px] overflow-hidden bg-slate-950/90 rounded-2xl border border-white/5">
               {lockedComponent}
             </div>
 
-            {/* Paywall Lock Overlay Container */}
+            {/* Paywall Lock Overlay Container (무통장 입금 & 관리자 1:1 승인 시스템) */}
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center p-5 bg-gradient-to-t from-[#070A12] via-[#0A0E1A]/95 to-transparent rounded-2xl border border-amber-500/40 text-center shadow-[0_0_30px_rgba(245,158,11,0.2)]"
+              className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 bg-gradient-to-t from-slate-950 via-slate-950/95 to-slate-900/90 rounded-2xl border border-amber-500/50 text-center shadow-[0_0_40px_rgba(245,158,11,0.25)] backdrop-blur-md"
             >
-              <div className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 mb-2.5 shadow-[0_0_15px_rgba(245,158,11,0.3)] animate-pulse">
-                <Lock size={20} />
+              <div className="w-11 h-11 rounded-full bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-amber-300 mb-3 shadow-[0_0_20px_rgba(245,158,11,0.35)] animate-pulse">
+                <Lock size={22} />
               </div>
 
-              <h4 className="text-sm sm:text-base font-black text-white mb-1">
-                🔒 {title} 정밀 해독 열람
+              <h4 className="text-sm sm:text-base font-black text-amber-300 mb-1 flex items-center gap-1.5">
+                🔒 3회 컨텐츠 이용이 완료되었습니다.
               </h4>
-              <p className="text-xs text-gray-300 max-w-xs mb-3 leading-relaxed">
-                나의 본질 무의식 코드 70% 딥 해독 및 3단계 메타코드(제로포인트) 각성 솔루션이 잠겨 있습니다.
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                <strong>관리자 승인이 완료 되면 잠금이 해제되어 3회 추가 이용이 가능합니다.</strong>
               </p>
 
-              {/* Price Display */}
-              <div className="flex items-baseline justify-center gap-2 mb-3">
-                <span className="text-xs text-gray-400 line-through font-mono">정가 {originalPrice.toLocaleString()}원</span>
-                <span className="text-amber-400 font-extrabold text-xs">
-                  [{Math.round((1 - price / originalPrice) * 100)}% OFF]
-                </span>
-                <span className="text-2xl font-black font-mono text-white">{price.toLocaleString()}</span>
-                <span className="text-xs font-bold text-gray-300">원</span>
-              </div>
-
-              {/* CTA Unlock Button */}
-              <button
-                onClick={handleUnlockClick}
-                className="w-full max-w-xs py-3 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-xs sm:text-sm rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>{price.toLocaleString()}원에 1초 만에 전체 해독 열람하기</span>
-                <ArrowRight size={15} />
-              </button>
-
-              <div className="mt-2 text-[10px] text-amber-300/80 flex items-center gap-1">
-                <Zap size={11} className="fill-amber-300 text-amber-300" />
-                <span>오늘 결제 시 890원 3회 이용권 할인 쿠폰 즉시 발급</span>
-              </div>
+              {/* Approval Request Button */}
+              {!hasRequestedApproval ? (
+                <button
+                  type="button"
+                  onClick={handleRequestApproval}
+                  className="w-full max-w-sm py-3 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all transform active:scale-98"
+                >
+                  <CheckCircle2 size={16} />
+                  <span>관리자 승인 요청하기</span>
+                </button>
+              ) : (
+                <div className="w-full max-w-sm py-3 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2">
+                  <CheckCircle2 size={16} className="text-emerald-400" />
+                  <span>관리자 승인 대기 중 (승인 완료 시 3회 추가 이용 가능)</span>
+                </div>
+              )}
             </motion.div>
           </>
         ) : (

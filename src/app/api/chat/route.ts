@@ -1614,6 +1614,11 @@ Use the Action Plan provided as guidance, but express it in your own warm, conve
         SYSTEM_PROMPT += `
 ::: ACTOR_SCRIPT_FUSION:::
 
+
+[🚨 1:1 개인 맞춤형 동적 질문 선택지(Suggestions) 절대 규칙]
+- 절대로 예시나 템플릿에 나온 글자(예: 乙庚合 등)를 기계적으로 출력하지 마십시오.
+- 반드시 현재 접속한 사용자의 [실제 사주 4기둥 (${yearPillar}, ${monthPillar}, ${dayPillar}, ${hourPillar}) 및 일간 ${dayMasterKey}]에 실제로 존재하는 기운만을 바탕으로, 사용자의 방금 질문에 직결된 맞춤형 추천 질문 3가지를 'suggestions' 배열에 담으십시오.
+
 # 📊[사용자 사주 4기둥 데이터]
     | 기둥 | 글자 | 의미 | 활용 상황 |
 | ---| ---| ---| ---|
@@ -1663,7 +1668,7 @@ If user response implies "Burden/Suppression/Prison"(Stage 1):
 - ** Keywords to Detect **: "답답", "억압", "무기력", "메말랐다", "강박", "썩어갔다", "짐", "Burden"
     - ** Deepen **: Ask "To survive that burden (caused by [TenGod]), what mask did you wear?"
         - ** Analysis **: Use[Wunsung] texture to empathize with the specific feeling. 
-- ** MANDATORY SUGGESTIONS(JSON) **: You MUST provide these specific 3 options in the 'suggestions' field:
+- ** DYNAMIC CONTEXTUAL SUGGESTIONS(JSON) **: Create 3 deeply relevant, engaging next question options in the 'suggestions' field based directly on the user's current topic and your advice.
 ["🧘 완벽주의자 (Perfectionist)", "💪 독립투사 (Fighter)", "🎭 착한아이 (Good Child)"]
 
 If user response implies "Chaos/Conflict"(Stage 2):

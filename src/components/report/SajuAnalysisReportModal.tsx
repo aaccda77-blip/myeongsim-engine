@@ -6,6 +6,7 @@ import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju, calculateSajuStats } from '@/lib/saju/SajuEngine';
 import MyeongliTermModal from './MyeongliTermModal';
 import PaymentCard from '../chat/PaymentCard';
+import { incrementContentViewCount } from '@/lib/contentLockManager';
 
 interface SajuAnalysisReportModalProps {
     isOpen: boolean;
@@ -240,6 +241,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile, 
     // 모달이 켜질 때 오늘 이미 스캔을 마친 이력이 로컬스토리지에 있는지 판별하여 상태를 보존
     useEffect(() => {
         if (isOpen && typeof window !== 'undefined') {
+            incrementContentViewCount();
             const todayStr = new Date().toISOString().split('T')[0];
             const savedDate = localStorage.getItem('myeongsim_today_scan_date');
             const savedHz = localStorage.getItem('myeongsim_today_scan_hz');
@@ -995,13 +997,16 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile, 
                                     onClose();
                                     onOpenCoaching();
                                 } else {
-                                    setShowPaymentModal(true);
+                                    onClose();
+                                    if (typeof window !== 'undefined') {
+                                        window.location.href = '/myeongsim-chat';
+                                    }
                                 }
                             }}
                             className="w-full py-3.5 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl hover:shadow-amber-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                         >
                             <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
-                            <span>🔮 1:1 다각도 심층 명심 AI 코칭 받기 (🔒 890원) ➔</span>
+                            <span>🔮 1:1 명심 AI 코칭 연결하기 (무통장 입금 전용) ➔</span>
                         </button>
                         <p className="text-[9.5px] text-gray-500 font-medium">
                             * 본 리포트는 3세대 CBT 인지재구성 특허출원중(제10-2025-0166877호) 알고리즘으로 작성되었습니다.
@@ -1010,36 +1015,6 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile, 
 
                 </motion.div>
             </motion.div>
-
-            {/* 💳 890원 1:1 심층 AI 코칭 결제 및 상담 딥링크 모달 */}
-            {showPaymentModal && (
-                <div className="fixed inset-0 z-[10000] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
-                    <div className="relative w-full max-w-md bg-slate-950 border border-amber-500/40 rounded-3xl p-4 shadow-2xl space-y-3 text-left">
-                        <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                            <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
-                                <Sparkles className="w-4 h-4 text-amber-400" />
-                                <span>📜 [특허출원중 82% OFF] 시중가 <span className="line-through text-gray-400">5,000원</span> ➔ 890원</span>
-                            </div>
-                            <button 
-                                onClick={() => setShowPaymentModal(false)}
-                                className="text-gray-400 hover:text-white p-1 cursor-pointer"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-                        </div>
-
-                        <PaymentCard
-                            onDetailedReport={() => {
-                                setShowPaymentModal(false);
-                                onClose();
-                                if (typeof window !== 'undefined') {
-                                    window.location.href = '/myeongsim-chat';
-                                }
-                            }}
-                        />
-                    </div>
-                </div>
-            )}
 
             {/* 명리학 용어 상세 설명 모달 */}
             <MyeongliTermModal

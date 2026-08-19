@@ -2294,6 +2294,10 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                             if (parsedFullContent.reply) displayText = parsedFullContent.reply;
                                             if (parsedFullContent.analysis_data) analysisData = parsedFullContent.analysis_data;
                                             if (parsedFullContent.suggestions) suggestions = parsedFullContent.suggestions;
+                                            if (parsedFullContent.action_plan) {
+                                                if (!analysisData) analysisData = {};
+                                                analysisData.action_plan = parsedFullContent.action_plan;
+                                            }
                                         } catch (e) {
                                             // If strict JSON parse fails, try regex on the whole content as last resort
                                             // (This covers the case where separator is missing but JSON exists)

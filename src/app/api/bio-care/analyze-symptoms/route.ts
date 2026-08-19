@@ -142,7 +142,7 @@ ${symptomSummary}
         }
 
         const { text } = await generateText({
-            model: google('gemini-2.0-flash-exp') as any,
+            model: google('gemini-2.5-flash-exp') as any,
             prompt: prompt,
             temperature: 0.7,
         });
