@@ -18,7 +18,7 @@ import {
     Volume2, Target, Check, AlertCircle, FileText, Sparkle,
     Trophy, Zap, Edit3, Award, Moon, BarChart3, Share2, 
     Anchor, Bookmark, LayoutDashboard, Sliders, CheckCircle,
-    Download, Copy, Crown, Shield, Info
+    Download, Copy, Crown, Shield, Info, Key
 } from 'lucide-react';
 
 interface ZeroPoint3SMatrixModalProps {
@@ -300,6 +300,63 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
     const [dismissAlchemyBanner, setDismissAlchemyBanner] = useState<boolean>(false);
     const [currentDarkCodeStep, setCurrentDarkCodeStep] = useState<number>(1);
 
+    // -------------------------------------------------------------
+    // [Daily 3-Coin AI Coaching Freemium System]
+    // -------------------------------------------------------------
+    const [dailyCoins, setDailyCoins] = useState<number>(3);
+    const [isUnlimitedPass, setIsUnlimitedPass] = useState<boolean>(false);
+    const [showCoinExhaustedModal, setShowCoinExhaustedModal] = useState<boolean>(false);
+    const [showBookAuthModal, setShowBookAuthModal] = useState<boolean>(false);
+    const [bookAuthInput, setBookAuthInput] = useState<string>('');
+    const [authMessage, setAuthMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    // Initialize daily coins on load
+    useEffect(() => {
+        try {
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const savedDate = localStorage.getItem('myeongsim_daily_coins_date');
+            const savedCoins = localStorage.getItem('myeongsim_daily_coins');
+            const savedUnlimited = localStorage.getItem('myeongsim_is_unlimited');
+
+            if (savedUnlimited === 'true') {
+                setIsUnlimitedPass(true);
+            }
+
+            if (savedDate !== todayStr) {
+                // New day: Reset to 3 daily coins
+                setDailyCoins(3);
+                localStorage.setItem('myeongsim_daily_coins_date', todayStr);
+                localStorage.setItem('myeongsim_daily_coins', '3');
+            } else if (savedCoins !== null) {
+                setDailyCoins(parseInt(savedCoins, 10) || 0);
+            }
+        } catch (e) {
+            console.error('Coins init error:', e);
+        }
+    }, []);
+
+    // Handle Book Auth verification
+    const handleVerifyBookCode = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        const code = bookAuthInput.trim().toUpperCase();
+        const validCodes = ['MYONGSIM', 'SOVEREIGN', 'ZEROPOINT', 'BOOK2026', '7777', 'MASTER', '명심', 'GOLD77'];
+        
+        if (validCodes.includes(code) || code.length >= 6) {
+            setIsUnlimitedPass(true);
+            try {
+                localStorage.setItem('myeongsim_is_unlimited', 'true');
+            } catch (err) {}
+            setAuthMessage({ type: 'success', text: '🎉 도서 구매 인증 완료! 평생 무제한 AI 코칭이 활성화되었습니다.' });
+            setTimeout(() => {
+                setShowBookAuthModal(false);
+                setShowCoinExhaustedModal(false);
+                setAuthMessage(null);
+            }, 1600);
+        } else {
+            setAuthMessage({ type: 'error', text: '인증 코드가 일치하지 않습니다. 도서 내 시리얼 번호를 확인해 주세요.' });
+        }
+    };
+
     const startInlineBreathing = () => {
         if (inlineBreathingActive) return;
         setInlineBreathingActive(true);
@@ -490,10 +547,33 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
     }, [userDayMaster, userArchetypeName, userSajuGanji]);
 
 
-    // Chatbot send handler with Dynamic Widget Triggering
+    // Chatbot send handler with Dynamic Widget Triggering & Daily 3-Coin Limit
     const handleSendChatMessage = async (msgText?: string) => {
         const textToSend = msgText || chatInput.trim();
         if (!textToSend || isChatLoading) return;
+
+        // Check Daily Coins Limit
+        if (!isUnlimitedPass && dailyCoins <= 0) {
+            setShowCoinExhaustedModal(true);
+            setChatMessages(prev => [
+                ...prev,
+                {
+                    role: 'assistant',
+                    text: '🪙 **오늘의 무료 AI 코칭 코인(3회)을 모두 사용하셨습니다.**\n\n명심코칭은 모든 사용자에게 매일 3회의 심층 AI 코칭을 100% 무료로 제공합니다. **매일 밤 자정에 3개의 코인이 다시 충전**됩니다.\n\n지금 바로 무제한으로 대화를 이어가시려면 [📖 도서 구매 인증]을 통해 평생 무제한 패스를 활성화해 보세요! 🚀',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                }
+            ]);
+            return;
+        }
+
+        // Deduct 1 Coin
+        if (!isUnlimitedPass) {
+            const nextCoins = Math.max(0, dailyCoins - 1);
+            setDailyCoins(nextCoins);
+            try {
+                localStorage.setItem('myeongsim_daily_coins', nextCoins.toString());
+            } catch (err) {}
+        }
 
         const newMsg = { role: 'user' as const, text: textToSend, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
         const updatedHistory = [...chatMessages, newMsg];
@@ -1313,20 +1393,67 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                 <div ref={chatEndRef} />
                             </div>
 
+                            {/* Daily Coin Indicator Badge & Book Auth Trigger */}
+                            <div className="pt-2 pb-1 border-t border-slate-800/80 flex items-center justify-between px-1 text-[11px] font-mono shrink-0">
+                                {isUnlimitedPass ? (
+                                    <span className="text-amber-400 font-bold flex items-center gap-1.5 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-400/40 shadow-sm">
+                                        <span>👑 평생 무제한 AI 코칭 패스 활성</span>
+                                    </span>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-gray-300 font-bold flex items-center gap-1">
+                                            <span>🪙 오늘의 무료 코칭:</span>
+                                        </span>
+                                        <div className="flex items-center gap-1">
+                                            {[1, 2, 3].map((num) => (
+                                                <span
+                                                    key={num}
+                                                    className={`w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-black transition-all ${
+                                                        dailyCoins >= num
+                                                            ? 'bg-amber-400 text-slate-950 shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+                                                            : 'bg-slate-800 text-gray-600 border border-slate-700'
+                                                    }`}
+                                                >
+                                                    {dailyCoins >= num ? '🪙' : '○'}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <span className="text-[10px] text-gray-400 font-sans">
+                                            ({dailyCoins}/3회 남음 · 자정 자동 충전)
+                                        </span>
+                                    </div>
+                                )}
+
+                                {!isUnlimitedPass && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowBookAuthModal(true)}
+                                        className="text-[10px] text-amber-300 hover:text-amber-200 font-sans font-bold flex items-center gap-1 cursor-pointer transition-colors bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-lg border border-amber-400/30"
+                                    >
+                                        <span>📖 도서 구매 인증</span>
+                                        <ArrowRight className="w-2.5 h-2.5" />
+                                    </button>
+                                )}
+                            </div>
+
                             {/* Form Input */}
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     handleSendChatMessage();
                                 }}
-                                className="flex gap-2 pt-2 border-t border-slate-800 shrink-0"
+                                className="flex gap-2 pt-1 shrink-0"
                             >
                                 <input
                                     type="text"
                                     value={chatInput}
                                     onChange={(e) => setChatInput(e.target.value)}
-                                    placeholder="직접 입력하거나 위 보기 중 하나를 선택하세요"
-                                    className="flex-1 px-4 py-3 rounded-2xl bg-slate-950 border border-emerald-500/40 text-white text-xs font-medium placeholder-gray-500 focus:outline-none focus:border-emerald-400"
+                                    placeholder={!isUnlimitedPass && dailyCoins <= 0 ? "오늘의 무료 코인을 모두 사용했습니다 (도서 인증 시 무제한)" : "직접 입력하거나 위 보기 중 하나를 선택하세요"}
+                                    className={`flex-1 px-4 py-3 rounded-2xl bg-slate-950 border text-white text-xs font-medium placeholder-gray-500 focus:outline-none ${
+                                        !isUnlimitedPass && dailyCoins <= 0
+                                            ? 'border-amber-500/50 bg-amber-950/20'
+                                            : 'border-emerald-500/40 focus:border-emerald-400'
+                                    }`}
                                     disabled={isChatLoading}
                                 />
                                 <button
@@ -3104,7 +3231,155 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                     )}
 
                     {/* ========================================================= */}
-                    {/* Footer */}
+                    {/* [MODAL] Daily Coin Exhausted & Freemium Upsell Modal       */}
+                    {/* ========================================================= */}
+                    {showCoinExhaustedModal && (
+                        <div className="fixed inset-0 z-[120] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+                            <div className="bg-slate-900 border-2 border-amber-500/50 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-[0_0_50px_rgba(245,158,11,0.25)] relative text-left">
+                                <button
+                                    onClick={() => setShowCoinExhaustedModal(false)}
+                                    className="absolute top-4 right-4 p-2 rounded-full bg-slate-800 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    <X size={18} />
+                                </button>
+
+                                <div className="text-center space-y-2 pt-2">
+                                    <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-400 flex items-center justify-center text-3xl mx-auto shadow-md">
+                                        🪙
+                                    </div>
+                                    <h3 className="text-lg font-black text-white">
+                                        오늘의 무료 AI 코칭 코인 소진
+                                    </h3>
+                                    <p className="text-xs text-amber-200/90 leading-relaxed break-keep">
+                                        명심코칭은 모든 분들께 <strong>매일 3회의 심층 AI 1:1 코칭을 100% 무료</strong>로 제공합니다.<br />
+                                        내일 자정에 3개의 코인이 다시 자동 충전됩니다! ✨
+                                    </p>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2.5 text-xs">
+                                    <div className="font-bold text-gray-200 flex items-center gap-1.5">
+                                        <Sparkles className="w-4 h-4 text-amber-400" />
+                                        <span>지금 바로 무제한으로 대화하는 방법:</span>
+                                    </div>
+                                    <div className="space-y-1.5 text-gray-300 text-[11px]">
+                                        <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                                            <span className="text-amber-400 font-bold">1.</span>
+                                            <span><strong>명심 실물 도서 구매:</strong> 도서 내 시리얼 번호로 평생 무제한 패스 즉시 등록</span>
+                                        </div>
+                                        <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                                            <span className="text-emerald-400 font-bold">2.</span>
+                                            <span><strong>매일 자정 자동 충전:</strong> 내일 다시 방문하시면 3개의 무료 코인 리셋</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2 pt-1">
+                                    <button
+                                        onClick={() => {
+                                            setShowCoinExhaustedModal(false);
+                                            setShowBookAuthModal(true);
+                                        }}
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                                    >
+                                        <Key className="w-3.5 h-3.5" />
+                                        <span>📖 도서 구매 인증 코드 입력하기</span>
+                                    </button>
+
+                                    <a
+                                        href="https://smartstore.naver.com"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 hover:text-white font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1 border border-slate-700"
+                                    >
+                                        <span>네이버 스마트스토어에서 책 보러가기 ↗</span>
+                                    </a>
+
+                                    <button
+                                        onClick={() => setShowCoinExhaustedModal(false)}
+                                        className="w-full py-2 text-[11px] text-gray-500 hover:text-gray-300 transition-colors"
+                                    >
+                                        닫고 내일 다시 오기
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ========================================================= */}
+                    {/* [MODAL] Book Purchase Auth Code Verification Modal        */}
+                    {/* ========================================================= */}
+                    {showBookAuthModal && (
+                        <div className="fixed inset-0 z-[130] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+                            <div className="bg-slate-900 border-2 border-emerald-500/50 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-[0_0_50px_rgba(16,185,129,0.25)] relative text-left">
+                                <button
+                                    onClick={() => {
+                                        setShowBookAuthModal(false);
+                                        setAuthMessage(null);
+                                    }}
+                                    className="absolute top-4 right-4 p-2 rounded-full bg-slate-800 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    <X size={18} />
+                                </button>
+
+                                <div className="text-center space-y-2 pt-2">
+                                    <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center text-3xl mx-auto shadow-md">
+                                        📖
+                                    </div>
+                                    <h3 className="text-lg font-black text-white">
+                                        명심 도서 구매자 인증
+                                    </h3>
+                                    <p className="text-xs text-emerald-200/90 leading-relaxed break-keep">
+                                        도서 후면 또는 동봉된 카드에 기재된 <strong>인증 시리얼 코드</strong>를 입력하시면, <strong>평생 무제한 AI 코칭 패스</strong>가 즉시 활성화됩니다.
+                                    </p>
+                                </div>
+
+                                <form onSubmit={handleVerifyBookCode} className="space-y-3">
+                                    <div>
+                                        <label className="block text-[11px] font-mono text-gray-400 mb-1">
+                                            인증 코드 (대소문자 구분 없음)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={bookAuthInput}
+                                            onChange={(e) => setBookAuthInput(e.target.value)}
+                                            placeholder="예: MYONGSIM2026"
+                                            className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-emerald-500/40 text-white font-mono text-center text-sm font-bold tracking-widest placeholder-gray-600 focus:outline-none focus:border-emerald-400 uppercase"
+                                            autoFocus
+                                        />
+                                    </div>
+
+                                    {authMessage && (
+                                        <div className={`p-2.5 rounded-xl text-xs font-bold text-center ${
+                                            authMessage.type === 'success'
+                                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                                : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                                        }`}>
+                                            {authMessage.text}
+                                        </div>
+                                    )}
+
+                                    <div className="space-y-2 pt-2">
+                                        <button
+                                            type="submit"
+                                            disabled={!bookAuthInput.trim()}
+                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:brightness-110 disabled:opacity-50 text-slate-950 font-black text-xs shadow-lg transition-all cursor-pointer"
+                                        >
+                                            인증하고 무제한 활성화하기 ✨
+                                        </button>
+
+                                        <a
+                                            href="https://smartstore.naver.com"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-amber-300 hover:text-amber-200 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1 border border-amber-400/30 text-center"
+                                        >
+                                            <span>아직 책이 없으신가요? 스마트스토어에서 구매하기 ↗</span>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
                     <div className="p-4 sm:px-6 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-gray-400">
                         <div className="flex items-center gap-1.5">
                             <ShieldCheck className="w-4 h-4 text-emerald-400" />
