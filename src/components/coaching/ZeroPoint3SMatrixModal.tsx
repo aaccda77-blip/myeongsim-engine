@@ -224,7 +224,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
     }>>([
         {
             role: 'assistant',
-            text: '안녕하세요. 명심 제로포인트 3S 1:1 맞춤형 코치입니다.\n\n당신이 오랫동안 마주하기 두려워 방치해 두었던 **"진짜 본진 1순위 과제"**는 무엇인가요? 거대한 부담과 불안을 말씀해 주시면, 뇌의 과열을 끄고 즉시 [10분 마이크로 시동]을 켤 수 있도록 지휘해 드리겠습니다.\n\n**[B-minus 1-Tap 선택지]**\n* [A] 완벽하게 못 할 바엔 다 때려치우고 싶어요 ⚡\n* [B] 전 역시 의지박약인가 봐요 (자책감) 🌿\n* [C] 남 일 돕느라 내 본업이 방치됐어요 (구원자 트랩) 💡',
+            text: '안녕하세요! 명심 제로포인트 1:1 맞춤형 코치입니다.\n\n당신이 오랫동안 마주하기 두려워 방치해 두었던 **본진 1순위 과제**는 무엇인가요? 거대한 부담과 불안을 말씀해 주시면, 뇌의 과열을 끄고 즉시 [10분 마이크로 시동]을 켤 수 있도록 도와드리겠습니다.\n\n**[1단계 1-Tap 내면 상태 선택]**\n* [A] 완벽하게 해낼 각이 안 서서 착수를 망설이고 있어요 💎\n* [B] 할 일이 너무 많아 머릿속이 복잡하고 지쳤어요 🌿\n* [C] 자책감과 피로 때문에 시작 자체를 미루고 있어요 ⚡',
             time: '방금 전'
         }
     ]);
@@ -297,6 +297,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
     const [activeActionProtocol, setActiveActionProtocol] = useState<ActionCoachingProtocol | null>(null);
     const [showDeclineTemplateModal, setShowDeclineTemplateModal] = useState<boolean>(false);
     const [showAlchemyReportModal, setShowAlchemyReportModal] = useState<boolean>(false);
+    const [dismissAlchemyBanner, setDismissAlchemyBanner] = useState<boolean>(false);
     const [currentDarkCodeStep, setCurrentDarkCodeStep] = useState<number>(1);
 
     const startInlineBreathing = () => {
@@ -1343,41 +1344,53 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                     {/* [TAB 2] 에너지 대시보드 (Energy Dashboard)                */}
                     {/* ========================================================= */}
                     {activeTab === 'dashboard' && (
-                        <div className="p-5 sm:p-8 space-y-6 animate-fade-in">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4.5 rounded-3xl bg-gradient-to-r from-amber-950/70 via-slate-900 to-emerald-950/70 border-2 border-amber-400/40 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
-                                <div className="flex items-center gap-3.5">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-emerald-500 text-slate-950 flex items-center justify-center text-2xl font-black shadow-lg shrink-0">
-                                        {alchemyResult.emblemIcon}
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-400/40">
-                                                👑 뉴럴 코드 승급 완료 (Level-Up)
-                                            </span>
-                                            <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
-                                                주권 점수 {sovereignScore}점
-                                            </span>
+                        <div className="p-4 sm:p-7 space-y-5 animate-fade-in font-sans">
+                            {/* Compact Gold Promotion Banner with Dismiss Button */}
+                            {!dismissAlchemyBanner && (
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-950/60 via-slate-900 to-emerald-950/60 border border-amber-400/40 shadow-lg relative">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-emerald-500 text-slate-950 flex items-center justify-center text-xl font-black shadow-md shrink-0">
+                                            {alchemyResult.emblemIcon}
                                         </div>
-                                        <h3 className="text-base sm:text-lg font-black text-white mt-0.5 flex items-center gap-2">
-                                            <span>{alchemyResult.title}</span>
-                                        </h3>
-                                        <p className="text-xs text-amber-200/90 font-medium">
-                                            "소진형 해결사" ➔ <strong>"{alchemyResult.title.split('(')[0]}"</strong>로 승화 발현 중
-                                        </p>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/40">
+                                                    👑 뉴럴 코드 승급 완료
+                                                </span>
+                                                <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                                                    주권 {sovereignScore}점
+                                                </span>
+                                            </div>
+                                            <h3 className="text-sm sm:text-base font-black text-white mt-0.5">
+                                                {alchemyResult.title}
+                                            </h3>
+                                            <p className="text-[11px] text-amber-200/90 font-medium">
+                                                "소진형 해결사" ➔ <strong>{alchemyResult.title.split('(')[0].trim()}</strong>으로 승화 발현 중
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                                        <button
+                                            onClick={() => setShowAlchemyReportModal(true)}
+                                            className="px-3 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-amber-400/40 text-amber-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1 shadow-sm"
+                                        >
+                                            <span>📜 리포트 전문</span>
+                                            <ArrowRight className="w-3 h-3" />
+                                        </button>
+                                        <button
+                                            onClick={() => setDismissAlchemyBanner(true)}
+                                            className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                            title="배너 닫기"
+                                        >
+                                            <X size={14} />
+                                        </button>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => setShowAlchemyReportModal(true)}
-                                    className="px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-amber-400/40 text-amber-300 text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
-                                >
-                                    <span>📜 리포트 카드 전문 보기</span>
-                                    <ArrowRight className="w-3 h-3" />
-                                </button>
-                            </div>
+                            )}
 
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h3 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                                    <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
                                         <span>에너지 환류 & 자기 주권 대시보드</span>
                                         <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
                                             LIVE SYNC
@@ -1389,70 +1402,89 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                 </div>
                             </div>
 
-                            {/* 3 Core Metric Cards */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div className="p-5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1 relative overflow-hidden">
+                            {/* 3 Core Metric Cards (Mobile Overflow-Free Single Line Subtext) */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                                <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1 relative overflow-hidden">
                                     <div className="text-[10px] text-gray-400 font-mono font-bold uppercase">
                                         회수한 자기 주권 시간
                                     </div>
                                     <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">
                                         +{totalReclaimedMins} <span className="text-xs font-sans text-gray-400">MIN</span>
                                     </div>
-                                    <p className="text-[10px] text-emerald-300/80">
-                                        남의 위기에서 내 본진으로 환류된 시간
+                                    <p className="text-[10px] text-emerald-300/80 truncate">
+                                        남의 위기에서 내 본진으로 환류
                                     </p>
                                 </div>
 
-                                <div className="p-5 rounded-2xl bg-slate-950/80 border border-cyan-500/30 space-y-1 relative overflow-hidden">
+                                <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/80 border border-cyan-500/30 space-y-1 relative overflow-hidden">
                                     <div className="text-[10px] text-gray-400 font-mono font-bold uppercase">
                                         다크코드 방어 횟수
                                     </div>
                                     <div className="text-2xl sm:text-3xl font-black text-cyan-400 font-mono">
                                         {darkCodeBlocksCount} <span className="text-xs font-sans text-gray-400">회</span>
                                     </div>
-                                    <p className="text-[10px] text-cyan-300/80">
+                                    <p className="text-[10px] text-cyan-300/80 truncate">
                                         회피 및 충동 개입 유혹 선제 차단
                                     </p>
                                 </div>
 
-                                <div className="p-5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1 relative overflow-hidden">
+                                <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1 relative overflow-hidden">
                                     <div className="text-[10px] text-gray-400 font-mono font-bold uppercase">
-                                        자기 주권 점수 (Sovereign)
+                                        자기 주권 점수 (SOVEREIGN)
                                     </div>
                                     <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono">
                                         {sovereignScore} <span className="text-xs font-sans text-gray-400">/ 100점</span>
                                     </div>
-                                    <p className="text-[10px] text-amber-300/80">
-                                        안정 궤도 진입 (상위 5% 에너지 보존)
+                                    <p className="text-[10px] text-amber-300/80 truncate">
+                                        안정 궤도 (상위 5% 보존)
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Recent Session Logs */}
-                            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                            {/* Recent Session Logs with Explicit Tag Badges & Time Reconciliation */}
+                            <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
                                 <div className="text-xs font-bold text-gray-300 flex items-center justify-between">
-                                    <span>📋 최근 환류 세션 타임라인</span>
+                                    <span className="flex items-center gap-1.5">
+                                        <span>📋 최근 환류 세션 타임라인</span>
+                                        <span className="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">총 +{totalReclaimedMins} MIN</span>
+                                    </span>
                                     <span className="text-[10px] text-gray-500 font-mono">자동 저장됨</span>
                                 </div>
 
                                 <div className="space-y-2">
-                                    {sessionLogs.map((log) => (
-                                        <div key={log.id} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between text-xs">
-                                            <div className="space-y-0.5">
-                                                <div className="font-bold text-gray-200">{log.task}</div>
-                                                <div className="text-[10px] text-gray-400 italic">{log.note}</div>
+                                    {sessionLogs.map((log) => {
+                                        const isDarkCodeBlock = log.task.includes('타인') || log.task.includes('개입') || log.note?.includes('남 일');
+                                        const isMicroFocus = log.task.includes('시동') || log.task.includes('작성') || log.task.includes('기획서');
+
+                                        return (
+                                            <div key={log.id} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between text-xs gap-2">
+                                                <div className="space-y-1 min-w-0">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                                                            isDarkCodeBlock 
+                                                                ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' 
+                                                                : isMicroFocus 
+                                                                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' 
+                                                                : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                                        }`}>
+                                                            {isDarkCodeBlock ? '🛡️ 다크코드 차단' : isMicroFocus ? '⚡ 마이크로 시동' : '🎯 주권 집중'}
+                                                        </span>
+                                                        <span className="font-bold text-gray-200 truncate">{log.task}</span>
+                                                    </div>
+                                                    <div className="text-[10px] text-gray-400 italic pl-1">{log.note}</div>
+                                                </div>
+                                                <div className="text-right shrink-0 font-mono pl-2">
+                                                    <div className="text-emerald-400 font-bold">+{log.durationMin} MIN</div>
+                                                    <div className="text-[10px] text-gray-500">{log.date}</div>
+                                                </div>
                                             </div>
-                                            <div className="text-right shrink-0 font-mono">
-                                                <div className="text-emerald-400 font-bold">+{log.durationMin} MIN</div>
-                                                <div className="text-[10px] text-gray-500">{log.date}</div>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
 
                             {/* [NEW] 📊 야간 9시 웰니스 푸시 타겟팅 성과 분석 대시보드 */}
-                            <div className="pt-2">
+                            <div className="pt-1">
                                 <PushComparisonDashboard />
                             </div>
                         </div>

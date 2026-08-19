@@ -32,7 +32,7 @@ export interface TransmutedSuperpower {
 export const ARCHETYPE_REGISTRY: Record<string, Omit<TransmutedSuperpower, "subTitle" | "sovereigntyScore">> = {
     ARCHITECT: {
         archetypeId: "ARCHITECT",
-        title: "시스템 바운더리 아키텍트 (Boundary Architect)",
+        title: "시스템 경계선 아키텍트 (System Boundary Architect)",
         emblemIcon: "🏛️",
         shadowPattern: {
             fromDarkCode: "타인의 위기까지 혼자 밤새워 떠안는 과잉 책임감",
@@ -50,7 +50,7 @@ export const ARCHETYPE_REGISTRY: Record<string, Omit<TransmutedSuperpower, "subT
 
     PRECISION_MASTER: {
         archetypeId: "PRECISION_MASTER",
-        title: "하이 프리시전 마스터 (High-Precision Master)",
+        title: "초정밀 장인 마스터 (High-Precision Master)",
         emblemIcon: "💎",
         shadowPattern: {
             fromDarkCode: "100점이 아니면 착수조차 거부하는 완벽주의 및 자책",
@@ -68,7 +68,7 @@ export const ARCHETYPE_REGISTRY: Record<string, Omit<TransmutedSuperpower, "subT
 
     STRATEGIC_SAFEGUARD: {
         archetypeId: "STRATEGIC_SAFEGUARD",
-        title: "스트래티직 리스크 세이프가드 (Strategic Safeguard)",
+        title: "전략적 위험 방어 아키텍트 (Strategic Risk Safeguard)",
         emblemIcon: "🛡️",
         shadowPattern: {
             fromDarkCode: "모든 변수를 틀어쥐려다 신경계가 과열되는 통제 강박",
@@ -86,7 +86,7 @@ export const ARCHETYPE_REGISTRY: Record<string, Omit<TransmutedSuperpower, "subT
 
     DEEP_INNOVATOR: {
         archetypeId: "DEEP_INNOVATOR",
-        title: "딥 인큐베이션 이노베이터 (Incubation Innovator)",
+        title: "심층 본질 혁신가 (Deep Incubation Innovator)",
         emblemIcon: "🔮",
         shadowPattern: {
             fromDarkCode: "막막함에 압도되어 딴짓을 하거나 도망치는 회피/미루기",
@@ -104,7 +104,7 @@ export const ARCHETYPE_REGISTRY: Record<string, Omit<TransmutedSuperpower, "subT
 
     EMPATHY_CATALYST: {
         archetypeId: "EMPATHY_CATALYST",
-        title: "휴먼 엠파시 카탈리스트 (Empathy Catalyst)",
+        title: "공감 임파워먼트 촉진가 (Empathy Catalyst)",
         emblemIcon: "🌿",
         shadowPattern: {
             fromDarkCode: "거절하지 못해 남의 감정 쓰레기통 역할을 자처하는 소진형 공감",
