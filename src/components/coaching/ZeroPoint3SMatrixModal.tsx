@@ -18,7 +18,7 @@ import {
     Volume2, Target, Check, AlertCircle, FileText, Sparkle,
     Trophy, Zap, Edit3, Award, Moon, BarChart3, Share2, 
     Anchor, Bookmark, LayoutDashboard, Sliders, CheckCircle,
-    Download, Copy
+    Download, Copy, Crown, Shield, Info
 } from 'lucide-react';
 
 interface ZeroPoint3SMatrixModalProps {
@@ -942,11 +942,11 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                         </span>
                                         <button
                                             onClick={() => setShowRarityModal(true)}
-                                            className="ml-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/25 via-emerald-500/25 to-amber-500/25 hover:from-amber-500/40 hover:to-emerald-500/40 text-amber-300 hover:text-amber-200 text-[10px] font-black border border-amber-400/50 transition-all cursor-pointer inline-flex items-center gap-1 shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:scale-105 group"
-                                            title="518,400개 사주 조합 중 통계학적 희소성 분석 보기"
+                                            className="ml-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 via-slate-800 to-amber-500/20 hover:from-amber-500/30 hover:to-amber-500/30 text-amber-300 hover:text-amber-200 text-[10px] font-black border border-amber-400/40 transition-all cursor-pointer inline-flex items-center gap-1 shadow-sm hover:scale-105 group"
+                                            title="518,400개 사주 조합 구조 및 인지 행동 프로파일 보기"
                                         >
-                                            <Sparkles className="w-3 h-3 text-amber-400 animate-spin" style={{ animationDuration: '4s' }} />
-                                            <span>👑 상위 {sajuRarityInfo.percent}% 희소 명식</span>
+                                            <Sparkles className="w-3 h-3 text-amber-400" />
+                                            <span>📊 사주 구조 프로파일 ({sajuRarityInfo.rarityPercent}%)</span>
                                             <ArrowRight className="w-2.5 h-2.5 text-amber-400/70 group-hover:translate-x-0.5 transition-transform" />
                                         </button>
                                     </div>
@@ -2275,115 +2275,138 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                     )}
 
                     {/* ========================================================= */}
-                    {/* [NEW] 🔬 518,400 사주 통계학 & 신경심리 희소성 메트릭스 모달   */}
+                    {/* [NEW] 🔬 518,400 사주 구조 분석 & 인지 행동 프로파일 모달     */}
                     {/* ========================================================= */}
                     {showRarityModal && (
-                        <div className="fixed inset-0 z-[4300] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in font-sans">
-                            <div className="bg-[#0b0f19] border-2 border-amber-500/50 rounded-3xl w-full max-w-xl max-h-[85vh] overflow-y-auto p-6 sm:p-7 shadow-[0_0_90px_rgba(245,158,11,0.3)] relative text-white space-y-5 custom-scrollbar">
+                        <div className="fixed inset-0 z-[4300] flex items-center justify-center bg-black/90 backdrop-blur-md p-3 sm:p-5 animate-fade-in font-sans">
+                            <div className="bg-[#0a0f1d] border border-amber-500/40 rounded-3xl w-full max-w-xl max-h-[88vh] overflow-y-auto p-5 sm:p-7 shadow-[0_0_80px_rgba(245,158,11,0.25)] relative text-white space-y-5 custom-scrollbar text-left">
+                                
                                 {/* Header */}
-                                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                                <div className="flex items-center justify-between border-b border-slate-800/80 pb-3.5">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg text-lg">
-                                            👑
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/20 to-teal-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 font-black shadow-md text-lg">
+                                            📊
                                         </div>
                                         <div>
-                                            <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
-                                                <span>사주 조합 통계학적 희소성 인덱스</span>
-                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold">
-                                                    Top {sajuRarityInfo.percent}%
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/40">
+                                                    {sajuRarityInfo.rarityCategory}
                                                 </span>
+                                                <span className="text-[10px] text-gray-400 font-mono">
+                                                    표본 약 {sajuRarityInfo.sampleCount.toLocaleString()}개 / 518,400개
+                                                </span>
+                                            </div>
+                                            <h3 className="text-base sm:text-lg font-black text-white mt-0.5">
+                                                사주 구조 분석 & 인지 행동 프로파일
                                             </h3>
-                                            <p className="text-xs text-gray-400 font-mono">
-                                                전체 518,400가지 시공간 명식 매트릭스 정밀 통계
-                                            </p>
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => setShowRarityModal(false)}
-                                        className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                        className="p-2 rounded-full bg-slate-800/80 hover:bg-slate-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
                                     >
                                         <X size={18} />
                                     </button>
                                 </div>
 
-                                {/* Main Highlight Card */}
-                                <div className="p-4.5 rounded-2xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-emerald-950/40 border border-amber-500/40 space-y-2.5 shadow-inner">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs font-mono text-amber-300 font-bold">
-                                            ✨ {sajuRarityInfo.tierName}
-                                        </span>
-                                        <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-md border border-emerald-500/30">
-                                            희소 표본: 약 {sajuRarityInfo.countInTotal.toLocaleString()}개 / 518,400개
-                                        </span>
+                                {/* Main Structural Profile Card */}
+                                <div className="p-4.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2 shadow-inner">
+                                    <div className="text-[11px] font-mono font-bold text-amber-300 flex items-center gap-1.5">
+                                        <Crown className="w-3.5 h-3.5 text-amber-400" />
+                                        <span>{sajuRarityInfo.archetypeTitle}</span>
                                     </div>
-                                    <div className="text-sm font-black text-white leading-relaxed">
-                                        "{userSajuGanji}" 명식은 60갑자 연월일시의 518,400가지 조합 중 <strong className="text-amber-300 underline decoration-amber-400 decoration-2 underline-offset-4">상위 {sajuRarityInfo.percent}%</strong>에 해당하는 독보적 잠재력의 사주입니다.
+                                    <div className="text-xs sm:text-sm font-bold text-slate-100 leading-relaxed font-sans">
+                                        "{userSajuGanji}" 명식은 518,400개 조합 중 약 <span className="text-amber-300 font-extrabold">{sajuRarityInfo.rarityPercent}%</span> 구간의 고유 조합군입니다.
                                     </div>
-                                    <p className="text-xs text-gray-300 leading-relaxed break-keep">
-                                        {sajuRarityInfo.specialtyDesc}
+                                    <p className="text-xs text-gray-300 leading-relaxed font-sans pt-0.5">
+                                        {sajuRarityInfo.structureSummary}
                                     </p>
                                 </div>
 
-                                {/* 4-Dimension Metric Bars */}
-                                <div className="space-y-3 pt-1 text-xs">
-                                    <h4 className="text-xs font-black text-emerald-300 flex items-center gap-1.5">
-                                        <Activity className="w-3.5 h-3.5" />
-                                        <span>4대 신경심리 & 역학 메트릭스 정밀 지수</span>
-                                    </h4>
-
-                                    {/* Metric 1 */}
-                                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
-                                        <div className="flex justify-between font-mono text-[11px]">
-                                            <span className="text-gray-300">1. 시공간 조합 희소성 (Combinatorial Rarity)</span>
-                                            <span className="text-amber-400 font-bold">상위 {sajuRarityInfo.percent}% (518,400개 중)</span>
-                                        </div>
-                                        <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full" style={{ width: `${100 - sajuRarityInfo.percent}%` }} />
-                                        </div>
+                                {/* 🌟 1. 고유 강점 자산 (Core Strengths - 2개) */}
+                                <div className="space-y-2.5">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="font-bold text-emerald-300 flex items-center gap-1.5">
+                                            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                                            <span>고유 강점 자산 (Core Strengths)</span>
+                                        </span>
+                                        <span className="text-[10px] text-gray-400 font-mono">100점 만점 역량 스케일</span>
                                     </div>
 
-                                    {/* Metric 2 */}
-                                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
-                                        <div className="flex justify-between font-mono text-[11px]">
-                                            <span className="text-gray-300">2. 오행 에너지 순환 완결도 (Five-Element Synergy)</span>
-                                            <span className="text-emerald-400 font-bold">{sajuRarityInfo.synergyScore}% (전체 평균 64.2%)</span>
-                                        </div>
-                                        <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style={{ width: `${sajuRarityInfo.synergyScore}%` }} />
-                                        </div>
-                                    </div>
-
-                                    {/* Metric 3 */}
-                                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
-                                        <div className="flex justify-between font-mono text-[11px]">
-                                            <span className="text-gray-300">3. 전두엽 개척 및 집행력 (Executive Function)</span>
-                                            <span className="text-cyan-400 font-bold">상위 {sajuRarityInfo.executivePercent}%</span>
-                                        </div>
-                                        <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-400 rounded-full" style={{ width: `${100 - sajuRarityInfo.executivePercent}%` }} />
-                                        </div>
-                                    </div>
-
-                                    {/* Metric 4 */}
-                                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
-                                        <div className="flex justify-between font-mono text-[11px]">
-                                            <span className="text-gray-300">4. 시스템 혁신 및 사회적 임팩트 (Impact Potential)</span>
-                                            <span className="text-purple-400 font-bold">상위 {sajuRarityInfo.impactPercent}%</span>
-                                        </div>
-                                        <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-purple-500 to-pink-400 rounded-full" style={{ width: `${100 - sajuRarityInfo.impactPercent}%` }} />
-                                        </div>
+                                    <div className="space-y-2">
+                                        {sajuRarityInfo.strengths.map((str, idx) => (
+                                            <div key={idx} className="p-3.5 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold flex items-center justify-center border border-emerald-500/40">
+                                                            {idx + 1}
+                                                        </span>
+                                                        <span className="text-xs font-bold text-white font-sans">{str.title}</span>
+                                                    </div>
+                                                    <span className="text-xs font-black font-mono text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded-md border border-emerald-500/40">
+                                                        {str.score}점
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-emerald-100/90 leading-relaxed font-sans pl-6">
+                                                    {str.description}
+                                                </p>
+                                                <div className="pl-6 pt-1 text-[11px] text-gray-400 font-mono">
+                                                    🔍 <strong>산출 근거:</strong> {str.mechanism}
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
 
-                                {/* Scientific Footnote */}
-                                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-[11px] text-gray-400 leading-relaxed text-center font-sans">
-                                    💡 <strong>산출 공식:</strong> 60갑자 사주 4주 순열(60 × 12 × 60 × 12 = 518,400) × 일간 오행 통근 계수 × 관인상생 격국 가중치를 신경과학적 집행 기능 지표와 결합하여 산출되었습니다.
+                                {/* 🌟 2. 주의해야 할 인지/행동 리스크 (Cognitive Risks & Shadow - 객관성 확보) */}
+                                <div className="space-y-2.5 pt-1">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="font-bold text-rose-300 flex items-center gap-1.5">
+                                            <Shield className="w-3.5 h-3.5 text-rose-400" />
+                                            <span>주의해야 할 인지/행동 리스크 (Shadow Bias)</span>
+                                        </span>
+                                        <span className="text-[10px] text-rose-400 font-mono font-bold">자가 점검 필수</span>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        {sajuRarityInfo.risks.map((risk, idx) => (
+                                            <div key={idx} className="p-3.5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-4 h-4 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold flex items-center justify-center border border-rose-500/40">
+                                                            !
+                                                        </span>
+                                                        <span className="text-xs font-bold text-rose-200 font-sans">{risk.title}</span>
+                                                    </div>
+                                                    <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                                                        {risk.riskLevel}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-gray-300 leading-relaxed font-sans pl-6">
+                                                    {risk.pattern}
+                                                </p>
+                                                <div className="pl-6 pt-1 text-[11px] text-amber-300/90 font-sans bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                                                    💡 <strong>완화 솔루션:</strong> {risk.mitigationStrategy}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* 3. 투명한 인과관계 및 산출 원리 (Footnote) */}
+                                <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-1 text-xs text-gray-400 font-sans leading-relaxed">
+                                    <div className="text-[11px] font-bold text-gray-300 flex items-center gap-1.5">
+                                        <Info className="w-3.5 h-3.5 text-cyan-400" />
+                                        <span>분석 기준 및 신뢰성 안내</span>
+                                    </div>
+                                    <p className="text-[11px] text-gray-400 leading-relaxed">
+                                        {sajuRarityInfo.calculationRationale}
+                                    </p>
                                 </div>
 
                                 <button
                                     onClick={() => setShowRarityModal(false)}
-                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-emerald-600 text-slate-950 font-black text-xs shadow-lg hover:brightness-110 transition-all cursor-pointer"
+                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:opacity-95 text-slate-950 font-black text-xs shadow-lg transition-all cursor-pointer"
                                 >
                                     확인 완료 및 1:1 맞춤 코칭 계속하기
                                 </button>
