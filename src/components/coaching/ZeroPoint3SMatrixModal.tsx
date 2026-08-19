@@ -2525,8 +2525,14 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         </span>
                                                         <span className="text-xs font-bold text-white font-sans">{str.title}</span>
                                                     </div>
-                                                    <span className="text-[11px] font-black font-mono text-emerald-300 bg-emerald-950/90 px-2 py-0.5 rounded-md border border-emerald-500/40">
-                                                        ✨ 핵심 {str.score}점
+                                                    <span className={`text-[11px] font-black font-mono px-2 py-0.5 rounded-md border ${
+                                                        str.score >= 80 
+                                                            ? 'text-amber-300 bg-amber-950/90 border-amber-500/40' 
+                                                            : str.score <= 50 
+                                                            ? 'text-cyan-300 bg-cyan-950/90 border-cyan-500/40' 
+                                                            : 'text-emerald-300 bg-emerald-950/90 border-emerald-500/40'
+                                                    }`}>
+                                                        {str.score >= 80 ? `✨ 핵심 ${str.score}점` : str.score <= 50 ? `🌊 조후용신 ${str.score}점` : `🌿 안정 ${str.score}점`}
                                                     </span>
                                                 </div>
 

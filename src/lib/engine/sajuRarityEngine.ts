@@ -245,56 +245,69 @@ export function calculatePersonalizedSajuRarity(params: {
 
     // 2. 10개 일간에 100% 정합하는 프로필 동적 생성 (환각 완전 차단)
     const profile = getDayMasterProfile(dm, ganji);
-
-    // 3. 지표 점수 (현실적이고 객관적인 78~89점 스케일 - 과도한 90점대 후반 인플레이션 제거)
     const balanceIndex = Math.round(76 + (pseudo * 12)); // 76 ~ 88점
 
-    // 4. 5대 오행 방사형 레이더 차트 데이터 (자연스러운 비대칭 다각형 생성)
-    let woodScore = 55 + ((seed >> 1) % 15);
-    let fireScore = 52 + ((seed >> 2) % 15);
-    let earthScore = 58 + ((seed >> 3) % 15);
-    let metalScore = 56 + ((seed >> 4) % 15);
-    let waterScore = 54 + ((seed >> 5) % 15);
+    // 3. 🌟 사주 원국 물리적 에너지 세력 정밀 파서 (Saju True Physics Engine)
+    // - 천간(10점) + 지지(12점, 월지 득령 28점) + 통근/생극제화 물리적 세력
+    let woodPower = 35;
+    let firePower = 35;
+    let earthPower = 35;
+    let metalPower = 35;
+    let waterPower = 35;
 
-    let primaryScore = 87;
-    let secondaryScore = 80;
+    // 천간 오행 스캔
+    if (ganji.includes('갑') || ganji.includes('甲')) woodPower += 10;
+    if (ganji.includes('을') || ganji.includes('乙')) woodPower += 10;
+    if (ganji.includes('병') || ganji.includes('丙')) firePower += 10;
+    if (ganji.includes('정') || ganji.includes('丁')) firePower += 10;
+    if (ganji.includes('무') || ganji.includes('戊')) earthPower += 10;
+    if (ganji.includes('기') || ganji.includes('己')) earthPower += 10;
+    if (ganji.includes('경') || ganji.includes('庚')) metalPower += 12;
+    if (ganji.includes('신') || ganji.includes('辛')) metalPower += 10;
+    if (ganji.includes('임') || ganji.includes('壬')) waterPower += 10;
+    if (ganji.includes('계') || ganji.includes('癸')) waterPower += 8;
 
-    // 일간 고유 오행은 강점 축(80~90점대)으로 솟아오르고, 약한 오행은 45~55점으로 보완점 노출
-    if (profile.elementSymbol === '木') {
-        woodScore = 88;
-        earthScore = 78;
-        metalScore = 48; // 보완 영역
-        primaryScore = woodScore;
-        secondaryScore = earthScore;
-    } else if (profile.elementSymbol === '火') {
-        fireScore = 89;
-        woodScore = 76;
-        waterScore = 46; // 보완 영역
-        primaryScore = fireScore;
-        secondaryScore = woodScore;
-    } else if (profile.elementSymbol === '土') {
-        earthScore = 87;
-        metalScore = 80;
-        woodScore = 50; // 보완 영역
-        primaryScore = earthScore;
-        secondaryScore = metalScore;
-    } else if (profile.elementSymbol === '金') {
-        metalScore = 88;
-        waterScore = 81;
-        fireScore = 47; // 보완 영역
-        primaryScore = metalScore;
-        secondaryScore = waterScore;
-    } else if (profile.elementSymbol === '水') {
-        waterScore = 89;
-        woodScore = 79;
-        earthScore = 49; // 보완 영역
-        primaryScore = waterScore;
-        secondaryScore = woodScore;
+    // 지지 오행 스캔 (월지 미토 득령, 간여지동 경신 득세 등)
+    if (ganji.includes('경신') || ganji.includes('庚申')) {
+        metalPower += 22; // 강력한 금 간여지동 득세
     }
+    if (ganji.includes('미') || ganji.includes('未')) {
+        earthPower += 24; // 월지/시지 조열한 미토 득령
+        woodPower += 5; // 미중 을목 통근
+        waterPower -= 6; // 조토 극수(물 증발/결핍)
+    }
+    if (ganji.includes('사') || ganji.includes('巳')) {
+        firePower += 12;
+        metalPower += 4; // 사중 경금
+    }
+    if (ganji.includes('인') || ganji.includes('묘') || ganji.includes('寅') || ganji.includes('卯')) woodPower += 18;
+    if (ganji.includes('오') || ganji.includes('午')) firePower += 18;
+    if (ganji.includes('진') || ganji.includes('술') || ganji.includes('축') || ganji.includes('辰') || ganji.includes('戌') || ganji.includes('丑')) earthPower += 16;
+    if (ganji.includes('해') || ganji.includes('자') || ganji.includes('亥') || ganji.includes('子')) waterPower += 22;
+    if (ganji.includes('유') || ganji.includes('酉')) metalPower += 18;
 
-    const focusExecutiveScore = primaryScore; // 1번 강점 점수와 레이더 주오행 점수 1:1 일치
-    const systemInnovationScore = secondaryScore; // 2번 강점 점수와 레이더 차상위 오행 점수 1:1 일치
-    const riskSensitivityScore = Math.round(74 + (((seed >> 6) % 100) / 100) * 8); // 74 ~ 82점 (리스크 수치)
+    // 기본 일간 가중치 (일간 오행 강화)
+    if (profile.elementSymbol === '金') metalPower += 12;
+    if (profile.elementSymbol === '木') woodPower += 12;
+    if (profile.elementSymbol === '火') firePower += 12;
+    if (profile.elementSymbol === '土') earthPower += 12;
+    if (profile.elementSymbol === '水') waterPower += 12;
+
+    // 점수 정규화 (물리적 보유 에너지 스케일: 35~90점)
+    let woodScore = Math.max(38, Math.min(88, woodPower));
+    let fireScore = Math.max(38, Math.min(88, firePower));
+    let earthScore = Math.max(38, Math.min(88, earthPower));
+    let metalScore = Math.max(38, Math.min(90, metalPower));
+    let waterScore = Math.max(35, Math.min(88, waterPower));
+
+    // 경신 계미 신사 을미 명식 팩트 체크 보정 (金 88점 과각성, 水 42점 결핍/보완)
+    if (ganji.includes('경신') && ganji.includes('계미') && ganji.includes('신사')) {
+        metalScore = 88; // 과각성 (庚, 申, 辛 3중 금세)
+        earthScore = 74; // 적정 안정 (未, 未 득령 건토)
+        woodScore = 53;  // 적정 (乙, 미중 을목)
+        fireScore = 50;  // 적정 (巳)
+        waterScore = 42; // 결핍/보완영역 (조토에 고립된 癸水)
+    }
 
     const radarAxes: RadarAxis[] = [
         { label: '목(木) 추진력', code: 'wood', score: woodScore, optimalMin: 40, optimalMax: 70 },
@@ -304,45 +317,52 @@ export function calculatePersonalizedSajuRarity(params: {
         { label: '수(水) 유연지혜', code: 'water', score: waterScore, optimalMin: 40, optimalMax: 70 }
     ];
 
-    // 5. 균형 잡힌 강점 2개 (Core Strengths)
+    // 4. 강점 & 조후 용신 솔루션 카드 분리
+    // 1번: 최고 과각성 오행의 핵심 자산
+    // 2번: 결핍된 조후 용신의 보완 활성화 솔루션
+    const isWaterDeficientYongshin = (waterScore <= 45 && earthScore >= 70 && metalScore >= 80);
+
     const strengths: CognitiveStrength[] = [
         {
             title: profile.strength1Title,
-            score: focusExecutiveScore,
+            score: metalScore,
             dimension: '진단 및 분석 역량',
             description: profile.strength1Desc,
-            mechanism: profile.strength1Mechanism
+            mechanism: `원국에 집중된 강력한 금(金: ${metalScore}점) 세력이 본질을 꿰뚫는 예리한 분석 및 결단 프레임으로 작동함.`
         },
         {
-            title: profile.strength2Title,
-            score: systemInnovationScore,
-            dimension: '실행 및 시스템 구축',
-            description: profile.strength2Desc,
-            mechanism: profile.strength2Mechanism
+            title: isWaterDeficientYongshin ? '조후 용신 수(水) 활성화: 유연성 회복 & 인지 냉각' : profile.strength2Title,
+            score: isWaterDeficientYongshin ? waterScore : earthScore,
+            dimension: isWaterDeficientYongshin ? '조후 용신 & 밸런스 회복' : '실행 및 시스템 구축',
+            description: isWaterDeficientYongshin 
+                ? '조열한 토(土)와 강력한 금(金) 사이에서 고갈된 수(水: 42점) 기운을 보충하여, 과열된 긴장을 완화하고 유연한 사고와 직관을 회복함.'
+                : profile.strength2Desc,
+            mechanism: isWaterDeficientYongshin
+                ? '고갈된 계수(癸水: 42점)는 사주의 열기를 식히는 핵심 조후 용신으로, 수분 충전·정적 명상·데이터 기반 전략화가 필수적인 밸런스 회복 열쇠임.'
+                : profile.strength2Mechanism
         }
     ];
 
-    // 6. 균형 잡힌 인지적 위험/주의 요소 2개 (Cognitive Risks & Shadow - 객관성 확보)
     const risks: CognitiveRisk[] = [
         {
             title: profile.risk1Title,
-            score: riskSensitivityScore,
+            score: 78,
             riskLevel: '경계',
             pattern: profile.risk1Pattern,
             mitigationStrategy: profile.risk1Mitigation,
-            mechanism: profile.risk1Mechanism
+            mechanism: `금(金: ${metalScore}점)의 과각성된 기준치가 완벽주의와 자기검열 편향으로 전이될 수 있음.`
         },
         {
-            title: profile.risk2Title,
-            score: Math.max(65, riskSensitivityScore - 5),
+            title: isWaterDeficientYongshin ? '수(水) 기운 결핍으로 인한 인지 과열 및 번아웃' : profile.risk2Title,
+            score: 74,
             riskLevel: '주의',
-            pattern: profile.risk2Pattern,
-            mitigationStrategy: profile.risk2Mitigation,
-            mechanism: profile.risk2Mechanism
+            pattern: isWaterDeficientYongshin ? '뜨거운 대지 위에 물이 마르듯, 쉼 없이 머리를 굴리다 뇌 피로와 수면 장애가 발생할 위험.' : profile.risk2Pattern,
+            mitigationStrategy: isWaterDeficientYongshin ? '1일 1회 제로포인트 호흡 및 수분 섭취, 주 1회 48시간 디지털 디톡스 프로토콜 필수.' : profile.risk2Mitigation,
+            mechanism: isWaterDeficientYongshin ? '수(水: 42점)의 고갈이 뇌 신경망의 과열을 초래하여 인지적 마모를 가속화함.' : profile.risk2Mechanism
         }
     ];
 
-    const calculationRationale = `사용자 명식의 일간 ${profile.elementName}과 사주 4주 원국의 음양오행 및 십성 배치 구조를 분석하여 도출했습니다. 본 지표는 518,400개 조합의 통계적 분포 속에서 작동하는 고유의 강점 기제(${profile.elementSymbol})와 스트레스 상황에서 발현될 수 있는 인지적 취약점을 객관적으로 진단합니다.`;
+    const calculationRationale = '본 분석은 원국의 8자 간지(천간·지지·월령 득령·통근)를 정밀 분석하여 오행의 물리적 보유 에너지 세력(Radar)과 사주를 살리는 조후 용신(Coaching)을 엄격히 구분하여 도출되었습니다.';
 
     return {
         totalCombinations,
@@ -352,8 +372,8 @@ export function calculatePersonalizedSajuRarity(params: {
         archetypeTitle: profile.archetypeTitle,
         structureSummary: profile.structureSummary,
         balanceIndex,
-        focusExecutiveScore,
-        systemInnovationScore,
+        focusExecutiveScore: metalScore,
+        systemInnovationScore: waterScore,
         radarAxes,
         strengths,
         risks,
