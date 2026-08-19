@@ -775,21 +775,29 @@ export default function SoulArchivePage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#03060c] text-slate-100 font-sans p-4 sm:p-8 flex flex-col items-center selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div className="w-full min-h-screen bg-[#02040b] text-slate-100 font-sans p-3 sm:p-6 md:p-8 flex flex-col items-center selection:bg-amber-500/30 selection:text-amber-200 relative overflow-x-hidden">
       
+      {/* ── 우주적 앰비언트 오로라 배경 오라 ── */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-amber-500/10 via-purple-500/5 to-transparent rounded-full blur-[140px]" />
+        <div className="absolute top-[35%] left-[-15%] w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[130px]" />
+        <div className="absolute top-[65%] right-[-15%] w-[600px] h-[600px] bg-rose-500/5 rounded-full blur-[130px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(#ffffff05_1px,transparent_1px)] [background-size:24px_24px] opacity-70" />
+      </div>
+
       {/* ── 클립보드 복사 토스트 ── */}
       {copiedToast && (
-        <div className="fixed top-6 z-50 px-5 py-3 rounded-2xl bg-emerald-500 text-slate-950 text-xs font-bold shadow-2xl flex items-center gap-2 animate-bounce">
-          <CheckCircle2 className="w-4 h-4" />
+        <div className="fixed top-6 z-50 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 text-xs font-black shadow-[0_0_30px_rgba(52,211,153,0.6)] flex items-center gap-2.5 animate-bounce border border-white/40">
+          <CheckCircle2 className="w-4 h-4 text-slate-950" />
           <span>성공적으로 클립보드에 복사되었습니다!</span>
         </div>
       )}
 
       {/* 🔮 [생년월일 실시간 직접 변경 모달 - SajuEngine 만세력 연동] */}
       {showEditModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in">
-          <div className="relative w-full max-w-md rounded-3xl bg-gradient-to-b from-[#161f33] to-[#080d1a] border border-amber-500/60 p-6 sm:p-7 shadow-[0_0_50px_rgba(245,158,11,0.4)] space-y-5 text-left">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4 animate-fade-in">
+          <div className="relative w-full max-w-md rounded-3xl bg-gradient-to-b from-[#131b2e] via-[#0b1222] to-[#040812] border border-amber-500/60 p-6 sm:p-7 shadow-[0_0_60px_rgba(245,158,11,0.45)] space-y-5 text-left">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3.5">
               <div className="flex items-center gap-2 text-amber-300 text-sm font-bold font-mono">
                 <Calendar className="w-4 h-4 text-amber-400" />
                 <span>명심 천명 ✕ 사주 만세력 1:1 연동</span>
@@ -802,7 +810,7 @@ export default function SoulArchivePage() {
               </button>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-xs text-gray-300 font-medium">이름 / 닉네임</label>
                 <input
@@ -825,7 +833,7 @@ export default function SoulArchivePage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-gray-300 font-medium">태어난 시간 (선택)</label>
+                <label className="text-xs text-gray-300 font-medium">태어난 시간 (HH:MM)</label>
                 <input
                   type="time"
                   value={inputTime}
@@ -833,31 +841,20 @@ export default function SoulArchivePage() {
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700 text-sm text-white focus:border-amber-400 outline-none"
                 />
               </div>
-
-              {/* 실시간 SajuEngine 연산 결과 미리보기 */}
-              <div className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-200 text-xs font-mono space-y-1.5">
-                <div className="text-[11px] font-bold text-amber-300">⚡ 정통 SajuEngine 만세력 연산:</div>
-                <div className="text-sm font-bold text-white">
-                  👉 {getCleanSajuInfo(inputDob, inputTime).dayPillarKo}({getCleanSajuInfo(inputDob, inputTime).dayPillarHanja})일주 · {getCleanSajuInfo(inputDob, inputTime).ganName}
-                </div>
-                <div className="text-[10px] text-gray-400">
-                  년주 {getCleanSajuInfo(inputDob, inputTime).yearPillarKo}({getCleanSajuInfo(inputDob, inputTime).yearPillarHanja}) · 월주 {getCleanSajuInfo(inputDob, inputTime).monthPillarKo}({getCleanSajuInfo(inputDob, inputTime).monthPillarHanja}) · 시주 {getCleanSajuInfo(inputDob, inputTime).timePillarKo}({getCleanSajuInfo(inputDob, inputTime).timePillarHanja})
-                </div>
-              </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div className="flex gap-2 pt-2">
               <button
-                onClick={() => setShowEditModal(false)}
-                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 font-bold text-xs cursor-pointer"
+                onClick={() => handleApplyNewProfile("강미숙", "1980-07-07", "13:40")}
+                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 text-xs font-bold transition-colors cursor-pointer border border-slate-700"
               >
-                취소
+                신사일주로 리셋
               </button>
               <button
                 onClick={() => handleApplyNewProfile(inputName, inputDob, inputTime)}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-95 text-slate-950 font-black text-xs transition-colors cursor-pointer shadow-lg"
+                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-95 text-slate-950 text-xs font-black transition-all cursor-pointer shadow-lg shadow-amber-500/20"
               >
-                1:1 맞춤 천명 코드 즉시 반영하기
+                만세력 즉시 동기화
               </button>
             </div>
           </div>
@@ -1003,10 +1000,10 @@ export default function SoulArchivePage() {
         </div>
       )}
 
-      {/* 🔮 [1차 AI 듀얼 모드 심층 팝업 모달] */}
+      {/* 🔮 [1차 AI 3단 탭 심층 팝업 모달] */}
       {modalItem && (
-        <div className="fixed inset-0 z-40 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4">
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-gradient-to-b from-[#0e1626] to-[#080d1a] border border-amber-500/50 p-6 sm:p-8 shadow-[0_0_50px_rgba(245,158,11,0.35)] space-y-5 text-left">
+        <div className="fixed inset-0 z-40 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-5">
+          <div className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl bg-gradient-to-b from-[#0e1628] via-[#090f1d] to-[#040711] border border-amber-500/50 p-5 sm:p-8 shadow-[0_0_70px_rgba(245,158,11,0.4)] space-y-5 text-left">
             
             <button 
               onClick={() => setModalItem(null)}
@@ -1015,27 +1012,29 @@ export default function SoulArchivePage() {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="space-y-2 border-b border-slate-800 pb-4">
+            <div className="space-y-2.5 border-b border-slate-800/90 pb-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold border border-amber-500/40">
-                    명심 AI 심층 천명 리딩
+                  <span className="px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/25 to-yellow-500/15 text-amber-300 text-[10px] font-mono font-bold border border-amber-500/40 shadow-[0_0_12px_rgba(245,158,11,0.2)]">
+                    명심 천명 아카이브 VIP 리딩
                   </span>
                   <span className="text-xs text-gray-400 font-mono">{modalItem.category}</span>
                 </div>
                 <HexagramLines lines={modalItem.hexLines} color="amber" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+
+              <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
                 <span>{modalItem.title}</span>
               </h2>
-              <p className="text-xs text-emerald-400 font-medium">"{modalItem.oneLiner}"</p>
+              <p className="text-xs text-emerald-400 font-medium font-sans">"{modalItem.oneLiner}"</p>
 
+              {/* 3단 탭 스위처 바 */}
               <div className="pt-2 flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => setModalMode('expert')}
-                  className={`flex-1 min-w-[140px] py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`flex-1 min-w-[130px] py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     modalMode === 'expert'
-                      ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                      ? 'bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.4)] font-black'
                       : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
                   }`}
                 >
@@ -1045,9 +1044,9 @@ export default function SoulArchivePage() {
 
                 <button
                   onClick={() => setModalMode('beginner')}
-                  className={`flex-1 min-w-[130px] py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`flex-1 min-w-[130px] py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     modalMode === 'beginner'
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 shadow-md font-black'
+                      ? 'bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 shadow-[0_0_15px_rgba(52,211,153,0.4)] font-black'
                       : 'bg-white/5 text-emerald-300 hover:bg-white/10 border border-emerald-500/30'
                   }`}
                 >
@@ -1057,9 +1056,9 @@ export default function SoulArchivePage() {
 
                 <button
                   onClick={() => setModalMode('business')}
-                  className={`flex-1 min-w-[150px] py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`flex-1 min-w-[150px] py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     modalMode === 'business'
-                      ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-amber-600 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] font-black'
+                      ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-amber-600 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.6)] font-black'
                       : 'bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/40'
                   }`}
                 >
@@ -1072,12 +1071,12 @@ export default function SoulArchivePage() {
             {/* 🌟 1. 전문가 모드 (주역 효사 & 사주 정합성) */}
             {modalMode === 'expert' && (
               <div className="space-y-4 animate-fade-in">
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                <div className="p-4.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5 shadow-inner">
                   <div className="flex items-center gap-2 text-amber-300 text-xs font-bold font-mono">
-                    <BookOpen className="w-4 h-4" />
+                    <BookOpen className="w-4 h-4 text-amber-400" />
                     <span>명심 천명 효사 & 괘의 본질</span>
                   </div>
-                  <p className="text-xs font-serif text-amber-100/90 leading-relaxed bg-amber-950/20 p-2.5 rounded-xl border border-amber-500/20">
+                  <p className="text-xs font-serif text-amber-100/95 leading-relaxed bg-amber-950/20 p-3 rounded-xl border border-amber-500/25">
                     "{modalItem.hexagramVerse}"
                   </p>
                   <p className="text-xs text-gray-300 leading-relaxed pt-1 font-sans whitespace-pre-line">
@@ -1085,10 +1084,10 @@ export default function SoulArchivePage() {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
+                <div className="p-4.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/35 space-y-2">
                   <div className="flex items-center gap-2 text-indigo-300 text-xs font-bold font-mono">
-                    <UserCheck className="w-4 h-4" />
-                    <span>{userName} 님 사주 원국 ({sajuInfo.dayPillarKo}({sajuInfo.dayPillarHanja})일주 · {sajuInfo.ganName}) 1:1 맞춤 정합성</span>
+                    <UserCheck className="w-4 h-4 text-indigo-400" />
+                    <span>{userName} 님 사주 4주 원국 ({sajuInfo.yearPillarKo}·{sajuInfo.monthPillarKo}·{sajuInfo.dayPillarKo}·{sajuInfo.timePillarKo}) 1:1 맞춤 정합성</span>
                   </div>
                   <p className="text-xs text-indigo-100/90 leading-relaxed font-sans whitespace-pre-line">
                     {modalItem.sajuAlignment}
@@ -1098,49 +1097,49 @@ export default function SoulArchivePage() {
                 <div className="space-y-2.5 text-xs">
                   <div 
                     onClick={() => openEssay('dark')}
-                    className="p-3 rounded-xl bg-red-950/25 border border-red-500/25 text-red-200 cursor-pointer hover:border-red-400 transition-colors flex items-center justify-between"
+                    className="p-3.5 rounded-2xl bg-red-950/25 border border-red-500/30 text-red-200 cursor-pointer hover:border-red-400 transition-all hover:bg-red-950/40 flex items-center justify-between shadow-sm"
                   >
                     <div>
-                      <strong className="text-red-400 block font-mono text-[10px] mb-0.5">🛡️ 1. 다크코드 (과거의 낡은 보디가드):</strong>
-                      <p>{modalItem.darkCode}</p>
+                      <strong className="text-red-400 block font-mono text-[10px] mb-0.5">🛡️ 1. 다크코드 (과거의 낡은 방어기제):</strong>
+                      <p className="leading-relaxed">{modalItem.darkCode}</p>
                     </div>
-                    <span className="text-[10px] text-red-300 underline font-sans shrink-0 ml-2">치유 에세이 ↗</span>
+                    <span className="text-[10px] text-red-300 underline font-sans shrink-0 ml-3">치유 에세이 ↗</span>
                   </div>
 
                   <div 
                     onClick={() => openEssay('neural')}
-                    className="p-3 rounded-xl bg-emerald-950/25 border border-emerald-500/25 text-emerald-200 cursor-pointer hover:border-emerald-400 transition-colors flex items-center justify-between"
+                    className="p-3.5 rounded-2xl bg-emerald-950/25 border border-emerald-500/30 text-emerald-200 cursor-pointer hover:border-emerald-400 transition-all hover:bg-emerald-950/40 flex items-center justify-between shadow-sm"
                   >
                     <div>
-                      <strong className="text-emerald-400 block font-mono text-[10px] mb-0.5">✨ 2. 뉴럴코드 (고유의 천부적 주권 무기):</strong>
-                      <p>{modalItem.neuralCode}</p>
+                      <strong className="text-emerald-400 block font-mono text-[10px] mb-0.5">✨ 2. 뉴럴코드 (천부적 주권 무기):</strong>
+                      <p className="leading-relaxed">{modalItem.neuralCode}</p>
                     </div>
-                    <span className="text-[10px] text-emerald-300 underline font-sans shrink-0 ml-2">성장 에세이 ↗</span>
+                    <span className="text-[10px] text-emerald-300 underline font-sans shrink-0 ml-3">성장 에세이 ↗</span>
                   </div>
 
                   <div 
                     onClick={() => openEssay('meta')}
-                    className="p-3 rounded-xl bg-gradient-to-r from-purple-950/40 via-amber-950/30 to-indigo-950/40 border border-amber-500/40 text-amber-200 cursor-pointer hover:border-amber-400 transition-colors flex items-center justify-between"
+                    className="p-3.5 rounded-2xl bg-gradient-to-r from-purple-950/40 via-amber-950/30 to-indigo-950/40 border border-amber-500/40 text-amber-200 cursor-pointer hover:border-amber-400 transition-all hover:opacity-95 flex items-center justify-between shadow-sm"
                   >
                     <div>
                       <strong className="text-amber-300 block font-mono text-[10px] mb-0.5 flex items-center gap-1">
                         <Sparkles className="w-3 h-3 text-amber-400" />
                         <span>3. 메타코드 (제로포인트 대자유 & 초의식):</span>
                       </strong>
-                      <p className="font-serif text-amber-100/90">{modalItem.metaCode}</p>
+                      <p className="font-serif text-amber-100/95 leading-relaxed">{modalItem.metaCode}</p>
                     </div>
-                    <span className="text-[10px] text-amber-300 underline font-sans shrink-0 ml-2">초의식 에세이 ↗</span>
+                    <span className="text-[10px] text-amber-300 underline font-sans shrink-0 ml-3">초의식 에세이 ↗</span>
                   </div>
                 </div>
 
                 <div 
                   onClick={() => openSolutionModal(modalItem)}
-                  className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 hover:border-amber-400 text-amber-200 text-xs font-mono cursor-pointer transition-all hover:bg-amber-500/25 flex items-center justify-between shadow-sm"
+                  className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 hover:border-amber-400 text-amber-200 text-xs font-mono cursor-pointer transition-all hover:bg-amber-500/25 flex items-center justify-between shadow-md"
                 >
                   <div>
                     👉 <strong className="text-amber-300">천명 번영 실행 솔루션 코칭:</strong> {modalItem.actionTip}
                   </div>
-                  <span className="text-[10px] text-amber-300 underline font-sans shrink-0 ml-2">상세 풀이 팝업 ↗</span>
+                  <span className="text-[10px] text-amber-300 underline font-sans shrink-0 ml-2">상세 가이드 팝업 ↗</span>
                 </div>
               </div>
             )}
@@ -1148,7 +1147,7 @@ export default function SoulArchivePage() {
             {/* 🌟 2. 초보자 모드 (쉬운 일상 비유 & 실천) */}
             {modalMode === 'beginner' && (
               <div className="space-y-4 animate-fade-in">
-                <div className="p-4 rounded-2xl bg-emerald-950/25 border border-emerald-500/40 space-y-1.5 shadow-inner">
+                <div className="p-4.5 rounded-2xl bg-emerald-950/25 border border-emerald-500/40 space-y-1.5 shadow-inner">
                   <div className="flex items-center gap-1.5 text-emerald-300 text-xs font-bold font-mono">
                     <Lightbulb className="w-4 h-4 text-emerald-400" />
                     <span>💡 한눈에 쏙 들어오는 쉬운 일상 비유</span>
@@ -1161,12 +1160,12 @@ export default function SoulArchivePage() {
                 <div className="space-y-3 text-xs">
                   <div 
                     onClick={() => openEssay('dark')}
-                    className="p-3.5 rounded-2xl bg-red-950/25 border border-red-500/35 hover:border-red-400 text-red-200 space-y-1 cursor-pointer transition-all hover:bg-red-950/40 shadow-sm"
+                    className="p-4 rounded-2xl bg-red-950/25 border border-red-500/35 hover:border-red-400 text-red-200 space-y-1.5 cursor-pointer transition-all hover:bg-red-950/40 shadow-sm"
                   >
                     <div className="flex items-center justify-between text-red-400 font-mono text-[11px] font-bold">
                       <span>🛡️ 1. 다크코드: {modalItem.easyDarkTitle}</span>
                       <span className="text-[10px] text-red-300 underline font-sans flex items-center gap-1">
-                        <span>📖 감동 치유 에세이 열기</span>
+                        <span>📖 감동 치유 에세이</span>
                         <span>↗</span>
                       </span>
                     </div>
@@ -1175,12 +1174,12 @@ export default function SoulArchivePage() {
 
                   <div 
                     onClick={() => openEssay('neural')}
-                    className="p-3.5 rounded-2xl bg-emerald-950/25 border border-emerald-500/35 hover:border-emerald-400 text-emerald-200 space-y-1 cursor-pointer transition-all hover:bg-emerald-950/40 shadow-sm"
+                    className="p-4 rounded-2xl bg-emerald-950/25 border border-emerald-500/35 hover:border-emerald-400 text-emerald-200 space-y-1.5 cursor-pointer transition-all hover:bg-emerald-950/40 shadow-sm"
                   >
                     <div className="flex items-center justify-between text-emerald-400 font-mono text-[11px] font-bold">
                       <span>✨ 2. 뉴럴코드: {modalItem.easyNeuralTitle}</span>
                       <span className="text-[10px] text-emerald-300 underline font-sans flex items-center gap-1">
-                        <span>📖 감동 성장 에세이 열기</span>
+                        <span>📖 감동 성장 에세이</span>
                         <span>↗</span>
                       </span>
                     </div>
@@ -1189,7 +1188,7 @@ export default function SoulArchivePage() {
 
                   <div 
                     onClick={() => openEssay('meta')}
-                    className="p-3.5 rounded-2xl bg-gradient-to-r from-purple-950/40 via-amber-950/30 to-indigo-950/40 border border-amber-500/40 hover:border-amber-400 text-amber-200 space-y-1 cursor-pointer transition-all hover:opacity-95 shadow-sm"
+                    className="p-4 rounded-2xl bg-gradient-to-r from-purple-950/40 via-amber-950/30 to-indigo-950/40 border border-amber-500/40 hover:border-amber-400 text-amber-200 space-y-1.5 cursor-pointer transition-all hover:opacity-95 shadow-sm"
                   >
                     <div className="flex items-center justify-between text-amber-300 font-mono text-[11px] font-bold">
                       <span className="flex items-center gap-1">
@@ -1197,7 +1196,7 @@ export default function SoulArchivePage() {
                         <span>3. 메타코드: {modalItem.easyMetaTitle}</span>
                       </span>
                       <span className="text-[10px] text-amber-300 underline font-sans flex items-center gap-1">
-                        <span>📖 초의식 에세이 열기</span>
+                        <span>📖 초의식 에세이</span>
                         <span>↗</span>
                       </span>
                     </div>
@@ -1222,7 +1221,7 @@ export default function SoulArchivePage() {
               <div className="space-y-4 animate-fade-in text-left">
                 
                 {/* 1. 한 줄 직업 정체성 배너 */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 border border-amber-500/50 space-y-2 shadow-lg">
+                <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 border border-amber-500/50 space-y-2.5 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
                   <div className="flex items-center justify-between text-[11px] font-mono font-bold text-amber-300">
                     <span className="flex items-center gap-1.5">
                       <Crown className="w-4 h-4 text-amber-400" />
@@ -1246,30 +1245,36 @@ export default function SoulArchivePage() {
                 </div>
 
                 {/* 2. 직업적 3단계 메커니즘 인터랙티브 플로우 */}
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   <div className="text-xs font-mono font-bold text-gray-300 flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
                     <span>⚡ 천명 연금술 직업적 3단계 메커니즘 (Business Mechanism)</span>
                   </div>
 
                   {/* 1단계: 진단 영역 (Analyst) */}
-                  <div className="p-4 rounded-2xl bg-blue-950/30 border border-blue-500/40 space-y-1.5">
+                  <div className="relative p-4.5 rounded-2xl bg-gradient-to-r from-blue-950/40 to-slate-950/60 border border-blue-500/40 space-y-1.5 shadow-md">
                     <div className="flex items-center justify-between text-blue-300 font-mono text-xs font-bold">
-                      <span>{businessBmResult?.stage1Title || "1단계: 감수(坎水) — 문제와 병목의 포착 (진단 영역)"}</span>
-                      <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] border border-blue-500/40 font-mono">
+                      <span className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-300 flex items-center justify-center text-[10px] border border-blue-500/40">1</span>
+                        <span>{businessBmResult?.stage1Title || "1단계: 감수(坎水) — 문제와 병목의 포착 (진단 영역)"}</span>
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] border border-blue-500/40 font-mono">
                         {businessBmResult?.stage1Role || "진단자 (Analyst)"}
                       </span>
                     </div>
-                    <p className="text-xs text-blue-100/90 leading-relaxed font-sans">
+                    <p className="text-xs text-blue-100/90 leading-relaxed font-sans pl-7">
                       {businessBmResult?.stage1Desc || "사람들이 어디서 불안해하고, 어떤 인지적·현실적 오류에 갇혀(속박) 에너지를 낭비하는지 본능적으로 꿰뚫어 봅니다. 복잡하게 꼬인 실타래의 '핵심 매듭'을 찾아내는 진단자(Analyst)의 역할입니다."}
                     </p>
                   </div>
 
                   {/* 2단계: 솔루션 영역 (Solution Architect) */}
-                  <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/40 space-y-1.5">
+                  <div className="relative p-4.5 rounded-2xl bg-gradient-to-r from-purple-950/40 to-slate-950/60 border border-purple-500/40 space-y-1.5 shadow-md">
                     <div className="flex items-center justify-between text-purple-300 font-mono text-xs font-bold">
-                      <span>{businessBmResult?.stage2Title || "2단계: 진뢰(震雷) — 급소 타격과 프레임워크 (솔루션 영역)"}</span>
-                      <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] border border-purple-500/40 font-mono">
+                      <span className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center text-[10px] border border-purple-500/40">2</span>
+                        <span>{businessBmResult?.stage2Title || "2단계: 진뢰(震雷) — 급소 타격과 프레임워크 (솔루션 영역)"}</span>
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] border border-purple-500/40 font-mono">
                         {businessBmResult?.stage2Role || "설계자 (Solution Architect)"}
                       </span>
                     </div>
