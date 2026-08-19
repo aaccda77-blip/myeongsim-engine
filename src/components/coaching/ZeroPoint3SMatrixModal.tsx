@@ -847,7 +847,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     </span>
                                 </div>
                                 <p className="text-xs text-emerald-300/80 mt-0.5">
-                                    AI 오케스트레이터 챗봇 ➔ 에너지 대시보드 ➔ 포커스 랩 ➔ 소버린 아카이브
+                                    실시간 인지 행동 조율 및 포커스 시스템
                                 </p>
                             </div>
                         </div>
@@ -883,7 +883,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                             }`}
                         >
                             <Brain className="w-4 h-4 shrink-0" />
-                            <span className="truncate">Tab 1. 코칭 룸</span>
+                            <span className="truncate">코칭 룸</span>
                         </button>
 
                         <button
@@ -895,7 +895,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                             }`}
                         >
                             <LayoutDashboard className="w-4 h-4 shrink-0" />
-                            <span className="truncate">Tab 2. 대시보드</span>
+                            <span className="truncate">대시보드</span>
                         </button>
 
                         <button
@@ -907,7 +907,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                             }`}
                         >
                             <Clock className="w-4 h-4 shrink-0" />
-                            <span className="truncate">Tab 3. 포커스 랩</span>
+                            <span className="truncate">포커스 랩</span>
                         </button>
 
                         <button
@@ -919,7 +919,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                             }`}
                         >
                             <Award className="w-4 h-4 shrink-0" />
-                            <span className="truncate">Tab 4. 아카이브</span>
+                            <span className="truncate">아카이브</span>
                         </button>
                     </div>
 
@@ -961,11 +961,11 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                             {/* 5-Step Dark Code Release Mobile Progress Bar */}
                             <div className="mb-3 px-3 py-2 rounded-2xl bg-slate-950/90 border border-slate-800 flex items-center justify-between text-[10px] font-mono shrink-0 shadow-inner overflow-x-auto gap-1.5 custom-scrollbar">
                                 {[
-                                    { step: 1, label: '1.보호자(IFS)', icon: '🛡️' },
-                                    { step: 2, label: '2.관찰자(ACT)', icon: '🎬' },
-                                    { step: 3, label: '3.뉴럴코드(융)', icon: '🌟' },
-                                    { step: 4, label: '4.10초수용(CBT)', icon: '⚓' },
-                                    { step: 5, label: '5.주권회복(CTA)', icon: '👑' }
+                                    { step: 1, label: '1. 상태 확인', icon: '🛡️' },
+                                    { step: 2, label: '2. 감정 분리', icon: '🎬' },
+                                    { step: 3, label: '3. 패턴 재정의', icon: '🌟' },
+                                    { step: 4, label: '4. 신체 이완', icon: '⚓' },
+                                    { step: 5, label: '5. 행동 시동', icon: '👑' }
                                 ].map((s) => (
                                     <div
                                         key={s.step}
@@ -1029,11 +1029,11 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                                 <span className="text-emerald-400 flex items-center gap-1.5">
                                                                     <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                                                                     <span>
-                                                                        {currentDarkCodeStep === 1 && '🛡️ 1단계 [보호자 프레이밍] 1-Tap 공감 선택:'}
-                                                                        {currentDarkCodeStep === 2 && '🎬 2단계 [관찰자 분리] 비주얼 아이콘 선택:'}
-                                                                        {currentDarkCodeStep === 3 && '🌟 3단계 [뉴럴 코드 가치] 골드 앰버 선택:'}
-                                                                        {currentDarkCodeStep === 4 && '⚓ 4단계 [역설적 수용] 현실 검증 선택:'}
-                                                                        {currentDarkCodeStep >= 5 && '👑 5단계 [주권 회복] 실행 선택:'}
+                                                                        {currentDarkCodeStep === 1 && '🛡️ 1단계 1-Tap 내면 상태 선택:'}
+                                                                        {currentDarkCodeStep === 2 && '🎬 2단계 감정 분리 선택:'}
+                                                                        {currentDarkCodeStep === 3 && '🌟 3단계 패턴 재정의 선택:'}
+                                                                        {currentDarkCodeStep === 4 && '⚓ 4단계 신체 이완 선택:'}
+                                                                        {currentDarkCodeStep >= 5 && '👑 5단계 행동 시동 선택:'}
                                                                     </span>
                                                                 </span>
                                                                 <span className="text-[10px] text-gray-400 font-mono">
@@ -1324,7 +1324,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     type="text"
                                     value={chatInput}
                                     onChange={(e) => setChatInput(e.target.value)}
-                                    placeholder="방치했던 1순위 과제나 내면의 자책/불안을 말씀해 주세요..."
+                                    placeholder="직접 입력하거나 위 보기 중 하나를 선택하세요"
                                     className="flex-1 px-4 py-3 rounded-2xl bg-slate-950 border border-emerald-500/40 text-white text-xs font-medium placeholder-gray-500 focus:outline-none focus:border-emerald-400"
                                     disabled={isChatLoading}
                                 />
