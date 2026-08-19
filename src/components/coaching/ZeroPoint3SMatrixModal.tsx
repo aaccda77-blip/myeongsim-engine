@@ -2338,12 +2338,12 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     {/* SVG Radar Chart with Optimal Zone Green Band & Vertex Labels */}
                                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
                                         <div className="relative w-[230px] h-[230px] shrink-0">
-                                            <svg viewBox="0 0 250 250" className="w-full h-full overflow-visible">
+                                            <svg viewBox="0 0 260 260" className="w-full h-full overflow-visible">
                                                 {/* 1. Base Grid Background (100% outer) */}
                                                 <polygon
                                                     points={[0, 1, 2, 3, 4].map(i => {
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                        return `${125 + 85 * Math.cos(angle)},${125 + 85 * Math.sin(angle)}`;
+                                                        return `${130 + 85 * Math.cos(angle)},${125 + 85 * Math.sin(angle)}`;
                                                     }).join(' ')}
                                                     fill="rgba(15, 23, 42, 0.6)"
                                                     stroke="rgba(148, 163, 184, 0.2)"
@@ -2354,7 +2354,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 <polygon
                                                     points={[0, 1, 2, 3, 4].map(i => {
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                        return `${125 + (85 * 0.7) * Math.cos(angle)},${125 + (85 * 0.7) * Math.sin(angle)}`;
+                                                        return `${130 + (85 * 0.7) * Math.cos(angle)},${125 + (85 * 0.7) * Math.sin(angle)}`;
                                                     }).join(' ')}
                                                     fill="rgba(16, 185, 129, 0.22)"
                                                     stroke="rgba(52, 211, 153, 0.85)"
@@ -2365,7 +2365,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 <polygon
                                                     points={[0, 1, 2, 3, 4].map(i => {
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                        return `${125 + (85 * 0.4) * Math.cos(angle)},${125 + (85 * 0.4) * Math.sin(angle)}`;
+                                                        return `${130 + (85 * 0.4) * Math.cos(angle)},${125 + (85 * 0.4) * Math.sin(angle)}`;
                                                     }).join(' ')}
                                                     fill="#0a0f1d"
                                                     stroke="rgba(52, 211, 153, 0.4)"
@@ -2375,12 +2375,12 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 {/* 3. Axis Lines */}
                                                 {[0, 1, 2, 3, 4].map((i) => {
                                                     const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                    const x2 = 125 + 85 * Math.cos(angle);
+                                                    const x2 = 130 + 85 * Math.cos(angle);
                                                     const y2 = 125 + 85 * Math.sin(angle);
                                                     return (
                                                         <line
                                                             key={i}
-                                                            x1="125"
+                                                            x1="130"
                                                             y1="125"
                                                             x2={x2}
                                                             y2={y2}
@@ -2396,7 +2396,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
                                                         const normScore = Math.max(20, Math.min(100, axis.score)) / 100;
                                                         const r = 85 * normScore;
-                                                        return `${125 + r * Math.cos(angle)},${125 + r * Math.sin(angle)}`;
+                                                        return `${130 + r * Math.cos(angle)},${125 + r * Math.sin(angle)}`;
                                                     }).join(' ');
 
                                                     return (
@@ -2411,7 +2411,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                             {sajuRarityInfo.radarAxes.map((axis, i) => {
                                                                 const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
                                                                 const normScore = Math.max(20, Math.min(100, axis.score)) / 100;
-                                                                const cx = 125 + 85 * normScore * Math.cos(angle);
+                                                                const cx = 130 + 85 * normScore * Math.cos(angle);
                                                                 const cy = 125 + 85 * normScore * Math.sin(angle);
                                                                 return (
                                                                     <circle
@@ -2429,20 +2429,27 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                     );
                                                 })()}
 
-                                                {/* 5. 🌟 꼭짓점 오행 & 점수 라벨 (Vertex Labels) */}
+                                                {/* 5. 🌟 꼭짓점 오행 & 점수 라벨 (360px 모바일 완벽 대응 여유 간격) */}
                                                 {sajuRarityInfo.radarAxes.map((axis, i) => {
                                                     const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                    const labelR = 106;
-                                                    const lx = 125 + labelR * Math.cos(angle);
-                                                    const ly = 125 + labelR * Math.sin(angle);
+                                                    // 0(Top), 1(Right-top), 2(Right-bottom), 3(Left-bottom), 4(Left-top)
+                                                    let lx = 130 + 108 * Math.cos(angle);
+                                                    let ly = 125 + 108 * Math.sin(angle);
+                                                    let anchor: 'middle' | 'start' | 'end' = 'middle';
+
+                                                    if (i === 1) { lx += 4; anchor = 'start'; }
+                                                    else if (i === 2) { lx += 8; ly += 6; anchor = 'start'; } // 토(土) 우측 하단 벌림
+                                                    else if (i === 3) { lx -= 8; ly += 6; anchor = 'end'; }   // 금(金) 좌측 하단 벌림
+                                                    else if (i === 4) { lx -= 4; anchor = 'end'; }
+
                                                     const isHighlight = axis.score >= 80;
 
                                                     return (
                                                         <g key={i}>
                                                             <text
                                                                 x={lx}
-                                                                y={ly - 4}
-                                                                textAnchor="middle"
+                                                                y={ly - 5}
+                                                                textAnchor={anchor}
                                                                 dominantBaseline="central"
                                                                 className={`text-[11px] font-black ${
                                                                     isHighlight ? 'fill-amber-300 font-bold' : 'fill-slate-300'
@@ -2453,7 +2460,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                             <text
                                                                 x={lx}
                                                                 y={ly + 8}
-                                                                textAnchor="middle"
+                                                                textAnchor={anchor}
                                                                 dominantBaseline="central"
                                                                 className={`text-[10px] font-mono font-bold ${
                                                                     isHighlight ? 'fill-amber-400' : 'fill-slate-400'
@@ -2587,7 +2594,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         <div className="w-1/2 flex justify-end">
                                                             <div
                                                                 className="h-full bg-gradient-to-l from-rose-500 to-rose-700 rounded-l-full"
-                                                                style={{ width: `${(risk.score / 100) * 100}%` }}
+                                                                style={{ width: `${Math.min(100, Math.max(0, risk.score))}%` }}
                                                             />
                                                         </div>
                                                         {/* Center Divider */}
@@ -2596,7 +2603,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         <div className="w-1/2 flex justify-start">
                                                             <div
                                                                 className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-r-full"
-                                                                style={{ width: `${((sajuRarityInfo.strengths[idx]?.score || 87) / 100) * 100}%` }}
+                                                                style={{ width: `${Math.min(100, Math.max(0, sajuRarityInfo.strengths[idx]?.score || 87))}%` }}
                                                             />
                                                         </div>
                                                     </div>
@@ -2630,12 +2637,16 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     </p>
                                 </div>
 
-                                <button
-                                    onClick={() => setShowRarityModal(false)}
-                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:opacity-95 text-slate-950 font-black text-xs shadow-lg transition-all cursor-pointer"
-                                >
-                                    확인 완료 및 1:1 맞춤 코칭 계속하기
-                                </button>
+                                {/* Bottom Fixed Action CTA with iOS Safe Area Protection */}
+                                <div className="pt-1 pb-2 sm:pb-1">
+                                    <button
+                                        onClick={() => setShowRarityModal(false)}
+                                        className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:opacity-95 text-slate-950 font-black text-xs sm:text-sm shadow-[0_4px_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer active:scale-[0.99] flex items-center justify-center gap-2"
+                                    >
+                                        <span>확인 완료 및 1:1 맞춤 코칭 계속하기</span>
+                                        <ArrowRight className="w-4 h-4" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
