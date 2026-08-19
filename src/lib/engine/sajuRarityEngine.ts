@@ -5,12 +5,33 @@
  * - Grounded in professional competency & mental coaching frameworks.
  */
 
+export interface ActionRoutineItem {
+    title: string;
+    action: string;
+    neuroEffect: string;
+    timing: string;
+}
+
+export interface ActionCoachingProtocol {
+    elementCode: 'wood' | 'fire' | 'earth' | 'metal' | 'water';
+    elementName: string; // e.g. '수(水)'
+    targetGoal: string; // e.g. '브레인 쿨다운 & 유연성 회복'
+    trendTags: string[]; // ['#F1피트스탑', '#뇌캐시삭제', '#저속노화도파민']
+    subtitle: string;
+    morningRoutine: ActionRoutineItem;
+    workplaceMicroBreak: ActionRoutineItem;
+    eveningDetox: ActionRoutineItem;
+    nightProtocol: ActionRoutineItem;
+    dailyChallenge: string; // 오늘 1분 실천 미션
+}
+
 export interface CognitiveStrength {
     title: string;
     score: number; // 0 ~ 100 Scale
     dimension: string;
     description: string;
     mechanism: string; // 역학적/인지적 산출 근거
+    actionCoaching?: ActionCoachingProtocol; // 🌟 팝업 상세 실생활 행동 솔루션
 }
 
 export interface CognitiveRisk {
@@ -20,6 +41,7 @@ export interface CognitiveRisk {
     pattern: string;
     mitigationStrategy: string; // 완화 솔루션
     mechanism: string; // 역학적/인지적 산출 근거
+    actionCoaching?: ActionCoachingProtocol; // 🌟 팝업 상세 실생활 행동 솔루션
 }
 
 export interface RadarAxis {
@@ -334,6 +356,147 @@ export function calculatePersonalizedSajuRarity(params: {
         { label: '수(水) 유연지혜', code: 'water', score: waterScore, optimalMin: 40, optimalMax: 70 }
     ];
 
+function getActionCoachingProtocol(elementCode: 'wood' | 'fire' | 'earth' | 'metal' | 'water', isDeficit: boolean): ActionCoachingProtocol {
+    if (elementCode === 'water' || isDeficit) {
+        return {
+            elementCode: 'water',
+            elementName: '수(水)',
+            targetGoal: '수(水) 기운 활성화: 브레인 쿨다운 & 유연성 회복',
+            trendTags: ['#F1피트스탑', '#뇌브라우저캐시삭제', '#저속노화도파민', '#Zone2이완'],
+            subtitle: '과각성된 금(金)의 완벽주의 긴장을 풀고, 뇌 피로도를 낮추는 4단계 실생활 실천 가이드',
+            morningRoutine: {
+                title: '기상 직후 첫 5분 스마트폰 잠금 & 실온 물 한 컵',
+                action: '눈뜨자마자 SNS/카톡을 열지 않고, 실온의 물 한 컵을 천천히 마시며 창밖을 1분간 멍하니 응시합니다.',
+                neuroEffect: '수면 중 과열된 뇌 압력 완화 및 교감신경 급상승(스파이크) 차단',
+                timing: '기상 직후'
+            },
+            workplaceMicroBreak: {
+                title: '손목 찬물 쿨다운 (F1 피트스탑 15초 앵커링)',
+                action: '생각이 꼬이거나 마감 압박으로 머리가 뜨거워질 때, 화장실 세면대에서 찬물로 양 손목 안쪽을 15초간 적십니다. 퇴근 30분 전 오늘 끝내지 못한 일 1개는 메모장에 적어두고 컴퓨터 창을 과감히 닫습니다.',
+                neuroEffect: '체온 센서 자극을 통해 교감신경 흥분을 즉각 진정시키고 인지적 브라우저 탭(RAM) 과부하 리셋',
+                timing: '오후 집중 업무 중 / 퇴근 30분 전'
+            },
+            eveningDetox: {
+                title: '퇴근길 도파민 디톡스 & 저녁 8시 간접 조명 모드',
+                action: '퇴근길에 쇼츠/릴스 대신 빗소리·물소리 백색소음을 들으며 눈을 감고, 저녁 8시 이후에는 형광등을 끄고 노란 무드등 1개만 켭니다.',
+                neuroEffect: '시각 정보 과부하 차단 및 멜라토닌 분비 촉진을 통한 수면 뇌파 유도',
+                timing: '퇴근길 및 저녁 8시 이후'
+            },
+            nightProtocol: {
+                title: '샤워 감각 집중 명상 & ‘이 정도면 됐다’ 80% 확답 루틴',
+                action: '샤워할 때 목 뒤로 떨어지는 따뜻한 물줄기의 감촉에만 집중하고, 잠들기 전 "오늘 할 몫은 다 했다, 나머지는 내일의 흐름에 맡긴다"고 가볍게 읊조립니다.',
+                neuroEffect: '완벽주의적 통제 압박을 내려놓고 부교감신경 이완 회복 모드 안착',
+                timing: '취침 30분 전'
+            },
+            dailyChallenge: '오늘 오후 4시, 15초 찬물 손목 쿨다운 & 창밖 1분 멍때리기'
+        };
+    }
+
+    if (elementCode === 'metal') {
+        return {
+            elementCode: 'metal',
+            elementName: '금(金)',
+            targetGoal: '금(金) 과각성 조절: 완벽주의 이완 & 80% 릴리즈',
+            trendTags: ['#미니멀데스크', '#80프로릴리즈룰', '#통제권위임', '#데스크테리어'],
+            subtitle: '자기검열과 과도한 기준치를 완화하고, 지속 가능한 실행 탄력을 확보하는 가이드',
+            morningRoutine: {
+                title: '오늘 안 해도 되는 일 2가지 과감히 삭제',
+                action: '투두리스트를 빼곡히 채우는 대신, 오늘 당장 처리하지 않아도 큰일 나지 않는 일 2개를 지웁니다.',
+                neuroEffect: '완벽주의적 인지 과부하 억제',
+                timing: '아침 업무 시작 전'
+            },
+            workplaceMicroBreak: {
+                title: '80% 완성도 초안 공유 & 책상 위 물리적 리셋',
+                action: '100% 혼자 완성하려 애쓰지 않고, 80% 상태에서 동료에게 피드백을 요청합니다. 퇴근 전 책상 위 펜과 컵을 서랍에 넣는 물리적 바탕화면 0개 챌린지를 실천합니다.',
+                neuroEffect: '자기검열 마비(Analysis Paralysis) 해소',
+                timing: '업무 중간 및 퇴근 10분 전'
+            },
+            eveningDetox: {
+                title: '‘타인의 비효율은 타인의 배움이다’ 경계선 확언',
+                action: '타인의 문제나 실수를 대신 떠안지 않고, 각자의 몫을 존중하는 심리적 안전 경계선을 칩니다.',
+                neuroEffect: '구원자 트랩 해제 및 정서적 에너지 마진 확보',
+                timing: '퇴근 직후'
+            },
+            nightProtocol: {
+                title: '미완성 과제 포스트잇 인계 선언',
+                action: '머릿속에 맴도는 일을 포스트잇에 적어두고, "내일 아침 9시의 내가 처리한다"며 컴퓨터 전원을 완전히 끕니다.',
+                neuroEffect: '수면 중 뇌 램(RAM) 잔여 프로세스 강제 종료',
+                timing: '취침 전'
+            },
+            dailyChallenge: '초안 80% 상태에서 피드백 먼저 가볍게 공유해보기'
+        };
+    }
+
+    if (elementCode === 'fire') {
+        return {
+            elementCode: 'fire',
+            elementName: '화(火)',
+            targetGoal: '화(火) 기운 조절: 감정 스파이크 방어 & 번아웃 억제',
+            trendTags: ['#멘탈혈당스파이크방어', '#슬로우워킹', '#무자극스트레칭'],
+            subtitle: '급격한 에너지 방출을 조절하고 마찰열을 식히는 감정 쿨다운 가이드',
+            morningRoutine: {
+                title: '첫 10분 무자극 호흡 & 척추 스트레칭',
+                action: '일어나자마자 자극적인 미디어 대신 깊은 심호흡으로 체온을 부드럽게 올립니다.',
+                neuroEffect: '급격한 각성 쇼크 방지',
+                timing: '기상 직후'
+            },
+            workplaceMicroBreak: {
+                title: '식후 10분 그늘 슬로우 워킹 & 무가당 탄산수',
+                action: '점심 식후 단 음료 대신 시원한 탄산수나 차를 마시며 10분간 천천히 그늘을 걷습니다.',
+                neuroEffect: '뇌 마찰열 분산 및 감정 스파이크 차단',
+                timing: '점심 식후'
+            },
+            eveningDetox: {
+                title: '고강도 작업 후 24시간 디지털 디톡스 인터벌',
+                action: '열정을 쏟아부은 프로젝트 직후에는 하루 동안 알림을 끄고 정적 휴식을 갖습니다.',
+                neuroEffect: '부신 피로 및 번아웃 방지',
+                timing: '저녁'
+            },
+            nightProtocol: {
+                title: '온열 안대 & 마인드풀 이완',
+                action: '눈에 온열 안대를 올리고 하루 동안 흥분했던 감각을 가라앉힙니다.',
+                neuroEffect: '시신경 및 뇌파 진정',
+                timing: '취침 전'
+            },
+            dailyChallenge: '점심 식후 스마트폰 주머니에 넣고 10분 그늘 걷기'
+        };
+    }
+
+    // Default: Wood / Earth
+    return {
+        elementCode: elementCode,
+        elementName: elementCode === 'wood' ? '목(木)' : '토(土)',
+        targetGoal: elementCode === 'wood' ? '목(木) 추진력: 10분 마이크로 시동' : '토(土) 신뢰안정: 경계선 NVC & 과부하 차단',
+        trendTags: ['#10분마이크로스타트', '#경계선NVC', '#Zone2러닝'],
+        subtitle: '현실적이고 안전한 실행 탄력과 에너지 마진을 지켜내는 가이드',
+        morningRoutine: {
+            title: '오늘 1순위 핵심 과제 1개만 메모',
+            action: '침대 정리와 함께 오늘 가장 가치 있는 일 1개만 기록합니다.',
+            neuroEffect: '단일 집중 인지 프레임 형성',
+            timing: '아침'
+        },
+        workplaceMicroBreak: {
+            title: '거대한 일을 ‘3문장 초안’으로 쪼개어 착수',
+            action: '시작이 두려울 때 10분 타이머를 맞추고 3문장만 가볍게 적습니다.',
+            neuroEffect: '시동 저항성(Inertia) 제거',
+            timing: '업무 시작 직후'
+        },
+        eveningDetox: {
+            title: '타인의 긴급 요청 24시간 유예 프로토콜',
+            action: '즉시 수락하지 않고 "내일 오전까지 검토 후 말씀드리겠습니다" 완충 템플릿 사용.',
+            neuroEffect: '인지적 경계선 보호',
+            timing: '퇴근 전'
+        },
+        nightProtocol: {
+            title: '감사 회고 1줄 메모',
+            action: '오늘 지켜낸 나의 작은 시간 1가지를 칭찬하고 잠자리에 듭니다.',
+            neuroEffect: '자아 효능감 회복',
+            timing: '취침 전'
+        },
+        dailyChallenge: '미뤄둔 본진 과제 10분 마이크로 스타트 켜기'
+    };
+}
+
     // G. 최강 오행(과각성 핵심 강점) vs 최약/조후용신 오행(보완 솔루션) 동적 탐색
     const sortedScores = [...radarAxes].sort((a, b) => b.score - a.score);
     const primaryMax = sortedScores[0]; // 최고 점수 축
@@ -342,13 +505,17 @@ export function calculatePersonalizedSajuRarity(params: {
     // 조후 용신 판단 (물이 부족한 여름 사주, 불이 부족한 겨울 사주 등 - 40점 미만 결핍)
     const isYongshinNeeded = lowestMin.score < 40;
 
+    const primaryActionCoaching = getActionCoachingProtocol(primaryMax.code as any, false);
+    const secondaryActionCoaching = getActionCoachingProtocol(lowestMin.code as any, isYongshinNeeded);
+
     const strengths: CognitiveStrength[] = [
         {
             title: profile.strength1Title,
             score: primaryMax.score,
             dimension: '진단 및 분석 역량',
             description: profile.strength1Desc,
-            mechanism: `원국에 집중된 강력한 ${primaryMax.label.split(' ')[0]}(${primaryMax.score}점) 세력이 본질을 꿰뚫는 분석 및 결단 프레임으로 작동함.`
+            mechanism: `원국에 집중된 강력한 ${primaryMax.label.split(' ')[0]}(${primaryMax.score}점) 세력이 본질을 꿰뚫는 분석 및 결단 프레임으로 작동함.`,
+            actionCoaching: primaryActionCoaching
         },
         {
             title: isYongshinNeeded 
@@ -361,7 +528,8 @@ export function calculatePersonalizedSajuRarity(params: {
                 : profile.strength2Desc,
             mechanism: isYongshinNeeded
                 ? `결핍된 ${lowestMin.label.split(' ')[0]}(${lowestMin.score}점)은 사주의 과열/경직을 풀어주는 핵심 조후 용신으로, 수분 충전·정적 명상·데이터 기반 전략화가 필수 회복 열쇠임.`
-                : profile.strength2Mechanism
+                : profile.strength2Mechanism,
+            actionCoaching: secondaryActionCoaching
         }
     ];
 
@@ -372,7 +540,8 @@ export function calculatePersonalizedSajuRarity(params: {
             riskLevel: '경계',
             pattern: profile.risk1Pattern,
             mitigationStrategy: profile.risk1Mitigation,
-            mechanism: `${primaryMax.label.split(' ')[0]}(${primaryMax.score}점)의 과각성된 기준치가 스트레스 상황에서 완벽주의 편향으로 발현될 수 있음.`
+            mechanism: `${primaryMax.label.split(' ')[0]}(${primaryMax.score}점)의 과각성된 기준치가 스트레스 상황에서 완벽주의 편향으로 발현될 수 있음.`,
+            actionCoaching: primaryActionCoaching
         },
         {
             title: isYongshinNeeded ? `${lowestMin.label.split(' ')[0]} 결핍으로 인한 인지 피로 및 번아웃` : profile.risk2Title,
@@ -380,7 +549,8 @@ export function calculatePersonalizedSajuRarity(params: {
             riskLevel: '주의',
             pattern: isYongshinNeeded ? `필수 기운(${lowestMin.label.split(' ')[0]})의 결핍으로 인해 에너지 충전 주기가 끊기고 뇌 피로가 누적될 위험.` : profile.risk2Pattern,
             mitigationStrategy: isYongshinNeeded ? '1일 1회 제로포인트 호흡 및 주 1회 디지털 디톡스 프로토콜 필수 적용.' : profile.risk2Mitigation,
-            mechanism: isYongshinNeeded ? `${lowestMin.label.split(' ')[0]}(${lowestMin.score}점)의 고갈이 자율신경계 과열을 초래하여 인지적 마모를 유발함.` : profile.risk2Mechanism
+            mechanism: isYongshinNeeded ? `${lowestMin.label.split(' ')[0]}(${lowestMin.score}점)의 고갈이 자율신경계 과열을 초래하여 인지적 마모를 유발함.` : profile.risk2Mechanism,
+            actionCoaching: secondaryActionCoaching
         }
     ];
 

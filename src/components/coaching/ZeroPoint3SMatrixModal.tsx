@@ -6,7 +6,7 @@ import OneMinuteCompassionBreathing from './OneMinuteCompassionBreathing';
 import { calculateArchetypeAndStrengths, TransmutedSuperpower } from '@/lib/alchemy/archetypeEngine';
 import { calculateSajuAlchemyFusion, FusionResult } from '@/lib/engine/sajuAlchemyFusion';
 import { generatePersonalizedSajuGreeting } from '@/lib/engine/sajuDiagnosisGenerator';
-import { calculatePersonalizedSajuRarity } from '@/lib/engine/sajuRarityEngine';
+import { calculatePersonalizedSajuRarity, ActionCoachingProtocol } from '@/lib/engine/sajuRarityEngine';
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
@@ -294,6 +294,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
     const [showPushCenterModal, setShowPushCenterModal] = useState<boolean>(false);
     const [pushModalTab, setPushModalTab] = useState<'templates' | 'analytics'>('templates');
     const [showRarityModal, setShowRarityModal] = useState<boolean>(false);
+    const [activeActionProtocol, setActiveActionProtocol] = useState<ActionCoachingProtocol | null>(null);
     const [showDeclineTemplateModal, setShowDeclineTemplateModal] = useState<boolean>(false);
     const [showAlchemyReportModal, setShowAlchemyReportModal] = useState<boolean>(false);
     const [currentDarkCodeStep, setCurrentDarkCodeStep] = useState<number>(1);
@@ -2568,10 +2569,21 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 <p className="text-xs text-emerald-100/90 leading-relaxed font-sans pl-1">
                                                     {str.description}
                                                 </p>
-                                                {/* 슬림화된 산출 근거 텍스트 라인 */}
-                                                <div className="text-[11px] text-gray-400 font-mono flex items-start gap-1 pl-1 pt-0.5">
-                                                    <span className="text-emerald-400/80 shrink-0">🔍 산출 근거:</span>
-                                                    <span className="text-slate-300 leading-snug">{str.mechanism}</span>
+                                                {/* 슬림화된 산출 근거 텍스트 라인 및 실생활 솔루션 트리거 버튼 */}
+                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-emerald-500/20">
+                                                    <div className="text-[11px] text-gray-400 font-mono flex items-start gap-1 pl-1">
+                                                        <span className="text-emerald-400/80 shrink-0">🔍 산출 근거:</span>
+                                                        <span className="text-slate-300 leading-snug">{str.mechanism}</span>
+                                                    </div>
+                                                    {str.actionCoaching && (
+                                                        <button
+                                                            onClick={() => setActiveActionProtocol(str.actionCoaching!)}
+                                                            className="shrink-0 self-end sm:self-auto px-2.5 py-1 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-300 hover:text-emerald-200 border border-emerald-400/40 text-[11px] font-black transition-all cursor-pointer flex items-center gap-1 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                                                        >
+                                                            <span>💡 1분 실천 프로토콜 확인</span>
+                                                            <ArrowRight className="w-3 h-3 text-emerald-400" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}
@@ -2641,9 +2653,20 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         <span className="text-rose-400/80 shrink-0">🔍 발현 기제:</span>
                                                         <span className="text-slate-300 leading-snug">{risk.mechanism}</span>
                                                     </div>
-                                                    {/* 산뜻한 완화 솔루션 틴트 박스 */}
-                                                    <div className="text-[11px] text-amber-300/90 font-sans bg-amber-950/25 p-2.5 rounded-xl border border-amber-500/30">
-                                                        💡 <strong>완화 솔루션:</strong> {risk.mitigationStrategy}
+                                                    {/* 산뜻한 완화 솔루션 틴트 박스 및 실생활 솔루션 트리거 버튼 */}
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-amber-300/90 font-sans bg-amber-950/25 p-2.5 rounded-xl border border-amber-500/30">
+                                                        <div className="leading-relaxed">
+                                                            💡 <strong>완화 솔루션:</strong> {risk.mitigationStrategy}
+                                                        </div>
+                                                        {risk.actionCoaching && (
+                                                            <button
+                                                                onClick={() => setActiveActionProtocol(risk.actionCoaching!)}
+                                                                className="shrink-0 self-end sm:self-auto px-2 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200 border border-amber-400/40 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                                                            >
+                                                                <span>실생활 가이드 보기</span>
+                                                                <ArrowRight className="w-2.5 h-2.5 text-amber-400" />
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );
@@ -2670,6 +2693,164 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     >
                                         <span>확인 완료 및 1:1 맞춤 코칭 계속하기</span>
                                         <span>➔</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ========================================================= */}
+                    {/* [NEW] 💡 실생활 행동 솔루션 코칭 상세 팝업 모달 (트렌드 결합)   */}
+                    {/* ========================================================= */}
+                    {activeActionProtocol && (
+                        <div className="fixed inset-0 z-[4500] flex items-center justify-center bg-black/90 backdrop-blur-xl p-3 sm:p-5 animate-fade-in font-sans">
+                            <div className="bg-[#0a0f1d] border-2 border-emerald-500/50 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-[0_0_90px_rgba(16,185,129,0.3)] relative text-white space-y-4 custom-scrollbar">
+                                
+                                {/* Modal Header */}
+                                <div className="flex items-start justify-between border-b border-slate-800 pb-3 gap-3">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-slate-950 flex items-center justify-center font-black text-lg shadow-lg shrink-0 mt-0.5">
+                                            {activeActionProtocol.elementCode === 'water' ? '🌊' : activeActionProtocol.elementCode === 'metal' ? '⚡' : activeActionProtocol.elementCode === 'fire' ? '🔥' : activeActionProtocol.elementCode === 'wood' ? '🌿' : '⛰️'}
+                                        </div>
+                                        <div className="space-y-1">
+                                            <div className="flex flex-wrap items-center gap-1.5">
+                                                <h3 className="text-sm sm:text-base font-black text-white">
+                                                    {activeActionProtocol.targetGoal}
+                                                </h3>
+                                            </div>
+                                            <div className="flex flex-wrap gap-1 pt-0.5">
+                                                {activeActionProtocol.trendTags.map((tag, tIdx) => (
+                                                    <span key={tIdx} className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <p className="text-[11px] text-gray-400 leading-snug">
+                                                {activeActionProtocol.subtitle}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setActiveActionProtocol(null)}
+                                        className="p-2 rounded-full bg-slate-800/80 hover:bg-slate-700 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+
+                                {/* 4대 실생활 행동 코칭 영역 */}
+                                <div className="space-y-2.5">
+                                    {/* 1. 기상 직후 */}
+                                    <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                                                <span>🌅 1. 기상 직후 (뇌 각성 지연 루틴)</span>
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 font-mono">기상 후 5분</span>
+                                        </div>
+                                        <div className="text-xs font-bold text-white font-sans">
+                                            {activeActionProtocol.morningRoutine.title}
+                                        </div>
+                                        <p className="text-xs text-gray-300 leading-relaxed break-keep font-sans">
+                                            {activeActionProtocol.morningRoutine.action}
+                                        </p>
+                                        <div className="text-[11px] text-emerald-400/90 font-mono flex items-center gap-1 pt-0.5">
+                                            <span>🧠 인지 효과:</span>
+                                            <span className="text-slate-300">{activeActionProtocol.morningRoutine.neuroEffect}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* 2. 업무 및 일상 중 */}
+                                    <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="font-bold text-cyan-300 flex items-center gap-1.5">
+                                                <span>⚡ 2. 업무 중 마이크로 브레이크 (과각성 차단)</span>
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 font-mono">오후 & 퇴근 30분 전</span>
+                                        </div>
+                                        <div className="text-xs font-bold text-white font-sans">
+                                            {activeActionProtocol.workplaceMicroBreak.title}
+                                        </div>
+                                        <p className="text-xs text-gray-300 leading-relaxed break-keep font-sans">
+                                            {activeActionProtocol.workplaceMicroBreak.action}
+                                        </p>
+                                        <div className="text-[11px] text-cyan-400/90 font-mono flex items-center gap-1 pt-0.5">
+                                            <span>🧠 인지 효과:</span>
+                                            <span className="text-slate-300">{activeActionProtocol.workplaceMicroBreak.neuroEffect}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* 3. 퇴근 및 저녁 */}
+                                    <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="font-bold text-indigo-300 flex items-center gap-1.5">
+                                                <span>🌇 3. 퇴근길 & 저녁 (도파민 디톡스 & 저속노화)</span>
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 font-mono">저녁 8시 이후</span>
+                                        </div>
+                                        <div className="text-xs font-bold text-white font-sans">
+                                            {activeActionProtocol.eveningDetox.title}
+                                        </div>
+                                        <p className="text-xs text-gray-300 leading-relaxed break-keep font-sans">
+                                            {activeActionProtocol.eveningDetox.action}
+                                        </p>
+                                        <div className="text-[11px] text-indigo-400/90 font-mono flex items-center gap-1 pt-0.5">
+                                            <span>🧠 인지 효과:</span>
+                                            <span className="text-slate-300">{activeActionProtocol.eveningDetox.neuroEffect}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* 4. 취침 전 */}
+                                    <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="font-bold text-teal-300 flex items-center gap-1.5">
+                                                <span>🌙 4. 취침 전 (완벽주의 이완 프로토콜)</span>
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 font-mono">취침 30분 전</span>
+                                        </div>
+                                        <div className="text-xs font-bold text-white font-sans">
+                                            {activeActionProtocol.nightProtocol.title}
+                                        </div>
+                                        <p className="text-xs text-gray-300 leading-relaxed break-keep font-sans">
+                                            {activeActionProtocol.nightProtocol.action}
+                                        </p>
+                                        <div className="text-[11px] text-teal-400/90 font-mono flex items-center gap-1 pt-0.5">
+                                            <span>🧠 인지 효과:</span>
+                                            <span className="text-slate-300">{activeActionProtocol.nightProtocol.neuroEffect}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 오늘의 1분 실천 미션 박스 */}
+                                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-teal-950/40 to-slate-900 border border-emerald-500/40 text-xs space-y-1 font-sans">
+                                    <div className="font-bold text-emerald-300 flex items-center gap-1.5">
+                                        <Sparkles className="w-4 h-4 text-emerald-400" />
+                                        <span>오늘 바로 실천할 1분 마이크로 챌린지</span>
+                                    </div>
+                                    <p className="text-xs text-white font-bold pl-1">
+                                        👉 {activeActionProtocol.dailyChallenge}
+                                    </p>
+                                </div>
+
+                                {/* Modal Actions CTA */}
+                                <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-slate-800">
+                                    <button
+                                        onClick={() => {
+                                            const challenge = activeActionProtocol.dailyChallenge;
+                                            setActiveActionProtocol(null);
+                                            setShowRarityModal(false);
+                                            setActiveTab('coaching_room');
+                                            handleSendChatMessage(`오늘 실천할 쿨다운 미션 등록: "${challenge}". 뇌 피로를 낮추고 즉시 실천할 수 있도록 가이드해 줘!`);
+                                        }}
+                                        className="w-full sm:flex-1 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 text-slate-950 font-black text-xs shadow-[0_4px_15px_rgba(16,185,129,0.3)] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                                    >
+                                        <span>🔥 오늘의 쿨다운 미션 1개 등록하기</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveActionProtocol(null)}
+                                        className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-gray-300 font-bold text-xs transition-colors cursor-pointer"
+                                    >
+                                        닫기
                                     </button>
                                 </div>
                             </div>
