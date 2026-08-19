@@ -228,7 +228,7 @@ function buildCardForGate(
       hexLines: [false, false, true, false, true, false],
       hexagramVerse: "田獲三狐, 得黃矢, 貞吉 (사냥에서 문제를 일으키는 세 마리 여우를 잡고, 바른 황금 화살을 얻으니 바르고 길하다.)",
       hexagramMeaning: `1. 괘 번호 및 괘명 검증: 정확히 일치 (100%)\n64괘 표준 순서 (문왕괘 서열): 40번 = 뇌수해 (雷水解)\n\n· 상괘: 진뢰(震雷 ☳, 우레/행동/돌파)\n· 하괘: 감수(坎水 ☵, 험난함/속박/지혜)\n· 괘의 본질: "봄비와 천둥이 험난한 겨울의 얼음을 녹여 만물을 속박에서 해방시킨다(雷雨作 解)."\n→ 화면의 "사람들을 속박에서 해방시키는 솔루션" 정의와 정확히 일치합니다.\n\n2. 40.2 (2효) 및 코드 해석 검증\n주역 40.2(九二) 효사: "田獲三狐, 得黃矢, 貞吉"\n· 해석: 얽매인 난제(다크코드)를 정확한 지혜로 해결하여 정당한 수확과 풍요(뉴럴·메타코드)를 얻는 효입니다.\n· 다크코드(과거의 방어기제): 40번 명심 천명 코드의 근본 다크코드인 '에너지 소진(Exhaustion)과 과부하'와 정확히 연결됩니다. (돈·성과 집착으로 인한 건강/영혼 손실)\n· 뉴럴·메타코드(천부적 주권 무기 & 초의식): 40번 천명 코드의 뉴럴코드인 '단호한 결의(Resolve)' 및 메타코드인 '신성한 자유(Divine Will)'와 일치하여, 얽매임을 풀고 진정한 자유와 풍요를 완성하는 구조입니다.`,
-      sajuAlignment: isSinsa ? `3. 사주 원국(경신년 계미월 신사일 을미시)과의 정합성\n\n[조후와 통관의 매듭을 푸는 상(解)]\n한여름 조열한 미월(未月)의 신사(辛巳) 일주에게 월간 계수(癸水, 감수 ☵)와 시상 을목(乙木, 편재)은 막힌 기운을 뚫고 생명력을 틔우는 핵심 글자입니다.\n\n[코칭/솔루션 알고리즘]\n타인의 억압된 문제와 병목(坎/속박)을 명쾌한 분석과 솔루션(震/번개)으로 풀어내어 현실적 결실(乙未 편재)로 전환하는 명식의 지향점과 뇌수해 40.2의 메타코드가 일관되게 맞물려 있습니다.` : `${userName} 님의 ${sajuPillarText} 명식(${sajuInfo.yearPillarKo}년 ${sajuInfo.monthPillarKo}월 ${sajuInfo.dayPillarKo}일 ${sajuInfo.timePillarKo}시)에서 타인의 억압된 문제와 병목(坎/속박)을 명쾌한 분석과 솔루션(震/번개)으로 풀어내어 현실적 결실로 전환하는 명식의 지향점과 뇌수해 40.2의 메타코드가 완벽하게 맞물려 있습니다.`,
+      sajuAlignment: `3. 사주 원국(${sajuInfo.yearPillarKo}년 ${sajuInfo.monthPillarKo}월 ${sajuInfo.dayPillarKo}일 ${sajuInfo.timePillarKo}시)과의 4주 8자 정합성\n\n[조후와 통관의 매듭을 푸는 상(解)]\n${sajuInfo.yearPillarKo}(${sajuInfo.yearPillarHanja})년 ${sajuInfo.monthPillarKo}(${sajuInfo.monthPillarHanja})월 ${sajuInfo.dayPillarKo}(${sajuInfo.dayPillarHanja})일 ${sajuInfo.timePillarKo}(${sajuInfo.timePillarHanja})시 4주 원국에서, 월주의 환경적 기운과 시주의 결실 글자는 일주의 막힌 기운을 뚫고 생명력을 틔우는 핵심 통로입니다.\n\n[코칭/솔루션 알고리즘]\n타인의 억압된 문제와 병목(坎/속박)을 명쾌한 분석과 솔루션(震/번개)으로 풀어내어 현실적 결실(시주 결실 에너지)로 전환하는 ${userName} 님의 4주 명식 지향점과 뇌수해 40.2의 메타코드가 일관되게 맞물려 있습니다.`,
       darkCode: "돈과 성과에 집착하다 정작 내 건강과 영혼의 평화를 잃는 위험",
       neuralCode: "물질적 번영과 영적 자유가 완벽하게 일치하는 풍요의 완성",
       metaCode: "【퀀텀풍요 (Quantum Abundance)】 영적 대자유와 현실적 번영이 완전한 일치를 이루는 축복",
@@ -260,6 +260,32 @@ function buildCardForGate(
     };
   }
 
+  // 🌟 [사주팔자 년·월·일·시 4주 원국 정밀 결합 동적 문장 생성]
+  const fullPillarsStr = `${sajuInfo.yearPillarKo}년·${sajuInfo.monthPillarKo}월·${sajuInfo.dayPillarKo}일·${sajuInfo.timePillarKo}시`;
+  const pillarRoleText = categoryTitle.includes('천명 과업') 
+    ? `월주(${sajuInfo.monthPillarKo})의 사회적 무대에서 ${giftName}의 주권으로 천명을 세우는 길`
+    : categoryTitle.includes('성장 도약대')
+    ? `년주(${sajuInfo.yearPillarKo})의 선천적 잠재력을 ${giftName}의 통찰로 도약시키는 디딤돌`
+    : categoryTitle.includes('생체 활력')
+    ? `일주(${sajuInfo.dayPillarKo})의 ${sajuInfo.ganName} 생명력을 ${giftName}으로 활성화하는 엔진`
+    : categoryTitle.includes('영혼의 뿌리')
+    ? `시주(${sajuInfo.timePillarKo})의 심층 본질에 ${giftName}의 단단한 뿌리를 내리는 근원`
+    : categoryTitle.includes('공명') || categoryTitle.includes('인연')
+    ? `월주(${sajuInfo.monthPillarKo})와 일주(${sajuInfo.dayPillarKo})의 기운을 이어 귀인을 끌어당기는 ${giftName}의 자력`
+    : categoryTitle.includes('지성') || categoryTitle.includes('IQ')
+    ? `사주 원국의 조화를 꿰뚫는 ${giftName}의 명철한 지혜`
+    : categoryTitle.includes('감성') || categoryTitle.includes('EQ')
+    ? `감정의 파도를 평온으로 전환하는 ${giftName}의 자비 연금술`
+    : categoryTitle.includes('주권') || categoryTitle.includes('SQ')
+    ? `시주(${sajuInfo.timePillarKo})의 영적 깊이와 일주가 합일되는 ${giftName}의 주권 회복`
+    : categoryTitle.includes('코어 미션')
+    ? `일주(${sajuInfo.dayPillarKo})의 ${sajuInfo.ganName} 기운으로 세상의 병목을 돌파하는 ${giftName}의 1순위 폭발력`
+    : categoryTitle.includes('협력 생태계')
+    ? `년·월주(${sajuInfo.yearPillarKo}·${sajuInfo.monthPillarKo})의 네트워크를 확장하는 ${giftName}의 상생 생태계`
+    : categoryTitle.includes('시그니처')
+    ? `4주 팔자의 독보적 아우라를 완성하는 ${giftName}의 VIP 권위`
+    : `${fullPillarsStr} 4주 원국의 결실을 풍요로 완성하는 ${giftName}의 퀀텀 결실`;
+
   return {
     id: `gate_${safeGate}_line_${safeLine}_${categoryTitle}`,
     gateNum: safeGate,
@@ -270,39 +296,39 @@ function buildCardForGate(
     title: `${codeFormatted} ${parsedName} (${hexMeta.hanja})`,
     category: categoryTitle,
     icon: iconComponent,
-    oneLiner: `${sajuInfo.dayPillarKo}일주의 ${sajuElementText} 기운으로 ${giftName}의 지혜를 꽃피우는 황금경로`,
+    oneLiner: pillarRoleText,
     hexLines: hexMeta.lines,
     hexagramVerse: hexMeta.verse,
     hexagramMeaning: hexMeta.meaning,
-    sajuAlignment: `${userName} 님의 ${sajuPillarText} 명식에서 ${giftName}의 주파수를 켤 때, 사주의 조화가 완성되며 강력한 천명 권위가 확립됩니다.`,
+    sajuAlignment: `${userName} 님의 4주 팔자 원국(년주 ${sajuInfo.yearPillarKo} · 월주 ${sajuInfo.monthPillarKo} · 일주 ${sajuInfo.dayPillarKo} · 시주 ${sajuInfo.timePillarKo})에서, ${parsedName}(${hexMeta.hanja})의 에너지는 ${sajuInfo.elementKo} 기운의 균형을 맞추고 [${giftName}]의 뉴럴코드를 활성화하여 4주 8자의 흐름을 가장 높은 차원으로 도약시킵니다.`,
     darkCode: `${darkName} — ${darkDesc}`,
     neuralCode: `${giftName} — ${giftDesc}`,
     metaCode: `【${metaName}】 ${metaDesc}`,
     actionTip: `오늘 당장 10분 동안 ${giftName}의 에너지를 의식하며 작은 한 걸음을 떼어보세요.`,
-    easyMetaphor: `🌱 ${hexMeta.meaning}의 자연스러운 에너지를 타고나, 세상을 이롭게 밝히는 ${userName} 님의 고유한 빛입니다.`,
+    easyMetaphor: `🌱 ${hexMeta.meaning}의 자연스러운 에너지를 타고나, 사주 4주의 잠재력을 세상에 이롭게 밝히는 ${userName} 님의 고유한 빛입니다.`,
     easyDarkTitle: darkName,
     easyDarkDesc: darkDesc,
     easyNeuralTitle: giftName,
     easyNeuralDesc: giftDesc,
     easyMetaTitle: `【${metaName}】`,
     easyMetaDesc: metaDesc,
-    easyAction: `10분간 심호흡하며 "${userName}의 중심에는 ${giftName}의 힘이 있다"고 선언하세요.`,
-    darkEssayTitle: `남들의 속도에 지친 ${userName} 님의 가슴을 안아주세요`,
-    darkEssayContent: `${userName} 님, 그동안 남들의 기대와 시선에 맞추느라 얼마나 애쓰셨나요?\n\n당신의 영혼은 ${darkName}의 두려움에 쫓길 때가 아니라, 당신 고유의 깊은 호흡으로 나아갈 때 가장 눈부신 가치를 발합니다.\n\n안심하고 긴장을 내려놓으세요. 당신은 이미 충분히 안전합니다.`,
-    darkAffirmation: `"내가 서두르지 않아도, 온 우주는 내 걸음에 맞춰 가장 찬란한 풍요를 준비하고 있다."`,
-    neuralEssayTitle: `${giftName}의 지혜로 완성하는 ${userName} 님의 왕국`,
-    neuralEssayContent: `${userName} 님의 진짜 위대함은 하루 10분의 위대한 꾸준함에 있습니다. ${giftName}의 힘으로 오늘 쌓은 작은 벽돌 하나가 훗날 결코 무너지지 않는 거대한 신뢰의 성이 됩니다.`,
-    neuralAffirmation: `"나는 매일 10분의 위대한 주권으로, 그 누구도 흉내 낼 수 없는 명작을 완성한다."`,
-    metaEssayTitle: `온 우주가 ${userName} 님의 발걸음에 맞춰 춤추고 있습니다`,
-    metaEssayContent: `${userName} 님이 내면의 평화(Zero-Point)에 머무를 때 세상의 모든 기회와 귀인들이 당신의 문을 두드립니다. 안심하고 숨을 내쉬세요.`,
-    metaAffirmation: `"나는 애쓰지 않는다. 온 우주가 내 존재 자체를 가장 완벽한 풍요로 이끌고 있다."`,
-    solutionWhy: `10분으로 잘게 쪼개면 뇌의 편도체 저항 없이 즉시 몰입 모드로 전환됩니다.`,
+    easyAction: `나만의 안전한 시간과 공간에서 ${giftName}의 중심을 잡고 가볍게 숨을 쉬어보세요.`,
+    darkEssayTitle: `남들의 시선과 두려움에 지친 ${userName} 님의 가슴을 안아주세요`,
+    darkEssayContent: `${userName} 님, 그동안 ${darkName}의 무게를 짊어지느라 얼마나 애쓰셨나요?\n\n이것은 당신의 결함이 아니라, 어린 시절부터 자신을 지키기 위해 만들어낸 소중한 방어기제였습니다.\n\n이제는 괜찮습니다. 편안하게 힘을 빼고 당신 고유의 ${giftName} 주권을 회복하세요.`,
+    darkAffirmation: `"나는 과거의 불안과 방어기제로부터 안전하며, 지금 이 순간 내 주권을 온전히 회복한다."`,
+    neuralEssayTitle: `${giftName}의 당당한 지혜로 피어나는 ${userName} 님의 천명`,
+    neuralEssayContent: `${userName} 님이 ${giftName}의 뉴럴코드를 켤 때, 사주 4주(${sajuInfo.yearPillarKo}·${sajuInfo.monthPillarKo}·${sajuInfo.dayPillarKo}·${sajuInfo.timePillarKo})의 기운이 하나의 단단한 축으로 정렬됩니다. 당신의 존재 자체가 세상에 선물입니다.`,
+    neuralAffirmation: `"나는 내 안의 천부적 무기 [${giftName}]를 통해 세상에 가장 선한 영향력과 풍요를 전한다."`,
+    metaEssayTitle: `온 우주와 하나 되어 흐르는 ${userName} 님의 대자유`,
+    metaEssayContent: `${userName} 님이 모든 저항을 내려놓고 제로포인트에 머무를 때, ${metaName}의 초의식이 당신의 삶 전체를 관통하여 막힘없는 기적을 창조합니다.`,
+    metaAffirmation: `"나는 온 우주의 지혜와 온전히 하나이며, 내 모든 호흡은 절대적 평화와 풍요로 가득하다."`,
+    solutionWhy: `사주 4주 원국의 균형을 잡고 ${giftName}의 에너지를 의식화할 때 내면의 주권이 확립됩니다.`,
     solutionSteps: [
-      `Step 1: ${giftName}을 발휘할 가장 작은 1단계 종이에 적기`,
-      `Step 2: 타이머 10분 맞추고 방해 없는 공간에서 몰입`,
-      `Step 3: 1분간 깊은 자비 호흡으로 나 자신을 진심으로 칭찬하기`
+      `Step 1: ${darkName}의 조급함이 올라올 때 즉시 멈추고 3번의 깊은 자비 호흡하기`,
+      `Step 2: 나만의 고유한 무기인 [${giftName}]의 상태를 떠올리며 10분 초몰입하기`,
+      `Step 3: 완결된 결과물에 집착하지 않고 스스로의 회복탄력성을 따뜻하게 칭찬하기`
     ],
-    solutionTip: `완벽하게 끝내려 하지 마세요. 시작한 것만으로도 오늘의 신경망은 승리했습니다.`
+    solutionTip: `완벽하려 하지 마세요. 10분 동안 [${giftName}]의 파동에 머무는 것만으로도 4주 팔자의 운명은 개운됩니다.`
   };
 }
 
@@ -1374,11 +1400,9 @@ export default function SoulArchivePage() {
               <div className="flex flex-wrap items-center gap-2.5 pt-1 text-xs">
                 <span className="text-gray-300">수신인: <strong className="text-amber-300 font-bold">{userName}</strong> 님</span>
                 <span className="text-gray-600">|</span>
-                <span className="text-gray-300">사주 일주: <strong className="text-emerald-300 font-bold px-2 py-0.5 rounded-lg bg-emerald-950/60 border border-emerald-500/40">{sajuInfo.dayPillarKo}({sajuInfo.dayPillarHanja})일주</strong></span>
-                <span className="text-gray-600">|</span>
-                <span className="text-gray-300">본질 기운: <strong className="text-amber-400 font-bold">{sajuInfo.ganName}</strong></span>
-                <span className="text-gray-600">|</span>
                 <span className="text-gray-300">생년월일: <strong className="text-cyan-300 font-bold">{birthDate} ({birthTime})</strong></span>
+                <span className="text-gray-600">|</span>
+                <span className="text-gray-300">본질 오행: <strong className="text-amber-400 font-bold">{sajuInfo.ganName}</strong></span>
                 
                 <button
                   onClick={() => setShowEditModal(true)}
@@ -1387,6 +1411,49 @@ export default function SoulArchivePage() {
                   <Edit3 className="w-3 h-3" />
                   <span>생년월일 변경</span>
                 </button>
+              </div>
+
+              {/* 🌟 사주팔자 년·월·일·시 4주 8자 럭셔리 네온 뱃지 */}
+              <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-left flex flex-col justify-center">
+                  <div className="text-[10px] text-gray-400 font-mono flex items-center justify-between">
+                    <span>년주 (선천·사회)</span>
+                    <span className="text-[9px] text-gray-500 font-sans">Year</span>
+                  </div>
+                  <div className="text-sm font-black text-amber-200 font-serif pt-0.5">
+                    {sajuInfo.yearPillarKo} <span className="text-xs font-normal text-amber-400/80">({sajuInfo.yearPillarHanja})</span>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-left flex flex-col justify-center">
+                  <div className="text-[10px] text-gray-400 font-mono flex items-center justify-between">
+                    <span>월주 (환경·직업)</span>
+                    <span className="text-[9px] text-gray-500 font-sans">Month</span>
+                  </div>
+                  <div className="text-sm font-black text-cyan-200 font-serif pt-0.5">
+                    {sajuInfo.monthPillarKo} <span className="text-xs font-normal text-cyan-400/80">({sajuInfo.monthPillarHanja})</span>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/60 text-left flex flex-col justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                  <div className="text-[10px] text-emerald-400 font-mono font-bold flex items-center justify-between">
+                    <span>일주 (본질·나)</span>
+                    <span className="text-[9px] text-emerald-300 font-mono">Day ★</span>
+                  </div>
+                  <div className="text-sm font-black text-emerald-200 font-serif pt-0.5">
+                    {sajuInfo.dayPillarKo} <span className="text-xs font-normal text-emerald-300/90">({sajuInfo.dayPillarHanja})일주</span>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-left flex flex-col justify-center">
+                  <div className="text-[10px] text-gray-400 font-mono flex items-center justify-between">
+                    <span>시주 (심층·결실)</span>
+                    <span className="text-[9px] text-gray-500 font-sans">Hour</span>
+                  </div>
+                  <div className="text-sm font-black text-purple-200 font-serif pt-0.5">
+                    {sajuInfo.timePillarKo} <span className="text-xs font-normal text-purple-400/80">({sajuInfo.timePillarHanja})</span>
+                  </div>
+                </div>
               </div>
             </div>
 
