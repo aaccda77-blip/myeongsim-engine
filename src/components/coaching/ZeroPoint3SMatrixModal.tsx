@@ -2350,16 +2350,17 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                     strokeWidth="1"
                                                 />
 
-                                                {/* 2. 🌟 Optimal Zone 40~70% Green Band (도넛 밴드 음영) */}
+                                                {/* 2. 🌟 Optimal Zone 40~70% Green Band (도넛 밴드 음영 고대비 & 글로우) */}
                                                 <polygon
                                                     points={[0, 1, 2, 3, 4].map(i => {
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
                                                         return `${125 + (85 * 0.7) * Math.cos(angle)},${125 + (85 * 0.7) * Math.sin(angle)}`;
                                                     }).join(' ')}
-                                                    fill="rgba(16, 185, 129, 0.16)"
-                                                    stroke="rgba(52, 211, 153, 0.5)"
-                                                    strokeWidth="1.2"
+                                                    fill="rgba(16, 185, 129, 0.22)"
+                                                    stroke="rgba(52, 211, 153, 0.85)"
+                                                    strokeWidth="1.5"
                                                     strokeDasharray="3 3"
+                                                    className="filter drop-shadow-[0_0_6px_rgba(16,185,129,0.5)]"
                                                 />
                                                 <polygon
                                                     points={[0, 1, 2, 3, 4].map(i => {
@@ -2367,7 +2368,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         return `${125 + (85 * 0.4) * Math.cos(angle)},${125 + (85 * 0.4) * Math.sin(angle)}`;
                                                     }).join(' ')}
                                                     fill="#0a0f1d"
-                                                    stroke="rgba(52, 211, 153, 0.35)"
+                                                    stroke="rgba(52, 211, 153, 0.4)"
                                                     strokeWidth="1"
                                                 />
 
@@ -2434,7 +2435,6 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                     const labelR = 106;
                                                     const lx = 125 + labelR * Math.cos(angle);
                                                     const ly = 125 + labelR * Math.sin(angle);
-                                                    const isTop = i === 0;
                                                     const isHighlight = axis.score >= 80;
 
                                                     return (
@@ -2540,8 +2540,10 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 <p className="text-xs text-emerald-100/90 leading-relaxed font-sans pl-1">
                                                     {str.description}
                                                 </p>
-                                                <div className="text-[11px] text-gray-400 font-mono bg-slate-950/60 p-2 rounded-xl border border-slate-800">
-                                                    🔍 <strong>산출 근거:</strong> {str.mechanism}
+                                                {/* 슬림화된 산출 근거 텍스트 라인 */}
+                                                <div className="text-[11px] text-gray-400 font-mono flex items-start gap-1 pl-1 pt-0.5">
+                                                    <span className="text-emerald-400/80 shrink-0">🔍 산출 근거:</span>
+                                                    <span className="text-slate-300 leading-snug">{str.mechanism}</span>
                                                 </div>
                                             </div>
                                         ))}
@@ -2603,10 +2605,13 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 <p className="text-xs text-gray-300 leading-relaxed font-sans pl-1">
                                                     {risk.pattern}
                                                 </p>
-                                                <div className="text-[11px] text-gray-400 font-mono bg-slate-950/60 p-2 rounded-xl border border-slate-800">
-                                                    🔍 <strong>발현 기제:</strong> {risk.mechanism}
+                                                {/* 슬림화된 발현 기제 텍스트 라인 */}
+                                                <div className="text-[11px] text-gray-400 font-mono flex items-start gap-1 pl-1 pt-0.5">
+                                                    <span className="text-rose-400/80 shrink-0">🔍 발현 기제:</span>
+                                                    <span className="text-slate-300 leading-snug">{risk.mechanism}</span>
                                                 </div>
-                                                <div className="text-[11px] text-amber-300/90 font-sans bg-amber-950/25 p-2 rounded-xl border border-amber-500/30">
+                                                {/* 산뜻한 완화 솔루션 틴트 박스 */}
+                                                <div className="text-[11px] text-amber-300/90 font-sans bg-amber-950/25 p-2.5 rounded-xl border border-amber-500/30">
                                                     💡 <strong>완화 솔루션:</strong> {risk.mitigationStrategy}
                                                 </div>
                                             </div>
