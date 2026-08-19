@@ -333,11 +333,25 @@ export default function SoulArchivePage() {
   const [activeTab, setActiveTab] = useState<'core' | 'alchemy' | 'neural64' | 'saju12'>('alchemy');
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const [modalItem, setModalItem] = useState<GoldenPathCard | null>(null);
-  const [modalMode, setModalMode] = useState<'expert' | 'beginner'>('expert');
+  const [modalMode, setModalMode] = useState<'expert' | 'beginner' | 'business'>('expert');
   const [essayModal, setEssayModal] = useState<{ title: string; category: string; content: string; affirmation: string; icon: any; color: string } | null>(null);
   const [solutionModal, setSolutionModal] = useState<{ title: string; actionTip: string; why: string; steps: string[]; tip: string } | null>(null);
   const [copiedToast, setCopiedToast] = useState(false);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [businessBmResult, setBusinessBmResult] = useState<{
+    oneLinerIdentity?: string;
+    stage1Title?: string;
+    stage1Role?: string;
+    stage1Desc?: string;
+    stage2Title?: string;
+    stage2Role?: string;
+    stage2Desc?: string;
+    stage3Title?: string;
+    stage3Role?: string;
+    stage3Desc?: string;
+    productPackaging?: string;
+    targetAudience?: string;
+  } | null>(null);
 
   // 🌟 사용자 동적 프로필 상태 (메인 페이지 / 온보딩과 100% 실시간 연동)
   const [userName, setUserName] = useState<string>("강미숙");
@@ -621,11 +635,12 @@ export default function SoulArchivePage() {
     setExpandedCard(prev => prev === id ? null : id);
   };
 
-  const openDetailModal = (item: GoldenPathCard, mode: 'expert' | 'beginner' = 'expert') => {
+  const openDetailModal = (item: GoldenPathCard, mode: 'expert' | 'beginner' | 'business' = 'expert') => {
     setModalItem(item);
     setModalMode(mode);
     setEssayModal(null);
     setSolutionModal(null);
+    setBusinessBmResult(null);
   };
 
   const openSolutionModal = (item: GoldenPathCard) => {
@@ -667,6 +682,33 @@ export default function SoulArchivePage() {
         icon: Sparkles,
         color: 'amber'
       });
+    }
+  };
+
+  const handleGenerateLiveBusinessModel = async () => {
+    if (!modalItem) return;
+    setIsAiGenerating(true);
+    try {
+      const res = await fetch('/api/soul-archive/reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userName,
+          dayMaster: sajuInfo.ganName,
+          sajuPillars: `${sajuInfo.yearPillarKo}년 ${sajuInfo.monthPillarKo}월 ${sajuInfo.dayPillarKo}일 ${sajuInfo.timePillarKo}시 (${sajuInfo.dayPillarKo}일주)`,
+          codeTitle: modalItem.title,
+          codeCategory: modalItem.category,
+          codeType: '비즈니스 메커니즘'
+        })
+      });
+      const json = await res.json();
+      if (json.success && json.data) {
+        setBusinessBmResult(json.data);
+      }
+    } catch (e) {
+      console.error('AI Business Model generation failed:', e);
+    } finally {
+      setIsAiGenerating(false);
     }
   };
 
@@ -962,10 +1004,10 @@ export default function SoulArchivePage() {
               </h2>
               <p className="text-xs text-emerald-400 font-medium">"{modalItem.oneLiner}"</p>
 
-              <div className="pt-2 flex items-center gap-2">
+              <div className="pt-2 flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => setModalMode('expert')}
-                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`flex-1 min-w-[140px] py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     modalMode === 'expert'
                       ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                       : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
@@ -977,7 +1019,7 @@ export default function SoulArchivePage() {
 
                 <button
                   onClick={() => setModalMode('beginner')}
-                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`flex-1 min-w-[130px] py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     modalMode === 'beginner'
                       ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 shadow-md font-black'
                       : 'bg-white/5 text-emerald-300 hover:bg-white/10 border border-emerald-500/30'
@@ -986,9 +1028,22 @@ export default function SoulArchivePage() {
                   <Lightbulb className="w-3.5 h-3.5" />
                   <span>💡 초보자용 쉬운 해설</span>
                 </button>
+
+                <button
+                  onClick={() => setModalMode('business')}
+                  className={`flex-1 min-w-[150px] py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    modalMode === 'business'
+                      ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-amber-600 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] font-black'
+                      : 'bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/40'
+                  }`}
+                >
+                  <Award className="w-3.5 h-3.5" />
+                  <span>💼 천명 BM & 직업 메커니즘</span>
+                </button>
               </div>
             </div>
 
+            {/* 🌟 1. 전문가 모드 (주역 효사 & 사주 정합성) */}
             {modalMode === 'expert' && (
               <div className="space-y-4 animate-fade-in">
                 <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
@@ -999,7 +1054,7 @@ export default function SoulArchivePage() {
                   <p className="text-xs font-serif text-amber-100/90 leading-relaxed bg-amber-950/20 p-2.5 rounded-xl border border-amber-500/20">
                     "{modalItem.hexagramVerse}"
                   </p>
-                  <p className="text-xs text-gray-300 leading-relaxed pt-1 font-sans">
+                  <p className="text-xs text-gray-300 leading-relaxed pt-1 font-sans whitespace-pre-line">
                     {modalItem.hexagramMeaning}
                   </p>
                 </div>
@@ -1009,7 +1064,7 @@ export default function SoulArchivePage() {
                     <UserCheck className="w-4 h-4" />
                     <span>{userName} 님 사주 원국 ({sajuInfo.dayPillarKo}({sajuInfo.dayPillarHanja})일주 · {sajuInfo.ganName}) 1:1 맞춤 정합성</span>
                   </div>
-                  <p className="text-xs text-indigo-100/90 leading-relaxed font-sans">
+                  <p className="text-xs text-indigo-100/90 leading-relaxed font-sans whitespace-pre-line">
                     {modalItem.sajuAlignment}
                   </p>
                 </div>
@@ -1064,6 +1119,7 @@ export default function SoulArchivePage() {
               </div>
             )}
 
+            {/* 🌟 2. 초보자 모드 (쉬운 일상 비유 & 실천) */}
             {modalMode === 'beginner' && (
               <div className="space-y-4 animate-fade-in">
                 <div className="p-4 rounded-2xl bg-emerald-950/25 border border-emerald-500/40 space-y-1.5 shadow-inner">
@@ -1132,6 +1188,131 @@ export default function SoulArchivePage() {
                   </div>
                   <span className="text-[10px] text-cyan-300 underline font-sans shrink-0 ml-2">실천 가이드 팝업 ↗</span>
                 </div>
+              </div>
+            )}
+
+            {/* 🌟 3. VIP 비즈니스 모드 (천명 BM & 직업 3단계 메커니즘) */}
+            {modalMode === 'business' && (
+              <div className="space-y-4 animate-fade-in text-left">
+                
+                {/* 1. 한 줄 직업 정체성 배너 */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 border border-amber-500/50 space-y-2 shadow-lg">
+                  <div className="flex items-center justify-between text-[11px] font-mono font-bold text-amber-300">
+                    <span className="flex items-center gap-1.5">
+                      <Crown className="w-4 h-4 text-amber-400" />
+                      <span>👑 한 줄로 정의되는 {userName} 님의 직업적 정체성</span>
+                    </span>
+                    <button
+                      onClick={() => handleCopyText(businessBmResult?.oneLinerIdentity || "타인의 에너지 낭비와 삶의 병목을 명쾌한 시스템으로 해방시키고(뇌수해), 이를 현실적인 지식 비즈니스와 가치로 구현하는 프로덕트 빌더이자 마스터 코치")}
+                      className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[10px] flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <Copy className="w-3 h-3" />
+                      <span>복사</span>
+                    </button>
+                  </div>
+                  <p className="text-xs sm:text-sm font-black text-amber-100 leading-relaxed font-sans">
+                    "{businessBmResult?.oneLinerIdentity || (
+                      modalItem.gateNum === 40
+                        ? "타인의 에너지 낭비와 삶의 병목을 명쾌한 시스템으로 해방시키고(뇌수해), 이를 현실적인 지식 비즈니스와 가치로 구현하는 프로덕트 빌더이자 마스터 코치"
+                        : `${sajuInfo.dayPillarKo}일주의 고유한 ${sajuInfo.ganName} 기운과 ${modalItem.title}의 지혜로 사람들의 병목을 해방시키고 독보적 지식 프로덕트를 완성하는 마스터 아키텍트`
+                    )}"
+                  </p>
+                </div>
+
+                {/* 2. 직업적 3단계 메커니즘 인터랙티브 플로우 */}
+                <div className="space-y-2.5">
+                  <div className="text-xs font-mono font-bold text-gray-300 flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <span>⚡ 천명 연금술 직업적 3단계 메커니즘 (Business Mechanism)</span>
+                  </div>
+
+                  {/* 1단계: 진단 영역 (Analyst) */}
+                  <div className="p-4 rounded-2xl bg-blue-950/30 border border-blue-500/40 space-y-1.5">
+                    <div className="flex items-center justify-between text-blue-300 font-mono text-xs font-bold">
+                      <span>{businessBmResult?.stage1Title || "1단계: 감수(坎水) — 문제와 병목의 포착 (진단 영역)"}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] border border-blue-500/40 font-mono">
+                        {businessBmResult?.stage1Role || "진단자 (Analyst)"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-blue-100/90 leading-relaxed font-sans">
+                      {businessBmResult?.stage1Desc || "사람들이 어디서 불안해하고, 어떤 인지적·현실적 오류에 갇혀(속박) 에너지를 낭비하는지 본능적으로 꿰뚫어 봅니다. 복잡하게 꼬인 실타래의 '핵심 매듭'을 찾아내는 진단자(Analyst)의 역할입니다."}
+                    </p>
+                  </div>
+
+                  {/* 2단계: 솔루션 영역 (Solution Architect) */}
+                  <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/40 space-y-1.5">
+                    <div className="flex items-center justify-between text-purple-300 font-mono text-xs font-bold">
+                      <span>{businessBmResult?.stage2Title || "2단계: 진뢰(震雷) — 급소 타격과 프레임워크 (솔루션 영역)"}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] border border-purple-500/40 font-mono">
+                        {businessBmResult?.stage2Role || "설계자 (Solution Architect)"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-purple-100/90 leading-relaxed font-sans">
+                      {businessBmResult?.stage2Desc || "단순한 위로에 그치지 않고, 명쾌한 이론·알고리즘·시스템으로 막힌 곳을 단번에 뚫어내는 설계자(Solution Architect)의 기제입니다. 주역 40.2효의 ‘황금 화살(黃矢)’처럼 본질을 정조준하여 문제를 즉시 해소합니다."}
+                    </p>
+                  </div>
+
+                  {/* 3단계: 수익·사업 영역 (Product Builder) */}
+                  <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 space-y-1.5">
+                    <div className="flex items-center justify-between text-emerald-300 font-mono text-xs font-bold">
+                      <span>{businessBmResult?.stage3Title || "3단계: 을미(乙未) — 시스템화와 실질적 부가가치 (수익·사업 영역)"}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] border border-emerald-500/40 font-mono">
+                        {businessBmResult?.stage3Role || "프로덕트 빌더 (Product Builder)"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-emerald-100/90 leading-relaxed font-sans">
+                      {businessBmResult?.stage3Desc || "추상적인 철학이나 지식에 머물지 않고, 책·플랫폼·교육 프로그램·컨설팅 같은 구체적인 현실의 결과물(편재)로 패키징하여 수익과 가치로 치환합니다."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. 추천 프로덕트 패키징 & 타겟 고객 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-1 text-xs">
+                    <strong className="text-amber-400 block font-mono text-[11px] flex items-center gap-1.5">
+                      <Target className="w-3.5 h-3.5 text-amber-400" />
+                      <span>📦 추천 1순위 지식 상품 패키징</span>
+                    </strong>
+                    <p className="text-gray-300 leading-relaxed font-sans">
+                      {businessBmResult?.productPackaging || "『삶의 병목을 푸는 해방의 뇌수해 알고리즘』 전자책 + 1:1 진단 컨설팅 세션 + 프레임워크 워크시트"}
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-1 text-xs">
+                    <strong className="text-cyan-400 block font-mono text-[11px] flex items-center gap-1.5">
+                      <UserCheck className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>🎯 핵심 타겟 고객군 (Target)</span>
+                    </strong>
+                    <p className="text-gray-300 leading-relaxed font-sans">
+                      {businessBmResult?.targetAudience || "노력 대비 성과가 막혀 답답해하는 창업가, 전문가, 그리고 자기검열과 에너지 소진에 갇힌 도반들"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 4. AI 실시간 생성 버튼 */}
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3">
+                  <div className="text-xs text-amber-200 font-sans">
+                    💡 다른 관점의 1:1 맞춤형 비즈니스 BM 아키텍처를 AI로 즉시 재연산할 수 있습니다.
+                  </div>
+                  <button
+                    onClick={handleGenerateLiveBusinessModel}
+                    disabled={isAiGenerating}
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-95 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-md shrink-0"
+                  >
+                    {isAiGenerating ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>AI BM 분석 중...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Bot className="w-3.5 h-3.5" />
+                        <span>🔮 AI 천명 BM 생성</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
               </div>
             )}
 

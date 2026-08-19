@@ -12,7 +12,47 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'API Key not configured' }, { status: 400 });
         }
 
-        const prompt = `
+        const isBusinessMode = codeType === '비즈니스 메커니즘' || codeType === '천명 BM' || codeType === '직업 아키텍처';
+
+        let prompt = '';
+
+        if (isBusinessMode) {
+            prompt = `
+당신은 대한민국 최고의 동양역학(주역/사주) ✕ 지식 비즈니스 아키텍처 융합 설계자 '명심 비즈니스 마스터'입니다.
+수신인: ${userName || '도반'} 님 (사주 일주: ${dayMaster || '금'}, 원국: ${sajuPillars || '맞춤 원국'})
+선택한 코드: ${codeTitle} (${codeCategory})
+
+[핵심 미션]:
+수신인의 사주 원국과 선택된 괘의 상괘/하괘 및 주역 효사를 바탕으로, 단순한 성향 분석을 넘어 **명확한 ‘직업적 메커니즘(비즈니스 모델/BM)’**을 1:1 맞춤형으로 도출하세요.
+
+[필수 구조]:
+1. 한 줄 직업적 정체성: "타인의 [핵심 문제]를 [고유 솔루션]으로 해방시키고([괘명]), 이를 현실적인 [비즈니스 형태]로 구현하는 [직업적 페르소나]" 형식으로 명쾌하게 정의.
+2. 1단계: 하괘/오행 중심 — 문제와 병목의 포착 (진단 영역 / Analyst)
+   - 타인이 어디서 불안해하고 어떤 인지적·현실적 오류에 갇혀 에너지를 낭비하는지 본능적으로 꿰뚫어 보는 진단자 역할.
+3. 2단계: 상괘/효사 중심 — 급소 타격과 프레임워크 (솔루션 영역 / Solution Architect)
+   - 단순 위로가 아닌 명쾌한 이론·알고리즘·시스템으로 막힌 곳을 단번에 뚫어내는 솔루션 설계자 기제 (황금 화살 원리).
+4. 3단계: 일주/시주/십성 중심 — 시스템화와 실질적 부가가치 (수익·사업 영역 / Product Builder)
+   - 추상적 지식에 머물지 않고 책·플랫폼·교육·컨설팅 등 구체적 프로덕트로 패키징하여 수익과 가치로 치환하는 방법.
+5. 구체적 프로덕트 제안: 지금 당장 런칭할 수 있는 1순위 지식 비즈니스 프로덕트 예시 (책, VOD, 1:1 컨설팅 등).
+
+반드시 순수한 JSON 형식만 출력하세요:
+{
+  "oneLinerIdentity": "한 줄로 정의되는 강력한 직업적 정체성",
+  "stage1Title": "1단계: [하괘/오행명] — 문제와 병목의 포착 (진단 영역)",
+  "stage1Role": "진단자 (Analyst)",
+  "stage1Desc": "타인의 불안과 인지적 속박을 꿰뚫어 보는 진단 메커니즘 상세 설명",
+  "stage2Title": "2단계: [상괘/효사명] — 급소 타격과 프레임워크 (솔루션 영역)",
+  "stage2Role": "설계자 (Solution Architect)",
+  "stage2Desc": "명쾌한 알고리즘과 황금 화살로 막힌 곳을 단번에 뚫어내는 설계 기제 상세 설명",
+  "stage3Title": "3단계: [십성/오행명] — 시스템화와 실질적 부가가치 (수익·사업 영역)",
+  "stage3Role": "프로덕트 빌더 (Product Builder)",
+  "stage3Desc": "책, 플랫폼, 교육 프로그램 등 구체적 결과물로 패키징하여 수익화하는 방법 상세 설명",
+  "productPackaging": "추천 1순위 지식 상품 패키징 (예: 전자책 + 프레임워크 워크시트 + VIP 컨설팅)",
+  "targetAudience": "가장 열광할 핵심 타겟 고객군 정의"
+}
+`;
+        } else {
+            prompt = `
 당신은 대한민국 최고의 동양역학 ✕ 인지신경과학 융합 코칭 마스터 '명심 코치'입니다.
 수신인: ${userName || '도반'} 님 (사주 일주: ${dayMaster || '금'}, 원국: ${sajuPillars || '맞춤 원국'})
 선택한 코드: ${codeTitle} (${codeCategory})
@@ -33,6 +73,7 @@ export async function POST(req: NextRequest) {
   "actionSolution": "오늘 당장 10분 만에 할 수 있는 실천 솔루션"
 }
 `;
+        }
 
         // 🌟 Google 공식 네이티브 REST API 호출 (gemini-2.5-flash)
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -60,6 +101,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             success: true,
             model: 'gemini-2.5-flash',
+            isBusiness: isBusinessMode,
             data: parsed
         });
 
