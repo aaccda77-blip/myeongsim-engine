@@ -2338,12 +2338,12 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     {/* SVG Radar Chart with Optimal Zone Green Band & Vertex Labels */}
                                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
                                         <div className="relative w-[230px] h-[230px] shrink-0">
-                                            <svg viewBox="0 0 260 260" className="w-full h-full overflow-visible">
+                                            <svg viewBox="0 0 250 250" className="w-full h-full overflow-visible">
                                                 {/* 1. Base Grid Background (100% outer) */}
                                                 <polygon
                                                     points={[0, 1, 2, 3, 4].map(i => {
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                        return `${130 + 85 * Math.cos(angle)},${125 + 85 * Math.sin(angle)}`;
+                                                        return `${125 + 85 * Math.cos(angle)},${125 + 85 * Math.sin(angle)}`;
                                                     }).join(' ')}
                                                     fill="rgba(15, 23, 42, 0.6)"
                                                     stroke="rgba(148, 163, 184, 0.2)"
@@ -2354,7 +2354,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 <polygon
                                                     points={[0, 1, 2, 3, 4].map(i => {
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                        return `${130 + (85 * 0.7) * Math.cos(angle)},${125 + (85 * 0.7) * Math.sin(angle)}`;
+                                                        return `${125 + (85 * 0.7) * Math.cos(angle)},${125 + (85 * 0.7) * Math.sin(angle)}`;
                                                     }).join(' ')}
                                                     fill="rgba(16, 185, 129, 0.22)"
                                                     stroke="rgba(52, 211, 153, 0.85)"
@@ -2365,7 +2365,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 <polygon
                                                     points={[0, 1, 2, 3, 4].map(i => {
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                        return `${130 + (85 * 0.4) * Math.cos(angle)},${125 + (85 * 0.4) * Math.sin(angle)}`;
+                                                        return `${125 + (85 * 0.4) * Math.cos(angle)},${125 + (85 * 0.4) * Math.sin(angle)}`;
                                                     }).join(' ')}
                                                     fill="#0a0f1d"
                                                     stroke="rgba(52, 211, 153, 0.4)"
@@ -2375,12 +2375,12 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                 {/* 3. Axis Lines */}
                                                 {[0, 1, 2, 3, 4].map((i) => {
                                                     const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                    const x2 = 130 + 85 * Math.cos(angle);
+                                                    const x2 = 125 + 85 * Math.cos(angle);
                                                     const y2 = 125 + 85 * Math.sin(angle);
                                                     return (
                                                         <line
                                                             key={i}
-                                                            x1="130"
+                                                            x1="125"
                                                             y1="125"
                                                             x2={x2}
                                                             y2={y2}
@@ -2396,7 +2396,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
                                                         const normScore = Math.max(20, Math.min(100, axis.score)) / 100;
                                                         const r = 85 * normScore;
-                                                        return `${130 + r * Math.cos(angle)},${125 + r * Math.sin(angle)}`;
+                                                        return `${125 + r * Math.cos(angle)},${125 + r * Math.sin(angle)}`;
                                                     }).join(' ');
 
                                                     return (
@@ -2411,7 +2411,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                             {sajuRarityInfo.radarAxes.map((axis, i) => {
                                                                 const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
                                                                 const normScore = Math.max(20, Math.min(100, axis.score)) / 100;
-                                                                const cx = 130 + 85 * normScore * Math.cos(angle);
+                                                                const cx = 125 + 85 * normScore * Math.cos(angle);
                                                                 const cy = 125 + 85 * normScore * Math.sin(angle);
                                                                 return (
                                                                     <circle
@@ -2429,18 +2429,27 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                     );
                                                 })()}
 
-                                                {/* 5. 🌟 꼭짓점 오행 & 점수 라벨 (360px 모바일 완벽 대응 여유 간격) */}
+                                                {/* 5. 🌟 꼭짓점 오행 & 점수 라벨 (하단 축 좌우 분리 & 모바일 겹침 방지) */}
                                                 {sajuRarityInfo.radarAxes.map((axis, i) => {
                                                     const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                                                    // 0(Top), 1(Right-top), 2(Right-bottom), 3(Left-bottom), 4(Left-top)
-                                                    let lx = 130 + 108 * Math.cos(angle);
-                                                    let ly = 125 + 108 * Math.sin(angle);
-                                                    let anchor: 'middle' | 'start' | 'end' = 'middle';
-
-                                                    if (i === 1) { lx += 4; anchor = 'start'; }
-                                                    else if (i === 2) { lx += 8; ly += 6; anchor = 'start'; } // 토(土) 우측 하단 벌림
-                                                    else if (i === 3) { lx -= 8; ly += 6; anchor = 'end'; }   // 금(金) 좌측 하단 벌림
-                                                    else if (i === 4) { lx -= 4; anchor = 'end'; }
+                                                    const labelR = 106;
+                                                    let lx = 125 + labelR * Math.cos(angle);
+                                                    let ly = 125 + labelR * Math.sin(angle);
+                                                    
+                                                    // 360px 모바일 화면 및 하단 꼭짓점 라벨 간격 분리 최적화
+                                                    if (i === 0) {
+                                                        ly -= 4; // 상단 목
+                                                    } else if (i === 1) {
+                                                        lx += 6; // 우상단 화
+                                                    } else if (i === 2) {
+                                                        lx += 12; // 우하단 토 (우측으로 벌림)
+                                                        ly += 6;
+                                                    } else if (i === 3) {
+                                                        lx -= 12; // 좌하단 금 (좌측으로 벌림)
+                                                        ly += 6;
+                                                    } else if (i === 4) {
+                                                        lx -= 6; // 좌상단 수
+                                                    }
 
                                                     const isHighlight = axis.score >= 80;
 
@@ -2448,8 +2457,8 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                         <g key={i}>
                                                             <text
                                                                 x={lx}
-                                                                y={ly - 5}
-                                                                textAnchor={anchor}
+                                                                y={ly - 4}
+                                                                textAnchor="middle"
                                                                 dominantBaseline="central"
                                                                 className={`text-[11px] font-black ${
                                                                     isHighlight ? 'fill-amber-300 font-bold' : 'fill-slate-300'
@@ -2460,7 +2469,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                                             <text
                                                                 x={lx}
                                                                 y={ly + 8}
-                                                                textAnchor={anchor}
+                                                                textAnchor="middle"
                                                                 dominantBaseline="central"
                                                                 className={`text-[10px] font-mono font-bold ${
                                                                     isHighlight ? 'fill-amber-400' : 'fill-slate-400'
@@ -2568,61 +2577,65 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     </div>
 
                                     <div className="space-y-2">
-                                        {sajuRarityInfo.risks.map((risk, idx) => (
-                                            <div key={idx} className="p-3.5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="w-4 h-4 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold flex items-center justify-center border border-rose-500/40">
-                                                            !
+                                        {sajuRarityInfo.risks.map((risk, idx) => {
+                                            const counterpartScore = sajuRarityInfo.strengths[idx]?.score || (idx === 0 ? sajuRarityInfo.focusExecutiveScore : sajuRarityInfo.systemInnovationScore) || 87;
+
+                                            return (
+                                                <div key={idx} className="p-3.5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="w-4 h-4 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold flex items-center justify-center border border-rose-500/40">
+                                                                !
+                                                            </span>
+                                                            <span className="text-xs font-bold text-rose-200 font-sans">{risk.title}</span>
+                                                        </div>
+                                                        <span className="text-[11px] font-black font-mono text-rose-300 bg-rose-950/90 px-2 py-0.5 rounded-md border border-rose-500/40">
+                                                            ⚠️ {risk.riskLevel} {risk.score}점
                                                         </span>
-                                                        <span className="text-xs font-bold text-rose-200 font-sans">{risk.title}</span>
                                                     </div>
-                                                    <span className="text-[11px] font-black font-mono text-rose-300 bg-rose-950/90 px-2 py-0.5 rounded-md border border-rose-500/40">
-                                                        ⚠️ {risk.riskLevel} {risk.score}점
-                                                    </span>
-                                                </div>
 
-                                                {/* Split Polarity Bar (Left: Shadow Risk / Right: Strength Potential) */}
-                                                <div className="p-2 rounded-xl bg-slate-950 border border-slate-800 space-y-1 font-mono text-[10px]">
-                                                    <div className="flex justify-between text-gray-400 text-[9px]">
-                                                        <span className="text-rose-400 font-bold">◀ 그림자 리스크 ({risk.score}%)</span>
-                                                        <span className="text-gray-400 font-mono">중심 (0)</span>
-                                                        <span className="text-emerald-400 font-bold">강점 잠재력 ({sajuRarityInfo.strengths[idx]?.score || 87}%) ▶</span>
-                                                    </div>
-                                                    <div className="relative w-full h-2 rounded-full bg-slate-900 flex overflow-hidden">
-                                                        {/* Left Bar (Red - 뻗어나감) */}
-                                                        <div className="w-1/2 flex justify-end">
-                                                            <div
-                                                                className="h-full bg-gradient-to-l from-rose-500 to-rose-700 rounded-l-full"
-                                                                style={{ width: `${Math.min(100, Math.max(0, risk.score))}%` }}
-                                                            />
+                                                    {/* Split Polarity Bar (Left: Shadow Risk / Right: Strength Potential - 정밀 비례 분기) */}
+                                                    <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5 font-mono text-[10px]">
+                                                        <div className="flex justify-between text-gray-400 text-[9px]">
+                                                            <span className="text-rose-400 font-bold">◀ 그림자 리스크 ({risk.score}%)</span>
+                                                            <span className="text-gray-400 font-mono">중심 (0)</span>
+                                                            <span className="text-emerald-400 font-bold">강점 잠재력 ({counterpartScore}%) ▶</span>
                                                         </div>
-                                                        {/* Center Divider */}
-                                                        <div className="w-0.5 h-full bg-white z-10" />
-                                                        {/* Right Bar (Emerald - 뻗어나감) */}
-                                                        <div className="w-1/2 flex justify-start">
-                                                            <div
-                                                                className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-r-full"
-                                                                style={{ width: `${Math.min(100, Math.max(0, sajuRarityInfo.strengths[idx]?.score || 87))}%` }}
-                                                            />
+                                                        <div className="relative w-full h-2.5 rounded-full bg-slate-900 flex overflow-hidden border border-slate-800/80">
+                                                            {/* Left Half Container (Red - Right to Left 뻗어나감) */}
+                                                            <div className="w-1/2 h-full flex justify-end">
+                                                                <div
+                                                                    className="h-full bg-gradient-to-l from-rose-500 to-rose-700"
+                                                                    style={{ width: `${Math.min(100, Math.max(0, risk.score))}%` }}
+                                                                />
+                                                            </div>
+                                                            {/* Exact Center 0 Divider */}
+                                                            <div className="w-[2px] h-full bg-white z-10 shrink-0 shadow-[0_0_4px_#ffffff]" />
+                                                            {/* Right Half Container (Emerald - Left to Right 뻗어나감) */}
+                                                            <div className="w-1/2 h-full flex justify-start">
+                                                                <div
+                                                                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400"
+                                                                    style={{ width: `${Math.min(100, Math.max(0, counterpartScore))}%` }}
+                                                                />
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                <p className="text-xs text-gray-300 leading-relaxed font-sans pl-1">
-                                                    {risk.pattern}
-                                                </p>
-                                                {/* 슬림화된 발현 기제 텍스트 라인 */}
-                                                <div className="text-[11px] text-gray-400 font-mono flex items-start gap-1 pl-1 pt-0.5">
-                                                    <span className="text-rose-400/80 shrink-0">🔍 발현 기제:</span>
-                                                    <span className="text-slate-300 leading-snug">{risk.mechanism}</span>
+                                                    <p className="text-xs text-gray-300 leading-relaxed font-sans pl-1">
+                                                        {risk.pattern}
+                                                    </p>
+                                                    {/* 슬림화된 발현 기제 텍스트 라인 */}
+                                                    <div className="text-[11px] text-gray-400 font-mono flex items-start gap-1 pl-1 pt-0.5">
+                                                        <span className="text-rose-400/80 shrink-0">🔍 발현 기제:</span>
+                                                        <span className="text-slate-300 leading-snug">{risk.mechanism}</span>
+                                                    </div>
+                                                    {/* 산뜻한 완화 솔루션 틴트 박스 */}
+                                                    <div className="text-[11px] text-amber-300/90 font-sans bg-amber-950/25 p-2.5 rounded-xl border border-amber-500/30">
+                                                        💡 <strong>완화 솔루션:</strong> {risk.mitigationStrategy}
+                                                    </div>
                                                 </div>
-                                                {/* 산뜻한 완화 솔루션 틴트 박스 */}
-                                                <div className="text-[11px] text-amber-300/90 font-sans bg-amber-950/25 p-2.5 rounded-xl border border-amber-500/30">
-                                                    💡 <strong>완화 솔루션:</strong> {risk.mitigationStrategy}
-                                                </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
@@ -2637,14 +2650,14 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     </p>
                                 </div>
 
-                                {/* Bottom Fixed Action CTA with iOS Safe Area Protection */}
-                                <div className="pt-1 pb-2 sm:pb-1">
+                                {/* 🌟 4. 하단 Sticky CTA 버튼 & 모바일 Safe Area 보호 */}
+                                <div className="pt-2 sticky bottom-0 bg-[#0a0f1d]/95 backdrop-blur-md pb-[max(0.75rem,env(safe-area-inset-bottom,0.75rem))] -mx-5 px-5 sm:-mx-7 sm:px-7 border-t border-slate-800/80">
                                     <button
                                         onClick={() => setShowRarityModal(false)}
-                                        className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:opacity-95 text-slate-950 font-black text-xs sm:text-sm shadow-[0_4px_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer active:scale-[0.99] flex items-center justify-center gap-2"
+                                        className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:opacity-95 text-slate-950 font-black text-xs sm:text-sm shadow-[0_4px_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
                                     >
                                         <span>확인 완료 및 1:1 맞춤 코칭 계속하기</span>
-                                        <ArrowRight className="w-4 h-4" />
+                                        <span>➔</span>
                                     </button>
                                 </div>
                             </div>
