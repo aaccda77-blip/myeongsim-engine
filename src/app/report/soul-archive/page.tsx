@@ -227,7 +227,7 @@ function buildCardForGate(
       oneLiner: "사람들을 속박에서 해방시키는 솔루션으로 얻는 최고의 풍요",
       hexLines: [false, false, true, false, true, false],
       hexagramVerse: "田獲三狐, 得黃矢, 貞吉 (사냥에서 문제를 일으키는 세 마리 여우를 잡고, 바른 황금 화살을 얻으니 바르고 길하다.)",
-      hexagramMeaning: `1. 괘 번호 및 괘명 검증: 정확히 일치 (100%)\n64괘 표준 순서 (문왕괘 서열): 40번 = 뇌수해 (雷水解)\n\n· 상괘: 진뢰(震雷 ☳, 우레/행동/돌파)\n· 하괘: 감수(坎水 ☵, 험난함/속박/지혜)\n· 괘의 본질: "봄비와 천둥이 험난한 겨울의 얼음을 녹여 만물을 속박에서 해방시킨다(雷雨作 解)."\n→ 화면의 "사람들을 속박에서 해방시키는 솔루션" 정의와 정확히 일치합니다.\n\n2. 40.2 (2효) 및 코드 해석 검증\n주역 40.2(九二) 효사: "田獲三狐, 得黃矢, 貞吉"\n· 해석: 얽매인 난제(속박/다크코드)를 정확한 지혜로 해결하여 정당한 수확과 풍요(뉴럴/메타코드)를 얻는 효입니다.\n· 다크코드(그림자): 40번 키의 근본 그림자인 'Exhaustion(소진/에너지 고갈)'과 정확히 연결됩니다. (돈·성과 집착으로 인한 건강/영혼 손실)\n· 뉴럴·메타코드(선물/성취): 40번 키의 선물·지혜인 'Resolve(단호한 결의) / Divine Will(신성한 자유)'와 일치하여, 얽매임을 풀고 진정한 자유와 풍요를 완성하는 구조입니다.`,
+      hexagramMeaning: `1. 괘 번호 및 괘명 검증: 정확히 일치 (100%)\n64괘 표준 순서 (문왕괘 서열): 40번 = 뇌수해 (雷水解)\n\n· 상괘: 진뢰(震雷 ☳, 우레/행동/돌파)\n· 하괘: 감수(坎水 ☵, 험난함/속박/지혜)\n· 괘의 본질: "봄비와 천둥이 험난한 겨울의 얼음을 녹여 만물을 속박에서 해방시킨다(雷雨作 解)."\n→ 화면의 "사람들을 속박에서 해방시키는 솔루션" 정의와 정확히 일치합니다.\n\n2. 40.2 (2효) 및 코드 해석 검증\n주역 40.2(九二) 효사: "田獲三狐, 得黃矢, 貞吉"\n· 해석: 얽매인 난제(다크코드)를 정확한 지혜로 해결하여 정당한 수확과 풍요(뉴럴·메타코드)를 얻는 효입니다.\n· 다크코드(과거의 방어기제): 40번 명심 천명 코드의 근본 다크코드인 '에너지 소진(Exhaustion)과 과부하'와 정확히 연결됩니다. (돈·성과 집착으로 인한 건강/영혼 손실)\n· 뉴럴·메타코드(천부적 주권 무기 & 초의식): 40번 천명 코드의 뉴럴코드인 '단호한 결의(Resolve)' 및 메타코드인 '신성한 자유(Divine Will)'와 일치하여, 얽매임을 풀고 진정한 자유와 풍요를 완성하는 구조입니다.`,
       sajuAlignment: isSinsa ? `3. 사주 원국(경신년 계미월 신사일 을미시)과의 정합성\n\n[조후와 통관의 매듭을 푸는 상(解)]\n한여름 조열한 미월(未月)의 신사(辛巳) 일주에게 월간 계수(癸水, 감수 ☵)와 시상 을목(乙木, 편재)은 막힌 기운을 뚫고 생명력을 틔우는 핵심 글자입니다.\n\n[코칭/솔루션 알고리즘]\n타인의 억압된 문제와 병목(坎/속박)을 명쾌한 분석과 솔루션(震/번개)으로 풀어내어 현실적 결실(乙未 편재)로 전환하는 명식의 지향점과 뇌수해 40.2의 메타코드가 일관되게 맞물려 있습니다.` : `${userName} 님의 ${sajuPillarText} 명식(${sajuInfo.yearPillarKo}년 ${sajuInfo.monthPillarKo}월 ${sajuInfo.dayPillarKo}일 ${sajuInfo.timePillarKo}시)에서 타인의 억압된 문제와 병목(坎/속박)을 명쾌한 분석과 솔루션(震/번개)으로 풀어내어 현실적 결실로 전환하는 명식의 지향점과 뇌수해 40.2의 메타코드가 완벽하게 맞물려 있습니다.`,
       darkCode: "돈과 성과에 집착하다 정작 내 건강과 영혼의 평화를 잃는 위험",
       neuralCode: "물질적 번영과 영적 자유가 완벽하게 일치하는 풍요의 완성",
@@ -1553,7 +1553,7 @@ export default function SoulArchivePage() {
         {activeTab === 'alchemy' && (
           <div className="space-y-6 animate-fade-in text-left">
             
-            {/* 1단계: 본질 각성 경로 (Activation Sequence) */}
+            {/* 1단계: 본질 각성 경로 (Activation Matrix) */}
             <div className="relative p-6 sm:p-7 rounded-3xl bg-gradient-to-b from-[#06151b] via-[#051015] to-[#03060c] border border-emerald-500/40 space-y-5 shadow-[0_10px_35px_rgba(16,185,129,0.15)] overflow-hidden">
               <div className="flex items-center justify-between border-b border-emerald-950/60 pb-3.5">
                 <div className="flex items-center gap-3">
@@ -1563,7 +1563,7 @@ export default function SoulArchivePage() {
                   <div>
                     <h3 className="text-base font-black text-emerald-300 flex items-center gap-2">
                       <span>1단계. 본질 각성 경로</span>
-                      <span className="text-[10px] text-emerald-400/80 font-mono font-normal">(Activation Sequence)</span>
+                      <span className="text-[10px] text-emerald-400/80 font-mono font-normal">(Activation Matrix)</span>
                     </h3>
                     <p className="text-xs text-gray-400">
                       {userName} 님의 천명 과업 · 성장 도약대 · 생체 활력 · 영혼의 뿌리 4대 코드
@@ -1669,7 +1669,7 @@ export default function SoulArchivePage() {
               </div>
             </div>
 
-            {/* 2단계: 심신 공명 경로 (Venus Sequence) */}
+            {/* 2단계: 심신 공명 경로 (Resonance Matrix) */}
             <div className="relative p-6 sm:p-7 rounded-3xl bg-gradient-to-b from-[#1b0a12] via-[#14070d] to-[#03060c] border border-rose-500/40 space-y-5 shadow-[0_10px_35px_rgba(244,63,94,0.15)] overflow-hidden">
               <div className="flex items-center justify-between border-b border-rose-950/60 pb-3.5">
                 <div className="flex items-center gap-3">
@@ -1679,7 +1679,7 @@ export default function SoulArchivePage() {
                   <div>
                     <h3 className="text-base font-black text-rose-300 flex items-center gap-2">
                       <span>2단계. 심신 공명 경로</span>
-                      <span className="text-[10px] text-rose-400/80 font-mono font-normal">(Venus Sequence)</span>
+                      <span className="text-[10px] text-rose-400/80 font-mono font-normal">(Resonance Matrix)</span>
                     </h3>
                     <p className="text-xs text-gray-400">
                       {userName} 님의 공명 자력 · 명철 지성 · 자비 감성 · 영적 주권 4대 코드
@@ -1785,7 +1785,7 @@ export default function SoulArchivePage() {
               </div>
             </div>
 
-            {/* 3단계: 천명 번영 경로 (Pearl Sequence) */}
+            {/* 3단계: 천명 번영 경로 (Abundance Matrix) */}
             <div className="relative p-6 sm:p-7 rounded-3xl bg-gradient-to-b from-[#1c1406] via-[#140f04] to-[#03060c] border border-amber-500/45 space-y-5 shadow-[0_10px_35px_rgba(245,158,11,0.2)] overflow-hidden">
               <div className="flex items-center justify-between border-b border-amber-950/60 pb-3.5">
                 <div className="flex items-center gap-3">
@@ -1795,7 +1795,7 @@ export default function SoulArchivePage() {
                   <div>
                     <h3 className="text-base font-black text-amber-300 flex items-center gap-2">
                       <span>3단계. 천명 번영 경로</span>
-                      <span className="text-[10px] text-amber-400/80 font-mono font-normal">(Pearl Sequence)</span>
+                      <span className="text-[10px] text-amber-400/80 font-mono font-normal">(Abundance Matrix)</span>
                     </h3>
                     <p className="text-xs text-gray-400">
                       {userName} 님의 코어 미션 · 협력 생태계 · 시그니처 권위 · 퀀텀 풍요 4대 코드
