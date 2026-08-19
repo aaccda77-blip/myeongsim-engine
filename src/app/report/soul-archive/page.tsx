@@ -389,6 +389,83 @@ export default function SoulArchivePage() {
   const [inputName, setInputName] = useState<string>("강미숙");
   const [inputDob, setInputDob] = useState<string>("1976-09-09");
   const [inputTime, setInputTime] = useState<string>("13:40");
+  const [timeSelectMode, setTimeSelectMode] = useState<'ganji' | 'ampm'>('ganji');
+  const [selectedGanjiTime, setSelectedGanjiTime] = useState<string>('mi');
+  const [ampm, setAmpm] = useState<'AM' | 'PM'>('PM');
+  const [inputHour, setInputHour] = useState<number>(1);
+  const [inputMinute, setInputMinute] = useState<number>(40);
+
+  // 12간지 시진 목록 상수
+  const GANJI_TIMES = [
+    { id: 'unknown', name: '시간 모름 (12:00 정오 기준)', value: '12:00' },
+    { id: 'ja', name: '자시 (子時 · 23:30 ~ 01:29)', value: '00:00' },
+    { id: 'chuk', name: '축시 (丑時 · 01:30 ~ 03:29)', value: '02:30' },
+    { id: 'in', name: '인시 (寅時 · 03:30 ~ 05:29)', value: '04:30' },
+    { id: 'myo', name: '묘시 (卯時 · 05:30 ~ 07:29)', value: '06:30' },
+    { id: 'jin', name: '진시 (辰時 · 07:30 ~ 09:29)', value: '08:30' },
+    { id: 'sa', name: '사시 (巳時 · 09:30 ~ 11:29)', value: '10:30' },
+    { id: 'o', name: '오시 (午時 · 11:30 ~ 13:29)', value: '12:30' },
+    { id: 'mi', name: '미시 (未時 · 13:30 ~ 15:29)', value: '14:30' },
+    { id: 'shin', name: '신시 (申時 · 15:30 ~ 17:29)', value: '16:30' },
+    { id: 'yu', name: '유시 (酉時 · 17:30 ~ 19:29)', value: '18:30' },
+    { id: 'sul', name: '술시 (戌時 · 19:30 ~ 21:29)', value: '20:30' },
+    { id: 'hae', name: '해시 (亥時 · 21:30 ~ 23:29)', value: '22:30' },
+  ];
+
+  // 시간 문자열 파싱 헬퍼
+  const handleOpenEditModal = () => {
+    setInputName(userName);
+    setInputDob(birthDate);
+    setInputTime(birthTime);
+
+    try {
+      const [hStr, mStr] = birthTime.split(':');
+      let h = parseInt(hStr || '12', 10);
+      const m = parseInt(mStr || '0', 10);
+      if (h >= 12) {
+        setAmpm('PM');
+        if (h > 12) h -= 12;
+      } else {
+        setAmpm('AM');
+        if (h === 0) h = 12;
+      }
+      setInputHour(h);
+      setInputMinute(m);
+    } catch (e) {}
+
+    setShowEditModal(true);
+  };
+
+  const handleUpdateFromAmpm = (newAmpm: 'AM' | 'PM', newH: number, newM: number) => {
+    setAmpm(newAmpm);
+    setInputHour(newH);
+    setInputMinute(newM);
+    let h24 = newH;
+    if (newAmpm === 'PM' && newH < 12) h24 += 12;
+    if (newAmpm === 'AM' && newH === 12) h24 = 0;
+    const timeStr = `${String(h24).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
+    setInputTime(timeStr);
+  };
+
+  const handleUpdateFromGanji = (ganjiId: string) => {
+    setSelectedGanjiTime(ganjiId);
+    const item = GANJI_TIMES.find(g => g.id === ganjiId);
+    if (item) {
+      setInputTime(item.value);
+      const [hStr, mStr] = item.value.split(':');
+      let h = parseInt(hStr, 10);
+      const m = parseInt(mStr, 10);
+      if (h >= 12) {
+        setAmpm('PM');
+        if (h > 12) h -= 12;
+      } else {
+        setAmpm('AM');
+        if (h === 0) h = 12;
+      }
+      setInputHour(h);
+      setInputMinute(m);
+    }
+  };
 
   // 🌟 1. 정통 SajuEngine 만세력 실시간 연산 (1976-09-09 -> 갑자(甲子)일주 100% 정확!)
   const sajuInfo = useMemo(() => {
@@ -832,29 +909,139 @@ export default function SoulArchivePage() {
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs text-gray-300 font-medium">태어난 시간 (HH:MM)</label>
-                <input
-                  type="time"
-                  value={inputTime}
-                  onChange={(e) => setInputTime(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700 text-sm text-white focus:border-amber-400 outline-none"
-                />
+              {/* 🌟 태어난 시간: 12간지(인시/미시 등) & 오전/오후 듀얼 선택기 */}
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs text-gray-300 font-medium">태어난 시간 선택</label>
+                  <div className="flex items-center gap-1 bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px]">
+                    <button
+                      type="button"
+                      onClick={() => setTimeSelectMode('ganji')}
+                      className={`px-2 py-1 rounded-md transition-all ${
+                        timeSelectMode === 'ganji'
+                          ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      12간지 시진
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTimeSelectMode('ampm')}
+                      className={`px-2 py-1 rounded-md transition-all ${
+                        timeSelectMode === 'ampm'
+                          ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      오전/오후
+                    </button>
+                  </div>
+                </div>
+
+                {timeSelectMode === 'ganji' ? (
+                  <div className="space-y-1.5">
+                    <select
+                      value={selectedGanjiTime}
+                      onChange={(e) => handleUpdateFromGanji(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-amber-500/50 text-sm text-amber-200 focus:border-amber-400 outline-none cursor-pointer font-sans"
+                    >
+                      {GANJI_TIMES.map((g) => (
+                        <option key={g.id} value={g.id} className="bg-slate-900 text-white">
+                          {g.name}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[11px] text-gray-400 font-mono">
+                      선택된 시간: <strong className="text-amber-300">{inputTime}</strong> (정통 만세력 시주 연동)
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      {/* 오전 / 오후 선택 버튼 */}
+                      <div className="flex rounded-xl bg-slate-950 border border-slate-700 p-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateFromAmpm('AM', inputHour, inputMinute)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            ampm === 'AM'
+                              ? 'bg-amber-500 text-slate-950 shadow-sm'
+                              : 'text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          오전
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateFromAmpm('PM', inputHour, inputMinute)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            ampm === 'PM'
+                              ? 'bg-amber-500 text-slate-950 shadow-sm'
+                              : 'text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          오후
+                        </button>
+                      </div>
+
+                      {/* 시 선택 */}
+                      <select
+                        value={inputHour}
+                        onChange={(e) => handleUpdateFromAmpm(ampm, parseInt(e.target.value, 10), inputMinute)}
+                        className="flex-1 px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-sm text-white focus:border-amber-400 outline-none cursor-pointer"
+                      >
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                          <option key={h} value={h} className="bg-slate-900 text-white">
+                            {h}시
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* 분 선택 */}
+                      <select
+                        value={inputMinute}
+                        onChange={(e) => handleUpdateFromAmpm(ampm, inputHour, parseInt(e.target.value, 10))}
+                        className="flex-1 px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-sm text-white focus:border-amber-400 outline-none cursor-pointer"
+                      >
+                        {Array.from({ length: 60 }, (_, i) => i).map((m) => (
+                          <option key={m} value={m} className="bg-slate-900 text-white">
+                            {String(m).padStart(2, '0')}분
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <p className="text-[11px] text-gray-400 font-mono">
+                      선택된 시간: <strong className="text-cyan-300">{ampm === 'AM' ? '오전' : '오후'} {inputHour}시 {String(inputMinute).padStart(2, '0')}분 ({inputTime})</strong>
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* 실시간 만세력 계산 미리보기 배지 */}
+              <div className="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-amber-200 text-xs space-y-1 shadow-inner">
+                <div className="text-[10px] text-amber-400 font-mono font-bold">⚡ 실시간 4주 8자 연산 결과:</div>
+                <div className="text-xs font-bold text-white flex items-center gap-1.5 font-serif">
+                  <span className="text-amber-300">{getCleanSajuInfo(inputDob, inputTime).yearPillarKo}년</span>
+                  <span className="text-cyan-300">{getCleanSajuInfo(inputDob, inputTime).monthPillarKo}월</span>
+                  <span className="text-emerald-300 font-black px-1.5 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/40">{getCleanSajuInfo(inputDob, inputTime).dayPillarKo}일주</span>
+                  <span className="text-purple-300">{getCleanSajuInfo(inputDob, inputTime).timePillarKo}시</span>
+                </div>
               </div>
             </div>
 
             <div className="flex gap-2 pt-2">
               <button
-                onClick={() => handleApplyNewProfile("강미숙", "1980-07-07", "13:40")}
-                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 text-xs font-bold transition-colors cursor-pointer border border-slate-700"
+                onClick={() => setShowEditModal(false)}
+                className="w-1/3 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-300 text-xs font-bold transition-colors cursor-pointer border border-slate-700"
               >
-                신사일주로 리셋
+                취소
               </button>
               <button
                 onClick={() => handleApplyNewProfile(inputName, inputDob, inputTime)}
-                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-95 text-slate-950 text-xs font-black transition-all cursor-pointer shadow-lg shadow-amber-500/20"
+                className="w-2/3 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-95 text-slate-950 text-xs font-black transition-all cursor-pointer shadow-lg shadow-amber-500/30 flex items-center justify-center gap-1.5"
               >
-                만세력 즉시 동기화
+                <span>✨ 만세력 1:1 즉시 동기화</span>
               </button>
             </div>
           </div>
@@ -1410,8 +1597,8 @@ export default function SoulArchivePage() {
                 <span className="text-gray-300">본질 오행: <strong className="text-amber-400 font-bold">{sajuInfo.ganName}</strong></span>
                 
                 <button
-                  onClick={() => setShowEditModal(true)}
-                  className="ml-1 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm"
+                  onClick={handleOpenEditModal}
+                  className="ml-1 px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
                 >
                   <Edit3 className="w-3 h-3" />
                   <span>생년월일 변경</span>
