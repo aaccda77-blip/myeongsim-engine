@@ -156,8 +156,8 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
     stage: 'solo_pre',
     userName: '명심가 (예비창업자)',
     sajuSummaryText: '경신년(庚申) · 계미월(癸未) · 신사일(辛巳) · 을미시(乙未)',
-    identityTitle: '지식 IP 기반 1인 솔루션 아키텍트 & 부트스트래퍼',
-    slogan: '나만의 전문 지식을 디지털 프로덕트와 표준 코드로 전환하여 무자본으로 시작하는 1인 기업가',
+    identityTitle: '1%의 오차도 없는 깐깐한 명품 장인 & 프리미엄 지식 컨설턴트',
+    slogan: '나만의 전문 지식과 노하우를 명품 아이템으로 만들어 무자본으로 시작하는 1인 기업가',
     pillarBreakdowns: [
         {
             pillarName: '일간 / 일지 (Core Identity)',
@@ -722,44 +722,57 @@ export function parseSajuFourPillars(saju: any) {
 // [METADATA] 10간(천간) × 12지(지지) 인지과학 비즈니스 역량 사전
 // -------------------------------------------------------------
 const STEM_INFO: Record<string, { name: string; trait: string; shortTrait: string; element: string }> = {
-    '甲': { name: '갑목(甲木)', trait: '선구적 기획력과 시장 개척 리더십', shortTrait: '선구적 기획력(甲木)', element: '목' },
-    '乙': { name: '을목(乙木)', trait: '유연한 적응력과 네트워크 확장성', shortTrait: '적응형 연결력(乙木)', element: '목' },
-    '丙': { name: '병화(丙火)', trait: '대중적 비전 제시와 폭발적 브랜딩', shortTrait: '비전 브랜딩(丙火)', element: '화' },
-    '丁': { name: '정화(丁火)', trait: '정밀한 전문성과 딥테크/IP 디테일', shortTrait: '정밀 전문성(丁火)', element: '화' },
-    '戊': { name: '무토(戊土)', trait: '거대한 플랫폼 인프라와 신뢰 자산', shortTrait: '플랫폼 인프라(戊土)', element: '토' },
-    '己': { name: '기토(己土)', trait: '실용적 프로세스 최적화와 내실 경영', shortTrait: '실용 최적화(己土)', element: '토' },
-    '庚': { name: '경금(庚金)', trait: '과감한 결단력과 표준 프레임워크', shortTrait: '표준 프레임워크(庚金)', element: '금' },
-    '辛': { name: '신금(辛金)', trait: '초정밀 분석력과 하이엔드 품질 관리', shortTrait: '초정밀 분석력(辛金)', element: '금' },
-    '壬': { name: '임수(壬水)', trait: '글로벌 거시 통찰력과 무한한 유통 확장', shortTrait: '글로벌 통찰력(壬水)', element: '수' },
-    '癸': { name: '계수(癸水)', trait: '직관적 인사이트와 지식 솔루션화', shortTrait: '직관적 솔루션(癸水)', element: '수' }
+    '甲': { name: '갑목(甲木)', trait: '새로운 길을 여는 추진력과 기획력', shortTrait: '앞서가는 기획력(甲木)', element: '목' },
+    '乙': { name: '을목(乙木)', trait: '사람과 기회를 잇는 유연한 연결력', shortTrait: '사람을 잇는 소통력(乙木)', element: '목' },
+    '丙': { name: '병화(丙火)', trait: '사람들의 마음을 사로잡는 스타성과 열정', shortTrait: '사람을 끄는 매력(丙火)', element: '화' },
+    '丁': { name: '정화(丁火)', trait: '핵심을 콕 짚어내는 1등 족집게 전문성', shortTrait: '핵심을 찌르는 전문성(丁火)', element: '화' },
+    '戊': { name: '무토(戊土)', trait: '믿고 머무를 수 있는 든든한 신뢰와 큰 판', shortTrait: '든든한 사업 터전(戊土)', element: '토' },
+    '己': { name: '기토(己土)', trait: '낭비 없이 꼼꼼하게 챙기는 실속 살림력', shortTrait: '알짜배기 실속력(己土)', element: '토' },
+    '庚': { name: '경금(庚金)', trait: '일의 뼈대를 딱 세우는 결단력과 실행력', shortTrait: '탄탄한 일의 공식(庚金)', element: '금' },
+    '辛': { name: '신금(辛金)', trait: '1%의 오차도 용납하지 않는 명품 퀄리티', shortTrait: '빈틈없는 명품감각(辛金)', element: '금' },
+    '壬': { name: '임수(壬水)', trait: '큰 물에서 판을 키우는 거침없는 확장력', shortTrait: '판을 키우는 통찰력(壬水)', element: '수' },
+    '癸': { name: '계수(癸水)', trait: '마르지 않는 아이디어와 빠른 눈치·센스', shortTrait: '반짝이는 아이디어(癸水)', element: '수' }
 };
 
 const BRANCH_INFO: Record<string, { name: string; env: string; shortEnv: string; element: string }> = {
-    '子': { name: '자수(子水)', env: '심층 연구 데이터베이스 및 지적 자산', shortEnv: '심층 R&D 자산(子水)', element: '수' },
-    '丑': { name: '축토(丑土)', env: '축적된 전문 기술과 실전 노하우 자산', shortEnv: '축적된 노하우(丑土)', element: '토' },
-    '寅': { name: '인목(寅木)', env: '신규 시장을 선점하는 스타트업 론칭 실행력', shortEnv: '스타트업 론칭력(寅木)', element: '목' },
-    '卯': { name: '묘목(卯木)', env: '창의적 콘텐츠 기획과 빠른 프로토타이핑', shortEnv: '창의 기획력(卯木)', element: '목' },
-    '辰': { name: '진토(辰土)', env: '다채로운 비즈니스를 결합하는 플랫폼 허브', shortEnv: '비즈니스 허브(辰土)', element: '토' },
-    '巳': { name: '사화(巳火)', env: '제도권 공신력과 대외 비즈니스 네트워크', shortEnv: '제도권 공신력(巳火)', element: '화' },
-    '午': { name: '오화(午火)', env: '트렌드를 선도하는 마케팅 쇼케이스 파워', shortEnv: '마케팅 파워(午火)', element: '화' },
-    '未': { name: '미토(未土)', env: '특화된 지식 라이브러리와 IP 자산 창고', shortEnv: '지식 IP 자산(未土)', element: '토' },
-    '申': { name: '신금(申金)', env: '글로벌 표준 테크 인프라와 자동화 시스템', shortEnv: '자동화 시스템(申金)', element: '금' },
-    '酉': { name: '유금(酉金)', env: '엄격한 품질 검증과 완벽한 상품 패키징', shortEnv: '품질 검증 패키징(酉金)', element: '금' },
-    '戌': { name: '술토(戌土)', env: '위기 관리와 보안, 데이터 신뢰성 방화벽', shortEnv: '보안 방화벽(戌土)', element: '토' },
-    '亥': { name: '해수(亥水)', env: '국경 없는 디지털 유통과 유연한 비즈니스', shortEnv: '디지털 유통망(亥水)', element: '수' }
+    '子': { name: '자수(子水)', env: '깊이 있는 노하우와 알찬 지식 창고', shortEnv: '알찬 지식창고(子水)', element: '수' },
+    '丑': { name: '축토(丑土)', env: '오랜 시간 갈고닦은 실전 기술과 밑천', shortEnv: '탄탄한 실전기술(丑土)', element: '토' },
+    '寅': { name: '인목(寅木)', env: '남들보다 반 발 앞서 시작하는 론칭 실행력', shortEnv: '과감한 창업실행력(寅木)', element: '목' },
+    '卯': { name: '묘목(卯木)', env: '통통 튀는 아이템 기획과 빠른 제작 능력', shortEnv: '재빠른 상품화(卯木)', element: '목' },
+    '辰': { name: '진토(辰土)', env: '다양한 일과 사람을 한데 모으는 꿀단지', shortEnv: '풍성한 사업마당(辰土)', element: '토' },
+    '巳': { name: '사화(巳火)', env: '대외적으로 인정받는 공신력과 고급 인맥', shortEnv: '공식적인 신뢰·인맥(巳火)', element: '화' },
+    '午': { name: '오화(午火)', env: '시선을 확 사로잡는 대세 마케팅 무대', shortEnv: '화려한 쇼케이스(午火)', element: '화' },
+    '未': { name: '미토(未土)', env: '돈이 되는 특화 지식과 나만의 비법 서랍', shortEnv: '특화 비법서랍(未土)', element: '토' },
+    '申': { name: '신금(申金)', env: '알아서 척척 돌아가는 자동화 시스템', shortEnv: '자동화된 일머리(申金)', element: '금' },
+    '酉': { name: '유금(酉金)', env: '깔끔하고 완벽한 상품 패키징과 결과물', shortEnv: '완벽한 상품포장(酉金)', element: '금' },
+    '戌': { name: '술토(戌土)', env: '위기를 막아내는 든든한 방어벽과 보안', shortEnv: '안전한 방어막(戌土)', element: '토' },
+    '亥': { name: '해수(亥水)', env: '전국·해외로 뻗어나가는 막힘없는 판로', shortEnv: '넓은 온라인판로(亥水)', element: '수' }
 };
 
 const IDENTITY_TITLES: Record<string, string> = {
-    '甲': '지식 IP 기반 1인 선구자 & 플랫폼 파이오니어',
-    '乙': '적응형 네트워크 링커 & 지식 큐레이션 아키텍트',
-    '丙': '비전 브랜딩 디렉터 & 미디어 임팩트 빌더',
-    '丁': '딥테크 전문 분석가 & 하이엔드 솔루션 스페셜리스트',
-    '戊': '플랫폼 인프라 아키텍트 & 에코시스템 설계자',
-    '己': '실용 프로세스 최적화 마스터 & 부트스트래퍼',
-    '庚': '표준 프레임워크 디렉터 & 시스템 아키텍트',
-    '辛': '지식 IP 기반 1인 솔루션 아키텍트 & 부트스트래퍼',
-    '壬': '글로벌 스케일업 전략가 & 데이터 유통 아키텍트',
-    '癸': '직관적 AI 솔루션 크리에이터 & 디지털 지식 빌더'
+    '甲': '새로운 시장을 여는 1인 개척가 & 지식 비즈니스 리더',
+    '乙': '사람과 기회를 잇는 연결 전문가 & 맞춤형 큐레이터',
+    '丙': '사람들의 마음을 사로잡는 스타 크리에이터 & 브랜드 기획자',
+    '丁': '깊이 있는 노하우를 파고드는 1등 족집게 전문가 & 명품 코치',
+    '戊': '든든한 신뢰를 주는 큰 판의 설계자 & 비즈니스 터줏대감',
+    '己': '알짜배기 실전 살림꾼 & 똑똑한 무자본 1인 창업가',
+    '庚': '일의 뼈대를 세우는 결단력 있는 기획자 & 표준 시스템 설계자',
+    '辛': '1%의 오차도 없는 깐깐한 명품 장인 & 프리미엄 지식 컨설턴트',
+    '壬': '큰 물에서 노는 글로벌 전략가 & 거대한 유통망을 쥐는 사업가',
+    '癸': '마르지 않는 아이디어 뱅크 & 똑똑한 디지털 지식 크리에이터'
+};
+
+const IDENTITY_SLOGANS: Record<string, string> = {
+    '甲': '남들이 가지 않은 길에서 나만의 경험과 지식으로 첫 번째 깃발을 꽂는 1인 창업가',
+    '乙': '유연한 소통으로 사람들을 모으고 필요한 정보와 상품을 딱 맞게 연결해 주는 커뮤니티 리더',
+    '丙': '빛나는 비전과 넘치는 에너지로 대중의 팬덤과 충성 고객을 만들어내는 영향력 있는 사업가',
+    '丁': '남들이 보지 못하는 핵심을 콕 짚어 고객의 가려운 곳을 확실하게 긁어주는 1등 전문가',
+    '戊': '누구나 믿고 머물 수 있는 든든한 사업 터전과 탄탄한 수익 기반을 만드는 생태계 구축가',
+    '己': '불필요한 낭비 없이 내실 있게 실전 노하우를 엮어 착실하게 돈을 버는 알짜배기 사업가',
+    '庚': '복잡한 일을 군더더기 없이 깔끔한 공식과 매뉴얼로 뚝딱 정리해 내는 확실한 실행파 리더',
+    '辛': '최고의 완성도와 정밀한 분석으로 고객에게 흠잡을 데 없는 최상의 가치를 선물하는 명품 전문가',
+    '壬': '넓은 시야와 거침없는 확장력으로 국내를 넘어 더 큰 무대로 판을 키우는 대형 사업가',
+    '癸': '촉이 빠르고 센스 넘치는 영감으로 요즘 트렌드에 맞는 콘텐츠를 찰떡같이 만들어내는 기획자'
 };
 
 function buildDynamicPillars(p: ReturnType<typeof parseSajuFourPillars>): PillarProfileItem[] {
@@ -814,19 +827,19 @@ function buildDynamicCompetencies(p: ReturnType<typeof parseSajuFourPillars>) {
 
     return [
         {
-            title: `1. 본원적 아키텍처: ${dStem.trait}`,
+            title: `1. 본원적 핵심 역량: ${dStem.trait}`,
             tenGodFormula: `${dStem.name} + ${dBranch.name}`,
-            description: `나만의 고유한 선천적 인지 하드웨어(${dStem.name})를 기반으로 흔들리지 않는 표준 프로토콜과 코어 비즈니스 엔진을 정밀 설계합니다.`
+            description: `나만의 고유한 선천적 강점(${dStem.name})을 기반으로 흔들리지 않는 튼튼한 사업 뼈대와 코어 비즈니스 엔진을 설계합니다.`
         },
         {
-            title: `2. 시장 침투 무기: ${mStem.trait}`,
+            title: `2. 실전 세일즈 무기: ${mStem.trait}`,
             tenGodFormula: `${mStem.name} + ${mBranch.name}`,
-            description: `시장의 병목과 고객의 결핍을 정확하게 짚어내고, ${mBranch.env}을 활용하여 즉각적인 가치를 전달하는 독보적 세일즈 필살기입니다.`
+            description: `시장의 가려운 곳과 고객의 결핍을 정확하게 짚어내고, ${mBranch.env}을 활용하여 즉각적인 신뢰와 선택을 받는 독보적 필살기입니다.`
         },
         {
-            title: `3. 미래 자산화 파이프라인: ${tStem.trait}`,
+            title: `3. 미래 수익 파이프라인: ${tStem.trait}`,
             tenGodFormula: `${tStem.name} + ${tBranch.name}`,
-            description: `1회성 용역에 그치지 않고 ${tBranch.env}을 디지털 자산(IP/SaaS/콘텐츠)으로 축적하여 자는 동안에도 일하는 자동화 시스템을 완성합니다.`
+            description: `1회성 일거리에 그치지 않고 ${tBranch.env}을 디지털 자산(강의/전자책/자동화툴)으로 축적하여 지속적으로 돈이 들어오는 시스템을 완성합니다.`
         }
     ];
 }
@@ -864,8 +877,8 @@ export function generateNtsBusinessArchitecture(
 
         // 2. 비즈니스 페르소나 및 슬로건 동적 생성
         const dStem = STEM_INFO[p.dGan] || STEM_INFO['甲'];
-        baseReport.identityTitle = IDENTITY_TITLES[p.dGan] || `${userName} 대표의 [${dStem.trait} 기반 비즈니스 아키텍트]`;
-        baseReport.slogan = `나만의 고유한 선천적 인지 강점(${dStem.name})을 디지털 프로덕트와 표준 코드로 전환하여 무자본으로 시작하는 1인 기업가`;
+        baseReport.identityTitle = IDENTITY_TITLES[p.dGan] || `${userName} 대표의 [${dStem.trait} 기반 비즈니스 리더]`;
+        baseReport.slogan = IDENTITY_SLOGANS[p.dGan] || `나만의 고유한 선천적 강점(${dStem.name})을 실전 사업 아이템으로 전환하여 무자본으로 시작하는 1인 기업가`;
 
         // 3. 3대 비즈니스 코어 강점 동적 생성
         baseReport.coreCompetencies = buildDynamicCompetencies(p);
