@@ -939,6 +939,224 @@ function getGongwangCoaching(dGan: string, dJi: string) {
     return GONGWANG_MAP[pair] || GONGWANG_MAP['戌亥'];
 }
 
+function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
+    const dStem = STEM_INFO[p.dGan] || STEM_INFO['甲'];
+    const element = dStem.element; // '목' | '화' | '토' | '금' | '수'
+
+    if (element === '목') {
+        return [
+            {
+                classification: '코어 엔진 (주)',
+                mainIndustry: '정보통신업',
+                subIndustryAndCodes: [
+                    { name: '데이터베이스 및 온라인정보 제공업', code: '724000' },
+                    { name: '응용 소프트웨어 개발 및 공급업', code: '722000' }
+                ],
+                businessModel: `${dStem.trait} 기반 온라인 교육·지식 아카데미, 자기계발 & 역량 진단 SaaS 플랫폼`,
+                colorTheme: 'emerald' as const
+            },
+            {
+                classification: '신뢰 자산 (주)',
+                mainIndustry: '전문, 과학 및 기술 서비스업',
+                subIndustryAndCodes: [
+                    { name: '경영 컨설팅업 (비즈니스 코칭)', code: '741400' },
+                    { name: '인문 및 사회과학 연구개발업', code: '732002' }
+                ],
+                businessModel: `창업가 1:1 맞춤 성장 코칭, 스타트업 비전 기획 & 조직 브랜딩 자문 용역`,
+                colorTheme: 'cyan' as const
+            },
+            {
+                classification: 'IP 자산화 (부)',
+                mainIndustry: '출판 및 교육 서비스업',
+                subIndustryAndCodes: [
+                    { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
+                    { name: '교육관련 자문 및 평가업', code: '930921' }
+                ],
+                businessModel: `나만의 성장 노하우 단행본·e-Book 출판, 온라인 VOD 마스터 클래스, 전문 워크숍`,
+                colorTheme: 'purple' as const
+            },
+            {
+                classification: '수익 확장 (부)',
+                mainIndustry: '도매 및 소매업',
+                subIndustryAndCodes: [
+                    { name: '전자상거래 소매업', code: '525101' }
+                ],
+                businessModel: `디지털 성장 템플릿(Notion/PDF), 코칭 다이어리 및 교구재 온라인 판매`,
+                colorTheme: 'amber' as const
+            }
+        ];
+    } else if (element === '화') {
+        return [
+            {
+                classification: '코어 엔진 (주)',
+                mainIndustry: '방송·미디어 및 정보통신업',
+                subIndustryAndCodes: [
+                    { name: '1인 미디어 콘텐츠 창작업', code: '921505' },
+                    { name: '포털 및 온라인 정보 매개업', code: '724000' }
+                ],
+                businessModel: `${dStem.trait}을 결합한 대세 미디어 채널 운영, 비전 브랜딩 쇼케이스 플랫폼`,
+                colorTheme: 'amber' as const
+            },
+            {
+                classification: '신뢰 자산 (주)',
+                mainIndustry: '전문 서비스업',
+                subIndustryAndCodes: [
+                    { name: '광고·마케팅 기획 자문업', code: '743000' },
+                    { name: '경영 및 브랜드 전략 컨설팅업', code: '741400' }
+                ],
+                businessModel: `기업 퍼스널 브랜딩 자문, 고객 팬덤 구축 및 마케팅 퍼널 최적화 솔루션`,
+                colorTheme: 'cyan' as const
+            },
+            {
+                classification: 'IP 자산화 (부)',
+                mainIndustry: '출판 및 교육 서비스업',
+                subIndustryAndCodes: [
+                    { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
+                    { name: '직업훈련 및 온라인 VOD 교육업', code: '930921' }
+                ],
+                businessModel: `트렌드 브랜딩 전자책 발행, 라이브 쇼케이스 코칭, 온라인 VOD 강의`,
+                colorTheme: 'purple' as const
+            },
+            {
+                classification: '수익 확장 (부)',
+                mainIndustry: '도매 및 소매업',
+                subIndustryAndCodes: [
+                    { name: '전자상거래 소매업', code: '525101' }
+                ],
+                businessModel: `브랜드 굿즈, 디지털 디자인 템플릿, 팬덤 전용 교구재 판매`,
+                colorTheme: 'emerald' as const
+            }
+        ];
+    } else if (element === '토') {
+        return [
+            {
+                classification: '코어 엔진 (주)',
+                mainIndustry: '정보통신업',
+                subIndustryAndCodes: [
+                    { name: '데이터베이스 및 온라인정보 제공업', code: '724000' },
+                    { name: '포털 및 인터넷 정보매개업', code: '724000' }
+                ],
+                businessModel: `${dStem.trait} 기반 커뮤니티 허브, 신뢰형 1인 기업가 매칭 플랫폼`,
+                colorTheme: 'cyan' as const
+            },
+            {
+                classification: '신뢰 자산 (주)',
+                mainIndustry: '전문, 과학 및 기술 서비스업',
+                subIndustryAndCodes: [
+                    { name: '경영 컨설팅업', code: '741400' },
+                    { name: '사업 지원 및 자산 관리 자문업', code: '749900' }
+                ],
+                businessModel: `탄탄한 내실 경영 자문, 1인 사업가 재무·운영 프로세스 최적화 코칭`,
+                colorTheme: 'emerald' as const
+            },
+            {
+                classification: 'IP 자산화 (부)',
+                mainIndustry: '출판 및 교육 서비스업',
+                subIndustryAndCodes: [
+                    { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
+                    { name: '교육관련 자문 및 평가업', code: '930921' }
+                ],
+                businessModel: `알짜배기 실전 살림 매뉴얼, 비즈니스 운영 가이드북 및 서식 라이브러리`,
+                colorTheme: 'purple' as const
+            },
+            {
+                classification: '수익 확장 (부)',
+                mainIndustry: '도매 및 소매업',
+                subIndustryAndCodes: [
+                    { name: '전자상거래 소매업', code: '525101' }
+                ],
+                businessModel: `실전 사업 서식 패키지, 노코드 자동화 템플릿 마켓플레이스 판매`,
+                colorTheme: 'amber' as const
+            }
+        ];
+    } else if (element === '수') {
+        return [
+            {
+                classification: '코어 엔진 (주)',
+                mainIndustry: '정보통신업',
+                subIndustryAndCodes: [
+                    { name: '데이터베이스 및 온라인정보 제공업', code: '724000' },
+                    { name: '응용 소프트웨어 개발 및 공급업', code: '722000' }
+                ],
+                businessModel: `${dStem.trait}을 활용한 직관적 AI 솔루션, 지식 아카이브 및 데이터 유통 서비스`,
+                colorTheme: 'cyan' as const
+            },
+            {
+                classification: '신뢰 자산 (주)',
+                mainIndustry: '전문, 과학 및 기술 서비스업',
+                subIndustryAndCodes: [
+                    { name: '심리·진로 전문 상담 및 자문업', code: '741400' },
+                    { name: '인문 및 사회과학 연구개발업', code: '732002' }
+                ],
+                businessModel: `1:1 심층 마인드셋 & 커리어 전환 코칭, 거시 트렌드 인사이트 자문`,
+                colorTheme: 'purple' as const
+            },
+            {
+                classification: 'IP 자산화 (부)',
+                mainIndustry: '출판 및 글로벌 교육 서비스업',
+                subIndustryAndCodes: [
+                    { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
+                    { name: '온라인 원격 평생교육업', code: '930921' }
+                ],
+                businessModel: `글로벌 e-Book 출판, 국경 없는 온라인 웨비나, 심리/지식 구독형 뉴스레터`,
+                colorTheme: 'emerald' as const
+            },
+            {
+                classification: '수익 확장 (부)',
+                mainIndustry: '도매 및 소매업',
+                subIndustryAndCodes: [
+                    { name: '전자상거래 소매업', code: '525101' }
+                ],
+                businessModel: `디지털 오디오북, 힐링 명상 음원, 글로벌 디지털 다운로드 판매`,
+                colorTheme: 'amber' as const
+            }
+        ];
+    } else {
+        // 기본 금(金)
+        return [
+            {
+                classification: '코어 엔진 (주)',
+                mainIndustry: '정보통신업',
+                subIndustryAndCodes: [
+                    { name: '데이터베이스 및 온라인정보 제공업', code: '724000' },
+                    { name: '응용 소프트웨어 개발 및 공급업', code: '722000' }
+                ],
+                businessModel: `${dStem.trait} 기반 초정밀 진단 알고리즘 웹 서비스, 표준 코칭 SaaS 플랫폼`,
+                colorTheme: 'emerald' as const
+            },
+            {
+                classification: '신뢰 자산 (주)',
+                mainIndustry: '전문, 과학 및 기술 서비스업',
+                subIndustryAndCodes: [
+                    { name: '경영 컨설팅업', code: '741400' },
+                    { name: '인문 및 사회과학 연구개발업', code: '732002' }
+                ],
+                businessModel: `B2B 기업 리더십 진단, 1:1 프리미엄 품질 관리 및 표준 프로토콜 자문 용역`,
+                colorTheme: 'cyan' as const
+            },
+            {
+                classification: 'IP 자산화 (부)',
+                mainIndustry: '출판 및 교육 서비스업',
+                subIndustryAndCodes: [
+                    { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
+                    { name: '교육관련 자문 및 평가업', code: '930921' }
+                ],
+                businessModel: `전문 표준 매뉴얼 출판, 마스터클래스 VOD 클래스, 전문 자격 평가`,
+                colorTheme: 'purple' as const
+            },
+            {
+                classification: '수익 확장 (부)',
+                mainIndustry: '도매 및 소매업',
+                subIndustryAndCodes: [
+                    { name: '전자상거래 소매업', code: '525101' }
+                ],
+                businessModel: `정밀 비즈니스 진단 툴킷(Notion/PDF), B2B 서식 패키지 온라인 판매`,
+                colorTheme: 'amber' as const
+            }
+        ];
+    }
+}
+
 // -------------------------------------------------------------
 // 사용자 사주 데이터를 분석하여 맞춤 리포트를 생성하는 통합 엔진
 // -------------------------------------------------------------
@@ -980,6 +1198,15 @@ export function generateNtsBusinessArchitecture(
 
         // 4. 60갑자 맞춤 공망(空亡)의 역설 비즈니스 전환 코칭 동적 생성
         baseReport.gongwangArchitecture = getGongwangCoaching(p.dGan, p.dJi);
+
+        // 5. 국세청 업태·종목 최적화 매핑 (4대 분류 체계) 동적 생성
+        baseReport.taxonomyTable = buildDynamicTaxonomyTable(p);
+        baseReport.businessArchitectureMap = {
+            infra: `${baseReport.taxonomyTable[0].mainIndustry} / ${baseReport.taxonomyTable[0].subIndustryAndCodes[0].name} (${baseReport.taxonomyTable[0].subIndustryAndCodes[0].code})`,
+            solution: `${baseReport.taxonomyTable[1].mainIndustry} / ${baseReport.taxonomyTable[1].subIndustryAndCodes[0].name} (${baseReport.taxonomyTable[1].subIndustryAndCodes[0].code})`,
+            contentIp: `${baseReport.taxonomyTable[2].subIndustryAndCodes[0].name} (${baseReport.taxonomyTable[2].subIndustryAndCodes[0].code}) / ${baseReport.taxonomyTable[2].subIndustryAndCodes[1].name} (${baseReport.taxonomyTable[2].subIndustryAndCodes[1].code})`,
+            targetPlatform: `1인 ${dStem.shortTrait} 기반 지식 플랫폼`
+        };
 
         // 4. 비즈니스 4대 핵심 실행 영역 동적 치환
         const mStem = STEM_INFO[p.mGan] || STEM_INFO['丁'];
