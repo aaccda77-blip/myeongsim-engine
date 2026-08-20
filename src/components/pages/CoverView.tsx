@@ -150,6 +150,9 @@ export default function CoverView() {
                 } as any
             });
 
+            // 생년월일/명식 재계산 시 이전 딥스캔 캐시 무효화
+            useReportStore.getState().setDeepScanResult(null);
+
             setViewMode('result');
             setIsLoading(false);
         }, 800);
