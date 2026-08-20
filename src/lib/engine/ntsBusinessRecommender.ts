@@ -644,6 +644,17 @@ export interface PersonalizedPsstReport {
 // -------------------------------------------------------------
 // [HELPER] 사주 데이터가 문자열 또는 객체인 경우 안전하게 한자/문자 추출
 // -------------------------------------------------------------
+const STEM_REGEX = /[甲乙丙丁戊己庚辛壬癸]/;
+const BRANCH_REGEX = /[子丑寅卯辰巳午未申酉戌亥]/;
+const KOR_STEM_MAP: Record<string, string> = {
+    '갑': '甲', '을': '乙', '병': '丙', '정': '丁', '무': '戊',
+    '기': '己', '경': '庚', '신': '辛', '임': '壬', '계': '癸'
+};
+const KOR_BRANCH_MAP: Record<string, string> = {
+    '자': '子', '축': '丑', '인': '寅', '묘': '卯', '진': '辰', '사': '巳',
+    '오': '午', '미': '未', '신': '申', '유': '酉', '술': '戌', '해': '亥'
+};
+
 export function extractChar(val: any, fallback: string = ''): string {
     if (!val) return fallback;
     if (typeof val === 'string') return val;
@@ -651,6 +662,26 @@ export function extractChar(val: any, fallback: string = ''): string {
         return val.hanja || val.char || val.name || val.stem || val.branch || val.label || fallback;
     }
     return String(val) || fallback;
+}
+
+export function extractStem(val: any, fallback: string = '甲'): string {
+    if (!val) return fallback;
+    const str = extractChar(val, '');
+    const hMatch = str.match(STEM_REGEX);
+    if (hMatch) return hMatch[0];
+    const kMatch = str.match(/[갑을병정무기경신임계]/);
+    if (kMatch) return KOR_STEM_MAP[kMatch[0]] || fallback;
+    return fallback;
+}
+
+export function extractBranch(val: any, fallback: string = '子'): string {
+    if (!val) return fallback;
+    const str = extractChar(val, '');
+    const hMatch = str.match(BRANCH_REGEX);
+    if (hMatch) return hMatch[0];
+    const kMatch = str.match(/[자축인묘진사오미신유술해]/);
+    if (kMatch) return KOR_BRANCH_MAP[kMatch[0]] || fallback;
+    return fallback;
 }
 
 export function parseSajuFourPillars(saju: any) {
@@ -670,17 +701,17 @@ export function parseSajuFourPillars(saju: any) {
     const dp = saju.dayPillar || saju.day_pillar || fp.day || {};
     const tp = saju.hourPillar || saju.hour_pillar || saju.timePillar || fp.time || {};
 
-    const yGan = extractChar(yp.gan !== undefined ? yp.gan : yp.stem, '庚');
-    const yJi = extractChar(yp.ji !== undefined ? yp.ji : yp.branch, '申');
+    const yGan = extractStem(yp.gan !== undefined ? yp.gan : yp.stem, '庚');
+    const yJi = extractBranch(yp.ji !== undefined ? yp.ji : yp.branch, '申');
 
-    const mGan = extractChar(mp.gan !== undefined ? mp.gan : mp.stem, '癸');
-    const mJi = extractChar(mp.ji !== undefined ? mp.ji : mp.branch, '未');
+    const mGan = extractStem(mp.gan !== undefined ? mp.gan : mp.stem, '癸');
+    const mJi = extractBranch(mp.ji !== undefined ? mp.ji : mp.branch, '未');
 
-    const dGan = extractChar(dp.gan !== undefined ? dp.gan : dp.stem, '辛');
-    const dJi = extractChar(dp.ji !== undefined ? dp.ji : dp.branch, '巳');
+    const dGan = extractStem(dp.gan !== undefined ? dp.gan : (dp.stem || saju.dayMaster), '辛');
+    const dJi = extractBranch(dp.ji !== undefined ? dp.ji : dp.branch, '巳');
 
-    const tGan = extractChar(tp.gan !== undefined ? tp.gan : tp.stem, '乙');
-    const tJi = extractChar(tp.ji !== undefined ? tp.ji : tp.branch, '未');
+    const tGan = extractStem(tp.gan !== undefined ? tp.gan : tp.stem, '乙');
+    const tJi = extractBranch(tp.ji !== undefined ? tp.ji : tp.branch, '未');
 
     const summaryText = `${yGan}${yJi}년 · ${mGan}${mJi}월 · ${dGan}${dJi}일 · ${tGan}${tJi}시`;
 
@@ -838,6 +869,85 @@ export function generateNtsBusinessArchitecture(
 
         // 3. 3대 비즈니스 코어 강점 동적 생성
         baseReport.coreCompetencies = buildDynamicCompetencies(p);
+
+        // 4. 비즈니스 4대 핵심 실행 영역 동적 치환
+        const mStem = STEM_INFO[p.mGan] || STEM_INFO['丁'];
+        const tStem = STEM_INFO[p.tGan] || STEM_INFO['庚'];
+        const yStem = STEM_INFO[p.yGan] || STEM_INFO['丙'];
+
+        baseReport.consultant4Areas = {
+            marketing: {
+                sajuEngine: `${mStem.name} 표출 + ${tStem.name} 재성`,
+                targetCustomer: `${mStem.trait}을 필요로 하는 예비 창업자, 1인 지식 기업가, 초기 스타트업 대표 및 B2B 고객`,
+                salesChannel: '1-Page 무료 자가진단 리포트 바이럴 퍼널 ➔ 카카오 채널 및 뉴스레터 ➔ 1:1 맞춤 코칭',
+                conversionStrategy: '무료 진단(리드 수집) ➔ 1-Point 업종·PSST 리포트 ➔ 1:1 맞춤 비즈니스 코칭 및 IR 컨설팅'
+            },
+            hrOrg: {
+                sajuEngine: `${dStem.name} 본원 + ${yStem.name} 거시인프라`,
+                idealTeamRole: `총괄 비즈니스 아키텍트 (${dStem.trait})`,
+                conflictTrigger: '불필요한 마이크로 매니징 및 모든 과정을 혼자 통제하려는 과부하',
+                delegationProtocol: '공망의 역설: 무거운 내부 고용 대신 클라우드 외주 개발 풀과 AI 자동화 시스템 레버리지'
+            },
+            financeTax: {
+                sajuEngine: `${dStem.name} 코어 + 국가공인 국세청 표준 코드`,
+                taxReductionRate: '창업중소기업 세액감면 50~100% 감면 대상',
+                recommendedLocation: '수도권 과밀억제권역 외 지역 (비과밀 성장관리권역 청년/일반)',
+                legalStructure: '1인 창업 ➔ 지식 IP 자산화 법인 전환 (B2B/투자유치 시)'
+            },
+            govSupportTarget: {
+                recommendedPrograms: [
+                    { name: '중기부 예비창업패키지', targetFunding: '최대 1억 원 (평균 5,000만 원)', tip: `${dStem.trait}을 결합한 지식 IP 자동화 플랫폼 어필` },
+                    { name: '소진공 신사업창업사관학교', targetFunding: '최대 4,000만 원 (사업화 자금)', tip: '온·오프라인 융합 웰니스 코칭 솔루션 제안' },
+                    { name: '중기부 초기창업패키지', targetFunding: '최대 1억 원 (평균 7,000만 원)', tip: 'B2B 유료 고객 검증 지표 및 SaaS 확장성 강조' }
+                ],
+                competitivenessScore: 94
+            }
+        };
+
+        // 5. PSST 사업계획서 동적 치환
+        baseReport.psstBlueprint = {
+            problem: {
+                title: '1. 문제 인식 (Problem & Motivation)',
+                marketPainPoint: '기존 비즈니스 컨설팅의 높은 비용과 추상성, 1회성 조언 후 실제 행정/세무/사업계획서 작성으로 이어지지 않는 실행 공백(Execution Gap).',
+                urgency: '창업 진입 단계에서 잘못된 업종 선택과 세제 혜택 누락으로 초기 폐업률이 급증하고 있어, 1-Stop 맞춤형 솔루션 제공이 시급함.'
+            },
+            solution: {
+                title: '2. 실현 가능성 (Solution & Architecture)',
+                coreMvp: `[${dStem.shortTrait} 기반 엔진] 사용자 기질 및 창업 데이터를 분석하여 국세청 표준 코드와 PSST 사업계획서 초안을 즉시 도출하는 AI 솔루션.`,
+                differentiation: '단순 심리테스트를 넘어 국세청 공식 세무 코드, 창업중소기업 세액감면(최대 100%), 중기부 지원사업 매핑까지 융합된 실전 솔루션.'
+            },
+            scaleUp: {
+                title: '3. 성장 전략 & 수익 모델 (Scale-up & BM)',
+                businessModel: 'B2C 지식 IP 자동화 판매 ➔ B2B 기업 조직 기질 진단 컨설팅 ➔ B2G 공공 창업지원 멘토링 납품',
+                expansionRoadmap: '1단계 무료 진단 리드 확보 ➔ 2단계 1:1 맞춤형 PSST 코칭 전환 ➔ 3단계 B2B 조직 진단 SaaS 확장'
+            },
+            team: {
+                title: '4. 팀 구성 및 조직 역량 (Team & HR)',
+                founderStrength: `대표자 코어 역량 (${p.summaryText}): ${dStem.trait}과 ${mStem.trait}을 바탕으로 한 비즈니스 총괄 아키텍트.`,
+                recommendedHiring: '프론트엔드 개발 및 퍼포먼스 마케팅은 전문 외주 풀과 협업하고, 대표자는 코어 IP 및 BM 기획에 집중.'
+            }
+        };
+
+        // 6. 번아웃 방지 에너지 가이드 동적 치환
+        baseReport.burnoutGuide = {
+            cognitiveTrap: [
+                {
+                    title: `1. ${dStem.name} 완벽주의 & 과잉 통제 함정`,
+                    risk: `${dStem.trait}에 지나치게 집착하여 모든 과정을 혼자 검증하려다 번아웃 발생.`,
+                    prescription: '80% 완성 시점에 즉시 릴리즈하고 고객 피드백을 통해 보완하는 린(Lean) 프로토콜 적용.'
+                },
+                {
+                    title: `2. ${mStem.name} 에너지 과잉 발산 함정`,
+                    risk: '동시에 수많은 기획을 펼쳐놓고 마무리를 짓지 못해 인지 리소스가 고갈되는 현상.',
+                    prescription: '동시 진행 프로젝트를 최대 2개로 제한하고, 1개 완성 후 다음 프로젝트 오픈.'
+                }
+            ],
+            dailyRhythmProtocol: [
+                { timeSlot: '오전 09:00 - 10:30', energyFocus: '코어 기획 (Deep Work)', action: `${dStem.trait} 기반 핵심 비즈니스 아키텍처 1개 몰입`, sajuElement: dStem.element },
+                { timeSlot: '오후 14:00 - 15:30', energyFocus: '마케팅 & 고객 소통', action: `${mStem.trait}을 활용한 채널 콘텐츠 발행 및 피드백 수용`, sajuElement: mStem.element },
+                { timeSlot: '오후 17:00 - 18:00', energyFocus: '시스템 자동화 & 쿨링', action: '반복 업무 템플릿화 및 에너지 충전을 위한 신체 리셋', sajuElement: tStem.element }
+            ]
+        };
     }
 
     return baseReport;
