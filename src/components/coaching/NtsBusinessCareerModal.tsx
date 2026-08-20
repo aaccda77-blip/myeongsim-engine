@@ -8,15 +8,19 @@ import {
     Award, ArrowRight, Building, HelpCircle, Layers, Zap,
     Cpu, BookOpen, Compass, Globe, Server, Database, BarChart3,
     HeartPulse, Clock, AlertTriangle, MessageSquare, Flame, CheckCheck,
-    Users, DollarSign, Target, Rocket, RefreshCw, Landmark, ExternalLink
+    Users, DollarSign, Target, Rocket, RefreshCw, Landmark, ExternalLink,
+    Send, Download, CheckSquare, Edit3
 } from 'lucide-react';
 import {
     generateNtsBusinessArchitecture,
+    generatePersonalizedPsstArchitecture,
     PRE_STARTUP_REPORT,
     EARLY_STARTUP_REPORT,
     RE_FOUNDER_REPORT,
     NtsBusinessArchitectureReport,
-    StartupStageType
+    StartupStageType,
+    StartupIntakeAnswers,
+    PersonalizedPsstReport
 } from '@/lib/engine/ntsBusinessRecommender';
 
 interface NtsBusinessCareerModalProps {
@@ -38,11 +42,38 @@ export default function NtsBusinessCareerModal({
     const [viewRoleModel, setViewRoleModel] = useState<boolean>(false);
     const [copiedPsst, setCopiedPsst] = useState<boolean>(false);
 
+    // 1분 창업 진단 Intake Form 상태
+    const [intakeAnswers, setIntakeAnswers] = useState<StartupIntakeAnswers>({
+        stage: 'pre_startup',
+        businessType: 'knowledge_ip',
+        problemKeyword: '기존 솔루션의 추상성과 높은 비용, 실행 공백(Execution Gap)',
+        solutionKeyword: '기질 데이터 기반 표준 행정 코드 자동 매핑 및 3초 사업화 로드맵 AI',
+        biggestBottleneck: 'funding_plan'
+    });
+
+    const [showIntakeEdit, setShowIntakeEdit] = useState<boolean>(false);
+
+    // AI 경영지도사 인라인 챗봇 상태
+    const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([
+        {
+            role: 'assistant',
+            content: `반갑습니다, ${userProfile?.userName || '대표'}님! 공인 경영지도사(CMC)와 명심코칭 3S 기질 엔진이 결합된 AI 수석 비즈니스 컨설턴트입니다. 국세청 업종 매핑, 중기부 PSST 사업계획서, 정부지원사업(예창패/초창패) 합격 전략에 대해 무엇이든 질문해 주세요.`
+        }
+    ]);
+    const [inputMessage, setInputMessage] = useState('');
+    const [isLoadingChat, setIsLoadingChat] = useState(false);
+
     if (!isOpen) return null;
 
     const currentProfile: NtsBusinessArchitectureReport = viewRoleModel
         ? (selectedStage === 'early_team' ? EARLY_STARTUP_REPORT : selectedStage === 're_founder' ? RE_FOUNDER_REPORT : PRE_STARTUP_REPORT)
         : generateNtsBusinessArchitecture(userProfile, selectedStage);
+
+    // 개인화된 PSST 리포트 생성
+    const personalizedPsst: PersonalizedPsstReport = generatePersonalizedPsstArchitecture(
+        userProfile,
+        intakeAnswers
+    );
 
     const handleCopyCode = (code: string, label: string) => {
         navigator.clipboard.writeText(code);
@@ -51,22 +82,89 @@ export default function NtsBusinessCareerModal({
     };
 
     const handleCopyPsstBlueprint = () => {
-        const p = currentProfile.psstBlueprint;
-        const text = `[중기부 표준 PSST 사업계획서 뼈대 - ${currentProfile.identityTitle}]\n\n`
-            + `1. 문제 인식 (Problem)\n- 시장 문제점: ${p.problem.marketPainPoint}\n- 해결의 시급성: ${p.problem.urgency}\n\n`
-            + `2. 실현 가능성 (Solution)\n- 핵심 MVP: ${p.solution.coreMvp}\n- 차별화 요소: ${p.solution.differentiation}\n\n`
-            + `3. 성장 전략 (Scale-up)\n- 수익 모델(BM): ${p.scaleUp.businessModel}\n- 확장 로드맵: ${p.scaleUp.expansionRoadmap}\n\n`
-            + `4. 팀 구성 (Team)\n- 대표자 강점: ${p.team.founderStrength}\n- 추천 인재 영입: ${p.team.recommendedHiring}`;
+        const p = personalizedPsst;
+        const text = `[중소벤처기업부 표준 PSST 사업계획서 뼈대]\n`
+            + `■ 비즈니스명: ${p.identityTitle}\n`
+            + `■ 기질 프로파일: ${p.sajuSummaryText}\n\n`
+            + `1. 문제 인식 (Problem & Motivation)\n`
+            + `- ${p.problem.marketPainPoint}\n`
+            + `- ${p.problem.founderMotivation}\n`
+            + `- 해결의 시급성: ${p.problem.urgency}\n\n`
+            + `2. 실현 가능성 (Solution & Architecture)\n`
+            + `- ${p.solution.coreMvp}\n`
+            + `- ${p.solution.differentiation}\n`
+            + `- 개발 마일스톤: ${p.solution.techMilestone}\n\n`
+            + `3. 성장 전략 & 수익 모델 (Scale-up & BM)\n`
+            + `- B2C: ${p.scaleUp.businessModel.b2c}\n`
+            + `- B2B: ${p.scaleUp.businessModel.b2b}\n`
+            + `- B2G: ${p.scaleUp.businessModel.b2g}\n`
+            + `- 시장 진입 전략: ${p.scaleUp.gtmStrategy}\n\n`
+            + `4. 팀 구성 및 조직 역량 (Team & HR)\n`
+            + `- ${p.team.founderStrength}\n`
+            + `- ${p.team.hrComplementPlan}\n\n`
+            + `[경영지도사 행정·세무 원포인트 체크]\n`
+            + `• 추천 주업종 코드: ${p.onePointCheck.recommendedMainCode} (${p.onePointCheck.recommendedMainTitle})\n`
+            + `• 세액감면 혜택: ${p.onePointCheck.taxBenefitStatus}\n`
+            + `• 필수 인허가: ${p.onePointCheck.requiredPermits.join(', ')}\n`
+            + `• 추천 지원사업: ${p.onePointCheck.recommendedGovPrograms.map(g => `${g.name} (${g.targetFunding})`).join(' / ')}`;
         
         navigator.clipboard.writeText(text);
         setCopiedPsst(true);
         setTimeout(() => setCopiedPsst(false), 2500);
     };
 
-    const handlePromptClick = (promptText: string) => {
-        onClose();
-        if (onStartChatCoaching) {
-            onStartChatCoaching(promptText);
+    const handleDownloadPsst = () => {
+        const p = personalizedPsst;
+        const text = `[중소벤처기업부 표준 PSST 사업계획서]\n`
+            + `대표자: ${userProfile?.userName || '대표'}\n`
+            + `기질 요약: ${p.sajuSummaryText}\n\n`
+            + `1. Problem (문제 인식)\n- ${p.problem.marketPainPoint}\n- ${p.problem.founderMotivation}\n\n`
+            + `2. Solution (실현 가능성)\n- ${p.solution.coreMvp}\n- ${p.solution.differentiation}\n\n`
+            + `3. Scale-up (성장 전략)\n- B2C: ${p.scaleUp.businessModel.b2c}\n- B2B: ${p.scaleUp.businessModel.b2b}\n- B2G: ${p.scaleUp.businessModel.b2g}\n\n`
+            + `4. Team (팀 역량)\n- ${p.team.founderStrength}\n- ${p.team.hrComplementPlan}\n\n`
+            + `[국세청 코드 및 세무 가이드]\n- 주업종: ${p.onePointCheck.recommendedMainCode}\n- 세제 혜택: ${p.onePointCheck.taxBenefitStatus}`;
+        
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `PSST_사업계획서_${userProfile?.userName || '명심가'}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const handleSendMessage = async (msgToSend?: string) => {
+        const text = msgToSend || inputMessage;
+        if (!text.trim() || isLoadingChat) return;
+
+        const newMessages = [...chatMessages, { role: 'user' as const, content: text }];
+        setChatMessages(newMessages);
+        if (!msgToSend) setInputMessage('');
+        setIsLoadingChat(true);
+
+        try {
+            const res = await fetch('/api/coaching/business-consultant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: text,
+                    history: chatMessages,
+                    sajuSummary: currentProfile.sajuSummaryText,
+                    intakeAnswers,
+                    userName: currentProfile.userName
+                })
+            });
+
+            const data = await res.json();
+            if (data.reply) {
+                setChatMessages([...newMessages, { role: 'assistant', content: data.reply }]);
+            } else {
+                setChatMessages([...newMessages, { role: 'assistant', content: data.error || '답변을 불러오지 못했습니다.' }]);
+            }
+        } catch (err) {
+            setChatMessages([...newMessages, { role: 'assistant', content: '서버 연결에 실패했습니다. 다시 시도해 주세요.' }]);
+        } finally {
+            setIsLoadingChat(false);
         }
     };
 
@@ -80,7 +178,7 @@ export default function NtsBusinessCareerModal({
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                             <span className="text-[11px] font-mono font-bold text-amber-400">
-                                🏛️ [비즈니스 설계] 경영지도사 연계 5단계 웰니스 컨설팅
+                                🏛️ [명심코칭 × 경영지도사] PSST 사업계획서 & B2B 웰니스 컨설팅
                             </span>
                         </div>
 
@@ -112,7 +210,10 @@ export default function NtsBusinessCareerModal({
                     {/* Stage Selector: 3대 창업 생애주기 탭 */}
                     <div className="p-1 rounded-2xl bg-slate-950/90 border border-slate-800 grid grid-cols-3 gap-1 text-center text-xs font-bold">
                         <button
-                            onClick={() => setSelectedStage('solo_pre')}
+                            onClick={() => {
+                                setSelectedStage('solo_pre');
+                                setIntakeAnswers(prev => ({ ...prev, stage: 'pre_startup' }));
+                            }}
                             className={`py-2 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                                 selectedStage === 'solo_pre'
                                     ? 'bg-gradient-to-r from-amber-500/30 to-amber-600/30 text-amber-300 border border-amber-500/50 shadow-md'
@@ -123,7 +224,10 @@ export default function NtsBusinessCareerModal({
                             <span>1인 지식 / 예비창업</span>
                         </button>
                         <button
-                            onClick={() => setSelectedStage('early_team')}
+                            onClick={() => {
+                                setSelectedStage('early_team');
+                                setIntakeAnswers(prev => ({ ...prev, stage: 'early_stage' }));
+                            }}
                             className={`py-2 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                                 selectedStage === 'early_team'
                                     ? 'bg-gradient-to-r from-emerald-500/30 to-teal-600/30 text-emerald-300 border border-emerald-500/50 shadow-md'
@@ -134,7 +238,10 @@ export default function NtsBusinessCareerModal({
                             <span>초기 스타트업 창업</span>
                         </button>
                         <button
-                            onClick={() => setSelectedStage('re_founder')}
+                            onClick={() => {
+                                setSelectedStage('re_founder');
+                                setIntakeAnswers(prev => ({ ...prev, stage: 're_founder' }));
+                            }}
                             className={`py-2 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                                 selectedStage === 're_founder'
                                     ? 'bg-gradient-to-r from-purple-500/30 to-indigo-600/30 text-purple-300 border border-purple-500/50 shadow-md'
@@ -237,7 +344,6 @@ export default function NtsBusinessCareerModal({
                         ======================================================== */}
                     {activeTab === 'step1' && (
                         <div className="space-y-4 animate-fade-in text-xs">
-                            {/* Identity Title Card */}
                             <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-amber-500/40 space-y-1.5 shadow-inner">
                                 <div className="text-amber-400 font-mono font-black flex items-center gap-1.5 text-[11px]">
                                     <Crown className="w-3.5 h-3.5 text-amber-400" />
@@ -251,7 +357,6 @@ export default function NtsBusinessCareerModal({
                                 </p>
                             </div>
 
-                            {/* 4 Pillars Breakdown Grid */}
                             <div className="space-y-2">
                                 <div className="font-bold text-gray-200 flex items-center gap-1.5 text-xs">
                                     <Compass className="w-3.5 h-3.5 text-amber-400" />
@@ -278,7 +383,6 @@ export default function NtsBusinessCareerModal({
                                 </div>
                             </div>
 
-                            {/* 3 Core Competencies */}
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
                                 <div className="font-bold text-gray-200 flex items-center gap-1.5 text-xs">
                                     <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -308,7 +412,6 @@ export default function NtsBusinessCareerModal({
                         ======================================================== */}
                     {activeTab === 'step2' && (
                         <div className="space-y-4 animate-fade-in text-xs">
-                            {/* Taxonomy Overview Table */}
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div className="font-bold text-emerald-300 flex items-center gap-1.5 text-xs">
@@ -333,7 +436,6 @@ export default function NtsBusinessCareerModal({
                                                 <span className="font-bold text-white text-xs">{tax.mainIndustry}</span>
                                             </div>
 
-                                            {/* Sub Codes Grid */}
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                                                 {tax.subIndustryAndCodes.map((item, cIdx) => (
                                                     <button
@@ -359,7 +461,6 @@ export default function NtsBusinessCareerModal({
                                 </div>
                             </div>
 
-                            {/* Main Primary Section 1 */}
                             <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/30 via-slate-900 to-slate-950 border border-emerald-500/40 space-y-2">
                                 <div className="flex items-center justify-between">
                                     <span className="text-emerald-400 font-bold">{currentProfile.primaryBusiness1.sectionTitle}</span>
@@ -375,7 +476,7 @@ export default function NtsBusinessCareerModal({
                     )}
 
                     {/* ========================================================
-                        STEP 3: 국가공인 경영지도사 4대 영역 융합 진단 (NEW)
+                        STEP 3: 국가공인 경영지도사 4대 영역 융합 진단
                         ======================================================== */}
                     {activeTab === 'step3' && (
                         <div className="space-y-4 animate-fade-in text-xs">
@@ -389,9 +490,7 @@ export default function NtsBusinessCareerModal({
                                 </span>
                             </div>
 
-                            {/* 4 Areas Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {/* 1. Marketing */}
                                 <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-1.5 text-amber-400 font-bold">
@@ -411,7 +510,6 @@ export default function NtsBusinessCareerModal({
                                     </div>
                                 </div>
 
-                                {/* 2. HR / Org */}
                                 <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
@@ -431,7 +529,6 @@ export default function NtsBusinessCareerModal({
                                     </div>
                                 </div>
 
-                                {/* 3. Finance & Tax */}
                                 <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-1.5 text-cyan-400 font-bold">
@@ -449,7 +546,6 @@ export default function NtsBusinessCareerModal({
                                     </div>
                                 </div>
 
-                                {/* 4. Gov Funding Target */}
                                 <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-1.5 text-purple-400 font-bold">
@@ -477,71 +573,271 @@ export default function NtsBusinessCareerModal({
                     )}
 
                     {/* ========================================================
-                        STEP 4: 중기부 표준 PSST 사업계획서 뼈대 자동 생성 (NEW)
+                        STEP 4: 1분 창업 진단 & 개인화 PSST 사업계획서 뼈대 (NEW)
                         ======================================================== */}
                     {activeTab === 'step4' && (
                         <div className="space-y-4 animate-fade-in text-xs">
-                            <div className="p-3 rounded-2xl bg-rose-950/40 border border-rose-500/40 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <FileText className="w-4 h-4 text-rose-400" />
-                                    <span className="font-bold text-rose-200">중소벤처기업부 표준 PSST 사업계획서 자동 뼈대</span>
+                            
+                            <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-950/40 via-slate-900 to-indigo-950/40 border border-rose-500/40 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-300 flex items-center justify-center font-bold text-xs border border-rose-500/30">
+                                            📝
+                                        </span>
+                                        <div>
+                                            <h4 className="font-black text-white text-sm">1분 완성 창업 진단 (Intake Form)</h4>
+                                            <p className="text-[10.5px] text-gray-300">내 창업 단계와 아이템을 선택하면 중기부 PSST와 국세청 코드가 즉시 재계산됩니다.</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowIntakeEdit(!showIntakeEdit)}
+                                        className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-rose-500/30 text-rose-300 font-bold text-xs flex items-center gap-1 transition-all cursor-pointer shadow-sm"
+                                    >
+                                        <Edit3 className="w-3 h-3" />
+                                        <span>{showIntakeEdit ? '진단 폼 접기' : '5문항 진단 수정하기'}</span>
+                                    </button>
                                 </div>
-                                <button
-                                    onClick={handleCopyPsstBlueprint}
-                                    className="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 text-rose-300 font-bold text-[10.5px] flex items-center gap-1 transition-all cursor-pointer"
-                                >
-                                    {copiedPsst ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                                    <span>{copiedPsst ? '복사 완료!' : 'PSST 전체 복사'}</span>
-                                </button>
+
+                                {showIntakeEdit && (
+                                    <div className="space-y-3 pt-2 border-t border-slate-800 text-[11px] animate-fade-in">
+                                        <div className="space-y-1">
+                                            <label className="text-amber-300 font-bold">Q1. 창업 준비 단계</label>
+                                            <div className="grid grid-cols-3 gap-1.5">
+                                                {[
+                                                    { id: 'pre_startup', label: '① 예비 창업 (아이디어)' },
+                                                    { id: 'early_stage', label: '② 초기 창업 (3년 이내)' },
+                                                    { id: 're_founder', label: '③ 재창업 / 피봇팅' }
+                                                ].map(item => (
+                                                    <button
+                                                        key={item.id}
+                                                        onClick={() => setIntakeAnswers(prev => ({ ...prev, stage: item.id as any }))}
+                                                        className={`p-2 rounded-lg text-left transition-all border ${
+                                                            intakeAnswers.stage === item.id
+                                                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 font-bold'
+                                                                : 'bg-slate-950 text-gray-400 border-slate-800 hover:text-white'
+                                                        }`}
+                                                    >
+                                                        {item.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-emerald-300 font-bold">Q2. 비즈니스 형태</label>
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                                                {[
+                                                    { id: 'knowledge_ip', label: '1인 지식·IP·콘텐츠' },
+                                                    { id: 'platform_it', label: '플랫폼·앱/웹 서비스' },
+                                                    { id: 'b2b_consulting', label: 'B2B 용역·컨설팅·교육' },
+                                                    { id: 'commerce_goods', label: '제조·유통·이커머스' }
+                                                ].map(item => (
+                                                    <button
+                                                        key={item.id}
+                                                        onClick={() => setIntakeAnswers(prev => ({ ...prev, businessType: item.id as any }))}
+                                                        className={`p-2 rounded-lg text-left transition-all border ${
+                                                            intakeAnswers.businessType === item.id
+                                                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-bold'
+                                                                : 'bg-slate-950 text-gray-400 border-slate-800 hover:text-white'
+                                                        }`}
+                                                    >
+                                                        {item.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-cyan-300 font-bold">Q3. 해결할 시장 문제점 (Problem)</label>
+                                            <div className="flex flex-wrap gap-1 mb-1">
+                                                {[
+                                                    '기존 솔루션의 비싼 비용과 정보 비대칭',
+                                                    '1회성 조언 후 실행 불가능한 실행 공백',
+                                                    '높은 고정비와 인건비 부담'
+                                                ].map((tag, tIdx) => (
+                                                    <button
+                                                        key={tIdx}
+                                                        onClick={() => setIntakeAnswers(prev => ({ ...prev, problemKeyword: tag }))}
+                                                        className="px-2 py-0.5 rounded bg-slate-950 hover:bg-cyan-950 text-[10px] text-cyan-300 border border-cyan-500/30"
+                                                    >
+                                                        + {tag}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={intakeAnswers.problemKeyword}
+                                                onChange={e => setIntakeAnswers(prev => ({ ...prev, problemKeyword: e.target.value }))}
+                                                placeholder="시장에서 가장 해결하고 싶은 결핍을 입력하세요"
+                                                className="w-full p-2 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-cyan-500 text-xs"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-rose-300 font-bold">Q4. 핵심 가치 솔루션 (Solution)</label>
+                                            <div className="flex flex-wrap gap-1 mb-1">
+                                                {[
+                                                    '기질 데이터 기반 표준 행정 코드 자동 매핑',
+                                                    '자동화 알고리즘 기반 SaaS 진단 도구',
+                                                    '1:1 맞춤형 웰니스 코칭 & 턴어라운드'
+                                                ].map((tag, tIdx) => (
+                                                    <button
+                                                        key={tIdx}
+                                                        onClick={() => setIntakeAnswers(prev => ({ ...prev, solutionKeyword: tag }))}
+                                                        className="px-2 py-0.5 rounded bg-slate-950 hover:bg-rose-950 text-[10px] text-rose-300 border border-rose-500/30"
+                                                    >
+                                                        + {tag}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={intakeAnswers.solutionKeyword}
+                                                onChange={e => setIntakeAnswers(prev => ({ ...prev, solutionKeyword: e.target.value }))}
+                                                placeholder="고객에게 제공할 핵심 가치를 입력하세요"
+                                                className="w-full p-2 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-rose-500 text-xs"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-purple-300 font-bold">Q5. 현재 가장 큰 결핍 (경영지도사 처방 대상)</label>
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                                                {[
+                                                    { id: 'funding_plan', label: '자금 조달 & 사업계획서' },
+                                                    { id: 'team_hr', label: '팀 빌딩 & R&R (HR)' },
+                                                    { id: 'marketing_sales', label: '마케팅 & 첫 고객 확보' },
+                                                    { id: 'mental_burnout', label: '멘탈 & 번아웃 극복' }
+                                                ].map(item => (
+                                                    <button
+                                                        key={item.id}
+                                                        onClick={() => setIntakeAnswers(prev => ({ ...prev, biggestBottleneck: item.id as any }))}
+                                                        className={`p-2 rounded-lg text-left transition-all border ${
+                                                            intakeAnswers.biggestBottleneck === item.id
+                                                                ? 'bg-purple-500/20 text-purple-300 border-purple-500/50 font-bold'
+                                                                : 'bg-slate-950 text-gray-400 border-slate-800 hover:text-white'
+                                                        }`}
+                                                    >
+                                                        {item.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
-                            {/* PSST 4-Cards */}
+                            <div className="p-3 rounded-2xl bg-rose-950/40 border border-rose-500/40 flex flex-wrap items-center justify-between gap-2">
+                                <div className="flex items-center gap-2">
+                                    <FileText className="w-4 h-4 text-rose-400" />
+                                    <span className="font-bold text-rose-200">
+                                        중소벤처기업부 표준 PSST 사업계획서 자동 뼈대
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={handleDownloadPsst}
+                                        className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-gray-300 hover:text-white font-bold text-[10.5px] flex items-center gap-1 transition-all cursor-pointer"
+                                    >
+                                        <Download className="w-3 h-3" />
+                                        <span>TXT 다운로드</span>
+                                    </button>
+                                    <button
+                                        onClick={handleCopyPsstBlueprint}
+                                        className="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 text-rose-300 font-bold text-[10.5px] flex items-center gap-1 transition-all cursor-pointer"
+                                    >
+                                        {copiedPsst ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                                        <span>{copiedPsst ? '복사 완료!' : 'PSST 전체 복사'}</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <div className="space-y-3">
-                                {/* P: Problem */}
                                 <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
-                                    <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
-                                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-mono text-[10px] border border-amber-500/40">P</span>
-                                        <span>{currentProfile.psstBlueprint.problem.title}</span>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
+                                            <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-mono text-[10px] border border-amber-500/40">P</span>
+                                            <span>{personalizedPsst.problem.title}</span>
+                                        </div>
+                                        <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30">
+                                            월주 (사회적 결핍 포착)
+                                        </span>
                                     </div>
                                     <div className="space-y-1 text-[11px] pl-7">
-                                        <p className="text-gray-300">⚠️ <strong>시장 문제점:</strong> {currentProfile.psstBlueprint.problem.marketPainPoint}</p>
-                                        <p className="text-amber-200/90">⏱️ <strong>해결의 시급성:</strong> {currentProfile.psstBlueprint.problem.urgency}</p>
+                                        <p className="text-gray-300">⚠️ <strong>시장 결핍:</strong> {personalizedPsst.problem.marketPainPoint}</p>
+                                        <p className="text-amber-200/90">💡 <strong>창업자 필연적 동기:</strong> {personalizedPsst.problem.founderMotivation}</p>
+                                        <p className="text-gray-400 text-[10px]">⏱️ <strong>시급성:</strong> {personalizedPsst.problem.urgency}</p>
                                     </div>
                                 </div>
 
-                                {/* S: Solution */}
                                 <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
-                                    <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-                                        <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-mono text-[10px] border border-emerald-500/40">S</span>
-                                        <span>{currentProfile.psstBlueprint.solution.title}</span>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+                                            <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-mono text-[10px] border border-emerald-500/40">S</span>
+                                            <span>{personalizedPsst.solution.title}</span>
+                                        </div>
+                                        <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
+                                            일주 (핵심 전문성 & IP)
+                                        </span>
                                     </div>
                                     <div className="space-y-1 text-[11px] pl-7">
-                                        <p className="text-gray-300">💡 <strong>핵심 MVP:</strong> {currentProfile.psstBlueprint.solution.coreMvp}</p>
-                                        <p className="text-emerald-300">✨ <strong>차별화 요소:</strong> {currentProfile.psstBlueprint.solution.differentiation}</p>
+                                        <p className="text-gray-300">💡 <strong>핵심 솔루션:</strong> {personalizedPsst.solution.coreMvp}</p>
+                                        <p className="text-emerald-300">✨ <strong>차별화 요소:</strong> {personalizedPsst.solution.differentiation}</p>
+                                        <p className="text-gray-400 text-[10px]">🎯 <strong>기술 마일스톤:</strong> {personalizedPsst.solution.techMilestone}</p>
                                     </div>
                                 </div>
 
-                                {/* S: Scale-up */}
                                 <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
-                                    <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs">
-                                        <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-mono text-[10px] border border-cyan-500/40">S</span>
-                                        <span>{currentProfile.psstBlueprint.scaleUp.title}</span>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs">
+                                            <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-mono text-[10px] border border-cyan-500/40">S</span>
+                                            <span>{personalizedPsst.scaleUp.title}</span>
+                                        </div>
+                                        <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-500/30">
+                                            시주 (수익 모델 & 자산화)
+                                        </span>
                                     </div>
                                     <div className="space-y-1 text-[11px] pl-7">
-                                        <p className="text-gray-300">📈 <strong>비즈니스 모델(BM):</strong> {currentProfile.psstBlueprint.scaleUp.businessModel}</p>
-                                        <p className="text-cyan-300">🚀 <strong>확장 로드맵:</strong> {currentProfile.psstBlueprint.scaleUp.expansionRoadmap}</p>
+                                        <p className="text-gray-300">📈 <strong>B2C (기본 엔진):</strong> {personalizedPsst.scaleUp.businessModel.b2c}</p>
+                                        <p className="text-gray-300">🏢 <strong>B2B (수익 극대화):</strong> {personalizedPsst.scaleUp.businessModel.b2b}</p>
+                                        <p className="text-gray-300">🏛️ <strong>B2G (스케일업):</strong> {personalizedPsst.scaleUp.businessModel.b2g}</p>
+                                        <p className="text-cyan-300">🚀 <strong>시장 진입 (GTM):</strong> {personalizedPsst.scaleUp.gtmStrategy}</p>
                                     </div>
                                 </div>
 
-                                {/* T: Team */}
                                 <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
-                                    <div className="flex items-center gap-2 text-purple-400 font-bold text-xs">
-                                        <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center font-mono text-[10px] border border-purple-500/40">T</span>
-                                        <span>{currentProfile.psstBlueprint.team.title}</span>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-purple-400 font-bold text-xs">
+                                            <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center font-mono text-[10px] border border-purple-500/40">T</span>
+                                            <span>{personalizedPsst.team.title}</span>
+                                        </div>
+                                        <span className="text-[10px] font-mono text-purple-300 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30">
+                                            년주 (인프라 & HR 보완)
+                                        </span>
                                     </div>
                                     <div className="space-y-1 text-[11px] pl-7">
-                                        <p className="text-gray-300">👑 <strong>대표자 강점:</strong> {currentProfile.psstBlueprint.team.founderStrength}</p>
-                                        <p className="text-purple-300">👥 <strong>추천 인재 영입:</strong> {currentProfile.psstBlueprint.team.recommendedHiring}</p>
+                                        <p className="text-gray-300">👑 <strong>대표자 코어 역량:</strong> {personalizedPsst.team.founderStrength}</p>
+                                        <p className="text-purple-300">👥 <strong>HR 보완 전략:</strong> {personalizedPsst.team.hrComplementPlan}</p>
+                                    </div>
+                                </div>
+
+                                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-950/40 via-slate-900 to-indigo-950/40 border border-blue-500/40 space-y-2 text-[11px]">
+                                    <div className="flex items-center gap-2 text-blue-300 font-bold">
+                                        <Award className="w-4 h-4 text-blue-400" />
+                                        <span>경영지도사 행정 · 세무 원포인트 체크</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-300">
+                                        <div className="p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+                                            📌 <strong>추천 주업종 코드:</strong> <span className="text-amber-400 font-mono font-bold">{personalizedPsst.onePointCheck.recommendedMainCode}</span> ({personalizedPsst.onePointCheck.recommendedMainTitle})
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+                                            💰 <strong>세제 혜택:</strong> <span className="text-emerald-300">{personalizedPsst.onePointCheck.taxBenefitStatus}</span>
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+                                            📋 <strong>필수 인허가:</strong> {personalizedPsst.onePointCheck.requiredPermits.join(', ')}
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+                                            🏛️ <strong>추천 정부지원사업:</strong> {personalizedPsst.onePointCheck.recommendedGovPrograms.map(g => `${g.name}`).join(', ')}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -553,7 +849,6 @@ export default function NtsBusinessCareerModal({
                         ======================================================== */}
                     {activeTab === 'step5' && (
                         <div className="space-y-4 animate-fade-in text-xs">
-                            {/* 3-Step Admin Checklist */}
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
                                 <div className="font-bold text-emerald-300 flex items-center gap-1.5 text-xs">
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -576,7 +871,6 @@ export default function NtsBusinessCareerModal({
                                 </div>
                             </div>
 
-                            {/* Daily Energy Protocol */}
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
                                 <div className="font-bold text-amber-300 flex items-center gap-1.5 text-xs">
                                     <Clock className="w-4 h-4 text-amber-400" />
@@ -601,7 +895,6 @@ export default function NtsBusinessCareerModal({
                                 </div>
                             </div>
 
-                            {/* Scale-up 3 Phases */}
                             <div className="space-y-2">
                                 <div className="font-bold text-purple-300 flex items-center gap-1.5 text-xs">
                                     <TrendingUp className="w-4 h-4 text-purple-400" />
@@ -624,39 +917,87 @@ export default function NtsBusinessCareerModal({
                         </div>
                     )}
 
-                    {/* Copy Alert Toast */}
                     {copiedCode && (
                         <div className="p-2.5 rounded-xl bg-emerald-950/90 border border-emerald-400/60 text-emerald-300 text-xs font-bold text-center animate-fade-in shadow-lg">
                             ✨ {copiedCode}가 클립보드에 복사되었습니다! 홈택스 신청서에 바로 붙여넣으세요.
                         </div>
                     )}
 
-                    {/* AI Assistant */}
+                    {/* AI 경영지도사 1:1 실시간 대화창 (Interactive Chat) */}
                     <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-950 border-2 border-indigo-500/40 space-y-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-300">
                                 <MessageSquare className="w-4 h-4 text-indigo-400" />
-                                <span>AI 경영지도사에게 1:1 실시간 질문하기</span>
+                                <span>AI 경영지도사 1:1 실시간 자문실</span>
                             </div>
-                            <span className="text-[10px] text-gray-400 font-mono">1-Tap 1:1 코칭</span>
+                            <span className="text-[10px] text-gray-400 font-mono">Gemini 2.5 Pro 엔진</span>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            {currentProfile.chatAssitantPrompts.map((cp, idx) => (
+                        {/* Chat Messages Log */}
+                        <div className="max-h-48 overflow-y-auto space-y-2 p-2 rounded-xl bg-slate-950/90 border border-slate-800 text-xs custom-scrollbar">
+                            {chatMessages.map((msg, mIdx) => (
+                                <div
+                                    key={mIdx}
+                                    className={`p-2.5 rounded-xl leading-relaxed ${
+                                        msg.role === 'user'
+                                            ? 'bg-amber-500/20 text-amber-200 border border-amber-500/30 ml-8 text-right'
+                                            : 'bg-slate-900 text-gray-200 border border-slate-800 mr-8'
+                                    }`}
+                                >
+                                    <div className="text-[10px] font-bold mb-0.5 text-gray-400">
+                                        {msg.role === 'user' ? '👤 대표님' : '🏛️ AI 경영지도사'}
+                                    </div>
+                                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                                </div>
+                            ))}
+                            {isLoadingChat && (
+                                <div className="p-2.5 rounded-xl bg-slate-900 text-indigo-300 border border-slate-800 mr-8 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
+                                    <span className="text-xs">경영지도사 AI가 사업계획서와 행정 코드를 분석 중입니다...</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Quick Prompts */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                            {[
+                                { title: '예창패/초창패 통과 전략', prompt: '내 기질과 비즈니스 형태를 바탕으로, 정부지원사업 서류 심사에서 가산점을 받는 차별화 스토리라인을 작성해줘.' },
+                                { title: '국세청 100% 감면 행정', prompt: '국세청 사업자등록 시 주업종 724000과 부업종을 어떻게 등록해야 5개년 소득세 100% 감면을 안전하게 받는지 알려줘.' },
+                                { title: '1인 MVP 30일 론칭 로드맵', prompt: '직원 채용 없이 초기 30일 안에 최소기능제품(MVP)을 론칭하고 첫 유료 고객을 만드는 실행 계획을 짜줘.' }
+                            ].map((cp, idx) => (
                                 <button
                                     key={idx}
-                                    onClick={() => handlePromptClick(cp.prompt)}
-                                    className="p-2.5 rounded-xl bg-slate-950/90 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-400/60 text-left transition-all cursor-pointer group active:scale-[0.98] space-y-1"
+                                    onClick={() => handleSendMessage(cp.prompt)}
+                                    disabled={isLoadingChat}
+                                    className="p-2 rounded-lg bg-slate-950 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-400/50 text-left transition-all cursor-pointer text-[10.5px] group disabled:opacity-50"
                                 >
-                                    <div className="font-bold text-white text-[11px] flex items-center justify-between">
-                                        <span>{cp.icon} {cp.title}</span>
-                                        <ChevronRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-indigo-300 group-hover:translate-x-0.5 transition-transform" />
-                                    </div>
-                                    <p className="text-gray-400 text-[10px] line-clamp-2 leading-relaxed group-hover:text-gray-300">
-                                        &quot;{cp.prompt}&quot;
-                                    </p>
+                                    <span className="font-bold text-white group-hover:text-indigo-300">💡 {cp.title}</span>
                                 </button>
                             ))}
+                        </div>
+
+                        {/* Chat Input */}
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="text"
+                                value={inputMessage}
+                                onChange={e => setInputMessage(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSendMessage();
+                                    }
+                                }}
+                                placeholder="사업계획서 작성, 정부지원사업, 국세청 코드 관련 질문을 입력하세요..."
+                                className="flex-1 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-gray-500 focus:outline-none focus:border-indigo-400 text-xs"
+                            />
+                            <button
+                                onClick={() => handleSendMessage()}
+                                disabled={isLoadingChat || !inputMessage.trim()}
+                                className="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0 flex items-center justify-center shadow-md"
+                            >
+                                <Send className="w-4 h-4" />
+                            </button>
                         </div>
                     </div>
 
@@ -664,8 +1005,8 @@ export default function NtsBusinessCareerModal({
                     <div className="space-y-2 pt-1 border-t border-slate-800">
                         <button
                             onClick={() => {
-                                handlePromptClick(
-                                    `내 비즈니스 정체성("${currentProfile.identityTitle}")과 국세청 업종(724000/741400), 그리고 중기부 PSST 사업계획서 뼈대를 바탕으로, 실전 사업화 및 정부지원사업(예창패/초창패) 통과 전략을 1:1로 코칭해 줘!`
+                                handleSendMessage(
+                                    `내 비즈니스명("${personalizedPsst.identityTitle}")과 국세청 코드(${personalizedPsst.onePointCheck.recommendedMainCode})를 바탕으로, PSST 사업계획서 [1. 문제 인식]과 [2. 실현 가능성] 항목을 심사위원 기준에서 가장 매력적인 문장으로 정밀 작성해 줘!`
                                 );
                             }}
                             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(245,158,11,0.35)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"

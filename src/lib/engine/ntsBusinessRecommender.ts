@@ -588,6 +588,58 @@ export const RE_FOUNDER_REPORT: NtsBusinessArchitectureReport = {
 };
 
 // -------------------------------------------------------------
+// [NEW] 1분 완성 창업 진단 질문지 (Intake Form) 인터페이스
+// -------------------------------------------------------------
+export interface StartupIntakeAnswers {
+    stage: 'pre_startup' | 'early_stage' | 're_founder'; // Q1. 창업 단계
+    businessType: 'knowledge_ip' | 'platform_it' | 'b2b_consulting' | 'commerce_goods'; // Q2. 비즈니스 형태
+    problemKeyword: string; // Q3. 해결할 시장 결핍/문제점
+    solutionKeyword: string; // Q4. 고객에게 제공할 핵심 가치/솔루션
+    biggestBottleneck: 'funding_plan' | 'team_hr' | 'marketing_sales' | 'mental_burnout'; // Q5. 현재 가장 큰 결핍
+}
+
+export interface ManagementOnePointCheck {
+    recommendedMainCode: string;
+    recommendedMainTitle: string;
+    taxBenefitStatus: string;
+    requiredPermits: string[];
+    recommendedGovPrograms: { name: string; targetFunding: string; tip: string }[];
+}
+
+export interface PersonalizedPsstReport {
+    sajuSummaryText: string;
+    identityTitle: string;
+    intakeAnswers: StartupIntakeAnswers;
+    problem: {
+        title: string;
+        marketPainPoint: string;
+        founderMotivation: string;
+        urgency: string;
+    };
+    solution: {
+        title: string;
+        coreMvp: string;
+        differentiation: string;
+        techMilestone: string;
+    };
+    scaleUp: {
+        title: string;
+        businessModel: {
+            b2c: string;
+            b2b: string;
+            b2g: string;
+        };
+        gtmStrategy: string;
+    };
+    team: {
+        title: string;
+        founderStrength: string;
+        hrComplementPlan: string;
+    };
+    onePointCheck: ManagementOnePointCheck;
+}
+
+// -------------------------------------------------------------
 // 사용자 사주 데이터를 분석하여 맞춤 리포트를 생성하는 통합 엔진
 // -------------------------------------------------------------
 export function generateNtsBusinessArchitecture(
@@ -621,3 +673,122 @@ export function generateNtsBusinessArchitecture(
 
     return baseReport;
 }
+
+// -------------------------------------------------------------
+// [NEW] 사주 기질 + 5문항 진단 답변 융합 ➔ 개인화 PSST 리포트 생성기
+// -------------------------------------------------------------
+export function generatePersonalizedPsstArchitecture(
+    userProfile: any,
+    answers: StartupIntakeAnswers
+): PersonalizedPsstReport {
+    const userName = userProfile?.userName || userProfile?.name || '명심가';
+    const saju = userProfile?.saju || {};
+
+    const y = `${saju.yearPillar?.gan || saju.fourPillars?.year?.gan || '庚'}${saju.yearPillar?.ji || saju.fourPillars?.year?.ji || '申'}`;
+    const m = `${saju.monthPillar?.gan || saju.fourPillars?.month?.gan || '癸'}${saju.monthPillar?.ji || saju.fourPillars?.month?.ji || '未'}`;
+    const d = `${saju.dayPillar?.gan || saju.fourPillars?.day?.gan || '辛'}${saju.dayPillar?.ji || saju.fourPillars?.day?.ji || '巳'}`;
+    const h = `${saju.hourPillar?.gan || saju.fourPillars?.hour?.gan || '乙'}${saju.hourPillar?.ji || saju.fourPillars?.hour?.ji || '未'}`;
+    const sajuSummaryText = `${y}년 · ${m}월 · ${d}일 · ${h}시`;
+
+    // 1. 업종 및 국세청 코드 매핑
+    let mainCode = '724000';
+    let mainTitle = '데이터베이스 및 온라인정보 제공업';
+    let requiredPermits = ['통신판매업 신고 (지자체)'];
+    let taxBenefit = '창업중소기업 세액감면 대상 업종 (수도권 과밀억제권역 외 창업 시 5개년 소득세/법인세 최대 50~100% 감면)';
+
+    if (answers.businessType === 'knowledge_ip') {
+        mainCode = '724000';
+        mainTitle = '데이터베이스 및 온라인정보 제공업 / 전자출판';
+        requiredPermits = ['통신판매업 신고', '출판사 등록신고 (도서/전자책 발행 시)'];
+    } else if (answers.businessType === 'platform_it') {
+        mainCode = '722000';
+        mainTitle = '응용 소프트웨어 개발 및 공급업 (722000) / 데이터베이스 제공업 (724000)';
+        requiredPermits = ['통신판매업 신고', '부가통신사업자 신고'];
+        taxBenefit = '벤처기업 인증 및 소프트웨어 진흥법 세제 혜택 최대 100% 감면';
+    } else if (answers.businessType === 'b2b_consulting') {
+        mainCode = '741400';
+        mainTitle = '경영 컨설팅업 (741400) / 교육관련 자문 및 평가업 (930921)';
+        requiredPermits = ['통신판매업 신고 (온라인 교육 진행 시)', '원격평생교육원 인허가 (규모 확장 시)'];
+    } else if (answers.businessType === 'commerce_goods') {
+        mainCode = '525101';
+        mainTitle = '통신판매업 / 전자상거래 소매업 (525101)';
+        requiredPermits = ['통신판매업 신고', '식품위생교육 및 영업신고 (식품/건기식 취급 시)'];
+    }
+
+    // 2. 창업 단계별 추천 지원사업 매핑
+    let govPrograms: { name: string; targetFunding: string; tip: string }[] = [];
+    if (answers.stage === 'pre_startup') {
+        govPrograms = [
+            { name: '중기부 예비창업패키지 (일반/특화)', targetFunding: '최대 1억 원 (평균 5,000만 원)', tip: '기질 데이터 기반 지식 IP 및 솔루션 자동화 BM 강조' },
+            { name: '소진공 신사업창업사관학교', targetFunding: '최대 4,000만 원 (사업화 자금)', tip: '온오프라인 융합 웰니스 콘텐츠 및 코칭 서비스 제안' },
+            { name: '청년창업사관학교 (만 39세 이하)', targetFunding: '최대 1억 원 + 입주 공간', tip: 'SaaS 솔루션 아키텍처 및 1인 지식 기업 스케일업' }
+        ];
+    } else if (answers.stage === 'early_stage') {
+        govPrograms = [
+            { name: '중기부 초기창업패키지', targetFunding: '최대 1억 원 (평균 7,000만 원)', tip: 'PMF(제품 시장 적합성) 검증 지표 및 B2B 유료 고객 확보 전략 어필' },
+            { name: 'TIPS (민관공동창업자금)', targetFunding: 'R&D 최대 5억 + 사업화 2억', tip: '특허 알고리즘 및 AI 인지과학 기반 멘탈케어 기술성 강조' },
+            { name: '중기부 디딤돌 첫걸음 R&D', targetFunding: '최대 1.2억 원', tip: '기질 분석 및 바이오 웰니스 솔루션 연구개발 과제 신청' }
+        ];
+    } else {
+        govPrograms = [
+            { name: '중기부 재도전성공패키지 (지식서비스)', targetFunding: '최대 1억 원 (평균 6,000만 원)', tip: '과거 실패 원인의 철저한 디브리핑 및 리스크 헷징된 무자본 BM 부각' },
+            { name: '중진공 재창업자금 (융자)', targetFunding: '최대 5억 원 (저금리 정책자금)', tip: '고정비 최소화된 지식 서비스 모델로 안정적 상환 계획 제시' },
+            { name: '소상공인 희망리턴패키지', targetFunding: '재창업 사업화 최대 2,000만 원', tip: '디지털 전환 및 온라인 정보제공업 피봇팅' }
+        ];
+    }
+
+    // 3. 결핍(Bottleneck)별 HR 보완 처방
+    let hrPlan = '';
+    if (answers.biggestBottleneck === 'funding_plan') {
+        hrPlan = '자금 조달 및 사업계획서 작성을 신속히 완료하기 위해, PSST 프레임워크 뼈대를 기반으로 표준 정량 지표 작성을 우선하고 정부지원사업 전문 멘토링 풀을 활용합니다.';
+    } else if (answers.biggestBottleneck === 'team_hr') {
+        hrPlan = '대표자의 과도한 완벽주의와 행정 리소스 소모를 방어하기 위해 프론트엔드 개발 및 퍼포먼스 마케팅 파트는 파트너십 또는 검증된 외주 풀(Pool)로 세팅하여 에너지 누수를 차단합니다.';
+    } else if (answers.biggestBottleneck === 'marketing_sales') {
+        hrPlan = '초기 세일즈 전환율을 극대화하기 위해 1-Page 무료 진단 리포트를 활용한 오가닉 리드 수집 퍼널을 최우선 가동하고, 콘텐츠 마케팅 외주 파트너와 성과 공유형 협업을 구축합니다.';
+    } else {
+        hrPlan = '대표자의 번아웃 예방을 위해 매일 오전 황금 몰입 시간에만 코어 기획을 진행하고, 고객 응대와 행정은 표준 프로토콜 템플릿으로 자동화하여 심리적 안전지대를 확보합니다.';
+    }
+
+    const problemDesc = answers.problemKeyword || '기존 솔루션의 지나친 추상성과 높은 비용, 1회성 상담 후 실제 실행 불가능한 실행 공백(Execution Gap)';
+    const solutionDesc = answers.solutionKeyword || '기질 데이터 기반 표준 행정 코드 자동 매핑 및 3초 만에 사업화 로드맵을 완성하는 AI 솔루션 플랫폼';
+
+    return {
+        sajuSummaryText,
+        identityTitle: `${userName} 대표의 [${answers.businessType === 'knowledge_ip' ? '지식 IP 기반 1인 솔루션 기업' : answers.businessType === 'platform_it' ? 'AI 웰니스 테크 플랫폼' : answers.businessType === 'b2b_consulting' ? 'B2B 전문 경영·인재 솔루션' : 'D2C 웰니스 커머스 기업'}]`,
+        intakeAnswers: answers,
+        problem: {
+            title: '1. 문제 인식 (Problem & Motivation)',
+            marketPainPoint: `시장 결핍: ${problemDesc}으로 인해 수많은 고객과 창업 준비생들이 막대한 시간과 자금을 낭비하고 제도권 비즈니스로 안착하지 못함.`,
+            founderMotivation: `창업자 필연적 동기 (${m}월 식신·인성 기질): 방대한 지식과 심리 메커니즘을 정밀하게 구조화할 수 있는 대표자의 선천적 인지 역량을 바탕으로, 시장의 비효율을 객관적 지표와 표준 코드로 해결해야 한다는 필연성을 절감하여 창업을 결심함.`,
+            urgency: '단순 상담이나 단발성 콘텐츠는 사후 처방에 불과하여, 창업 진입 단계부터 표준화된 국세청 업종코드와 비즈니스 아키텍처를 원클릭으로 도출하는 혁신 플랫폼이 시급함.'
+        },
+        solution: {
+            title: '2. 실현 가능성 (Solution & Architecture)',
+            coreMvp: `핵심 솔루션 (${d}일 정밀 시스템 기반): 사용자 기질 데이터를 표준 행정 분류로 자동 치환하는 엔진 구축 및 ${solutionDesc} 개발.`,
+            differentiation: `차별화 요소: 단순 심리검사를 넘어 국가 공인 국세청 표준 코드(${mainCode}) 매핑, 세제 감면 혜택, 중기부 PSST 사업계획서 뼈대까지 1-Stop으로 제공하는 올인원(All-in-One) 솔루션.`,
+            techMilestone: '1차: AI 1분 창업 진단 및 국세청 6자리 코드 자동 추천 웹 배포 ➔ 2차: 1:1 맞춤형 PSST 사업계획서 실시간 인터뷰 생성기 고도화.'
+        },
+        scaleUp: {
+            title: '3. 성장 전략 & 수익 모델 (Scale-up & BM)',
+            businessModel: {
+                b2c: '기본 엔진: 디지털 진단 리포트 및 지식 IP(전자책/VOD/툴킷) 자동화 판매',
+                b2b: '수익 극대화: 기업 임직원 번아웃 방지 및 부서별 기질 케미스트리 조직 진단 컨설팅 용역',
+                b2g: '스케일업: 공공 창업지원단 및 지자체 청년 창업 멘탈 웰니스 프로그램 납품'
+            },
+            gtmStrategy: '1단계: 1분 무료 진단 배포를 통한 초기 1만 명 잠재 고객 DB 확보 ➔ 2단계: 유료 프리미엄 심층 리포트 및 1:1 경영지도사 코칭 구독 전환.'
+        },
+        team: {
+            title: '4. 팀 구성 및 조직 역량 (Team & HR)',
+            founderStrength: `대표자 코어 역량 (${y}년 인프라 레버리지): 정밀 시스템 설계 및 핵심 로직/알고리즘 총괄 디렉팅.`,
+            hrComplementPlan: `보완 전략 (HR): ${hrPlan}`
+        },
+        onePointCheck: {
+            recommendedMainCode: mainCode,
+            recommendedMainTitle: mainTitle,
+            taxBenefitStatus: taxBenefit,
+            requiredPermits,
+            recommendedGovPrograms: govPrograms
+        }
+    };
+}
+
