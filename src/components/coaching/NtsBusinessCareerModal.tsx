@@ -420,6 +420,52 @@ export default function NtsBusinessCareerModal({
                                 </div>
                             </div>
 
+                            {/* [SPECIAL] 공망(空亡)의 역설: 온프레미스 서버를 버리고 클라우드 플랫폼으로 */}
+                            <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-950/50 via-slate-900 to-indigo-950/60 border-2 border-purple-500/40 space-y-3 shadow-lg relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300">
+                                            <Server className="w-4 h-4" />
+                                        </div>
+                                        <div>
+                                            <span className="text-[10px] text-purple-400 font-mono font-bold tracking-wider">COGNITIVE SHIFT ARCHITECTURE</span>
+                                            <h5 className="text-sm font-black text-white flex items-center gap-1.5">
+                                                <span>공망(空亡)의 역설 — 온프레미스를 버리고 클라우드 플랫폼으로</span>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-900/60 text-purple-200 border border-purple-400/30 font-bold">
+                                        명심 3S 기질 전환
+                                    </span>
+                                </div>
+
+                                <blockquote className="p-2.5 rounded-xl bg-slate-950/80 border border-purple-500/30 text-amber-200 text-xs italic font-medium leading-relaxed">
+                                    &ldquo;공망(空亡)은 채우지 못해 비어 있는 것이 아니라, 전 세계를 담기 위해 비워둔 클라우드 서버입니다.&rdquo;
+                                </blockquote>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
+                                    <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                                        <div className="font-bold text-indigo-300 flex items-center gap-1">
+                                            <Globe className="w-3.5 h-3.5" />
+                                            <span>1. 결핍이 아닌 무한 대역폭(Bandwidth)</span>
+                                        </div>
+                                        <p className="text-gray-300 leading-relaxed text-[10.5px]">
+                                            사옥과 직원을 물리적으로 묶으려 하면 결속력이 약해집니다. 서버·AI·지식 IP처럼 실체 없는 <strong>디지털 클라우드 시스템</strong>에 사람들을 담을 때 무한한 확장성을 갖습니다.
+                                        </p>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                                        <div className="font-bold text-amber-300 flex items-center gap-1">
+                                            <Cpu className="w-3.5 h-3.5" />
+                                            <span>2. 플레이어가 아닌 플랫폼(Platform) 설계</span>
+                                        </div>
+                                        <p className="text-gray-300 leading-relaxed text-[10.5px]">
+                                            직접 통제하는 오너가 아닌 <strong>&quot;누구나 들어와 활동하는 열린 마당(플랫폼)&quot;</strong>의 설계자가 되세요. 분산 네트워크로 확장할 때 스케일업 잠재력이 폭발합니다.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
                                 <div className="font-bold text-gray-200 flex items-center gap-1.5 text-xs">
                                     <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -547,22 +593,38 @@ export default function NtsBusinessCareerModal({
                                     </div>
                                 </div>
 
-                                <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+                                <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
                                             <Users className="w-3.5 h-3.5" />
-                                            <span>2. 인사 & 조직 관리</span>
+                                            <span>2. 인사 & 조직 관리 (공망 아키텍처)</span>
                                         </div>
                                         <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
                                             {currentProfile.consultant4Areas.hrOrg.sajuEngine}
                                         </span>
                                     </div>
-                                    <div className="space-y-1 text-[11px]">
+                                    <div className="space-y-1.5 text-[11px]">
                                         <p className="text-gray-300">👥 <strong>이상적 팀 역할:</strong> {currentProfile.consultant4Areas.hrOrg.idealTeamRole}</p>
                                         <p className="text-rose-300">⚠️ <strong>갈등 유발 요인:</strong> {currentProfile.consultant4Areas.hrOrg.conflictTrigger}</p>
                                         <p className="text-cyan-300 bg-cyan-950/30 p-1.5 rounded border border-cyan-500/20">
                                             🛡️ <strong>위임 프로토콜:</strong> {currentProfile.consultant4Areas.hrOrg.delegationProtocol}
                                         </p>
+
+                                        {/* 시스템 아키텍처 행동 지침 */}
+                                        <div className="p-2 rounded-xl bg-slate-950 border border-slate-800 space-y-1 text-[10px]">
+                                            <div className="font-bold text-gray-300 flex items-center gap-1">
+                                                <Layers className="w-3 h-3 text-emerald-400" />
+                                                <span>공망(空亡) 리프레이밍 행동 지침</span>
+                                            </div>
+                                            <div className="text-rose-400 flex items-start gap-1">
+                                                <span className="font-bold">❌ 지양:</span>
+                                                <span>대규모 고정비 오프라인 사업장, 수직적 위계 조직, 지분 중심 동업</span>
+                                            </div>
+                                            <div className="text-emerald-400 flex items-start gap-1">
+                                                <span className="font-bold">⭕ 권장:</span>
+                                                <span>SaaS/AI 기반 자동화 시스템, 지식/IP 라이선싱, 느슨한 전문가 커뮤니티</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1016,11 +1078,12 @@ export default function NtsBusinessCareerModal({
                         </div>
 
                         {/* Quick Prompts */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                             {[
                                 { title: '예창패/초창패 통과 전략', prompt: '내 기질과 비즈니스 형태를 바탕으로, 정부지원사업 서류 심사에서 가산점을 받는 차별화 스토리라인을 작성해줘.' },
                                 { title: '국세청 100% 감면 행정', prompt: '국세청 사업자등록 시 주업종 724000과 부업종을 어떻게 등록해야 5개년 소득세 100% 감면을 안전하게 받는지 알려줘.' },
-                                { title: '1인 MVP 30일 론칭 로드맵', prompt: '직원 채용 없이 초기 30일 안에 최소기능제품(MVP)을 론칭하고 첫 유료 고객을 만드는 실행 계획을 짜줘.' }
+                                { title: '1인 MVP 30일 로드맵', prompt: '직원 채용 없이 초기 30일 안에 최소기능제품(MVP)을 론칭하고 첫 유료 고객을 만드는 실행 계획을 짜줘.' },
+                                { title: '공망 ➔ 클라우드 플랫폼', prompt: '공망(비움)의 기질을 결핍이 아닌 무한 대역폭의 클라우드 플랫폼으로 전환하여 1인 기업을 스케일업하는 3단계 실행 전략을 짜줘.' }
                             ].map((cp, idx) => (
                                 <button
                                     key={idx}

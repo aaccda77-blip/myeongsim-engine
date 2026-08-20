@@ -828,8 +828,8 @@ export function generatePersonalizedPsstArchitecture(
         },
         team: {
             title: '4. 팀 구성 및 조직 역량 (Team & HR)',
-            founderStrength: `대표자 코어 역량 (${p.yGan}${p.yJi}년 인프라 레버리지): 정밀 시스템 설계 및 핵심 로직/알고리즘 총괄 디렉팅.`,
-            hrComplementPlan: `보완 전략 (HR): ${hrPlan}`
+            founderStrength: `대표자 코어 역량 (${p.yGan}${p.yJi}년 클라우드 플랫폼 인프라 레버리지): 무거운 온프레미스 고정비 조직을 지양하고, 비물리적 디지털 시스템(AI·지식 IP·SaaS)과 분산 전문가 네트워크를 총괄하는 플랫폼 아키텍트 역량 보유.`,
+            hrComplementPlan: `보완 및 스케일업 전략 (HR): ${hrPlan} (공망 리프레이밍: 사람을 직접 통제하는 수직적 고용 대신, 누구나 활동할 수 있는 열린 시스템 플랫폼을 제공하여 한계비용 제로로 스케일업)`
         },
         onePointCheck: {
             recommendedMainCode: mainCode,
