@@ -146,6 +146,17 @@ export interface NtsBusinessArchitectureReport {
     consultant4Areas: ManagementConsultant4Areas;
     psstBlueprint: PsstBlueprint;
     
+    // [NEW] 60갑자 맞춤 공망(空亡)의 역설 비즈니스 전환 아키텍처
+    gongwangArchitecture?: {
+        title: string;
+        quote: string;
+        point1Title: string;
+        point1Desc: string;
+        point2Title: string;
+        point2Desc: string;
+        gongwangTag: string;
+    };
+
     chatAssitantPrompts: { title: string; prompt: string; icon: string }[];
 }
 
@@ -844,6 +855,90 @@ function buildDynamicCompetencies(p: ReturnType<typeof parseSajuFourPillars>) {
     ];
 }
 
+const STEM_KEYS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+const BRANCH_KEYS = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+
+function calculateGongwangPair(dGan: string, dJi: string): string {
+    const ganIdx = STEM_KEYS.indexOf(dGan) !== -1 ? STEM_KEYS.indexOf(dGan) : 0;
+    const jiIdx = BRANCH_KEYS.indexOf(dJi) !== -1 ? BRANCH_KEYS.indexOf(dJi) : 0;
+    const g1Idx = (jiIdx - ganIdx + 12 + 10) % 12;
+    const g2Idx = (jiIdx - ganIdx + 12 + 11) % 12;
+    const b1 = BRANCH_KEYS[g1Idx];
+    const b2 = BRANCH_KEYS[g2Idx];
+    return `${b1}${b2}`;
+}
+
+function getGongwangCoaching(dGan: string, dJi: string) {
+    const pair = calculateGongwangPair(dGan, dJi);
+
+    const GONGWANG_MAP: Record<string, {
+        title: string;
+        quote: string;
+        point1Title: string;
+        point1Desc: string;
+        point2Title: string;
+        point2Desc: string;
+        gongwangTag: string;
+    }> = {
+        '戌亥': {
+            title: '술해(戌亥) 천문 공망 — 좁은 오프라인 공간을 넘어 글로벌 지식 클라우드로',
+            quote: '“물리적 부동산이나 오프라인 매장의 한계를 벗어나, 하늘의 영감과 디지털 지식 IP로 전 세계를 연결하세요.”',
+            point1Title: '1. 결핍이 아닌 무한 대역폭(Bandwidth)',
+            point1Desc: '물리적 공간이나 제한된 영업망에 얽매이면 답답해집니다. 온라인 플랫폼, 전자책, AI 지식 솔루션처럼 시공간 없는 디지털 생태계에서 당신의 잠재력이 폭발합니다.',
+            point2Title: '2. 플레이어가 아닌 플랫폼(Platform) 설계',
+            point2Desc: '혼자 일하는 실무자를 넘어, 사람들이 찾아와 지식과 영감을 얻어가는 "열린 디지털 커뮤니티"의 주인이 되세요. 분산 네트워크로 확장할 때 부의 크기가 무한대로 커집니다.',
+            gongwangTag: '술해(戌亥) 천문공망'
+        },
+        '申酉': {
+            title: '신유(申酉) 결속 공망 — 무거운 내부 고용을 버리고 자동화 시스템으로',
+            quote: '“사람을 물리적으로 통제하려 하지 말고, 표준화된 자동화 시스템과 AI를 레버리지하세요.”',
+            point1Title: '1. 결핍이 아닌 무한 대역폭(Bandwidth)',
+            point1Desc: '사옥과 직원을 직접 고용하여 묶으려 하면 결속력이 약해집니다. AI 자동화 툴과 스마트한 외주 파트너십으로 가볍게 움직일 때 무한한 확장성을 갖습니다.',
+            point2Title: '2. 플레이어가 아닌 플랫폼(Platform) 설계',
+            point2Desc: '직접 통제하는 오너가 아닌 "누구나 들어와 활동하는 열린 마당(플랫폼)"의 설계자가 되세요. 가벼운 1인 기업에서 한계비용 제로로 스케일업합니다.',
+            gongwangTag: '신유(申酉) 결속공망'
+        },
+        '午未': {
+            title: '오미(午未) 출력 공망 — 몸으로 뛰는 노동을 넘어 자산형 프로덕트로',
+            quote: '“직접 몸으로 뛰는 1회성 강의와 상담을 넘어, 자는 동안에도 판매되는 디지털 자산을 구축하세요.”',
+            point1Title: '1. 결핍이 아닌 무한 대역폭(Bandwidth)',
+            point1Desc: '내 시간과 체력을 직접 팔아 돈을 버는 구조는 금방 방전을 부릅니다. VOD, 디지털 템플릿, 자동화 코칭 툴킷으로 자산화할 때 진정한 부가 열립니다.',
+            point2Title: '2. 플레이어가 아닌 플랫폼(Platform) 설계',
+            point2Desc: '매번 무대 위에서 혼자 춤추는 플레이어가 아니라, 다른 전문가들도 입점하여 활동할 수 있는 솔루션 마켓플레이스를 만드세요.',
+            gongwangTag: '오미(午未) 출력공망'
+        },
+        '辰巳': {
+            title: '진사(辰巳) 조직 공망 — 꽉 막힌 사내 정치를 벗어나 자유로운 1인 기업으로',
+            quote: '“기존 제도권의 관습과 수직적 위계에 갇히지 말고, 국경 없는 유연한 글로벌 1인 비즈니스를 개척하세요.”',
+            point1Title: '1. 결핍이 아닌 무한 대역폭(Bandwidth)',
+            point1Desc: '조직의 승진 사다리나 사내 정치에 에너지를 쏟으면 질식합니다. 독자적인 브랜드와 디지털 1인 솔루션으로 시장과 직접 소통할 때 자유와 부를 얻습니다.',
+            point2Title: '2. 플레이어가 아닌 플랫폼(Platform) 설계',
+            point2Desc: '남의 울타리 안에서 일하는 관리자가 아니라, 나만의 규칙으로 고객을 끌어당기는 독자적인 비즈니스 생태계를 완성하세요.',
+            gongwangTag: '진사(辰巳) 조직공망'
+        },
+        '寅卯': {
+            title: '인묘(寅卯) 시작 공망 — 맨땅의 헤딩을 넘어 이미 완성된 인프라 레버리지로',
+            quote: '“처음부터 모든 걸 바닥에서 만들려 하지 말고, 검증된 오픈소스와 플랫폼 인프라를 지렛대 삼으세요.”',
+            point1Title: '1. 결핍이 아닌 무한 대역폭(Bandwidth)',
+            point1Desc: '자본도 없이 밑바닥부터 혼자 다 만들려면 시작 단계에서 지칩니다. 기존 노코드 툴, SaaS 플랫폼, 완성된 파이프라인을 조립하여 3초 만에 론칭하세요.',
+            point2Title: '2. 플레이어가 아닌 플랫폼(Platform) 설계',
+            point2Desc: '혼자 처음부터 끝까지 다 뛰는 1인 러너가 아니라, 잘 차려진 플랫폼들의 장점만 골라 결합하는 스마트한 플랫폼 지휘자가 되세요.',
+            gongwangTag: '인묘(寅卯) 시작공망'
+        },
+        '子丑': {
+            title: '자축(子丑) 기반 공망 — 고루한 학벌과 스펙을 넘어 실전 성과주의로',
+            quote: '“전통적인 학벌이나 자격증 껍데기에 연연하지 말고, 고객에게 즉각 돈과 시간을 아껴주는 실전 솔루션을 제공하세요.”',
+            point1Title: '1. 결핍이 아닌 무한 대역폭(Bandwidth)',
+            point1Desc: '준비가 덜 됐다는 완벽주의 핑계로 공부만 파고들면 평생 론칭하지 못합니다. 고객이 당장 겪는 현실의 고통을 풀어주는 실전 결과물로 시장을 장악하세요.',
+            point2Title: '2. 플레이어가 아닌 플랫폼(Platform) 설계',
+            point2Desc: '이론만 가르치는 학자가 아니라, 현장의 문제를 즉시 해결해 주는 실전 솔루션 플랫폼을 구축하여 압도적인 신뢰를 확보하세요.',
+            gongwangTag: '자축(子丑) 기반공망'
+        }
+    };
+
+    return GONGWANG_MAP[pair] || GONGWANG_MAP['戌亥'];
+}
+
 // -------------------------------------------------------------
 // 사용자 사주 데이터를 분석하여 맞춤 리포트를 생성하는 통합 엔진
 // -------------------------------------------------------------
@@ -882,6 +977,9 @@ export function generateNtsBusinessArchitecture(
 
         // 3. 3대 비즈니스 코어 강점 동적 생성
         baseReport.coreCompetencies = buildDynamicCompetencies(p);
+
+        // 4. 60갑자 맞춤 공망(空亡)의 역설 비즈니스 전환 코칭 동적 생성
+        baseReport.gongwangArchitecture = getGongwangCoaching(p.dGan, p.dJi);
 
         // 4. 비즈니스 4대 핵심 실행 영역 동적 치환
         const mStem = STEM_INFO[p.mGan] || STEM_INFO['丁'];

@@ -420,51 +420,65 @@ export default function NtsBusinessCareerModal({
                                 </div>
                             </div>
 
-                            {/* [SPECIAL] 공망(空亡)의 역설: 온프레미스 서버를 버리고 클라우드 플랫폼으로 */}
-                            <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-950/50 via-slate-900 to-indigo-950/60 border-2 border-purple-500/40 space-y-3 shadow-lg relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-7 h-7 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300">
-                                            <Server className="w-4 h-4" />
-                                        </div>
-                                        <div>
-                                            <span className="text-[10px] text-purple-400 font-mono font-bold tracking-wider">COGNITIVE SHIFT ARCHITECTURE</span>
-                                            <h5 className="text-sm font-black text-white flex items-center gap-1.5">
-                                                <span>공망(空亡)의 역설 — 온프레미스를 버리고 클라우드 플랫폼으로</span>
-                                            </h5>
-                                        </div>
-                                    </div>
-                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-900/60 text-purple-200 border border-purple-400/30 font-bold">
-                                        명심 3S 기질 전환
-                                    </span>
-                                </div>
+                            {/* [SPECIAL] 공망(空亡)의 역설: 내담자 60갑자 맞춤 클라우드 플랫폼 전환 */}
+                            {(() => {
+                                const gw = currentProfile.gongwangArchitecture || {
+                                    title: '공망(空亡)의 역설 — 온프레미스를 버리고 클라우드 플랫폼으로',
+                                    quote: '“공망(空亡)은 채우지 못해 비어 있는 것이 아니라, 전 세계를 담기 위해 비워둔 클라우드 서버입니다.”',
+                                    point1Title: '1. 결핍이 아닌 무한 대역폭(Bandwidth)',
+                                    point1Desc: '사옥과 직원을 물리적으로 묶으려 하면 결속력이 약해집니다. 서버·AI·지식 IP처럼 실체 없는 디지털 클라우드 시스템에 사람들을 담을 때 무한한 확장성을 갖습니다.',
+                                    point2Title: '2. 플레이어가 아닌 플랫폼(Platform) 설계',
+                                    point2Desc: '직접 통제하는 오너가 아닌 "누구나 들어와 활동하는 열린 마당(플랫폼)"의 설계자가 되세요. 분산 네트워크로 확장할 때 스케일업 잠재력이 폭발합니다.',
+                                    gongwangTag: '명심 3S 기질 전환'
+                                };
 
-                                <blockquote className="p-2.5 rounded-xl bg-slate-950/80 border border-purple-500/30 text-amber-200 text-xs italic font-medium leading-relaxed">
-                                    &ldquo;공망(空亡)은 채우지 못해 비어 있는 것이 아니라, 전 세계를 담기 위해 비워둔 클라우드 서버입니다.&rdquo;
-                                </blockquote>
+                                return (
+                                    <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-950/50 via-slate-900 to-indigo-950/60 border-2 border-purple-500/40 space-y-3 shadow-lg relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-7 h-7 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300">
+                                                    <Server className="w-4 h-4" />
+                                                </div>
+                                                <div>
+                                                    <span className="text-[10px] text-purple-400 font-mono font-bold tracking-wider">COGNITIVE SHIFT ARCHITECTURE</span>
+                                                    <h5 className="text-sm font-black text-white flex items-center gap-1.5">
+                                                        <span>{gw.title}</span>
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-900/60 text-purple-200 border border-purple-400/30 font-bold">
+                                                {gw.gongwangTag}
+                                            </span>
+                                        </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
-                                    <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
-                                        <div className="font-bold text-indigo-300 flex items-center gap-1">
-                                            <Globe className="w-3.5 h-3.5" />
-                                            <span>1. 결핍이 아닌 무한 대역폭(Bandwidth)</span>
+                                        <blockquote className="p-2.5 rounded-xl bg-slate-950/80 border border-purple-500/30 text-amber-200 text-xs italic font-medium leading-relaxed">
+                                            {gw.quote}
+                                        </blockquote>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
+                                            <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                                                <div className="font-bold text-indigo-300 flex items-center gap-1">
+                                                    <Globe className="w-3.5 h-3.5" />
+                                                    <span>{gw.point1Title}</span>
+                                                </div>
+                                                <p className="text-gray-300 leading-relaxed text-[10.5px]">
+                                                    {gw.point1Desc}
+                                                </p>
+                                            </div>
+                                            <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                                                <div className="font-bold text-amber-300 flex items-center gap-1">
+                                                    <Cpu className="w-3.5 h-3.5" />
+                                                    <span>{gw.point2Title}</span>
+                                                </div>
+                                                <p className="text-gray-300 leading-relaxed text-[10.5px]">
+                                                    {gw.point2Desc}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <p className="text-gray-300 leading-relaxed text-[10.5px]">
-                                            사옥과 직원을 물리적으로 묶으려 하면 결속력이 약해집니다. 서버·AI·지식 IP처럼 실체 없는 <strong>디지털 클라우드 시스템</strong>에 사람들을 담을 때 무한한 확장성을 갖습니다.
-                                        </p>
                                     </div>
-                                    <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
-                                        <div className="font-bold text-amber-300 flex items-center gap-1">
-                                            <Cpu className="w-3.5 h-3.5" />
-                                            <span>2. 플레이어가 아닌 플랫폼(Platform) 설계</span>
-                                        </div>
-                                        <p className="text-gray-300 leading-relaxed text-[10.5px]">
-                                            직접 통제하는 오너가 아닌 <strong>&quot;누구나 들어와 활동하는 열린 마당(플랫폼)&quot;</strong>의 설계자가 되세요. 분산 네트워크로 확장할 때 스케일업 잠재력이 폭발합니다.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                                );
+                            })()}
 
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
                                 <div className="font-bold text-gray-200 flex items-center gap-1.5 text-xs">

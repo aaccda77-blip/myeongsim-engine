@@ -296,13 +296,6 @@ export default function CoverView() {
                 </section>
                 {/* END: HeaderSection */}
 
-                {/* [Version 3: Impact Hook Hero Card] */}
-                {viewMode === 'form' && (
-                    <div className="mb-6">
-                        <ImpactHookHeroCard />
-                    </div>
-                )}
-
                 {/* Brand Story Intro Modal */}
                 <BrandStoryIntroModal
                     isOpen={showBrandStoryModal}

@@ -198,30 +198,6 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         </button>
                     </div>
 
-                    {/* 📱 Mode Toggle Bar (큐레이션 카드 모드 ↔ 딥 헬스케어 코칭 모드) */}
-                    <div className="flex items-center bg-black/70 border border-white/20 p-0.5 rounded-xl shadow-lg">
-                        <button
-                            onClick={() => handleModeSwitch('grid')}
-                            className={`px-2.5 py-1 rounded-lg text-[10.5px] font-black transition-all cursor-pointer ${
-                                viewMode === 'grid'
-                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-md scale-105'
-                                    : 'text-gray-400 hover:text-white'
-                            }`}
-                        >
-                            📱 카드 모드
-                        </button>
-                        <button
-                            onClick={() => handleModeSwitch('dashboard')}
-                            className={`px-2.5 py-1 rounded-lg text-[10.5px] font-black transition-all cursor-pointer ${
-                                viewMode === 'dashboard'
-                                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md scale-105'
-                                    : 'text-gray-400 hover:text-white'
-                            }`}
-                        >
-                            🌌 코칭 모드
-                        </button>
-                    </div>
-
                     <div className="flex items-center gap-1">
                         {/* [Removed] Login/Charge Button hidden by user request */}
 
