@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     X, Sparkles, Briefcase, Copy, Check, ChevronRight,
@@ -62,6 +62,15 @@ export default function NtsBusinessCareerModal({
     ]);
     const [inputMessage, setInputMessage] = useState('');
     const [isLoadingChat, setIsLoadingChat] = useState(false);
+    const [copiedMsgIdx, setCopiedMsgIdx] = useState<number | null>(null);
+    const chatBottomRef = useRef<HTMLDivElement>(null);
+
+    // 새 메시지가 들어오면 자동으로 하단 스크롤
+    useEffect(() => {
+        if (chatBottomRef.current) {
+            chatBottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [chatMessages, isLoadingChat]);
 
     if (!isOpen) return null;
 
@@ -966,28 +975,44 @@ export default function NtsBusinessCareerModal({
                         </div>
 
                         {/* Chat Messages Log */}
-                        <div className="max-h-48 overflow-y-auto space-y-2 p-2 rounded-xl bg-slate-950/90 border border-slate-800 text-xs custom-scrollbar">
+                        <div className="max-h-80 sm:max-h-[380px] overflow-y-auto space-y-2.5 p-3 rounded-xl bg-slate-950/90 border border-slate-800 text-xs custom-scrollbar">
                             {chatMessages.map((msg, mIdx) => (
                                 <div
                                     key={mIdx}
-                                    className={`p-2.5 rounded-xl leading-relaxed ${
+                                    className={`p-3 rounded-2xl leading-relaxed relative group transition-all ${
                                         msg.role === 'user'
                                             ? 'bg-amber-500/20 text-amber-200 border border-amber-500/30 ml-8 text-right'
-                                            : 'bg-slate-900 text-gray-200 border border-slate-800 mr-8'
+                                            : 'bg-slate-900 text-gray-200 border border-slate-800 mr-8 shadow-inner'
                                     }`}
                                 >
-                                    <div className="text-[10px] font-bold mb-0.5 text-gray-400">
-                                        {msg.role === 'user' ? '👤 대표님' : '🏛️ 명심 비즈니스 AI 코치'}
+                                    <div className="flex items-center justify-between text-[10px] font-bold mb-1 text-gray-400">
+                                        <span>{msg.role === 'user' ? '👤 대표님' : '🏛️ 명심 비즈니스 AI 코치'}</span>
+                                        {msg.role === 'assistant' && (
+                                            <button
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(msg.content);
+                                                    setCopiedMsgIdx(mIdx);
+                                                    setTimeout(() => setCopiedMsgIdx(null), 2000);
+                                                }}
+                                                className="opacity-0 group-hover:opacity-100 transition-opacity px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-gray-300 flex items-center gap-1 text-[9.5px] cursor-pointer"
+                                            >
+                                                {copiedMsgIdx === mIdx ? <Check className="w-2.5 h-2.5 text-emerald-400" /> : <Copy className="w-2.5 h-2.5" />}
+                                                <span>{copiedMsgIdx === mIdx ? '복사됨' : '복사'}</span>
+                                            </button>
+                                        )}
                                     </div>
-                                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                                    <p className="whitespace-pre-wrap text-[11.5px] leading-relaxed text-left">
+                                        {msg.content}
+                                    </p>
                                 </div>
                             ))}
                             {isLoadingChat && (
-                                <div className="p-2.5 rounded-xl bg-slate-900 text-indigo-300 border border-slate-800 mr-8 flex items-center gap-2">
+                                <div className="p-3 rounded-2xl bg-slate-900 text-indigo-300 border border-slate-800 mr-8 flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
                                     <span className="text-xs">명심 비즈니스 AI 코치가 사업적성과 행정 코드를 분석 중입니다...</span>
                                 </div>
                             )}
+                            <div ref={chatBottomRef} />
                         </div>
 
                         {/* Quick Prompts */}

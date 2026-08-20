@@ -124,7 +124,7 @@ export async function POST(req: Request) {
                 safetySettings,
                 generationConfig: {
                     temperature: 0.75,
-                    maxOutputTokens: 1500,
+                    maxOutputTokens: 3500,
                 }
             });
 
@@ -144,7 +144,7 @@ export async function POST(req: Request) {
                 safetySettings,
                 generationConfig: {
                     temperature: 0.75,
-                    maxOutputTokens: 1500,
+                    maxOutputTokens: 3500,
                 }
             });
 
