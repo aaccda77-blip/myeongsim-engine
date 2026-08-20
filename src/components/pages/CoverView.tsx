@@ -11,6 +11,8 @@ import { PillarMetaCodeMap } from '@/modules/PillarMetaCodeMap';
 import { supabase } from '@/lib/supabaseClient';
 
 import { ZODIAC_TIME_OPTIONS } from '@/constants/saju';
+import ImpactHookHeroCard from '@/components/landing/ImpactHookHeroCard';
+import BrandStoryIntroModal from '@/components/modals/BrandStoryIntroModal';
 
 const calculateSajuMetrics = (pillars: any, isTimeUnknown: boolean) => {
     const ohaeng = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
@@ -87,6 +89,7 @@ export default function CoverView() {
     const [isLoading, setIsLoading] = useState(false);
     const [viewMode, setViewMode] = useState<'form' | 'result'>('form');
     const [previewPillars, setPreviewPillars] = useState<any>(null);
+    const [showBrandStoryModal, setShowBrandStoryModal] = useState(false);
 
     // [SYNC-HYDRATION] 로컬 스토리지 복원 시 상태 동기화
     useEffect(() => {
@@ -224,7 +227,8 @@ export default function CoverView() {
         if (targetRoute === 'onboarding') {
             router.push('/onboarding');
         } else {
-            nextStep(); // Move to Intro
+            // [Version 1: Brand Story Intro Modal] 먼저 브랜드 철학 모달 팝업
+            setShowBrandStoryModal(true);
         }
     };
 
@@ -277,17 +281,34 @@ export default function CoverView() {
                 {/* END: TopNavigation */}
 
                 {/* BEGIN: HeaderSection */}
-                <section className="text-center mb-12" data-purpose="header-text">
-                    <h1 className="text-3xl font-bold mb-3 tracking-tight text-[#e2e8f0]">
+                <section className="text-center mb-6" data-purpose="header-text">
+                    <h1 className="text-2xl sm:text-3xl font-bold mb-2 tracking-tight text-[#e2e8f0]">
                         {viewMode === 'form' ? '명심코칭 시작하기' : '나의 기질 설계도'}
                     </h1>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-gray-400 text-xs sm:text-sm">
                         {viewMode === 'form'
                             ? '정확한 분석을 위해 태어난 정보를 입력해주세요.'
                             : '이 분석 대상이 본인이 맞으신가요?'}
                     </p>
                 </section>
                 {/* END: HeaderSection */}
+
+                {/* [Version 3: Impact Hook Hero Card] */}
+                {viewMode === 'form' && (
+                    <div className="mb-6">
+                        <ImpactHookHeroCard />
+                    </div>
+                )}
+
+                {/* Brand Story Intro Modal */}
+                <BrandStoryIntroModal
+                    isOpen={showBrandStoryModal}
+                    onClose={() => setShowBrandStoryModal(false)}
+                    onConfirm={() => {
+                        setShowBrandStoryModal(false);
+                        nextStep();
+                    }}
+                />
 
                 {/* BEGIN: FormSection */}
                 <AnimatePresence mode="wait">

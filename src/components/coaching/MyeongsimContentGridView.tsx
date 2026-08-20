@@ -7,6 +7,7 @@ import PaybackBanner from './PaybackBanner';
 import DailyScanWidget from './DailyScanWidget';
 import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
+import FounderWelcomeLetterBanner from './FounderWelcomeLetterBanner';
 
 const MultiDimensionalBlueprint = dynamic(() => import('@/components/chat/MultiDimensionalBlueprint'), { ssr: false });
 
@@ -31,8 +32,13 @@ export default function MyeongsimContentGridView({
   const [showBlueprintModal, setShowBlueprintModal] = useState(false);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 pb-20 animate-in fade-in duration-500">
+    <div className="w-full max-w-4xl mx-auto space-y-5 pb-20 animate-in fade-in duration-500">
       
+      {/* ==========================================
+          0. [Version 2: Emotional Founder Letter] 감성 편지글형 접이식 배너
+          ========================================== */}
+      <FounderWelcomeLetterBanner userName={userName} />
+
       {/* ==========================================
           1. 24h 실시간 타이머 및 페이백 배너 (Loss Aversion)
           ========================================== */}
