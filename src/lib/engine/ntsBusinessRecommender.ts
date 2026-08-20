@@ -1,11 +1,11 @@
 /**
  * ntsBusinessRecommender.ts
- * 국세청 표준산업분류 기준 업태/종목 및 6자리 홈택스 업종코드 1:1 매핑 엔진 (5단계 웰니스 심층 아키텍처)
- * 
- * 사주의 4주 팔자(년/월/일/시), 십신(식상, 재성, 관성, 인성, 비겁), 오행, 격국을 정밀 분석하여
- * 실제 홈택스 사업자등록 및 지식 비즈니스 모델 구축에 즉시 적용 가능한 
- * [1:1 비즈니스 아키텍처 & 국세청 업종 매핑 리포트] 데이터를 생성합니다.
+ * 국세청 표준산업분류 기준 업태/종목 및 6자리 홈택스 업종코드 1:1 매핑 엔진
+ * + 국가공인 경영지도사 4대 영역(마케팅, 인사·조직, 재무·행정, 생산·기술)
+ * + 중소벤처기업부 표준 PSST 사업계획서 프레임워크 & 정부지원사업 타겟팅 엔진
  */
+
+export type StartupStageType = 'solo_pre' | 'early_team' | 're_founder';
 
 export interface NtsCodeDetail {
     code: string;
@@ -54,7 +54,58 @@ export interface BurnoutEnergyGuide {
     }[];
 }
 
+// 경영지도사 4대 영역 융합 진단
+export interface ManagementConsultant4Areas {
+    marketing: {
+        sajuEngine: string; // '식상(癸水) + 재성(乙木)'
+        targetCustomer: string;
+        salesChannel: string;
+        conversionStrategy: string;
+    };
+    hrOrg: {
+        sajuEngine: string; // '비겁(庚申) + 관성(巳火)'
+        idealTeamRole: string;
+        conflictTrigger: string;
+        delegationProtocol: string;
+    };
+    financeTax: {
+        sajuEngine: string; // '인성(未土) + 관성(巳火)'
+        taxReductionRate: string;
+        recommendedLocation: string;
+        legalStructure: string;
+    };
+    govSupportTarget: {
+        recommendedPrograms: { name: string; targetFunding: string; tip: string }[];
+        competitivenessScore: number;
+    };
+}
+
+// 중기부 표준 PSST 사업계획서 뼈대
+export interface PsstBlueprint {
+    problem: {
+        title: string;
+        marketPainPoint: string;
+        urgency: string;
+    };
+    solution: {
+        title: string;
+        coreMvp: string;
+        differentiation: string;
+    };
+    scaleUp: {
+        title: string;
+        businessModel: string;
+        expansionRoadmap: string;
+    };
+    team: {
+        title: string;
+        founderStrength: string;
+        recommendedHiring: string;
+    };
+}
+
 export interface NtsBusinessArchitectureReport {
+    stage: StartupStageType;
     userName: string;
     sajuSummaryText: string;
     identityTitle: string;          // 예: "지식 IP 기반 솔루션 아키텍트 & 플랫폼 빌더"
@@ -89,17 +140,23 @@ export interface NtsBusinessArchitectureReport {
         taxBenefits: string;
     };
     scaleUpRoadmap: NtsScaleUpStep[];
+    
+    // [NEW] 경영지도사 4대 영역 융합 & PSST 사업계획서
+    consultant4Areas: ManagementConsultant4Areas;
+    psstBlueprint: PsstBlueprint;
+    
     chatAssitantPrompts: { title: string; prompt: string; icon: string }[];
 }
 
 // -------------------------------------------------------------
-// 대표 명식 롤모델: 경신년 계미월 신사일 을미시 (지식 IP 솔루션 아키텍트 & 플랫폼 빌더)
+// 1. [1인 지식기업 / 예비창업자] 롤모델 리포트
 // -------------------------------------------------------------
-export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
-    userName: '명심가 (대표 롤모델)',
+export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
+    stage: 'solo_pre',
+    userName: '명심가 (예비창업자)',
     sajuSummaryText: '경신년(庚申) · 계미월(癸未) · 신사일(辛巳) · 을미시(乙未)',
-    identityTitle: '지식 IP 기반 솔루션 아키텍트 & 플랫폼 빌더',
-    slogan: '전문 지식을 체계적 시스템과 디지털 프로덕트로 패키징하여 플랫폼으로 레버리지하는 사업가',
+    identityTitle: '지식 IP 기반 1인 솔루션 아키텍트 & 부트스트래퍼',
+    slogan: '나만의 전문 지식을 디지털 프로덕트와 표준 코드로 전환하여 무자본으로 시작하는 1인 기업가',
     pillarBreakdowns: [
         {
             pillarName: '일간 / 일지 (Core Identity)',
@@ -126,44 +183,43 @@ export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
             pillarName: '년간 / 년지 (Global Infrastructure)',
             ganji: '경신 (庚申)',
             tenGodLabel: '경금(庚金) · 신금(申金) 간여지동 겁재',
-            corePower: '거대한 네트워크·인프라 및 스케일업 파워(庚申)',
-            desc: '파트너십, 라이선스 공급, 거버넌스 연대를 통해 혼자가 아닌 대규모 생태계로 비즈니스를 확장하는 추진력.'
+            corePower: '스케일업 인프라 잠재력(庚申)',
+            desc: '향후 파트너십과 커뮤니티 확장을 통해 1인 기업에서 플랫폼으로 진화할 수 있는 강력한 씨앗.'
         }
     ],
     coreCompetencies: [
         {
-            title: '1. 지식의 정밀 솔루션화',
+            title: '1. 무자본 지식 프로덕트화',
             tenGodFormula: '식신(癸水) + 편인(未土)',
-            description: '방대한 데이터나 고난도 전문 지식을 자신만의 체계적인 논리와 정밀한 방법론(알고리즘, 프레임워크)으로 가공하는 능력이 압도적입니다.'
+            description: '재고 부담 없이 노션 템플릿, 전자책, 진단 툴킷 등 디지털 자산을 즉각 패키징하는 능력.'
         },
         {
-            title: '2. 시스템 구축 및 공신력 확보',
+            title: '2. 공신력 중심 B2B 자문 앵커링',
             tenGodFormula: '정관(巳火) + 신금(辛金)',
-            description: '단순 프리랜서 형태를 넘어 표준화된 프로세스, 공인된 자격/인증, 제도권 신뢰를 기반으로 한 고단가 B2B 비즈니스에 강점이 있습니다.'
+            description: '단순 강의를 넘어 기업이 신뢰할 수 있는 공식 인증 프로토콜과 평가 보고서 납품 역량.'
         },
         {
-            title: '3. 지식 자산의 다각화 및 플랫폼 확장',
-            tenGodFormula: '편재(乙木) + 겁재(庚申)',
-            description: '1회성 노동 교환을 탈피하여 책, 소프트웨어, 교육, 플랫폼 등 IP 기반 비즈니스를 구축하고 커뮤니티를 레버리지하여 스케일업합니다.'
+            title: '3. 멀티 파이프라인 수익 창출',
+            tenGodFormula: '편재(乙木) + 신사(辛巳)',
+            description: '1회성 상담료가 아닌 지식 라이선스, 디지털 판매, 정기 구독의 다채널 수익 구조화.'
         }
     ],
     businessArchitectureMap: {
-        infra: '정보통신 / 소프트웨어 / 데이터베이스',
-        solution: '전문 경영·심리 컨설팅 / 1:1 진단 자문',
-        contentIp: '단행본·전자책 출판 / 온라인 VOD 교육 / 템플릿 커머스',
-        targetPlatform: '통합 지식 비즈니스 & 웰니스 솔루션 플랫폼'
+        infra: '정보통신 / 소프트웨어 / 데이터베이스 (724000)',
+        solution: '전문 경영·심리 컨설팅 / 1:1 진단 자문 (741400)',
+        contentIp: '단행본·전자책 출판 (581101) / 온라인 VOD 교육 (930921)',
+        targetPlatform: '1인 부트스트래핑 지식 플랫폼'
     },
-    // Step 2: 국가 표준 업태 · 종목 최적화 매핑 (Taxonomy Mapping)
     taxonomyTable: [
         {
             classification: '코어 엔진 (주)',
             mainIndustry: '정보통신업',
             subIndustryAndCodes: [
                 { name: '데이터베이스 및 온라인정보 제공업', code: '724000' },
-                { name: '소프트웨어 개발 및 공급업', code: '722000' }
+                { name: '응용 소프트웨어 개발 및 공급업', code: '722000' }
             ],
-            businessModel: '플랫폼, 진단 알고리즘 웹/앱 서비스, 구독형 SaaS',
-            colorTheme: 'amber'
+            businessModel: '온라인 심리·진로 진단 웹 서비스, 데이터 기반 코칭 SaaS 플랫폼',
+            colorTheme: 'emerald'
         },
         {
             classification: '신뢰 자산 (주)',
@@ -172,18 +228,18 @@ export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
                 { name: '경영 컨설팅업', code: '741400' },
                 { name: '인문 및 사회과학 연구개발업', code: '732002' }
             ],
-            businessModel: 'B2B 기업 조직 코칭, 자문 용역, 학술 연구 프로젝트',
-            colorTheme: 'emerald'
+            businessModel: 'B2B 기업 리더십 진단, 1:1 프리미엄 경영·커리어 솔루션 자문 용역',
+            colorTheme: 'cyan'
         },
         {
             classification: 'IP 자산화 (부)',
             mainIndustry: '출판 및 교육 서비스업',
             subIndustryAndCodes: [
-                { name: '일반서적 출판업', code: '581101' },
+                { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
                 { name: '교육관련 자문 및 평가업', code: '930921' }
             ],
-            businessModel: '단행본/전자책 출간, 교육 VOD, 라이선스 워크숍',
-            colorTheme: 'cyan'
+            businessModel: '도서·e-Book 발행, 온라인 VOD 클래스, 전문 워크숍 및 라이선스',
+            colorTheme: 'purple'
         },
         {
             classification: '수익 확장 (부)',
@@ -191,74 +247,71 @@ export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
             subIndustryAndCodes: [
                 { name: '전자상거래 소매업', code: '525101' }
             ],
-            businessModel: '디지털 템플릿, 웰니스 교구재 및 툴킷 온라인 유통',
-            colorTheme: 'purple'
+            businessModel: '디지털 템플릿(Notion/PDF), 웰니스 교구재 및 다이어리 온라인 판매',
+            colorTheme: 'amber'
         }
     ],
     primaryBusiness1: {
-        sectionTitle: '주업종 1: 지식 플랫폼 & 디지털 솔루션 (메인 엔진)',
-        badge: '★ 메인 인프라 (Code: 724000)',
-        matchReason: '계수(식신)의 정밀한 로직 설계와 경신(겁재)의 대규모 시스템 인프라를 결합한 디지털 프로덕트 모델입니다.',
+        sectionTitle: '메인 코어 엔진: 지식 데이터베이스 & SaaS',
+        badge: '주업종 1순위 (추천)',
+        matchReason: '癸水(식신)의 직관적 솔루션과 辛金(정밀성)을 디지털 시스템으로 전환',
         mainCategory: '정보통신업',
-        colorTheme: 'amber',
-        subCategories: [
-            { code: '724000', title: '데이터베이스 및 온라인정보 제공업', businessModel: '웹/앱 기반 지식 코칭 플랫폼 운영, 유료 진단 툴 및 구독형 SaaS' },
-            { code: '722000', title: '소프트웨어 개발 및 공급업', businessModel: 'AI 알고리즘 분석 솔루션, 모바일 앱 패키지 개발 및 배포' },
-            { code: '631200', title: '포털 및 기타 인터넷 정보매개 서비스업', businessModel: '전문가-고객 매칭 중개 플랫폼, 커뮤니티 지식 포털 운영' }
-        ],
-        realWorldApplication: '자체 개발한 진단 알고리즘을 웹/앱 기반 SaaS 구독 모델로 서비스화하여 24시간 자동화된 수익 파이프라인 가동.'
-    },
-    primaryBusiness2: {
-        sectionTitle: '주업종 2: 전문 지식 기반 자문 및 B2B 컨설팅 (신뢰 자산)',
-        badge: '★ 신뢰 자산 (Code: 741400)',
-        matchReason: '사화(정관)의 공신력과 미토(편인)의 전문 자격을 기반으로 기업 및 기관 대상 고단가 프로젝트를 수주합니다.',
-        mainCategory: '전문, 과학 및 기술 서비스업',
         colorTheme: 'emerald',
         subCategories: [
-            { code: '741400', title: '경영 컨설팅업', businessModel: '기업 대상 조직 진단, 임원 리더십 코칭, 브랜딩 및 시스템 자문' },
-            { code: '732002', title: '기타 인문 및 사회과학 연구개발업', businessModel: '심리·역량 진단 도구 R&D, 학술 및 공공 연구용역 수주' },
-            { code: '749900', title: '기타 전문, 과학 및 기술 서비스업', businessModel: '맞춤형 솔루션 기획, 1:1 고단가 전략 자문 및 프로젝트 감수' }
+            { code: '724000', title: '데이터베이스 및 온라인정보 제공업', businessModel: '1:1 진단 플랫폼, 유료 인사이트 구독' },
+            { code: '722000', title: '응용 소프트웨어 개발 및 공급업', businessModel: '웰니스 진단 알고리즘 웹 애플리케이션' }
         ],
-        realWorldApplication: '공인된 프레임워크를 기반으로 기업체 연간 리테이너 자문 계약 및 정부/지자체 연구용역 프로젝트 턴키 수주.'
+        realWorldApplication: '사용자가 생년월일과 고민을 입력하면 맞춤 알고리즘으로 자동 분석 리포트를 제공하는 SaaS'
     },
-    secondaryBusiness: {
-        sectionTitle: '부업종 / 확장: 지식 IP 출판 및 교육 서비스 (수익 다각화)',
-        badge: '+ 수익 다각화 (Code: 930921, 581101, 525101)',
-        matchReason: '을목(편재)의 시장성 확보와 미토(목고/지식 저장소)를 결합하여 지식을 자산화하는 영구적 창구입니다.',
-        mainCategory: '교육 서비스업 / 출판업 / 도매 및 소매업',
+    primaryBusiness2: {
+        sectionTitle: '신뢰 자산 엔진: B2B 경영 컨설팅 & R&D',
+        badge: '주업종 2순위 (공신력)',
+        matchReason: '巳火(정관)의 제도권 공신력과 辛金(전문 분석력)의 결합',
+        mainCategory: '전문, 과학 및 기술 서비스업',
         colorTheme: 'cyan',
         subCategories: [
-            { code: '930921', title: '교육관련 자문 및 평가업', businessModel: '온라인 VOD 강의, 마스터클래스 워크숍, 자격증 인증 과정' },
-            { code: '581101', title: '일반서적 출판업', businessModel: '종이책 단행본, 전자책(e-Book), 오디오북 및 지식 백서 발행' },
-            { code: '525101', title: '전자상거래 소매업 (통신판매업)', businessModel: '스마트스토어/자사몰 디지털 교구재, PDF 워크시트, 굿즈 판매' }
+            { code: '741400', title: '경영 컨설팅업', businessModel: '스타트업 팀 진단, B2B 조직 코칭' },
+            { code: '732002', title: '인문 및 사회과학 연구개발업', businessModel: '사주·기질 분석 프레임워크 연구용역' }
         ],
-        realWorldApplication: '단행본 출판으로 베스트셀러 브랜드를 구축하고, 이를 VOD 강의 및 디지털 워크북 다운로드 판매로 연결.'
+        realWorldApplication: '기업 고객에게 리더십 진단 및 조직 케미스트리 분석 보고서를 납품하는 고단가 용역'
     },
-    // Step 3: 번아웃 방지 & 에너지 효율화 가이드 (Energy Flow)
+    secondaryBusiness: {
+        sectionTitle: 'IP 자산화 엔진: 출판, 교육 및 커머스',
+        badge: '부업종 (수익 다각화)',
+        matchReason: '未土(편인/지식창고)에 축적된 콘텐츠를 乙木(편재)로 현금 흐름화',
+        mainCategory: '출판 / 교육 / 전자상거래',
+        colorTheme: 'purple',
+        subCategories: [
+            { code: '581101', title: '일반서적 출판업', businessModel: '종이책, 전자책(e-Book), 오디오북 출판' },
+            { code: '930921', title: '교육관련 자문 및 평가업', businessModel: '온라인 코칭 과정, 전문가 양성 워크숍' },
+            { code: '525101', title: '전자상거래 소매업', businessModel: '디지털 템플릿, 웰니스 플래너 온라인 유통' }
+        ],
+        realWorldApplication: '단행본 출간을 통한 브랜드 권위 확보 ➔ VOD 강의 ➔ 디지털 템플릿 판매로 이어지는 퍼널'
+    },
     burnoutGuide: {
         cognitiveTrap: [
             {
-                title: '과도한 완벽주의(辛金)로 인한 론칭 지연',
-                risk: '99% 완성되어도 1%의 결함을 우려하여 세상에 내놓지 못하고 기회비용을 낭비하는 현상',
-                prescription: '완벽한 완성품 대신 70% 완성도의 최소기능제품(MVP)을 신속히 론칭하고 유저 피드백을 통해 고도화하는 애자일 마인드셋 탑재'
+                title: '완벽주의(辛金)로 인한 론칭 지연',
+                risk: '100% 완벽한 콘텐츠를 만들려다 시장 피드백을 놓치고 탈진',
+                prescription: '60% 완성도에서 MVP(최소기능제품)로 먼저 배포하고, 고객 피드백을 통해 80%로 업데이트'
             },
             {
-                title: '감정 소모형 1:1 반복 상담의 늪',
-                risk: '사용자의 모든 감정을 1:1로 받아내며 본인의 에너지가 고갈되고 시간당 단가에 갇히는 위험',
-                prescription: '자신의 코칭 논리를 웹/앱 진단 툴, e-Book, VOD 강의 등 ‘시스템화된 프로덕트’로 전환하여 비대면 자동화 레버리지 실현'
+                title: '감정 소모형 1:1 코칭 과다',
+                risk: '모든 고객을 1:1 대면 상담으로만 대응하여 시간과 에너지가 고갈',
+                prescription: '자주 묻는 질문과 기초 진단은 자동화 리포트(724000) 및 VOD로 전환하고 1:1은 프리미엄으로 한정'
             }
         ],
         dailyRhythmProtocol: [
             {
                 timeSlot: '오전 09:00 ~ 12:00 (황금 몰입기)',
-                energyFocus: '지식 설계 & 핵심 알고리즘 개발',
+                energyFocus: '지식 설계 & MVP 개발',
                 action: '외부 연락을 차단하고 계수(식신)의 창의적 설계 및 콘텐츠 기획에 몰입',
                 sajuElement: '계수(식신) · 미토(편인)'
             },
             {
                 timeSlot: '오후 14:00 ~ 17:00 (시스템 루틴기)',
-                energyFocus: '행정·운영·미팅 루틴화',
-                action: '사화(정관)의 원칙적 관리 역량을 발휘하여 이메일 회신, 세무·행정 처리, 파트너 미팅 진행',
+                energyFocus: '행정·세무·고객 응대',
+                action: '사화(정관)의 원칙적 관리 역량으로 사업자등록, 결제 시스템 점검, 파트너 소통',
                 sajuElement: '사화(정관)'
             },
             {
@@ -309,22 +362,227 @@ export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
             leveragePoint: '타인의 시간과 거대한 네트워크를 레버리지하는 플랫폼 생태계 파워'
         }
     ],
-    // 4. 챗봇 연계 1:1 실시간 어시스턴트 프롬프트
+    consultant4Areas: {
+        marketing: {
+            sajuEngine: '식상(癸水) + 재성(乙木)',
+            targetCustomer: '자신의 천직과 최적 업종을 찾고 싶어하는 지식 창업자 및 커리어 전환자',
+            salesChannel: '자가진단 무료 리포트 ➔ 뉴스레터/단행본 ➔ 프리미엄 B2B 자문 퍼널',
+            conversionStrategy: '국세청 6자리 표준 코드 무료 매핑으로 신뢰를 얻고, 심층 컨설팅으로 업셀링'
+        },
+        hrOrg: {
+            sajuEngine: '비겁(庚申) + 관성(巳火)',
+            idealTeamRole: '1인 총괄 기획자 (콘텐츠/로직/세일즈 총괄) + 외주 개발/디자인 파트너십',
+            conflictTrigger: '외주 작업물의 정밀도 부족 시 스트레스 급증 (신금 완벽주의)',
+            delegationProtocol: '구체적인 체크리스트와 표준 프로토콜 문서를 사전에 제공하여 감정 소모 차단'
+        },
+        financeTax: {
+            sajuEngine: '인성(未土) + 관성(巳火)',
+            taxReductionRate: '청년 창업 시 5년간 소득세 100% 감면 (수도권 과밀억제권역 외 724000 코드 적용 시)',
+            recommendedLocation: '비과밀억제권역 비상주 공유오피스 활용하여 세액감면 극대화',
+            legalStructure: '초기 간이과세/일반과세자 ➔ 연매출 1.5억 초과 시 법인 전환 검토'
+        },
+        govSupportTarget: {
+            recommendedPrograms: [
+                { name: '예비창업패키지 (중기부)', targetFunding: '최대 1억 원 (평균 5,000만 원)', tip: '기질 데이터 기반 AI 맞춤 진단 SaaS BM으로 지원 시 높은 점수' },
+                { name: '청년창업사관학교', targetFunding: '최대 1억 원 + 사업공간', tip: '지식 IP 소프트웨어 및 코칭 시스템 자동화 모델로 제안' },
+                { name: '신사업창업사관학교 (소진공)', targetFunding: '최대 4,000만 원', tip: '온오프라인 융합 웰니스 지식 콘텐츠 커머스로 접근' }
+            ],
+            competitivenessScore: 92
+        }
+    },
+    psstBlueprint: {
+        problem: {
+            title: '1. 문제 인식 (Problem)',
+            marketPainPoint: '기존 진로·사주 상담의 지나친 추상성(운세 풀이에 그침)과 높은 비용, 1회성 상담 후 실행 불가능',
+            urgency: '창업 준비생 및 N잡러의 87%가 자신의 적성에 맞는 구체적 업태·종목과 행정 절차를 몰라 시간과 자금을 낭비함'
+        },
+        solution: {
+            title: '2. 실현 가능성 (Solution)',
+            coreMvp: '사주 인지과학 분석 엔진을 국세청 6자리 업종코드와 1:1 매핑하여 3초 만에 사업화 로드맵을 도출하는 AI 웹 플랫폼',
+            differentiation: '경영지도사 4대 표준 영역과 연계된 원클릭 행정/세무 가이드 및 PSST 사업계획서 뼈대 자동 생성 기술'
+        },
+        scaleUp: {
+            title: '3. 성장 전략 (Scale-up)',
+            businessModel: '1) 무료 진단 기반 리드 수집 ➔ 2) 심층 리포트 및 AI 챗봇 유료 구독 ➔ 3) B2B 조직 진단 솔루션 납품',
+            expansionRoadmap: '1년차: 지식 IP 단행본 출간 및 1인 SaaS 론칭 ➔ 2년차: B2B 기업 리더십 진단 프로그램 확장'
+        },
+        team: {
+            title: '4. 팀 구성 (Team)',
+            founderStrength: '신사(辛巳)의 정밀 시스템 설계력 + 계미(癸未)의 심층 지식 가공력 보유한 솔루션 아키텍트',
+            recommendedHiring: '초기: 프론트엔드/백엔드 풀스택 파트너 1인 ➔ 성장기: B2B 세일즈 및 콘텐츠 마케터 영입'
+        }
+    },
     chatAssitantPrompts: [
         {
-            title: '1. MVP 론칭 전략',
+            title: '1. 1인 MVP 론칭 전략',
             icon: '🚀',
-            prompt: '내 기질에서 \'정보통신업(724000)\'을 메인으로 잡았을 때, 첫 달에 론칭하기 가장 좋은 최소기능제품(MVP)은 무엇인가요?'
+            prompt: '내 기질에서 정보통신업(724000)을 주업종으로 잡고 첫 달에 무자본으로 론칭할 수 있는 1인 지식 MVP 모델을 구체화해줘.'
         },
         {
-            title: '2. 안전한 행정 코드 묶기',
+            title: '2. 청년창업 100% 감면 행정',
             icon: '🏛️',
-            prompt: '출판사 등록과 통신판매업 신고를 병행할 때 홈택스에서 코드를 어떻게 묶어야 가장 안전한가요?'
+            prompt: '국세청 홈택스 사업자등록 시 724000과 741400을 묶어 5개년 소득세 감면을 최대로 받는 비상주 사업장 등록 팁을 알려줘.'
         },
         {
-            title: '3. 번아웃 방지 위임 가이드',
-            icon: '🌿',
-            prompt: '지금 번아웃이 오고 있는데, 제 명식의 에너지 균형을 위해 어떤 업무부터 위임해야 할까요?'
+            title: '3. 예비창업패키지 PSST 작성',
+            icon: '📝',
+            prompt: '내 명식의 강점을 반영하여 예비창업패키지 사업계획서(PSST)의 [문제 인식]과 [실현 가능성] 항목의 스토리라인 초안을 써줘.'
+        }
+    ]
+};
+
+// -------------------------------------------------------------
+// 2. [초기 스타트업 / 팀 빌딩] 롤모델 리포트
+// -------------------------------------------------------------
+export const EARLY_STARTUP_REPORT: NtsBusinessArchitectureReport = {
+    ...PRE_STARTUP_REPORT,
+    stage: 'early_team',
+    userName: '명심가 (스타트업 대표)',
+    identityTitle: '스케일업 플랫폼 아키텍트 & 테크 스타트업 파운더',
+    slogan: '팀의 다차원 기질을 동기화하고 기술과 인프라를 레버리지하여 폭발적 성장을 만드는 스타트업 리더',
+    consultant4Areas: {
+        marketing: {
+            sajuEngine: '식상(癸水) + 재성(乙木) + 겁재(庚申)',
+            targetCustomer: '조직 생산성 혁신 및 직원 번아웃 예방을 원하는 IT/스타트업/대기업 HR 부서',
+            salesChannel: 'B2B SaaS 무료 트라이얼 ➔ 기업 진단 데모데이 ➔ 연간 엔터프라이즈 구독 계약',
+            conversionStrategy: '부서별 기질 케미스트리 진단 무료 워크숍 제공 후 전사 솔루션 도입 유도'
+        },
+        hrOrg: {
+            sajuEngine: '겁재(庚申) + 정관(巳火)',
+            idealTeamRole: 'CEO (비전/전략/시스템 설계) + CTO (엔지니어링) + COO (오퍼레이션/HR)',
+            conflictTrigger: '역할(R&R) 모호성 및 마이크로매니징으로 인한 핵심 팀원 이탈 리스크',
+            delegationProtocol: '사화(정관)의 OKR 시스템을 정립하고, 세부 실행 권한은 庚申(팀원)에게 100% 위임'
+        },
+        financeTax: {
+            sajuEngine: '편재(乙木) + 정관(巳火)',
+            taxReductionRate: '창업중소기업 세액감면(50~100%) + 벤처기업 인증 시 취득세/재산세 감면',
+            recommendedLocation: '판교/강남 테크 밸리 또는 수도권 외 테크노파크 거점',
+            legalStructure: '주식회사 설립 및 스톡옵션 풀(10~15%) 사전 설계'
+        },
+        govSupportTarget: {
+            recommendedPrograms: [
+                { name: '초기창업패키지 (중기부)', targetFunding: '최대 1억 원', tip: 'PMF(제품-시장 적합성) 검증 데이터 및 B2B 유료 고객 확보 전략 강조' },
+                { name: 'TIPS(민관공동창업자금)', targetFunding: 'R&D 최대 5억 + 연계 2억', tip: 'AI 기질 분석 알고리즘 및 멘탈케어 데이터 독창성 특허 부각' },
+                { name: '중기부 디딤돌 R&D 지원사업', targetFunding: '최대 1.2억 원', tip: '생체신호 연계형 바이오 웰니스 알고리즘 기술 개발 과제로 신청' }
+            ],
+            competitivenessScore: 96
+        }
+    },
+    psstBlueprint: {
+        problem: {
+            title: '1. 문제 인식 (Problem)',
+            marketPainPoint: '원격근무 확산 및 스타트업 고성장 과정에서 팀원 간 갈등과 번아웃으로 인한 핵심 인재 퇴사율 38% 육박',
+            urgency: '단순 심리상담(EAP)은 사후 처방에 불과하여, 입사 단계부터 기질적 케미스트리를 진단하고 예방하는 솔루션 부재'
+        },
+        solution: {
+            title: '2. 실현 가능성 (Solution)',
+            coreMvp: '다차원 기질 설계도 기반 팀 빌딩 최적화 & 실시간 갈등 예방 B2B 웰니스 SaaS (명심 OS)',
+            differentiation: '동양 명리 인지과학과 서양 성격유형론을 융합한 독자적 특허 알고리즘 및 실시간 AI 코칭'
+        },
+        scaleUp: {
+            title: '3. 성장 전략 (Scale-up)',
+            businessModel: '임직원 1인당 월 9,900원의 B2B SaaS 구독료 + 프리미엄 팀 코칭 워크숍 업셀링',
+            expansionRoadmap: '국내 1,000개 테크 스타트업 도입 ➔ 글로벌 HR Tech 시장(미국/일본) 진출'
+        },
+        team: {
+            title: '4. 팀 구성 (Team)',
+            founderStrength: '시스템 아키텍처(辛巳) 및 데이터 알고리즘(癸未) 전문성을 갖춘 연쇄 창업가',
+            recommendedHiring: 'B2B 엔터프라이즈 세일즈 리드 및 AI/ML 데이터 사이언티스트'
+        }
+    },
+    chatAssitantPrompts: [
+        {
+            title: '1. 팀 갈등 예방 & R&R 분배',
+            icon: '👥',
+            prompt: '대표인 나의 신사(辛巳) 기질과 개발팀장(화/토 과다) 사이의 소통 마찰을 줄이고 최적의 R&R을 분배하는 법을 알려줘.'
+        },
+        {
+            title: '2. 초기창업패키지/TIPS 전략',
+            icon: '💡',
+            prompt: '초기창업패키지 서류 심사 통과를 위해 우리 BM의 [기술적 차별성]과 [스케일업 지표]를 강조하는 문장을 작성해줘.'
+        },
+        {
+            title: '3. B2B 엔터프라이즈 영업 퍼널',
+            icon: '📈',
+            prompt: '기업 HR 담당자에게 제안할 [조직 케미스트리 & 번아웃 예방 프로그램]의 1장짜리 콜드메일 제안서 초안을 써줘.'
+        }
+    ]
+};
+
+// -------------------------------------------------------------
+// 3. [재창업 / 피봇팅] 롤모델 리포트
+// -------------------------------------------------------------
+export const RE_FOUNDER_REPORT: NtsBusinessArchitectureReport = {
+    ...PRE_STARTUP_REPORT,
+    stage: 're_founder',
+    userName: '명심가 (재도전 기업가)',
+    identityTitle: '리스크 분산형 피봇팅 마스터 & 턴어라운드 디렉터',
+    slogan: '과거의 실패 경험을 최고의 지적 자산으로 전환하여 리스크 없는 견고한 현금 흐름을 재구축하는 사업가',
+    consultant4Areas: {
+        marketing: {
+            sajuEngine: '편인(未土) + 편재(乙木)',
+            targetCustomer: '동일한 실패와 번아웃을 겪고 있는 재도전 창업자, 소상공인, 리스크 회피형 사업가',
+            salesChannel: '실패 디브리핑 인사이트 콘텐츠 ➔ 고관여 턴어라운드 마스터마인드 ➔ 비즈니스 피봇팅 컨설팅',
+            conversionStrategy: '실패 비용을 90% 줄여주는 무자본 지식 비즈니스 구조 전환 프레임워크 제공'
+        },
+        hrOrg: {
+            sajuEngine: '신금(辛金) + 사화(巳火)',
+            idealTeamRole: '린(Lean) 조직: 대표 1인 핵심 의사결정 + 검증된 프로젝트 단위 프리랜서 네트워크',
+            conflictTrigger: '과도한 고정비(인건비/임대료) 지출로 인한 심리적 압박감 재발',
+            delegationProtocol: '모든 고정비를 변동비화하고, 성과 공유형 파트너십 계약으로 리스크 분산'
+        },
+        financeTax: {
+            sajuEngine: '정관(巳火) + 미토(未土)',
+            taxReductionRate: '재창업자 신용회복 지원 및 중소벤처기업진흥공단 재도전 자금 연계',
+            recommendedLocation: '창업보육센터/재도전성공센터 입주로 임대료 및 인프라 비용 제로화',
+            legalStructure: '성실경영평가 통과 후 재창업 전용 법인 설립 및 채무 분리'
+        },
+        govSupportTarget: {
+            recommendedPrograms: [
+                { name: '재도전성공패키지 (중기부)', targetFunding: '최대 1억 원 (평균 6,000만 원)', tip: '과거 실패 원인의 철저한 분석(디브리핑) 및 리스크 헷징된 신규 BM 강조' },
+                { name: '중진공 재창업자금 (융자)', targetFunding: '최대 5억 원 (저금리 정책자금)', tip: '고정비 최소화된 지식 서비스 및 플랫폼 매출 모델로 상환 안전성 어필' },
+                { name: '소상공인 희망리턴패키지', targetFunding: '재창업 사업화 최대 2,000만 원', tip: '디지털 전환 및 전자상거래/온라인정보제공업 피봇팅 계획 제시' }
+            ],
+            competitivenessScore: 94
+        }
+    },
+    psstBlueprint: {
+        problem: {
+            title: '1. 문제 인식 (Problem)',
+            marketPainPoint: '과거 하드웨어/과도한 초기 투자로 인한 실패 경험 분석: 높은 고정비와 시장 수요 검증 실패',
+            urgency: '재도전 창업자의 72%가 과거 실패의 심리적 트라우마와 자금 부족으로 새로운 도전을 주저함'
+        },
+        solution: {
+            title: '2. 실현 가능성 (Solution)',
+            coreMvp: '과거 축적된 전문 지식과 노하우를 자산화한 무자본 지식 IP & 자동화 진단 플랫폼 피봇팅',
+            differentiation: '인건비와 서버비 외 고정비가 0원에 수렴하며, 런칭 첫 주부터 영업이익률 85% 이상 달성 가능한 BM'
+        },
+        scaleUp: {
+            title: '3. 성장 전략 (Scale-up)',
+            businessModel: '검증된 지식 콘텐츠 D2C 판매 ➔ 턴어라운드 컨설팅 용역 ➔ 구독형 진단 플랫폼 전환',
+            expansionRoadmap: '초기 6개월: 손익분기점 달성 및 월 현금흐름 2,000만 원 확보 ➔ 2년차: 정부 재도전 자금 유치'
+        },
+        team: {
+            title: '4. 팀 구성 (Team)',
+            founderStrength: '산전수전의 실전 사업 경험 + 辛巳(정밀 시스템) 기반의 빈틈없는 리스크 관리 역량',
+            recommendedHiring: '초기 무고용 1인 체제 ➔ 수익 발생 후 퍼포먼스 마케터 및 운영 매니저 계약직 영입'
+        }
+    },
+    chatAssitantPrompts: [
+        {
+            title: '1. 과거 실패 디브리핑 & 피봇팅',
+            icon: '🔄',
+            prompt: '과거 내 사업의 실패 요인을 명식의 인지적 함정(辛金 완벽주의, 무리한 확장) 관점에서 객관화하고 신규 BM을 도출해줘.'
+        },
+        {
+            title: '2. 재도전성공패키지 사업계획서',
+            icon: '🛡️',
+            prompt: '중기부 [재도전성공패키지] 합격을 위해 [과거 실패원인 분석 및 개선 방안]을 설득력 있게 작성해줘.'
+        },
+        {
+            title: '3. 고정비 제로화 턴어라운드',
+            icon: '💎',
+            prompt: '직원 채용 없이 순수 지식 IP와 국세청 6자리 코드를 활용해 월 순익을 가장 빠르게 만드는 턴어라운드 로드맵을 알려줘.'
         }
     ]
 };
@@ -332,15 +590,24 @@ export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
 // -------------------------------------------------------------
 // 사용자 사주 데이터를 분석하여 맞춤 리포트를 생성하는 통합 엔진
 // -------------------------------------------------------------
-export function generateNtsBusinessArchitecture(userProfile: any): NtsBusinessArchitectureReport {
+export function generateNtsBusinessArchitecture(
+    userProfile: any, 
+    stage: StartupStageType = 'solo_pre'
+): NtsBusinessArchitectureReport {
     const userName = userProfile?.userName || userProfile?.name || '명심가';
     const saju = userProfile?.saju || {};
     
-    // 사주 원국 문자열 확인
-    const dayGanji = saju?.dayPillar?.gan || saju?.dayPillar?.ganKor || (userProfile as any)?.dayPillar || '';
-    
-    // 기본적으로 롤모델의 극도로 정밀한 데이터를 기반으로 사용자명과 사주 맥락을 융합
-    const baseReport: NtsBusinessArchitectureReport = JSON.parse(JSON.stringify(GOLDEN_ROLE_MODEL_REPORT));
+    // 스테이지에 따른 기본 롤모델 데이터 선택
+    let targetTemplate: NtsBusinessArchitectureReport;
+    if (stage === 'early_team') {
+        targetTemplate = EARLY_STARTUP_REPORT;
+    } else if (stage === 're_founder') {
+        targetTemplate = RE_FOUNDER_REPORT;
+    } else {
+        targetTemplate = PRE_STARTUP_REPORT;
+    }
+
+    const baseReport: NtsBusinessArchitectureReport = JSON.parse(JSON.stringify(targetTemplate));
     baseReport.userName = userName;
 
     // 만약 사주 데이터가 구체적으로 있으면 4주 텍스트 반영
