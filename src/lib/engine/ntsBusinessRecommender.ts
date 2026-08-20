@@ -642,6 +642,52 @@ export interface PersonalizedPsstReport {
 }
 
 // -------------------------------------------------------------
+// [HELPER] 사주 데이터가 문자열 또는 객체인 경우 안전하게 한자/문자 추출
+// -------------------------------------------------------------
+export function extractChar(val: any, fallback: string = ''): string {
+    if (!val) return fallback;
+    if (typeof val === 'string') return val;
+    if (typeof val === 'object') {
+        return val.hanja || val.char || val.name || val.stem || val.branch || val.label || fallback;
+    }
+    return String(val) || fallback;
+}
+
+export function parseSajuFourPillars(saju: any) {
+    if (!saju) {
+        return {
+            yGan: '庚', yJi: '申',
+            mGan: '癸', mJi: '未',
+            dGan: '辛', dJi: '巳',
+            tGan: '乙', tJi: '未',
+            summaryText: '庚申년 · 癸未월 · 辛巳일 · 乙未시'
+        };
+    }
+
+    const fp = saju.fourPillars || {};
+    const yp = saju.yearPillar || saju.year_pillar || fp.year || {};
+    const mp = saju.monthPillar || saju.month_pillar || fp.month || {};
+    const dp = saju.dayPillar || saju.day_pillar || fp.day || {};
+    const tp = saju.hourPillar || saju.hour_pillar || saju.timePillar || fp.time || {};
+
+    const yGan = extractChar(yp.gan !== undefined ? yp.gan : yp.stem, '庚');
+    const yJi = extractChar(yp.ji !== undefined ? yp.ji : yp.branch, '申');
+
+    const mGan = extractChar(mp.gan !== undefined ? mp.gan : mp.stem, '癸');
+    const mJi = extractChar(mp.ji !== undefined ? mp.ji : mp.branch, '未');
+
+    const dGan = extractChar(dp.gan !== undefined ? dp.gan : dp.stem, '辛');
+    const dJi = extractChar(dp.ji !== undefined ? dp.ji : dp.branch, '巳');
+
+    const tGan = extractChar(tp.gan !== undefined ? tp.gan : tp.stem, '乙');
+    const tJi = extractChar(tp.ji !== undefined ? tp.ji : tp.branch, '未');
+
+    const summaryText = `${yGan}${yJi}년 · ${mGan}${mJi}월 · ${dGan}${dJi}일 · ${tGan}${tJi}시`;
+
+    return { yGan, yJi, mGan, mJi, dGan, dJi, tGan, tJi, summaryText };
+}
+
+// -------------------------------------------------------------
 // 사용자 사주 데이터를 분석하여 맞춤 리포트를 생성하는 통합 엔진
 // -------------------------------------------------------------
 export function generateNtsBusinessArchitecture(
@@ -664,13 +710,18 @@ export function generateNtsBusinessArchitecture(
     const baseReport: NtsBusinessArchitectureReport = JSON.parse(JSON.stringify(targetTemplate));
     baseReport.userName = userName;
 
-    // 만약 사주 데이터가 구체적으로 있으면 4주 텍스트 반영
-    if (saju?.fourPillars || saju?.yearPillar) {
-        const y = `${saju.yearPillar?.gan || saju.fourPillars?.year?.gan || '庚'}${saju.yearPillar?.ji || saju.fourPillars?.year?.ji || '申'}`;
-        const m = `${saju.monthPillar?.gan || saju.fourPillars?.month?.gan || '癸'}${saju.monthPillar?.ji || saju.fourPillars?.month?.ji || '未'}`;
-        const d = `${saju.dayPillar?.gan || saju.fourPillars?.day?.gan || '辛'}${saju.dayPillar?.ji || saju.fourPillars?.day?.ji || '巳'}`;
-        const h = `${saju.hourPillar?.gan || saju.fourPillars?.hour?.gan || '乙'}${saju.hourPillar?.ji || saju.fourPillars?.hour?.ji || '未'}`;
-        baseReport.sajuSummaryText = `${y}년 · ${m}월 · ${d}일 · ${h}시`;
+    // 사주 데이터가 있으면 안전하게 파싱하여 반영
+    if (saju && (saju.fourPillars || saju.yearPillar || saju.year_pillar || saju.dayPillar || saju.day_pillar)) {
+        const p = parseSajuFourPillars(saju);
+        baseReport.sajuSummaryText = p.summaryText;
+
+        // Pillar breakdown의 간지 텍스트도 동적 업데이트
+        if (Array.isArray(baseReport.pillarBreakdowns) && baseReport.pillarBreakdowns.length >= 4) {
+            baseReport.pillarBreakdowns[0].ganji = `${p.dGan}${p.dJi}`;
+            baseReport.pillarBreakdowns[1].ganji = `${p.mGan}${p.mJi}`;
+            baseReport.pillarBreakdowns[2].ganji = `${p.tGan}${p.tJi}`;
+            baseReport.pillarBreakdowns[3].ganji = `${p.yGan}${p.yJi}`;
+        }
     }
 
     return baseReport;
@@ -685,12 +736,8 @@ export function generatePersonalizedPsstArchitecture(
 ): PersonalizedPsstReport {
     const userName = userProfile?.userName || userProfile?.name || '명심가';
     const saju = userProfile?.saju || {};
-
-    const y = `${saju.yearPillar?.gan || saju.fourPillars?.year?.gan || '庚'}${saju.yearPillar?.ji || saju.fourPillars?.year?.ji || '申'}`;
-    const m = `${saju.monthPillar?.gan || saju.fourPillars?.month?.gan || '癸'}${saju.monthPillar?.ji || saju.fourPillars?.month?.ji || '未'}`;
-    const d = `${saju.dayPillar?.gan || saju.fourPillars?.day?.gan || '辛'}${saju.dayPillar?.ji || saju.fourPillars?.day?.ji || '巳'}`;
-    const h = `${saju.hourPillar?.gan || saju.fourPillars?.hour?.gan || '乙'}${saju.hourPillar?.ji || saju.fourPillars?.hour?.ji || '未'}`;
-    const sajuSummaryText = `${y}년 · ${m}월 · ${d}일 · ${h}시`;
+    const p = parseSajuFourPillars(saju);
+    const sajuSummaryText = p.summaryText;
 
     // 1. 업종 및 국세청 코드 매핑
     let mainCode = '724000';
@@ -761,12 +808,12 @@ export function generatePersonalizedPsstArchitecture(
         problem: {
             title: '1. 문제 인식 (Problem & Motivation)',
             marketPainPoint: `시장 결핍: ${problemDesc}으로 인해 수많은 고객과 창업 준비생들이 막대한 시간과 자금을 낭비하고 제도권 비즈니스로 안착하지 못함.`,
-            founderMotivation: `창업자 필연적 동기 (${m}월 식신·인성 기질): 방대한 지식과 심리 메커니즘을 정밀하게 구조화할 수 있는 대표자의 선천적 인지 역량을 바탕으로, 시장의 비효율을 객관적 지표와 표준 코드로 해결해야 한다는 필연성을 절감하여 창업을 결심함.`,
+            founderMotivation: `창업자 필연적 동기 (${p.mGan}${p.mJi}월 식신·인성 기질): 방대한 지식과 심리 메커니즘을 정밀하게 구조화할 수 있는 대표자의 선천적 인지 역량을 바탕으로, 시장의 비효율을 객관적 지표와 표준 코드로 해결해야 한다는 필연성을 절감하여 창업을 결심함.`,
             urgency: '단순 상담이나 단발성 콘텐츠는 사후 처방에 불과하여, 창업 진입 단계부터 표준화된 국세청 업종코드와 비즈니스 아키텍처를 원클릭으로 도출하는 혁신 플랫폼이 시급함.'
         },
         solution: {
             title: '2. 실현 가능성 (Solution & Architecture)',
-            coreMvp: `핵심 솔루션 (${d}일 정밀 시스템 기반): 사용자 기질 데이터를 표준 행정 분류로 자동 치환하는 엔진 구축 및 ${solutionDesc} 개발.`,
+            coreMvp: `핵심 솔루션 (${p.dGan}${p.dJi}일 정밀 시스템 기반): 사용자 기질 데이터를 표준 행정 분류로 자동 치환하는 엔진 구축 및 ${solutionDesc} 개발.`,
             differentiation: `차별화 요소: 단순 심리검사를 넘어 국가 공인 국세청 표준 코드(${mainCode}) 매핑, 세제 감면 혜택, 중기부 PSST 사업계획서 뼈대까지 1-Stop으로 제공하는 올인원(All-in-One) 솔루션.`,
             techMilestone: '1차: AI 1분 창업 진단 및 국세청 6자리 코드 자동 추천 웹 배포 ➔ 2차: 1:1 맞춤형 PSST 사업계획서 실시간 인터뷰 생성기 고도화.'
         },
@@ -781,7 +828,7 @@ export function generatePersonalizedPsstArchitecture(
         },
         team: {
             title: '4. 팀 구성 및 조직 역량 (Team & HR)',
-            founderStrength: `대표자 코어 역량 (${y}년 인프라 레버리지): 정밀 시스템 설계 및 핵심 로직/알고리즘 총괄 디렉팅.`,
+            founderStrength: `대표자 코어 역량 (${p.yGan}${p.yJi}년 인프라 레버리지): 정밀 시스템 설계 및 핵심 로직/알고리즘 총괄 디렉팅.`,
             hrComplementPlan: `보완 전략 (HR): ${hrPlan}`
         },
         onePointCheck: {
