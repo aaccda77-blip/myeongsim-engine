@@ -22,6 +22,7 @@ import {
     StartupIntakeAnswers,
     PersonalizedPsstReport
 } from '@/lib/engine/ntsBusinessRecommender';
+import { useReportStore } from '@/store/useReportStore';
 
 interface NtsBusinessCareerModalProps {
     isOpen: boolean;
@@ -74,13 +75,21 @@ export default function NtsBusinessCareerModal({
 
     if (!isOpen) return null;
 
+    // 글로벌 스토어의 reportData와 props userProfile을 안전하게 병합
+    const globalReportData = useReportStore.getState().reportData;
+    const effectiveProfile = {
+        ...globalReportData,
+        ...userProfile,
+        saju: userProfile?.saju || globalReportData?.saju
+    };
+
     const currentProfile: NtsBusinessArchitectureReport = viewRoleModel
         ? (selectedStage === 'early_team' ? EARLY_STARTUP_REPORT : selectedStage === 're_founder' ? RE_FOUNDER_REPORT : PRE_STARTUP_REPORT)
-        : generateNtsBusinessArchitecture(userProfile, selectedStage);
+        : generateNtsBusinessArchitecture(effectiveProfile, selectedStage);
 
     // 개인화된 PSST 리포트 생성
     const personalizedPsst: PersonalizedPsstReport = generatePersonalizedPsstArchitecture(
-        userProfile,
+        effectiveProfile,
         intakeAnswers
     );
 

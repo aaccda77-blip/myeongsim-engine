@@ -1362,6 +1362,11 @@ export function generatePersonalizedPsstArchitecture(
         hrPlan = '대표자의 번아웃 예방을 위해 매일 오전 황금 몰입 시간에만 코어 기획을 진행하고, 고객 응대와 행정은 표준 프로토콜 템플릿으로 자동화하여 심리적 안전지대를 확보합니다.';
     }
 
+    const dStem = STEM_INFO[p.dGan] || STEM_INFO['甲'];
+    const mStem = STEM_INFO[p.mGan] || STEM_INFO['丁'];
+    const tStem = STEM_INFO[p.tGan] || STEM_INFO['庚'];
+    const yStem = STEM_INFO[p.yGan] || STEM_INFO['丙'];
+
     const problemDesc = answers.problemKeyword || '기존 솔루션의 지나친 추상성과 높은 비용, 1회성 상담 후 실제 실행 불가능한 실행 공백(Execution Gap)';
     const solutionDesc = answers.solutionKeyword || '기질 데이터 기반 표준 행정 코드 자동 매핑 및 3초 만에 사업화 로드맵을 완성하는 AI 솔루션 플랫폼';
 
@@ -1371,29 +1376,29 @@ export function generatePersonalizedPsstArchitecture(
         intakeAnswers: answers,
         problem: {
             title: '1. 문제 인식 (Problem & Motivation)',
-            marketPainPoint: `시장 결핍: ${problemDesc}으로 인해 수많은 고객과 창업 준비생들이 막대한 시간과 자금을 낭비하고 제도권 비즈니스로 안착하지 못함.`,
-            founderMotivation: `창업자 필연적 동기 (${p.mGan}${p.mJi}월 식신·인성 기질): 방대한 지식과 심리 메커니즘을 정밀하게 구조화할 수 있는 대표자의 선천적 인지 역량을 바탕으로, 시장의 비효율을 객관적 지표와 표준 코드로 해결해야 한다는 필연성을 절감하여 창업을 결심함.`,
+            marketPainPoint: `${problemDesc}으로 인해 수많은 고객과 창업 준비생들이 막대한 시간과 자금을 낭비하고 제도권 비즈니스로 안착하지 못함.`,
+            founderMotivation: `[${p.mGan}${p.mJi}월 ${mStem.trait}]: 방대한 전문 지식과 고객 심리 메커니즘을 꿰뚫어보는 대표자의 선천적 통찰을 바탕으로, 시장의 비효율을 명쾌한 표준 시스템으로 해결해야 한다는 필연성을 절감하여 창업을 결심함.`,
             urgency: '단순 상담이나 단발성 콘텐츠는 사후 처방에 불과하여, 창업 진입 단계부터 표준화된 국세청 업종코드와 비즈니스 아키텍처를 원클릭으로 도출하는 혁신 플랫폼이 시급함.'
         },
         solution: {
             title: '2. 실현 가능성 (Solution & Architecture)',
-            coreMvp: `핵심 솔루션 (${p.dGan}${p.dJi}일 정밀 시스템 기반): 사용자 기질 데이터를 표준 행정 분류로 자동 치환하는 엔진 구축 및 ${solutionDesc} 개발.`,
-            differentiation: `차별화 요소: 단순 심리검사를 넘어 국가 공인 국세청 표준 코드(${mainCode}) 매핑, 세제 감면 혜택, 중기부 PSST 사업계획서 뼈대까지 1-Stop으로 제공하는 올인원(All-in-One) 솔루션.`,
+            coreMvp: `[${p.dGan}${p.dJi}일 ${dStem.trait} 기반]: 사용자 기질 데이터를 표준 행정 분류로 자동 치환하는 엔진 구축 및 ${solutionDesc} 개발.`,
+            differentiation: `단순 심리검사를 넘어 국가 공인 국세청 표준 코드(${mainCode}) 매핑, 세제 감면 혜택(최대 100%), 중기부 PSST 사업계획서 뼈대까지 1-Stop으로 제공하는 올인원(All-in-One) 솔루션.`,
             techMilestone: '1차: AI 1분 창업 진단 및 국세청 6자리 코드 자동 추천 웹 배포 ➔ 2차: 1:1 맞춤형 PSST 사업계획서 실시간 인터뷰 생성기 고도화.'
         },
         scaleUp: {
             title: '3. 성장 전략 & 수익 모델 (Scale-up & BM)',
             businessModel: {
-                b2c: '기본 엔진: 디지털 진단 리포트 및 지식 IP(전자책/VOD/툴킷) 자동화 판매',
-                b2b: '수익 극대화: 기업 임직원 번아웃 방지 및 부서별 기질 케미스트리 조직 진단 컨설팅 용역',
-                b2g: '스케일업: 공공 창업지원단 및 지자체 청년 창업 멘탈 웰니스 프로그램 납품'
+                b2c: '디지털 진단 리포트 및 지식 IP(전자책/VOD/툴킷) 자동화 판매',
+                b2b: '기업 임직원 번아웃 방지 및 부서별 기질 케미스트리 조직 진단 컨설팅 용역',
+                b2g: '공공 창업지원단 및 지자체 청년 창업 멘탈 웰니스 프로그램 납품'
             },
             gtmStrategy: '1단계: 1분 무료 진단 배포를 통한 초기 1만 명 잠재 고객 DB 확보 ➔ 2단계: 유료 프리미엄 심층 리포트 및 1:1 맞춤 사업적성 코칭 구독 전환.'
         },
         team: {
             title: '4. 팀 구성 및 조직 역량 (Team & HR)',
-            founderStrength: `대표자 코어 역량 (${p.yGan}${p.yJi}년 클라우드 플랫폼 인프라 레버리지): 무거운 온프레미스 고정비 조직을 지양하고, 비물리적 디지털 시스템(AI·지식 IP·SaaS)과 분산 전문가 네트워크를 총괄하는 플랫폼 아키텍트 역량 보유.`,
-            hrComplementPlan: `보완 및 스케일업 전략 (HR): ${hrPlan} (공망 리프레이밍: 사람을 직접 통제하는 수직적 고용 대신, 누구나 활동할 수 있는 열린 시스템 플랫폼을 제공하여 한계비용 제로로 스케일업)`
+            founderStrength: `[${p.yGan}${p.yJi}년 ${yStem.trait}]: 무거운 온프레미스 고정비 조직을 지양하고, 비물리적 디지털 시스템(AI·지식 IP·SaaS)과 분산 전문가 네트워크를 총괄하는 플랫폼 리더십 보유.`,
+            hrComplementPlan: `${hrPlan} (공망 리프레이밍: 사람을 직접 통제하는 수직적 고용 대신, 누구나 활동할 수 있는 열린 시스템 플랫폼을 제공하여 한계비용 제로로 스케일업)`
         },
         onePointCheck: {
             recommendedMainCode: mainCode,
