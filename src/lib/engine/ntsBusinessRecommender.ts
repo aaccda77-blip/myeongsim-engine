@@ -1,6 +1,6 @@
 /**
  * ntsBusinessRecommender.ts
- * 국세청 표준산업분류 기준 업태/종목 및 6자리 홈택스 업종코드 1:1 매핑 엔진
+ * 국세청 표준산업분류 기준 업태/종목 및 6자리 홈택스 업종코드 1:1 매핑 엔진 (5단계 웰니스 심층 아키텍처)
  * 
  * 사주의 4주 팔자(년/월/일/시), 십신(식상, 재성, 관성, 인성, 비겁), 오행, 격국을 정밀 분석하여
  * 실제 홈택스 사업자등록 및 지식 비즈니스 모델 구축에 즉시 적용 가능한 
@@ -11,6 +11,7 @@ export interface NtsCodeDetail {
     code: string;
     title: string;
     businessModel: string;
+    categoryGroup?: string; // '코어 엔진 (주)', '신뢰 자산 (주)', 'IP 자산화 (부)', '수익 확장 (부)'
 }
 
 export interface NtsBusinessSection {
@@ -32,17 +33,31 @@ export interface PillarProfileItem {
 }
 
 export interface NtsScaleUpStep {
-    phase: string;        // '1단계 (Zero to One)', '2단계 (Productization)' 등
+    phase: string;        // 'Foundation (신뢰 구축)', 'Productization (제품화)', 'Ecosystem (플랫폼화)'
     keyword: string;      // '공신력 확보', '디지털 프로덕트 구축' 등
     coreAction: string;   // 실행 가이드
     sajuEngine: string;   // 활용되는 사주 기운
     leveragePoint: string;// 레버리지 포인트
 }
 
+export interface BurnoutEnergyGuide {
+    cognitiveTrap: {
+        title: string;
+        risk: string;
+        prescription: string;
+    }[];
+    dailyRhythmProtocol: {
+        timeSlot: string;
+        energyFocus: string;
+        action: string;
+        sajuElement: string;
+    }[];
+}
+
 export interface NtsBusinessArchitectureReport {
     userName: string;
     sajuSummaryText: string;
-    identityTitle: string;          // 예: "지식 IP 기반의 솔루션 아키텍트 & 플랫폼 빌더"
+    identityTitle: string;          // 예: "지식 IP 기반 솔루션 아키텍트 & 플랫폼 빌더"
     slogan: string;
     pillarBreakdowns: PillarProfileItem[];
     coreCompetencies: {
@@ -56,9 +71,17 @@ export interface NtsBusinessArchitectureReport {
         contentIp: string;
         targetPlatform: string;
     };
+    taxonomyTable: {
+        classification: string;   // '코어 엔진 (주)', '신뢰 자산 (주)', 'IP 자산화 (부)', '수익 확장 (부)'
+        mainIndustry: string;     // 추천 국세청 업태
+        subIndustryAndCodes: { name: string; code: string }[]; // 세부 종목명 및 업종코드
+        businessModel: string;    // 비즈니스 모델 연계
+        colorTheme: 'amber' | 'emerald' | 'cyan' | 'purple';
+    }[];
     primaryBusiness1: NtsBusinessSection; // 주업종 1 (메인 인프라)
     primaryBusiness2: NtsBusinessSection; // 주업종 2 (전문 솔루션 & 자문)
     secondaryBusiness: NtsBusinessSection;// 부업종 (콘텐츠 & IP & 교육)
+    burnoutGuide: BurnoutEnergyGuide;      // Step 3: 번아웃 방지 & 에너지 효율화 가이드
     hometaxRegistrationGuide: {
         mainSelection: string; // 주업태 / 주종목 권장안
         subSelections: string[]; // 부업태 / 부종목 권장 리스트
@@ -66,6 +89,7 @@ export interface NtsBusinessArchitectureReport {
         taxBenefits: string;
     };
     scaleUpRoadmap: NtsScaleUpStep[];
+    chatAssitantPrompts: { title: string; prompt: string; icon: string }[];
 }
 
 // -------------------------------------------------------------
@@ -74,7 +98,7 @@ export interface NtsBusinessArchitectureReport {
 export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
     userName: '명심가 (대표 롤모델)',
     sajuSummaryText: '경신년(庚申) · 계미월(癸未) · 신사일(辛巳) · 을미시(乙未)',
-    identityTitle: '지식 IP 기반의 솔루션 아키텍트 & 플랫폼 빌더',
+    identityTitle: '지식 IP 기반 솔루션 아키텍트 & 플랫폼 빌더',
     slogan: '전문 지식을 체계적 시스템과 디지털 프로덕트로 패키징하여 플랫폼으로 레버리지하는 사업가',
     pillarBreakdowns: [
         {
@@ -129,6 +153,48 @@ export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
         contentIp: '단행본·전자책 출판 / 온라인 VOD 교육 / 템플릿 커머스',
         targetPlatform: '통합 지식 비즈니스 & 웰니스 솔루션 플랫폼'
     },
+    // Step 2: 국가 표준 업태 · 종목 최적화 매핑 (Taxonomy Mapping)
+    taxonomyTable: [
+        {
+            classification: '코어 엔진 (주)',
+            mainIndustry: '정보통신업',
+            subIndustryAndCodes: [
+                { name: '데이터베이스 및 온라인정보 제공업', code: '724000' },
+                { name: '소프트웨어 개발 및 공급업', code: '722000' }
+            ],
+            businessModel: '플랫폼, 진단 알고리즘 웹/앱 서비스, 구독형 SaaS',
+            colorTheme: 'amber'
+        },
+        {
+            classification: '신뢰 자산 (주)',
+            mainIndustry: '전문, 과학 및 기술 서비스업',
+            subIndustryAndCodes: [
+                { name: '경영 컨설팅업', code: '741400' },
+                { name: '인문 및 사회과학 연구개발업', code: '732002' }
+            ],
+            businessModel: 'B2B 기업 조직 코칭, 자문 용역, 학술 연구 프로젝트',
+            colorTheme: 'emerald'
+        },
+        {
+            classification: 'IP 자산화 (부)',
+            mainIndustry: '출판 및 교육 서비스업',
+            subIndustryAndCodes: [
+                { name: '일반서적 출판업', code: '581101' },
+                { name: '교육관련 자문 및 평가업', code: '930921' }
+            ],
+            businessModel: '단행본/전자책 출간, 교육 VOD, 라이선스 워크숍',
+            colorTheme: 'cyan'
+        },
+        {
+            classification: '수익 확장 (부)',
+            mainIndustry: '도매 및 소매업',
+            subIndustryAndCodes: [
+                { name: '전자상거래 소매업', code: '525101' }
+            ],
+            businessModel: '디지털 템플릿, 웰니스 교구재 및 툴킷 온라인 유통',
+            colorTheme: 'purple'
+        }
+    ],
     primaryBusiness1: {
         sectionTitle: '주업종 1: 지식 플랫폼 & 디지털 솔루션 (메인 엔진)',
         badge: '★ 메인 인프라 (Code: 724000)',
@@ -168,42 +234,97 @@ export const GOLDEN_ROLE_MODEL_REPORT: NtsBusinessArchitectureReport = {
         ],
         realWorldApplication: '단행본 출판으로 베스트셀러 브랜드를 구축하고, 이를 VOD 강의 및 디지털 워크북 다운로드 판매로 연결.'
     },
+    // Step 3: 번아웃 방지 & 에너지 효율화 가이드 (Energy Flow)
+    burnoutGuide: {
+        cognitiveTrap: [
+            {
+                title: '과도한 완벽주의(辛金)로 인한 론칭 지연',
+                risk: '99% 완성되어도 1%의 결함을 우려하여 세상에 내놓지 못하고 기회비용을 낭비하는 현상',
+                prescription: '완벽한 완성품 대신 70% 완성도의 최소기능제품(MVP)을 신속히 론칭하고 유저 피드백을 통해 고도화하는 애자일 마인드셋 탑재'
+            },
+            {
+                title: '감정 소모형 1:1 반복 상담의 늪',
+                risk: '사용자의 모든 감정을 1:1로 받아내며 본인의 에너지가 고갈되고 시간당 단가에 갇히는 위험',
+                prescription: '자신의 코칭 논리를 웹/앱 진단 툴, e-Book, VOD 강의 등 ‘시스템화된 프로덕트’로 전환하여 비대면 자동화 레버리지 실현'
+            }
+        ],
+        dailyRhythmProtocol: [
+            {
+                timeSlot: '오전 09:00 ~ 12:00 (황금 몰입기)',
+                energyFocus: '지식 설계 & 핵심 알고리즘 개발',
+                action: '외부 연락을 차단하고 계수(식신)의 창의적 설계 및 콘텐츠 기획에 몰입',
+                sajuElement: '계수(식신) · 미토(편인)'
+            },
+            {
+                timeSlot: '오후 14:00 ~ 17:00 (시스템 루틴기)',
+                energyFocus: '행정·운영·미팅 루틴화',
+                action: '사화(정관)의 원칙적 관리 역량을 발휘하여 이메일 회신, 세무·행정 처리, 파트너 미팅 진행',
+                sajuElement: '사화(정관)'
+            },
+            {
+                timeSlot: '저녁 19:00 ~ 21:00 (에너지 회복 & 인출)',
+                energyFocus: '성과 리뷰 & 지식 아카이빙',
+                action: '을목(편재)의 부가가치 점검 및 미토(지식창고)에 하루의 인사이트를 기록하고 휴식',
+                sajuElement: '을목(편재) · 미토(목고)'
+            }
+        ]
+    },
+    // Step 4: 원클릭 실전 행정 & 인허가 블루프린트
     hometaxRegistrationGuide: {
         mainSelection: '정보통신업 / 데이터베이스 및 온라인정보 제공업 (724000)',
         subSelections: [
             '전문, 과학 및 기술 서비스업 / 경영 컨설팅업 (741400)',
+            '출판업 / 일반서적 출판업 (581101) ※ 지자체 출판사 신고 후 추가',
             '교육 서비스업 / 교육관련 자문 및 평가업 (930921)',
-            '도매 및 소매업 / 전자상거래 소매업 (525101)',
-            '출판업 / 일반서적 출판업 (581101) ※ 관할 지자체 출판사 신고 후 추가'
+            '도매 및 소매업 / 전자상거래 소매업 (525101)'
         ],
         adminChecklist: [
-            { step: '1단계 (관할 지자체)', place: '시·군·구청 문화체육과', action: '출판사 등록 및 신고필증 수령 (출판업 영위 시 선행 필수)' },
-            { step: '2단계 (국세청 홈택스)', place: 'hometax.go.kr', action: '주업종 [724000] 및 부업종 [741400, 930921, 525101, 581101] 일괄 등록' },
+            { step: '1단계 (관할 지자체)', place: '시·군·구청 문화체육과', action: '출판사 등록신고 및 신고필증 수령 (출판업 영위 시 선행 필수)' },
+            { step: '2단계 (국세청 홈택스)', place: 'hometax.go.kr', action: '주업종 [724000] 및 부업종 [741400, 581101, 930921, 525101] 일괄 사업자등록' },
             { step: '3단계 (정부24)', place: 'gov.kr', action: '통신판매업 신고 완료 (온라인 결제 및 디지털 콘텐츠 다운로드 판매 시 필수)' }
         ],
         taxBenefits: '정보통신업(SW/데이터베이스) 및 전문·과학·기술 서비스업은 중소기업 창업 감면 대상 업종에 포함되어, 청년/수도권 과밀억제권역 외 창업 시 소득세·법인세를 5년간 최대 50~100% 전액 감면받을 수 있는 극도로 유리한 코드 조합입니다.'
     },
+    // Step 5: 3단계 스케일업 로드맵 (Zero to Infinity)
     scaleUpRoadmap: [
         {
-            phase: '1단계: [Zero to One] 공신력 확보 & 지식 IP 자산화',
+            phase: 'Step 1. Foundation (신뢰 구축)',
             keyword: '사화(정관) · 미토(편인) 발동',
-            coreAction: '전문 자격과 단행본/전자책(IP)을 발행하여 시장 내 대체 불가능한 권위와 공신력을 선점',
+            coreAction: '저서 집필 및 전문 라이선스 확보로 시장 내 독점적 포지셔닝과 압도적 공신력 선점',
             sajuEngine: '정관(巳火)의 신뢰성과 편인(未土)의 학문적 깊이를 결합하여 초기 1인 브랜드 앵커링',
             leveragePoint: '책 1권으로 수백 명의 잠재 고객을 인바운드로 끌어들이는 신뢰 레버리지'
         },
         {
-            phase: '2단계: [Productization] 디지털 프로덕트 & 자동화 엔진 구축',
+            phase: 'Step 2. Productization (제품화)',
             keyword: '계수(식신) · 신금(辛金) 발동',
-            coreAction: '복잡한 코칭/진단 이론을 웹·앱 기반의 자동화된 디지털 프로덕트(진단 SaaS/VOD)로 구축',
+            coreAction: '1:1 대면 코칭을 자동화된 디지털 진단 도구(SaaS), VOD 강의 및 디지털 툴킷으로 전환',
             sajuEngine: '식신(癸水)의 정밀한 로직과 신금(辛金)의 디테일한 완성도로 24시간 자동 동작 시스템 완성',
             leveragePoint: '나의 시간이 투입되지 않아도 매출이 일어나는 디지털 프로덕트 레버리지'
         },
         {
-            phase: '3단계: [Scale-up] 파트너 네트워크 & 플랫폼 생태계 확장',
+            phase: 'Step 3. Ecosystem (플랫폼화)',
             keyword: '경신(겁재) · 을목(편재) 발동',
-            coreAction: '파트너 코치 양성, B2B 엔터프라이즈 라이선스 공급, 커뮤니티 플랫폼화로 폭발적 확장',
+            coreAction: '파트너 코치 양성, B2B 엔터프라이즈 제휴, 커뮤니티 확장을 통한 레버리지 극대화',
             sajuEngine: '겁재(庚申)의 인프라 파워와 편재(乙木)의 거대한 시장 회전력으로 지식 기업 엑시트/스케일업',
             leveragePoint: '타인의 시간과 거대한 네트워크를 레버리지하는 플랫폼 생태계 파워'
+        }
+    ],
+    // 4. 챗봇 연계 1:1 실시간 어시스턴트 프롬프트
+    chatAssitantPrompts: [
+        {
+            title: '1. MVP 론칭 전략',
+            icon: '🚀',
+            prompt: '내 기질에서 \'정보통신업(724000)\'을 메인으로 잡았을 때, 첫 달에 론칭하기 가장 좋은 최소기능제품(MVP)은 무엇인가요?'
+        },
+        {
+            title: '2. 안전한 행정 코드 묶기',
+            icon: '🏛️',
+            prompt: '출판사 등록과 통신판매업 신고를 병행할 때 홈택스에서 코드를 어떻게 묶어야 가장 안전한가요?'
+        },
+        {
+            title: '3. 번아웃 방지 위임 가이드',
+            icon: '🌿',
+            prompt: '지금 번아웃이 오고 있는데, 제 명식의 에너지 균형을 위해 어떤 업무부터 위임해야 할까요?'
         }
     ]
 };
@@ -215,15 +336,11 @@ export function generateNtsBusinessArchitecture(userProfile: any): NtsBusinessAr
     const userName = userProfile?.userName || userProfile?.name || '명심가';
     const saju = userProfile?.saju || {};
     
-    // 사주 원국 문자열 확인 (경신년 계미월 신사일 을미시 또는 유사 명식인지 체크)
-    const yearGanji = saju?.yearPillar?.gan || saju?.yearPillar?.ganKor || (userProfile as any)?.yearPillar || '';
+    // 사주 원국 문자열 확인
     const dayGanji = saju?.dayPillar?.gan || saju?.dayPillar?.ganKor || (userProfile as any)?.dayPillar || '';
     
-    // 만약 사용자가 신사일주이거나 롤모델 분석을 요청한 경우 완벽한 골든 리포트 반환
-    const isShinSa = dayGanji.includes('辛') || dayGanji.includes('신') || (saju?.dayMaster === '辛' || saju?.dayMaster === '신');
-    
     // 기본적으로 롤모델의 극도로 정밀한 데이터를 기반으로 사용자명과 사주 맥락을 융합
-    const baseReport = JSON.parse(JSON.stringify(GOLDEN_ROLE_MODEL_REPORT));
+    const baseReport: NtsBusinessArchitectureReport = JSON.parse(JSON.stringify(GOLDEN_ROLE_MODEL_REPORT));
     baseReport.userName = userName;
 
     // 만약 사주 데이터가 구체적으로 있으면 4주 텍스트 반영

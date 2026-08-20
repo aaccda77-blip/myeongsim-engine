@@ -23,6 +23,7 @@ import MicroPassModal from '../coaching/MicroPassModal';
 import Myeongsim64KeysModal from '../coaching/Myeongsim64KeysModal';
 import OhaengContributionModal from '../coaching/OhaengContributionModal';
 import MyeongsimGeniusReportModal from '../coaching/MyeongsimGeniusReportModal';
+import NtsBusinessCareerModal from '../coaching/NtsBusinessCareerModal';
 import SupportInquiryModal from '../modals/SupportInquiryModal';
 
 export default function BookLayout({ children }: { children: React.ReactNode }) {
@@ -53,6 +54,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
     const [show64KeysModal, setShow64KeysModal] = useState(false);
     const [showOhaengModal, setShowOhaengModal] = useState(false);
     const [showGeniusModal, setShowGeniusModal] = useState(false);
+    const [showNtsModal, setShowNtsModal] = useState(false);
 
     useEffect(() => {
         try {
@@ -317,6 +319,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                 onOpenOhaengModal={() => setShowOhaengModal(true)}
                                 onOpenGeniusModal={() => setShowGeniusModal(true)}
                                 onOpenFullPassModal={() => setShowMicroPassModal(true)}
+                                onOpenNtsModal={() => setShowNtsModal(true)}
                             />
                         </div>
                     ) : (
@@ -360,6 +363,18 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                     <MyeongsimGeniusReportModal
                         isOpen={showGeniusModal}
                         onClose={() => setShowGeniusModal(false)}
+                    />
+                )}
+                {showNtsModal && (
+                    <NtsBusinessCareerModal
+                        isOpen={showNtsModal}
+                        onClose={() => setShowNtsModal(false)}
+                        userProfile={reportData}
+                        onStartChatCoaching={(prompt) => {
+                            setShowNtsModal(false);
+                            setIntentParams({ intent: 'business_coaching', section: prompt });
+                            setIsChatOpen(true);
+                        }}
                     />
                 )}
                 {isInquiryOpen && (

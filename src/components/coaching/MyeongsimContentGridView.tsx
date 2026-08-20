@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Zap, Lock, Shield, Compass, ChevronRight, Gift, Clock, Flame, Award, Heart, CheckCircle2, Layers, X } from 'lucide-react';
+import { Sparkles, Zap, Lock, Shield, Compass, ChevronRight, Gift, Clock, Flame, Award, Heart, CheckCircle2, Layers, X, Briefcase } from 'lucide-react';
 import PaybackBanner from './PaybackBanner';
 import DailyScanWidget from './DailyScanWidget';
 import dynamic from 'next/dynamic';
@@ -18,6 +18,7 @@ interface MyeongsimContentGridViewProps {
   onOpenOhaengModal?: () => void;
   onOpenGeniusModal?: () => void;
   onOpenFullPassModal?: () => void;
+  onOpenNtsModal?: () => void;
 }
 
 export default function MyeongsimContentGridView({
@@ -27,12 +28,13 @@ export default function MyeongsimContentGridView({
   onOpenOhaengModal,
   onOpenGeniusModal,
   onOpenFullPassModal,
+  onOpenNtsModal,
 }: MyeongsimContentGridViewProps) {
   const userName = userProfile?.userName || '명심가';
   const [showBlueprintModal, setShowBlueprintModal] = useState(false);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-5 pb-20 animate-in fade-in duration-500">
+    <div className="w-full max-w-4xl mx-auto space-y-5 pb-20 animate-in fade-in duration-500 text-left">
       
       {/* ==========================================
           0. [Version 2: Emotional Founder Letter] 감성 편지글형 접이식 배너
@@ -40,17 +42,64 @@ export default function MyeongsimContentGridView({
       <FounderWelcomeLetterBanner userName={userName} />
 
       {/* ==========================================
-          1. 24h 실시간 타이머 및 페이백 배너 (Loss Aversion)
+          1. [비즈니스 설계] 5단계 웰니스 심층 리포트 & 국세청 업종 매핑 배너 카드
+          ========================================== */}
+      <motion.div
+        whileHover={{ scale: 1.01, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={onOpenNtsModal}
+        className="group relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#1c1830] via-[#101428] to-[#1a1226] border-2 border-emerald-500/50 p-5 sm:p-6 shadow-2xl hover:border-emerald-400 transition-all cursor-pointer flex flex-col justify-between"
+      >
+        <div className="flex items-center justify-between z-10">
+          <span className="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+            <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
+            <span>[비즈니스 설계] 5단계 웰니스 심층 리포트</span>
+          </span>
+          <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 text-slate-950 font-black text-[11px] px-3.5 py-1 rounded-full shadow-lg flex items-center gap-1">
+            🏛️ 국세청 1:1 매핑
+          </span>
+        </div>
+
+        <div className="my-3 z-10 space-y-1">
+          <h3 className="text-lg sm:text-xl font-black text-white tracking-tight group-hover:text-emerald-300 transition-colors font-serif">
+            국세청 업태·종목 분류 기반 1:1 비즈니스 아키텍처
+          </h3>
+          <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed font-sans">
+            인지 아키타입 진단 ➔ 표준 업종 매핑(724000/741400) ➔ 번아웃 방지 ➔ 원클릭 행정/절세 ➔ 3단계 스케일업 로드맵
+          </p>
+          <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[10px] text-emerald-300/90 font-mono">
+            <span className="bg-slate-950/80 border border-emerald-500/30 px-2 py-0.5 rounded">1. 아키타입</span>
+            <span className="bg-slate-950/80 border border-emerald-500/30 px-2 py-0.5 rounded">2. 업종 매핑</span>
+            <span className="bg-slate-950/80 border border-rose-500/30 px-2 py-0.5 rounded text-rose-300">3. 번아웃 방지</span>
+            <span className="bg-slate-950/80 border border-cyan-500/30 px-2 py-0.5 rounded text-cyan-300">4. 실전 행정</span>
+            <span className="bg-slate-950/80 border border-purple-500/30 px-2 py-0.5 rounded text-purple-300">5. 스케일업</span>
+          </div>
+        </div>
+
+        <div className="z-10 flex items-center justify-between border-t border-white/10 pt-3 text-[11px]">
+          <span className="text-emerald-400 font-bold flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5" /> 1:1 비즈니스 챗봇 어시스턴트 즉시 연동
+          </span>
+          <span className="text-emerald-300 font-extrabold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            열람하기 <ChevronRight className="w-4 h-4" />
+          </span>
+        </div>
+
+        <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/25 transition-all" />
+      </motion.div>
+
+      {/* ==========================================
+          2. 24h 실시간 타이머 및 페이백 배너 (Loss Aversion)
           ========================================== */}
       <PaybackBanner onUpgradeClick={onOpenFullPassModal || onOpenMicroPassModal} />
 
       {/* ==========================================
-          2. 10초 자각 체크인 데일리 스캔 위젯
+          3. 10초 자각 체크인 데일리 스캔 위젯
           ========================================== */}
       <DailyScanWidget userProfile={userProfile} />
 
       {/* ==========================================
-          3. 사주아이 스타일 큼직한 비주얼 카드 그리드
+          4. 사주아이 스타일 큼직한 비주얼 카드 그리드
           ========================================== */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">

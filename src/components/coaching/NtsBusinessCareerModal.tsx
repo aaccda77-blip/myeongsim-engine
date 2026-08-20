@@ -6,7 +6,8 @@ import {
     X, Sparkles, Briefcase, Copy, Check, ChevronRight,
     TrendingUp, Shield, FileText, CheckCircle2, Crown,
     Award, ArrowRight, Building, HelpCircle, Layers, Zap,
-    Cpu, BookOpen, Compass, Globe, Server, Database, BarChart3
+    Cpu, BookOpen, Compass, Globe, Server, Database, BarChart3,
+    HeartPulse, Clock, AlertTriangle, MessageSquare, Flame, CheckCheck
 } from 'lucide-react';
 import {
     generateNtsBusinessArchitecture,
@@ -28,7 +29,7 @@ export default function NtsBusinessCareerModal({
     onStartChatCoaching
 }: NtsBusinessCareerModalProps) {
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'scan' | 'sync' | 'shift' | 'scaleup'>('scan');
+    const [activeTab, setActiveTab] = useState<'step1' | 'step2' | 'step3' | 'step4' | 'step5'>('step1');
     const [viewRoleModel, setViewRoleModel] = useState<boolean>(false);
 
     if (!isOpen) return null;
@@ -43,17 +44,24 @@ export default function NtsBusinessCareerModal({
         setTimeout(() => setCopiedCode(null), 2200);
     };
 
+    const handlePromptClick = (promptText: string) => {
+        onClose();
+        if (onStartChatCoaching) {
+            onStartChatCoaching(promptText);
+        }
+    };
+
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-5 font-sans animate-fade-in">
-                <div className="bg-[#0c101c] border-2 border-amber-500/40 rounded-3xl w-full max-w-3xl max-h-[92vh] overflow-y-auto p-4 sm:p-7 shadow-[0_0_90px_rgba(245,158,11,0.25)] relative text-white space-y-4 custom-scrollbar text-left">
+            <div className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-5 font-sans animate-fade-in text-left">
+                <div className="bg-[#0c101c] border-2 border-amber-500/40 rounded-3xl w-full max-w-3xl max-h-[92vh] overflow-y-auto p-4 sm:p-7 shadow-[0_0_90px_rgba(245,158,11,0.25)] relative text-white space-y-4 custom-scrollbar">
                     
                     {/* Top Status & Role Model Switch */}
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                             <span className="text-[11px] font-mono font-bold text-amber-400">
-                                🏛️ 국세청 표준산업분류 1:1 비즈니스 아키텍처
+                                🏛️ [비즈니스 설계] 5단계 웰니스 심층 리포트 & 1:1 어시스턴트
                             </span>
                         </div>
 
@@ -111,66 +119,76 @@ export default function NtsBusinessCareerModal({
                         </button>
                     </div>
 
-                    {/* 4-Step Navigation Tabs (Scan ➔ Sync ➔ Shift ➔ Scale-up) */}
-                    <div className="grid grid-cols-4 gap-1.5 p-1 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-center">
+                    {/* 5-Step Navigation Tabs */}
+                    <div className="grid grid-cols-5 gap-1 p-1 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-center">
                         <button
-                            onClick={() => setActiveTab('scan')}
+                            onClick={() => setActiveTab('step1')}
                             className={`py-2 rounded-lg transition-all cursor-pointer ${
-                                activeTab === 'scan'
+                                activeTab === 'step1'
                                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            1. 기질 스캔 (Scan)
+                            Step 1. 아키타입
                         </button>
                         <button
-                            onClick={() => setActiveTab('sync')}
+                            onClick={() => setActiveTab('step2')}
                             className={`py-2 rounded-lg transition-all cursor-pointer ${
-                                activeTab === 'sync'
+                                activeTab === 'step2'
                                     ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            2. 국세청 업종 (Sync)
+                            Step 2. 업종 매핑
                         </button>
                         <button
-                            onClick={() => setActiveTab('shift')}
+                            onClick={() => setActiveTab('step3')}
                             className={`py-2 rounded-lg transition-all cursor-pointer ${
-                                activeTab === 'shift'
+                                activeTab === 'step3'
+                                    ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm'
+                                    : 'text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            Step 3. 번아웃 방지
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('step4')}
+                            className={`py-2 rounded-lg transition-all cursor-pointer ${
+                                activeTab === 'step4'
                                     ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            3. 행정 & 절세 (Shift)
+                            Step 4. 실전 행정
                         </button>
                         <button
-                            onClick={() => setActiveTab('scaleup')}
+                            onClick={() => setActiveTab('step5')}
                             className={`py-2 rounded-lg transition-all cursor-pointer ${
-                                activeTab === 'scaleup'
+                                activeTab === 'step5'
                                     ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-sm'
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            4. 성장 전략 (Scale)
+                            Step 5. 스케일업
                         </button>
                     </div>
 
                     {/* ========================================================
-                        TAB 1: 1. 비즈니스 기질 및 핵심 역량 스캔 (Scan)
+                        STEP 1: 인지 하드웨어 & 비즈니스 아키타입 진단
                         ======================================================== */}
-                    {activeTab === 'scan' && (
+                    {activeTab === 'step1' && (
                         <div className="space-y-4 animate-fade-in text-xs">
                             {/* Identity Title Card */}
                             <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-amber-500/40 space-y-1.5 shadow-inner">
                                 <div className="text-amber-400 font-mono font-black flex items-center gap-1.5 text-[11px]">
                                     <Crown className="w-3.5 h-3.5 text-amber-400" />
-                                    <span>핵심 비즈니스 정체성 (Core Archetype)</span>
+                                    <span>비즈니스 페르소나 도출 (1차 정체성)</span>
                                 </div>
                                 <h4 className="text-base sm:text-lg font-black text-white">
-                                    "{currentProfile.identityTitle}"
+                                    &quot;{currentProfile.identityTitle}&quot;
                                 </h4>
                                 <p className="text-gray-300 leading-relaxed">
-                                    단순 용역 프리랜서를 넘어, 지식재산권(IP)과 소프트웨어/플랫폼 인프라를 결합하여 고부가가치를 창출하는 솔루션 빌더입니다.
+                                    세상과 상호작용할 때 가장 저항이 적은 1차 정체성으로, 단순 프리랜서를 넘어 지식재산권(IP)과 소프트웨어/플랫폼 인프라를 결합하여 레버리지를 일으킵니다.
                                 </p>
                             </div>
 
@@ -178,7 +196,7 @@ export default function NtsBusinessCareerModal({
                             <div className="space-y-2">
                                 <div className="font-bold text-gray-200 flex items-center gap-1.5 text-xs">
                                     <Compass className="w-3.5 h-3.5 text-amber-400" />
-                                    <span>명식 4주(四柱) 팔자별 비즈니스 엔진 분해</span>
+                                    <span>기질 프로파일링: 십신과 오행의 에너지 흐름</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -205,7 +223,7 @@ export default function NtsBusinessCareerModal({
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
                                 <div className="font-bold text-gray-200 flex items-center gap-1.5 text-xs">
                                     <Zap className="w-3.5 h-3.5 text-amber-400" />
-                                    <span>3대 핵심 비즈니스 역량 스캔</span>
+                                    <span>현대 인지과학적 3대 강점 번역</span>
                                 </div>
                                 <div className="space-y-2">
                                     {currentProfile.coreCompetencies.map((comp, idx) => (
@@ -227,153 +245,153 @@ export default function NtsBusinessCareerModal({
                     )}
 
                     {/* ========================================================
-                        TAB 2: 2. 맞춤 국세청 업태 · 종목 분류 매핑 (Sync)
+                        STEP 2: 국가 표준 업태 · 종목 최적화 매핑 (Taxonomy Mapping)
                         ======================================================== */}
-                    {activeTab === 'sync' && (
+                    {activeTab === 'step2' && (
                         <div className="space-y-4 animate-fade-in text-xs">
-                            {/* Business Architecture Diagram Card */}
-                            <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                                <div className="font-bold text-amber-400 flex items-center gap-1.5 text-[11px]">
-                                    <Layers className="w-3.5 h-3.5 text-amber-400" />
-                                    <span>[비즈니스 아키텍처 구조도]</span>
+                            {/* Complete Taxonomy Mapping Table */}
+                            <div className="p-4 rounded-2xl bg-slate-900/90 border-2 border-emerald-500/40 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="font-bold text-emerald-300 flex items-center gap-1.5 text-xs">
+                                        <Layers className="w-4 h-4 text-emerald-400" />
+                                        <span>국가 표준 업태 · 종목 최적화 매핑 (Taxonomy Mapping)</span>
+                                    </div>
+                                    <span className="text-[10px] text-gray-400 font-mono">
+                                        홈택스 등록용 표준 코드
+                                    </span>
                                 </div>
-                                <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono space-y-1.5 text-gray-300 leading-relaxed">
-                                    <div className="text-amber-300 font-bold">
-                                        ⚡ 메인 인프라 (정보통신/SW) ──┐
-                                    </div>
-                                    <div className="text-emerald-300 font-bold">
-                                        💎 전문 솔루션 (경영/사회과학) ──┼──➔ <span className="text-white bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/40">[{currentProfile.businessArchitectureMap.targetPlatform}]</span>
-                                    </div>
-                                    <div className="text-cyan-300 font-bold">
-                                        📚 콘텐츠 & IP (출판/온라인교육) ──┘
-                                    </div>
+
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr className="border-b border-slate-800 text-[10.5px] text-gray-400 bg-slate-950/80">
+                                                <th className="p-2.5">분류</th>
+                                                <th className="p-2.5">추천 국세청 업태</th>
+                                                <th className="p-2.5">세부 종목명 및 업종코드</th>
+                                                <th className="p-2.5">비즈니스 모델 연계</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-800/80 text-[11px]">
+                                            {currentProfile.taxonomyTable.map((row, idx) => (
+                                                <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
+                                                    <td className="p-2.5 font-bold text-amber-300 whitespace-nowrap">
+                                                        {row.classification}
+                                                    </td>
+                                                    <td className="p-2.5 text-white font-medium whitespace-nowrap">
+                                                        {row.mainIndustry}
+                                                    </td>
+                                                    <td className="p-2.5 space-y-1">
+                                                        {row.subIndustryAndCodes.map((sub, sIdx) => (
+                                                            <div key={sIdx} className="flex items-center justify-between gap-1.5 bg-slate-950 p-1.5 rounded border border-slate-800">
+                                                                <span className="text-gray-200">
+                                                                    • {sub.name} <strong className="text-emerald-400 font-mono">({sub.code})</strong>
+                                                                </span>
+                                                                <button
+                                                                    onClick={() => handleCopyCode(sub.code, sub.name)}
+                                                                    className="px-1.5 py-0.5 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-mono text-[9px] font-bold border border-emerald-500/30 transition-all cursor-pointer shrink-0"
+                                                                >
+                                                                    복사
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </td>
+                                                    <td className="p-2.5 text-gray-300 text-[10.5px] leading-relaxed">
+                                                        {row.businessModel}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 
-                            {/* Section 1: 주업종 1 (메인 인프라) */}
-                            <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-amber-950/20 border-2 border-amber-500/40 space-y-2.5 relative shadow-md">
-                                <div className="flex items-center justify-between">
-                                    <span className="px-2.5 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black text-[10.5px]">
-                                        {currentProfile.primaryBusiness1.badge}
-                                    </span>
-                                    <span className="text-[11px] text-amber-300 font-bold">
-                                        업태: {currentProfile.primaryBusiness1.mainCategory}
-                                    </span>
+                            {/* Detailed 3 Business Sections */}
+                            <div className="grid grid-cols-1 gap-3">
+                                {/* 주업종 1 */}
+                                <div className="p-3.5 rounded-2xl bg-slate-900 border border-amber-500/30 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-black text-amber-300">
+                                            {currentProfile.primaryBusiness1.sectionTitle}
+                                        </span>
+                                        <span className="text-[10px] text-gray-400">
+                                            업태: {currentProfile.primaryBusiness1.mainCategory}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-gray-300 leading-relaxed bg-slate-950/80 p-2 rounded-xl border border-slate-800">
+                                        💡 {currentProfile.primaryBusiness1.matchReason}
+                                    </p>
                                 </div>
 
-                                <h4 className="text-sm font-black text-white">
-                                    {currentProfile.primaryBusiness1.sectionTitle}
-                                </h4>
+                                {/* 주업종 2 */}
+                                <div className="p-3.5 rounded-2xl bg-slate-900 border border-emerald-500/30 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-black text-emerald-300">
+                                            {currentProfile.primaryBusiness2.sectionTitle}
+                                        </span>
+                                        <span className="text-[10px] text-gray-400">
+                                            업태: {currentProfile.primaryBusiness2.mainCategory}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-gray-300 leading-relaxed bg-slate-950/80 p-2 rounded-xl border border-slate-800">
+                                        💡 {currentProfile.primaryBusiness2.matchReason}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
-                                <p className="text-[11px] text-gray-300 leading-relaxed bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
-                                    💡 <strong>추천 사유:</strong> {currentProfile.primaryBusiness1.matchReason}
-                                </p>
+                    {/* ========================================================
+                        STEP 3: 번아웃 방지 & 에너지 효율화 가이드 (Energy Flow)
+                        ======================================================== */}
+                    {activeTab === 'step3' && (
+                        <div className="space-y-4 animate-fade-in text-xs">
+                            {/* Cognitive Trap Card */}
+                            <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-950/30 via-slate-900 to-slate-900 border-2 border-rose-500/40 space-y-3">
+                                <div className="font-bold text-rose-300 flex items-center gap-1.5 text-xs">
+                                    <AlertTriangle className="w-4 h-4 text-rose-400" />
+                                    <span>주의해야 할 인지적 함정 (Cognitive Traps)</span>
+                                </div>
 
-                                {/* Codes List */}
-                                <div className="space-y-1.5">
-                                    <div className="font-bold text-gray-400 text-[10.5px]">국세청 종목 및 6자리 코드:</div>
-                                    {currentProfile.primaryBusiness1.subCategories.map((item, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-slate-950/90 border border-slate-800 text-[11px]">
-                                            <div className="space-y-0.5">
-                                                <div className="font-black text-white flex items-center gap-1.5">
-                                                    <span className="text-amber-400 font-mono tracking-wider">[{item.code}]</span>
-                                                    <span>{item.title}</span>
-                                                </div>
-                                                <div className="text-[10px] text-gray-400">{item.businessModel}</div>
+                                <div className="space-y-2.5">
+                                    {currentProfile.burnoutGuide.cognitiveTrap.map((trap, idx) => (
+                                        <div key={idx} className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-1.5">
+                                            <div className="font-black text-white flex items-center gap-2">
+                                                <span className="w-4 h-4 rounded-full bg-rose-500/20 text-rose-300 flex items-center justify-center font-bold text-[10px]">
+                                                    !
+                                                </span>
+                                                <span>{trap.title}</span>
                                             </div>
-                                            <button
-                                                onClick={() => handleCopyCode(item.code, item.title)}
-                                                className="px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-mono text-[10px] font-bold border border-amber-400/40 transition-all cursor-pointer flex items-center gap-1 shrink-0 ml-2"
-                                            >
-                                                <Copy size={11} />
-                                                <span>복사</span>
-                                            </button>
+                                            <p className="text-gray-400 text-[11px] pl-6">
+                                                ⚠️ <strong>위험 요인:</strong> {trap.risk}
+                                            </p>
+                                            <p className="text-rose-200 text-[11px] pl-6 bg-rose-950/40 p-2 rounded-lg border border-rose-500/30">
+                                                🛡️ <strong>행동 처방:</strong> {trap.prescription}
+                                            </p>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Section 2: 주업종 2 (전문 B2B 자문) */}
-                            <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-emerald-950/20 border-2 border-emerald-500/40 space-y-2.5 relative shadow-md">
-                                <div className="flex items-center justify-between">
-                                    <span className="px-2.5 py-0.5 rounded-md bg-emerald-500 text-slate-950 font-black text-[10.5px]">
-                                        {currentProfile.primaryBusiness2.badge}
-                                    </span>
-                                    <span className="text-[11px] text-emerald-300 font-bold">
-                                        업태: {currentProfile.primaryBusiness2.mainCategory}
-                                    </span>
+                            {/* Daily Rhythm Optimization Protocol */}
+                            <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+                                <div className="font-bold text-amber-300 flex items-center gap-1.5 text-xs">
+                                    <Clock className="w-4 h-4 text-amber-400" />
+                                    <span>일일 리듬 최적화 프로토콜 (Daily Energy Flow)</span>
                                 </div>
 
-                                <h4 className="text-sm font-black text-white">
-                                    {currentProfile.primaryBusiness2.sectionTitle}
-                                </h4>
-
-                                <p className="text-[11px] text-gray-300 leading-relaxed bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
-                                    💡 <strong>추천 사유:</strong> {currentProfile.primaryBusiness2.matchReason}
-                                </p>
-
-                                {/* Codes List */}
-                                <div className="space-y-1.5">
-                                    <div className="font-bold text-gray-400 text-[10.5px]">국세청 종목 및 6자리 코드:</div>
-                                    {currentProfile.primaryBusiness2.subCategories.map((item, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-slate-950/90 border border-slate-800 text-[11px]">
-                                            <div className="space-y-0.5">
-                                                <div className="font-black text-white flex items-center gap-1.5">
-                                                    <span className="text-emerald-400 font-mono tracking-wider">[{item.code}]</span>
-                                                    <span>{item.title}</span>
-                                                </div>
-                                                <div className="text-[10px] text-gray-400">{item.businessModel}</div>
+                                <div className="space-y-2">
+                                    {currentProfile.burnoutGuide.dailyRhythmProtocol.map((slot, idx) => (
+                                        <div key={idx} className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                                            <div className="flex items-center justify-between text-[11.5px]">
+                                                <span className="font-black text-amber-300">{slot.timeSlot}</span>
+                                                <span className="font-mono text-emerald-300 text-[10px] bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
+                                                    {slot.sajuElement}
+                                                </span>
                                             </div>
-                                            <button
-                                                onClick={() => handleCopyCode(item.code, item.title)}
-                                                className="px-2 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-400/40 transition-all cursor-pointer flex items-center gap-1 shrink-0 ml-2"
-                                            >
-                                                <Copy size={11} />
-                                                <span>복사</span>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Section 3: 부업종 (출판/교육/이커머스) */}
-                            <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-cyan-950/20 border border-cyan-500/40 space-y-2.5 relative shadow-md">
-                                <div className="flex items-center justify-between">
-                                    <span className="px-2.5 py-0.5 rounded-md bg-cyan-500 text-slate-950 font-black text-[10.5px]">
-                                        {currentProfile.secondaryBusiness.badge}
-                                    </span>
-                                    <span className="text-[11px] text-cyan-300 font-bold">
-                                        업태: {currentProfile.secondaryBusiness.mainCategory}
-                                    </span>
-                                </div>
-
-                                <h4 className="text-sm font-black text-white">
-                                    {currentProfile.secondaryBusiness.sectionTitle}
-                                </h4>
-
-                                <p className="text-[11px] text-gray-300 leading-relaxed bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
-                                    💡 <strong>추천 사유:</strong> {currentProfile.secondaryBusiness.matchReason}
-                                </p>
-
-                                {/* Codes List */}
-                                <div className="space-y-1.5">
-                                    <div className="font-bold text-gray-400 text-[10.5px]">국세청 종목 및 6자리 코드:</div>
-                                    {currentProfile.secondaryBusiness.subCategories.map((item, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-slate-950/90 border border-slate-800 text-[11px]">
-                                            <div className="space-y-0.5">
-                                                <div className="font-black text-white flex items-center gap-1.5">
-                                                    <span className="text-cyan-400 font-mono tracking-wider">[{item.code}]</span>
-                                                    <span>{item.title}</span>
-                                                </div>
-                                                <div className="text-[10px] text-gray-400">{item.businessModel}</div>
-                                            </div>
-                                            <button
-                                                onClick={() => handleCopyCode(item.code, item.title)}
-                                                className="px-2 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-mono text-[10px] font-bold border border-cyan-400/40 transition-all cursor-pointer flex items-center gap-1 shrink-0 ml-2"
-                                            >
-                                                <Copy size={11} />
-                                                <span>복사</span>
-                                            </button>
+                                            <div className="text-white font-bold text-xs">{slot.energyFocus}</div>
+                                            <p className="text-gray-300 text-[11px] leading-relaxed">
+                                                {slot.action}
+                                            </p>
                                         </div>
                                     ))}
                                 </div>
@@ -382,9 +400,9 @@ export default function NtsBusinessCareerModal({
                     )}
 
                     {/* ========================================================
-                        TAB 3: 3. 실전 사업자등록 & 행정 실행 가이드 (Shift)
+                        STEP 4: 원클릭 실전 행정 & 인허가 블루프린트
                         ======================================================== */}
-                    {activeTab === 'shift' && (
+                    {activeTab === 'step4' && (
                         <div className="space-y-4 animate-fade-in text-xs">
                             {/* Registration Combination Table */}
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
@@ -417,7 +435,7 @@ export default function NtsBusinessCareerModal({
                             <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
                                 <div className="font-bold text-emerald-300 flex items-center gap-1.5 text-xs">
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                                    <span>행정 절차 3단계 체크리스트</span>
+                                    <span>지자체 인허가 ➔ 홈택스 ➔ 통신판매업 3단계 순서도</span>
                                 </div>
                                 <div className="space-y-2">
                                     {currentProfile.hometaxRegistrationGuide.adminChecklist.map((chk, idx) => (
@@ -440,7 +458,7 @@ export default function NtsBusinessCareerModal({
                             <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-blue-950/40 border border-emerald-500/40 space-y-1.5">
                                 <div className="font-bold text-emerald-300 flex items-center gap-1.5 text-xs">
                                     <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                                    <span>세제 혜택 & 창업 감면 (최대 50~100% 절세)</span>
+                                    <span>창업 중소기업 세액감면 가이드 (최대 50~100% 감면)</span>
                                 </div>
                                 <p className="text-gray-300 text-[11px] leading-relaxed">
                                     {currentProfile.hometaxRegistrationGuide.taxBenefits}
@@ -450,9 +468,9 @@ export default function NtsBusinessCareerModal({
                     )}
 
                     {/* ========================================================
-                        TAB 4: 4. 명심코칭 비즈니스 성장 전략 (Scale-up)
+                        STEP 5: 3단계 스케일업 로드맵 (Zero to Infinity)
                         ======================================================== */}
-                    {activeTab === 'scaleup' && (
+                    {activeTab === 'step5' && (
                         <div className="space-y-3.5 animate-fade-in text-xs">
                             {currentProfile.scaleUpRoadmap.map((step, idx) => (
                                 <div key={idx} className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-purple-500/30 transition-all">
@@ -492,25 +510,53 @@ export default function NtsBusinessCareerModal({
                         </div>
                     )}
 
+                    {/* ========================================================
+                        4. 챗봇 연계 1:1 실시간 어시스턴트 고도화
+                        ======================================================== */}
+                    <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-950 border-2 border-indigo-500/40 space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-300">
+                                <MessageSquare className="w-4 h-4 text-indigo-400" />
+                                <span>내 비즈니스 설계 챗봇에게 실시간 질문하기</span>
+                            </div>
+                            <span className="text-[10px] text-gray-400 font-mono">1-Tap 1:1 코칭</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            {currentProfile.chatAssitantPrompts.map((cp, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => handlePromptClick(cp.prompt)}
+                                    className="p-2.5 rounded-xl bg-slate-950/90 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-400/60 text-left transition-all cursor-pointer group active:scale-[0.98] space-y-1"
+                                >
+                                    <div className="font-bold text-white text-[11px] flex items-center justify-between">
+                                        <span>{cp.icon} {cp.title}</span>
+                                        <ChevronRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-indigo-300 group-hover:translate-x-0.5 transition-transform" />
+                                    </div>
+                                    <p className="text-gray-400 text-[10px] line-clamp-2 leading-relaxed group-hover:text-gray-300">
+                                        &quot;{cp.prompt}&quot;
+                                    </p>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Bottom Action Footer */}
-                    <div className="space-y-2 pt-2 border-t border-slate-800">
+                    <div className="space-y-2 pt-1 border-t border-slate-800">
                         <button
                             onClick={() => {
-                                onClose();
-                                if (onStartChatCoaching) {
-                                    onStartChatCoaching(
-                                        `내 비즈니스 정체성("${currentProfile.identityTitle}")과 추천 국세청 업종(데이터베이스/온라인정보 724000, 경영컨설팅 741400, 교육출판 930921)을 바탕으로, 1인 지식 플랫폼 30일 론칭 사업계획서를 1:1로 코칭해 줘!`
-                                    );
-                                }
+                                handlePromptClick(
+                                    `내 비즈니스 정체성("${currentProfile.identityTitle}")과 국세청 업종(데이터베이스/온라인정보 724000, 경영컨설팅 741400, 교육출판 930921)을 바탕으로, 1인 지식 플랫폼 30일 론칭 사업계획서를 1:1로 코칭해 줘!`
+                                );
                             }}
                             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(245,158,11,0.35)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
                         >
                             <Briefcase className="w-4 h-4 fill-slate-950" />
-                            <span>💼 이 아키텍처로 1:1 맞춤 사업계획서 코칭받기 ↗</span>
+                            <span>💼 이 아키텍처로 1:1 맞춤 사업계획서 코칭 시작하기 ↗</span>
                         </button>
 
                         <p className="text-[10px] text-gray-500 text-center">
-                            💡 본 아키텍처는 국세청 표준산업분류와 창업중소기업 세액감면 요건을 기반으로 설계된 실무형 가이드입니다.
+                            💡 내면의 본질(Being)을 정의하고 현실의 행동(Doing)을 표준 행정 체계로 풀어내는 글로벌 웰니스 솔루션
                         </p>
                     </div>
                 </div>
