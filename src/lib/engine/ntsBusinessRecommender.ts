@@ -688,6 +688,119 @@ export function parseSajuFourPillars(saju: any) {
 }
 
 // -------------------------------------------------------------
+// [METADATA] 10간(천간) × 12지(지지) 인지과학 비즈니스 역량 사전
+// -------------------------------------------------------------
+const STEM_INFO: Record<string, { name: string; trait: string; shortTrait: string; element: string }> = {
+    '甲': { name: '갑목(甲木)', trait: '선구적 기획력과 시장 개척 리더십', shortTrait: '선구적 기획력(甲木)', element: '목' },
+    '乙': { name: '을목(乙木)', trait: '유연한 적응력과 네트워크 확장성', shortTrait: '적응형 연결력(乙木)', element: '목' },
+    '丙': { name: '병화(丙火)', trait: '대중적 비전 제시와 폭발적 브랜딩', shortTrait: '비전 브랜딩(丙火)', element: '화' },
+    '丁': { name: '정화(丁火)', trait: '정밀한 전문성과 딥테크/IP 디테일', shortTrait: '정밀 전문성(丁火)', element: '화' },
+    '戊': { name: '무토(戊土)', trait: '거대한 플랫폼 인프라와 신뢰 자산', shortTrait: '플랫폼 인프라(戊土)', element: '토' },
+    '己': { name: '기토(己土)', trait: '실용적 프로세스 최적화와 내실 경영', shortTrait: '실용 최적화(己土)', element: '토' },
+    '庚': { name: '경금(庚金)', trait: '과감한 결단력과 표준 프레임워크', shortTrait: '표준 프레임워크(庚金)', element: '금' },
+    '辛': { name: '신금(辛金)', trait: '초정밀 분석력과 하이엔드 품질 관리', shortTrait: '초정밀 분석력(辛金)', element: '금' },
+    '壬': { name: '임수(壬水)', trait: '글로벌 거시 통찰력과 무한한 유통 확장', shortTrait: '글로벌 통찰력(壬水)', element: '수' },
+    '癸': { name: '계수(癸水)', trait: '직관적 인사이트와 지식 솔루션화', shortTrait: '직관적 솔루션(癸水)', element: '수' }
+};
+
+const BRANCH_INFO: Record<string, { name: string; env: string; shortEnv: string; element: string }> = {
+    '子': { name: '자수(子水)', env: '심층 연구 데이터베이스 및 지적 자산', shortEnv: '심층 R&D 자산(子水)', element: '수' },
+    '丑': { name: '축토(丑土)', env: '축적된 전문 기술과 실전 노하우 자산', shortEnv: '축적된 노하우(丑土)', element: '토' },
+    '寅': { name: '인목(寅木)', env: '신규 시장을 선점하는 스타트업 론칭 실행력', shortEnv: '스타트업 론칭력(寅木)', element: '목' },
+    '卯': { name: '묘목(卯木)', env: '창의적 콘텐츠 기획과 빠른 프로토타이핑', shortEnv: '창의 기획력(卯木)', element: '목' },
+    '辰': { name: '진토(辰土)', env: '다채로운 비즈니스를 결합하는 플랫폼 허브', shortEnv: '비즈니스 허브(辰土)', element: '토' },
+    '巳': { name: '사화(巳火)', env: '제도권 공신력과 대외 비즈니스 네트워크', shortEnv: '제도권 공신력(巳火)', element: '화' },
+    '午': { name: '오화(午火)', env: '트렌드를 선도하는 마케팅 쇼케이스 파워', shortEnv: '마케팅 파워(午火)', element: '화' },
+    '未': { name: '미토(未土)', env: '특화된 지식 라이브러리와 IP 자산 창고', shortEnv: '지식 IP 자산(未土)', element: '토' },
+    '申': { name: '신금(申金)', env: '글로벌 표준 테크 인프라와 자동화 시스템', shortEnv: '자동화 시스템(申金)', element: '금' },
+    '酉': { name: '유금(酉金)', env: '엄격한 품질 검증과 완벽한 상품 패키징', shortEnv: '품질 검증 패키징(酉金)', element: '금' },
+    '戌': { name: '술토(戌土)', env: '위기 관리와 보안, 데이터 신뢰성 방화벽', shortEnv: '보안 방화벽(戌土)', element: '토' },
+    '亥': { name: '해수(亥水)', env: '국경 없는 디지털 유통과 유연한 비즈니스', shortEnv: '디지털 유통망(亥水)', element: '수' }
+};
+
+const IDENTITY_TITLES: Record<string, string> = {
+    '甲': '지식 IP 기반 1인 선구자 & 플랫폼 파이오니어',
+    '乙': '적응형 네트워크 링커 & 지식 큐레이션 아키텍트',
+    '丙': '비전 브랜딩 디렉터 & 미디어 임팩트 빌더',
+    '丁': '딥테크 전문 분석가 & 하이엔드 솔루션 스페셜리스트',
+    '戊': '플랫폼 인프라 아키텍트 & 에코시스템 설계자',
+    '己': '실용 프로세스 최적화 마스터 & 부트스트래퍼',
+    '庚': '표준 프레임워크 디렉터 & 시스템 아키텍트',
+    '辛': '지식 IP 기반 1인 솔루션 아키텍트 & 부트스트래퍼',
+    '壬': '글로벌 스케일업 전략가 & 데이터 유통 아키텍트',
+    '癸': '직관적 AI 솔루션 크리에이터 & 디지털 지식 빌더'
+};
+
+function buildDynamicPillars(p: ReturnType<typeof parseSajuFourPillars>): PillarProfileItem[] {
+    const dStem = STEM_INFO[p.dGan] || STEM_INFO['甲'];
+    const dBranch = BRANCH_INFO[p.dJi] || BRANCH_INFO['子'];
+    const mStem = STEM_INFO[p.mGan] || STEM_INFO['丁'];
+    const mBranch = BRANCH_INFO[p.mJi] || BRANCH_INFO['酉'];
+    const tStem = STEM_INFO[p.tGan] || STEM_INFO['庚'];
+    const tBranch = BRANCH_INFO[p.tJi] || BRANCH_INFO['午'];
+    const yStem = STEM_INFO[p.yGan] || STEM_INFO['丙'];
+    const yBranch = BRANCH_INFO[p.yJi] || BRANCH_INFO['辰'];
+
+    return [
+        {
+            pillarName: '일간 / 일지 (Core Identity)',
+            ganji: `${p.dGan}${p.dJi}`,
+            tenGodLabel: `${dStem.name} 본원 + ${dBranch.name}`,
+            corePower: `${dStem.shortTrait}과 ${dBranch.shortEnv}`,
+            desc: `${dStem.trait}을 바탕으로 ${dBranch.env}을 구축하는 본원적 코어 역량.`
+        },
+        {
+            pillarName: '월간 / 월지 (Social Weapon)',
+            ganji: `${p.mGan}${p.mJi}`,
+            tenGodLabel: `${mStem.name} 표출 + ${mBranch.name}`,
+            corePower: `${mStem.shortTrait}과 ${mBranch.shortEnv}`,
+            desc: `사회적 시장에서 ${mStem.trait}을 발휘하여 ${mBranch.env}으로 고객의 결핍을 타격하는 필살기.`
+        },
+        {
+            pillarName: '시간 / 시지 (Future Asset)',
+            ganji: `${p.tGan}${p.tJi}`,
+            tenGodLabel: `${tStem.name} 미래자산 + ${tBranch.name}`,
+            corePower: `${tStem.shortTrait}과 ${tBranch.shortEnv}`,
+            desc: `단발성 노동을 넘어 ${tStem.trait}과 ${tBranch.env}을 결합하여 지속 가능한 부를 창출하는 미래 창구.`
+        },
+        {
+            pillarName: '년간 / 년지 (Global Infrastructure)',
+            ganji: `${p.yGan}${p.yJi}`,
+            tenGodLabel: `${yStem.name} 거시환경 + ${yBranch.name}`,
+            corePower: `${yStem.shortTrait}과 ${yBranch.shortEnv}`,
+            desc: `${yStem.trait}과 ${yBranch.env}을 결합하여 1인 기업에서 거대한 플랫폼으로 진화할 수 있는 강력한 씨앗.`
+        }
+    ];
+}
+
+function buildDynamicCompetencies(p: ReturnType<typeof parseSajuFourPillars>) {
+    const dStem = STEM_INFO[p.dGan] || STEM_INFO['甲'];
+    const dBranch = BRANCH_INFO[p.dJi] || BRANCH_INFO['子'];
+    const mStem = STEM_INFO[p.mGan] || STEM_INFO['丁'];
+    const mBranch = BRANCH_INFO[p.mJi] || BRANCH_INFO['酉'];
+    const tStem = STEM_INFO[p.tGan] || STEM_INFO['庚'];
+    const tBranch = BRANCH_INFO[p.tJi] || BRANCH_INFO['午'];
+
+    return [
+        {
+            title: `1. 본원적 아키텍처: ${dStem.trait}`,
+            tenGodFormula: `${dStem.name} + ${dBranch.name}`,
+            description: `나만의 고유한 선천적 인지 하드웨어(${dStem.name})를 기반으로 흔들리지 않는 표준 프로토콜과 코어 비즈니스 엔진을 정밀 설계합니다.`
+        },
+        {
+            title: `2. 시장 침투 무기: ${mStem.trait}`,
+            tenGodFormula: `${mStem.name} + ${mBranch.name}`,
+            description: `시장의 병목과 고객의 결핍을 정확하게 짚어내고, ${mBranch.env}을 활용하여 즉각적인 가치를 전달하는 독보적 세일즈 필살기입니다.`
+        },
+        {
+            title: `3. 미래 자산화 파이프라인: ${tStem.trait}`,
+            tenGodFormula: `${tStem.name} + ${tBranch.name}`,
+            description: `1회성 용역에 그치지 않고 ${tBranch.env}을 디지털 자산(IP/SaaS/콘텐츠)으로 축적하여 자는 동안에도 일하는 자동화 시스템을 완성합니다.`
+        }
+    ];
+}
+
+// -------------------------------------------------------------
 // 사용자 사주 데이터를 분석하여 맞춤 리포트를 생성하는 통합 엔진
 // -------------------------------------------------------------
 export function generateNtsBusinessArchitecture(
@@ -710,18 +823,21 @@ export function generateNtsBusinessArchitecture(
     const baseReport: NtsBusinessArchitectureReport = JSON.parse(JSON.stringify(targetTemplate));
     baseReport.userName = userName;
 
-    // 사주 데이터가 있으면 안전하게 파싱하여 반영
+    // 사주 데이터가 있으면 완벽하게 동적으로 리포트 본문 재구성
     if (saju && (saju.fourPillars || saju.yearPillar || saju.year_pillar || saju.dayPillar || saju.day_pillar)) {
         const p = parseSajuFourPillars(saju);
         baseReport.sajuSummaryText = p.summaryText;
 
-        // Pillar breakdown의 간지 텍스트도 동적 업데이트
-        if (Array.isArray(baseReport.pillarBreakdowns) && baseReport.pillarBreakdowns.length >= 4) {
-            baseReport.pillarBreakdowns[0].ganji = `${p.dGan}${p.dJi}`;
-            baseReport.pillarBreakdowns[1].ganji = `${p.mGan}${p.mJi}`;
-            baseReport.pillarBreakdowns[2].ganji = `${p.tGan}${p.tJi}`;
-            baseReport.pillarBreakdowns[3].ganji = `${p.yGan}${p.yJi}`;
-        }
+        // 1. 4대 기둥 (일간/일지, 월간/월지, 시간/시지, 년간/년지) 완전 동적 생성
+        baseReport.pillarBreakdowns = buildDynamicPillars(p);
+
+        // 2. 비즈니스 페르소나 및 슬로건 동적 생성
+        const dStem = STEM_INFO[p.dGan] || STEM_INFO['甲'];
+        baseReport.identityTitle = IDENTITY_TITLES[p.dGan] || `${userName} 대표의 [${dStem.trait} 기반 비즈니스 아키텍트]`;
+        baseReport.slogan = `나만의 고유한 선천적 인지 강점(${dStem.name})을 디지털 프로덕트와 표준 코드로 전환하여 무자본으로 시작하는 1인 기업가`;
+
+        // 3. 3대 비즈니스 코어 강점 동적 생성
+        baseReport.coreCompetencies = buildDynamicCompetencies(p);
     }
 
     return baseReport;
