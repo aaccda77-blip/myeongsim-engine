@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-
 export async function POST(req: Request) {
     try {
         const body = await req.json();
@@ -11,6 +9,20 @@ export async function POST(req: Request) {
         if (!message) {
             return NextResponse.json({ error: '메시지가 누락되었습니다.' }, { status: 400 });
         }
+
+        const apiKey = process.env.GEMINI_API_KEY || 
+                       process.env.GOOGLE_GENERATIVE_AI_API_KEY || 
+                       process.env.GOOGLE_GEMINI_API_KEY || 
+                       process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
+
+        if (!apiKey) {
+            console.error('[Business Consultant API] API Key is missing in environment variables');
+            return NextResponse.json({
+                error: 'Gemini API 키가 설정되지 않았습니다. 관리자에게 문의해 주세요.'
+            }, { status: 500 });
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
 
         const clientName = userName || '대표님';
         const sajuText = sajuSummary || '辛巳 일주 · 癸未 월주 · 庚申 년주 · 乙未 시주';
@@ -59,39 +71,96 @@ export async function POST(req: Request) {
 4. 대표자가 지치지 않고 지속 가능하게 경영할 수 있도록 '번아웃 방지 위임 전략'과 '일일 에너지 리듬'을 반드시 포함하여 조언하세요.
 5. 친절하면서도 예리하고, 즉각 실행 가능한 액션 아이템(Action Item)을 1~3단계로 요약해 주세요.`;
 
-        const model = genAI.getGenerativeModel({
-            model: 'gemini-2.5-flash',
-            systemInstruction: systemPrompt,
-            safetySettings: [
-                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-            ],
-            generationConfig: {
-                temperature: 0.75,
-                maxOutputTokens: 1200,
+        // 1. Google Gemini History 포맷 검증 (첫 번째는 반드시 'user'여야 함)
+        const rawHistory = Array.isArray(history) ? history : [];
+        const validHistory: { role: 'user' | 'model'; parts: { text: string }[] }[] = [];
+
+        // 첫 번째 'user' 메시지 인덱스 찾기
+        let firstUserIndex = -1;
+        for (let i = 0; i < rawHistory.length; i++) {
+            const role = rawHistory[i]?.role;
+            if (role === 'user') {
+                firstUserIndex = i;
+                break;
             }
-        });
+        }
 
-        // Format history
-        const formattedHistory = (history || []).map((msg: any) => ({
-            role: msg.role === 'assistant' || msg.role === 'model' ? 'model' : 'user',
-            parts: [{ text: msg.content }]
-        }));
+        if (firstUserIndex !== -1) {
+            for (let i = firstUserIndex; i < rawHistory.length; i++) {
+                const item = rawHistory[i];
+                const mappedRole = item.role === 'user' ? 'user' : 'model';
+                const textContent = typeof item.content === 'string' ? item.content : '';
+                
+                if (textContent.trim()) {
+                    // 이전 메시지와 동일한 role이 연속으로 오지 않도록 병합 또는 방어
+                    const lastMsg = validHistory[validHistory.length - 1];
+                    if (lastMsg && lastMsg.role === mappedRole) {
+                        lastMsg.parts[0].text += `\n${textContent}`;
+                    } else {
+                        validHistory.push({
+                            role: mappedRole,
+                            parts: [{ text: textContent }]
+                        });
+                    }
+                }
+            }
+        }
 
-        const chatSession = model.startChat({
-            history: formattedHistory,
-        });
+        const safetySettings = [
+            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        ];
 
-        const result = await chatSession.sendMessage(message);
-        const reply = result.response.text().trim();
+        // 2. 모델 실행 (gemini-2.5-flash 우선 ➔ 오류 시 gemini-1.5-flash fallback)
+        const primaryModelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+        let reply = '';
+
+        try {
+            const model = genAI.getGenerativeModel({
+                model: primaryModelName,
+                systemInstruction: systemPrompt,
+                safetySettings,
+                generationConfig: {
+                    temperature: 0.75,
+                    maxOutputTokens: 1500,
+                }
+            });
+
+            const chatSession = model.startChat({
+                history: validHistory,
+            });
+
+            const result = await chatSession.sendMessage(message);
+            reply = result.response.text().trim();
+        } catch (firstErr: any) {
+            console.warn(`[Business Consultant API] Primary model (${primaryModelName}) failed:`, firstErr?.message || firstErr);
+            
+            // Fallback to gemini-1.5-flash
+            const fallbackModel = genAI.getGenerativeModel({
+                model: 'gemini-1.5-flash',
+                systemInstruction: systemPrompt,
+                safetySettings,
+                generationConfig: {
+                    temperature: 0.75,
+                    maxOutputTokens: 1500,
+                }
+            });
+
+            const fallbackChat = fallbackModel.startChat({
+                history: validHistory,
+            });
+
+            const fallbackResult = await fallbackChat.sendMessage(message);
+            reply = fallbackResult.response.text().trim();
+        }
 
         return NextResponse.json({ success: true, reply });
     } catch (error: any) {
-        console.error('[Business Consultant API] Error:', error);
+        console.error('[Business Consultant API] Final Error:', error);
         return NextResponse.json({
-            error: '명심 비즈니스 AI 응답 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+            error: error?.message || '명심 비즈니스 AI 응답 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
         }, { status: 500 });
     }
 }
