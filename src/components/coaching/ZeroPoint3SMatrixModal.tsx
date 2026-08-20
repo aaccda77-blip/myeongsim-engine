@@ -293,6 +293,9 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
     const [showNoiseGuideModal, setShowNoiseGuideModal] = useState<boolean>(false);
     const [showPushCenterModal, setShowPushCenterModal] = useState<boolean>(false);
     const [pushModalTab, setPushModalTab] = useState<'templates' | 'analytics'>('templates');
+    const [pushEnabled, setPushEnabled] = useState<boolean>(true);
+    const [selectedPushTemplate, setSelectedPushTemplate] = useState<number>(0);
+    const [pushToastMessage, setPushToastMessage] = useState<string | null>(null);
     const [showRarityModal, setShowRarityModal] = useState<boolean>(false);
     const [activeActionProtocol, setActiveActionProtocol] = useState<ActionCoachingProtocol | null>(null);
     const [showDeclineTemplateModal, setShowDeclineTemplateModal] = useState<boolean>(false);
@@ -2273,156 +2276,206 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                             </div>
                         </div>
                     )}
-
-                    {/* ========================================================= */}
+                                  {/* ========================================================= */}
                     {/* [NEW] 🔔 저녁 9시 웰니스 마감 푸시 알림 3종 센터           */}
                     {/* ========================================================= */}
                     {showPushCenterModal && (
-                        <div className="fixed inset-0 z-[4200] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in font-sans">
-                            <div className="bg-[#0b0f19] border-2 border-indigo-500/40 rounded-3xl w-full max-w-xl max-h-[85vh] overflow-y-auto p-6 sm:p-7 shadow-[0_0_80px_rgba(99,102,241,0.3)] relative text-white space-y-5 custom-scrollbar">
-                                {/* Header */}
-                                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div className="fixed inset-0 z-[4200] flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-5 animate-fade-in font-sans">
+                            <div className="bg-[#0b0f19] border-2 border-indigo-500/40 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-[0_0_80px_rgba(99,102,241,0.3)] relative text-white space-y-4 custom-scrollbar text-left">
+                                
+                                {/* Header with ON/OFF Switch */}
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-3.5">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shrink-0">
                                             <Moon className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
-                                                <span>저녁 9시 웰니스 마감 푸시 알림</span>
-                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono font-bold">21:00 PM</span>
-                                            </h3>
-                                            <p className="text-xs text-gray-400">
-                                                낮 동안 지켜낸 에너지를 회수하고 수면으로 이끄는 쿨다운 알림
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-base sm:text-lg font-black text-white">
+                                                    저녁 9시 웰니스 마감 알림
+                                                </h3>
+                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono font-bold border border-indigo-500/30">
+                                                    21:00 PM
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-400 mt-0.5">
+                                                오늘 밤, 당신에게 도착할 마감 힐링 메시지를 선택해 주세요.
                                             </p>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={() => setShowPushCenterModal(false)}
-                                        className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
-                                    >
-                                        <X size={18} />
-                                    </button>
+
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        {/* Toggle ON/OFF */}
+                                        <button
+                                            type="button"
+                                            onClick={() => setPushEnabled(!pushEnabled)}
+                                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+                                                pushEnabled
+                                                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 shadow-sm'
+                                                    : 'bg-slate-800 text-gray-400 border-slate-700'
+                                            }`}
+                                        >
+                                            <span className={`w-2 h-2 rounded-full ${pushEnabled ? 'bg-emerald-400 animate-pulse' : 'bg-gray-500'}`} />
+                                            <span>{pushEnabled ? '알림 켜짐' : '알림 꺼짐'}</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                setShowPushCenterModal(false);
+                                                setPushToastMessage(null);
+                                            }}
+                                            className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
                                 </div>
 
-                                {/* Push Modal Sub-nav Tabs */}
+                                {/* Push Modal Sub-nav Tabs (Clean Without Recharts Jargon) */}
                                 <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-950 border border-slate-800">
                                     <button
                                         onClick={() => setPushModalTab('templates')}
-                                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                                             pushModalTab === 'templates'
                                                 ? 'bg-indigo-500/30 text-indigo-200 border border-indigo-500/50 shadow-sm'
                                                 : 'text-gray-400 hover:text-white'
                                         }`}
                                     >
-                                        📜 3대 마감 알림 템플릿
+                                        <span>🔔 3대 마감 알림 선택</span>
                                     </button>
                                     <button
                                         onClick={() => setPushModalTab('analytics')}
-                                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                                             pushModalTab === 'analytics'
                                                 ? 'bg-teal-500/30 text-teal-200 border border-teal-500/50 shadow-sm'
                                                 : 'text-gray-400 hover:text-white'
                                         }`}
                                     >
-                                        📊 A/B 타겟팅 성과 분석 (Recharts)
+                                        <span>📈 발송 성과 분석</span>
                                     </button>
                                 </div>
 
                                 {pushModalTab === 'templates' ? (
                                     <>
-                                        {/* 3 Push Notification Cards */}
-                                        <div className="space-y-3.5 animate-fade-in">
-                                            {/* Option 1 */}
-                                            <div
-                                                onClick={() => {
-                                                    setShowPushCenterModal(false);
-                                                    setActiveTab('dashboard');
-                                                }}
-                                                className="p-4.5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 hover:border-emerald-400 hover:bg-slate-800/90 transition-all cursor-pointer space-y-2 shadow-md group"
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                                                        <h4 className="text-xs sm:text-sm font-black text-emerald-300 font-sans">
-                                                            옵션 1. 🌿 오늘 당신이 회수한 10분의 온기
-                                                        </h4>
-                                                    </div>
-                                                    <span className="text-[10px] font-mono text-gray-500 group-hover:text-emerald-300 transition-colors">
-                                                        대시보드 연결 →
-                                                    </span>
-                                                </div>
-                                                <p className="text-xs text-gray-300 leading-relaxed break-keep">
-                                                    "남의 불을 끄러 달려가지 않고, 온전히 나 자신에게 돌려준 10분이 있었습니다. 세상은 무너지지 않았고 당신의 중심은 더 단단해졌습니다. 이제 마음 편히 깊은 쉼에 드세요."
-                                                </p>
-                                                <div className="text-[10px] text-emerald-400/80 font-mono pt-1">
-                                                    👉 탭 시: [에너지 대시보드 (+10분 회수 스탬프 확인)]으로 즉시 이동
-                                                </div>
-                                            </div>
+                                        {/* 3 Push Notification Lock-Screen Preview Cards */}
+                                        <div className="space-y-3 animate-fade-in">
+                                            {[
+                                                {
+                                                    id: 0,
+                                                    title: '🌿 오늘 당신이 회수한 10분의 온기',
+                                                    body: '"남의 불을 끄러 달려가지 않고 나를 지켜낸 10분이 있었습니다. 오늘 하루도 수고 많으셨습니다. 편안한 쉼에 드세요."',
+                                                    actionText: '에너지 대시보드 (+10분 스탬프)',
+                                                    borderColor: 'border-emerald-500/40',
+                                                    glowBg: 'hover:border-emerald-400 hover:bg-emerald-950/20',
+                                                    activeBg: 'bg-emerald-950/40 border-emerald-400 ring-2 ring-emerald-500/30',
+                                                    themeColor: 'text-emerald-300'
+                                                },
+                                                {
+                                                    id: 1,
+                                                    title: '🌙 세상을 구하지 않아도 괜찮았던 하루',
+                                                    body: '"완벽한 하루가 아니었어도 10분의 시동을 켜낸 당신은 충분히 훌륭했습니다. 뇌의 과열을 끄고 평온을 누리세요."',
+                                                    actionText: '수면 전 1분 마인드풀 호흡 가이드',
+                                                    borderColor: 'border-cyan-500/40',
+                                                    glowBg: 'hover:border-cyan-400 hover:bg-cyan-950/20',
+                                                    activeBg: 'bg-cyan-950/40 border-cyan-400 ring-2 ring-cyan-500/30',
+                                                    themeColor: 'text-cyan-300'
+                                                },
+                                                {
+                                                    id: 2,
+                                                    title: '🛡️ 오늘 밤, 당신의 엔진을 완전히 꺼주세요',
+                                                    body: '"낮 동안 확보한 10분의 주권이 대시보드에 안전하게 보관되었습니다. 모든 생각은 문밖에 두고 꿀잠 드세요."',
+                                                    actionText: '432Hz 델타파 숙면 바이노럴 비트',
+                                                    borderColor: 'border-purple-500/40',
+                                                    glowBg: 'hover:border-purple-400 hover:bg-purple-950/20',
+                                                    activeBg: 'bg-purple-950/40 border-purple-400 ring-2 ring-purple-500/30',
+                                                    themeColor: 'text-purple-300'
+                                                }
+                                            ].map((tpl) => {
+                                                const isSelected = selectedPushTemplate === tpl.id;
 
-                                            {/* Option 2 */}
-                                            <div
-                                                onClick={() => {
-                                                    setShowPushCenterModal(false);
-                                                    setActiveTab('focus_lab');
-                                                    setFocusSubTab('compassion_breath');
-                                                }}
-                                                className="p-4.5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-400 hover:bg-slate-800/90 transition-all cursor-pointer space-y-2 shadow-md group"
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-                                                        <h4 className="text-xs sm:text-sm font-black text-cyan-300 font-sans">
-                                                            옵션 2. 🌙 세상을 구하지 않아도 괜찮았던 하루
-                                                        </h4>
-                                                    </div>
-                                                    <span className="text-[10px] font-mono text-gray-500 group-hover:text-cyan-300 transition-colors">
-                                                        1분 수면 가이드 →
-                                                    </span>
-                                                </div>
-                                                <p className="text-xs text-gray-300 leading-relaxed break-keep">
-                                                    "완벽한 하루가 아니었어도, 뇌의 저항을 뚫고 10분의 시동을 켜낸 당신은 충분히 훌륭했습니다. 뇌의 과열된 스위치를 끄고, 오늘 밤은 온전한 무중력(Zero-Point)의 평온을 누리세요."
-                                                </p>
-                                                <div className="text-[10px] text-cyan-400/80 font-mono pt-1">
-                                                    👉 탭 시: [수면 전 1분 마인드풀 호흡 가이드] 자동 실행
-                                                </div>
-                                            </div>
+                                                return (
+                                                    <div
+                                                        key={tpl.id}
+                                                        onClick={() => setSelectedPushTemplate(tpl.id)}
+                                                        className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 relative shadow-md ${
+                                                            isSelected ? tpl.activeBg : `bg-slate-900/90 ${tpl.borderColor} ${tpl.glowBg}`
+                                                        }`}
+                                                    >
+                                                        {/* Lock Screen Header Meta */}
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-5 h-5 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px]">
+                                                                    🔮
+                                                                </div>
+                                                                <span className="text-[11px] font-bold text-gray-300 font-sans">
+                                                                    명심 제로포인트
+                                                                </span>
+                                                                <span className="text-[10px] text-gray-500 font-mono">
+                                                                    • 21:00
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border transition-all ${
+                                                                    isSelected
+                                                                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                                                                        : 'bg-slate-800 text-gray-400 border-slate-700'
+                                                                }`}>
+                                                                    {isSelected ? '✓ 오늘 밤 예약됨' : '선택하기'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
 
-                                            {/* Option 3 */}
-                                            <div
-                                                onClick={() => {
-                                                    setShowPushCenterModal(false);
-                                                    setActiveTab('focus_lab');
-                                                    setFocusSubTab('delta_sleep');
-                                                    setSleepTimerOption('Unlimited');
-                                                    setSleepRemainingSecs(null);
-                                                    setIsSleepRunning(true);
-                                                    startSleepCoachSound();
-                                                }}
-                                                className="p-4.5 rounded-2xl bg-slate-900/90 border border-purple-500/30 hover:border-purple-400 hover:bg-slate-800/90 transition-all cursor-pointer space-y-2 shadow-md group"
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse" />
-                                                        <h4 className="text-xs sm:text-sm font-black text-purple-300 font-sans">
-                                                            옵션 3. 🛡️ 오늘 밤, 당신의 엔진을 완전히 꺼주세요
-                                                        </h4>
+                                                        {/* Push Content */}
+                                                        <div>
+                                                            <h4 className={`text-xs sm:text-sm font-black ${tpl.themeColor} font-sans flex items-center gap-1.5`}>
+                                                                <span>{tpl.title}</span>
+                                                            </h4>
+                                                            <p className="text-xs text-gray-300 leading-relaxed font-sans pt-1 break-keep">
+                                                                {tpl.body}
+                                                            </p>
+                                                        </div>
+
+                                                        {/* Action Destination Hint */}
+                                                        <div className="flex items-center justify-between pt-1 border-t border-slate-800/80 text-[10px]">
+                                                            <span className="text-gray-400 font-sans flex items-center gap-1">
+                                                                <span>👉 탭 시 연결:</span>
+                                                                <strong className="text-gray-200">{tpl.actionText}</strong>
+                                                            </span>
+                                                            <span className={`${tpl.themeColor} font-mono text-[10px] font-bold`}>
+                                                                바로가기 →
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <span className="text-[10px] font-mono text-gray-500 group-hover:text-purple-300 transition-colors">
-                                                        432Hz 델타파 시작 →
-                                                    </span>
-                                                </div>
-                                                <p className="text-xs text-gray-300 leading-relaxed break-keep">
-                                                    "낮 동안 확보한 10분의 자기 주권이 대시보드에 안전하게 보관되었습니다. 외부의 모든 요청과 생각은 문밖에 두고, 당신만의 불가침 영역으로 입장할 시간입니다."
-                                                </p>
-                                                <div className="text-[10px] text-purple-400/80 font-mono pt-1">
-                                                    👉 탭 시: [432Hz 델타파 숙면 바이노럴 비트 플레이어] 즉시 재생
-                                                </div>
-                                            </div>
+                                                );
+                                            })}
                                         </div>
 
-                                        {/* Footer Policy Notice */}
-                                        <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-[11px] text-gray-400 leading-relaxed text-center">
-                                            💡 <strong>발송 원칙:</strong> 행동 강요가 아닌 <em>'오늘 지켜낸 주권을 축하하고 이완하는 허용'</em>을 통해 심리적 피로도를 0으로 유지합니다.
+                                        {/* Toast Notification Message */}
+                                        {pushToastMessage && (
+                                            <div className="p-3 rounded-xl bg-emerald-950/90 border border-emerald-400/60 text-emerald-300 text-xs font-bold text-center animate-fade-in shadow-lg">
+                                                {pushToastMessage}
+                                            </div>
+                                        )}
+
+                                        {/* Main CTA Button */}
+                                        <div className="space-y-2 pt-1">
+                                            <button
+                                                onClick={() => {
+                                                    setPushToastMessage('🎉 오늘 밤 9시에 선택하신 웰니스 힐링 알림이 전송됩니다!');
+                                                    setTimeout(() => {
+                                                        setShowPushCenterModal(false);
+                                                        setPushToastMessage(null);
+                                                    }, 1400);
+                                                }}
+                                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-teal-500 hover:brightness-110 text-white font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(99,102,241,0.4)] transition-all cursor-pointer flex items-center justify-center gap-2"
+                                            >
+                                                <Moon className="w-4 h-4 fill-white" />
+                                                <span>🔔 저녁 9시 웰니스 알림 예약 완료 (무료) ✨</span>
+                                            </button>
+
+                                            <p className="text-[10px] text-gray-500 text-center">
+                                                💡 알림은 강요가 아닌 <em>'오늘 지켜낸 주권을 축하하고 깊은 잠으로 이끄는 온전한 쉼'</em>입니다.
+                                            </p>
                                         </div>
                                     </>
                                 ) : (
