@@ -233,6 +233,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
                 desc: "국가와 기업, 그리고 나의 부",
                 intent: "NAV_WORLD_ECONOMY",
                 children: [
+                    { id: "ww_nts", label: "💼 국세청 창업·N잡 (실전 업태/종목)", desc: "홈택스 6자리 사업자코드 1:1 맞춤 추천", intent: "nts_business_career", icon: "💼" },
                     { id: "ww_40", label: "40. 주식/국운 명리", desc: "투자 타이밍과 기업 운세", intent: "ms_stock_saju" },
                     { id: "ww_50", label: "50. 글로벌 운세 지도", desc: "나에게 맞는 이민/여행 국가", intent: "ms_global_map" },
                     { id: "ww_43", label: "43. 나비 효과 계산기", desc: "나의 행동이 미치는 사회적 파장", intent: "ms_butterfly_effect" }

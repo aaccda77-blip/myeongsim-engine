@@ -68,6 +68,7 @@ const Myeongsim64KeysModal = dynamic(() => import('@/components/coaching/Myeongs
 const MyeongsimGeniusReportModal = dynamic(() => import('@/components/coaching/MyeongsimGeniusReportModal'), { ssr: false });
 const MyeongsimOracleCardModal = dynamic(() => import('@/components/coaching/MyeongsimOracleCardModal'), { ssr: false });
 const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/coaching/DarkCodeCompassionTransformerModal'), { ssr: false });
+const NtsBusinessCareerModal = dynamic(() => import('@/components/coaching/NtsBusinessCareerModal'), { ssr: false });
 
 
 
@@ -524,6 +525,7 @@ export default function DrillDownIconMenu({
     const [showMyeongsimGenius, setShowMyeongsimGenius] = useState(false);
     const [showMyeongsimOracle, setShowMyeongsimOracle] = useState(false);
     const [showDarkCodeTransformer, setShowDarkCodeTransformer] = useState(false);
+    const [showNtsCareerModal, setShowNtsCareerModal] = useState(false); // [NEW] 국세청 창업·N잡 모달 상태
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
@@ -725,6 +727,13 @@ export default function DrillDownIconMenu({
             setShowTalentReportModal(true);
 
             // 5. 여기서 무조건 리턴 (챗봇으로 절대 안감)
+            return;
+        }
+
+        // [NEW] 국세청 창업·N잡 실전 업태/종목 모달
+        if (subItem.intent === 'nts_business_career' || subItem.intent === 'nts_business_view') {
+            setSelectedIcon(null);
+            setShowNtsCareerModal(true);
             return;
         }
 
@@ -1139,6 +1148,35 @@ export default function DrillDownIconMenu({
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#FCD34D' }}>{t('menu.my_report')}</div>
                         <div style={styles.neuroTrigger}>{t('menu.diagnosis_summary')}</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 💼 국세청 공식 업태·종목 추천 (1:1 실전 창업·직업 리포트) - 나의 리포트 바로 옆 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('1:1 맞춤형 국세청 업태·종목 추천을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1);
+                            return;
+                        }
+                        setShowNtsCareerModal(true);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.25))',
+                        border: '1px solid rgba(245, 158, 11, 0.5)',
+                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>💼</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>국세청 창업·N잡</div>
+                        <div style={styles.neuroTrigger}>1:1 실전 업태·종목</div>
                     </div>
                 </button>
 
@@ -2053,6 +2091,16 @@ export default function DrillDownIconMenu({
                     : '사주 주파수 로딩 완료'
                 }
                 gongWang={userProfile?.saju?.gongWang || (reportData as any)?.saju?.gongWang || []}
+            />
+
+            {/* [NEW] 국세청 공식 업태·종목 1:1 맞춤형 창업 코칭 모달 */}
+            <NtsBusinessCareerModal
+                isOpen={showNtsCareerModal}
+                onClose={() => setShowNtsCareerModal(false)}
+                userProfile={userProfile || reportData}
+                onStartChatCoaching={(prompt) => {
+                    onSelectIntent('nts_business_coaching', prompt);
+                }}
             />
         </>
     );
