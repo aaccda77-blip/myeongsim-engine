@@ -53,11 +53,11 @@ export default function NtsBusinessCareerModal({
 
     const [showIntakeEdit, setShowIntakeEdit] = useState<boolean>(false);
 
-    // AI 경영지도사 인라인 챗봇 상태
+    // 명심 사업적성 AI 코치 인라인 챗봇 상태
     const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([
         {
             role: 'assistant',
-            content: `반갑습니다, ${userProfile?.userName || '대표'}님! 공인 경영지도사(CMC)와 명심코칭 3S 기질 엔진이 결합된 AI 수석 비즈니스 컨설턴트입니다. 국세청 업종 매핑, 중기부 PSST 사업계획서, 정부지원사업(예창패/초창패) 합격 전략에 대해 무엇이든 질문해 주세요.`
+            content: `반갑습니다, ${userProfile?.userName || '대표'}님! 명심코칭의 3S(Scan-Sync-Shift) 인지과학 기질 분석 엔진을 탑재한 [명심 사업적성 1:1 맞춤 AI 코치]입니다. 국세청 업종 매핑, 중기부 PSST 사업계획서, 정부지원사업(예창패/초창패) 합격 전략에 대해 무엇이든 질문해 주세요.`
         }
     ]);
     const [inputMessage, setInputMessage] = useState('');
@@ -102,7 +102,7 @@ export default function NtsBusinessCareerModal({
             + `4. 팀 구성 및 조직 역량 (Team & HR)\n`
             + `- ${p.team.founderStrength}\n`
             + `- ${p.team.hrComplementPlan}\n\n`
-            + `[경영지도사 행정·세무 원포인트 체크]\n`
+            + `[명심 행정·세무 1-Point 비즈니스 체크]\n`
             + `• 추천 주업종 코드: ${p.onePointCheck.recommendedMainCode} (${p.onePointCheck.recommendedMainTitle})\n`
             + `• 세액감면 혜택: ${p.onePointCheck.taxBenefitStatus}\n`
             + `• 필수 인허가: ${p.onePointCheck.requiredPermits.join(', ')}\n`
@@ -118,28 +118,56 @@ export default function NtsBusinessCareerModal({
         const text = `[중소벤처기업부 표준 PSST 사업계획서]\n`
             + `대표자: ${userProfile?.userName || '대표'}\n`
             + `기질 요약: ${p.sajuSummaryText}\n\n`
-            + `1. Problem (문제 인식)\n- ${p.problem.marketPainPoint}\n- ${p.problem.founderMotivation}\n\n`
-            + `2. Solution (실현 가능성)\n- ${p.solution.coreMvp}\n- ${p.solution.differentiation}\n\n`
-            + `3. Scale-up (성장 전략)\n- B2C: ${p.scaleUp.businessModel.b2c}\n- B2B: ${p.scaleUp.businessModel.b2b}\n- B2G: ${p.scaleUp.businessModel.b2g}\n\n`
-            + `4. Team (팀 역량)\n- ${p.team.founderStrength}\n- ${p.team.hrComplementPlan}\n\n`
-            + `[국세청 코드 및 세무 가이드]\n- 주업종: ${p.onePointCheck.recommendedMainCode}\n- 세제 혜택: ${p.onePointCheck.taxBenefitStatus}`;
+            + `========================================================\n`
+            + `1. 문제 인식 (Problem & Motivation)\n`
+            + `========================================================\n`
+            + `■ 시장 결핍: ${p.problem.marketPainPoint}\n`
+            + `■ 창업자 필연적 동기: ${p.problem.founderMotivation}\n`
+            + `■ 해결 시급성: ${p.problem.urgency}\n\n`
+            + `========================================================\n`
+            + `2. 실현 가능성 (Solution & Architecture)\n`
+            + `========================================================\n`
+            + `■ 핵심 솔루션 (MVP): ${p.solution.coreMvp}\n`
+            + `■ 차별화 경쟁력: ${p.solution.differentiation}\n`
+            + `■ 개발 마일스톤: ${p.solution.techMilestone}\n\n`
+            + `========================================================\n`
+            + `3. 성장 전략 & 수익 모델 (Scale-up & BM)\n`
+            + `========================================================\n`
+            + `■ B2C 수익모델: ${p.scaleUp.businessModel.b2c}\n`
+            + `■ B2B 수익모델: ${p.scaleUp.businessModel.b2b}\n`
+            + `■ B2G 수익모델: ${p.scaleUp.businessModel.b2g}\n`
+            + `■ 시장 진입 (GTM): ${p.scaleUp.gtmStrategy}\n\n`
+            + `========================================================\n`
+            + `4. 팀 구성 및 조직 역량 (Team & HR)\n`
+            + `========================================================\n`
+            + `■ 대표자 코어 역량: ${p.team.founderStrength}\n`
+            + `■ HR 보완 전략: ${p.team.hrComplementPlan}\n\n`
+            + `========================================================\n`
+            + `[명심 행정 · 세무 1-Point 비즈니스 체크]\n`
+            + `========================================================\n`
+            + `■ 추천 국세청 주업종: ${p.onePointCheck.recommendedMainCode} (${p.onePointCheck.recommendedMainTitle})\n`
+            + `■ 세무 감면 혜택: ${p.onePointCheck.taxBenefitStatus}\n`
+            + `■ 필수 인허가: ${p.onePointCheck.requiredPermits.join(', ')}\n`
+            + `■ 타겟 정부지원사업:\n${p.onePointCheck.recommendedGovPrograms.map(g => `  - ${g.name} [지원 규모: ${g.targetFunding}] (TIP: ${g.tip})`).join('\n')}\n`;
         
         const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `PSST_사업계획서_${userProfile?.userName || '명심가'}.txt`;
+        a.download = `명심코칭_PSST사업계획서_${userProfile?.userName || '대표'}.txt`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
     };
 
-    const handleSendMessage = async (msgToSend?: string) => {
-        const text = msgToSend || inputMessage;
-        if (!text.trim() || isLoadingChat) return;
+    const handleSendMessage = async (customPrompt?: string) => {
+        const textToSend = customPrompt || inputMessage;
+        if (!textToSend.trim() || isLoadingChat) return;
 
-        const newMessages = [...chatMessages, { role: 'user' as const, content: text }];
+        const newMessages = [...chatMessages, { role: 'user' as const, content: textToSend }];
         setChatMessages(newMessages);
-        if (!msgToSend) setInputMessage('');
+        if (!customPrompt) setInputMessage('');
         setIsLoadingChat(true);
 
         try {
@@ -147,16 +175,16 @@ export default function NtsBusinessCareerModal({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: text,
-                    history: chatMessages,
+                    message: textToSend,
+                    history: newMessages.slice(0, -1),
                     sajuSummary: currentProfile.sajuSummaryText,
                     intakeAnswers,
-                    userName: currentProfile.userName
+                    userName: userProfile?.userName || '대표'
                 })
             });
 
             const data = await res.json();
-            if (data.reply) {
+            if (data.success && data.reply) {
                 setChatMessages([...newMessages, { role: 'assistant', content: data.reply }]);
             } else {
                 setChatMessages([...newMessages, { role: 'assistant', content: data.error || '답변을 불러오지 못했습니다.' }]);
@@ -178,7 +206,7 @@ export default function NtsBusinessCareerModal({
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                             <span className="text-[11px] font-mono font-bold text-amber-400">
-                                🏛️ [명심코칭 × 경영지도사] PSST 사업계획서 & B2B 웰니스 컨설팅
+                                🏛️ [명심 사업적성 1:1 맞춤코칭] PSST 사업계획서 & B2B 비즈니스 아키텍처
                             </span>
                         </div>
 
@@ -315,7 +343,7 @@ export default function NtsBusinessCareerModal({
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            3. 경영지도 4대
+                            3. 비즈니스 4대실행
                         </button>
                         <button
                             onClick={() => setActiveTab('step4')}
@@ -476,17 +504,17 @@ export default function NtsBusinessCareerModal({
                     )}
 
                     {/* ========================================================
-                        STEP 3: 국가공인 경영지도사 4대 영역 융합 진단
+                        STEP 3: 명심 비즈니스 4대 핵심 실행 영역 융합 진단
                         ======================================================== */}
                     {activeTab === 'step3' && (
                         <div className="space-y-4 animate-fade-in text-xs">
                             <div className="p-3 rounded-2xl bg-blue-950/40 border border-blue-500/40 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Award className="w-4 h-4 text-blue-400" />
-                                    <span className="font-bold text-blue-200">국가공인 경영지도사 4대 실무 영역 1:1 융합 진단</span>
+                                    <span className="font-bold text-blue-200">명심 비즈니스 4대 핵심 실행 영역 (마케팅·조직·재무·지원사업)</span>
                                 </div>
                                 <span className="text-[10px] text-blue-300 font-mono font-bold bg-blue-900/60 px-2 py-0.5 rounded">
-                                    중기부 표준 체계
+                                    명심 3S 체계
                                 </span>
                             </div>
 
@@ -700,7 +728,7 @@ export default function NtsBusinessCareerModal({
                                         </div>
 
                                         <div className="space-y-1">
-                                            <label className="text-purple-300 font-bold">Q5. 현재 가장 큰 결핍 (경영지도사 처방 대상)</label>
+                                            <label className="text-purple-300 font-bold">Q5. 현재 가장 큰 결핍 (명심 1:1 처방 영역)</label>
                                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                                                 {[
                                                     { id: 'funding_plan', label: '자금 조달 & 사업계획서' },
@@ -823,7 +851,7 @@ export default function NtsBusinessCareerModal({
                                 <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-950/40 via-slate-900 to-indigo-950/40 border border-blue-500/40 space-y-2 text-[11px]">
                                     <div className="flex items-center gap-2 text-blue-300 font-bold">
                                         <Award className="w-4 h-4 text-blue-400" />
-                                        <span>경영지도사 행정 · 세무 원포인트 체크</span>
+                                        <span>명심 행정 · 세무 1-Point 비즈니스 체크</span>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-300">
                                         <div className="p-2 rounded-lg bg-slate-950/80 border border-slate-800">
@@ -900,19 +928,21 @@ export default function NtsBusinessCareerModal({
                                     <TrendingUp className="w-4 h-4 text-purple-400" />
                                     <span>3단계 스케일업 로드맵 (Zero to Infinity)</span>
                                 </div>
-                                {currentProfile.scaleUpRoadmap.map((step, idx) => (
-                                    <div key={idx} className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
-                                        <div className="flex items-center justify-between text-amber-300 font-bold">
-                                            <span className="text-white font-black">{step.phase}</span>
-                                            <span className="text-[10px] font-mono text-purple-300 bg-purple-950/70 px-2 py-0.5 rounded">
-                                                {step.keyword}
-                                            </span>
+                                <div className="space-y-2">
+                                    {currentProfile.scaleUpRoadmap.map((step, idx) => (
+                                        <div key={idx} className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                                            <div className="flex items-center justify-between text-amber-300 font-bold">
+                                                <span className="text-white font-black">{step.phase}</span>
+                                                <span className="text-[10px] font-mono text-purple-300 bg-purple-950/70 px-2 py-0.5 rounded">
+                                                    {step.keyword}
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-300 text-[11px]">
+                                                🎯 <strong>핵심 액션:</strong> {step.coreAction}
+                                            </p>
                                         </div>
-                                        <p className="text-gray-300 text-[11px]">
-                                            🎯 <strong>핵심 액션:</strong> {step.coreAction}
-                                        </p>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -923,12 +953,12 @@ export default function NtsBusinessCareerModal({
                         </div>
                     )}
 
-                    {/* AI 경영지도사 1:1 실시간 대화창 (Interactive Chat) */}
+                    {/* 명심 사업적성 1:1 AI 비즈니스 자문실 (Interactive Chat) */}
                     <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-950 border-2 border-indigo-500/40 space-y-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-300">
                                 <MessageSquare className="w-4 h-4 text-indigo-400" />
-                                <span>AI 경영지도사 1:1 실시간 자문실</span>
+                                <span>명심 사업적성 1:1 AI 비즈니스 자문실</span>
                             </div>
                             <span className="text-[10px] text-gray-400 font-mono">Gemini 2.5 Pro 엔진</span>
                         </div>
@@ -945,7 +975,7 @@ export default function NtsBusinessCareerModal({
                                     }`}
                                 >
                                     <div className="text-[10px] font-bold mb-0.5 text-gray-400">
-                                        {msg.role === 'user' ? '👤 대표님' : '🏛️ AI 경영지도사'}
+                                        {msg.role === 'user' ? '👤 대표님' : '🏛️ 명심 비즈니스 AI 코치'}
                                     </div>
                                     <p className="whitespace-pre-wrap">{msg.content}</p>
                                 </div>
@@ -953,7 +983,7 @@ export default function NtsBusinessCareerModal({
                             {isLoadingChat && (
                                 <div className="p-2.5 rounded-xl bg-slate-900 text-indigo-300 border border-slate-800 mr-8 flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
-                                    <span className="text-xs">경영지도사 AI가 사업계획서와 행정 코드를 분석 중입니다...</span>
+                                    <span className="text-xs">명심 비즈니스 AI 코치가 사업적성과 행정 코드를 분석 중입니다...</span>
                                 </div>
                             )}
                         </div>

@@ -1,8 +1,8 @@
 /**
  * ntsBusinessRecommender.ts
  * 국세청 표준산업분류 기준 업태/종목 및 6자리 홈택스 업종코드 1:1 매핑 엔진
- * + 국가공인 경영지도사 4대 영역(마케팅, 인사·조직, 재무·행정, 생산·기술)
- * + 중소벤처기업부 표준 PSST 사업계획서 프레임워크 & 정부지원사업 타겟팅 엔진
+ * + [명심 비즈니스 4대 실행 영역] (마케팅·시장성, 인사·조직, 재무·세무, 정부지원사업 타겟팅)
+ * + 중소벤처기업부 표준 PSST 사업계획서 프레임워크 & 창업 멘탈 웰니스 엔진
  */
 
 export type StartupStageType = 'solo_pre' | 'early_team' | 're_founder';
@@ -54,8 +54,8 @@ export interface BurnoutEnergyGuide {
     }[];
 }
 
-// 경영지도사 4대 영역 융합 진단
-export interface ManagementConsultant4Areas {
+// 명심 비즈니스 4대 실행 영역 융합 진단
+export interface MyeongsimBusiness4Areas {
     marketing: {
         sajuEngine: string; // '식상(癸水) + 재성(乙木)'
         targetCustomer: string;
@@ -79,6 +79,7 @@ export interface ManagementConsultant4Areas {
         competitivenessScore: number;
     };
 }
+export type ManagementConsultant4Areas = MyeongsimBusiness4Areas; // 하위 호환성 유지
 
 // 중기부 표준 PSST 사업계획서 뼈대
 export interface PsstBlueprint {
@@ -141,7 +142,7 @@ export interface NtsBusinessArchitectureReport {
     };
     scaleUpRoadmap: NtsScaleUpStep[];
     
-    // [NEW] 경영지도사 4대 영역 융합 & PSST 사업계획서
+    // [NEW] 명심 비즈니스 4대 핵심 실행 영역 & PSST 사업계획서
     consultant4Areas: ManagementConsultant4Areas;
     psstBlueprint: PsstBlueprint;
     
@@ -399,7 +400,7 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
         solution: {
             title: '2. 실현 가능성 (Solution)',
             coreMvp: '사주 인지과학 분석 엔진을 국세청 6자리 업종코드와 1:1 매핑하여 3초 만에 사업화 로드맵을 도출하는 AI 웹 플랫폼',
-            differentiation: '경영지도사 4대 표준 영역과 연계된 원클릭 행정/세무 가이드 및 PSST 사업계획서 뼈대 자동 생성 기술'
+            differentiation: '명심 비즈니스 4대 실행 영역과 연계된 원클릭 행정/세무 가이드 및 PSST 사업계획서 뼈대 자동 생성 기술'
         },
         scaleUp: {
             title: '3. 성장 전략 (Scale-up)',
@@ -598,13 +599,14 @@ export interface StartupIntakeAnswers {
     biggestBottleneck: 'funding_plan' | 'team_hr' | 'marketing_sales' | 'mental_burnout'; // Q5. 현재 가장 큰 결핍
 }
 
-export interface ManagementOnePointCheck {
+export interface MyeongsimOnePointCheck {
     recommendedMainCode: string;
     recommendedMainTitle: string;
     taxBenefitStatus: string;
     requiredPermits: string[];
     recommendedGovPrograms: { name: string; targetFunding: string; tip: string }[];
 }
+export type ManagementOnePointCheck = MyeongsimOnePointCheck; // 호환성 유지
 
 export interface PersonalizedPsstReport {
     sajuSummaryText: string;
@@ -636,7 +638,7 @@ export interface PersonalizedPsstReport {
         founderStrength: string;
         hrComplementPlan: string;
     };
-    onePointCheck: ManagementOnePointCheck;
+    onePointCheck: MyeongsimOnePointCheck;
 }
 
 // -------------------------------------------------------------
@@ -740,7 +742,7 @@ export function generatePersonalizedPsstArchitecture(
     // 3. 결핍(Bottleneck)별 HR 보완 처방
     let hrPlan = '';
     if (answers.biggestBottleneck === 'funding_plan') {
-        hrPlan = '자금 조달 및 사업계획서 작성을 신속히 완료하기 위해, PSST 프레임워크 뼈대를 기반으로 표준 정량 지표 작성을 우선하고 정부지원사업 전문 멘토링 풀을 활용합니다.';
+        hrPlan = '자금 조달 및 사업계획서 작성을 신속히 완료하기 위해, PSST 프레임워크 뼈대를 기반으로 표준 정량 지표 작성을 우선하고 전문 멘토링 풀을 활용합니다.';
     } else if (answers.biggestBottleneck === 'team_hr') {
         hrPlan = '대표자의 과도한 완벽주의와 행정 리소스 소모를 방어하기 위해 프론트엔드 개발 및 퍼포먼스 마케팅 파트는 파트너십 또는 검증된 외주 풀(Pool)로 세팅하여 에너지 누수를 차단합니다.';
     } else if (answers.biggestBottleneck === 'marketing_sales') {
@@ -775,7 +777,7 @@ export function generatePersonalizedPsstArchitecture(
                 b2b: '수익 극대화: 기업 임직원 번아웃 방지 및 부서별 기질 케미스트리 조직 진단 컨설팅 용역',
                 b2g: '스케일업: 공공 창업지원단 및 지자체 청년 창업 멘탈 웰니스 프로그램 납품'
             },
-            gtmStrategy: '1단계: 1분 무료 진단 배포를 통한 초기 1만 명 잠재 고객 DB 확보 ➔ 2단계: 유료 프리미엄 심층 리포트 및 1:1 경영지도사 코칭 구독 전환.'
+            gtmStrategy: '1단계: 1분 무료 진단 배포를 통한 초기 1만 명 잠재 고객 DB 확보 ➔ 2단계: 유료 프리미엄 심층 리포트 및 1:1 맞춤 사업적성 코칭 구독 전환.'
         },
         team: {
             title: '4. 팀 구성 및 조직 역량 (Team & HR)',
@@ -791,4 +793,5 @@ export function generatePersonalizedPsstArchitecture(
         }
     };
 }
+
 

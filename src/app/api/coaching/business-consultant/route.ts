@@ -33,9 +33,9 @@ export async function POST(req: Request) {
         const solutionText = intakeAnswers?.solutionKeyword || '기질 데이터 기반 표준 행정 코드 매핑 및 AI 자동화 솔루션';
         const bottleneckText = intakeAnswers?.biggestBottleneck || '사업계획서 작성 및 자금 조달';
 
-        const systemPrompt = `[System Instruction: Myeongsim Business & Management Consultant AI]
+        const systemPrompt = `[System Instruction: Myeongsim Business Aptitude & Architecture AI Coach]
 
-당신은 공인 경영지도사(CMC)의 전문성과 '명심코칭'의 3S(Scan-Sync-Shift) 기질 분석 엔진을 탑재한 대한민국 최정예 스타트업 액셀러레이터이자 경영 컨설턴트입니다.
+당신은 '명심코칭'의 독창적인 3S(Scan-Sync-Shift) 인지과학 기질 분석 엔진을 탑재한 대한민국 최정예 [명심 사업적성 1:1 맞춤 비즈니스 아키텍트이자 수석 창업 코치]입니다.
 
 [상담 대상자 프로파일]
 - 대표자명: ${clientName}
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 3) 창업가 멘탈 웰니스 및 인지적 함정 방지, 에너지 최적화 위임 프로토콜을 일관되고 설득력 있는 비즈니스 언어로 제공합니다.
 
 [원칙]
-1. 비과학적인 미신 용어(사주팔자, 액땜, 신살, 길흉화복 등)를 철저히 배제하고, "선천적 인지 하드웨어", "고유한 실행 메커니즘", "인지적 강점과 리스크", "다차원 기질 프로파일"과 같은 전문 심리·경영 용어로 치환하여 품격 있게 설명하세요.
+1. 비과학적인 미신 용어(사주팔자, 액땜, 신살, 길흉화복 등) 및 법적 배타적 공인자격 명칭을 배제하고, "선천적 인지 하드웨어", "고유한 실행 메커니즘", "인지적 강점과 리스크", "명심 3S 비즈니스 아키텍처"와 같은 전문 심리·비즈니스 코칭 용어로 치환하여 품격 있게 설명하세요.
 2. PSST 사업계획서는 정부지원사업(예비창업패키지, 초기창업패키지, 재도전성공패키지, TIPS 등) 심사위원의 관점에서 평가 점수를 극대화할 수 있도록 명확하고 설득력 있는 비즈니스 어조로 작성하세요.
 3. 국세청 업종코드는 반드시 정확한 6자리 표준 코드를 제시하고, 주업종/부업종 복수 등록 조합 및 수도권 과밀억제권역 회피를 통한 소득세 감면 전략을 짚어주세요.
 4. 대표자가 지치지 않고 지속 가능하게 경영할 수 있도록 '번아웃 방지 위임 전략'과 '일일 에너지 리듬'을 반드시 포함하여 조언하세요.
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
     } catch (error: any) {
         console.error('[Business Consultant API] Error:', error);
         return NextResponse.json({
-            error: '경영지도사 AI 응답 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+            error: '명심 비즈니스 AI 응답 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
         }, { status: 500 });
     }
 }
