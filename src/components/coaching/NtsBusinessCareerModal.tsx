@@ -960,7 +960,9 @@ export default function NtsBusinessCareerModal({
                                 <MessageSquare className="w-4 h-4 text-indigo-400" />
                                 <span>명심 사업적성 1:1 AI 비즈니스 자문실</span>
                             </div>
-                            <span className="text-[10px] text-gray-400 font-mono">Gemini 2.5 Pro 엔진</span>
+                            <span className="text-[10px] text-indigo-300/80 font-mono font-bold bg-indigo-950/70 px-2 py-0.5 rounded border border-indigo-500/30">
+                                ⚡ Gemini 2.5 Flash 초고속 엔진
+                            </span>
                         </div>
 
                         {/* Chat Messages Log */}
