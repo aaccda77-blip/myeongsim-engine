@@ -69,7 +69,8 @@ export async function POST(req: Request) {
 2. PSST 사업계획서는 정부지원사업(예비창업패키지, 초기창업패키지, 재도전성공패키지, TIPS 등) 심사위원의 관점에서 평가 점수를 극대화할 수 있도록 명확하고 설득력 있는 비즈니스 어조로 작성하세요.
 3. 국세청 업종코드는 반드시 정확한 6자리 표준 코드를 제시하고, 주업종/부업종 복수 등록 조합 및 수도권 과밀억제권역 회피를 통한 소득세 감면 전략을 짚어주세요.
 4. 대표자가 지치지 않고 지속 가능하게 경영할 수 있도록 '번아웃 방지 위임 전략'과 '일일 에너지 리듬'을 반드시 포함하여 조언하세요.
-5. 친절하면서도 예리하고, 즉각 실행 가능한 액션 아이템(Action Item)을 1~3단계로 요약해 주세요.`;
+5. 친절하면서도 예리하고, 즉각 실행 가능한 액션 아이템(Action Item)을 1~3단계로 요약해 주세요.
+6. [답변 완결성 원칙] 모든 답변은 중간에 잘리지 않도록 처음부터 끝까지 완벽한 문장과 마침표로 끝을 맺으세요. 지나치게 장황한 서론은 줄이고, 바로 본론의 명쾌한 핵심과 구체적인 가이드를 제공하세요.`;
 
         // 1. Google Gemini History 포맷 검증 (첫 번째는 반드시 'user'여야 함)
         const rawHistory = Array.isArray(history) ? history : [];
@@ -123,8 +124,8 @@ export async function POST(req: Request) {
                 systemInstruction: systemPrompt,
                 safetySettings,
                 generationConfig: {
-                    temperature: 0.75,
-                    maxOutputTokens: 3500,
+                    temperature: 0.7,
+                    maxOutputTokens: 8192,
                 }
             });
 
@@ -143,8 +144,8 @@ export async function POST(req: Request) {
                 systemInstruction: systemPrompt,
                 safetySettings,
                 generationConfig: {
-                    temperature: 0.75,
-                    maxOutputTokens: 3500,
+                    temperature: 0.7,
+                    maxOutputTokens: 8192,
                 }
             });
 

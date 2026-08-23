@@ -23,6 +23,8 @@ import {
     PersonalizedPsstReport
 } from '@/lib/engine/ntsBusinessRecommender';
 import { useReportStore } from '@/store/useReportStore';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface NtsBusinessCareerModalProps {
     isOpen: boolean;
@@ -1060,18 +1062,20 @@ export default function NtsBusinessCareerModal({
                         </div>
 
                         {/* Chat Messages Log */}
-                        <div className="max-h-80 sm:max-h-[380px] overflow-y-auto space-y-2.5 p-3 rounded-xl bg-slate-950/90 border border-slate-800 text-xs custom-scrollbar">
+                        <div className="max-h-96 sm:max-h-[440px] overflow-y-auto space-y-3 p-3.5 rounded-xl bg-slate-950/95 border border-slate-800 text-xs custom-scrollbar">
                             {chatMessages.map((msg, mIdx) => (
                                 <div
                                     key={mIdx}
-                                    className={`p-3 rounded-2xl leading-relaxed relative group transition-all ${
+                                    className={`p-3.5 rounded-2xl leading-relaxed relative group transition-all shadow-sm ${
                                         msg.role === 'user'
-                                            ? 'bg-amber-500/20 text-amber-200 border border-amber-500/30 ml-8 text-right'
-                                            : 'bg-slate-900 text-gray-200 border border-slate-800 mr-8 shadow-inner'
+                                            ? 'bg-amber-500/20 text-amber-200 border border-amber-500/40 ml-8 text-right'
+                                            : 'bg-slate-900/90 text-gray-200 border border-slate-800 mr-4 sm:mr-8'
                                     }`}
                                 >
-                                    <div className="flex items-center justify-between text-[10px] font-bold mb-1 text-gray-400">
-                                        <span>{msg.role === 'user' ? '👤 대표님' : '🏛️ 명심 비즈니스 AI 코치'}</span>
+                                    <div className="flex items-center justify-between text-[10.5px] font-bold mb-2 text-gray-400 border-b border-white/5 pb-1">
+                                        <span className="flex items-center gap-1">
+                                            {msg.role === 'user' ? '👤 대표님' : '🏛️ 명심 비즈니스 AI 코치'}
+                                        </span>
                                         {msg.role === 'assistant' && (
                                             <button
                                                 onClick={() => {
@@ -1079,16 +1083,41 @@ export default function NtsBusinessCareerModal({
                                                     setCopiedMsgIdx(mIdx);
                                                     setTimeout(() => setCopiedMsgIdx(null), 2000);
                                                 }}
-                                                className="opacity-0 group-hover:opacity-100 transition-opacity px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-gray-300 flex items-center gap-1 text-[9.5px] cursor-pointer"
+                                                className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-gray-300 flex items-center gap-1 text-[10px] cursor-pointer"
+                                                title="답변 전체 복사"
                                             >
-                                                {copiedMsgIdx === mIdx ? <Check className="w-2.5 h-2.5 text-emerald-400" /> : <Copy className="w-2.5 h-2.5" />}
+                                                {copiedMsgIdx === mIdx ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                                                 <span>{copiedMsgIdx === mIdx ? '복사됨' : '복사'}</span>
                                             </button>
                                         )}
                                     </div>
-                                    <p className="whitespace-pre-wrap text-[11.5px] leading-relaxed text-left">
-                                        {msg.content}
-                                    </p>
+                                    
+                                    {msg.role === 'user' ? (
+                                        <p className="whitespace-pre-wrap text-[12px] leading-relaxed text-left font-medium">
+                                            {msg.content}
+                                        </p>
+                                    ) : (
+                                        <div className="prose prose-invert prose-xs max-w-none text-left text-[12px] leading-relaxed space-y-2">
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkGfm]}
+                                                components={{
+                                                    h1: ({ node, ...props }) => <h1 className="text-sm font-black text-amber-300 mt-2 mb-1 border-b border-amber-500/20 pb-1" {...props} />,
+                                                    h2: ({ node, ...props }) => <h2 className="text-[13px] font-bold text-indigo-300 mt-2 mb-1" {...props} />,
+                                                    h3: ({ node, ...props }) => <h3 className="text-xs font-bold text-emerald-300 mt-2 mb-1" {...props} />,
+                                                    strong: ({ node, ...props }) => <strong className="font-bold text-amber-200" {...props} />,
+                                                    ul: ({ node, ...props }) => <ul className="list-disc pl-4 space-y-1 my-1 text-gray-300" {...props} />,
+                                                    ol: ({ node, ...props }) => <ol className="list-decimal pl-4 space-y-1 my-1 text-gray-300" {...props} />,
+                                                    li: ({ node, ...props }) => <li className="leading-relaxed" {...props} />,
+                                                    p: ({ node, ...props }) => <p className="mb-1.5 leading-relaxed text-gray-200" {...props} />,
+                                                    hr: ({ node, ...props }) => <hr className="my-2 border-slate-800" {...props} />,
+                                                    code: ({ node, ...props }) => <code className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-amber-300 font-mono text-[11px]" {...props} />,
+                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-2 border-indigo-500/50 pl-2.5 my-1.5 italic text-indigo-200 bg-indigo-950/20 py-1 rounded-r" {...props} />
+                                                }}
+                                            >
+                                                {msg.content}
+                                            </ReactMarkdown>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                             {isLoadingChat && (
