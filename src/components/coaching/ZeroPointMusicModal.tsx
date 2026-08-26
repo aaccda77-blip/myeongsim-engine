@@ -6,7 +6,8 @@ import {
     X, Sparkles, Music, Play, Pause, Volume2, VolumeX,
     RotateCcw, Heart, Share2, Copy, Check, ChevronRight,
     Wind, ShieldAlert, Brain, Flame, BatteryLow, Sparkle,
-    Download, Loader2
+    Download, Loader2, Briefcase, ShieldCheck, CheckCircle2,
+    ChevronDown, ChevronUp, DollarSign, Lightbulb
 } from 'lucide-react';
 import {
     generateZeroPointMusicTrack,
@@ -38,6 +39,7 @@ export default function ZeroPointMusicModal({
     const [copiedLyrics, setCopiedLyrics] = useState<boolean>(false);
     const [breathText, setBreathText] = useState<string>('천천히 숨을 들이쉬세요...');
     const [breathScale, setBreathScale] = useState<number>(1);
+    const [showBusinessGuide, setShowBusinessGuide] = useState<boolean>(false);
 
     // 글로벌 스토어와 프로필 병합
     const globalReportData = useReportStore.getState().reportData;
@@ -626,6 +628,104 @@ export default function ZeroPointMusicModal({
                                     <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-[11px] leading-relaxed">
                                         {trackInfo.myeongsimCoaching}
                                     </div>
+                                </div>
+
+                                {/* [NEW] 💼 Suno AI 상업적 음원 제작 & 1인 비즈니스 판매 가이드 */}
+                                <div className="rounded-2xl bg-gradient-to-br from-indigo-950/60 to-slate-950 border border-indigo-500/30 overflow-hidden text-xs">
+                                    <button
+                                        onClick={() => setShowBusinessGuide(!showBusinessGuide)}
+                                        className="w-full p-3.5 flex items-center justify-between text-left hover:bg-white/5 transition-colors cursor-pointer"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                                <Briefcase className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-white flex items-center gap-1.5 text-[11.5px]">
+                                                    <span>1인 창업 가이드: 맞춤 힐링송 유료 판매 및 Suno 상업적 라이선스</span>
+                                                    <span className="text-[9.5px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                                                        합법 비즈니스
+                                                    </span>
+                                                </div>
+                                                <div className="text-[10px] text-gray-400">월 $10로 월 500곡 제작 ➔ 건당 4,900~9,900원 고수익 판매 모델</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-gray-400">
+                                            {showBusinessGuide ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                        </div>
+                                    </button>
+
+                                    {showBusinessGuide && (
+                                        <div className="p-4 pt-2 border-t border-white/5 space-y-3.5 text-gray-300 text-[11px] leading-relaxed bg-slate-950/80 animate-fade-in">
+                                            <div className="p-2.5 rounded-xl bg-indigo-900/30 border border-indigo-500/30 text-indigo-200">
+                                                ✅ <strong>상업적 판매 가능:</strong> 단, <strong>Suno(수노)의 유료 요금제(Pro 또는 Premier)를 구독한 상태에서 생성한 음원</strong>이어야 고객에게 합법적으로 제공·판매할 수 있습니다.
+                                            </div>
+
+                                            {/* 1. 요금제별 기준 표 */}
+                                            <div className="space-y-1.5">
+                                                <div className="font-bold text-amber-300 flex items-center gap-1 text-[11px]">
+                                                    <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                                                    <span>1. Suno 요금제별 상업적 이용 기준</span>
+                                                </div>
+                                                <div className="overflow-x-auto rounded-xl border border-slate-800">
+                                                    <table className="w-full text-left text-[10.5px]">
+                                                        <thead className="bg-slate-900 text-gray-400 border-b border-slate-800">
+                                                            <tr>
+                                                                <th className="p-2">구분</th>
+                                                                <th className="p-2 text-rose-300">무료 플랜 (Basic)</th>
+                                                                <th className="p-2 text-emerald-300 font-bold">유료 플랜 (Pro / Premier)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-slate-800/60 text-gray-300">
+                                                            <tr>
+                                                                <td className="p-2 font-bold text-gray-400">월 요금</td>
+                                                                <td className="p-2">$0</td>
+                                                                <td className="p-2 text-amber-300 font-bold">Pro: 약 $10/월 (월 500곡) / Premier: $30/월</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="p-2 font-bold text-gray-400">상업적 이용</td>
+                                                                <td className="p-2 text-rose-400 font-bold">❌ 불가 (개인 청취용)</td>
+                                                                <td className="p-2 text-emerald-300 font-bold">✅ 가능 (소유권 및 상업적 권리 인정)</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="p-2 font-bold text-gray-400">유료 판매/앱 제공</td>
+                                                                <td className="p-2 text-rose-400">불가능 (약관 위반)</td>
+                                                                <td className="p-2 text-emerald-300 font-bold">고객 전송, 앱 내 유료 판매, 스트리밍 가능</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="p-2 font-bold text-gray-400">구독 해지 후</td>
+                                                                <td className="p-2 text-gray-500">해당 없음</td>
+                                                                <td className="p-2 text-gray-200">구독 기간에 만든 곡은 해지 후에도 상업적 권리 유지</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            {/* 2. 핵심 3가지 */}
+                                            <div className="space-y-2">
+                                                <div className="font-bold text-amber-300 flex items-center gap-1 text-[11px]">
+                                                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
+                                                    <span>2. 서비스 운영 시 꼭 챙겨야 할 핵심 3가지</span>
+                                                </div>
+                                                <div className="space-y-1.5 text-[10.5px]">
+                                                    <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                                                        <strong className="text-white">① 유료 구독 계정에서 곡 생성:</strong> 고객에게 전달할 음원은 반드시 Pro($10) 또는 Premier($30) 활성화 상태에서 생성하세요. 한 달에 500곡(Pro 기준)을 만들 수 있어 가성비와 마진율이 매우 뛰어납니다.
+                                                    </div>
+                                                    <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                                                        <strong className="text-white">② 가사는 직접 작성한 창작물 사용:</strong> 지금처럼 '명심코칭'의 고유한 사주 해석 및 제로포인트 에세이 가사를 직접 넣어 생성하는 것은 100% 안전하며 독창적인 지식재산(IP)이 됩니다.
+                                                    </div>
+                                                    <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                                                        <strong className="text-white">③ 완성도를 높이는 패키징 팁:</strong> 음원 파일만 보내기보다, [사주 맞춤 힐링송 음원 + 제로포인트 처방 에세이 텍스트 카드 + 1분 호흡 가이드] 3종 세트로 묶어 카카오톡 알림톡이나 앱 보관함으로 전달하면 고객 만족도와 가치가 극대화됩니다.
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-[10.5px]">
+                                                💡 <strong>결론:</strong> 월 $10(약 13,000원) Pro 요금제만 유지하시면, 고객에게 단건(4,900원~9,900원)으로 맞춤 음악을 생성해 판매하는 비즈니스는 <strong>약관상 완벽히 합법적이며 마진율이 매우 높은 훌륭한 비즈니스 모델</strong>입니다.
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="flex gap-2">
