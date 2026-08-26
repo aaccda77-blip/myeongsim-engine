@@ -69,6 +69,7 @@ const MyeongsimGeniusReportModal = dynamic(() => import('@/components/coaching/M
 const MyeongsimOracleCardModal = dynamic(() => import('@/components/coaching/MyeongsimOracleCardModal'), { ssr: false });
 const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/coaching/DarkCodeCompassionTransformerModal'), { ssr: false });
 const NtsBusinessCareerModal = dynamic(() => import('@/components/coaching/NtsBusinessCareerModal'), { ssr: false });
+const ZeroPointMusicModal = dynamic(() => import('@/components/coaching/ZeroPointMusicModal'), { ssr: false });
 
 
 
@@ -526,6 +527,7 @@ export default function DrillDownIconMenu({
     const [showMyeongsimOracle, setShowMyeongsimOracle] = useState(false);
     const [showDarkCodeTransformer, setShowDarkCodeTransformer] = useState(false);
     const [showNtsCareerModal, setShowNtsCareerModal] = useState(false); // [NEW] 국세청 창업·N잡 모달 상태
+    const [showZeroPointMusic, setShowZeroPointMusic] = useState(false); // [NEW] 사주 맞춤 제로포인트 음악 모달
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
@@ -1151,7 +1153,36 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 💼 국세청 공식 업태·종목 추천 (1:1 실전 창업·직업 리포트) - 나의 리포트 바로 옆 */}
+                {/* [NEW] 🎧 사주 맞춤 제로포인트 음악 (432Hz 사운드 테라피) - 나의 리포트 바로 옆 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                        if (!hasBirthDate) {
+                            alert('사주 맞춤 힐링송 처방을 위해 생년월일을 먼저 등록해주세요.');
+                            useReportStore.getState().setStep(1);
+                            return;
+                        }
+                        setShowZeroPointMusic(true);
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(139, 92, 246, 0.25))',
+                        border: '1px solid rgba(244, 114, 182, 0.5)',
+                        boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🎧</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>사주 힐링송</div>
+                        <div style={styles.neuroTrigger}>432Hz 제로포인트</div>
+                    </div>
+                </button>
+
+                {/* [NEW] 💼 국세청 공식 업태·종목 추천 (1:1 실전 창업·직업 리포트) */}
                 <button
                     style={styles.iconButton}
                     onClick={() => {
@@ -2101,6 +2132,13 @@ export default function DrillDownIconMenu({
                 onStartChatCoaching={(prompt) => {
                     onSelectIntent('nts_business_coaching', prompt);
                 }}
+            />
+
+            {/* [NEW] 🎧 사주 맞춤 제로포인트 음악 (사운드 테라피) 모달 */}
+            <ZeroPointMusicModal
+                isOpen={showZeroPointMusic}
+                onClose={() => setShowZeroPointMusic(false)}
+                userProfile={userProfile || reportData}
             />
         </>
     );
