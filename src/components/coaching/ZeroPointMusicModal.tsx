@@ -14,6 +14,7 @@ import {
     EmotionalState,
     ZeroPointTrackInfo
 } from '@/lib/engine/zeroPointMusicEngine';
+import { parseSajuFourPillars } from '@/lib/engine/ntsBusinessRecommender';
 import { zeroPointSoundEngine } from '@/lib/sound/zeroPointSoundEngine';
 import { useReportStore } from '@/store/useReportStore';
 
@@ -43,8 +44,11 @@ export default function ZeroPointMusicModal({
     const effectiveProfile = {
         ...globalReportData,
         ...userProfile,
+        userName: userProfile?.userName || userProfile?.name || globalReportData?.userName || (globalReportData as any)?.name || '대표',
         saju: userProfile?.saju || globalReportData?.saju
     };
+
+    const pillars = parseSajuFourPillars(effectiveProfile?.saju);
 
     const trackInfo: ZeroPointTrackInfo = generateZeroPointMusicTrack(
         effectiveProfile,
@@ -303,23 +307,23 @@ export default function ZeroPointMusicModal({
                                 {/* User Saju Pill Box */}
                                 <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-center space-y-2">
                                     <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-amber-400/30">
-                                        {effectiveProfile?.userName || '대표'} 님의 사주 원식
+                                        {effectiveProfile.userName} 님의 사주 원식
                                     </span>
                                     <h4 className="text-sm font-bold text-white">
                                         {trackInfo.subTitle}
                                     </h4>
                                     <div className="flex justify-center gap-2 pt-1">
                                         <span className="px-2.5 py-1 rounded bg-slate-800 text-amber-300 font-mono font-bold text-xs border border-slate-700">
-                                            {effectiveProfile?.saju?.yearGan || '丙'}{effectiveProfile?.saju?.yearJi || '辰'}년
+                                            {pillars.yGan}{pillars.yJi}년
                                         </span>
                                         <span className="px-2.5 py-1 rounded bg-slate-800 text-amber-300 font-mono font-bold text-xs border border-slate-700">
-                                            {effectiveProfile?.saju?.monthGan || '丁'}{effectiveProfile?.saju?.monthJi || '酉'}월
+                                            {pillars.mGan}{pillars.mJi}월
                                         </span>
                                         <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-200 font-mono font-bold text-xs border border-amber-500/40 shadow-sm">
-                                            {effectiveProfile?.saju?.dayGan || '甲'}{effectiveProfile?.saju?.dayJi || '子'}일 (본원)
+                                            {pillars.dGan}{pillars.dJi}일 (본원)
                                         </span>
                                         <span className="px-2.5 py-1 rounded bg-slate-800 text-amber-300 font-mono font-bold text-xs border border-slate-700">
-                                            {effectiveProfile?.saju?.timeGan || '庚'}{effectiveProfile?.saju?.timeJi || '午'}시
+                                            {pillars.tGan}{pillars.tJi}시
                                         </span>
                                     </div>
                                 </div>

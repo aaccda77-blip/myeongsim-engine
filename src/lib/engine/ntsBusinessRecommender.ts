@@ -698,11 +698,11 @@ export function extractBranch(val: any, fallback: string = '子'): string {
 export function parseSajuFourPillars(saju: any) {
     if (!saju) {
         return {
-            yGan: '庚', yJi: '申',
-            mGan: '癸', mJi: '未',
-            dGan: '辛', dJi: '巳',
-            tGan: '乙', tJi: '未',
-            summaryText: '庚申년 · 癸未월 · 辛巳일 · 乙未시'
+            yGan: '丙', yJi: '辰',
+            mGan: '丁', mJi: '酉',
+            dGan: '甲', dJi: '子',
+            tGan: '庚', tJi: '午',
+            summaryText: '丙辰년 · 丁酉월 · 甲子일 · 庚午시'
         };
     }
 
@@ -712,17 +712,29 @@ export function parseSajuFourPillars(saju: any) {
     const dp = saju.dayPillar || saju.day_pillar || fp.day || {};
     const tp = saju.hourPillar || saju.hour_pillar || saju.timePillar || fp.time || {};
 
-    const yGan = extractStem(yp.gan !== undefined ? yp.gan : yp.stem, '庚');
-    const yJi = extractBranch(yp.ji !== undefined ? yp.ji : yp.branch, '申');
+    const rawYGan = saju.yearGan || saju.year_gan || saju.yGan || yp.gan || yp.stem || (typeof yp === 'string' ? yp.charAt(0) : undefined);
+    const rawYJi = saju.yearJi || saju.year_ji || saju.yJi || yp.ji || yp.branch || (typeof yp === 'string' && yp.length > 1 ? yp.charAt(1) : undefined);
 
-    const mGan = extractStem(mp.gan !== undefined ? mp.gan : mp.stem, '癸');
-    const mJi = extractBranch(mp.ji !== undefined ? mp.ji : mp.branch, '未');
+    const rawMGan = saju.monthGan || saju.month_gan || saju.mGan || mp.gan || mp.stem || (typeof mp === 'string' ? mp.charAt(0) : undefined);
+    const rawMJi = saju.monthJi || saju.month_ji || saju.mJi || mp.ji || mp.branch || (typeof mp === 'string' && mp.length > 1 ? mp.charAt(1) : undefined);
 
-    const dGan = extractStem(dp.gan !== undefined ? dp.gan : (dp.stem || saju.dayMaster), '辛');
-    const dJi = extractBranch(dp.ji !== undefined ? dp.ji : dp.branch, '巳');
+    const rawDGan = saju.dayGan || saju.day_gan || saju.dGan || saju.dayMaster || dp.gan || dp.stem || (typeof dp === 'string' ? dp.charAt(0) : undefined);
+    const rawDJi = saju.dayJi || saju.day_ji || saju.dJi || dp.ji || dp.branch || (typeof dp === 'string' && dp.length > 1 ? dp.charAt(1) : undefined);
 
-    const tGan = extractStem(tp.gan !== undefined ? tp.gan : tp.stem, '乙');
-    const tJi = extractBranch(tp.ji !== undefined ? tp.ji : tp.branch, '未');
+    const rawTGan = saju.timeGan || saju.time_gan || saju.hourGan || saju.tGan || tp.gan || tp.stem || (typeof tp === 'string' ? tp.charAt(0) : undefined);
+    const rawTJi = saju.timeJi || saju.time_ji || saju.hourJi || saju.tJi || tp.ji || tp.branch || (typeof tp === 'string' && tp.length > 1 ? tp.charAt(1) : undefined);
+
+    const yGan = extractStem(rawYGan, '丙');
+    const yJi = extractBranch(rawYJi, '辰');
+
+    const mGan = extractStem(rawMGan, '丁');
+    const mJi = extractBranch(rawMJi, '酉');
+
+    const dGan = extractStem(rawDGan, '甲');
+    const dJi = extractBranch(rawDJi, '子');
+
+    const tGan = extractStem(rawTGan, '庚');
+    const tJi = extractBranch(rawTJi, '午');
 
     const summaryText = `${yGan}${yJi}년 · ${mGan}${mJi}월 · ${dGan}${dJi}일 · ${tGan}${tJi}시`;
 
