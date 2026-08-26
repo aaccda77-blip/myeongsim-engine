@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     X, Sparkles, Music, Play, Pause, Volume2, VolumeX,
     RotateCcw, Heart, Share2, Copy, Check, ChevronRight,
-    Wind, ShieldAlert, Brain, Flame, BatteryLow, Sparkle
+    Wind, ShieldAlert, Brain, Flame, BatteryLow, Sparkle,
+    Download, Loader2
 } from 'lucide-react';
 import {
     generateZeroPointMusicTrack,
@@ -131,6 +132,30 @@ export default function ZeroPointMusicModal({
         } else {
             setIsMuted(true);
             zeroPointSoundEngine.setVolume(0);
+        }
+    };
+
+    const [isDownloading, setIsDownloading] = useState<boolean>(false);
+
+    const handleDownloadAudio = async () => {
+        try {
+            setIsDownloading(true);
+            const blob = await zeroPointSoundEngine.exportWavAudio(trackInfo.targetElement, 45);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const safeName = (effectiveProfile?.userName || '대표').replace(/\s+/g, '_');
+            const fileName = `${safeName}_사주맞춤_제로포인트_힐링송_432Hz.wav`;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Audio download error:', err);
+            alert('음원 생성 및 다운로드 중 문제가 발생했습니다.');
+        } finally {
+            setIsDownloading(false);
         }
     };
 
@@ -374,14 +399,23 @@ export default function ZeroPointMusicModal({
                                         <span className="text-[10px] font-bold bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-full text-white border border-white/20">
                                             {trackInfo.albumArtTheme.icon} {trackInfo.albumArtTheme.elementBadge}
                                         </span>
-                                        <div className="flex items-center gap-1">
+                                        <div className="flex items-center gap-1.5">
+                                            <button
+                                                onClick={handleDownloadAudio}
+                                                disabled={isDownloading}
+                                                className="p-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition-all cursor-pointer text-[10.5px] flex items-center gap-1 shadow-md disabled:opacity-50"
+                                                title="432Hz 고음질 WAV 음원 소장 다운로드"
+                                            >
+                                                {isDownloading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
+                                                <span>{isDownloading ? '생성중...' : '음원 다운로드'}</span>
+                                            </button>
                                             <button
                                                 onClick={handleCopyLyrics}
                                                 className="p-1.5 rounded-lg bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white transition-colors cursor-pointer text-[10px] flex items-center gap-1"
                                                 title="가사 복사"
                                             >
                                                 {copiedLyrics ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                                                <span>{copiedLyrics ? '복사됨' : '가사 복사'}</span>
+                                                <span>{copiedLyrics ? '복사됨' : '가사'}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -496,16 +530,26 @@ export default function ZeroPointMusicModal({
                                     </div>
                                 </div>
 
-                                <button
-                                    onClick={() => {
-                                        zeroPointSoundEngine.stop();
-                                        setIsPlaying(false);
-                                        onClose();
-                                    }}
-                                    className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors cursor-pointer"
-                                >
-                                    마음 리셋 완료 (닫기)
-                                </button>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={handleDownloadAudio}
+                                        disabled={isDownloading}
+                                        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                    >
+                                        {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                                        <span>{isDownloading ? '432Hz 고음질 렌더링 중...' : '📥 432Hz 힐링 음원 소장하기 (.WAV)'}</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            zeroPointSoundEngine.stop();
+                                            setIsPlaying(false);
+                                            onClose();
+                                        }}
+                                        className="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors cursor-pointer shrink-0"
+                                    >
+                                        닫기
+                                    </button>
+                                </div>
                             </div>
                         )}
 

@@ -242,6 +242,159 @@ class ZeroPointSoundEngine {
     public getCurrentElement(): SajuElementType {
         return this.currentElement;
     }
+
+    /**
+     * 사용자의 맞춤 사주 힐링 사운드를 432Hz 고음질 WAV 파일로 고속 렌더링하여 다운로드
+     */
+    public async exportWavAudio(element: SajuElementType = 'wood', durationSecs: number = 45): Promise<Blob> {
+        const sampleRate = 44100;
+        const OfflineContextClass = window.OfflineAudioContext || (window as any).webkitOfflineAudioContext;
+        const offlineCtx = new OfflineContextClass(2, sampleRate * durationSecs, sampleRate);
+
+        const preset = SOUND_REMEDY_PRESETS[element] || SOUND_REMEDY_PRESETS['wood'];
+        const baseFreq = preset.baseFrequency;
+
+        // 1. 드론 베이스 생성
+        const osc1 = offlineCtx.createOscillator();
+        const osc2 = offlineCtx.createOscillator();
+        const oscGain = offlineCtx.createGain();
+        const filter = offlineCtx.createBiquadFilter();
+
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(baseFreq / 4, 0);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime((baseFreq / 4) + 1.5, 0);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(450, 0);
+
+        oscGain.gain.setValueAtTime(0.01, 0);
+        oscGain.gain.linearRampToValueAtTime(0.2, 3);
+        oscGain.gain.setValueAtTime(0.2, durationSecs - 4);
+        oscGain.gain.linearRampToValueAtTime(0.001, durationSecs); // 페이드 아웃
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(oscGain);
+        oscGain.connect(offlineCtx.destination);
+
+        osc1.start(0);
+        osc2.start(0);
+        osc1.stop(durationSecs);
+        osc2.stop(durationSecs);
+
+        // 2. 멜로디 아르페지오 렌더링
+        const scaleMap: Record<SajuElementType, number[]> = {
+            wood: [1, 9/8, 5/4, 3/2, 5/3, 2],
+            fire: [1, 9/8, 6/5, 4/3, 3/2, 8/5, 2],
+            earth: [1, 5/4, 4/3, 3/2, 15/8, 2],
+            metal: [1, 9/8, 5/4, 3/2, 27/16, 2],
+            water: [1, 9/8, 5/4, 45/32, 3/2, 5/3, 2]
+        };
+
+        const ratios = scaleMap[element] || scaleMap['wood'];
+        const noteDuration = 60 / preset.bpm;
+        let currentTime = 0.5;
+        let step = 0;
+
+        while (currentTime < durationSecs - 3) {
+            const ratio = ratios[step % ratios.length];
+            const octave = (step % 4 === 0) ? 2 : (step % 2 === 0) ? 1 : 1.5;
+            const freq = (baseFreq / 2) * ratio * octave;
+
+            const nOsc = offlineCtx.createOscillator();
+            const nGain = offlineCtx.createGain();
+            const nFilter = offlineCtx.createBiquadFilter();
+
+            if (element === 'fire') {
+                nOsc.type = 'triangle';
+                nFilter.frequency.setValueAtTime(600, currentTime);
+            } else if (element === 'wood' || element === 'metal') {
+                nOsc.type = 'sine';
+                nFilter.frequency.setValueAtTime(1200, currentTime);
+            } else {
+                nOsc.type = 'sine';
+                nFilter.frequency.setValueAtTime(900, currentTime);
+            }
+
+            nOsc.frequency.setValueAtTime(freq, currentTime);
+
+            nGain.gain.setValueAtTime(0, currentTime);
+            nGain.gain.linearRampToValueAtTime(0.14, currentTime + 0.08);
+            nGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 2.5);
+
+            nOsc.connect(nFilter);
+            nFilter.connect(nGain);
+            nGain.connect(offlineCtx.destination);
+
+            nOsc.start(currentTime);
+            nOsc.stop(currentTime + 2.6);
+
+            currentTime += noteDuration;
+            step++;
+        }
+
+        // 오프라인 오디오 렌더링 실행
+        const renderedBuffer = await offlineCtx.startRendering();
+        return this.audioBufferToWavBlob(renderedBuffer);
+    }
+
+    private audioBufferToWavBlob(buffer: AudioBuffer): Blob {
+        const numOfChan = buffer.numberOfChannels;
+        const length = buffer.length * numOfChan * 2 + 44;
+        const outBuffer = new ArrayBuffer(length);
+        const view = new DataView(outBuffer);
+        const channels = [];
+        let sample = 0;
+        let offset = 0;
+        let pos = 0;
+
+        // RIFF 식별자
+        setUint32(0x46464952); // "RIFF"
+        setUint32(length - 8);  // 파일 크기 - 8
+        setUint32(0x45564157); // "WAVE"
+
+        // FMT 서브청크
+        setUint32(0x20746d66); // "fmt "
+        setUint32(16);          // 서브청크 크기 (16 for PCM)
+        setUint16(1);           // 오디오 포맷 1 (PCM)
+        setUint16(numOfChan);
+        setUint32(buffer.sampleRate);
+        setUint32(buffer.sampleRate * 2 * numOfChan); // byte rate
+        setUint16(numOfChan * 2); // block align
+        setUint16(16);          // 16-bit
+
+        // DATA 서브청크
+        setUint32(0x61746164); // "data"
+        setUint32(length - pos - 4);
+
+        for (let i = 0; i < buffer.numberOfChannels; i++) {
+            channels.push(buffer.getChannelData(i));
+        }
+
+        while (pos < length) {
+            for (let i = 0; i < numOfChan; i++) {
+                sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                view.setInt16(pos, sample, true);
+                pos += 2;
+            }
+            offset++;
+        }
+
+        return new Blob([outBuffer], { type: 'audio/wav' });
+
+        function setUint16(data: number) {
+            view.setUint16(pos, data, true);
+            pos += 2;
+        }
+
+        function setUint32(data: number) {
+            view.setUint32(pos, data, true);
+            pos += 4;
+        }
+    }
 }
 
 export const zeroPointSoundEngine = new ZeroPointSoundEngine();
