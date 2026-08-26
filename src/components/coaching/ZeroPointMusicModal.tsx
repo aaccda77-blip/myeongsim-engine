@@ -66,13 +66,72 @@ export default function ZeroPointMusicModal({
         };
     }, [isPlaying]);
 
-    // 모달 닫힐 때 오디오 정지
+    const [enableVoice, setEnableVoice] = useState<boolean>(true);
+    const [activeVerseIdx, setActiveVerseIdx] = useState<number>(0);
+
+    // 가사 음성 나레이션 & 하이라이트 싱크
+    const voiceTimeoutsRef = useRef<any[]>([]);
+
+    const clearVoiceTimers = () => {
+        voiceTimeoutsRef.current.forEach(t => clearTimeout(t));
+        voiceTimeoutsRef.current = [];
+        if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+    };
+
+    const startVoiceNarration = () => {
+        clearVoiceTimers();
+        if (!enableVoice || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+        const verses = trackInfo.lyricsVerses;
+        const delays = [1500, 14000, 27000, 40000]; // 4구절 딜레이
+
+        verses.forEach((verse, idx) => {
+            const delay = delays[idx] || (idx * 13000);
+            const timer = setTimeout(() => {
+                setActiveVerseIdx(idx);
+                
+                const utterance = new SpeechSynthesisUtterance(verse.line);
+                utterance.lang = 'ko-KR';
+                utterance.rate = 0.82; // 차분하고 부드러운 명상 템포
+                utterance.pitch = 0.95;
+                utterance.volume = isMuted ? 0 : 0.9;
+
+                // 가능한 경우 가장 자연스러운 한국어 보이스 선택
+                const voices = window.speechSynthesis.getVoices();
+                const koVoice = voices.find(v => v.lang.includes('ko') && (v.name.includes('Natural') || v.name.includes('Yuna') || v.name.includes('Google') || v.name.includes('Heami')));
+                if (koVoice) utterance.voice = koVoice;
+
+                window.speechSynthesis.speak(utterance);
+            }, delay);
+
+            voiceTimeoutsRef.current.push(timer);
+        });
+    };
+
+    // 음악 재생/정지 시 음성 제어
+    useEffect(() => {
+        if (isPlaying) {
+            startVoiceNarration();
+        } else {
+            clearVoiceTimers();
+            setActiveVerseIdx(-1);
+        }
+        return () => {
+            clearVoiceTimers();
+        };
+    }, [isPlaying, enableVoice]);
+
+    // 모달 닫힐 때 오디오 및 음성 정지
     useEffect(() => {
         if (!isOpen) {
             zeroPointSoundEngine.stop();
+            clearVoiceTimers();
             setIsPlaying(false);
             setCurrentStep(1);
             setPlaySeconds(0);
+            setActiveVerseIdx(-1);
         }
     }, [isOpen]);
 
@@ -111,6 +170,7 @@ export default function ZeroPointMusicModal({
     const handlePlayPause = () => {
         if (isPlaying) {
             zeroPointSoundEngine.stop();
+            clearVoiceTimers();
             setIsPlaying(false);
         } else {
             zeroPointSoundEngine.play(trackInfo.targetElement);
@@ -509,20 +569,54 @@ export default function ZeroPointMusicModal({
 
                                 {/* Lyrics & Coaching Essay Box */}
                                 <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
-                                    <div className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
-                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                        <span>나만의 제로포인트 에세이 가사</span>
+                                    <div className="flex items-center justify-between">
+                                        <div className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                                            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                            <span>나만의 제로포인트 에세이 가사</span>
+                                        </div>
+                                        {/* Voice Narration Toggle */}
+                                        <button
+                                            onClick={() => setEnableVoice(!enableVoice)}
+                                            className={`px-2.5 py-1 rounded-full text-[10.5px] font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                                enableVoice
+                                                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm'
+                                                    : 'bg-slate-900 text-gray-400 border-slate-700 hover:text-gray-200'
+                                            }`}
+                                        >
+                                            <span>{enableVoice ? '🎤 감성 보이스 낭독 ON' : '🔇 BGM만 듣기'}</span>
+                                        </button>
                                     </div>
 
                                     <div className="space-y-2 pl-2 border-l-2 border-amber-500/40">
-                                        {trackInfo.lyricsVerses.map((verse, vIdx) => (
-                                            <div key={vIdx} className="space-y-0.5">
-                                                <span className="text-[9.5px] font-mono text-gray-500">{verse.timeLabel}</span>
-                                                <p className="text-xs text-gray-200 font-medium leading-relaxed">
-                                                    "{verse.line}"
-                                                </p>
-                                            </div>
-                                        ))}
+                                        {trackInfo.lyricsVerses.map((verse, vIdx) => {
+                                            const isActive = activeVerseIdx === vIdx;
+                                            return (
+                                                <div
+                                                    key={vIdx}
+                                                    className={`p-2 rounded-xl transition-all duration-500 ${
+                                                        isActive
+                                                            ? 'bg-amber-500/20 border border-amber-400/60 shadow-lg shadow-amber-500/10 translate-x-1'
+                                                            : 'bg-transparent border border-transparent'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center gap-1.5 mb-0.5">
+                                                        <span className="text-[9.5px] font-mono text-gray-500">{verse.timeLabel}</span>
+                                                        {isActive && (
+                                                            <span className="text-[10px] text-amber-300 font-bold animate-pulse flex items-center gap-1">
+                                                                <span>🎵 낭독 중</span>
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className={`text-xs leading-relaxed transition-colors ${
+                                                        isActive
+                                                            ? 'text-amber-100 font-bold text-sm'
+                                                            : 'text-gray-300 font-medium'
+                                                    }`}>
+                                                        "{verse.line}"
+                                                    </p>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
 
                                     <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-[11px] leading-relaxed">
