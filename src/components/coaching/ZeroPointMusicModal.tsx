@@ -1494,6 +1494,7 @@ export default function ZeroPointMusicModal({
                                             <button
                                                 onClick={() => {
                                                     setIncludeName(true);
+                                                    setIsDepositSubmitted(false);
                                                     setShowPaymentModal(true);
                                                 }}
                                                 className="py-3 px-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-[11.5px] shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer transform hover:-translate-y-0.5 text-center"
@@ -1503,6 +1504,7 @@ export default function ZeroPointMusicModal({
                                             <button
                                                 onClick={() => {
                                                     setIncludeName(false);
+                                                    setIsDepositSubmitted(false);
                                                     setShowPaymentModal(true);
                                                 }}
                                                 className="py-3 px-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-black text-[11.5px] shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer transform hover:-translate-y-0.5 text-center"
@@ -1533,13 +1535,13 @@ export default function ZeroPointMusicModal({
                     {/* [NEW] 💳 4,900원 맞춤 노래 평생 소장 결제 팝업 모달 */}
                     {showPaymentModal && (
                         <div className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-                            <div className="w-full max-w-sm bg-slate-900 border border-amber-500/50 rounded-3xl p-5 shadow-2xl space-y-4 text-xs relative">
+                            <div className="w-full max-w-sm bg-slate-900 border border-amber-500/50 rounded-3xl p-5 shadow-2xl space-y-4 text-xs relative max-h-[90vh] overflow-y-auto hide-scrollbar">
                                 <button
                                     onClick={() => {
                                         setShowPaymentModal(false);
-                                        setIsPaidSuccess(false);
+                                        setIsDepositSubmitted(false);
                                     }}
-                                    className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1"
+                                    className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1 cursor-pointer"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
