@@ -240,10 +240,13 @@ export default function ZeroPointMusicModal({
         }
     }, [isOpen]);
 
-    // STEP 3 명상 호흡 가이드 실제 사운드 & 타이머
+    // STEP 3 명상 호흡 가이드 실제 사운드 & 애니메이션 정밀 동기화
+    const [breathDuration, setBreathDuration] = useState<number>(4.2);
+
     useEffect(() => {
         let t1: any = null;
         let t2: any = null;
+        let t3: any = null;
         let step3Timer: any = null;
 
         const playMeditationVoice = (src: string) => {
@@ -273,25 +276,36 @@ export default function ZeroPointMusicModal({
                 console.error(e);
             }
 
-            // 1단계: 들이마시기 (Inhale)
-            setBreathText('숨을... 깊게... 들이마십니다... (Inhale)');
-            setBreathScale(1.35);
+            // [1단계: 0초 ~ 4.2초] 들이마시기 (Inhale 4.2초 음원과 100% 동기화)
+            setBreathDuration(4.2);
+            setBreathText('숨을 깊게 들이마십니다... (Inhale)');
+            setBreathScale(1.45);
             playMeditationVoice('/sounds/meditation_inhale.wav');
 
-            // 2단계: 멈추기 (Hold)
+            // [2단계: 4.3초 ~ 7.8초] 멈추기 (Hold 3.6초 음원과 100% 동기화)
             t1 = setTimeout(() => {
-                setBreathText('잠시...... 멈춥니다. (Hold)');
+                setBreathDuration(3.6);
+                setBreathText('잠시 멈춥니다... (Hold)');
+                setBreathScale(1.45);
                 playMeditationVoice('/sounds/meditation_hold.wav');
-            }, 3500);
+            }, 4300);
 
-            // 3단계: 내쉬기 (Exhale)
+            // [3단계: 7.9초 ~ 11.8초] 내쉬기 (Exhale 3.8초 음원과 100% 동기화)
             t2 = setTimeout(() => {
-                setBreathText('숨을 부드럽게 내쉽니다... (Exhale)');
+                setBreathDuration(3.8);
+                setBreathText('천천히 숨을 내쉽니다... (Exhale)');
                 setBreathScale(0.85);
                 playMeditationVoice('/sounds/voice_exhale.mp3');
-            }, 7000);
+            }, 7900);
 
-            // 4단계: 완료 후 STEP 4 이동
+            // [4단계: 11.9초 ~ 13.2초] 제로포인트 도달 완료 멘트
+            t3 = setTimeout(() => {
+                setBreathDuration(1.2);
+                setBreathText('✨ 마음의 중심, 제로포인트에 도달했습니다.');
+                setBreathScale(1.0);
+            }, 11900);
+
+            // [5단계: 13.5초] 완료 후 STEP 4 이동 및 오행 힐링 음악 시작
             step3Timer = setTimeout(() => {
                 if (meditationBgmRef.current) {
                     meditationBgmRef.current.pause();
@@ -306,11 +320,12 @@ export default function ZeroPointMusicModal({
                 zeroPointSoundEngine.play(trackInfo.targetElement);
                 zeroPointSoundEngine.setVolume(volume);
                 setIsPlaying(true);
-            }, 10500);
+            }, 13500);
 
             return () => {
                 clearTimeout(t1);
                 clearTimeout(t2);
+                clearTimeout(t3);
                 clearTimeout(step3Timer);
                 if (meditationBgmRef.current) {
                     meditationBgmRef.current.pause();
@@ -638,10 +653,10 @@ export default function ZeroPointMusicModal({
                             STEP 3: 제로포인트 5초 명상 호흡 가이드
                             ======================================================== */}
                         {currentStep === 3 && (
-                            <div className="py-12 flex flex-col items-center justify-center text-center space-y-6 animate-fade-in">
+                            <div className="py-12 flex flex-col items-center justify-center text-center space-y-6 animate-fade-in relative">
                                 <motion.div
                                     animate={{ scale: breathScale }}
-                                    transition={{ duration: 2.5, ease: 'easeInOut' }}
+                                    transition={{ duration: breathDuration, ease: 'easeInOut' }}
                                     className="w-36 h-36 rounded-full bg-gradient-to-tr from-amber-400/30 via-indigo-500/30 to-emerald-400/30 border-2 border-amber-400/50 flex items-center justify-center shadow-2xl shadow-amber-500/20 relative"
                                 >
                                     <div className="w-24 h-24 rounded-full bg-slate-950/90 border border-white/20 flex flex-col items-center justify-center text-amber-300 font-bold">
@@ -661,6 +676,26 @@ export default function ZeroPointMusicModal({
                                         사주의 치우친 기운을 비워내고 고요한 0점으로 귀환 중입니다...
                                     </p>
                                 </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (meditationBgmRef.current) {
+                                            meditationBgmRef.current.pause();
+                                            meditationBgmRef.current = null;
+                                        }
+                                        if (meditationVoiceRef.current) {
+                                            meditationVoiceRef.current.pause();
+                                            meditationVoiceRef.current = null;
+                                        }
+                                        setCurrentStep(4);
+                                        zeroPointSoundEngine.play(trackInfo.targetElement);
+                                        zeroPointSoundEngine.setVolume(volume);
+                                        setIsPlaying(true);
+                                    }}
+                                    className="text-[10.5px] text-gray-400 hover:text-amber-300 underline transition-colors cursor-pointer pt-2"
+                                >
+                                    호흡 명상 건너뛰고 바로 듣기 ➔
+                                </button>
                             </div>
                         )}
 
