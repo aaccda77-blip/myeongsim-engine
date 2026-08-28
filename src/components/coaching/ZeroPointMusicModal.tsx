@@ -413,106 +413,155 @@ export default function ZeroPointMusicModal({
                                         </span>
                                     </div>
 
-                                    {/* Saju 4 Pillars & Explanation Box */}
-                                    <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-slate-800 space-y-2.5">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
-                                                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                                <span>이소영 님의 사주 원식 (2003.01.25 寅시)</span>
-                                            </span>
-                                            <span className="text-[10px] text-gray-400 font-mono">오행: 木2 火1 土3 金0 水2</span>
-                                        </div>
-
-                                        {/* 만세력 4주 8글자 칩 */}
-                                        <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
-                                            <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
-                                                <div className="text-gray-400 text-[9px]">년주 (편재/정인)</div>
-                                                <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">壬午</div>
-                                            </div>
-                                            <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
-                                                <div className="text-gray-400 text-[9px]">월주 (정재/겁재)</div>
-                                                <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">癸丑</div>
-                                            </div>
-                                            <div className="p-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 shadow-sm">
-                                                <div className="text-amber-300 font-bold text-[9px]">일주 (본원/비견)</div>
-                                                <div className="font-extrabold text-amber-100 font-mono text-xs mt-0.5">戊戌</div>
-                                            </div>
-                                            <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
-                                                <div className="text-gray-400 text-[9px]">시주 (편관/편관)</div>
-                                                <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">甲寅</div>
-                                            </div>
-                                        </div>
-
-                                        {/* 사주 기질 해설 */}
-                                        <p className="text-[10.5px] text-gray-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
-                                            💡 <strong>[사주 기질 진단]</strong>: 戊戌(무술) 일주는 거대한 대지처럼 강한 책임감과 끈기를 지녔으나, 시주의 <strong>甲寅(편관) 중압감</strong>과 <strong>土(3) 비견의 무게</strong>로 인해 모든 짐을 혼자 짊어지려는 완벽주의가 강합니다. 특히 <strong>금(金=호흡·비움·이완)이 결핍(0개)</strong>되어 어깨가 무겁고 마음의 긴장이 쉽게 쌓이는 구조입니다.
-                                        </p>
-                                    </div>
-
-                                    {/* 과학적 근거 & 가사 연계성 설명 박스 */}
-                                    <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 space-y-2 text-[10.5px] text-gray-300 leading-relaxed">
-                                        <div className="text-[11px] font-bold text-indigo-300 flex items-center gap-1.5">
-                                            <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
-                                            <span>왜 이 가사로 지어졌을까요? (과학적 & 명리학적 근거)</span>
-                                        </div>
-                                        
-                                        <div className="space-y-1.5 pl-1 border-l-2 border-indigo-500/40">
-                                            <p>
-                                                🧠 <strong>음향심리학적 과학 근거</strong>: 자연의 수학적 비율과 일치하는 <strong>432Hz 주파수</strong>가 부교감신경을 자극하여 스트레스 호르몬을 낮추고 뇌파를 알파파로 안정시킵니다. 또한 뇌의 <strong>자기 참조 효과(Self-Referential Effect)</strong>로 인해 노래 속에서 다정하게 내 이름이 불릴 때 심리적 방어 기제가 풀리고 깊은 치유가 일어납니다.
-                                            </p>
-                                            <div className="bg-slate-950/60 p-2 rounded-xl space-y-1 text-[10px] text-gray-300">
-                                                <div>• <strong className="text-amber-300">1소절 ("쉼 없이 짊어지던 무거운 책임의 무게를")</strong> ➔ 戊戌·甲寅의 짓눌린 중압감 공감 및 이완 시작</div>
-                                                <div>• <strong className="text-amber-300">2소절 ("깊은 한숨 대신 가벼운 숨으로 비워내네")</strong> ➔ 결핍된 金(폐·호흡) 기운을 보강하는 432Hz 호흡 처방</div>
-                                                <div>• <strong className="text-amber-300">3소절 ("완벽하게 버티지 않아도 대지는 여전히 푸르고")</strong> ➔ 무조건 버텨야 한다는 강박을 해소하고 안전한 쉼 허락</div>
-                                                <div>• <strong className="text-amber-300">4소절 ("내려놓은 그 자리에서 비로소 온전한 나를 만나네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Emotional Prescription Catchphrase */}
-                                    <div className="p-3 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-1">
-                                        <div className="text-[11.5px] font-bold text-amber-200 flex items-center gap-1.5">
-                                            <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
-                                            <span>"힘들 때 수시로 들으세요."</span>
-                                        </div>
-                                        <p className="text-[10.5px] text-gray-300 leading-relaxed">
-                                            광활한 대지(戊戌)처럼 모든 짐을 혼자 짊어지려 할 때, 무거운 숨을 가볍게 비워내고 쉼을 선물하는 432Hz 힐링 처방입니다.
-                                        </p>
-                                    </div>
-
-                                    {/* Track Select Tabs (이름 포함 vs 이름 미포함 vs 맑은 물) */}
-                                    <div className="grid grid-cols-3 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-[10px]">
+                                    {/* Track Select Tabs (이소영 님 vs 순수 에세이 vs 신사일주 남성 맑은 물) */}
+                                    <div className="grid grid-cols-3 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-[9.5px]">
                                         <button
                                             onClick={() => playSampleTrack('name_soyoung')}
-                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center ${
+                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'name_soyoung'
                                                     ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>💖 이름 포함 (소영)</span>
+                                            <span>💖 1. 이소영(戊戌)</span>
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('light_breath')}
-                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center ${
+                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'light_breath'
                                                     ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>🌿 이름 미포함</span>
+                                            <span>🌿 2. 숨(순수)</span>
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('clean_water')}
-                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center ${
+                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'clean_water'
                                                     ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>💧 맑은 물</span>
+                                            <span>💧 3. 맑은물(辛巳男)</span>
                                         </button>
                                     </div>
+
+                                    {/* Saju 4 Pillars & Explanation Box (동적 전환) */}
+                                    {currentSampleTrack !== 'clean_water' ? (
+                                        <>
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-slate-800 space-y-2.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                                        <span>이소영 님의 사주 원식 (2003.01.25 寅시, 女)</span>
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-400 font-mono">오행: 木2 火1 土3 金0 水2</span>
+                                                </div>
+
+                                                {/* 만세력 4주 8글자 칩 */}
+                                                <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">년주 (편재/정인)</div>
+                                                        <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">壬午</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">월주 (정재/겁재)</div>
+                                                        <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">癸丑</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 shadow-sm">
+                                                        <div className="text-amber-300 font-bold text-[9px]">일주 (본원/비견)</div>
+                                                        <div className="font-extrabold text-amber-100 font-mono text-xs mt-0.5">戊戌</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">시주 (편관/편관)</div>
+                                                        <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">甲寅</div>
+                                                    </div>
+                                                </div>
+
+                                                <p className="text-[10.5px] text-gray-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+                                                    💡 <strong>[사주 기질 진단]</strong>: 戊戌(무술) 일주는 거대한 대지처럼 강한 책임감과 끈기를 지녔으나, 시주의 <strong>甲寅(편관) 중압감</strong>과 <strong>土(3) 비견의 무게</strong>로 인해 모든 짐을 혼자 짊어지려는 완벽주의가 강합니다. 특히 <strong>금(金=호흡·비움·이완)이 결핍(0개)</strong>되어 어깨가 무겁고 마음의 긴장이 쉽게 쌓이는 구조입니다.
+                                                </p>
+                                            </div>
+
+                                            {/* 과학적 근거 & 가사 연계성 설명 박스 */}
+                                            <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 space-y-2 text-[10.5px] text-gray-300 leading-relaxed">
+                                                <div className="text-[11px] font-bold text-indigo-300 flex items-center gap-1.5">
+                                                    <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
+                                                    <span>왜 이 가사로 지어졌을까요? (과학적 & 명리학적 근거)</span>
+                                                </div>
+                                                
+                                                <div className="space-y-1.5 pl-1 border-l-2 border-indigo-500/40">
+                                                    <p>
+                                                        🧠 <strong>음향심리학적 과학 근거</strong>: 자연의 수학적 비율과 일치하는 <strong>432Hz 주파수</strong>가 부교감신경을 자극하여 스트레스 호르몬을 낮추고 뇌파를 알파파로 안정시킵니다. 또한 뇌의 <strong>자기 참조 효과(Self-Referential Effect)</strong>로 인해 노래 속에서 다정하게 내 이름이 불릴 때 심리적 방어 기제가 풀리고 깊은 치유가 일어납니다.
+                                                    </p>
+                                                    <div className="bg-slate-950/60 p-2 rounded-xl space-y-1 text-[10px] text-gray-300">
+                                                        <div>• <strong className="text-amber-300">1소절 ("쉼 없이 짊어지던 무거운 책임의 무게를")</strong> ➔ 戊戌·甲寅의 짓눌린 중압감 공감 및 이완 시작</div>
+                                                        <div>• <strong className="text-amber-300">2소절 ("깊은 한숨 대신 가벼운 숨으로 비워내네")</strong> ➔ 결핍된 金(폐·호흡) 기운을 보강하는 432Hz 호흡 처방</div>
+                                                        <div>• <strong className="text-amber-300">3소절 ("완벽하게 버티지 않아도 대지는 여전히 푸르고")</strong> ➔ 무조건 버텨야 한다는 강박을 해소하고 안전한 쉼 허락</div>
+                                                        <div>• <strong className="text-amber-300">4소절 ("내려놓은 그 자리에서 비로소 온전한 나를 만나네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* [NEW] 💧 남자 사주 (庚申년 癸未월 辛巳일 乙未시) 맑은 물이 머무는 곳 사주 분석 */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-sky-500/40 space-y-2.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
+                                                        <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                                                        <span>남성 사주 원식 (辛巳일주 乾命)</span>
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-400 font-mono">오행: 金3 土2 火1 水1 木1</span>
+                                                </div>
+
+                                                {/* 만세력 4주 8글자 칩 */}
+                                                <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">년주 (겁재/겁재)</div>
+                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">庚申</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">월주 (식신/편인)</div>
+                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">癸未</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-sky-500/20 border border-sky-500/50 shadow-sm">
+                                                        <div className="text-sky-300 font-bold text-[9px]">일주 (본원/정관)</div>
+                                                        <div className="font-extrabold text-sky-100 font-mono text-xs mt-0.5">辛巳</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">시주 (편재/편인)</div>
+                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">乙未</div>
+                                                    </div>
+                                                </div>
+
+                                                <p className="text-[10.5px] text-gray-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+                                                    💡 <strong>[사주 기질 진단]</strong>: 辛巳(신사) 일주 남성은 섬세하고 고귀한 보석(辛金)의 기질이나, 년주의 강한 <strong>庚申(겁재) 경쟁 압박</strong>과 <strong>未月·巳火의 건조하고 뜨거운 열기</strong>로 인해 보석이 흙먼지와 열기에 지치기 쉽습니다. 따라서 맑고 시원한 <strong>癸水(식신)의 맑은 물기운으로 보석을 씻어내어(도세주옥, 淘洗珠玉)</strong> 본래의 맑은 빛을 되찾아주는 432Hz 힐링 처방입니다.
+                                                </p>
+                                            </div>
+
+                                            {/* 맑은 물이 머무는 곳 과학적 근거 & 가사 연계성 */}
+                                            <div className="p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 space-y-2 text-[10.5px] text-gray-300 leading-relaxed">
+                                                <div className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
+                                                    <Heart className="w-3.5 h-3.5 text-sky-400 fill-sky-400" />
+                                                    <span>왜 '맑은 물이 머무는 곳'일까요? (도세주옥 淘洗珠玉 처방)</span>
+                                                </div>
+                                                
+                                                <div className="space-y-1.5 pl-1 border-l-2 border-sky-500/40">
+                                                    <p>
+                                                        🧠 <strong>음향심리학적 과학 근거</strong>: 메마른 신경계의 과열된 화기(火氣)를 가라앉히는 <strong>432Hz 수(水) 파동 공명</strong>으로 두뇌의 온도를 낮추고 심박수를 안정시킵니다.
+                                                    </p>
+                                                    <div className="bg-slate-950/60 p-2 rounded-xl space-y-1 text-[10px] text-gray-300">
+                                                        <div>• <strong className="text-sky-300">1소절 ("뜨거운 대지 위에 지쳐있던 보석 같은 마음")</strong> ➔ 辛巳·未月의 건조한 열감과 압박 공감</div>
+                                                        <div>• <strong className="text-sky-300">2소절 ("맑은 물이 머무는 곳으로 잔잔히 흘러가네")</strong> ➔ 癸水(식신)의 시원한 432Hz 물기운 처방</div>
+                                                        <div>• <strong className="text-sky-300">3소절 ("세상의 먼지를 씻어내고 본래의 빛을 발하듯")</strong> ➔ 보석을 맑게 씻어내는 도세주옥 치유</div>
+                                                        <div>• <strong className="text-sky-300">4소절 ("고요한 쉼 속에서 가장 순수한 나로 회복하네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
 
                                     {/* Audio Player & Progress Bar */}
                                     <div className="space-y-2 bg-slate-950/90 p-3 rounded-2xl border border-slate-800">
