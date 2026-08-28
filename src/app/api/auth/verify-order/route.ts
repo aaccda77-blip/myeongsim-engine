@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { verifySmartStoreOrder } from '@/lib/orderVerification';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
         if (!orderNumber || typeof orderNumber !== 'string') {
             return NextResponse.json({
                 success: false,
-                message: '네이버 스마트스토어 주문번호를 입력해 주세요.'
+                message: '도서 구매 주문번호 또는 영수증 승인번호를 입력해 주세요.'
             }, { status: 400 });
         }
 

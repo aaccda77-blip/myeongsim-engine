@@ -97,10 +97,11 @@ export default function MicroChatPassModal({
     };
 
     // 🎫 네이버 스마트스토어 주문번호 인증 핸들러 (1건당 1회 30회 충전)
+    // 🎫 도서 구매 주문번호 / 영수증 인증 핸들러 (1건당 1회 30회 충전)
     const handleVerifySecretCode = async () => {
         const cleaned = secretCode.trim();
         if (!cleaned) {
-            setCodeError('네이버 스마트스토어 주문번호를 입력해 주세요.');
+            setCodeError('도서 구매 주문번호 또는 영수증 승인번호를 입력해 주세요.');
             return;
         }
 
@@ -124,11 +125,11 @@ export default function MicroChatPassModal({
                     localStorage.setItem('myeongsim_verified_order', cleaned);
                     localStorage.removeItem('myeongsim_pending_approval');
                 }
-                alert('🎉 네이버 스마트스토어 도서 구매 인증이 완료되었습니다! 30회 VIP 코칭 대화가 충전되었습니다.');
+                alert('🎉 도서 구매 주문/영수증 인증이 완료되었습니다! 30회 VIP 코칭 대화가 충전되었습니다.');
                 if (onSuccessPay) onSuccessPay();
                 onClose();
             } else {
-                setCodeError(data.message || '유효하지 않은 주문번호이거나 이미 등록된 주문번호입니다.');
+                setCodeError(data.message || '유효하지 않은 주문/영수증 번호이거나 이미 등록된 번호입니다.');
             }
         } catch (e) {
             console.error('Order verify error:', e);
@@ -141,7 +142,7 @@ export default function MicroChatPassModal({
                 if (onSuccessPay) onSuccessPay();
                 onClose();
             } else {
-                setCodeError('주문번호 인증 중 오류가 발생했습니다.');
+                setCodeError('주문번호/영수증 인증 중 오류가 발생했습니다.');
             }
         }
     };
@@ -180,7 +181,7 @@ export default function MicroChatPassModal({
                     </h3>
                     <p className="text-[11px] text-gray-300 font-light leading-relaxed mb-3">
                         무통장 입금 후 관리자 승인을 받으시거나,<br />
-                        <strong>스마트스토어 주문번호</strong>를 입력하시면 30회 코칭이 즉시 활성화됩니다.
+                        <strong>도서 구매 주문/영수증 번호</strong>를 입력하시면 30회 코칭이 즉시 활성화됩니다.
                     </p>
 
                     {/* Tab Switcher */}
@@ -205,7 +206,7 @@ export default function MicroChatPassModal({
                             }`}
                         >
                             <KeyRound className="w-3.5 h-3.5" />
-                            <span>2. 스마트스토어 인증</span>
+                            <span>2. 주문/영수증 인증</span>
                         </button>
                     </div>
 
@@ -320,17 +321,17 @@ export default function MicroChatPassModal({
                         </>
                     )}
 
-                    {/* TAB 2: 스마트스토어 주문번호 인증 */}
+                    {/* TAB 2: 도서 구매 주문번호 / 영수증 인증 */}
                     {activeTab === 'code' && (
                         <div className="space-y-3.5 text-left animate-fade-in">
                             <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed">
-                                📦 <strong>스마트스토어 도서 구매자 전용</strong><br />
-                                네이버 스마트스토어의 <strong>주문번호(주문상세내역 확인)</strong>를 입력하시면 30회 VIP 코칭 대화가 즉시 충전됩니다.
+                                📖 <strong>도서 구매 독자 전용 혜택</strong><br />
+                                스마트스토어, 부크크, 교보문고 등의 <strong>구매 주문번호 또는 영수증 번호</strong>를 입력하시면 30회 VIP 코칭 대화가 즉시 충전됩니다.
                             </div>
 
                             <div className="space-y-1">
                                 <label className="text-[11px] font-bold text-amber-300 block">
-                                    네이버 스마트스토어 주문번호
+                                    도서 구매 주문번호 / 영수증 번호
                                 </label>
                                 <input
                                     type="text"
@@ -339,11 +340,11 @@ export default function MicroChatPassModal({
                                         setSecretCode(e.target.value);
                                         setCodeError(null);
                                     }}
-                                    placeholder="예: 20260829-12345678"
+                                    placeholder="예: 20260829-12345678 (주문/영수증 번호)"
                                     className="w-full bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-wider text-xs px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-amber-400 placeholder:text-gray-600"
                                 />
                                 <p className="text-[10px] text-gray-400 text-center">
-                                    ※ 주문번호 1건당 1회만 등록 가능합니다.
+                                    ※ 스마트스토어·부크크·교보 등 주문 1건당 1회 등록 가능
                                 </p>
                                 {codeError && (
                                     <p className="text-[10px] text-rose-400 mt-1 text-center font-medium">
@@ -357,7 +358,7 @@ export default function MicroChatPassModal({
                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                                 <Sparkles className="w-4 h-4 fill-current" />
-                                <span>주문번호 인증하고 30회 코칭 충전 ➔</span>
+                                <span>주문/영수증 인증하고 30회 코칭 충전 ➔</span>
                             </button>
                         </div>
                     )}

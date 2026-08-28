@@ -1,4 +1,4 @@
-﻿import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export interface VerifiedOrderRecord {
     orderNumber: string;
@@ -19,7 +19,7 @@ export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: str
     if (!cleanOrder || cleanOrder.length < 8) {
         return {
             success: false,
-            message: '올바른 네이버 스마트스토어 주문번호를 입력해 주세요. (최소 8자리 이상)'
+            message: '올바른 도서 구매 주문번호 또는 영수증 승인번호를 입력해 주세요. (최소 8자리 이상)'
         };
     }
 
@@ -28,7 +28,7 @@ export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: str
         const existing = usedOrderNumbersStore.get(cleanOrder)!;
         return {
             success: false,
-            message: `이미 혜택 지급이 완료된 주문번호입니다. (인증일시: ${new Date(existing.verifiedAt).toLocaleDateString('ko-KR')}) - 주문번호 1건당 1회만 등록 가능합니다.`
+            message: `이미 혜택 지급이 완료된 주문/영수증 번호입니다. (인증일시: ${new Date(existing.verifiedAt).toLocaleDateString('ko-KR')}) - 주문 1건당 1회만 등록 가능합니다.`
         };
     }
 
@@ -44,7 +44,7 @@ export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: str
             if (data) {
                 return {
                     success: false,
-                    message: '이미 혜택 지급이 완료된 주문번호입니다. (주문번호 1건당 1회만 등록 가능합니다)'
+                    message: '이미 혜택 지급이 완료된 주문/영수증 번호입니다. (주문 1건당 1회만 등록 가능합니다)'
                 };
             }
         } catch (err) {
@@ -57,7 +57,7 @@ export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: str
     const record: VerifiedOrderRecord = {
         orderNumber: cleanOrder,
         userId: userId || `user-${cleanOrder.slice(0, 8)}`,
-        depositorName: depositorName || '스마트스토어 독자',
+        depositorName: depositorName || '도서 구매 독자',
         verifiedAt: nowIso
     };
 
@@ -82,7 +82,7 @@ export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: str
 
     return {
         success: true,
-        message: '🎉 네이버 스마트스토어 주문번호 인증이 완료되었습니다! 1:1 맞춤 힐링송 신청 및 30회 VIP 코칭 혜택이 활성화되었습니다.',
+        message: '🎉 도서 구매 주문번호/영수증 인증이 완료되었습니다! 1:1 맞춤 힐링송 신청 및 30회 VIP 코칭 혜택이 활성화되었습니다.',
         record
     };
 }
