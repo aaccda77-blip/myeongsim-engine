@@ -1537,7 +1537,7 @@ export default function ZeroPointMusicModal({
                                                 </div>
                                                 <div className="flex items-center gap-1.5">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                                    <span>지친 마음을 비워내는 제로포인트 호흡 가이드 포함</span>
+                                                    <span className="font-bold text-amber-200">📖 《제로포인트》 도서 포함</span>
                                                 </div>
                                             </div>
                                         </div>
