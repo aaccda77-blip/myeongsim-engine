@@ -1793,18 +1793,18 @@ export default function ZeroPointMusicModal({
                                                         onClick={() => setOrderDeliveryType('kakao')}
                                                         className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
                                                             orderDeliveryType === 'kakao'
-                                                                ? 'bg-amber-400 text-slate-950 border-amber-400'
+                                                                ? 'bg-amber-400 text-slate-950 border-amber-400 font-extrabold'
                                                                 : 'bg-slate-950 text-gray-400 border-slate-800'
                                                         }`}
                                                     >
-                                                        💬 카카오톡 전달 (추천)
+                                                        💬 1:1 오픈채팅 전달 (추천)
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => setOrderDeliveryType('email')}
                                                         className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
                                                             orderDeliveryType === 'email'
-                                                                ? 'bg-indigo-500 text-white border-indigo-400'
+                                                                ? 'bg-indigo-500 text-white border-indigo-400 font-extrabold'
                                                                 : 'bg-slate-950 text-gray-400 border-slate-800'
                                                         }`}
                                                     >
@@ -1815,7 +1815,7 @@ export default function ZeroPointMusicModal({
                                                     type="text"
                                                     value={orderContact}
                                                     onChange={(e) => setOrderContact(e.target.value)}
-                                                    placeholder={orderDeliveryType === 'kakao' ? "카카오톡 연락처 또는 닉네임" : "음원을 받을 이메일 주소 (예: user@naver.com)"}
+                                                    placeholder={orderDeliveryType === 'kakao' ? "오픈채팅 닉네임 또는 연락처" : "음원을 받을 이메일 주소 (예: user@naver.com)"}
                                                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400"
                                                 />
                                             </div>
