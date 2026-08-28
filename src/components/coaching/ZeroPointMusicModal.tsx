@@ -1052,12 +1052,12 @@ export default function ZeroPointMusicModal({
                                     </div>
 
                                     {/* Track Select Tabs (여자1 님 vs 여자2 님 vs 순수 에세이 vs 신사일주 남자1 vs 도파민 날아올라) */}
-                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-[8.5px] sm:text-[9.5px]">
+                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 p-1.5 bg-slate-950/90 rounded-2xl border border-slate-800 text-[10px] sm:text-xs gpu-smooth">
                                         <button
                                             onClick={() => playSampleTrack('name_soyoung')}
-                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
+                                            className={`py-2 px-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'name_soyoung'
-                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
+                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md font-black'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
@@ -1065,9 +1065,9 @@ export default function ZeroPointMusicModal({
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('kang_misook')}
-                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
+                                            className={`py-2 px-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'kang_misook'
-                                                    ? 'bg-gradient-to-r from-amber-400 via-rose-400 to-pink-500 text-slate-950 shadow-sm font-extrabold animate-pulse'
+                                                    ? 'bg-gradient-to-r from-amber-400 via-rose-400 to-pink-500 text-slate-950 shadow-md font-black'
                                                     : 'text-rose-300 hover:text-white'
                                             }`}
                                         >
@@ -1075,9 +1075,9 @@ export default function ZeroPointMusicModal({
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('light_breath')}
-                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
+                                            className={`py-2 px-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'light_breath'
-                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
+                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md font-black'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
@@ -1085,9 +1085,9 @@ export default function ZeroPointMusicModal({
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('clean_water')}
-                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
+                                            className={`py-2 px-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'clean_water'
-                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
+                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md font-black'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
@@ -1095,9 +1095,9 @@ export default function ZeroPointMusicModal({
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('fly_high')}
-                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
+                                            className={`py-2 px-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'fly_high'
-                                                    ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 text-white font-extrabold shadow-sm'
+                                                    ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 text-white font-black shadow-md'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
