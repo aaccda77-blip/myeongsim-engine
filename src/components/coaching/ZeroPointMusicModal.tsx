@@ -609,6 +609,68 @@ export default function ZeroPointMusicModal({
                                             onChange={(e) => handleSampleSeek(parseFloat(e.target.value))}
                                             className="w-full h-1.5 bg-slate-800 accent-amber-400 rounded-lg cursor-pointer"
                                         />
+
+                                        {/* [NEW] 🎤 실시간 노래 가사 뷰어 (재생 시 실시간 하이라이트 싱크) */}
+                                        <div className="pt-2 border-t border-slate-800/80 space-y-2">
+                                            <div className="flex items-center justify-between text-[10.5px]">
+                                                <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                                                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                                    <span>실시간 노래 가사</span>
+                                                </span>
+                                                {isSamplePlaying ? (
+                                                    <span className="text-[9.5px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/40 font-bold animate-pulse flex items-center gap-1">
+                                                        <span>🎵 보컬 재생 중</span>
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[9.5px] text-gray-500">재생 시 가사가 실시간 하이라이트됩니다</span>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-1.5">
+                                                {(currentSampleTrack === 'name_soyoung' ? [
+                                                    { timeLabel: '00:00 - 00:45', line: '소영아, 쉼 없이 짊어지던 무거운 책임의 무게를', start: 0, end: 45 },
+                                                    { timeLabel: '00:46 - 01:30', line: '깊은 한숨 대신 가벼운 숨으로 비워내네', start: 46, end: 90 },
+                                                    { timeLabel: '01:31 - 02:15', line: '완벽하게 버티지 않아도 대지는 여전히 푸르고', start: 91, end: 135 },
+                                                    { timeLabel: '02:16 - 03:40', line: '내려놓은 그 자리에서 비로소 온전한 나를 만나네', start: 136, end: 220 }
+                                                ] : currentSampleTrack === 'light_breath' ? [
+                                                    { timeLabel: '00:00 - 00:45', line: '쉼 없이 짊어지던 무거운 책임의 무게를', start: 0, end: 45 },
+                                                    { timeLabel: '00:46 - 01:30', line: '깊은 한숨 대신 가벼운 숨으로 비워내네', start: 46, end: 90 },
+                                                    { timeLabel: '01:31 - 02:15', line: '완벽하게 버티지 않아도 대지는 여전히 푸르고', start: 91, end: 135 },
+                                                    { timeLabel: '02:16 - 03:40', line: '내려놓은 그 자리에서 비로소 온전한 나를 만나네', start: 136, end: 220 }
+                                                ] : [
+                                                    { timeLabel: '00:00 - 00:45', line: '뜨거운 대지 위에 지쳐있던 보석 같은 마음', start: 0, end: 45 },
+                                                    { timeLabel: '00:46 - 01:30', line: '맑은 물이 머무는 곳으로 잔잔히 흘러가네', start: 46, end: 90 },
+                                                    { timeLabel: '01:31 - 02:15', line: '세상의 먼지를 씻어내고 본래의 빛을 발하듯', start: 91, end: 135 },
+                                                    { timeLabel: '02:16 - 03:40', line: '고요한 쉼 속에서 가장 순수한 나로 회복하네', start: 136, end: 220 }
+                                                ]).map((lyric, idx) => {
+                                                    const isCurrent = isSamplePlaying && sampleProgress >= lyric.start && sampleProgress <= lyric.end;
+                                                    return (
+                                                        <div
+                                                            key={idx}
+                                                            className={`p-2.5 rounded-xl transition-all duration-300 ${
+                                                                isCurrent
+                                                                    ? 'bg-amber-500/25 border border-amber-400 shadow-md shadow-amber-500/15 translate-x-1'
+                                                                    : 'bg-slate-900/60 border border-white/5'
+                                                            }`}
+                                                        >
+                                                            <div className="flex items-center justify-between text-[9px] font-mono text-gray-400 mb-0.5">
+                                                                <span>{lyric.timeLabel}</span>
+                                                                {isCurrent && (
+                                                                    <span className="text-amber-300 font-bold flex items-center gap-1">
+                                                                        <span>● 현재 소절</span>
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <p className={`text-xs leading-relaxed transition-colors ${
+                                                                isCurrent ? 'text-amber-100 font-extrabold text-[12.5px]' : 'text-gray-300'
+                                                            }`}>
+                                                                "{lyric.line}"
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* [NEW] 💖 구입을 망설이는 분들을 위한 따뜻한 감성 위로 멘트 */}
