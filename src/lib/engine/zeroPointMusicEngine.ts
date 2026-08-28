@@ -38,7 +38,8 @@ export const EMOTIONAL_STATE_OPTIONS = [
 
 export function generateZeroPointMusicTrack(
     userProfile: any,
-    selectedEmotion: EmotionalState = 'rush'
+    selectedEmotion: EmotionalState = 'rush',
+    includeName: boolean = true
 ): ZeroPointTrackInfo {
     const userName = userProfile?.userName || userProfile?.name || '명심가';
     const saju = userProfile?.saju || {};
@@ -53,6 +54,8 @@ export function generateZeroPointMusicTrack(
     let verses: { timeLabel: string; line: string }[] = [];
     let coaching = '';
 
+    const namePrefix = includeName ? `${userName} 님, ` : '';
+
     if (selectedEmotion === 'rush' || dGan === '丙' || dGan === '丁') {
         // 화(火) 과열 ➔ 수(水) 처방 (잔잔한 물/첼로로 열기 식힘)
         targetElement = 'fire';
@@ -60,7 +63,7 @@ export function generateZeroPointMusicTrack(
         trackTitle = `${userName} 님의 [깊은 밤 잔잔한 호수에서]`;
         subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (65 BPM)`;
         verses = [
-            { timeLabel: '00:00 - 00:45', line: '쉼 없이 타오르던 마음의 불꽃을' },
+            { timeLabel: '00:00 - 00:45', line: `${namePrefix}쉼 없이 타오르던 마음의 불꽃을` },
             { timeLabel: '00:46 - 01:30', line: '깊은 호수 같은 고요에 비추어 보네' },
             { timeLabel: '01:31 - 02:15', line: '서두르지 않아도 모든 것은 제자리를 찾아가고' },
             { timeLabel: '02:16 - 03:00', line: '그 평온한 제로점에서 비로소 온전한 나를 만나네' }
@@ -73,7 +76,7 @@ export function generateZeroPointMusicTrack(
         trackTitle = `${userName} 님의 [푸른 나무의 평온한 쉼]`;
         subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (75 BPM)`;
         verses = [
-            { timeLabel: '00:00 - 00:45', line: '하늘 높이 뻗어 나가려던 수많은 생각의 가지들' },
+            { timeLabel: '00:00 - 00:45', line: `${namePrefix}하늘 높이 뻗어 나가려던 수많은 생각의 가지들` },
             { timeLabel: '00:46 - 01:30', line: '바람에 실어 보내고 뿌리의 고요에 기대어' },
             { timeLabel: '01:31 - 02:15', line: '증명하지 않아도 존재하는 그 자체로 충분한' },
             { timeLabel: '02:16 - 03:00', line: '숲의 침묵 속에 마음을 내려놓네' }
@@ -86,7 +89,7 @@ export function generateZeroPointMusicTrack(
         trackTitle = `${userName} 님의 [부드러운 온기의 선율]`;
         subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (70 BPM)`;
         verses = [
-            { timeLabel: '00:00 - 00:45', line: '날카롭게 날을 세우던 마음의 긴장들' },
+            { timeLabel: '00:00 - 00:45', line: `${namePrefix}날카롭게 날을 세우던 마음의 긴장들` },
             { timeLabel: '00:46 - 01:30', line: '따스한 햇살 같은 선율에 부드럽게 녹아내리네' },
             { timeLabel: '01:31 - 02:15', line: '완벽하지 않아도 아름다운 삶의 결을 따라' },
             { timeLabel: '02:16 - 03:00', line: '고요한 제로포인트에서 참된 자유를 얻네' }
@@ -99,7 +102,7 @@ export function generateZeroPointMusicTrack(
         trackTitle = `${userName} 님의 [새벽 시냇물과 맑은 피아노]`;
         subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (72 BPM)`;
         verses = [
-            { timeLabel: '00:00 - 00:45', line: '굳게 닫혀있던 마음의 문을 열고' },
+            { timeLabel: '00:00 - 00:45', line: `${namePrefix}굳게 닫혀있던 마음의 문을 열고` },
             { timeLabel: '00:46 - 01:30', line: '새벽 시냇물처럼 맑은 선율이 흘러가네' },
             { timeLabel: '01:31 - 02:15', line: '막혀있던 모든 응어리가 시원하게 풀려나고' },
             { timeLabel: '02:16 - 03:00', line: '새로운 생명의 기운이 가슴 가득 차오르네' }
@@ -112,7 +115,7 @@ export function generateZeroPointMusicTrack(
         trackTitle = `${userName} 님의 [아침 햇살의 따스한 파동]`;
         subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (80 BPM)`;
         verses = [
-            { timeLabel: '00:00 - 00:45', line: '차갑고 깊은 생각의 바다 위에' },
+            { timeLabel: '00:00 - 00:45', line: `${namePrefix}차갑고 깊은 생각의 바다 위에` },
             { timeLabel: '00:46 - 01:30', line: '눈부신 아침 햇살이 따스하게 비추이네' },
             { timeLabel: '01:31 - 02:15', line: '어둠을 뚫고 피어나는 희망의 온기를 품고' },
             { timeLabel: '02:16 - 03:00', line: '온전하고 빛나는 나 자신으로 걸어 나가네' }

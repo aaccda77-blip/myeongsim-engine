@@ -32,6 +32,7 @@ export default function ZeroPointMusicModal({
 }: ZeroPointMusicModalProps) {
     const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
     const [selectedEmotion, setSelectedEmotion] = useState<EmotionalState>('rush');
+    const [includeName, setIncludeName] = useState<boolean>(true); // [NEW] 이름 포함 여부 (기본 true: 1:1 헌정곡)
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [volume, setVolume] = useState<number>(0.5);
     const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -53,7 +54,8 @@ export default function ZeroPointMusicModal({
 
     const trackInfo: ZeroPointTrackInfo = generateZeroPointMusicTrack(
         effectiveProfile,
-        selectedEmotion
+        selectedEmotion,
+        includeName
     );
 
     // 음악 재생 타이머
@@ -128,8 +130,8 @@ export default function ZeroPointMusicModal({
         };
     }, [isPlaying, enableVoice]);
 
-    // [NEW] 🎧 공식 보컬 완성곡 샘플 플레이어 ('가벼워진 숨' & '맑은 물이 머무는 곳')
-    const [currentSampleTrack, setCurrentSampleTrack] = useState<'light_breath' | 'clean_water'>('light_breath');
+    // [NEW] 🎧 공식 보컬 완성곡 샘플 플레이어 ('이름 포함', '이름 미포함', '맑은 물')
+    const [currentSampleTrack, setCurrentSampleTrack] = useState<'name_soyoung' | 'light_breath' | 'clean_water'>('name_soyoung');
     const [isSamplePlaying, setIsSamplePlaying] = useState<boolean>(false);
     const [sampleProgress, setSampleProgress] = useState<number>(0);
     const [sampleDuration, setSampleDuration] = useState<number>(0);
@@ -137,8 +139,10 @@ export default function ZeroPointMusicModal({
     const [isPaidSuccess, setIsPaidSuccess] = useState<boolean>(false);
     const sampleAudioRef = useRef<HTMLAudioElement | null>(null);
 
-    const playSampleTrack = (track: 'light_breath' | 'clean_water') => {
-        const audioSrc = track === 'light_breath' ? '/sample_light_breath.wav' : '/sample_essay_song.wav';
+    const playSampleTrack = (track: 'name_soyoung' | 'light_breath' | 'clean_water') => {
+        let audioSrc = '/sample_name_soyoung.wav';
+        if (track === 'light_breath') audioSrc = '/sample_light_breath.wav';
+        else if (track === 'clean_water') audioSrc = '/sample_essay_song.wav';
         
         if (sampleAudioRef.current) {
             sampleAudioRef.current.pause();
@@ -176,7 +180,7 @@ export default function ZeroPointMusicModal({
         });
     };
 
-    const toggleSamplePlay = (track: 'light_breath' | 'clean_water' = currentSampleTrack) => {
+    const toggleSamplePlay = (track: 'name_soyoung' | 'light_breath' | 'clean_water' = currentSampleTrack) => {
         if (currentSampleTrack !== track || !sampleAudioRef.current) {
             playSampleTrack(track);
             return;
@@ -446,27 +450,37 @@ export default function ZeroPointMusicModal({
                                         </p>
                                     </div>
 
-                                    {/* Track Select Tabs (가벼워진 숨 vs 맑은 물이 머무는 곳) */}
-                                    <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800">
+                                    {/* Track Select Tabs (이름 포함 vs 이름 미포함 vs 맑은 물) */}
+                                    <div className="grid grid-cols-3 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-[10px]">
                                         <button
-                                            onClick={() => playSampleTrack('light_breath')}
-                                            className={`flex-1 py-1.5 rounded-lg text-[10.5px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                                                currentSampleTrack === 'light_breath'
-                                                    ? 'bg-amber-500 text-slate-950 shadow-sm'
+                                            onClick={() => playSampleTrack('name_soyoung')}
+                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center ${
+                                                currentSampleTrack === 'name_soyoung'
+                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>🎵 1. 가벼워진 숨 (이*영 님 戊戌일주)</span>
+                                            <span>💖 이름 포함 (소영)</span>
+                                        </button>
+                                        <button
+                                            onClick={() => playSampleTrack('light_breath')}
+                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center ${
+                                                currentSampleTrack === 'light_breath'
+                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
+                                                    : 'text-gray-400 hover:text-white'
+                                            }`}
+                                        >
+                                            <span>🌿 이름 미포함</span>
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('clean_water')}
-                                            className={`flex-1 py-1.5 rounded-lg text-[10.5px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center ${
                                                 currentSampleTrack === 'clean_water'
-                                                    ? 'bg-amber-500 text-slate-950 shadow-sm'
+                                                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-sm'
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>🎵 2. 맑은 물이 머무는 곳</span>
+                                            <span>💧 맑은 물</span>
                                         </button>
                                     </div>
 
@@ -490,7 +504,11 @@ export default function ZeroPointMusicModal({
                                                 </button>
                                                 <div>
                                                     <div className="text-xs font-bold text-white">
-                                                        {currentSampleTrack === 'light_breath' ? '가벼워진 숨' : '맑은 물이 머무는 곳'}
+                                                        {currentSampleTrack === 'name_soyoung'
+                                                            ? '가벼워진 숨 (이*영 님 헌정곡: 이름 포함)'
+                                                            : currentSampleTrack === 'light_breath'
+                                                            ? '가벼워진 숨 (순수 에세이: 이름 미포함)'
+                                                            : '맑은 물이 머무는 곳'}
                                                     </div>
                                                     <div className="text-[9.5px] text-gray-400">
                                                         {isSamplePlaying ? '🎵 실제 보컬 완성곡 재생 중...' : '재생 버튼을 눌러 들어보세요'}
@@ -533,6 +551,56 @@ export default function ZeroPointMusicModal({
                                         <span>✨ 4,900원 결제하고 내 사주 맞춤 노래 평생 소장하기</span>
                                         <ChevronRight className="w-4 h-4" />
                                     </button>
+                                </div>
+
+                                {/* [NEW] 💖 이름 포함 여부 선택 옵션 (고객 선택 메뉴) */}
+                                <div className="space-y-2 p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+                                    <label className="font-bold text-gray-200 flex items-center gap-1.5 text-xs">
+                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                        <span>노래 가사 유형 선택 (내 이름 포함 여부)</span>
+                                    </label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIncludeName(true)}
+                                            className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex items-start gap-2.5 ${
+                                                includeName
+                                                    ? 'bg-amber-500/20 border-amber-400 text-white shadow-lg shadow-amber-500/10'
+                                                    : 'bg-slate-900/60 border-slate-800 text-gray-400 hover:border-slate-700'
+                                            }`}
+                                        >
+                                            <span className="text-xl">💖</span>
+                                            <div>
+                                                <div className="font-bold text-xs text-white flex items-center gap-1.5">
+                                                    <span>내 이름 포함 1:1 헌정곡</span>
+                                                    <span className="text-[9px] bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded font-bold">추천</span>
+                                                </div>
+                                                <div className="text-[10.5px] text-gray-300 mt-0.5 leading-snug">
+                                                    가사 속에 '{effectiveProfile.userName} 님'의 이름을 직접 불러주어 깊은 감동과 위로를 줍니다.
+                                                </div>
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setIncludeName(false)}
+                                            className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex items-start gap-2.5 ${
+                                                !includeName
+                                                    ? 'bg-amber-500/20 border-amber-400 text-white shadow-lg shadow-amber-500/10'
+                                                    : 'bg-slate-900/60 border-slate-800 text-gray-400 hover:border-slate-700'
+                                            }`}
+                                        >
+                                            <span className="text-xl">🌿</span>
+                                            <div>
+                                                <div className="font-bold text-xs text-white">
+                                                    이름 미포함 순수 에세이곡
+                                                </div>
+                                                <div className="text-[10.5px] text-gray-300 mt-0.5 leading-snug">
+                                                    이름 없이 은은한 시적 은유로 마음을 차분하게 이완하고 힐링합니다.
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* User Saju Pill Box */}
@@ -939,7 +1007,11 @@ export default function ZeroPointMusicModal({
                                             <div className="space-y-1.5 text-[10.5px] text-gray-300">
                                                 <div className="flex items-center gap-1.5">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                                    <span>사주 8글자 1:1 맞춤 에세이 가사 작사</span>
+                                                    <span className="font-semibold text-amber-200">
+                                                        {includeName
+                                                            ? `💖 '${effectiveProfile.userName} 님' 이름 포함 1:1 헌정 에세이 작사`
+                                                            : `🌿 '${effectiveProfile.userName} 님' 사주 기질 맞춤 순수 에세이 작사`}
+                                                    </span>
                                                 </div>
                                                 <div className="flex items-center gap-1.5">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
