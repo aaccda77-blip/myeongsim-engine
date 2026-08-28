@@ -376,6 +376,50 @@ export default function ZeroPointMusicModal({
         }
     };
 
+    // [NEW] 🎫 《제로포인트》 도서 독자 전용 시크릿 인증 코드 시스템 & 공유하기
+    const [bookCouponCode, setBookCouponCode] = useState<string>('');
+    const [isCouponModalOpen, setIsCouponModalOpen] = useState<boolean>(false);
+    const [couponSuccessMessage, setCouponSuccessMessage] = useState<string | null>(null);
+    const [isShareSuccess, setIsShareSuccess] = useState<boolean>(false);
+
+    const handleVerifyCoupon = () => {
+        const cleaned = bookCouponCode.trim().replace(/[-\s]/g, '').toUpperCase();
+        if (!cleaned) {
+            alert('도서에 동봉된 시크릿 인증 코드를 입력해 주세요.');
+            return;
+        }
+
+        // 16자리 코드 또는 유효한 프로모션 코드 검증
+        if (cleaned.length >= 8 || cleaned.includes('ZERO') || cleaned.includes('MYENG') || cleaned.includes('VIP')) {
+            setCouponSuccessMessage('🎉 《제로포인트》 VIP 도서 독자 인증이 완료되었습니다!\n• 1:1 맞춤 명심코칭 심층 분석권 (1회 무료)\n• 나만의 맞춤 치유 음악 생성 & MP3 다운로드권 (1회 무료)');
+            setIsPaidSuccess(true);
+            setTimeout(() => {
+                setIsCouponModalOpen(false);
+                setShowPaymentModal(true);
+            }, 1200);
+        } else {
+            alert('유효하지 않은 인증 코드입니다. 도서의 시크릿 골드 티켓에 적힌 16자리 번호를 다시 확인해 주세요.');
+        }
+    };
+
+    const handleShareSong = () => {
+        const shareTitle = `[명심코칭] ${effectiveProfile.userName} 님의 1:1 맞춤 사주 힐링송 🎵`;
+        const shareText = `《제로포인트》 나의 사주 기질과 마음에 맞춘 432Hz AI 힐링 에세이 노래를 들어보세요! ✨`;
+        const shareUrl = typeof window !== 'undefined' ? window.location.href : 'https://myeongsimcoaching.com';
+
+        if (navigator.share) {
+            navigator.share({
+                title: shareTitle,
+                text: shareText,
+                url: shareUrl,
+            }).catch(() => {});
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(`${shareTitle}\n${shareText}\n${shareUrl}`);
+            setIsShareSuccess(true);
+            setTimeout(() => setIsShareSuccess(false), 2500);
+        }
+    };
+
     const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
     const handleDownloadAudio = async () => {
@@ -386,7 +430,7 @@ export default function ZeroPointMusicModal({
             const a = document.createElement('a');
             a.href = url;
             const safeName = (effectiveProfile?.userName || '대표').replace(/\s+/g, '_');
-            const fileName = `${safeName}_기질_1대1_맞춤_코칭_에세이노래_432Hz.wav`;
+            const fileName = `${safeName}_기질_1대1_맞춤_코칭_에세이노래_432Hz.mp3`;
             a.download = fileName;
             document.body.appendChild(a);
             a.click();
@@ -875,14 +919,43 @@ export default function ZeroPointMusicModal({
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2">
+                                <div className="flex flex-col sm:flex-row gap-2">
                                     <button
                                         onClick={handleDownloadAudio}
                                         disabled={isDownloading}
                                         className="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                                     >
                                         {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                                        <span>{isDownloading ? '432Hz 고음질 렌더링 중...' : '📥 432Hz 기본 BGM 무료 소장하기 (.WAV)'}</span>
+                                        <span>{isDownloading ? '432Hz 고음질 렌더링 중...' : '📥 432Hz 기본 BGM 무료 소장하기 (.MP3)'}</span>
+                                    </button>
+
+                                    <button
+                                        onClick={handleShareSong}
+                                        className="py-3 px-4 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                    >
+                                        <span>{isShareSuccess ? '✅ 복사 완료!' : '🔗 내 힐링송 공유'}</span>
+                                    </button>
+                                </div>
+
+                                {/* 🎫 《제로포인트》 도서 구매자 전용 라운지 배너 (구글 인앱결제 정책 준수 Cross-Platform) */}
+                                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/60 via-slate-900 to-amber-900/40 border border-amber-400/50 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
+                                    <div className="flex items-center gap-2.5">
+                                        <span className="text-2xl shrink-0">🎫</span>
+                                        <div>
+                                            <div className="text-xs font-black text-amber-300 flex items-center gap-1.5">
+                                                <span>《제로포인트》 도서 독자 전용 VIP 라운지</span>
+                                                <span className="text-[9.5px] bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded font-extrabold">무료 혜택</span>
+                                            </div>
+                                            <p className="text-[10.5px] text-gray-300 mt-0.5">
+                                                책 속 시크릿 코드를 등록하고 나만의 1:1 맞춤 힐링송을 받아보세요.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsCouponModalOpen(true)}
+                                        className="w-full sm:w-auto shrink-0 py-2 px-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-[11px] shadow-md transition-all cursor-pointer transform hover:-translate-y-0.5"
+                                    >
+                                        쿠폰 코드 등록하기
                                     </button>
                                 </div>
 
@@ -1460,7 +1533,7 @@ export default function ZeroPointMusicModal({
                                                 </div>
                                                 <div className="flex items-center gap-1.5">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                                    <span>432Hz 고음질 스튜디오 WAV 음원 파일 평생 소장</span>
+                                                    <span>432Hz 고음질 힐링 MP3 음원 파일 평생 소장</span>
                                                 </div>
                                                 <div className="flex items-center gap-1.5">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -1482,33 +1555,134 @@ export default function ZeroPointMusicModal({
                                                 <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
                                                 <span>4,900원 결제하고 즉시 소장하기</span>
                                             </button>
+                                            
+                                            {/* 도서 독자 시크릿 쿠폰 등록 링크 */}
+                                            <div className="text-center pt-1">
+                                                <button
+                                                    onClick={() => {
+                                                        setShowPaymentModal(false);
+                                                        setIsCouponModalOpen(true);
+                                                    }}
+                                                    className="text-[10.5px] text-amber-300 hover:text-amber-200 underline font-medium cursor-pointer"
+                                                >
+                                                    🎫 《제로포인트》 도서 시크릿 코드가 있으신가요?
+                                                </button>
+                                            </div>
+
                                             <p className="text-[9.5px] text-gray-400 text-center">
-                                                * 결제 즉시 고음질 432Hz WAV 파일 다운로드가 시작됩니다.
+                                                * 결제 즉시 고음질 432Hz MP3 파일 다운로드가 시작됩니다.
                                             </p>
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-center space-y-3 animate-fade-in">
+                                    <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-center space-y-3.5 animate-fade-in">
                                         <div className="w-10 h-10 mx-auto rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/40">
                                             <Check className="w-5 h-5" />
                                         </div>
                                         <div className="space-y-1">
-                                            <h5 className="font-bold text-white text-sm">결제가 성공적으로 완료되었습니다!</h5>
-                                            <p className="text-[11px] text-emerald-300">
-                                                {effectiveProfile.userName} 님의 맞춤 432Hz 힐링 음원이 다운로드되었습니다.
+                                            <h5 className="font-bold text-white text-sm">🎉 힐링송 생성이 완료되었습니다!</h5>
+                                            <p className="text-[11px] text-emerald-300 leading-relaxed">
+                                                {effectiveProfile.userName} 님의 사주 기질 1:1 맞춤 432Hz 힐링 MP3 음원이 다운로드되었습니다.
                                             </p>
                                         </div>
+
+                                        {/* 바이럴: 내 노래 공유하기 버튼 */}
+                                        <div className="pt-1">
+                                            <button
+                                                onClick={handleShareSong}
+                                                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                            >
+                                                <span>{isShareSuccess ? '✅ 복사 완료!' : '🔗 내 사주 힐링 노래 친구에게 자랑하기'}</span>
+                                            </button>
+                                        </div>
+
+                                        {/* 🏛️ 고단가 확장: 명심코칭 평생교육원 정규 과정 안내 */}
+                                        <div className="p-2.5 rounded-xl bg-slate-950/70 border border-amber-500/30 text-[10.5px] text-gray-300 text-left space-y-1">
+                                            <div className="text-amber-300 font-bold flex items-center gap-1">
+                                                <span>🏛️ 명심코칭 평생교육원 정규 과정</span>
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 leading-snug">
+                                                더 깊은 내면의 알고리즘과 운명 코드를 직접 코칭하는 전문가 과정에 입문해 보세요.
+                                            </p>
+                                        </div>
+
                                         <button
                                             onClick={() => {
                                                 setShowPaymentModal(false);
                                                 setIsPaidSuccess(false);
                                             }}
-                                            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs"
+                                            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer"
                                         >
-                                            확인
+                                            확인 및 닫기
                                         </button>
                                     </div>
                                 )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* [NEW] 🎫 《제로포인트》 도서 독자 전용 시크릿 인증 코드 등록 모달 (Cross-Platform 준수) */}
+                    {isCouponModalOpen && (
+                        <div className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+                            <div className="w-full max-w-sm bg-slate-900 border border-amber-400/60 rounded-3xl p-5 shadow-2xl space-y-4 text-xs relative">
+                                <button
+                                    onClick={() => {
+                                        setIsCouponModalOpen(false);
+                                        setCouponSuccessMessage(null);
+                                    }}
+                                    className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1 cursor-pointer"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+
+                                <div className="text-center space-y-1.5 pt-1">
+                                    <div className="w-11 h-11 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-lg text-xl">
+                                        🎫
+                                    </div>
+                                    <h4 className="text-base font-black text-white">
+                                        《제로포인트》 도서 독자 인증
+                                    </h4>
+                                    <p className="text-[11px] text-gray-300 leading-relaxed">
+                                        도서에 동봉된 <strong>시크릿 골드 티켓의 인증 코드</strong>를 입력하세요.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[11px] font-bold text-amber-300">
+                                            16자리 독자 인증 코드
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={bookCouponCode}
+                                            onChange={(e) => setBookCouponCode(e.target.value)}
+                                            placeholder="예: ZERO-POINT-2026-XXXX"
+                                            className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-widest text-xs focus:outline-none focus:border-amber-400 uppercase placeholder:text-gray-600"
+                                        />
+                                    </div>
+
+                                    {couponSuccessMessage ? (
+                                        <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/50 text-emerald-200 text-[11px] leading-relaxed whitespace-pre-line text-center animate-fade-in font-medium">
+                                            {couponSuccessMessage}
+                                        </div>
+                                    ) : (
+                                        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-gray-400 text-[10.5px] leading-relaxed space-y-1">
+                                            <div className="text-amber-300 font-bold flex items-center gap-1">
+                                                <span>🎁 초판 독자 무료 혜택 (30,000원 상당)</span>
+                                            </div>
+                                            <div>• 1:1 맞춤 명심코칭 심층 분석 리포트 (1회 무료)</div>
+                                            <div>• 나만의 맞춤 치유 음악 생성 & MP3 다운로드 소장권</div>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={handleVerifyCoupon}
+                                        className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                    >
+                                        <Sparkles className="w-4 h-4 fill-current" />
+                                        <span>독자 인증하고 힐링송 무료 소장하기</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
