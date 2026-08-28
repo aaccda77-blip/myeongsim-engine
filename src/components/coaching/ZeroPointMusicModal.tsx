@@ -987,8 +987,14 @@ export default function ZeroPointMusicModal({
                                     </div>
 
                                     {/* Free vs Premium Notice */}
-                                    <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed">
-                                        💡 <strong>[안내]</strong> 기본 432Hz 명상 BGM은 <strong>평생 100% 무료</strong>입니다. 아래 실제 사례처럼 <strong>전문 AI 보컬이 부른 고음질 1:1 맞춤 노래(.MP3 파일)</strong>를 영구 소장하시려면 <strong>4,900원</strong>에 맞춤 제작해 드립니다.
+                                    <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-indigo-500/15 border border-amber-400/40 text-[11px] text-amber-200 leading-relaxed shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                                        <div>
+                                            💡 <strong>[안내]</strong> 기본 432Hz 명상 BGM은 <strong>평생 100% 무료</strong>입니다. 아래 실제 사례처럼 <strong>전문 AI 보컬이 부른 고음질 1:1 맞춤 노래(.MP3 파일)</strong>를 영구 소장해 보세요!
+                                        </div>
+                                        <div className="shrink-0 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 px-3 py-1 rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md self-end sm:self-center">
+                                            <span className="text-slate-700 line-through text-[10px] font-bold">30,000원</span>
+                                            <span className="text-rose-950 font-black">🔥 이벤트 특가 4,900원</span>
+                                        </div>
                                     </div>
 
                                     {/* Track Select Tabs (여자1 님 vs 여자2 님 vs 순수 에세이 vs 신사일주 남자1 vs 도파민 날아올라) */}
@@ -1515,9 +1521,12 @@ export default function ZeroPointMusicModal({
 
                                         <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
                                             <div className="flex items-baseline justify-between border-b border-slate-800 pb-2">
-                                                <span className="text-gray-400 text-[11px]">런칭 기념 특별 혜택가</span>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="text-gray-300 text-[11px] font-bold">런칭 기념 이벤트 특가</span>
+                                                    <span className="text-[9px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1.5 py-0.2 rounded font-extrabold">84% 할인</span>
+                                                </div>
                                                 <div className="text-right">
-                                                    <span className="text-gray-500 line-through text-[10px] mr-1.5">39,000원</span>
+                                                    <span className="text-gray-500 line-through text-[10px] mr-1.5">30,000원</span>
                                                     <span className="text-amber-400 font-black text-base">4,900원</span>
                                                 </div>
                                             </div>
