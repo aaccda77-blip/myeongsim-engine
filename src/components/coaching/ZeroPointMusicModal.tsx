@@ -514,6 +514,16 @@ export default function ZeroPointMusicModal({
                                         />
                                     </div>
 
+                                    {/* [NEW] 💖 구입을 망설이는 분들을 위한 따뜻한 감성 위로 멘트 */}
+                                    <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-400/30 text-amber-100 text-[11px] leading-relaxed">
+                                        <p className="font-medium text-gray-200">
+                                            "본인의 기질에 맞는, <strong className="text-amber-300 font-bold">본인의 이름이 들어간 당신만의 1:1 맞춤 코칭 에세이 가사노래</strong>입니다."
+                                        </p>
+                                        <p className="text-amber-300 font-extrabold text-[11.5px] mt-1">
+                                            ✨ 힘들 때마다 들으시면서, 제로포인트로 돌아오세요.
+                                        </p>
+                                    </div>
+
                                     {/* 4,900원 결제/평생소장 버튼 */}
                                     <button
                                         onClick={() => setShowPaymentModal(true)}
@@ -902,6 +912,21 @@ export default function ZeroPointMusicModal({
 
                                 {!isPaidSuccess ? (
                                     <>
+                                        {/* [NEW] 💖 구입을 망설이는 분들을 위한 따뜻한 감성 위로 멘트 */}
+                                        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-rose-500/15 to-indigo-500/20 border border-amber-400/40 text-amber-100 text-[11px] leading-relaxed shadow-lg">
+                                            <div className="flex items-start gap-2">
+                                                <Heart className="w-4 h-4 text-rose-400 fill-rose-400 shrink-0 mt-0.5" />
+                                                <div className="space-y-1">
+                                                    <p className="font-medium text-gray-100">
+                                                        "본인의 기질에 맞는, <strong className="text-amber-300 font-bold">본인의 이름이 들어간 당신만의 1:1 맞춤 코칭 에세이 가사노래</strong>입니다."
+                                                    </p>
+                                                    <p className="text-amber-300 font-extrabold text-[11.5px]">
+                                                        ✨ 힘들 때마다 들으시면서, 제로포인트로 돌아오세요.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
                                             <div className="flex items-baseline justify-between border-b border-slate-800 pb-2">
                                                 <span className="text-gray-400 text-[11px]">런칭 기념 특별 혜택가</span>
