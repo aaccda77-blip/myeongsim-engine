@@ -394,9 +394,9 @@ export default function ZeroPointMusicModal({
                         {currentStep === 1 && (
                             <div className="space-y-4 animate-fade-in">
 
-                                {/* [NEW] 🌟 대표 사주 맞춤 제작 실사례: 이*영 님 (戊戌일주) '가벼워진 숨' 힐링노래 카드 */}
-                                <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-indigo-950/60 border border-amber-500/40 shadow-2xl space-y-3.5 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                                {/* [NEW] 🌟 대표 사주 맞춤 제작 실사례: 이소영 님 (24세, 戊戌일주) '가벼워진 숨' 힐링노래 카드 */}
+                                <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-indigo-950/60 border border-amber-500/40 shadow-2xl space-y-4 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
                                     {/* Header & Badges */}
                                     <div className="flex items-center justify-between">
@@ -404,38 +404,68 @@ export default function ZeroPointMusicModal({
                                             <span className="text-[10px] bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black px-2.5 py-0.5 rounded-full shadow-sm">
                                                 🌟 실제 맞춤제작 사례
                                             </span>
-                                            <span className="text-[10px] text-amber-300 font-mono font-bold">
-                                                이*영 님 (24세) 헌정곡
+                                            <span className="text-[10.5px] text-amber-300 font-bold">
+                                                이소영 님 (24세, 戊戌일주)
                                             </span>
                                         </div>
-                                        <span className="text-[9.5px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-full border border-indigo-500/30">
+                                        <span className="text-[9.5px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-full border border-indigo-500/30 font-mono">
                                             432Hz Full Vocal
                                         </span>
                                     </div>
 
-                                    {/* Title & Saju Pillars */}
-                                    <div className="space-y-1.5">
-                                        <div className="flex items-baseline justify-between">
-                                            <h4 className="text-base font-extrabold text-white flex items-center gap-1.5">
-                                                <span>가벼워진 숨</span>
-                                                <span className="text-xs font-normal text-amber-300">| 戊戌 기질 맞춤 힐링노래</span>
-                                            </h4>
+                                    {/* Saju 4 Pillars & Explanation Box */}
+                                    <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-slate-800 space-y-2.5">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                                                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                                <span>이소영 님의 사주 원식 (2003.01.25 寅시)</span>
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 font-mono">오행: 木2 火1 土3 金0 水2</span>
                                         </div>
 
                                         {/* 만세력 4주 8글자 칩 */}
-                                        <div className="flex items-center gap-1.5 text-[10px]">
-                                            <span className="px-2 py-0.5 rounded bg-slate-950/80 text-gray-300 border border-slate-800 font-mono">
-                                                壬午년
-                                            </span>
-                                            <span className="px-2 py-0.5 rounded bg-slate-950/80 text-gray-300 border border-slate-800 font-mono">
-                                                癸丑월
-                                            </span>
-                                            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 font-mono shadow-sm">
-                                                戊戌일 (본원)
-                                            </span>
-                                            <span className="px-2 py-0.5 rounded bg-slate-950/80 text-gray-300 border border-slate-800 font-mono">
-                                                甲寅시
-                                            </span>
+                                        <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
+                                            <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                <div className="text-gray-400 text-[9px]">년주 (편재/정인)</div>
+                                                <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">壬午</div>
+                                            </div>
+                                            <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                <div className="text-gray-400 text-[9px]">월주 (정재/겁재)</div>
+                                                <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">癸丑</div>
+                                            </div>
+                                            <div className="p-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 shadow-sm">
+                                                <div className="text-amber-300 font-bold text-[9px]">일주 (본원/비견)</div>
+                                                <div className="font-extrabold text-amber-100 font-mono text-xs mt-0.5">戊戌</div>
+                                            </div>
+                                            <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                <div className="text-gray-400 text-[9px]">시주 (편관/편관)</div>
+                                                <div className="font-bold text-amber-200 font-mono text-xs mt-0.5">甲寅</div>
+                                            </div>
+                                        </div>
+
+                                        {/* 사주 기질 해설 */}
+                                        <p className="text-[10.5px] text-gray-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+                                            💡 <strong>[사주 기질 진단]</strong>: 戊戌(무술) 일주는 거대한 대지처럼 강한 책임감과 끈기를 지녔으나, 시주의 <strong>甲寅(편관) 중압감</strong>과 <strong>土(3) 비견의 무게</strong>로 인해 모든 짐을 혼자 짊어지려는 완벽주의가 강합니다. 특히 <strong>금(金=호흡·비움·이완)이 결핍(0개)</strong>되어 어깨가 무겁고 마음의 긴장이 쉽게 쌓이는 구조입니다.
+                                        </p>
+                                    </div>
+
+                                    {/* 과학적 근거 & 가사 연계성 설명 박스 */}
+                                    <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 space-y-2 text-[10.5px] text-gray-300 leading-relaxed">
+                                        <div className="text-[11px] font-bold text-indigo-300 flex items-center gap-1.5">
+                                            <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
+                                            <span>왜 이 가사로 지어졌을까요? (과학적 & 명리학적 근거)</span>
+                                        </div>
+                                        
+                                        <div className="space-y-1.5 pl-1 border-l-2 border-indigo-500/40">
+                                            <p>
+                                                🧠 <strong>음향심리학적 과학 근거</strong>: 자연의 수학적 비율과 일치하는 <strong>432Hz 주파수</strong>가 부교감신경을 자극하여 스트레스 호르몬을 낮추고 뇌파를 알파파로 안정시킵니다. 또한 뇌의 <strong>자기 참조 효과(Self-Referential Effect)</strong>로 인해 노래 속에서 다정하게 내 이름이 불릴 때 심리적 방어 기제가 풀리고 깊은 치유가 일어납니다.
+                                            </p>
+                                            <div className="bg-slate-950/60 p-2 rounded-xl space-y-1 text-[10px] text-gray-300">
+                                                <div>• <strong className="text-amber-300">1소절 ("쉼 없이 짊어지던 무거운 책임의 무게를")</strong> ➔ 戊戌·甲寅의 짓눌린 중압감 공감 및 이완 시작</div>
+                                                <div>• <strong className="text-amber-300">2소절 ("깊은 한숨 대신 가벼운 숨으로 비워내네")</strong> ➔ 결핍된 金(폐·호흡) 기운을 보강하는 432Hz 호흡 처방</div>
+                                                <div>• <strong className="text-amber-300">3소절 ("완벽하게 버티지 않아도 대지는 여전히 푸르고")</strong> ➔ 무조건 버텨야 한다는 강박을 해소하고 안전한 쉼 허락</div>
+                                                <div>• <strong className="text-amber-300">4소절 ("내려놓은 그 자리에서 비로소 온전한 나를 만나네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -505,7 +535,7 @@ export default function ZeroPointMusicModal({
                                                 <div>
                                                     <div className="text-xs font-bold text-white">
                                                         {currentSampleTrack === 'name_soyoung'
-                                                            ? '가벼워진 숨 (이*영 님 헌정곡: 이름 포함)'
+                                                            ? '가벼워진 숨 (이소영 님 헌정곡: 이름 포함)'
                                                             : currentSampleTrack === 'light_breath'
                                                             ? '가벼워진 숨 (순수 에세이: 이름 미포함)'
                                                             : '맑은 물이 머무는 곳'}
@@ -542,15 +572,33 @@ export default function ZeroPointMusicModal({
                                         </p>
                                     </div>
 
-                                    {/* 4,900원 결제/평생소장 버튼 */}
-                                    <button
-                                        onClick={() => setShowPaymentModal(true)}
-                                        className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer transform hover:-translate-y-0.5"
-                                    >
-                                        <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
-                                        <span>✨ 4,900원 결제하고 내 사주 맞춤 노래 평생 소장하기</span>
-                                        <ChevronRight className="w-4 h-4" />
-                                    </button>
+                                    {/* [NEW] 💳 둘 중 하나 4,900원에 구매하기 (원클릭 듀얼 구매 버튼) */}
+                                    <div className="space-y-2 pt-1">
+                                        <div className="text-[11px] font-bold text-amber-300 text-center flex items-center justify-center gap-1">
+                                            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                            <span>원하는 버전을 선택하여 4,900원에 평생 소장하세요</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setIncludeName(true);
+                                                    setShowPaymentModal(true);
+                                                }}
+                                                className="py-3 px-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-[11.5px] shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer transform hover:-translate-y-0.5 text-center"
+                                            >
+                                                <span>💖 1. 내 이름 포함 헌정곡 (4,900원)</span>
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setIncludeName(false);
+                                                    setShowPaymentModal(true);
+                                                }}
+                                                className="py-3 px-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-black text-[11.5px] shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer transform hover:-translate-y-0.5 text-center"
+                                            >
+                                                <span>🌿 2. 순수 에세이 힐링곡 (4,900원)</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* [NEW] 💖 이름 포함 여부 선택 옵션 (고객 선택 메뉴) */}
