@@ -128,6 +128,56 @@ export default function ZeroPointMusicModal({
         };
     }, [isPlaying, enableVoice]);
 
+    // [NEW] 🎧 '맑은 물이 머무는 곳' 공식 보컬 완성곡 샘플 플레이어
+    const [isSamplePlaying, setIsSamplePlaying] = useState<boolean>(false);
+    const [sampleProgress, setSampleProgress] = useState<number>(0);
+    const [sampleDuration, setSampleDuration] = useState<number>(0);
+    const sampleAudioRef = useRef<HTMLAudioElement | null>(null);
+
+    const toggleSamplePlay = () => {
+        if (!sampleAudioRef.current) {
+            const audio = new Audio('/sample_essay_song.wav');
+            audio.ontimeupdate = () => {
+                setSampleProgress(audio.currentTime);
+                if (audio.duration && !isNaN(audio.duration)) {
+                    setSampleDuration(audio.duration);
+                }
+            };
+            audio.onended = () => {
+                setIsSamplePlaying(false);
+                setSampleProgress(0);
+            };
+            audio.onerror = (e) => {
+                console.error("Sample audio load error:", e);
+            };
+            sampleAudioRef.current = audio;
+        }
+
+        if (isSamplePlaying) {
+            sampleAudioRef.current.pause();
+            setIsSamplePlaying(false);
+        } else {
+            // 사주 힐링 BGM이 켜져있다면 중지
+            if (isPlaying) {
+                zeroPointSoundEngine.stop();
+                clearVoiceTimers();
+                setIsPlaying(false);
+            }
+            sampleAudioRef.current.play().then(() => {
+                setIsSamplePlaying(true);
+            }).catch(err => {
+                console.error("Audio playback error:", err);
+            });
+        }
+    };
+
+    const handleSampleSeek = (newTime: number) => {
+        if (sampleAudioRef.current) {
+            sampleAudioRef.current.currentTime = newTime;
+            setSampleProgress(newTime);
+        }
+    };
+
     // 모달 닫힐 때 오디오 및 음성 정지
     useEffect(() => {
         if (!isOpen) {
@@ -137,6 +187,12 @@ export default function ZeroPointMusicModal({
             setCurrentStep(1);
             setPlaySeconds(0);
             setActiveVerseIdx(-1);
+            if (sampleAudioRef.current) {
+                sampleAudioRef.current.pause();
+                sampleAudioRef.current.currentTime = 0;
+            }
+            setIsSamplePlaying(false);
+            setSampleProgress(0);
         }
     }, [isOpen]);
 
@@ -305,6 +361,68 @@ export default function ZeroPointMusicModal({
                             ======================================================== */}
                         {currentStep === 1 && (
                             <div className="space-y-4 animate-fade-in">
+
+                                {/* [NEW] 🌟 공식 완성곡 샘플: '맑은 물이 머무는 곳' 플레이어 카드 */}
+                                <div className="p-4 rounded-3xl bg-gradient-to-br from-indigo-950/80 via-slate-900 to-amber-950/40 border border-indigo-500/40 shadow-xl space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-2 rounded-2xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                                <Sparkles className="w-4 h-4 text-amber-300 animate-spin-slow" />
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="text-[10px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-full border border-indigo-500/40">
+                                                        공식 완성곡 샘플
+                                                    </span>
+                                                    <span className="text-[10px] text-amber-400 font-mono">432Hz Full Vocal</span>
+                                                </div>
+                                                <h4 className="text-sm font-bold text-white mt-0.5">
+                                                    맑은 물이 머무는 곳
+                                                </h4>
+                                            </div>
+                                        </div>
+
+                                        {/* Play/Pause Button */}
+                                        <button
+                                            onClick={toggleSamplePlay}
+                                            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer ${
+                                                isSamplePlaying
+                                                    ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/30 animate-pulse'
+                                                    : 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-amber-500/30'
+                                            }`}
+                                        >
+                                            {isSamplePlaying ? (
+                                                <Pause className="w-4 h-4 fill-current" />
+                                            ) : (
+                                                <Play className="w-4 h-4 fill-current ml-0.5" />
+                                            )}
+                                        </button>
+                                    </div>
+
+                                    {/* Timeline Slider */}
+                                    <div className="space-y-1 bg-slate-950/60 p-2.5 rounded-2xl border border-white/5">
+                                        <div className="flex justify-between text-[9.5px] font-mono text-gray-400">
+                                            <span className="text-amber-300 font-bold">{formatTime(Math.floor(sampleProgress))}</span>
+                                            <span className="text-gray-400">
+                                                {isSamplePlaying ? '🎵 보컬 샘플곡 재생 중...' : '클릭하여 완성곡 미리듣기'}
+                                            </span>
+                                            <span>{sampleDuration > 0 ? formatTime(Math.floor(sampleDuration)) : '03:40'}</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max={sampleDuration || 220}
+                                            step="0.5"
+                                            value={sampleProgress}
+                                            onChange={(e) => handleSampleSeek(parseFloat(e.target.value))}
+                                            className="w-full h-1.5 bg-slate-800 accent-amber-400 rounded-lg cursor-pointer"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 text-center">
+                                        💡 명심코칭의 기질 에세이와 432Hz 사운드가 결합된 실제 완성곡의 감동을 느껴보세요.
+                                    </p>
+                                </div>
+
                                 {/* User Saju Pill Box */}
                                 <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-center space-y-2">
                                     <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-amber-400/30">
