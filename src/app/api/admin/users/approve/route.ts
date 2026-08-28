@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
         const { userId, tier: rawTier = '' } = result.data;
         const now = new Date();
         let expiresAt: Date | null = null;
-        let paymentAmount = 890;
-        let tier: 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' | 'CHAT_3' = 'CHAT_3';
+        let paymentAmount = 4900;
+        let tier: 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' | 'CHAT_PASS' = 'CHAT_PASS';
 
         // Flexible Tier Normalization
         const rawTierStr = String(rawTier).toUpperCase();
@@ -35,28 +35,28 @@ export async function POST(request: NextRequest) {
             tier = 'TRIAL_30M';
         } else if (rawTierStr.includes('PASS') || rawTierStr.includes('24시간')) {
             tier = 'PASS_24H';
-        } else if (rawTierStr.includes('VIP') || rawTierStr.includes('7일')) {
+        } else if (rawTierStr.includes('VIP') || rawTierStr.includes('7일') || rawTierStr.includes('BOOK')) {
             tier = 'VIP_7D';
         } else {
-            tier = 'CHAT_3'; // Default 890 KRW 3-Turn Access
+            tier = 'CHAT_PASS'; // Default 4,900 KRW Chat Pass
         }
 
         switch (tier) {
             case 'TRIAL_30M':
                 expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
-                paymentAmount = 890;
+                paymentAmount = 4900;
                 break;
             case 'PASS_24H':
                 expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-                paymentAmount = 890;
+                paymentAmount = 4900;
                 break;
             case 'VIP_7D':
-                expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-                paymentAmount = 890;
+                expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+                paymentAmount = 19800;
                 break;
-            case 'CHAT_3':
-                expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days valid for 3 chat uses
-                paymentAmount = 890;
+            case 'CHAT_PASS':
+                expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+                paymentAmount = 4900;
                 break;
         }
 

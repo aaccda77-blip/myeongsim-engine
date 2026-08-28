@@ -203,7 +203,7 @@ export default function SampleResultPage() {
                       }}
                       className="w-full py-4 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black rounded-2xl text-sm shadow-[0_0_25px_rgba(245,158,11,0.4)] flex items-center justify-center gap-2 transition-all transform active:scale-98"
                     >
-                      <span>🔒 890원으로 전체 내면 해독서 즉시 잠금 해제하기</span>
+                      <span>🔒 4,900원으로 전체 내면 해독서 즉시 잠금 해제하기</span>
                       <ArrowRight size={18} />
                     </button>
 

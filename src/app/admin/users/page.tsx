@@ -81,7 +81,7 @@ export default function AdminUsersPage() {
         try {
             // Map display string to backend enum ('CHAT_3', 'TRIAL_30M', etc.)
             let mappedTier: 'CHAT_3' | 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' = 'CHAT_3';
-            if (rawTier.includes('890') || rawTier.includes('3회') || rawTier === 'CHAT_3') {
+            if (rawTier.includes('4900') || rawTier.includes('4,900') || rawTier.includes('890') || rawTier === 'CHAT_PASS' || rawTier === 'CHAT_3') {
                 mappedTier = 'CHAT_3';
             } else if (rawTier.includes('무료') || rawTier.includes('TRIAL')) {
                 mappedTier = 'TRIAL_30M';
@@ -96,7 +96,7 @@ export default function AdminUsersPage() {
             });
             const data = await response.json();
             if (data.success) {
-                alert(`성공: 890원 무통장 입금 승인이 완료되었습니다! 3회 코칭 이용권이 활성화되었습니다. ✨`);
+                alert(`성공: 4,900원 무통장 입금 승인이 완료되었습니다! 챗봇 코칭 이용권이 활성화되었습니다. ✨`);
                 fetchUsers();
             } else {
                 alert('승인 실패: ' + (data.error || '알 수 없는 오류'));
