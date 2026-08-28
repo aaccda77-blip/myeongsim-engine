@@ -1153,13 +1153,13 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 🎧 사주 맞춤 제로포인트 음악 (432Hz 사운드 테라피) - 나의 리포트 바로 옆 */}
+                {/* [NEW] 🎧 명심 기질 튜닝 송 (432Hz 주파수 리셋) - 나의 리포트 바로 옆 */}
                 <button
                     style={styles.iconButton}
                     onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) {
-                            alert('사주 맞춤 힐링송 처방을 위해 생년월일을 먼저 등록해주세요.');
+                            alert('기질 맞춤 튜닝송 처방을 위해 생년월일을 먼저 등록해주세요.');
                             useReportStore.getState().setStep(1);
                             return;
                         }
@@ -1177,8 +1177,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>🎧</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>사주 힐링송</div>
-                        <div style={styles.neuroTrigger}>432Hz 제로포인트</div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>기질 튜닝 송</div>
+                        <div style={styles.neuroTrigger}>432Hz 주파수 리셋</div>
                     </div>
                 </button>
 

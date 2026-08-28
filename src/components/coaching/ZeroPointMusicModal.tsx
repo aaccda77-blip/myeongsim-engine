@@ -210,7 +210,7 @@ export default function ZeroPointMusicModal({
             const a = document.createElement('a');
             a.href = url;
             const safeName = (effectiveProfile?.userName || '대표').replace(/\s+/g, '_');
-            const fileName = `${safeName}_사주맞춤_제로포인트_힐링송_432Hz.wav`;
+            const fileName = `${safeName}_명심_기질튜닝송_432Hz.wav`;
             a.download = fileName;
             document.body.appendChild(a);
             a.click();
@@ -258,12 +258,12 @@ export default function ZeroPointMusicModal({
                             </div>
                             <div>
                                 <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-                                    <span>사주 맞춤 제로포인트 힐링 사운드</span>
+                                    <span>명심 기질 튜닝 송</span>
                                     <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-mono border border-amber-500/30">
-                                        432Hz 테라피
+                                        432Hz 주파수 리셋
                                     </span>
                                 </h3>
-                                <p className="text-[10.5px] text-gray-400">오행 불균형 해소 & 나만의 영혼 에세이 송</p>
+                                <p className="text-[10.5px] text-gray-400">불균형한 내면의 기운을 악기처럼 알맞게 조율하는 432Hz 힐링 사운드</p>
                             </div>
                         </div>
                         <button
@@ -308,7 +308,7 @@ export default function ZeroPointMusicModal({
                                 {/* User Saju Pill Box */}
                                 <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-center space-y-2">
                                     <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-amber-400/30">
-                                        {effectiveProfile.userName} 님의 사주 원식
+                                        {effectiveProfile.userName} 님의 선천적 기질 원식
                                     </span>
                                     <h4 className="text-sm font-bold text-white">
                                         {trackInfo.subTitle}
@@ -360,7 +360,7 @@ export default function ZeroPointMusicModal({
                                     onClick={() => setCurrentStep(2)}
                                     className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer mt-4"
                                 >
-                                    <span>사주 맞춤 오행 처방 리포트 확인하기</span>
+                                    <span>기질 맞춤 튜닝 처방 리포트 확인하기</span>
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
                             </div>
@@ -577,7 +577,7 @@ export default function ZeroPointMusicModal({
                                     <div className="flex items-center justify-between">
                                         <div className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
                                             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                            <span>나만의 제로포인트 에세이 가사</span>
+                                            <span>나만의 기질 조율 에세이 가사</span>
                                         </div>
                                         {/* Voice Narration Toggle */}
                                         <button
@@ -636,7 +636,7 @@ export default function ZeroPointMusicModal({
                                         className="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                                     >
                                         {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                                        <span>{isDownloading ? '432Hz 고음질 렌더링 중...' : '📥 432Hz 힐링 음원 소장하기 (.WAV)'}</span>
+                                        <span>{isDownloading ? '432Hz 고음질 렌더링 중...' : '📥 432Hz 기질 튜닝 음원 소장하기 (.WAV)'}</span>
                                     </button>
                                     <button
                                         onClick={() => {
