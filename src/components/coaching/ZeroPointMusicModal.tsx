@@ -1554,7 +1554,7 @@ export default function ZeroPointMusicModal({
                                         나만의 1:1 맞춤 힐링노래 평생 소장권
                                     </h4>
                                     <p className="text-[11px] text-gray-300">
-                                        {effectiveProfile.userName} 님의 선천적 기질 8글자 1:1 맞춤 처방
+                                        {effectiveProfile.userName} 님의 선천적 기질 8글자 1:1 맞춤 코칭
                                     </p>
                                 </div>
 
