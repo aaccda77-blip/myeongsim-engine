@@ -376,10 +376,16 @@ export default function ZeroPointMusicModal({
         }
     };
 
-    // [NEW] 🎫 《제로포인트》 도서 독자 전용 시크릿 인증 코드 시스템 & 공유하기
+    // [NEW] 🎫 《제로포인트》 도서 독자 전용 2번 방식 (1:1 주문제작 신청 ➔ 카카오톡/이메일 전달)
     const [bookCouponCode, setBookCouponCode] = useState<string>('');
     const [isCouponModalOpen, setIsCouponModalOpen] = useState<boolean>(false);
-    const [couponSuccessMessage, setCouponSuccessMessage] = useState<string | null>(null);
+    const [couponStep, setCouponStep] = useState<'verify' | 'apply_form' | 'complete'>('verify');
+    const [orderUserName, setOrderUserName] = useState<string>(effectiveProfile.userName || '');
+    const [orderBirth, setOrderBirth] = useState<string>('');
+    const [orderSongStyle, setOrderSongStyle] = useState<'calm' | 'upbeat'>('calm');
+    const [orderDeliveryType, setOrderDeliveryType] = useState<'kakao' | 'email'>('kakao');
+    const [orderContact, setOrderContact] = useState<string>('');
+    const [copiedOrderText, setCopiedOrderText] = useState<boolean>(false);
     const [isShareSuccess, setIsShareSuccess] = useState<boolean>(false);
 
     const handleVerifyCoupon = () => {
@@ -391,15 +397,33 @@ export default function ZeroPointMusicModal({
 
         // 16자리 코드 또는 유효한 프로모션 코드 검증
         if (cleaned.length >= 8 || cleaned.includes('ZERO') || cleaned.includes('MYENG') || cleaned.includes('VIP')) {
-            setCouponSuccessMessage('🎉 《제로포인트》 VIP 도서 독자 인증이 완료되었습니다!\n• 1:1 맞춤 명심코칭 심층 분석권 (1회 무료)\n• 나만의 맞춤 치유 음악 생성 & MP3 다운로드권 (1회 무료)');
-            setIsPaidSuccess(true);
-            setTimeout(() => {
-                setIsCouponModalOpen(false);
-                setShowPaymentModal(true);
-            }, 1200);
+            setCouponStep('apply_form');
         } else {
             alert('유효하지 않은 인증 코드입니다. 도서의 시크릿 골드 티켓에 적힌 16자리 번호를 다시 확인해 주세요.');
         }
+    };
+
+    const handleOrderSubmit = () => {
+        if (!orderUserName.trim()) {
+            alert('노래에 들어갈 성함을 입력해 주세요.');
+            return;
+        }
+        if (!orderContact.trim()) {
+            alert(orderDeliveryType === 'kakao' ? '카카오톡 연락처 또는 닉네임을 입력해 주세요.' : '음원을 수신할 이메일 주소를 입력해 주세요.');
+            return;
+        }
+        setCouponStep('complete');
+    };
+
+    const getOrderSummaryText = () => {
+        const styleText = orderSongStyle === 'calm' ? '차분하고 따뜻한 432Hz 감성 헌정곡 (이완·위로)' : '신나고 힘나는 128 BPM 도파민 업비트곡 (자신감·도약)';
+        return `[《제로포인트》 1:1 맞춤 힐링송 제작 신청]\n- 인증 코드: ${bookCouponCode}\n- 신청자 성함: ${orderUserName}\n- 생년월일/사주: ${orderBirth || '정보 없음'}\n- 희망 곡 스타일: ${styleText}\n- 전달 방식: ${orderDeliveryType === 'kakao' ? '카카오톡 1:1 전달' : '이메일 전달'}\n- 연락처: ${orderContact}`;
+    };
+
+    const handleCopyOrderText = () => {
+        navigator.clipboard.writeText(getOrderSummaryText());
+        setCopiedOrderText(true);
+        setTimeout(() => setCopiedOrderText(false), 2500);
     };
 
     const handleShareSong = () => {
@@ -1630,68 +1654,239 @@ export default function ZeroPointMusicModal({
                         </div>
                     )}
 
-                    {/* [NEW] 🎫 《제로포인트》 도서 독자 전용 시크릿 인증 코드 등록 모달 (Cross-Platform 준수) */}
+                    {/* [NEW] 🎫 《제로포인트》 도서 독자 전용 2번 방식 (1:1 주문제작 신청 ➔ 카카오톡/이메일 전달) */}
                     {isCouponModalOpen && (
                         <div className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-                            <div className="w-full max-w-sm bg-slate-900 border border-amber-400/60 rounded-3xl p-5 shadow-2xl space-y-4 text-xs relative">
+                            <div className="w-full max-w-sm bg-slate-900 border border-amber-400/60 rounded-3xl p-5 shadow-2xl space-y-4 text-xs relative max-h-[90vh] overflow-y-auto hide-scrollbar">
                                 <button
                                     onClick={() => {
                                         setIsCouponModalOpen(false);
-                                        setCouponSuccessMessage(null);
+                                        setCouponStep('verify');
                                     }}
                                     className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1 cursor-pointer"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
 
-                                <div className="text-center space-y-1.5 pt-1">
-                                    <div className="w-11 h-11 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-lg text-xl">
-                                        🎫
-                                    </div>
-                                    <h4 className="text-base font-black text-white">
-                                        《제로포인트》 도서 독자 인증
-                                    </h4>
-                                    <p className="text-[11px] text-gray-300 leading-relaxed">
-                                        도서에 동봉된 <strong>시크릿 골드 티켓의 인증 코드</strong>를 입력하세요.
-                                    </p>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold text-amber-300">
-                                            16자리 독자 인증 코드
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={bookCouponCode}
-                                            onChange={(e) => setBookCouponCode(e.target.value)}
-                                            placeholder="예: ZERO-POINT-2026-XXXX"
-                                            className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-widest text-xs focus:outline-none focus:border-amber-400 uppercase placeholder:text-gray-600"
-                                        />
-                                    </div>
-
-                                    {couponSuccessMessage ? (
-                                        <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/50 text-emerald-200 text-[11px] leading-relaxed whitespace-pre-line text-center animate-fade-in font-medium">
-                                            {couponSuccessMessage}
-                                        </div>
-                                    ) : (
-                                        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-gray-400 text-[10.5px] leading-relaxed space-y-1">
-                                            <div className="text-amber-300 font-bold flex items-center gap-1">
-                                                <span>🎁 초판 독자 무료 혜택 (30,000원 상당)</span>
+                                {/* STEP 1: 인증 코드 입력 */}
+                                {couponStep === 'verify' && (
+                                    <>
+                                        <div className="text-center space-y-1.5 pt-1">
+                                            <div className="w-11 h-11 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-lg text-xl">
+                                                🎫
                                             </div>
-                                            <div>• 1:1 맞춤 명심코칭 심층 분석 리포트 (1회 무료)</div>
-                                            <div>• 나만의 맞춤 치유 음악 생성 & MP3 다운로드 소장권</div>
+                                            <h4 className="text-base font-black text-white">
+                                                《제로포인트》 도서 독자 인증
+                                            </h4>
+                                            <p className="text-[11px] text-gray-300 leading-relaxed">
+                                                도서에 동봉된 <strong>시크릿 골드 티켓의 인증 코드</strong>를 입력하세요.
+                                            </p>
                                         </div>
-                                    )}
 
-                                    <button
-                                        onClick={handleVerifyCoupon}
-                                        className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                                    >
-                                        <Sparkles className="w-4 h-4 fill-current" />
-                                        <span>독자 인증하고 힐링송 무료 소장하기</span>
-                                    </button>
-                                </div>
+                                        <div className="space-y-3">
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-bold text-amber-300">
+                                                    16자리 독자 인증 코드
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={bookCouponCode}
+                                                    onChange={(e) => setBookCouponCode(e.target.value)}
+                                                    placeholder="예: ZERO-POINT-2026-XXXX"
+                                                    className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-widest text-xs focus:outline-none focus:border-amber-400 uppercase placeholder:text-gray-600"
+                                                />
+                                            </div>
+
+                                            <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-gray-300 text-[10.5px] leading-relaxed space-y-1.5">
+                                                <div className="text-amber-300 font-bold flex items-center gap-1">
+                                                    <span>🎁 초판 독자 무료 혜택 (정가 30,000원 상당)</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-gray-300">
+                                                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                                    <span>내 이름 & 사주 기질 맞춤 1:1 헌정 힐링송(MP3) 무료 제작</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-gray-300">
+                                                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                                    <span>평생 소장용 432Hz 고음질 MP3 파일 제공</span>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={handleVerifyCoupon}
+                                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                            >
+                                                <Sparkles className="w-4 h-4 fill-current" />
+                                                <span>코드 인증하고 1:1 맞춤제작 신청하기 ➔</span>
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+
+                                {/* STEP 2: 1:1 맞춤 힐링송 제작 신청서 */}
+                                {couponStep === 'apply_form' && (
+                                    <div className="space-y-3.5 animate-fade-in">
+                                        <div className="text-center space-y-1 pt-1">
+                                            <div className="text-xs font-black text-amber-300 flex items-center justify-center gap-1">
+                                                <span>🎨 STEP 2. 나만의 1:1 힐링송 제작 신청</span>
+                                            </div>
+                                            <p className="text-[11px] text-gray-300">
+                                                사주 기질과 성함에 맞춘 세상에 단 하나뿐인 노래를 작곡해 드립니다.
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-2.5">
+                                            <div className="space-y-1">
+                                                <label className="text-[10.5px] font-bold text-gray-300">1. 노래에 들어갈 성함 *</label>
+                                                <input
+                                                    type="text"
+                                                    value={orderUserName}
+                                                    onChange={(e) => setOrderUserName(e.target.value)}
+                                                    placeholder="예: 홍길동"
+                                                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[10.5px] font-bold text-gray-300">2. 생년월일 및 태어난 시간 (양/음력)</label>
+                                                <input
+                                                    type="text"
+                                                    value={orderBirth}
+                                                    onChange={(e) => setOrderBirth(e.target.value)}
+                                                    placeholder="예: 1985년 3월 15일 낮 12시 (양력)"
+                                                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[10.5px] font-bold text-gray-300">3. 희망하는 곡 분위기</label>
+                                                <div className="grid grid-cols-2 gap-1.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setOrderSongStyle('calm')}
+                                                        className={`p-2 rounded-xl border text-[10.5px] font-bold transition-all text-center cursor-pointer ${
+                                                            orderSongStyle === 'calm'
+                                                                ? 'bg-amber-500/20 border-amber-400 text-amber-200'
+                                                                : 'bg-slate-950 border-slate-800 text-gray-400'
+                                                        }`}
+                                                    >
+                                                        💖 잔잔 감성 (위로·이완)
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setOrderSongStyle('upbeat')}
+                                                        className={`p-2 rounded-xl border text-[10.5px] font-bold transition-all text-center cursor-pointer ${
+                                                            orderSongStyle === 'upbeat'
+                                                                ? 'bg-pink-500/20 border-pink-400 text-pink-200'
+                                                                : 'bg-slate-950 border-slate-800 text-gray-400'
+                                                        }`}
+                                                    >
+                                                        ⚡ 신나는 힐링 (도파민)
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[10.5px] font-bold text-gray-300">4. 음원(MP3) 받으실 연락처 *</label>
+                                                <div className="flex gap-2 mb-1.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setOrderDeliveryType('kakao')}
+                                                        className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+                                                            orderDeliveryType === 'kakao'
+                                                                ? 'bg-amber-400 text-slate-950 border-amber-400'
+                                                                : 'bg-slate-950 text-gray-400 border-slate-800'
+                                                        }`}
+                                                    >
+                                                        💬 카카오톡 전달 (추천)
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setOrderDeliveryType('email')}
+                                                        className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+                                                            orderDeliveryType === 'email'
+                                                                ? 'bg-indigo-500 text-white border-indigo-400'
+                                                                : 'bg-slate-950 text-gray-400 border-slate-800'
+                                                        }`}
+                                                    >
+                                                        📧 이메일 전달
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    value={orderContact}
+                                                    onChange={(e) => setOrderContact(e.target.value)}
+                                                    placeholder={orderDeliveryType === 'kakao' ? "카카오톡 연락처 또는 닉네임" : "음원을 받을 이메일 주소 (예: user@naver.com)"}
+                                                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={handleOrderSubmit}
+                                            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+                                        >
+                                            <Sparkles className="w-4 h-4 fill-current" />
+                                            <span>맞춤 힐링송 제작 신청 완료하기</span>
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* STEP 3: 신청 완료 & 1:1 오픈카톡 안내 */}
+                                {couponStep === 'complete' && (
+                                    <div className="space-y-3.5 text-center animate-fade-in pt-1">
+                                        <div className="w-12 h-12 mx-auto rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/40 text-2xl">
+                                            🎉
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <h4 className="text-sm font-black text-white">
+                                                1:1 맞춤 힐링송 제작 신청이 완료되었습니다!
+                                            </h4>
+                                            <p className="text-[11px] text-emerald-300 leading-relaxed">
+                                                <strong>'{orderUserName} 님'</strong>의 사주 기질에 맞춘 432Hz MP3 완성곡을 정성껏 작곡하여 전달해 드립니다.
+                                            </p>
+                                        </div>
+
+                                        <div className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 text-left space-y-1.5 text-[10.5px]">
+                                            <div className="text-amber-300 font-bold flex items-center justify-between">
+                                                <span>📋 신청 접수 정보</span>
+                                                <button
+                                                    onClick={handleCopyOrderText}
+                                                    className="text-[9.5px] bg-slate-800 hover:bg-slate-700 text-gray-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
+                                                >
+                                                    {copiedOrderText ? '✅ 복사 완료!' : '내용 복사'}
+                                                </button>
+                                            </div>
+                                            <div className="text-gray-300 space-y-0.5 text-[10px] font-mono">
+                                                <div>• 성함: {orderUserName}</div>
+                                                <div>• 스타일: {orderSongStyle === 'calm' ? '잔잔 감성 헌정곡' : '신나는 도파민 힐링'}</div>
+                                                <div>• 수신처: {orderContact} ({orderDeliveryType === 'kakao' ? '카톡' : '이메일'})</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2 pt-1">
+                                            {/* 오픈카톡 바로가기 버튼 */}
+                                            <a
+                                                href="https://open.kakao.com/o/sZeroPoint"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer block"
+                                            >
+                                                <span>💬 1:1 카카오톡 오픈채팅으로 바로 문의하기</span>
+                                            </a>
+
+                                            <button
+                                                onClick={() => {
+                                                    setIsCouponModalOpen(false);
+                                                    setCouponStep('verify');
+                                                }}
+                                                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-300 font-bold text-xs cursor-pointer"
+                                            >
+                                                확인 및 닫기
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
