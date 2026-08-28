@@ -1864,15 +1864,32 @@ export default function ZeroPointMusicModal({
                                             </div>
                                         </div>
 
+                                        {/* QR코드 및 오픈카톡 바로가기 */}
+                                        <div className="p-3.5 rounded-2xl bg-white/5 border border-amber-500/30 flex flex-col items-center space-y-2.5">
+                                            <div className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                                                <span>📱 스마트폰 카메라로 QR 스캔 또는 바로 입장</span>
+                                            </div>
+                                            <div className="w-28 h-28 bg-white p-1.5 rounded-xl shadow-lg border border-amber-400/50 flex items-center justify-center">
+                                                <img
+                                                    src="/images/kakao_openchat_qr.jpg"
+                                                    alt="1:1 오픈채팅 QR코드"
+                                                    className="w-full h-full object-contain rounded-lg"
+                                                />
+                                            </div>
+                                            <p className="text-[10px] text-gray-400">
+                                                카카오톡에서 <strong>'{orderUserName}'</strong> 닉네임으로 입장하시면 가장 빠르게 음원을 전송해 드립니다.
+                                            </p>
+                                        </div>
+
                                         <div className="space-y-2 pt-1">
                                             {/* 오픈카톡 바로가기 버튼 */}
                                             <a
-                                                href="https://open.kakao.com/o/sZeroPoint"
+                                                href="https://open.kakao.com/o/sfNxzYKi"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer block"
                                             >
-                                                <span>💬 1:1 카카오톡 오픈채팅으로 바로 문의하기</span>
+                                                <span>💬 1:1 카카오톡 오픈채팅 바로 입장하기</span>
                                             </a>
 
                                             <button
