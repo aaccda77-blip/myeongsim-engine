@@ -130,8 +130,8 @@ export default function ZeroPointMusicModal({
         };
     }, [isPlaying, enableVoice]);
 
-    // [NEW] 🎧 공식 보컬 완성곡 샘플 플레이어 ('이름 포함', '이름 미포함', '맑은 물')
-    const [currentSampleTrack, setCurrentSampleTrack] = useState<'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high'>('name_soyoung');
+    // [NEW] 🎧 공식 보컬 완성곡 샘플 플레이어 ('이름 포함', '이름 미포함', '맑은 물', '날아올라', '강미숙 님')
+    const [currentSampleTrack, setCurrentSampleTrack] = useState<'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high' | 'kang_misook'>('name_soyoung');
     const [isSamplePlaying, setIsSamplePlaying] = useState<boolean>(false);
     const [sampleProgress, setSampleProgress] = useState<number>(0);
     const [sampleDuration, setSampleDuration] = useState<number>(0);
@@ -141,11 +141,12 @@ export default function ZeroPointMusicModal({
     const meditationBgmRef = useRef<HTMLAudioElement | null>(null);
     const meditationVoiceRef = useRef<HTMLAudioElement | null>(null);
 
-    const playSampleTrack = (track: 'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high') => {
+    const playSampleTrack = (track: 'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high' | 'kang_misook') => {
         let audioSrc = '/sample_name_soyoung.wav';
         if (track === 'light_breath') audioSrc = '/sample_light_breath.wav';
         else if (track === 'clean_water') audioSrc = '/sample_essay_song.wav';
         else if (track === 'fly_high') audioSrc = '/sample_fly_high.wav';
+        else if (track === 'kang_misook') audioSrc = '/sample_kang_misook.wav';
         
         if (sampleAudioRef.current) {
             sampleAudioRef.current.pause();
@@ -183,7 +184,7 @@ export default function ZeroPointMusicModal({
         });
     };
 
-    const toggleSamplePlay = (track: 'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high' = currentSampleTrack) => {
+    const toggleSamplePlay = (track: 'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high' | 'kang_misook' = currentSampleTrack) => {
         if (currentSampleTrack !== track || !sampleAudioRef.current) {
             playSampleTrack(track);
             return;
@@ -865,13 +866,15 @@ export default function ZeroPointMusicModal({
                                             <span className="text-[10.5px] text-amber-300 font-bold">
                                                 {currentSampleTrack === 'clean_water'
                                                     ? '남성 사주 (辛巳일주 乾命)'
+                                                    : currentSampleTrack === 'kang_misook'
+                                                    ? '강미숙 님 (51세, 甲子일주 신나는 힐링곡)'
                                                     : currentSampleTrack === 'fly_high'
-                                                    ? '이소영 님 (도파민 뿜뿜!! 신나는 힐링곡)'
+                                                    ? '도파민 뿜뿜!! 날아올라 (신나는 힐링곡)'
                                                     : '이소영 님 (24세, 戊戌일주)'}
                                             </span>
                                         </div>
                                         <span className="text-[9.5px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-full border border-indigo-500/30 font-mono">
-                                            {currentSampleTrack === 'fly_high' ? '⚡ Dopamine Upbeat' : '432Hz Full Vocal'}
+                                            {currentSampleTrack === 'kang_misook' || currentSampleTrack === 'fly_high' ? '⚡ Upbeat Healing' : '432Hz Full Vocal'}
                                         </span>
                                     </div>
 
@@ -880,8 +883,8 @@ export default function ZeroPointMusicModal({
                                         💡 <strong>[안내]</strong> 기본 432Hz 명상 BGM은 <strong>평생 100% 무료</strong>입니다. 아래 실제 사례처럼 <strong>전문 AI 보컬이 부른 고음질 1:1 맞춤 노래(.WAV 파일)</strong>를 영구 소장하시려면 <strong>4,900원</strong>에 맞춤 제작해 드립니다.
                                     </div>
 
-                                    {/* Track Select Tabs (이소영 님 잔잔 vs 순수 에세이 vs 신사일주 맑은물 vs 도파민 날아올라) */}
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-[9px] sm:text-[9.5px]">
+                                    {/* Track Select Tabs (이소영 님 vs 강미숙 님 vs 순수 에세이 vs 신사일주 맑은물 vs 도파민 날아올라) */}
+                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-[8.5px] sm:text-[9.5px]">
                                         <button
                                             onClick={() => playSampleTrack('name_soyoung')}
                                             className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
@@ -893,6 +896,16 @@ export default function ZeroPointMusicModal({
                                             <span>💖 1. 이소영(잔잔)</span>
                                         </button>
                                         <button
+                                            onClick={() => playSampleTrack('kang_misook')}
+                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
+                                                currentSampleTrack === 'kang_misook'
+                                                    ? 'bg-gradient-to-r from-amber-400 via-rose-400 to-pink-500 text-slate-950 shadow-sm font-extrabold animate-pulse'
+                                                    : 'text-rose-300 hover:text-white'
+                                            }`}
+                                        >
+                                            <span>⚡ 2. 강미숙(신나는🔥)</span>
+                                        </button>
+                                        <button
                                             onClick={() => playSampleTrack('light_breath')}
                                             className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'light_breath'
@@ -900,7 +913,7 @@ export default function ZeroPointMusicModal({
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>🌿 2. 숨(순수)</span>
+                                            <span>🌿 3. 숨(순수)</span>
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('clean_water')}
@@ -910,17 +923,17 @@ export default function ZeroPointMusicModal({
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>💧 3. 맑은물(辛巳男)</span>
+                                            <span>💧 4. 맑은물(辛巳男)</span>
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('fly_high')}
                                             className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
                                                 currentSampleTrack === 'fly_high'
-                                                    ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 text-white font-extrabold shadow-sm animate-pulse'
-                                                    : 'text-rose-300/80 hover:text-white'
+                                                    ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 text-white font-extrabold shadow-sm'
+                                                    : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>⚡ 4. 날아올라(도파민🔥)</span>
+                                            <span>🚀 5. 날아올라</span>
                                         </button>
                                     </div>
 
@@ -978,6 +991,62 @@ export default function ZeroPointMusicModal({
                                                         <div>• <strong className="text-sky-300">Verse 2 ("메마른 대지 위로 조용히 맑은 단비가 내려앉아요")</strong> ➔ 癸水(식신)의 시원한 432Hz 물기운 처방</div>
                                                         <div>• <strong className="text-sky-300">Pre-Chorus ("세상의 먼지를 씻어내고 본래의 빛을 발하듯")</strong> ➔ 보석을 맑게 씻어내는 도세주옥 치유</div>
                                                         <div>• <strong className="text-sky-300">Chorus & Outro ("가장 고요한 마음의 중심에서 비로소 온전한 나를 만나네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : currentSampleTrack === 'kang_misook' ? (
+                                        <>
+                                            {/* ⚡ 강미숙 님 (51세, 1976.09.09 12:00, 甲子일주 坤命) 사주 분석 */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-rose-500/40 space-y-2.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[11px] font-bold text-rose-300 flex items-center gap-1.5">
+                                                        <Sparkles className="w-3.5 h-3.5 text-rose-400 animate-spin" />
+                                                        <span>강미숙 님의 사주 원식 (1976.09.09 午시, 51세 坤命)</span>
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-400 font-mono">오행: 木1 火3 土1 金2 水1</span>
+                                                </div>
+
+                                                {/* 만세력 4주 8글자 칩 */}
+                                                <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">년주 (식신/편재)</div>
+                                                        <div className="font-bold text-rose-200 font-mono text-xs mt-0.5">丙辰</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">월주 (상관/정관)</div>
+                                                        <div className="font-bold text-rose-200 font-mono text-xs mt-0.5">丁酉</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-rose-500/20 border border-rose-500/50 shadow-sm">
+                                                        <div className="text-rose-300 font-bold text-[9px]">일주 (본원/정인)</div>
+                                                        <div className="font-extrabold text-rose-100 font-mono text-xs mt-0.5">甲子</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">시주 (편관/상관)</div>
+                                                        <div className="font-bold text-rose-200 font-mono text-xs mt-0.5">庚午</div>
+                                                    </div>
+                                                </div>
+
+                                                <p className="text-[10.5px] text-gray-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-rose-500/20">
+                                                    💡 <strong>[사주 기질 진단]</strong>: 푸른 소나무 `甲子(갑자)` 일주에 `丙火(식신)·丁火(상관)·午火(상관)`로 **식상(3개)의 넘치는 열정과 표현력**을 타고났으나, `酉金·庚金` 관살의 책임감으로 늘 남들을 먼저 배려하고 챙기느라 자신의 끼와 흥을 억눌러왔습니다.
+                                                </p>
+                                            </div>
+
+                                            {/* 강미숙 님 과학적 & 명리학적 가사 연계 설명 */}
+                                            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-rose-950/40 via-amber-950/40 to-slate-900 border border-rose-500/40 space-y-2 text-[10.5px] text-gray-300 leading-relaxed">
+                                                <div className="text-[11px] font-bold text-rose-300 flex items-center gap-1.5">
+                                                    <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
+                                                    <span>왜 '신나는 힐링곡'일까요? (식상(食傷) 대발산 & 도파민 부스팅)</span>
+                                                </div>
+                                                
+                                                <div className="space-y-1.5 pl-1 border-l-2 border-rose-500/40">
+                                                    <p>
+                                                        🧠 <strong>음향심리학적 과학 근거</strong>: 억눌렸던 식상(표현 에너지)을 깨우는 <strong>128 BPM 경쾌한 비트</strong>가 뇌의 보상 회로(측좌핵)를 자극하여 엔도르핀과 도파민을 분비시킵니다.
+                                                    </p>
+                                                    <div className="bg-slate-950/60 p-2.5 rounded-xl space-y-1 text-[10px] text-gray-300">
+                                                        <div>• <strong className="text-rose-300">Verse 1 ("파란 하늘 끝까지... 톡톡 터지는 탄산처럼 기분 좋은 아침")</strong> ➔ 甲木의 활력을 깨우는 시원한 에너지</div>
+                                                        <div>• <strong className="text-rose-300">Verse 2 ("남들을 챙기느라 숨겨둔 나의 미소 이제는 세상 밖으로 활짝")</strong> ➔ 관살 압박을 벗고 식상(火)의 끼와 미소 해방</div>
+                                                        <div>• <strong className="text-rose-300">Chorus & Spoken ("미숙 님, 오롯이 당신만을 위한 눈부신 기쁨으로 춤춥니다 / 세상은 나의 무대야!")</strong> ➔ 당당한 제로포인트 주인공 회귀</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1083,7 +1152,7 @@ export default function ZeroPointMusicModal({
                                                     className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer ${
                                                         isSamplePlaying
                                                             ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/30 animate-pulse'
-                                                            : currentSampleTrack === 'fly_high'
+                                                            : currentSampleTrack === 'kang_misook' || currentSampleTrack === 'fly_high'
                                                             ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-400 hover:to-amber-300 text-white shadow-pink-500/30'
                                                             : 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-amber-500/30'
                                                     }`}
@@ -1091,13 +1160,15 @@ export default function ZeroPointMusicModal({
                                                     {isSamplePlaying ? (
                                                         <Pause className="w-4 h-4 fill-current" />
                                                     ) : (
-                                                        <Play className="w-4 h-4 fill-current ml-0.5" />
+                                                         <Play className="w-4 h-4 fill-current ml-0.5" />
                                                     )}
                                                 </button>
                                                 <div>
                                                     <div className="text-xs font-bold text-white">
                                                         {currentSampleTrack === 'name_soyoung'
                                                             ? '가벼워진 숨 (이소영 님 헌정곡: 이름 포함)'
+                                                            : currentSampleTrack === 'kang_misook'
+                                                            ? '신나는 힐링곡 (강미숙 님 헌정곡: 51세 甲子일주)'
                                                             : currentSampleTrack === 'light_breath'
                                                             ? '가벼워진 숨 (순수 에세이: 이름 미포함)'
                                                             : currentSampleTrack === 'clean_water'
@@ -1128,7 +1199,7 @@ export default function ZeroPointMusicModal({
                                         {/* 🎤 실시간 노래 가사 뷰어 (실제 음원 보컬과 100% 일치하는 정밀 싱크 가사) */}
                                         <div className="pt-2 border-t border-slate-800/80 space-y-2">
                                             <div className="flex items-center justify-between text-[10.5px]">
-                                                    <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                                                <span className="font-bold text-amber-300 flex items-center gap-1.5">
                                                     <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                                                     <span>실시간 노래 가사 (음원 100% 정밀 싱크)</span>
                                                 </span>
@@ -1154,6 +1225,18 @@ export default function ZeroPointMusicModal({
                                                     { section: 'Spoken Word', timeLabel: '02:14 - 02:38', line: '🗣️ [Spoken Word] "소영 님 참 잘 버텨왔어요. 애 많이 썼어요. 이제는 마음껏 가벼워져도 괜찮습니다. 당신의 중심은 이미 온전하니까요."', start: 214, end: 238 },
                                                     { section: 'Outro', timeLabel: '02:39 - 03:00', line: '무게를 비워낸 자리에 차오르는 평온 마음의 제로 포인트 나에게로 돌아오는 길...', start: 239, end: 300 },
                                                     { section: 'Ending', timeLabel: '03:01 - 03:40', line: '🎵 [Fade Out] 잔잔한 피아노와 432Hz 여운...', start: 301, end: 220 }
+                                                ] : currentSampleTrack === 'kang_misook' ? [
+                                                    { section: 'Intro & Count', timeLabel: '00:00 - 00:14', line: '🎵 [Intro] "One two, ready, go! ⚡" (상쾌하고 신나는 비트)', start: 0, end: 14 },
+                                                    { section: 'Verse 1', timeLabel: '00:15 - 00:29', line: '파란 하늘 끝까지 펼쳐진 푸른 물결 어깨를 짓누르던 생각은 바람에 날려 톡톡 터지는 탄산처럼 기분 좋은 아침이야', start: 15, end: 29 },
+                                                    { section: 'Verse 2', timeLabel: '00:30 - 00:44', line: '남들을 챙기느라 숨겨둔 나의 미소 이제는 세상 밖으로 활짝 꺼내 볼래 발걸음마다 통통 튀는 신나는 멜로디', start: 30, end: 44 },
+                                                    { section: 'Pre-Chorus', timeLabel: '00:45 - 00:59', line: '심장이 기분 좋게 쿵쾅대기 시작해 눈부신 바람을 타고 날아오를 시간 자 두 손을 번쩍 들고!', start: 45, end: 59 },
+                                                    { section: 'Chorus', timeLabel: '01:00 - 01:14', line: '반짝이는 햇살 타고 끝없이 달려가 가장 자유롭고 당당한 나를 만나는 지금', start: 60, end: 74 },
+                                                    { section: 'Chorus', timeLabel: '01:15 - 01:35', line: '마음의 제로 포인트 세상은 나의 무대야 찬란하게 빛나는 오늘을 마음껏 노래해! (Shine on, Brilliant day!)', start: 75, end: 95 },
+                                                    { section: 'Spoken Word', timeLabel: '01:36 - 01:50', line: '🗣️ [Spoken Word] "미숙 님, 늘 모두를 비춰주던 당신의 고마운 마음이 이제는 오롯이 당신만을 위한 눈부신 기쁨으로 춤춥니다. 망설이지 말고 오늘을 마음껏 누리세요."', start: 96, end: 110 },
+                                                    { section: 'Verse 3', timeLabel: '01:51 - 02:06', line: '두려움은 파도 넘어 던져 버리고 더 높이 날아올라 푸른 바다를 안아 봐 눈부신 우리의 지금 완벽한 시작이야', start: 111, end: 126 },
+                                                    { section: 'Chorus', timeLabel: '02:07 - 02:20', line: '반짝이는 햇살 타고 끝없이 달려가 가장 자유롭고 당당한 나를 만나는 지금', start: 127, end: 140 },
+                                                    { section: 'Chorus', timeLabel: '02:21 - 02:36', line: '마음의 제로 포인트 세상은 나의 무대야 찬란하게 빛나는 오늘을 마음껏 노래해 랄랄랄랄랄랄', start: 141, end: 156 },
+                                                    { section: 'Finale & Outro', timeLabel: '02:37 - 02:56', line: '눈부신 바람을 타고 활짝 웃는 미숙 님을 위해 다 함께 댄스! (One two, ready, go! ⚡)', start: 157, end: 180 }
                                                 ] : currentSampleTrack === 'light_breath' ? [
                                                     { section: 'Intro', timeLabel: '00:00 - 00:13', line: '🎵 [Intro] 432Hz Soft Warm Piano & Gentle Breeze', start: 0, end: 13 },
                                                     { section: 'Verse 1', timeLabel: '00:14 - 00:24', line: '늘 담담하게 버티며 서 있어야 했던 날들', start: 14, end: 24 },
@@ -1181,7 +1264,6 @@ export default function ZeroPointMusicModal({
                                                     { section: 'Outro', timeLabel: '02:31 - 02:49', line: '고요 속으로 맑은 흐름 속으로 마음의 제로 포인트 본연의 온전한 나에게로...', start: 151, end: 169 },
                                                     { section: 'Ending', timeLabel: '02:50 - 03:40', line: '🎵 [Fade Out] 맑은 물결과 피아노 여운 페이드아웃...', start: 170, end: 220 }
                                                 ] : [
-                                                    /* ⚡ 4. 날아올라 (도파민 뿜뿜!! 신나는 힐링 버전 실시간 가사 싱크) */
                                                     { section: 'Intro & Count', timeLabel: '00:00 - 00:18', line: '🎵 하나 둘 셋 넷... 셋 넷... 흠... 하나 둘 셋 넷! ⚡', start: 0, end: 18 },
                                                     { section: 'Verse 1', timeLabel: '00:19 - 00:26', line: '어깨 위에 얹어둔 무거운 생각들 가벼운 바람결에 훌훌 털어 날려 봐', start: 19, end: 26 },
                                                     { section: 'Verse 1', timeLabel: '00:27 - 00:34', line: '조금 서툴러도 뭐 어때 웃어 버리면 그만인 걸', start: 27, end: 34 },
@@ -1226,7 +1308,6 @@ export default function ZeroPointMusicModal({
                                         </div>
                                     </div>
 
-                                    {/* 💖 구입을 망설이는 분들을 위한 따뜻한 감성 위로 멘트 */}
                                     <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-400/30 text-amber-100 text-[11px] leading-relaxed">
                                         <p className="font-medium text-gray-200">
                                             "본인의 기질에 맞는, <strong className="text-amber-300 font-bold">본인의 이름이 들어간 당신만의 1:1 맞춤 코칭 에세이 가사노래</strong>입니다."
@@ -1236,7 +1317,6 @@ export default function ZeroPointMusicModal({
                                         </p>
                                     </div>
 
-                                    {/* 💳 둘 중 하나 4,900원에 구매하기 (원클릭 듀얼 구매 버튼) */}
                                     <div className="space-y-2 pt-1">
                                         <div className="text-[11px] font-bold text-amber-300 text-center flex items-center justify-center gap-1">
                                             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
