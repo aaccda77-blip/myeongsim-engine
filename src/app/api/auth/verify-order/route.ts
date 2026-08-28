@@ -1,0 +1,39 @@
+﻿import { NextRequest, NextResponse } from 'next/server';
+import { verifySmartStoreOrder } from '@/lib/orderVerification';
+
+export const dynamic = 'force-dynamic';
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json().catch(() => ({}));
+        const { orderNumber = '', userId = '', depositorName = '' } = body;
+
+        if (!orderNumber || typeof orderNumber !== 'string') {
+            return NextResponse.json({
+                success: false,
+                message: '네이버 스마트스토어 주문번호를 입력해 주세요.'
+            }, { status: 400 });
+        }
+
+        const result = await verifySmartStoreOrder(orderNumber, userId, depositorName);
+
+        if (!result.success) {
+            return NextResponse.json({
+                success: false,
+                message: result.message
+            }, { status: 400 });
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: result.message,
+            record: result.record
+        });
+    } catch (error: any) {
+        console.error('[Verify Order Error]:', error);
+        return NextResponse.json({
+            success: false,
+            message: '주문번호 인증 처리 중 오류가 발생했습니다. 다시 시도해 주세요.'
+        }, { status: 500 });
+    }
+}

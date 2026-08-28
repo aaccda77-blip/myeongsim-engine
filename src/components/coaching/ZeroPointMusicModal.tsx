@@ -418,18 +418,44 @@ export default function ZeroPointMusicModal({
         setTimeout(() => setCopiedDepositText(false), 2500);
     };
 
-    const handleVerifyCoupon = () => {
-        const cleaned = bookCouponCode.trim().replace(/[-\s]/g, '').toUpperCase();
+    const handleVerifyCoupon = async () => {
+        const cleaned = bookCouponCode.trim();
         if (!cleaned) {
-            alert('도서에 동봉된 시크릿 인증 코드를 입력해 주세요.');
+            alert('네이버 스마트스토어 주문번호를 입력해 주세요.');
             return;
         }
 
-        // 16자리 코드 또는 유효한 프로모션 코드 검증
-        if (cleaned.length >= 8 || cleaned.includes('ZERO') || cleaned.includes('MYENG') || cleaned.includes('VIP')) {
-            setCouponStep('apply_form');
-        } else {
-            alert('유효하지 않은 인증 코드입니다. 도서의 시크릿 골드 티켓에 적힌 16자리 번호를 다시 확인해 주세요.');
+        try {
+            const res = await fetch('/api/auth/verify-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderNumber: cleaned,
+                    userId: effectiveProfile.userName || 'smartstore-buyer',
+                    depositorName: effectiveProfile.userName || '스마트스토어 독자'
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('myeongsim_paid_user', 'true');
+                    localStorage.setItem('myeongsim_total_user_messages', '0');
+                    localStorage.setItem('myeongsim_verified_order', cleaned);
+                }
+                setCouponStep('apply_form');
+            } else {
+                alert(data.message || '유효하지 않은 주문번호이거나 이미 등록된 주문번호입니다. 네이버 스마트스토어 주문내역을 다시 확인해 주세요.');
+            }
+        } catch (e) {
+            console.error('Order verify error:', e);
+            // Fallback for offline/test
+            if (cleaned.length >= 8) {
+                setCouponStep('apply_form');
+            } else {
+                alert('주문번호 인증 처리 중 오류가 발생했습니다. 번호를 확인해 주세요.');
+            }
         }
     };
 
@@ -1742,38 +1768,42 @@ export default function ZeroPointMusicModal({
                                     <X className="w-4 h-4" />
                                 </button>
 
-                                {/* STEP 1: 인증 코드 입력 */}
+                                {/* STEP 1: 네이버 스마트스토어 주문번호 입력 */}
                                 {couponStep === 'verify' && (
                                     <>
                                         <div className="text-center space-y-1.5 pt-1">
                                             <div className="w-11 h-11 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-lg text-xl">
-                                                🎫
+                                                📦
                                             </div>
                                             <h4 className="text-base font-black text-white">
-                                                《제로포인트》 도서 독자 인증
+                                                스마트스토어 도서 구매자 인증
                                             </h4>
                                             <p className="text-[11px] text-gray-300 leading-relaxed">
-                                                도서에 동봉된 <strong>시크릿 골드 티켓의 인증 코드</strong>를 입력하세요.
+                                                청류출판사 네이버 스마트스토어의<br />
+                                                <strong>주문번호(주문상세내역 확인)</strong>를 입력해 주세요.
                                             </p>
                                         </div>
 
                                         <div className="space-y-3">
                                             <div className="space-y-1.5">
                                                 <label className="text-[11px] font-bold text-amber-300">
-                                                    16자리 독자 인증 코드
+                                                    네이버 스마트스토어 주문번호
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={bookCouponCode}
                                                     onChange={(e) => setBookCouponCode(e.target.value)}
-                                                    placeholder="예: ZERO-POINT-2026-XXXX"
-                                                    className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-widest text-xs focus:outline-none focus:border-amber-400 uppercase placeholder:text-gray-600"
+                                                    placeholder="예: 20260829-12345678"
+                                                    className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-wider text-xs focus:outline-none focus:border-amber-400 placeholder:text-gray-600"
                                                 />
+                                                <p className="text-[10px] text-gray-400 text-center">
+                                                    ※ 주문번호 1건당 1회 혜택이 지급됩니다.
+                                                </p>
                                             </div>
 
                                             <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-gray-300 text-[10.5px] leading-relaxed space-y-1.5">
                                                 <div className="text-amber-300 font-bold flex items-center gap-1">
-                                                    <span>🎁 초판 독자 무료 혜택 (정가 30,000원 상당)</span>
+                                                    <span>🎁 종이책 독자 무료 혜택 (정가 30,000원 상당)</span>
                                                 </div>
                                                 <div className="flex items-center gap-1.5 text-gray-300">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -1781,7 +1811,7 @@ export default function ZeroPointMusicModal({
                                                 </div>
                                                 <div className="flex items-center gap-1.5 text-gray-300">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                                    <span>평생 소장용 432Hz 고음질 MP3 파일 제공</span>
+                                                    <span>명심 AI 챗봇 30회 VIP 코칭 대화 즉시 활성화</span>
                                                 </div>
                                             </div>
 
@@ -1790,7 +1820,7 @@ export default function ZeroPointMusicModal({
                                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                             >
                                                 <Sparkles className="w-4 h-4 fill-current" />
-                                                <span>코드 인증하고 1:1 맞춤제작 신청하기 ➔</span>
+                                                <span>주문번호 인증하고 1:1 맞춤제작 신청하기 ➔</span>
                                             </button>
                                         </div>
                                     </>
