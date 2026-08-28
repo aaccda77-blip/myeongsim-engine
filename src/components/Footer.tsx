@@ -13,7 +13,7 @@ export default function Footer() {
                     <div className="space-y-0.5 text-gray-400 text-xs">
                         <p>대표 <strong className="text-gray-300 font-normal">이경윤</strong></p>
                         <p>사업자등록번호 <strong className="text-gray-300 font-normal">838-03-03892</strong></p>
-                        <p>통신판매번호 <strong className="text-amber-400 font-semibold">준비중</strong></p>
+                        <p>통신판매업신고번호 <strong className="text-gray-300 font-normal">2026-세종-0576</strong></p>
                     </div>
                 </div>
 

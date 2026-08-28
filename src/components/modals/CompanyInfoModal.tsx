@@ -57,8 +57,8 @@ export default function CompanyInfoModal({ isOpen, onClose }: CompanyInfoModalPr
                             <span className="font-mono text-gray-200 font-semibold">838-03-03892</span>
                         </div>
                         <div className="flex justify-between items-center py-1">
-                            <span className="text-gray-400">통신판매번호</span>
-                            <span className="font-semibold text-amber-400">준비중</span>
+                            <span className="text-gray-400">통신판매업신고번호</span>
+                            <span className="font-mono text-gray-200 font-semibold">2026-세종-0576</span>
                         </div>
                     </div>
 
