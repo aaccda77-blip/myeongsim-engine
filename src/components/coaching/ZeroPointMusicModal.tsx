@@ -950,18 +950,18 @@ export default function ZeroPointMusicModal({
                                             <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 space-y-2 text-[10.5px] text-gray-300 leading-relaxed">
                                                 <div className="text-[11px] font-bold text-indigo-300 flex items-center gap-1.5">
                                                     <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
-                                                    <span>왜 이 가사로 지어졌을까요? (과학적 & 명리학적 근거)</span>
+                                                    <span>왜 이 가사로 지어졌을까요? (과학적 & 명리학적 1:1 연계)</span>
                                                 </div>
                                                 
                                                 <div className="space-y-1.5 pl-1 border-l-2 border-indigo-500/40">
                                                     <p>
                                                         🧠 <strong>음향심리학적 과학 근거</strong>: 자연의 수학적 비율과 일치하는 <strong>432Hz 주파수</strong>가 부교감신경을 자극하여 스트레스 호르몬을 낮추고 뇌파를 알파파로 안정시킵니다. 또한 뇌의 <strong>자기 참조 효과(Self-Referential Effect)</strong>로 인해 노래 속에서 다정하게 내 이름이 불릴 때 심리적 방어 기제가 풀리고 깊은 치유가 일어납니다.
                                                     </p>
-                                                    <div className="bg-slate-950/60 p-2 rounded-xl space-y-1 text-[10px] text-gray-300">
-                                                        <div>• <strong className="text-amber-300">1소절 ("쉼 없이 짊어지던 무거운 책임의 무게를")</strong> ➔ 戊戌·甲寅의 짓눌린 중압감 공감 및 이완 시작</div>
-                                                        <div>• <strong className="text-amber-300">2소절 ("깊은 한숨 대신 가벼운 숨으로 비워내네")</strong> ➔ 결핍된 金(폐·호흡) 기운을 보강하는 432Hz 호흡 처방</div>
-                                                        <div>• <strong className="text-amber-300">3소절 ("완벽하게 버티지 않아도 대지는 여전히 푸르고")</strong> ➔ 무조건 버텨야 한다는 강박을 해소하고 안전한 쉼 허락</div>
-                                                        <div>• <strong className="text-amber-300">4소절 ("내려놓은 그 자리에서 비로소 온전한 나를 만나네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
+                                                    <div className="bg-slate-950/60 p-2.5 rounded-xl space-y-1.5 text-[10px] text-gray-300">
+                                                        <div>• <strong className="text-amber-300">Verse 1 ("늘 단단하게 버티며 서 있어야 했던 날들... 무거운 마음의 짐")</strong> ➔ 戊戌(대지)·甲寅(편관)의 짓눌린 중압감과 어른스러운 침묵을 깊이 공감하여 심리적 무장 해제</div>
+                                                        <div>• <strong className="text-amber-300">Verse 2 ("얼어붙었던 땅을 녹이는 따스한 봄볕 속에 조용히 녹아내리네")</strong> ➔ 癸丑월(겨울 동토)의 얼어붙은 마음을 午火(정인)의 따뜻한 온기로 녹여주는 명리학적 조후 처방</div>
+                                                        <div>• <strong className="text-amber-300">Pre-Chorus ("내가 나를 붙잡고 있던 긴장의 손을 풀고")</strong> ➔ 사주에 결핍된 金(0개, 폐·호흡·비움) 기운을 보강하는 432Hz 이완 호흡 유도</div>
+                                                        <div>• <strong className="text-amber-300">Chorus & Spoken ("더 이상 홀로 모든 것을 짊어지지 않아도... 마음껏 가벼워져도 괜찮습니다")</strong> ➔ 戊土의 완벽주의를 내려놓고 고요한 제로포인트(Zero-Point) 참된 쉼으로 회귀</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1014,11 +1014,11 @@ export default function ZeroPointMusicModal({
                                                     <p>
                                                         🧠 <strong>음향심리학적 과학 근거</strong>: 메마른 신경계의 과열된 화기(火氣)를 가라앉히는 <strong>432Hz 수(水) 파동 공명</strong>으로 두뇌의 온도를 낮추고 심박수를 안정시킵니다.
                                                     </p>
-                                                    <div className="bg-slate-950/60 p-2 rounded-xl space-y-1 text-[10px] text-gray-300">
-                                                        <div>• <strong className="text-sky-300">1소절 ("뜨거운 대지 위에 지쳐있던 보석 같은 마음")</strong> ➔ 辛巳·未月의 건조한 열감과 압박 공감</div>
-                                                        <div>• <strong className="text-sky-300">2소절 ("맑은 물이 머무는 곳으로 잔잔히 흘러가네")</strong> ➔ 癸水(식신)의 시원한 432Hz 물기운 처방</div>
-                                                        <div>• <strong className="text-sky-300">3소절 ("세상의 먼지를 씻어내고 본래의 빛을 발하듯")</strong> ➔ 보석을 맑게 씻어내는 도세주옥 치유</div>
-                                                        <div>• <strong className="text-sky-300">4소절 ("고요한 쉼 속에서 가장 순수한 나로 회복하네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
+                                                    <div className="bg-slate-950/60 p-2.5 rounded-xl space-y-1.5 text-[10px] text-gray-300">
+                                                        <div>• <strong className="text-sky-300">Verse 1 ("뜨거운 대지 위에 지쳐있던 보석 같은 마음")</strong> ➔ 辛巳·未月의 건조한 열감과 압박 공감</div>
+                                                        <div>• <strong className="text-sky-300">Verse 2 ("맑은 물이 머무는 곳으로 잔잔히 흘러가네")</strong> ➔ 癸水(식신)의 시원한 432Hz 물기운 처방</div>
+                                                        <div>• <strong className="text-sky-300">Pre-Chorus ("세상의 먼지를 씻어내고 본래의 빛을 발하듯")</strong> ➔ 보석을 맑게 씻어내는 도세주옥 치유</div>
+                                                        <div>• <strong className="text-sky-300">Chorus & Outro ("고요한 쉼 속에서 가장 순수한 나로 회복하네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1072,12 +1072,12 @@ export default function ZeroPointMusicModal({
                                             className="w-full h-1.5 bg-slate-800 accent-amber-400 rounded-lg cursor-pointer"
                                         />
 
-                                        {/* 🎤 실시간 노래 가사 뷰어 (재생 시 실시간 하이라이트 싱크) */}
+                                        {/* 🎤 실시간 노래 가사 뷰어 (실제 풀 가사 및 소절별 정밀 싱크) */}
                                         <div className="pt-2 border-t border-slate-800/80 space-y-2">
                                             <div className="flex items-center justify-between text-[10.5px]">
                                                 <span className="font-bold text-amber-300 flex items-center gap-1.5">
                                                     <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                                    <span>실시간 노래 가사</span>
+                                                    <span>실시간 노래 가사 (풀 버전)</span>
                                                 </span>
                                                 {isSamplePlaying ? (
                                                     <span className="text-[9.5px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/40 font-bold animate-pulse flex items-center gap-1">
@@ -1088,46 +1088,66 @@ export default function ZeroPointMusicModal({
                                                 )}
                                             </div>
 
-                                            <div className="space-y-1.5">
+                                            <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1 hide-scrollbar">
                                                 {(currentSampleTrack === 'name_soyoung' ? [
-                                                    { timeLabel: '00:00 - 00:45', line: '소영아, 쉼 없이 짊어지던 무거운 책임의 무게를', start: 0, end: 45 },
-                                                    { timeLabel: '00:46 - 01:30', line: '깊은 한숨 대신 가벼운 숨으로 비워내네', start: 46, end: 90 },
-                                                    { timeLabel: '01:31 - 02:15', line: '완벽하게 버티지 않아도 대지는 여전히 푸르고', start: 91, end: 135 },
-                                                    { timeLabel: '02:16 - 03:40', line: '내려놓은 그 자리에서 비로소 온전한 나를 만나네', start: 136, end: 220 }
+                                                    { section: 'Intro', timeLabel: '00:00 - 00:15', lines: ['[Intro]', '🎵 A=432Hz Soft Warm Piano & Gentle Breeze Texture'], start: 0, end: 15 },
+                                                    { section: 'Verse 1', timeLabel: '00:16 - 00:45', lines: ['[Verse 1]', '소영아, 늘 단단하게 버티며 서 있어야 했던 날들', '어른스러운 침묵 뒤에 숨겨둔', '무거운 마음의 짐들을 가만히 내려놓아요'], start: 16, end: 45 },
+                                                    { section: 'Verse 2', timeLabel: '00:46 - 01:15', lines: ['[Verse 2]', '흘리지 못한 눈물도, 삼켜낸 수많은 말들도', '얼어붙었던 땅을 녹이는', '따스한 봄볕 속에 조용히 녹아내리네'], start: 46, end: 75 },
+                                                    { section: 'Pre-Chorus', timeLabel: '01:16 - 01:40', lines: ['[Pre-Chorus]', '내가 나를 붙잡고 있던 긴장의 손을 풀고', '가만히 불어오는 바람의 결에', '조심스레 내 마음을 맡겨봅니다'], start: 76, end: 100 },
+                                                    { section: 'Chorus', timeLabel: '01:41 - 02:20', lines: ['[Chorus]', '더 이상 홀로 모든 것을 짊어지지 않아도', '바람처럼 가볍게, 햇살처럼 자유롭게', '있는 그대로의 나로 숨 쉬는 곳', '가장 평온한 제로포인트에 닿아', '비로소 참된 쉼을 만나네'], start: 101, end: 140 },
+                                                    { section: 'Spoken Word', timeLabel: '02:21 - 02:55', lines: ['[Interlude & Spoken Word]', '🗣️ "잘 버텨왔어요, 참 애썼어요.', '이제는 마음껏 가벼워져도 괜찮습니다.', '당신의 중심은 이미 온전하니까요."'], start: 141, end: 175 },
+                                                    { section: 'Outro', timeLabel: '02:56 - 03:40', lines: ['[Outro]', '무게를 비워낸 자리에 차오르는 평온', '마음의 제로포인트', '나에게로 돌아오는 길...'], start: 176, end: 220 }
                                                 ] : currentSampleTrack === 'light_breath' ? [
-                                                    { timeLabel: '00:00 - 00:45', line: '쉼 없이 짊어지던 무거운 책임의 무게를', start: 0, end: 45 },
-                                                    { timeLabel: '00:46 - 01:30', line: '깊은 한숨 대신 가벼운 숨으로 비워내네', start: 46, end: 90 },
-                                                    { timeLabel: '01:31 - 02:15', line: '완벽하게 버티지 않아도 대지는 여전히 푸르고', start: 91, end: 135 },
-                                                    { timeLabel: '02:16 - 03:40', line: '내려놓은 그 자리에서 비로소 온전한 나를 만나네', start: 136, end: 220 }
+                                                    { section: 'Intro', timeLabel: '00:00 - 00:15', lines: ['[Intro]', '🎵 A=432Hz Soft Warm Piano & Gentle Breeze Texture'], start: 0, end: 15 },
+                                                    { section: 'Verse 1', timeLabel: '00:16 - 00:45', lines: ['[Verse 1]', '늘 단단하게 버티며 서 있어야 했던 날들', '어른스러운 침묵 뒤에 숨겨둔', '무거운 마음의 짐들을 가만히 내려놓아요'], start: 16, end: 45 },
+                                                    { section: 'Verse 2', timeLabel: '00:46 - 01:15', lines: ['[Verse 2]', '흘리지 못한 눈물도, 삼켜낸 수많은 말들도', '얼어붙었던 땅을 녹이는', '따스한 봄볕 속에 조용히 녹아내리네'], start: 46, end: 75 },
+                                                    { section: 'Pre-Chorus', timeLabel: '01:16 - 01:40', lines: ['[Pre-Chorus]', '내가 나를 붙잡고 있던 긴장의 손을 풀고', '가만히 불어오는 바람의 결에', '조심스레 내 마음을 맡겨봅니다'], start: 76, end: 100 },
+                                                    { section: 'Chorus', timeLabel: '01:41 - 02:20', lines: ['[Chorus]', '더 이상 홀로 모든 것을 짊어지지 않아도', '바람처럼 가볍게, 햇살처럼 자유롭게', '있는 그대로의 나로 숨 쉬는 곳', '가장 평온한 제로포인트에 닿아', '비로소 참된 쉼을 만나네'], start: 101, end: 140 },
+                                                    { section: 'Spoken Word', timeLabel: '02:21 - 02:55', lines: ['[Interlude & Spoken Word]', '🗣️ "잘 버텨왔어요, 참 애썼어요.', '이제는 마음껏 가벼워져도 괜찮습니다.', '당신의 중심은 이미 온전하니까요."'], start: 141, end: 175 },
+                                                    { section: 'Outro', timeLabel: '02:56 - 03:40', lines: ['[Outro]', '무게를 비워낸 자리에 차오르는 평온', '마음의 제로포인트', '나에게로 돌아오는 길...'], start: 176, end: 220 }
                                                 ] : [
-                                                    { timeLabel: '00:00 - 00:45', line: '뜨거운 대지 위에 지쳐있던 보석 같은 마음', start: 0, end: 45 },
-                                                    { timeLabel: '00:46 - 01:30', line: '맑은 물이 머무는 곳으로 잔잔히 흘러가네', start: 46, end: 90 },
-                                                    { timeLabel: '01:31 - 02:15', line: '세상의 먼지를 씻어내고 본래의 빛을 발하듯', start: 91, end: 135 },
-                                                    { timeLabel: '02:16 - 03:40', line: '고요한 쉼 속에서 가장 순수한 나로 회복하네', start: 136, end: 220 }
+                                                    { section: 'Intro', timeLabel: '00:00 - 00:15', lines: ['[Intro]', '🎵 432Hz 고요한 물결 소리와 맑은 건반 선율'], start: 0, end: 15 },
+                                                    { section: 'Verse 1', timeLabel: '00:16 - 00:45', lines: ['[Verse 1]', '뜨거운 대지 위에 지쳐있던 보석 같은 마음', '쉴 새 없이 몰아치던 세상의 열기 속에 지쳐갈 때'], start: 16, end: 45 },
+                                                    { section: 'Verse 2', timeLabel: '00:46 - 01:15', lines: ['[Verse 2]', '맑은 물이 머무는 곳으로 잔잔히 흘러가네', '메마른 마음에 시원한 샘물이 고여오듯'], start: 46, end: 75 },
+                                                    { section: 'Pre-Chorus', timeLabel: '01:16 - 01:40', lines: ['[Pre-Chorus]', '세상의 먼지를 씻어내고 본래의 빛을 발하듯', '도세주옥(淘洗珠玉)의 맑은 물결에 온몸을 맡기네'], start: 76, end: 100 },
+                                                    { section: 'Chorus', timeLabel: '01:41 - 02:20', lines: ['[Chorus]', '가장 맑고 순수한 나의 빛을 되찾는 곳', '고요한 쉼 속에서 비로소 온전한 나로 회복하네'], start: 101, end: 140 },
+                                                    { section: 'Spoken Word', timeLabel: '02:21 - 02:55', lines: ['[Interlude & Spoken Word]', '🗣️ "치열했던 긴장을 내려놓으세요.', '당신은 본래 찬란하게 빛나는 보석입니다."'], start: 141, end: 175 },
+                                                    { section: 'Outro', timeLabel: '02:56 - 03:40', lines: ['[Outro]', '맑은 물이 머무는 곳', '평온한 제로포인트의 안식...'], start: 176, end: 220 }
                                                 ]).map((lyric, idx) => {
                                                     const isCurrent = isSamplePlaying && sampleProgress >= lyric.start && sampleProgress <= lyric.end;
                                                     return (
                                                         <div
                                                             key={idx}
-                                                            className={`p-2.5 rounded-xl transition-all duration-300 ${
+                                                            className={`p-3 rounded-2xl transition-all duration-300 ${
                                                                 isCurrent
                                                                     ? 'bg-amber-500/25 border border-amber-400 shadow-md shadow-amber-500/15 translate-x-1'
                                                                     : 'bg-slate-900/60 border border-white/5'
                                                             }`}
                                                         >
-                                                            <div className="flex items-center justify-between text-[9px] font-mono text-gray-400 mb-0.5">
-                                                                <span>{lyric.timeLabel}</span>
+                                                            <div className="flex items-center justify-between text-[9.5px] font-mono text-gray-400 mb-1">
+                                                                <span className="text-amber-300 font-bold">{lyric.section} ({lyric.timeLabel})</span>
                                                                 {isCurrent && (
                                                                     <span className="text-amber-300 font-bold flex items-center gap-1">
                                                                         <span>● 현재 소절</span>
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <p className={`text-xs leading-relaxed transition-colors ${
-                                                                isCurrent ? 'text-amber-100 font-extrabold text-[12.5px]' : 'text-gray-300'
-                                                            }`}>
-                                                                "{lyric.line}"
-                                                            </p>
+                                                            <div className="space-y-0.5">
+                                                                {lyric.lines.map((ln, lIdx) => (
+                                                                    <p
+                                                                        key={lIdx}
+                                                                        className={`text-xs leading-relaxed transition-colors ${
+                                                                            lIdx === 0 && ln.startsWith('[')
+                                                                                ? 'text-[10px] text-gray-500 font-mono'
+                                                                                : isCurrent
+                                                                                ? 'text-amber-100 font-extrabold text-[12px]'
+                                                                                : 'text-gray-300'
+                                                                        }`}
+                                                                    >
+                                                                        {ln}
+                                                                    </p>
+                                                                ))}
+                                                            </div>
                                                         </div>
                                                     );
                                                 })}
