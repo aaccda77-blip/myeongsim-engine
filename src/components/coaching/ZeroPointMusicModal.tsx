@@ -131,7 +131,7 @@ export default function ZeroPointMusicModal({
     }, [isPlaying, enableVoice]);
 
     // [NEW] 🎧 공식 보컬 완성곡 샘플 플레이어 ('이름 포함', '이름 미포함', '맑은 물')
-    const [currentSampleTrack, setCurrentSampleTrack] = useState<'name_soyoung' | 'light_breath' | 'clean_water'>('name_soyoung');
+    const [currentSampleTrack, setCurrentSampleTrack] = useState<'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high'>('name_soyoung');
     const [isSamplePlaying, setIsSamplePlaying] = useState<boolean>(false);
     const [sampleProgress, setSampleProgress] = useState<number>(0);
     const [sampleDuration, setSampleDuration] = useState<number>(0);
@@ -141,10 +141,11 @@ export default function ZeroPointMusicModal({
     const meditationBgmRef = useRef<HTMLAudioElement | null>(null);
     const meditationVoiceRef = useRef<HTMLAudioElement | null>(null);
 
-    const playSampleTrack = (track: 'name_soyoung' | 'light_breath' | 'clean_water') => {
+    const playSampleTrack = (track: 'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high') => {
         let audioSrc = '/sample_name_soyoung.wav';
         if (track === 'light_breath') audioSrc = '/sample_light_breath.wav';
         else if (track === 'clean_water') audioSrc = '/sample_essay_song.wav';
+        else if (track === 'fly_high') audioSrc = '/sample_fly_high.wav';
         
         if (sampleAudioRef.current) {
             sampleAudioRef.current.pause();
@@ -182,7 +183,7 @@ export default function ZeroPointMusicModal({
         });
     };
 
-    const toggleSamplePlay = (track: 'name_soyoung' | 'light_breath' | 'clean_water' = currentSampleTrack) => {
+    const toggleSamplePlay = (track: 'name_soyoung' | 'light_breath' | 'clean_water' | 'fly_high' = currentSampleTrack) => {
         if (currentSampleTrack !== track || !sampleAudioRef.current) {
             playSampleTrack(track);
             return;
@@ -862,21 +863,25 @@ export default function ZeroPointMusicModal({
                                                 🌟 실제 1:1 맞춤제작 풀보컬 사례
                                             </span>
                                             <span className="text-[10.5px] text-amber-300 font-bold">
-                                                {currentSampleTrack === 'clean_water' ? '남성 사주 (辛巳일주 乾命)' : '이소영 님 (24세, 戊戌일주)'}
+                                                {currentSampleTrack === 'clean_water'
+                                                    ? '남성 사주 (辛巳일주 乾命)'
+                                                    : currentSampleTrack === 'fly_high'
+                                                    ? '이소영 님 (도파민 뿜뿜!! 신나는 힐링곡)'
+                                                    : '이소영 님 (24세, 戊戌일주)'}
                                             </span>
                                         </div>
                                         <span className="text-[9.5px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-full border border-indigo-500/30 font-mono">
-                                            432Hz Full Vocal
+                                            {currentSampleTrack === 'fly_high' ? '⚡ Dopamine Upbeat' : '432Hz Full Vocal'}
                                         </span>
                                     </div>
 
                                     {/* Free vs Premium Notice */}
                                     <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed">
-                                        💡 <strong>[안내]</strong> 위에서 들으신 기본 432Hz 힐링 명상 BGM은 <strong>평생 100% 무료</strong>로 이용하실 수 있습니다. 아래 실제 사례처럼 <strong>전문 AI 보컬이 부른 고음질 1:1 맞춤 노래(.WAV 파일)</strong>를 영구 소장하시려면 <strong>4,900원</strong>에 제작해 드립니다.
+                                        💡 <strong>[안내]</strong> 기본 432Hz 명상 BGM은 <strong>평생 100% 무료</strong>입니다. 아래 실제 사례처럼 <strong>전문 AI 보컬이 부른 고음질 1:1 맞춤 노래(.WAV 파일)</strong>를 영구 소장하시려면 <strong>4,900원</strong>에 맞춤 제작해 드립니다.
                                     </div>
 
-                                    {/* Track Select Tabs (이소영 님 vs 순수 에세이 vs 신사일주 남성 맑은 물) */}
-                                    <div className="grid grid-cols-3 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-[9.5px]">
+                                    {/* Track Select Tabs (이소영 님 잔잔 vs 순수 에세이 vs 신사일주 맑은물 vs 도파민 날아올라) */}
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-[9px] sm:text-[9.5px]">
                                         <button
                                             onClick={() => playSampleTrack('name_soyoung')}
                                             className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
@@ -885,7 +890,7 @@ export default function ZeroPointMusicModal({
                                                     : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            <span>💖 1. 이소영(戊戌)</span>
+                                            <span>💖 1. 이소영(잔잔)</span>
                                         </button>
                                         <button
                                             onClick={() => playSampleTrack('light_breath')}
@@ -907,11 +912,112 @@ export default function ZeroPointMusicModal({
                                         >
                                             <span>💧 3. 맑은물(辛巳男)</span>
                                         </button>
+                                        <button
+                                            onClick={() => playSampleTrack('fly_high')}
+                                            className={`py-1.5 px-1 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-0.5 text-center leading-tight ${
+                                                currentSampleTrack === 'fly_high'
+                                                    ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 text-white font-extrabold shadow-sm animate-pulse'
+                                                    : 'text-rose-300/80 hover:text-white'
+                                            }`}
+                                        >
+                                            <span>⚡ 4. 날아올라(도파민🔥)</span>
+                                        </button>
                                     </div>
 
                                     {/* Saju 4 Pillars & Explanation Box (동적 전환) */}
-                                    {currentSampleTrack !== 'clean_water' ? (
+                                    {currentSampleTrack === 'clean_water' ? (
                                         <>
+                                            {/* 💧 남자 사주 (庚申년 癸未월 辛巳일 乙未시) 맑은 물이 머무는 곳 사주 분석 */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-sky-500/40 space-y-2.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
+                                                        <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                                                        <span>남성 사주 원식 (辛巳일주 乾命)</span>
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-400 font-mono">오행: 金3 土2 火1 水1 木1</span>
+                                                </div>
+
+                                                {/* 만세력 4주 8글자 칩 */}
+                                                <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">년주 (겁재/겁재)</div>
+                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">庚申</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">월주 (식신/편인)</div>
+                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">癸未</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-sky-500/20 border border-sky-500/50 shadow-sm">
+                                                        <div className="text-sky-300 font-bold text-[9px]">일주 (본원/정관)</div>
+                                                        <div className="font-extrabold text-sky-100 font-mono text-xs mt-0.5">辛巳</div>
+                                                    </div>
+                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                                                        <div className="text-gray-400 text-[9px]">시주 (편재/편인)</div>
+                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">乙未</div>
+                                                    </div>
+                                                </div>
+
+                                                <p className="text-[10.5px] text-gray-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+                                                    💡 <strong>[사주 기질 진단]</strong>: 辛巳(신사) 일주 남성은 섬세하고 고귀한 보석(辛金)의 기질이나, 년주의 강한 <strong>庚申(겁재) 경쟁 압박</strong>과 <strong>未月·巳火의 건조하고 뜨거운 열기</strong>로 인해 보석이 흙먼지와 열기에 지치기 쉽습니다. 따라서 맑고 시원한 <strong>癸水(식신)의 맑은 물기운으로 보석을 씻어내어(도세주옥, 淘洗珠玉)</strong> 본래의 맑은 빛을 되찾아주는 432Hz 힐링 처방입니다.
+                                                </p>
+                                            </div>
+
+                                            {/* 맑은 물이 머무는 곳 과학적 근거 & 가사 연계성 */}
+                                            <div className="p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 space-y-2 text-[10.5px] text-gray-300 leading-relaxed">
+                                                <div className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
+                                                    <Heart className="w-3.5 h-3.5 text-sky-400 fill-sky-400" />
+                                                    <span>왜 '맑은 물이 머무는 곳'일까요? (도세주옥 淘洗珠玉 처방)</span>
+                                                </div>
+                                                
+                                                <div className="space-y-1.5 pl-1 border-l-2 border-sky-500/40">
+                                                    <p>
+                                                        🧠 <strong>음향심리학적 과학 근거</strong>: 메마른 신경계의 과열된 화기(火氣)를 가라앉히는 <strong>432Hz 수(水) 파동 공명</strong>으로 두뇌의 온도를 낮추고 심박수를 안정시킵니다.
+                                                    </p>
+                                                    <div className="bg-slate-950/60 p-2.5 rounded-xl space-y-1.5 text-[10px] text-gray-300">
+                                                        <div>• <strong className="text-sky-300">Verse 1 ("단단하게 쥐고 있던 두 손을 가만히 펴봅니다... 뜨거운 열기")</strong> ➔ 辛巳·未月의 건조한 열감과 압박 공감</div>
+                                                        <div>• <strong className="text-sky-300">Verse 2 ("메마른 대지 위로 조용히 맑은 단비가 내려앉아요")</strong> ➔ 癸水(식신)의 시원한 432Hz 물기운 처방</div>
+                                                        <div>• <strong className="text-sky-300">Pre-Chorus ("세상의 먼지를 씻어내고 본래의 빛을 발하듯")</strong> ➔ 보석을 맑게 씻어내는 도세주옥 치유</div>
+                                                        <div>• <strong className="text-sky-300">Chorus & Outro ("가장 고요한 마음의 중심에서 비로소 온전한 나를 만나네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : currentSampleTrack === 'fly_high' ? (
+                                        <>
+                                            {/* ⚡ 도파민 뿜뿜!! 신나는 힐링 버전 사주 분석 */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-pink-500/40 space-y-2.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[11px] font-bold text-pink-300 flex items-center gap-1.5">
+                                                        <Sparkles className="w-3.5 h-3.5 text-pink-400 animate-spin" />
+                                                        <span>에너지 대전환: 戊戌(대지) ➔ 丙·丁(화기) 도약 처방</span>
+                                                    </span>
+                                                    <span className="text-[10px] text-amber-300 font-bold bg-pink-500/20 px-2 py-0.5 rounded-full">🔥 도파민 부스팅 124 BPM</span>
+                                                </div>
+
+                                                <p className="text-[10.5px] text-gray-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-pink-500/20">
+                                                    ⚡ <strong>[도파민 힐링의 원리]</strong>: 무거운 흙(土)과 편관(甲寅)의 짓눌림 속에 갇혀있던 에너지를, <strong>밝고 역동적인 화(火)·목(木)의 긍정 에너지로 단숨에 폭발</strong>시키는 쾌감 처방입니다. 무기력과 번아웃을 부수고 즉각적인 자신감과 활력을 채워줍니다!
+                                                </p>
+                                            </div>
+
+                                            {/* 도파민 & 뇌과학적 효능 설명 박스 */}
+                                            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-pink-950/40 via-purple-950/40 to-slate-900 border border-pink-500/40 space-y-2.5 text-[10.5px] text-gray-300 leading-relaxed">
+                                                <div className="text-[11px] font-bold text-pink-300 flex items-center gap-1.5">
+                                                    <Heart className="w-3.5 h-3.5 text-pink-400 fill-pink-400" />
+                                                    <span>'날아올라'의 과학적 효능 & 뇌과학적 근거 (Dopamine Booster)</span>
+                                                </div>
+                                                
+                                                <div className="space-y-2 pl-1 border-l-2 border-pink-500/40">
+                                                    <div className="bg-slate-950/60 p-2.5 rounded-xl space-y-1.5 text-[10px] text-gray-300">
+                                                        <div>🧠 <strong>1. 도파민(Dopamine) & 엔도르핀 분비</strong>: 124 BPM의 업비트 리듬이 뇌의 쾌락·동기부여 중추인 <strong>측좌핵(Nucleus Accumbens)</strong>을 자극하여 우울감을 걷어내고 기분을 즉각 상승시킵니다.</div>
+                                                        <div>🏃 <strong>2. 운동 피질(Motor Cortex) 활성화</strong>: 카운트다운("하나 둘 셋 넷")과 점프 가사가 두뇌의 행동 신경을 자극하여 굳어있던 몸과 마음을 경쾌하게 움직이게 만듭니다.</div>
+                                                        <div>🌟 <strong>3. 자기 긍정 확언(Self-Affirmation) 효과</strong>: "당신의 세상은 지금부터 가장 눈부시게 빛날 거예요" 나레이션이 잠재의식의 방어기제를 녹이고 자존감을 극대화합니다.</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* 💖 이소영 님 잔잔한 감성 헌정곡 사주 분석 */}
                                             <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-slate-800 space-y-2.5">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
@@ -966,63 +1072,6 @@ export default function ZeroPointMusicModal({
                                                 </div>
                                             </div>
                                         </>
-                                    ) : (
-                                        <>
-                                            {/* 💧 남자 사주 (庚申년 癸未월 辛巳일 乙未시) 맑은 물이 머무는 곳 사주 분석 */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/85 border border-sky-500/40 space-y-2.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
-                                                        <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-                                                        <span>남성 사주 원식 (辛巳일주 乾命)</span>
-                                                    </span>
-                                                    <span className="text-[10px] text-gray-400 font-mono">오행: 金3 土2 火1 水1 木1</span>
-                                                </div>
-
-                                                {/* 만세력 4주 8글자 칩 */}
-                                                <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
-                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
-                                                        <div className="text-gray-400 text-[9px]">년주 (겁재/겁재)</div>
-                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">庚申</div>
-                                                    </div>
-                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
-                                                        <div className="text-gray-400 text-[9px]">월주 (식신/편인)</div>
-                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">癸未</div>
-                                                    </div>
-                                                    <div className="p-1.5 rounded-xl bg-sky-500/20 border border-sky-500/50 shadow-sm">
-                                                        <div className="text-sky-300 font-bold text-[9px]">일주 (본원/정관)</div>
-                                                        <div className="font-extrabold text-sky-100 font-mono text-xs mt-0.5">辛巳</div>
-                                                    </div>
-                                                    <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-800">
-                                                        <div className="text-gray-400 text-[9px]">시주 (편재/편인)</div>
-                                                        <div className="font-bold text-sky-200 font-mono text-xs mt-0.5">乙未</div>
-                                                    </div>
-                                                </div>
-
-                                                <p className="text-[10.5px] text-gray-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
-                                                    💡 <strong>[사주 기질 진단]</strong>: 辛巳(신사) 일주 남성은 섬세하고 고귀한 보석(辛金)의 기질이나, 년주의 강한 <strong>庚申(겁재) 경쟁 압박</strong>과 <strong>未月·巳火의 건조하고 뜨거운 열기</strong>로 인해 보석이 흙먼지와 열기에 지치기 쉽습니다. 따라서 맑고 시원한 <strong>癸水(식신)의 맑은 물기운으로 보석을 씻어내어(도세주옥, 淘洗珠玉)</strong> 본래의 맑은 빛을 되찾아주는 432Hz 힐링 처방입니다.
-                                                </p>
-                                            </div>
-
-                                            {/* 맑은 물이 머무는 곳 과학적 근거 & 가사 연계성 */}
-                                            <div className="p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 space-y-2 text-[10.5px] text-gray-300 leading-relaxed">
-                                                <div className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5">
-                                                    <Heart className="w-3.5 h-3.5 text-sky-400 fill-sky-400" />
-                                                    <span>왜 '맑은 물이 머무는 곳'일까요? (도세주옥 淘洗珠玉 처방)</span>
-                                                </div>
-                                                
-                                                <div className="space-y-1.5 pl-1 border-l-2 border-sky-500/40">
-                                                    <p>
-                                                        🧠 <strong>음향심리학적 과학 근거</strong>: 메마른 신경계의 과열된 화기(火氣)를 가라앉히는 <strong>432Hz 수(水) 파동 공명</strong>으로 두뇌의 온도를 낮추고 심박수를 안정시킵니다.
-                                                    </p>
-                                                    <div className="bg-slate-950/60 p-2.5 rounded-xl space-y-1.5 text-[10px] text-gray-300">
-                                                        <div>• <strong className="text-sky-300">Verse 1 ("뜨거운 대지 위에 지쳐있던 보석 같은 마음")</strong> ➔ 辛巳·未月의 건조한 열감과 압박 공감</div>
-                                                        <div>• <strong className="text-sky-300">Verse 2 ("맑은 물이 머무는 곳으로 잔잔히 흘러가네")</strong> ➔ 癸水(식신)의 시원한 432Hz 물기운 처방</div>
-                                                        <div>• <strong className="text-sky-300">Pre-Chorus ("세상의 먼지를 씻어내고 본래의 빛을 발하듯")</strong> ➔ 보석을 맑게 씻어내는 도세주옥 치유</div>
-                                                        <div>• <strong className="text-sky-300">Chorus & Outro ("고요한 쉼 속에서 가장 순수한 나로 회복하네")</strong> ➔ 평온한 제로포인트(Zero-Point) 회귀</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </>
                                     )}
 
                                     {/* Audio Player & Progress Bar */}
@@ -1034,6 +1083,8 @@ export default function ZeroPointMusicModal({
                                                     className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer ${
                                                         isSamplePlaying
                                                             ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/30 animate-pulse'
+                                                            : currentSampleTrack === 'fly_high'
+                                                            ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-400 hover:to-amber-300 text-white shadow-pink-500/30'
                                                             : 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-amber-500/30'
                                                     }`}
                                                 >
@@ -1049,7 +1100,9 @@ export default function ZeroPointMusicModal({
                                                             ? '가벼워진 숨 (이소영 님 헌정곡: 이름 포함)'
                                                             : currentSampleTrack === 'light_breath'
                                                             ? '가벼워진 숨 (순수 에세이: 이름 미포함)'
-                                                            : '맑은 물이 머무는 곳 (辛巳일주 男)'}
+                                                            : currentSampleTrack === 'clean_water'
+                                                            ? '맑은 물이 머무는 곳 (辛巳일주 男)'
+                                                            : '가벼운 날아올라 (⚡도파민 뿜뿜!! 신나는 힐링)'}
                                                     </div>
                                                     <div className="text-[9.5px] text-gray-400">
                                                         {isSamplePlaying ? '🎵 실제 보컬 완성곡 재생 중...' : '재생 버튼을 눌러 들어보세요'}
@@ -1075,7 +1128,7 @@ export default function ZeroPointMusicModal({
                                         {/* 🎤 실시간 노래 가사 뷰어 (실제 음원 보컬과 100% 일치하는 정밀 싱크 가사) */}
                                         <div className="pt-2 border-t border-slate-800/80 space-y-2">
                                             <div className="flex items-center justify-between text-[10.5px]">
-                                                <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                                                    <span className="font-bold text-amber-300 flex items-center gap-1.5">
                                                     <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                                                     <span>실시간 노래 가사 (음원 100% 정밀 싱크)</span>
                                                 </span>
@@ -1113,7 +1166,7 @@ export default function ZeroPointMusicModal({
                                                     { section: 'Spoken Word', timeLabel: '02:17 - 02:36', line: '🗣️ [Spoken Word] "잘 버텨왔어요. 참 애썼어요. 이제는 마음껏 가벼워져도 괜찮습니다. 당신의 중심은 이미 온전하니까요."', start: 217, end: 236 },
                                                     { section: 'Outro', timeLabel: '02:37 - 02:58', line: '무게를 비워낸 자리에 차오르는 평온 마음의 제로포인트 나에게로 돌아오는 길...', start: 237, end: 258 },
                                                     { section: 'Ending', timeLabel: '02:59 - 03:40', line: '🎵 [Fade Out] 잔잔한 피아노와 432Hz 여운...', start: 259, end: 220 }
-                                                ] : [
+                                                ] : currentSampleTrack === 'clean_water' ? [
                                                     { section: 'Intro', timeLabel: '00:00 - 00:08', line: '🎵 [Intro] 432Hz 잔잔하고 맑은 물결 피아노 선율', start: 0, end: 8 },
                                                     { section: 'Verse 1', timeLabel: '00:09 - 00:23', line: '단단하게 쥐고 있던 두 손을 가만히 펴봅니다 쉼 없이 나를 채찍질하던', start: 9, end: 23 },
                                                     { section: 'Verse 1', timeLabel: '00:24 - 00:34', line: '뜨거운 열기가 한숨 속에 흩어집니다', start: 24, end: 34 },
@@ -1127,6 +1180,21 @@ export default function ZeroPointMusicModal({
                                                     { section: 'Spoken Word', timeLabel: '02:13 - 02:30', line: '🗣️ [Spoken Word] "더 이상 애쓰지 않아도 괜찮아요. 비워낸 그 자리에 가장 맑은 숨이 차오릅니다."', start: 133, end: 150 },
                                                     { section: 'Outro', timeLabel: '02:31 - 02:49', line: '고요 속으로 맑은 흐름 속으로 마음의 제로 포인트 본연의 온전한 나에게로...', start: 151, end: 169 },
                                                     { section: 'Ending', timeLabel: '02:50 - 03:40', line: '🎵 [Fade Out] 맑은 물결과 피아노 여운 페이드아웃...', start: 170, end: 220 }
+                                                ] : [
+                                                    /* ⚡ 4. 날아올라 (도파민 뿜뿜!! 신나는 힐링 버전 실시간 가사 싱크) */
+                                                    { section: 'Intro & Count', timeLabel: '00:00 - 00:18', line: '🎵 하나 둘 셋 넷... 셋 넷... 흠... 하나 둘 셋 넷! ⚡', start: 0, end: 18 },
+                                                    { section: 'Verse 1', timeLabel: '00:19 - 00:26', line: '어깨 위에 얹어둔 무거운 생각들 가벼운 바람결에 훌훌 털어 날려 봐', start: 19, end: 26 },
+                                                    { section: 'Verse 1', timeLabel: '00:27 - 00:34', line: '조금 서툴러도 뭐 어때 웃어 버리면 그만인 걸', start: 27, end: 34 },
+                                                    { section: 'Verse 2', timeLabel: '00:35 - 00:42', line: '꽁꽁 얼어붙었던 어제의 고민도 따스한 햇살 아래 사르르 녹아내려', start: 35, end: 42 },
+                                                    { section: 'Verse 2', timeLabel: '00:43 - 00:50', line: '두 발끝이 먼저 리듬을 타기 시작해', start: 43, end: 50 },
+                                                    { section: 'Pre-Chorus', timeLabel: '00:51 - 01:04', line: '준비 땅! 심장이 두근두근 뛰어올라 숨겨둔 내 안의 빛을 활짝 열어둘 시간 망설이지 말고 점프!', start: 51, end: 104 },
+                                                    { section: 'Chorus', timeLabel: '01:05 - 01:13', line: '파란 하늘 위로 높이 날아올라봐 가장 자유로운 나를 만나는 이 순간', start: 105, end: 113 },
+                                                    { section: 'Chorus', timeLabel: '01:14 - 01:27', line: '모든 짐을 비워낸 가벼운 그곳에서 눈부시게 반짝이는 나의 오늘을 노래해! (헤이! Let\'s shine together)', start: 114, end: 127 },
+                                                    { section: 'Spoken Word', timeLabel: '01:28 - 01:44', line: '🗣️ [Spoken Word] "세영(소영) 님 그동안 정말 씩씩하게 잘해왔어요. 이제는 마음껏 웃고 가볍게 날아오를 차례예요. 당신의 세상은 지금부터 가장 눈부시게 빛날 거예요."', start: 128, end: 144 },
+                                                    { section: 'Verse 3', timeLabel: '01:45 - 02:01', line: '망설였던 어제는 안녕 펼쳐진 길 위로 신나게 달려가 우리의 새로움이 여기서 다시 시작이야', start: 145, end: 201 },
+                                                    { section: 'Chorus', timeLabel: '02:02 - 02:10', line: '파란 하늘 위로 높이 날아올라봐 가장 자유로운 나를 만나는 이 순간', start: 202, end: 210 },
+                                                    { section: 'Finale', timeLabel: '02:11 - 02:29', line: '모든 짐을 비워낸 가벼운 그곳에서 눈부시게 반짝이는 나의 오늘을 노래해 랄랄랄랄라 가벼워진 발걸음 환하게 웃는 나를 향해 점프!', start: 211, end: 229 },
+                                                    { section: 'Outro', timeLabel: '02:30 - 02:45', line: '🎵 [Energy Climax] 눈부신 도파민 충전 완료! ⚡✨', start: 230, end: 245 }
                                                 ]).map((lyric, idx) => {
                                                     const isCurrent = isSamplePlaying && sampleProgress >= lyric.start && sampleProgress <= lyric.end;
                                                     return (
