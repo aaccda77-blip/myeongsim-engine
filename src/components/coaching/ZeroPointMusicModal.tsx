@@ -138,6 +138,8 @@ export default function ZeroPointMusicModal({
     const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
     const [isPaidSuccess, setIsPaidSuccess] = useState<boolean>(false);
     const sampleAudioRef = useRef<HTMLAudioElement | null>(null);
+    const meditationBgmRef = useRef<HTMLAudioElement | null>(null);
+    const meditationVoiceRef = useRef<HTMLAudioElement | null>(null);
 
     const playSampleTrack = (track: 'name_soyoung' | 'light_breath' | 'clean_water') => {
         let audioSrc = '/sample_name_soyoung.wav';
@@ -223,40 +225,109 @@ export default function ZeroPointMusicModal({
                 sampleAudioRef.current.pause();
                 sampleAudioRef.current.currentTime = 0;
             }
+            if (meditationBgmRef.current) {
+                meditationBgmRef.current.pause();
+                meditationBgmRef.current = null;
+            }
+            if (meditationVoiceRef.current) {
+                meditationVoiceRef.current.pause();
+                meditationVoiceRef.current = null;
+            }
             setIsSamplePlaying(false);
             setSampleProgress(0);
         }
     }, [isOpen]);
 
-    // STEP 3 명상 호흡 가이드 타이머
+    // STEP 3 명상 호흡 가이드 실제 사운드 & 타이머
     useEffect(() => {
+        let t1: any = null;
+        let t2: any = null;
         let step3Timer: any = null;
+
+        const playMeditationVoice = (src: string) => {
+            try {
+                if (meditationVoiceRef.current) {
+                    meditationVoiceRef.current.pause();
+                    meditationVoiceRef.current.currentTime = 0;
+                }
+                const audio = new Audio(src);
+                audio.volume = 0.95;
+                meditationVoiceRef.current = audio;
+                audio.play().catch(e => console.log('Meditation voice play suppressed:', e));
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
         if (currentStep === 3) {
-            setBreathText('천천히 숨을 들이쉬고... (Inhale)');
-            setBreathScale(1.3);
+            // 528Hz 치유 파동 BGM 재생
+            try {
+                const bgm = new Audio('/sounds/528hz_healing_bgm.mp3');
+                bgm.volume = 0.35;
+                bgm.loop = true;
+                meditationBgmRef.current = bgm;
+                bgm.play().catch(e => console.log('Meditation BGM suppressed:', e));
+            } catch (e) {
+                console.error(e);
+            }
 
-            const t1 = setTimeout(() => {
-                setBreathText('잠시 멈추어 고요를 느끼고... (Hold)');
-            }, 2500);
+            // 1단계: 들이마시기 (Inhale)
+            setBreathText('숨을... 깊게... 들이마십니다... (Inhale)');
+            setBreathScale(1.35);
+            playMeditationVoice('/sounds/meditation_inhale.wav');
 
-            const t2 = setTimeout(() => {
-                setBreathText('부드럽게 내쉬세요... (Exhale)');
-                setBreathScale(0.9);
-            }, 4500);
+            // 2단계: 멈추기 (Hold)
+            t1 = setTimeout(() => {
+                setBreathText('잠시...... 멈춥니다. (Hold)');
+                playMeditationVoice('/sounds/meditation_hold.wav');
+            }, 3500);
 
+            // 3단계: 내쉬기 (Exhale)
+            t2 = setTimeout(() => {
+                setBreathText('숨을 부드럽게 내쉽니다... (Exhale)');
+                setBreathScale(0.85);
+                playMeditationVoice('/sounds/voice_exhale.mp3');
+            }, 7000);
+
+            // 4단계: 완료 후 STEP 4 이동
             step3Timer = setTimeout(() => {
+                if (meditationBgmRef.current) {
+                    meditationBgmRef.current.pause();
+                    meditationBgmRef.current = null;
+                }
+                if (meditationVoiceRef.current) {
+                    meditationVoiceRef.current.pause();
+                    meditationVoiceRef.current = null;
+                }
                 setCurrentStep(4);
                 // 자동으로 힐링 오행 음악 재생 시작
                 zeroPointSoundEngine.play(trackInfo.targetElement);
                 zeroPointSoundEngine.setVolume(volume);
                 setIsPlaying(true);
-            }, 6500);
+            }, 10500);
 
             return () => {
                 clearTimeout(t1);
                 clearTimeout(t2);
                 clearTimeout(step3Timer);
+                if (meditationBgmRef.current) {
+                    meditationBgmRef.current.pause();
+                    meditationBgmRef.current = null;
+                }
+                if (meditationVoiceRef.current) {
+                    meditationVoiceRef.current.pause();
+                    meditationVoiceRef.current = null;
+                }
             };
+        } else {
+            if (meditationBgmRef.current) {
+                meditationBgmRef.current.pause();
+                meditationBgmRef.current = null;
+            }
+            if (meditationVoiceRef.current) {
+                meditationVoiceRef.current.pause();
+                meditationVoiceRef.current = null;
+            }
         }
     }, [currentStep, trackInfo.targetElement, volume]);
 
