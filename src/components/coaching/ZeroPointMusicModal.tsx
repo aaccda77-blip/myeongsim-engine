@@ -388,6 +388,36 @@ export default function ZeroPointMusicModal({
     const [copiedOrderText, setCopiedOrderText] = useState<boolean>(false);
     const [isShareSuccess, setIsShareSuccess] = useState<boolean>(false);
 
+    // [NEW] 🏦 무통장 입금 및 관리자 승인 시스템 (토스뱅크 1002-6847-4899 마인드플로우랩)
+    const [depositorName, setDepositorName] = useState<string>(effectiveProfile.userName || '');
+    const [isAccountCopied, setIsAccountCopied] = useState<boolean>(false);
+    const [isDepositSubmitted, setIsDepositSubmitted] = useState<boolean>(false);
+    const [copiedDepositText, setCopiedDepositText] = useState<boolean>(false);
+
+    const handleCopyAccount = () => {
+        navigator.clipboard.writeText('토스뱅크 1002-6847-4899');
+        setIsAccountCopied(true);
+        setTimeout(() => setIsAccountCopied(false), 2500);
+    };
+
+    const handleDepositSubmit = () => {
+        if (!depositorName.trim()) {
+            alert('입금자 성함을 입력해 주세요.');
+            return;
+        }
+        setIsDepositSubmitted(true);
+    };
+
+    const getDepositSummaryText = () => {
+        return `[명심코칭 유료 컨텐츠 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 신청 컨텐츠: 432Hz 1:1 맞춤 힐링노래 평생소장권\n- 입금액: 4,900원 (토스뱅크 1002-6847-4899 마인드플로우랩)\n- 사용자 사주 정보: ${effectiveProfile.userName} (${effectiveProfile.birthDate || '미입력'})`;
+    };
+
+    const handleCopyDepositSummary = () => {
+        navigator.clipboard.writeText(getDepositSummaryText());
+        setCopiedDepositText(true);
+        setTimeout(() => setCopiedDepositText(false), 2500);
+    };
+
     const handleVerifyCoupon = () => {
         const cleaned = bookCouponCode.trim().replace(/[-\s]/g, '').toUpperCase();
         if (!cleaned) {
@@ -1526,24 +1556,25 @@ export default function ZeroPointMusicModal({
                                     </p>
                                 </div>
 
-                                {!isPaidSuccess ? (
+                                {!isDepositSubmitted ? (
                                     <>
-                                        {/* [NEW] 💖 구입을 망설이는 분들을 위한 따뜻한 감성 위로 멘트 */}
-                                        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-rose-500/15 to-indigo-500/20 border border-amber-400/40 text-amber-100 text-[11px] leading-relaxed shadow-lg">
+                                        {/* [NEW] 💖 따뜻한 감성 위로 멘트 */}
+                                        <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-rose-500/15 to-indigo-500/20 border border-amber-400/40 text-amber-100 text-[11px] leading-relaxed shadow-lg">
                                             <div className="flex items-start gap-2">
                                                 <Heart className="w-4 h-4 text-rose-400 fill-rose-400 shrink-0 mt-0.5" />
-                                                <div className="space-y-1">
+                                                <div className="space-y-0.5">
                                                     <p className="font-medium text-gray-100">
-                                                        "본인의 기질에 맞는, <strong className="text-amber-300 font-bold">본인의 이름이 들어간 당신만의 1:1 맞춤 코칭 에세이 가사노래</strong>입니다."
+                                                        "본인의 기질에 맞는, <strong className="text-amber-300 font-bold">본인의 이름이 들어간 1:1 맞춤 힐링노래</strong>입니다."
                                                     </p>
-                                                    <p className="text-amber-300 font-extrabold text-[11.5px]">
-                                                        ✨ 힘들 때마다 들으시면서, 제로포인트로 돌아오세요.
+                                                    <p className="text-amber-300 font-bold text-[10.5px]">
+                                                        ✨ 힘들 때마다 들으시면서 제로포인트로 돌아오세요.
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                                        {/* 혜택 및 가격 안내 */}
+                                        <div className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
                                             <div className="flex items-baseline justify-between border-b border-slate-800 pb-2">
                                                 <div className="flex items-center gap-1.5">
                                                     <span className="text-gray-300 text-[11px] font-bold">런칭 기념 이벤트 특가</span>
@@ -1555,7 +1586,7 @@ export default function ZeroPointMusicModal({
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-1.5 text-[10.5px] text-gray-300">
+                                            <div className="space-y-1 text-[10.5px] text-gray-300">
                                                 <div className="flex items-center gap-1.5">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                                                     <span className="font-semibold text-amber-200">
@@ -1575,18 +1606,43 @@ export default function ZeroPointMusicModal({
                                             </div>
                                         </div>
 
+                                        {/* 🏦 무통장 입금 계좌 안내 박스 */}
+                                        <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 space-y-2 text-[11px]">
+                                            <div className="flex items-center justify-between text-amber-300 font-bold">
+                                                <span className="flex items-center gap-1">🏦 무통장 입금 안내</span>
+                                                <span className="text-xs font-black text-amber-400">4,900원</span>
+                                            </div>
+                                            <div className="p-2 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-between">
+                                                <div className="font-mono text-white text-xs font-bold tracking-wider">
+                                                    토스뱅크 1002-6847-4899
+                                                    <span className="text-[10px] text-gray-400 font-normal ml-1.5">(마인드플로우랩)</span>
+                                                </div>
+                                                <button
+                                                    onClick={handleCopyAccount}
+                                                    className="px-2 py-1 rounded bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-[10px] cursor-pointer transition-colors"
+                                                >
+                                                    {isAccountCopied ? '✅ 복사됨' : '복사'}
+                                                </button>
+                                            </div>
+                                            <div className="space-y-1 pt-0.5">
+                                                <label className="text-[10.5px] font-bold text-gray-300">입금자 성함 *</label>
+                                                <input
+                                                    type="text"
+                                                    value={depositorName}
+                                                    onChange={(e) => setDepositorName(e.target.value)}
+                                                    placeholder="예: 홍길동 (실제 입금하신 이름)"
+                                                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400"
+                                                />
+                                            </div>
+                                        </div>
+
                                         <div className="space-y-2">
                                             <button
-                                                onClick={() => {
-                                                    setIsPaidSuccess(true);
-                                                    setTimeout(() => {
-                                                        handleDownloadAudio();
-                                                    }, 800);
-                                                }}
+                                                onClick={handleDepositSubmit}
                                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                             >
                                                 <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
-                                                <span>4,900원 결제하고 즉시 소장하기</span>
+                                                <span>입금 완료 및 1:1 오픈채팅으로 승인 요청하기 ➔</span>
                                             </button>
                                             
                                             {/* 도서 독자 시크릿 쿠폰 등록 링크 */}
@@ -1598,56 +1654,72 @@ export default function ZeroPointMusicModal({
                                                     }}
                                                     className="text-[10.5px] text-amber-300 hover:text-amber-200 underline font-medium cursor-pointer"
                                                 >
-                                                    🎫 《제로포인트》 도서 시크릿 코드가 있으신가요?
+                                                    🎫 《제로포인트》 도서 시크릿 코드가 있으신가요? (무료 이용)
                                                 </button>
                                             </div>
 
                                             <p className="text-[9.5px] text-gray-400 text-center">
-                                                * 결제 즉시 고음질 432Hz MP3 파일 다운로드가 시작됩니다.
+                                                * 입금 확인 후 관리자 승인을 통해 1:1 맞춤 MP3 음원이 전달됩니다.
                                             </p>
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-center space-y-3.5 animate-fade-in">
-                                        <div className="w-10 h-10 mx-auto rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/40">
-                                            <Check className="w-5 h-5" />
+                                    /* 입금 확인 접수 완료 및 오픈카톡 안내 화면 */
+                                    <div className="p-4 rounded-2xl bg-slate-950/90 border border-amber-400/40 text-center space-y-3.5 animate-fade-in">
+                                        <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center border border-amber-500/40 text-2xl">
+                                            🎉
                                         </div>
+
                                         <div className="space-y-1">
-                                            <h5 className="font-bold text-white text-sm">🎉 힐링송 생성이 완료되었습니다!</h5>
-                                            <p className="text-[11px] text-emerald-300 leading-relaxed">
-                                                {effectiveProfile.userName} 님의 사주 기질 1:1 맞춤 432Hz 힐링 MP3 음원이 다운로드되었습니다.
+                                            <h5 className="font-bold text-white text-sm">입금 확인 요청이 접수되었습니다!</h5>
+                                            <p className="text-[11px] text-amber-200 leading-relaxed">
+                                                <strong>'{depositorName} 님'</strong>의 입금(4,900원) 내역 확인 후, 관리자 승인 및 1:1 맞춤 432Hz MP3 음원을 직접 발송해 드립니다.
                                             </p>
                                         </div>
 
-                                        {/* 바이럴: 내 노래 공유하기 버튼 */}
-                                        <div className="pt-1">
-                                            <button
-                                                onClick={handleShareSong}
-                                                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                        {/* QR코드 및 오픈채팅 바로가기 */}
+                                        <div className="p-3 rounded-2xl bg-white/5 border border-slate-800 flex flex-col items-center space-y-2">
+                                            <div className="text-[10.5px] font-bold text-amber-300">
+                                                📱 1:1 오픈채팅으로 입금자명을 알려주세요
+                                            </div>
+                                            <div className="w-24 h-24 bg-white p-1 rounded-xl shadow-md border border-amber-400/40 flex items-center justify-center">
+                                                <img
+                                                    src="/images/kakao_openchat_qr.jpg"
+                                                    alt="1:1 오픈채팅 QR코드"
+                                                    className="w-full h-full object-contain rounded-lg"
+                                                />
+                                            </div>
+                                            <div className="w-full flex items-center justify-between text-[10px] text-gray-300 bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700">
+                                                <span>입금자명: <strong>{depositorName}</strong> (4,900원)</span>
+                                                <button
+                                                    onClick={handleCopyDepositSummary}
+                                                    className="text-[9.5px] bg-amber-400 text-slate-950 font-bold px-2 py-0.5 rounded cursor-pointer"
+                                                >
+                                                    {copiedDepositText ? '✅ 복사됨' : '내용 복사'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2 pt-1">
+                                            <a
+                                                href="https://open.kakao.com/o/sfNxzYKi"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer block"
                                             >
-                                                <span>{isShareSuccess ? '✅ 복사 완료!' : '🔗 내 사주 힐링 노래 친구에게 자랑하기'}</span>
+                                                <span>💬 1:1 오픈채팅 입장하여 입금 확인 요청하기</span>
+                                            </a>
+
+                                            <button
+                                                onClick={() => {
+                                                    setShowPaymentModal(false);
+                                                    setIsDepositSubmitted(false);
+                                                }}
+                                                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer"
+                                            >
+                                                확인 및 닫기
                                             </button>
                                         </div>
-
-                                        {/* 🏛️ 고단가 확장: 명심코칭 평생교육원 정규 과정 안내 */}
-                                        <div className="p-2.5 rounded-xl bg-slate-950/70 border border-amber-500/30 text-[10.5px] text-gray-300 text-left space-y-1">
-                                            <div className="text-amber-300 font-bold flex items-center gap-1">
-                                                <span>🏛️ 명심코칭 평생교육원 정규 과정</span>
-                                            </div>
-                                            <p className="text-[10px] text-gray-400 leading-snug">
-                                                더 깊은 내면의 알고리즘과 운명 코드를 직접 코칭하는 전문가 과정에 입문해 보세요.
-                                            </p>
-                                        </div>
-
-                                        <button
-                                            onClick={() => {
-                                                setShowPaymentModal(false);
-                                                setIsPaidSuccess(false);
-                                            }}
-                                            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer"
-                                        >
-                                            확인 및 닫기
-                                        </button>
                                     </div>
                                 )}
                             </div>
