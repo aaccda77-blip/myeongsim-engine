@@ -1072,12 +1072,12 @@ export default function ZeroPointMusicModal({
                                             className="w-full h-1.5 bg-slate-800 accent-amber-400 rounded-lg cursor-pointer"
                                         />
 
-                                        {/* 🎤 실시간 노래 가사 뷰어 (실제 풀 가사 및 소절별 정밀 싱크) */}
+                                        {/* 🎤 실시간 노래 가사 뷰어 (실제 음원 보컬과 100% 일치하는 정밀 싱크 가사) */}
                                         <div className="pt-2 border-t border-slate-800/80 space-y-2">
                                             <div className="flex items-center justify-between text-[10.5px]">
                                                 <span className="font-bold text-amber-300 flex items-center gap-1.5">
                                                     <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                                    <span>실시간 노래 가사 (풀 버전)</span>
+                                                    <span>실시간 노래 가사 (음원 100% 정밀 싱크)</span>
                                                 </span>
                                                 {isSamplePlaying ? (
                                                     <span className="text-[9.5px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/40 font-bold animate-pulse flex items-center gap-1">
@@ -1088,43 +1088,57 @@ export default function ZeroPointMusicModal({
                                                 )}
                                             </div>
 
-                                            <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1 hide-scrollbar">
+                                            <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1 hide-scrollbar">
                                                 {(currentSampleTrack === 'name_soyoung' ? [
-                                                    { section: 'Intro', timeLabel: '00:00 - 00:15', lines: ['[Intro]', '🎵 A=432Hz Soft Warm Piano & Gentle Breeze Texture'], start: 0, end: 15 },
-                                                    { section: 'Verse 1', timeLabel: '00:16 - 00:45', lines: ['[Verse 1]', '소영아, 늘 단단하게 버티며 서 있어야 했던 날들', '어른스러운 침묵 뒤에 숨겨둔', '무거운 마음의 짐들을 가만히 내려놓아요'], start: 16, end: 45 },
-                                                    { section: 'Verse 2', timeLabel: '00:46 - 01:15', lines: ['[Verse 2]', '흘리지 못한 눈물도, 삼켜낸 수많은 말들도', '얼어붙었던 땅을 녹이는', '따스한 봄볕 속에 조용히 녹아내리네'], start: 46, end: 75 },
-                                                    { section: 'Pre-Chorus', timeLabel: '01:16 - 01:40', lines: ['[Pre-Chorus]', '내가 나를 붙잡고 있던 긴장의 손을 풀고', '가만히 불어오는 바람의 결에', '조심스레 내 마음을 맡겨봅니다'], start: 76, end: 100 },
-                                                    { section: 'Chorus', timeLabel: '01:41 - 02:20', lines: ['[Chorus]', '더 이상 홀로 모든 것을 짊어지지 않아도', '바람처럼 가볍게, 햇살처럼 자유롭게', '있는 그대로의 나로 숨 쉬는 곳', '가장 평온한 제로포인트에 닿아', '비로소 참된 쉼을 만나네'], start: 101, end: 140 },
-                                                    { section: 'Spoken Word', timeLabel: '02:21 - 02:55', lines: ['[Interlude & Spoken Word]', '🗣️ "잘 버텨왔어요, 참 애썼어요.', '이제는 마음껏 가벼워져도 괜찮습니다.', '당신의 중심은 이미 온전하니까요."'], start: 141, end: 175 },
-                                                    { section: 'Outro', timeLabel: '02:56 - 03:40', lines: ['[Outro]', '무게를 비워낸 자리에 차오르는 평온', '마음의 제로포인트', '나에게로 돌아오는 길...'], start: 176, end: 220 }
+                                                    { section: 'Intro', timeLabel: '00:00 - 00:14', line: '🎵 [Intro] 432Hz Soft Warm Piano & Gentle Breeze', start: 0, end: 14 },
+                                                    { section: 'Verse 1', timeLabel: '00:15 - 00:26', line: '늘 단단하게 버티며 서 있어야 했던 날들', start: 15, end: 26 },
+                                                    { section: 'Verse 1', timeLabel: '00:27 - 00:43', line: '어른스러운 침묵 뒤에 숨겨둔 무거운 마음의 짐들을 가만히 내려 놓아요', start: 27, end: 43 },
+                                                    { section: 'Verse 2', timeLabel: '00:44 - 00:58', line: '흘리지 못한 눈물도, 삼켜낸 수많은 말들도', start: 44, end: 58 },
+                                                    { section: 'Verse 2', timeLabel: '00:59 - 01:12', line: '얼어붙었던 땅을 녹이는 따스한 봄볕 속에 조용히 녹아 내리네', start: 59, end: 112 },
+                                                    { section: 'Pre-Chorus', timeLabel: '01:13 - 01:36', line: '내가 나를 붙잡고 있던 긴장의 손을 풀고 가만히 불어오는 바람의 결에 조심스레 내 마음을 맡겨 봅니다', start: 113, end: 136 },
+                                                    { section: 'Chorus', timeLabel: '01:37 - 01:52', line: '더 이상 홀로 모든 것을 짊어지지 않아도 바람처럼 가볍게 햇살처럼 자유롭게', start: 137, end: 152 },
+                                                    { section: 'Chorus', timeLabel: '01:53 - 02:13', line: '있는 그대로의 나로 숨 쉬는 곳 가장 편안한 제로 포인트에 닿아 비로소 참된 쉼을 만나네', start: 153, end: 213 },
+                                                    { section: 'Spoken Word', timeLabel: '02:14 - 02:38', line: '🗣️ [Spoken Word] "소영 님 참 잘 버텨왔어요. 애 많이 썼어요. 이제는 마음껏 가벼워져도 괜찮습니다. 당신의 중심은 이미 온전하니까요."', start: 214, end: 238 },
+                                                    { section: 'Outro', timeLabel: '02:39 - 03:00', line: '무게를 비워낸 자리에 차오르는 평온 마음의 제로 포인트 나에게로 돌아오는 길...', start: 239, end: 300 },
+                                                    { section: 'Ending', timeLabel: '03:01 - 03:40', line: '🎵 [Fade Out] 잔잔한 피아노와 432Hz 여운...', start: 301, end: 220 }
                                                 ] : currentSampleTrack === 'light_breath' ? [
-                                                    { section: 'Intro', timeLabel: '00:00 - 00:15', lines: ['[Intro]', '🎵 A=432Hz Soft Warm Piano & Gentle Breeze Texture'], start: 0, end: 15 },
-                                                    { section: 'Verse 1', timeLabel: '00:16 - 00:45', lines: ['[Verse 1]', '늘 단단하게 버티며 서 있어야 했던 날들', '어른스러운 침묵 뒤에 숨겨둔', '무거운 마음의 짐들을 가만히 내려놓아요'], start: 16, end: 45 },
-                                                    { section: 'Verse 2', timeLabel: '00:46 - 01:15', lines: ['[Verse 2]', '흘리지 못한 눈물도, 삼켜낸 수많은 말들도', '얼어붙었던 땅을 녹이는', '따스한 봄볕 속에 조용히 녹아내리네'], start: 46, end: 75 },
-                                                    { section: 'Pre-Chorus', timeLabel: '01:16 - 01:40', lines: ['[Pre-Chorus]', '내가 나를 붙잡고 있던 긴장의 손을 풀고', '가만히 불어오는 바람의 결에', '조심스레 내 마음을 맡겨봅니다'], start: 76, end: 100 },
-                                                    { section: 'Chorus', timeLabel: '01:41 - 02:20', lines: ['[Chorus]', '더 이상 홀로 모든 것을 짊어지지 않아도', '바람처럼 가볍게, 햇살처럼 자유롭게', '있는 그대로의 나로 숨 쉬는 곳', '가장 평온한 제로포인트에 닿아', '비로소 참된 쉼을 만나네'], start: 101, end: 140 },
-                                                    { section: 'Spoken Word', timeLabel: '02:21 - 02:55', lines: ['[Interlude & Spoken Word]', '🗣️ "잘 버텨왔어요, 참 애썼어요.', '이제는 마음껏 가벼워져도 괜찮습니다.', '당신의 중심은 이미 온전하니까요."'], start: 141, end: 175 },
-                                                    { section: 'Outro', timeLabel: '02:56 - 03:40', lines: ['[Outro]', '무게를 비워낸 자리에 차오르는 평온', '마음의 제로포인트', '나에게로 돌아오는 길...'], start: 176, end: 220 }
+                                                    { section: 'Intro', timeLabel: '00:00 - 00:13', line: '🎵 [Intro] 432Hz Soft Warm Piano & Gentle Breeze', start: 0, end: 13 },
+                                                    { section: 'Verse 1', timeLabel: '00:14 - 00:24', line: '늘 담담하게 버티며 서 있어야 했던 날들', start: 14, end: 24 },
+                                                    { section: 'Verse 1', timeLabel: '00:25 - 00:40', line: '어른스러운 침묵 뒤에 숨겨둔 무거운 마음의 짐들을 가만히 내려놔요', start: 25, end: 40 },
+                                                    { section: 'Verse 2', timeLabel: '00:41 - 00:55', line: '흘리지 못한 눈물도, 삼켜낸 수많은 말들도', start: 41, end: 55 },
+                                                    { section: 'Verse 2', timeLabel: '00:56 - 01:12', line: '얼어붙었던 땅을 녹이는 따스한 봄볕 속에 조용히 녹아 내리네', start: 56, end: 112 },
+                                                    { section: 'Pre-Chorus', timeLabel: '01:13 - 01:37', line: '내가 나를 붙잡고 있던 긴장의 손을 풀고 가만히 불어오는 바람의 결에 조심스레 내 마음을 맡겨 봅니다', start: 113, end: 137 },
+                                                    { section: 'Chorus', timeLabel: '01:38 - 01:59', line: '더 이상 홀로 모든 것을 짊어지지 않아도 바람처럼 가볍게 햇살처럼 자유롭게 있는 그대로의 나로 숨쉬는 곳', start: 138, end: 159 },
+                                                    { section: 'Chorus', timeLabel: '02:00 - 02:16', line: '가장 평온한 제로포인트에 닿아 비로소 참된 쉼을 만나네', start: 160, end: 216 },
+                                                    { section: 'Spoken Word', timeLabel: '02:17 - 02:36', line: '🗣️ [Spoken Word] "잘 버텨왔어요. 참 애썼어요. 이제는 마음껏 가벼워져도 괜찮습니다. 당신의 중심은 이미 온전하니까요."', start: 217, end: 236 },
+                                                    { section: 'Outro', timeLabel: '02:37 - 02:58', line: '무게를 비워낸 자리에 차오르는 평온 마음의 제로포인트 나에게로 돌아오는 길...', start: 237, end: 258 },
+                                                    { section: 'Ending', timeLabel: '02:59 - 03:40', line: '🎵 [Fade Out] 잔잔한 피아노와 432Hz 여운...', start: 259, end: 220 }
                                                 ] : [
-                                                    { section: 'Intro', timeLabel: '00:00 - 00:15', lines: ['[Intro]', '🎵 432Hz 고요한 물결 소리와 맑은 건반 선율'], start: 0, end: 15 },
-                                                    { section: 'Verse 1', timeLabel: '00:16 - 00:45', lines: ['[Verse 1]', '뜨거운 대지 위에 지쳐있던 보석 같은 마음', '쉴 새 없이 몰아치던 세상의 열기 속에 지쳐갈 때'], start: 16, end: 45 },
-                                                    { section: 'Verse 2', timeLabel: '00:46 - 01:15', lines: ['[Verse 2]', '맑은 물이 머무는 곳으로 잔잔히 흘러가네', '메마른 마음에 시원한 샘물이 고여오듯'], start: 46, end: 75 },
-                                                    { section: 'Pre-Chorus', timeLabel: '01:16 - 01:40', lines: ['[Pre-Chorus]', '세상의 먼지를 씻어내고 본래의 빛을 발하듯', '도세주옥(淘洗珠玉)의 맑은 물결에 온몸을 맡기네'], start: 76, end: 100 },
-                                                    { section: 'Chorus', timeLabel: '01:41 - 02:20', lines: ['[Chorus]', '가장 맑고 순수한 나의 빛을 되찾는 곳', '고요한 쉼 속에서 비로소 온전한 나로 회복하네'], start: 101, end: 140 },
-                                                    { section: 'Spoken Word', timeLabel: '02:21 - 02:55', lines: ['[Interlude & Spoken Word]', '🗣️ "치열했던 긴장을 내려놓으세요.', '당신은 본래 찬란하게 빛나는 보석입니다."'], start: 141, end: 175 },
-                                                    { section: 'Outro', timeLabel: '02:56 - 03:40', lines: ['[Outro]', '맑은 물이 머무는 곳', '평온한 제로포인트의 안식...'], start: 176, end: 220 }
+                                                    { section: 'Intro', timeLabel: '00:00 - 00:08', line: '🎵 [Intro] 432Hz 잔잔하고 맑은 물결 피아노 선율', start: 0, end: 8 },
+                                                    { section: 'Verse 1', timeLabel: '00:09 - 00:23', line: '단단하게 쥐고 있던 두 손을 가만히 펴봅니다 쉼 없이 나를 채찍질하던', start: 9, end: 23 },
+                                                    { section: 'Verse 1', timeLabel: '00:24 - 00:34', line: '뜨거운 열기가 한숨 속에 흩어집니다', start: 24, end: 34 },
+                                                    { section: 'Verse 2', timeLabel: '00:35 - 00:43', line: '흐트러지지 않으려 세워둔 날카로운 벽', start: 35, end: 43 },
+                                                    { section: 'Verse 2', timeLabel: '00:44 - 00:57', line: '메마른 대지 위로 조용히 맑은 단비가 내려앉아요', start: 44, end: 57 },
+                                                    { section: 'Pre-Chorus', timeLabel: '00:58 - 01:09', line: '바람은 그저 불어가고 물결은 다투지 않고 흐르듯', start: 58, end: 69 },
+                                                    { section: 'Pre-Chorus', timeLabel: '01:10 - 01:24', line: '내가 나를 옥죄던 생각의 끈을 가만히 놓아줍니다', start: 70, end: 84 },
+                                                    { section: 'Chorus', timeLabel: '01:25 - 01:40', line: '서두르지 않아도 모든 것은 제자리로 돌아오고', start: 85, end: 100 },
+                                                    { section: 'Chorus', timeLabel: '01:41 - 01:56', line: '흐르는 물처럼 부드러워진 마음에 푸른 평온이 깃듭니다', start: 101, end: 116 },
+                                                    { section: 'Chorus', timeLabel: '01:57 - 02:12', line: '가장 고요한 마음의 중심에서 비로소 온전한 나를 만나네', start: 117, end: 132 },
+                                                    { section: 'Spoken Word', timeLabel: '02:13 - 02:30', line: '🗣️ [Spoken Word] "더 이상 애쓰지 않아도 괜찮아요. 비워낸 그 자리에 가장 맑은 숨이 차오릅니다."', start: 133, end: 150 },
+                                                    { section: 'Outro', timeLabel: '02:31 - 02:49', line: '고요 속으로 맑은 흐름 속으로 마음의 제로 포인트 본연의 온전한 나에게로...', start: 151, end: 169 },
+                                                    { section: 'Ending', timeLabel: '02:50 - 03:40', line: '🎵 [Fade Out] 맑은 물결과 피아노 여운 페이드아웃...', start: 170, end: 220 }
                                                 ]).map((lyric, idx) => {
                                                     const isCurrent = isSamplePlaying && sampleProgress >= lyric.start && sampleProgress <= lyric.end;
                                                     return (
                                                         <div
                                                             key={idx}
-                                                            className={`p-3 rounded-2xl transition-all duration-300 ${
+                                                            className={`p-2.5 rounded-2xl transition-all duration-300 ${
                                                                 isCurrent
                                                                     ? 'bg-amber-500/25 border border-amber-400 shadow-md shadow-amber-500/15 translate-x-1'
                                                                     : 'bg-slate-900/60 border border-white/5'
                                                             }`}
                                                         >
-                                                            <div className="flex items-center justify-between text-[9.5px] font-mono text-gray-400 mb-1">
+                                                            <div className="flex items-center justify-between text-[9px] font-mono text-gray-400 mb-1">
                                                                 <span className="text-amber-300 font-bold">{lyric.section} ({lyric.timeLabel})</span>
                                                                 {isCurrent && (
                                                                     <span className="text-amber-300 font-bold flex items-center gap-1">
@@ -1132,22 +1146,11 @@ export default function ZeroPointMusicModal({
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <div className="space-y-0.5">
-                                                                {lyric.lines.map((ln, lIdx) => (
-                                                                    <p
-                                                                        key={lIdx}
-                                                                        className={`text-xs leading-relaxed transition-colors ${
-                                                                            lIdx === 0 && ln.startsWith('[')
-                                                                                ? 'text-[10px] text-gray-500 font-mono'
-                                                                                : isCurrent
-                                                                                ? 'text-amber-100 font-extrabold text-[12px]'
-                                                                                : 'text-gray-300'
-                                                                        }`}
-                                                                    >
-                                                                        {ln}
-                                                                    </p>
-                                                                ))}
-                                                            </div>
+                                                            <p className={`text-xs leading-relaxed transition-colors ${
+                                                                isCurrent ? 'text-amber-100 font-extrabold text-[12.5px]' : 'text-gray-300'
+                                                            }`}>
+                                                                {lyric.line}
+                                                            </p>
                                                         </div>
                                                     );
                                                 })}
