@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { Sparkles, Loader2, RefreshCw } from 'lucide-react';
 import CandyRitualCanvas from '@/components/coaching/CandyRitualCanvas';
+import { useReportStore } from '@/store/useReportStore';
 
 interface PillData {
   id?: string;
@@ -97,6 +98,8 @@ export default function ZeroCapsulePage() {
     checkAuthAndFetch();
   }, [router]);
 
+  const reportData = useReportStore((s) => s.reportData);
+
   // AI 캡슐 생성 요청 핸들러
   const handleGenerateCapsule = async () => {
     if (isTodayGenerated) {
@@ -106,7 +109,34 @@ export default function ZeroCapsulePage() {
 
     setIsGenerating(true);
     try {
-      const res = await fetch('/api/zero-capsule/today?generate=true');
+      // 로컬 스토리지 및 리포트 스토어에서 온보딩 사주 정보 추출
+      let clientSajuInfo: any = {};
+      if (typeof window !== 'undefined') {
+        try {
+          const rawOnboarding = localStorage.getItem('user_onboarding_data');
+          if (rawOnboarding) {
+            clientSajuInfo = JSON.parse(rawOnboarding);
+          }
+        } catch (e) {
+          console.warn('Failed to parse onboarding data from localStorage');
+        }
+      }
+
+      const payload = {
+        userName: reportData?.userName || (reportData as any)?.name || clientSajuInfo?.userName || clientSajuInfo?.name || '',
+        birthDate: reportData?.birthDate || (reportData as any)?.birth_date || clientSajuInfo?.birthDate || clientSajuInfo?.birth_date || '',
+        birthTime: reportData?.birthTime || (reportData as any)?.birth_time || clientSajuInfo?.birthTime || clientSajuInfo?.birth_time || '12:00',
+        calendarType: (reportData as any)?.calendarType || (reportData as any)?.calendar_type || clientSajuInfo?.calendarType || clientSajuInfo?.calendar_type || 'solar',
+        gender: reportData?.gender || clientSajuInfo?.gender || 'female',
+        mbti: clientSajuInfo?.mbti || (reportData as any)?.meta?.mbti || ''
+      };
+
+      const res = await fetch('/api/zero-capsule/today', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
       if (res.ok) {
         const generatedPill = await res.json();
         setData(generatedPill);
@@ -117,7 +147,7 @@ export default function ZeroCapsulePage() {
           setHistory(await histRes.json());
         }
         
-        alert("오늘의 새로운 디지털 알약이 컴파일되어 포장되었습니다! 💊");
+        alert("오늘의 새로운 1:1 맞춤 사주 디지털 알약이 컴파일되어 포장되었습니다! 💊");
         setPhase('intro'); // 생성된 알약을 복용할 수 있도록 인트로 단계로 세팅
         setShowHistory(false); // 모달 닫기
       } else {
