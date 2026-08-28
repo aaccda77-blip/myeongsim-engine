@@ -128,36 +128,64 @@ export default function ZeroPointMusicModal({
         };
     }, [isPlaying, enableVoice]);
 
-    // [NEW] 🎧 '맑은 물이 머무는 곳' 공식 보컬 완성곡 샘플 플레이어
+    // [NEW] 🎧 공식 보컬 완성곡 샘플 플레이어 ('가벼워진 숨' & '맑은 물이 머무는 곳')
+    const [currentSampleTrack, setCurrentSampleTrack] = useState<'light_breath' | 'clean_water'>('light_breath');
     const [isSamplePlaying, setIsSamplePlaying] = useState<boolean>(false);
     const [sampleProgress, setSampleProgress] = useState<number>(0);
     const [sampleDuration, setSampleDuration] = useState<number>(0);
+    const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
+    const [isPaidSuccess, setIsPaidSuccess] = useState<boolean>(false);
     const sampleAudioRef = useRef<HTMLAudioElement | null>(null);
 
-    const toggleSamplePlay = () => {
-        if (!sampleAudioRef.current) {
-            const audio = new Audio('/sample_essay_song.wav');
-            audio.ontimeupdate = () => {
-                setSampleProgress(audio.currentTime);
-                if (audio.duration && !isNaN(audio.duration)) {
-                    setSampleDuration(audio.duration);
-                }
-            };
-            audio.onended = () => {
-                setIsSamplePlaying(false);
-                setSampleProgress(0);
-            };
-            audio.onerror = (e) => {
-                console.error("Sample audio load error:", e);
-            };
-            sampleAudioRef.current = audio;
+    const playSampleTrack = (track: 'light_breath' | 'clean_water') => {
+        const audioSrc = track === 'light_breath' ? '/sample_light_breath.wav' : '/sample_essay_song.wav';
+        
+        if (sampleAudioRef.current) {
+            sampleAudioRef.current.pause();
+        }
+
+        const audio = new Audio(audioSrc);
+        audio.ontimeupdate = () => {
+            setSampleProgress(audio.currentTime);
+            if (audio.duration && !isNaN(audio.duration)) {
+                setSampleDuration(audio.duration);
+            }
+        };
+        audio.onended = () => {
+            setIsSamplePlaying(false);
+            setSampleProgress(0);
+        };
+        audio.onerror = (e) => {
+            console.error("Sample audio load error:", e);
+        };
+
+        sampleAudioRef.current = audio;
+        setCurrentSampleTrack(track);
+
+        // 사주 힐링 BGM이 켜져있다면 중지
+        if (isPlaying) {
+            zeroPointSoundEngine.stop();
+            clearVoiceTimers();
+            setIsPlaying(false);
+        }
+
+        audio.play().then(() => {
+            setIsSamplePlaying(true);
+        }).catch(err => {
+            console.error("Audio playback error:", err);
+        });
+    };
+
+    const toggleSamplePlay = (track: 'light_breath' | 'clean_water' = currentSampleTrack) => {
+        if (currentSampleTrack !== track || !sampleAudioRef.current) {
+            playSampleTrack(track);
+            return;
         }
 
         if (isSamplePlaying) {
             sampleAudioRef.current.pause();
             setIsSamplePlaying(false);
         } else {
-            // 사주 힐링 BGM이 켜져있다면 중지
             if (isPlaying) {
                 zeroPointSoundEngine.stop();
                 clearVoiceTimers();
@@ -362,52 +390,119 @@ export default function ZeroPointMusicModal({
                         {currentStep === 1 && (
                             <div className="space-y-4 animate-fade-in">
 
-                                {/* [NEW] 🌟 공식 완성곡 샘플: '맑은 물이 머무는 곳' 플레이어 카드 */}
-                                <div className="p-4 rounded-3xl bg-gradient-to-br from-indigo-950/80 via-slate-900 to-amber-950/40 border border-indigo-500/40 shadow-xl space-y-3">
+                                {/* [NEW] 🌟 대표 사주 맞춤 제작 실사례: 이*영 님 (戊戌일주) '가벼워진 숨' 힐링노래 카드 */}
+                                <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-indigo-950/60 border border-amber-500/40 shadow-2xl space-y-3.5 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+
+                                    {/* Header & Badges */}
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-2 rounded-2xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                                <Sparkles className="w-4 h-4 text-amber-300 animate-spin-slow" />
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="text-[10px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-full border border-indigo-500/40">
-                                                        공식 완성곡 샘플
-                                                    </span>
-                                                    <span className="text-[10px] text-amber-400 font-mono">432Hz Full Vocal</span>
-                                                </div>
-                                                <h4 className="text-sm font-bold text-white mt-0.5">
-                                                    맑은 물이 머무는 곳
-                                                </h4>
-                                            </div>
+                                            <span className="text-[10px] bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black px-2.5 py-0.5 rounded-full shadow-sm">
+                                                🌟 실제 맞춤제작 사례
+                                            </span>
+                                            <span className="text-[10px] text-amber-300 font-mono font-bold">
+                                                이*영 님 (24세) 헌정곡
+                                            </span>
+                                        </div>
+                                        <span className="text-[9.5px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-full border border-indigo-500/30">
+                                            432Hz Full Vocal
+                                        </span>
+                                    </div>
+
+                                    {/* Title & Saju Pillars */}
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-baseline justify-between">
+                                            <h4 className="text-base font-extrabold text-white flex items-center gap-1.5">
+                                                <span>가벼워진 숨</span>
+                                                <span className="text-xs font-normal text-amber-300">| 戊戌 기질 맞춤 힐링노래</span>
+                                            </h4>
                                         </div>
 
-                                        {/* Play/Pause Button */}
+                                        {/* 만세력 4주 8글자 칩 */}
+                                        <div className="flex items-center gap-1.5 text-[10px]">
+                                            <span className="px-2 py-0.5 rounded bg-slate-950/80 text-gray-300 border border-slate-800 font-mono">
+                                                壬午년
+                                            </span>
+                                            <span className="px-2 py-0.5 rounded bg-slate-950/80 text-gray-300 border border-slate-800 font-mono">
+                                                癸丑월
+                                            </span>
+                                            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 font-mono shadow-sm">
+                                                戊戌일 (본원)
+                                            </span>
+                                            <span className="px-2 py-0.5 rounded bg-slate-950/80 text-gray-300 border border-slate-800 font-mono">
+                                                甲寅시
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Emotional Prescription Catchphrase */}
+                                    <div className="p-3 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-1">
+                                        <div className="text-[11.5px] font-bold text-amber-200 flex items-center gap-1.5">
+                                            <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
+                                            <span>"힘들 때 수시로 들으세요."</span>
+                                        </div>
+                                        <p className="text-[10.5px] text-gray-300 leading-relaxed">
+                                            광활한 대지(戊戌)처럼 모든 짐을 혼자 짊어지려 할 때, 무거운 숨을 가볍게 비워내고 쉼을 선물하는 432Hz 힐링 처방입니다.
+                                        </p>
+                                    </div>
+
+                                    {/* Track Select Tabs (가벼워진 숨 vs 맑은 물이 머무는 곳) */}
+                                    <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800">
                                         <button
-                                            onClick={toggleSamplePlay}
-                                            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer ${
-                                                isSamplePlaying
-                                                    ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/30 animate-pulse'
-                                                    : 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-amber-500/30'
+                                            onClick={() => playSampleTrack('light_breath')}
+                                            className={`flex-1 py-1.5 rounded-lg text-[10.5px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                                                currentSampleTrack === 'light_breath'
+                                                    ? 'bg-amber-500 text-slate-950 shadow-sm'
+                                                    : 'text-gray-400 hover:text-white'
                                             }`}
                                         >
-                                            {isSamplePlaying ? (
-                                                <Pause className="w-4 h-4 fill-current" />
-                                            ) : (
-                                                <Play className="w-4 h-4 fill-current ml-0.5" />
-                                            )}
+                                            <span>🎵 1. 가벼워진 숨 (이*영 님 戊戌일주)</span>
+                                        </button>
+                                        <button
+                                            onClick={() => playSampleTrack('clean_water')}
+                                            className={`flex-1 py-1.5 rounded-lg text-[10.5px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                                                currentSampleTrack === 'clean_water'
+                                                    ? 'bg-amber-500 text-slate-950 shadow-sm'
+                                                    : 'text-gray-400 hover:text-white'
+                                            }`}
+                                        >
+                                            <span>🎵 2. 맑은 물이 머무는 곳</span>
                                         </button>
                                     </div>
 
-                                    {/* Timeline Slider */}
-                                    <div className="space-y-1 bg-slate-950/60 p-2.5 rounded-2xl border border-white/5">
-                                        <div className="flex justify-between text-[9.5px] font-mono text-gray-400">
-                                            <span className="text-amber-300 font-bold">{formatTime(Math.floor(sampleProgress))}</span>
-                                            <span className="text-gray-400">
-                                                {isSamplePlaying ? '🎵 보컬 샘플곡 재생 중...' : '클릭하여 완성곡 미리듣기'}
-                                            </span>
-                                            <span>{sampleDuration > 0 ? formatTime(Math.floor(sampleDuration)) : '03:40'}</span>
+                                    {/* Audio Player & Progress Bar */}
+                                    <div className="space-y-2 bg-slate-950/90 p-3 rounded-2xl border border-slate-800">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => toggleSamplePlay(currentSampleTrack)}
+                                                    className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer ${
+                                                        isSamplePlaying
+                                                            ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/30 animate-pulse'
+                                                            : 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-amber-500/30'
+                                                    }`}
+                                                >
+                                                    {isSamplePlaying ? (
+                                                        <Pause className="w-4 h-4 fill-current" />
+                                                    ) : (
+                                                        <Play className="w-4 h-4 fill-current ml-0.5" />
+                                                    )}
+                                                </button>
+                                                <div>
+                                                    <div className="text-xs font-bold text-white">
+                                                        {currentSampleTrack === 'light_breath' ? '가벼워진 숨' : '맑은 물이 머무는 곳'}
+                                                    </div>
+                                                    <div className="text-[9.5px] text-gray-400">
+                                                        {isSamplePlaying ? '🎵 실제 보컬 완성곡 재생 중...' : '재생 버튼을 눌러 들어보세요'}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="text-[10px] font-mono text-amber-300 font-bold">
+                                                {formatTime(Math.floor(sampleProgress))} / {sampleDuration > 0 ? formatTime(Math.floor(sampleDuration)) : '03:40'}
+                                            </div>
                                         </div>
+
                                         <input
                                             type="range"
                                             min="0"
@@ -418,9 +513,16 @@ export default function ZeroPointMusicModal({
                                             className="w-full h-1.5 bg-slate-800 accent-amber-400 rounded-lg cursor-pointer"
                                         />
                                     </div>
-                                    <p className="text-[10px] text-gray-400 text-center">
-                                        💡 명심코칭의 기질 에세이와 432Hz 사운드가 결합된 실제 완성곡의 감동을 느껴보세요.
-                                    </p>
+
+                                    {/* 4,900원 결제/평생소장 버튼 */}
+                                    <button
+                                        onClick={() => setShowPaymentModal(true)}
+                                        className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer transform hover:-translate-y-0.5"
+                                    >
+                                        <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
+                                        <span>✨ 4,900원 결제하고 내 사주 맞춤 노래 평생 소장하기</span>
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
                                 </div>
 
                                 {/* User Saju Pill Box */}
@@ -771,6 +873,103 @@ export default function ZeroPointMusicModal({
                         )}
 
                     </div>
+
+                    {/* [NEW] 💳 4,900원 맞춤 노래 평생 소장 결제 팝업 모달 */}
+                    {showPaymentModal && (
+                        <div className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+                            <div className="w-full max-w-sm bg-slate-900 border border-amber-500/50 rounded-3xl p-5 shadow-2xl space-y-4 text-xs relative">
+                                <button
+                                    onClick={() => {
+                                        setShowPaymentModal(false);
+                                        setIsPaidSuccess(false);
+                                    }}
+                                    className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+
+                                <div className="text-center space-y-1.5 pt-1">
+                                    <div className="w-11 h-11 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-lg">
+                                        <Sparkles className="w-6 h-6" />
+                                    </div>
+                                    <h4 className="text-base font-black text-white">
+                                        나만의 1:1 맞춤 힐링노래 평생 소장권
+                                    </h4>
+                                    <p className="text-[11px] text-gray-300">
+                                        {effectiveProfile.userName} 님의 선천적 기질 8글자 1:1 맞춤 처방
+                                    </p>
+                                </div>
+
+                                {!isPaidSuccess ? (
+                                    <>
+                                        <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                                            <div className="flex items-baseline justify-between border-b border-slate-800 pb-2">
+                                                <span className="text-gray-400 text-[11px]">런칭 기념 특별 혜택가</span>
+                                                <div className="text-right">
+                                                    <span className="text-gray-500 line-through text-[10px] mr-1.5">39,000원</span>
+                                                    <span className="text-amber-400 font-black text-base">4,900원</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-1.5 text-[10.5px] text-gray-300">
+                                                <div className="flex items-center gap-1.5">
+                                                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                                    <span>사주 8글자 1:1 맞춤 에세이 가사 작사</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                                    <span>432Hz 고음질 스튜디오 WAV 음원 파일 평생 소장</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                                    <span>지친 마음을 비워내는 제로포인트 호흡 가이드 포함</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <button
+                                                onClick={() => {
+                                                    setIsPaidSuccess(true);
+                                                    setTimeout(() => {
+                                                        handleDownloadAudio();
+                                                    }, 800);
+                                                }}
+                                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                            >
+                                                <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
+                                                <span>4,900원 결제하고 즉시 소장하기</span>
+                                            </button>
+                                            <p className="text-[9.5px] text-gray-400 text-center">
+                                                * 결제 즉시 고음질 432Hz WAV 파일 다운로드가 시작됩니다.
+                                            </p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-center space-y-3 animate-fade-in">
+                                        <div className="w-10 h-10 mx-auto rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/40">
+                                            <Check className="w-5 h-5" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h5 className="font-bold text-white text-sm">결제가 성공적으로 완료되었습니다!</h5>
+                                            <p className="text-[11px] text-emerald-300">
+                                                {effectiveProfile.userName} 님의 맞춤 432Hz 힐링 음원이 다운로드되었습니다.
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setShowPaymentModal(false);
+                                                setIsPaidSuccess(false);
+                                            }}
+                                            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs"
+                                        >
+                                            확인
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </motion.div>
             </div>
         </AnimatePresence>
