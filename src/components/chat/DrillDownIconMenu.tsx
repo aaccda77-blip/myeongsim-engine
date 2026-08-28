@@ -1153,13 +1153,13 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 🎧 명심 기질 튜닝 송 (432Hz 주파수 리셋) - 나의 리포트 바로 옆 */}
+                {/* [NEW] 🎧 기질 1:1 맞춤 코칭 에세이노래 (432Hz 주파수 리셋) - 나의 리포트 바로 옆 */}
                 <button
                     style={styles.iconButton}
                     onClick={() => {
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) {
-                            alert('기질 맞춤 튜닝송 처방을 위해 생년월일을 먼저 등록해주세요.');
+                            alert('기질 1:1 맞춤 코칭 에세이노래 생성을 위해 생년월일을 먼저 등록해주세요.');
                             useReportStore.getState().setStep(1);
                             return;
                         }
@@ -1177,8 +1177,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>🎧</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>기질 튜닝 송</div>
-                        <div style={styles.neuroTrigger}>432Hz 주파수 리셋</div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>코칭 에세이노래</div>
+                        <div style={styles.neuroTrigger}>기질 1:1 맞춤 432Hz</div>
                     </div>
                 </button>
 

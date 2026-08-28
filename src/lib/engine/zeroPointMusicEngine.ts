@@ -58,7 +58,7 @@ export function generateZeroPointMusicTrack(
         targetElement = 'fire';
         diagnosis = `뜨거운 불길과 조급한 긴장감이 과열된 상태입니다. 깊은 호수의 차분함과 수(水)의 잔향으로 마음에 고요한 여백을 선물합니다.`;
         trackTitle = `${userName} 님의 [깊은 밤 잔잔한 호수에서]`;
-        subTitle = `${p.dGan}${p.dJi}일주 맞춤 기질 튜닝 송 (65 BPM)`;
+        subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (65 BPM)`;
         verses = [
             { timeLabel: '00:00 - 00:45', line: '쉼 없이 타오르던 마음의 불꽃을' },
             { timeLabel: '00:46 - 01:30', line: '깊은 호수 같은 고요에 비추어 보네' },
@@ -71,7 +71,7 @@ export function generateZeroPointMusicTrack(
         targetElement = 'wood';
         diagnosis = `의욕과 생각이 무성하게 뻗어나가 머리가 무거운 상태입니다. 깊은 뿌리의 고요에 기댈 수 있도록 맑은 어쿠스틱 선율을 처방합니다.`;
         trackTitle = `${userName} 님의 [푸른 나무의 평온한 쉼]`;
-        subTitle = `${p.dGan}${p.dJi}일주 맞춤 기질 튜닝 송 (75 BPM)`;
+        subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (75 BPM)`;
         verses = [
             { timeLabel: '00:00 - 00:45', line: '하늘 높이 뻗어 나가려던 수많은 생각의 가지들' },
             { timeLabel: '00:46 - 01:30', line: '바람에 실어 보내고 뿌리의 고요에 기대어' },
@@ -84,7 +84,7 @@ export function generateZeroPointMusicTrack(
         targetElement = 'metal';
         diagnosis = `1%의 오차도 용납하지 않으려는 완벽주의로 어깨와 신경이 경직된 상태입니다. 따스한 어쿠스틱 선율로 긴장을 녹여냅니다.`;
         trackTitle = `${userName} 님의 [부드러운 온기의 선율]`;
-        subTitle = `${p.dGan}${p.dJi}일주 맞춤 기질 튜닝 송 (70 BPM)`;
+        subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (70 BPM)`;
         verses = [
             { timeLabel: '00:00 - 00:45', line: '날카롭게 날을 세우던 마음의 긴장들' },
             { timeLabel: '00:46 - 01:30', line: '따스한 햇살 같은 선율에 부드럽게 녹아내리네' },
@@ -97,7 +97,7 @@ export function generateZeroPointMusicTrack(
         targetElement = 'earth';
         diagnosis = `단단하게 굳은 흙처럼 에너지가 정체되어 답답함을 느끼는 상태입니다. 시원하게 흐르는 맑은 피아노 선율로 순환을 돕습니다.`;
         trackTitle = `${userName} 님의 [새벽 시냇물과 맑은 피아노]`;
-        subTitle = `${p.dGan}${p.dJi}일주 맞춤 기질 튜닝 송 (72 BPM)`;
+        subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (72 BPM)`;
         verses = [
             { timeLabel: '00:00 - 00:45', line: '굳게 닫혀있던 마음의 문을 열고' },
             { timeLabel: '00:46 - 01:30', line: '새벽 시냇물처럼 맑은 선율이 흘러가네' },
@@ -110,7 +110,7 @@ export function generateZeroPointMusicTrack(
         targetElement = 'water';
         diagnosis = `마음이 가라앉고 차가운 무기력감이 찾아온 상태입니다. 따뜻한 햇살 같은 Rhodes 건반과 희망의 파동으로 온기를 채웁니다.`;
         trackTitle = `${userName} 님의 [아침 햇살의 따스한 파동]`;
-        subTitle = `${p.dGan}${p.dJi}일주 맞춤 기질 튜닝 송 (80 BPM)`;
+        subTitle = `${p.dGan}${p.dJi}일주 기질 1:1 맞춤 코칭 에세이노래 (80 BPM)`;
         verses = [
             { timeLabel: '00:00 - 00:45', line: '차갑고 깊은 생각의 바다 위에' },
             { timeLabel: '00:46 - 01:30', line: '눈부신 아침 햇살이 따스하게 비추이네' },

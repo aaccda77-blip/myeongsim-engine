@@ -210,7 +210,7 @@ export default function ZeroPointMusicModal({
             const a = document.createElement('a');
             a.href = url;
             const safeName = (effectiveProfile?.userName || '대표').replace(/\s+/g, '_');
-            const fileName = `${safeName}_명심_기질튜닝송_432Hz.wav`;
+            const fileName = `${safeName}_기질_1대1_맞춤_코칭_에세이노래_432Hz.wav`;
             a.download = fileName;
             document.body.appendChild(a);
             a.click();
@@ -258,12 +258,12 @@ export default function ZeroPointMusicModal({
                             </div>
                             <div>
                                 <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-                                    <span>명심 기질 튜닝 송</span>
+                                    <span>기질 1:1 맞춤 코칭 에세이노래</span>
                                     <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-mono border border-amber-500/30">
                                         432Hz 주파수 리셋
                                     </span>
                                 </h3>
-                                <p className="text-[10.5px] text-gray-400">불균형한 내면의 기운을 악기처럼 알맞게 조율하는 432Hz 힐링 사운드</p>
+                                <p className="text-[10.5px] text-gray-400">선천적 기질의 불균형을 알맞게 조율하는 432Hz 힐링 에세이 사운드</p>
                             </div>
                         </div>
                         <button
@@ -636,7 +636,7 @@ export default function ZeroPointMusicModal({
                                         className="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                                     >
                                         {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                                        <span>{isDownloading ? '432Hz 고음질 렌더링 중...' : '📥 432Hz 기질 튜닝 음원 소장하기 (.WAV)'}</span>
+                                        <span>{isDownloading ? '432Hz 고음질 렌더링 중...' : '📥 432Hz 코칭 에세이노래 소장하기 (.WAV)'}</span>
                                     </button>
                                     <button
                                         onClick={() => {
