@@ -1145,14 +1145,18 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 onClose={() => setShowCompanyModal(false)} 
             />
 
-            {/* 890원 수다 3회 충전 팝업 모달 */}
+            {/* 1:1 명심 챗봇 이용권 (무통장 입금 & 도서 시크릿 코드 인증) */}
             <MicroChatPassModal
                 isOpen={showMicroPassModal}
                 onClose={() => setShowMicroPassModal(false)}
+                userId={userId}
+                onCheckApproval={checkApprovalStatus}
                 onSuccessPay={() => {
                     setIsPaidUser(true);
+                    setCumulativeCount(0);
                     if (typeof window !== 'undefined') {
                         localStorage.setItem('myeongsim_paid_user', 'true');
+                        localStorage.setItem('myeongsim_total_user_messages', '0');
                     }
                     setShowMicroPassModal(false);
                 }}
