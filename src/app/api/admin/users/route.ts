@@ -34,10 +34,10 @@ export async function GET(request: NextRequest) {
                 email: '무통장 입금 신청',
                 name: pending.depositorName,
                 phone: pending.maskedPhone,
-                membership_tier: pending.membership_tier || 'CHAT_3',
+                membership_tier: pending.membership_tier || 'CHAT_PASS',
                 is_active: pending.is_active || false,
-                payment_amount: pending.amount || 890,
-                chat_turns_left: 3,
+                payment_amount: pending.amount || 4900,
+                chat_turns_left: 10,
                 created_at: pending.created_at,
             });
         } else if (pending.is_active) {

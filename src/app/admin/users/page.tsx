@@ -363,14 +363,14 @@ export default function AdminUsersPage() {
                     <span className="text-[10px] text-amber-300 font-mono mt-1 block">대기 중: {stats.pending}명</span>
                 </div>
 
-                {/* 890원 수다 결제자 */}
+                {/* 4,900원 코칭 결제자 */}
                 <div className="bg-slate-900/90 border border-yellow-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
                     <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] text-yellow-300 font-bold">890원 수다권</span>
+                        <span className="text-[11px] text-yellow-300 font-bold">4,900원 코칭권</span>
                         <Zap className="w-4 h-4 text-yellow-400" />
                     </div>
                     <p className="text-xl font-black text-yellow-300">{stats.microCount} 명</p>
-                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">마이크로 충전</span>
+                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">유료 충전 회원</span>
                 </div>
 
                 {/* 총 결제 매출 */}
@@ -671,16 +671,17 @@ export default function AdminUsersPage() {
                                         <td className="p-4 text-center">
                                             <div className="flex items-center justify-center gap-2">
                                                 <select
-                                                    value={selectedTiers[u.id] || u.membership_tier || '890원 수다 3회'}
+                                                    value={selectedTiers[u.id] || u.membership_tier || '4,900원 코칭 충전'}
                                                     onChange={(e) => setSelectedTiers({ ...selectedTiers, [u.id]: e.target.value })}
                                                     className="bg-slate-800 border border-white/15 rounded-lg px-2 py-1 text-xs text-white focus:outline-none"
                                                 >
-                                                    <option value="890원 수다 3회">⚡ 890원 수다 3회</option>
+                                                    <option value="4,900원 코칭 충전">⚡ 4,900원 코칭 충전</option>
+                                                    <option value="도서 VIP 30회권">📖 도서 VIP 30회권</option>
                                                     <option value="무료 체험 회원">🎁 무료 체험 회원</option>
                                                 </select>
                                                 <button
-                                                    onClick={() => approveUser(u.id, selectedTiers[u.id] || '890원 수다 3회')}
-                                                    className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs transition-all shadow-sm"
+                                                    onClick={() => approveUser(u.id, selectedTiers[u.id] || '4,900원 코칭 충전')}
+                                                    className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs transition-all shadow-sm cursor-pointer"
                                                 >
                                                     승인
                                                 </button>
