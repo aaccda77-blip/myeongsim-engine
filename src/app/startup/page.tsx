@@ -459,53 +459,115 @@ export default function StartupDashboard() {
                                     </div>
                                 </div>
 
-                                {/* Right Visual Emblem & Chart Box */}
-                                <div className="lg:col-span-5 bg-[#131022] border border-[#2b2839] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between min-h-[380px]">
-                                    <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                                {/* Right Visual: CEO 6-Power Radar Matrix & Business Fit */}
+                                <div className="lg:col-span-5 bg-[#131022] border border-[#2b2839] rounded-2xl p-5 md:p-6 relative overflow-hidden flex flex-col justify-between min-h-[440px]">
+                                    {/* Card Header */}
+                                    <div className="flex items-center justify-between border-b border-white/10 pb-3.5 mb-3">
                                         <div className="flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-indigo-400 text-sm">verified_user</span>
-                                            <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Enterprise Security</span>
+                                            <span className="material-symbols-outlined text-indigo-400 text-base">radar</span>
+                                            <span className="text-xs font-black text-white uppercase tracking-wider">창업가 6대 역량 파워 매트릭스</span>
                                         </div>
-                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Active</span>
+                                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                            AI 역량 진단
+                                        </span>
                                     </div>
 
-                                    {/* Central Graphic Radar & Momentum Spectrum */}
-                                    <div className="flex-1 flex flex-col items-center justify-center py-2 relative">
-                                        <div className="size-44 rounded-full border border-indigo-500/30 flex items-center justify-center animate-[spin_120s_linear_infinite] relative">
-                                            <div className="size-32 rounded-full border border-dashed border-purple-500/40 animate-[spin_60s_linear_infinite_reverse]"></div>
-                                            <div className="absolute inset-0 flex items-center justify-center">
-                                                <svg className="w-32 h-32 text-indigo-400/40" viewBox="0 0 100 100">
-                                                    <polygon points="50,10 88,32 88,76 50,95 12,76 12,32" fill="none" stroke="currentColor" strokeWidth="0.8" />
-                                                    <polygon points="50,22 75,36 65,70 50,82 25,68 28,34" fill="rgba(99,102,241,0.2)" stroke="#818cf8" strokeWidth="1.5" />
-                                                </svg>
+                                    {/* Central 6-Axis CEO Power Radar Chart with Clear Labels */}
+                                    <div className="relative py-2 flex flex-col items-center justify-center">
+                                        <div className="w-full max-w-[280px] aspect-square relative flex items-center justify-center">
+                                            {/* Radar SVG Grid & Polygon */}
+                                            <svg className="w-full h-full" viewBox="0 0 240 240">
+                                                {/* Outer Guides */}
+                                                <polygon points="120,30 198,75 198,165 120,210 42,165 42,75" fill="none" stroke="#2b2839" strokeWidth="1" />
+                                                <polygon points="120,55 176,87 176,153 120,185 64,153 64,87" fill="none" stroke="#2b2839" strokeWidth="0.8" strokeDasharray="3,3" />
+                                                <polygon points="120,80 154,100 154,140 120,160 86,140 86,100" fill="none" stroke="#2b2839" strokeWidth="0.5" />
+                                                
+                                                {/* Axis Lines */}
+                                                <line x1="120" y1="120" x2="120" y2="30" stroke="#3730a3" strokeWidth="0.8" />
+                                                <line x1="120" y1="120" x2="198" y2="75" stroke="#3730a3" strokeWidth="0.8" />
+                                                <line x1="120" y1="120" x2="198" y2="165" stroke="#3730a3" strokeWidth="0.8" />
+                                                <line x1="120" y1="120" x2="120" y2="210" stroke="#3730a3" strokeWidth="0.8" />
+                                                <line x1="120" y1="120" x2="42" y2="165" stroke="#3730a3" strokeWidth="0.8" />
+                                                <line x1="120" y1="120" x2="42" y2="75" stroke="#3730a3" strokeWidth="0.8" />
+
+                                                {/* Filled Power Area (Calculated Polygon for 94, 92, 96, 91, 89, 88) */}
+                                                <polygon
+                                                    points="120,38 191,80 193,161 120,199 49,158 48,82"
+                                                    fill="rgba(99, 102, 241, 0.28)"
+                                                    stroke="#818cf8"
+                                                    strokeWidth="2.2"
+                                                />
+
+                                                {/* Data Points */}
+                                                <circle cx="120" cy="38" r="3.5" fill="#a855f7" stroke="#fff" strokeWidth="1" />
+                                                <circle cx="191" cy="80" r="3.5" fill="#6366f1" stroke="#fff" strokeWidth="1" />
+                                                <circle cx="193" cy="161" r="3.5" fill="#3b82f6" stroke="#fff" strokeWidth="1" />
+                                                <circle cx="120" cy="199" r="3.5" fill="#06b6d4" stroke="#fff" strokeWidth="1" />
+                                                <circle cx="49" cy="158" r="3.5" fill="#10b981" stroke="#fff" strokeWidth="1" />
+                                                <circle cx="48" cy="82" r="3.5" fill="#f59e0b" stroke="#fff" strokeWidth="1" />
+                                            </svg>
+
+                                            {/* Axis Labels Placed Around the Radar */}
+                                            <div className="absolute top-0 text-center">
+                                                <span className="text-[10px] font-black text-purple-300 block">💡 혁신 기획</span>
+                                                <span className="text-[9px] font-mono text-purple-400 font-bold">94점</span>
+                                            </div>
+                                            <div className="absolute top-[26%] right-0 text-right">
+                                                <span className="text-[10px] font-black text-indigo-300 block">💰 자본/수익</span>
+                                                <span className="text-[9px] font-mono text-indigo-400 font-bold">92점</span>
+                                            </div>
+                                            <div className="absolute bottom-[26%] right-0 text-right">
+                                                <span className="text-[10px] font-black text-blue-300 block">⚡ 빠른 실행</span>
+                                                <span className="text-[9px] font-mono text-blue-400 font-bold">96점</span>
+                                            </div>
+                                            <div className="absolute bottom-0 text-center">
+                                                <span className="text-[10px] font-black text-cyan-300 block">📈 시장 확장</span>
+                                                <span className="text-[9px] font-mono text-cyan-400 font-bold">91점</span>
+                                            </div>
+                                            <div className="absolute bottom-[26%] left-0 text-left">
+                                                <span className="text-[10px] font-black text-emerald-300 block">👥 팀 리더십</span>
+                                                <span className="text-[9px] font-mono text-emerald-400 font-bold">89점</span>
+                                            </div>
+                                            <div className="absolute top-[26%] left-0 text-left">
+                                                <span className="text-[10px] font-black text-amber-300 block">🛡️ 멘탈 회복</span>
+                                                <span className="text-[9px] font-mono text-amber-400 font-bold">88점</span>
+                                            </div>
+
+                                            {/* Center Badge */}
+                                            <div className="absolute size-14 rounded-full bg-[#181526]/90 border border-indigo-500/50 flex flex-col items-center justify-center shadow-lg backdrop-blur-sm pointer-events-none">
+                                                <span className="text-[8px] font-bold text-indigo-300 uppercase">CEO 파워</span>
+                                                <span className="text-xs font-black text-white font-mono">92.5</span>
                                             </div>
                                         </div>
-
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                                            <span className="text-[8px] font-extrabold text-indigo-400 uppercase tracking-widest">108 NEURAL MATRIX</span>
-                                            <span className="text-lg font-black text-white font-mono my-0.5">N-DEEP-SYNC</span>
-                                            <span className="text-[9.5px] text-emerald-400 font-bold">High-Precision Engine</span>
-                                        </div>
                                     </div>
 
-                                    {/* [NEW] Real-time Match Preview Mini Card */}
-                                    <div className="my-3 p-3 rounded-xl bg-white/5 border border-white/5 space-y-1.5 text-left">
-                                        <div className="flex items-center justify-between text-[11px]">
-                                            <span className="text-slate-400">기질-비즈니스 적합도</span>
-                                            <span className="text-indigo-300 font-mono font-bold">94.8% (최적 적합)</span>
+                                    {/* Real-time Matching Result Box */}
+                                    <div className="mt-3 p-3.5 rounded-xl bg-white/5 border border-white/5 space-y-2 text-left">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="text-slate-300 font-bold flex items-center gap-1">
+                                                <span>🎯 추천 비즈니스 적합도</span>
+                                            </span>
+                                            <span className="text-emerald-400 font-mono font-black">94.8% (최적 적합)</span>
                                         </div>
                                         <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full w-[94.8%]"></div>
+                                            <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full rounded-full w-[94.8%]"></div>
                                         </div>
-                                        <p className="text-[10px] text-slate-400 pt-0.5 truncate">
-                                            💡 추천 분야: <strong className="text-white">B2B SaaS • 지식 플랫폼 • 에듀테크</strong>
-                                        </p>
+                                        <div className="pt-1 text-[11px] space-y-1 text-slate-300">
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-amber-400 font-bold">1순위:</span>
+                                                <strong className="text-white">B2B 엔터프라이즈 SaaS / 솔루션</strong>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 text-slate-400">
+                                                <span className="text-indigo-400 font-bold">2순위:</span>
+                                                <span>전문가 지식 플랫폼 & 데이터 서비스</span>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    {/* Security Badges Footer */}
+                                    {/* Security & Engine Footer */}
                                     <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-500 font-mono">
                                         <span>ISO-27001 ENCRYPTED</span>
-                                        <span>DATA-DRIVEN AI</span>
+                                        <span>108 MATRIX AI ENGINE</span>
                                     </div>
                                 </div>
                             </div>
