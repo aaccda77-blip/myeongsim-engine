@@ -275,6 +275,7 @@ export default function StartupDashboard() {
 
     // [New] 팝업 해설 및 결제/인증 잠금 상태
     const [selectedHighlight, setSelectedHighlight] = useState<any>(null);
+    const [activeDeepReport, setActiveDeepReport] = useState<any>(null);
     const [selectedRadarAxis, setSelectedRadarAxis] = useState<any>(null);
     const [isStartupPassOpen, setIsStartupPassOpen] = useState(false);
     const [pendingHighlight, setPendingHighlight] = useState<any>(null);
@@ -1488,6 +1489,251 @@ export default function StartupDashboard() {
                         </motion.div>
                     </div>
                 )}
+
+                
+                {/* 🌟 [세계 최고 수준 UX/UI] 창업가 1:1 맞춤형 핵심 심층 정밀 리포트 뷰어 모달 */}
+                {activeDeepReport && (
+                    <div className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-xl animate-fade-in" onClick={() => setActiveDeepReport(null)}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 25 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 25 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative w-full max-w-4xl bg-gradient-to-b from-[#161329] via-[#0f0c1d] to-[#07050e] border-2 border-indigo-500/40 rounded-3xl shadow-[0_0_80px_rgba(99,102,241,0.35)] overflow-hidden flex flex-col max-h-[92vh] text-left text-white"
+                        >
+                            {/* Top Hero Banner Header */}
+                            <div className="p-5 sm:p-6 border-b border-white/10 bg-gradient-to-r from-indigo-950/80 via-purple-950/70 to-slate-950 flex items-start justify-between relative overflow-hidden shrink-0">
+                                <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                                <div className="space-y-1.5 z-10">
+                                    <div className="flex items-center gap-2">
+                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-slate-950 flex items-center gap-1 shadow-sm">
+                                            👑 1:1 창업가 맞춤 정밀 리포트
+                                        </span>
+                                        <span className="text-[10px] font-mono text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-500/30">
+                                            {userSajuProfile.dayMasterName}
+                                        </span>
+                                        <span className="text-[10px] font-mono text-emerald-400">ISO-27001 AI VERIFIED</span>
+                                    </div>
+                                    <h2 className="text-lg sm:text-2xl font-black text-white leading-tight">
+                                        [{userSajuProfile.userName} 대표] {activeDeepReport.title}
+                                    </h2>
+                                    <p className="text-xs text-indigo-200/80 font-medium">
+                                        생년월일({userSajuProfile.birthDate}) 본원 기질과 108 매트릭스 알고리즘을 융합한 정밀 사업 진단서
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setActiveDeepReport(null)}
+                                    className="size-9 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center transition-all cursor-pointer z-10 shrink-0"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            {/* Report Scrollable Body */}
+                            <div className="p-5 sm:p-8 overflow-y-auto space-y-6 custom-scrollbar text-xs sm:text-sm">
+                                {/* Section 1: Executive Summary Card */}
+                                <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-900/30 via-purple-900/20 to-transparent border border-indigo-400/30 space-y-3 relative">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-sm font-black text-indigo-300 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-amber-400 text-base">verified</span>
+                                            <span>1. 핵심 요약 (Executive Summary)</span>
+                                        </h3>
+                                        <span className="text-xs font-black text-emerald-400 font-mono">성공 승률 {userSajuProfile.businessFit}%</span>
+                                    </div>
+                                    <p className="text-slate-200 leading-relaxed font-medium text-xs sm:text-sm">
+                                        {userSajuProfile.userName} 대표님의 기질 구조는 <strong className="text-amber-300">[{userSajuProfile.dayMasterName}]</strong>의 정밀 에너지와 일치합니다. 
+                                        무리한 B2C 소모전보다는 <strong className="text-emerald-300">고단가 지식 자산 및 B2B 구독 솔루션</strong>에서 가장 빠른 현금 회전율(ROI)을 달성할 수 있습니다.
+                                    </p>
+                                </div>
+
+                                {/* Section 2: 4-Type Entrepreneur Matrix & Match Rates */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-indigo-400 text-base">grid_view</span>
+                                        <span>2. 4대 창업 기질 유형별 적합도 진단</span>
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="p-4 rounded-2xl bg-white/5 border border-indigo-500/30 space-y-2 relative overflow-hidden">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-indigo-300">🛠️ 기술·솔루션 개발형</span>
+                                                <span className="text-xs font-black font-mono text-purple-300">96% (최상급)</span>
+                                            </div>
+                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full w-[96%]"></div>
+                                            </div>
+                                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                세상에 없던 정밀한 가치와 아키텍처를 설계하여 압도적 제품력으로 시장을 장악하는 1순위 적성.
+                                            </p>
+                                        </div>
+
+                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-cyan-300">💡 전문가 지식·컨설팅형</span>
+                                                <span className="text-xs font-black font-mono text-cyan-300">94% (우수)</span>
+                                            </div>
+                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                <div className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full w-[94%]"></div>
+                                            </div>
+                                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                깊이 있는 전문 데이터와 인사이트를 고단가 멤버십 및 B2B 라이선스로 전환하는 역량.
+                                            </p>
+                                        </div>
+
+                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-amber-300">🌐 플랫폼·유통 네트워크형</span>
+                                                <span className="text-xs font-black font-mono text-amber-300">91% (양호)</span>
+                                            </div>
+                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                <div className="bg-gradient-to-r from-amber-500 to-yellow-500 h-full rounded-full w-[91%]"></div>
+                                            </div>
+                                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                공급자와 수요자를 잇고 단위 경제성을 확보하여 자본 선순환을 유도하는 비즈니스.
+                                            </p>
+                                        </div>
+
+                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-emerald-300">👥 커뮤니티·팬덤형</span>
+                                                <span className="text-xs font-black font-mono text-emerald-300">88% (보통)</span>
+                                            </div>
+                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full w-[88%]"></div>
+                                            </div>
+                                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                충성도 높은 고객 커뮤니티를 구축하여 리텐션을 극대화하는 서포트 모델.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Section 3: Recommended Business Item Top 3 & ROI Table */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-amber-400 text-base">rocket_launch</span>
+                                        <span>3. 사주 기질 100% 일치 최적 사업 아이템 Top 3 & ROI 분석</span>
+                                    </h3>
+                                    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#0d0a1a]">
+                                        <table className="w-full text-left text-xs border-collapse">
+                                            <thead>
+                                                <tr className="bg-white/5 border-b border-white/10 text-slate-300 text-[11px] font-bold">
+                                                    <th className="p-3">순위 & 아이템 카테고리</th>
+                                                    <th className="p-3">목표 타겟</th>
+                                                    <th className="p-3 text-center">예상 ROI</th>
+                                                    <th className="p-3 text-center">손익분기(BEP)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5 text-slate-200">
+                                                <tr className="bg-indigo-500/10 hover:bg-indigo-500/15 transition-colors">
+                                                    <td className="p-3 font-black text-amber-300 flex items-center gap-1.5">
+                                                        <span className="size-5 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-[10px] font-black shrink-0">1</span>
+                                                        <span>{userSajuProfile.bizRank1}</span>
+                                                    </td>
+                                                    <td className="p-3 text-slate-300">B2B 중소/중견기업, 전문직</td>
+                                                    <td className="p-3 text-center font-bold text-emerald-400 font-mono">9.4x (최고)</td>
+                                                    <td className="p-3 text-center font-mono text-cyan-300">3 ~ 6개월</td>
+                                                </tr>
+                                                <tr className="hover:bg-white/5 transition-colors">
+                                                    <td className="p-3 font-bold text-white flex items-center gap-1.5">
+                                                        <span className="size-5 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px] font-black shrink-0">2</span>
+                                                        <span>{userSajuProfile.bizRank2}</span>
+                                                    </td>
+                                                    <td className="p-3 text-slate-300">스타트업 창업가, 전문가</td>
+                                                    <td className="p-3 text-center font-bold text-emerald-400 font-mono">8.8x</td>
+                                                    <td className="p-3 text-center font-mono text-cyan-300">2 ~ 4개월</td>
+                                                </tr>
+                                                <tr className="hover:bg-white/5 transition-colors">
+                                                    <td className="p-3 font-bold text-slate-300 flex items-center gap-1.5">
+                                                        <span className="size-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-black shrink-0">3</span>
+                                                        <span>버티컬 웰니스 & 1:1 맞춤형 뇌신경 멘탈케어</span>
+                                                    </td>
+                                                    <td className="p-3 text-slate-400">하이엔드 B2C, VIP 고객</td>
+                                                    <td className="p-3 text-center font-bold text-emerald-400 font-mono">8.2x</td>
+                                                    <td className="p-3 text-center font-mono text-cyan-300">4 ~ 8개월</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {/* Section 4: 3-Stage Agile Pivot Roadmap */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-purple-400 text-base">timeline</span>
+                                        <span>4. 3단계 고속 피벗 & 스케일업 로드맵</span>
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
+                                            <span className="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Phase 1 (1~3개월)</span>
+                                            <h4 className="text-xs font-bold text-white">0원 MVP 가설 검증</h4>
+                                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                거대한 개발 없이 노코드/원페이지 랜딩으로 10명의 유료 얼리어답터를 확보하여 시장 수요를 100% 확증.
+                                            </p>
+                                        </div>
+                                        <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                                            <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">Phase 2 (4~8개월)</span>
+                                            <h4 className="text-xs font-bold text-white">단위 경제성 & 자동화</h4>
+                                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                LTV/CAC 비율을 3.0 이상으로 맞추고, 핵심 파이프라인을 시스템화하여 대표의 시간 여유를 창출.
+                                            </p>
+                                        </div>
+                                        <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                                            <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">Phase 3 (9~12개월)</span>
+                                            <h4 className="text-xs font-bold text-white">플랫폼 스케일업 & 확장</h4>
+                                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                검증된 솔루션을 기반으로 인접 산업군으로 영토를 확장하고 B2B 엔터프라이즈 라이선스 계약 체결.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Section 5: Pre-mortem Risk Shield & Wellness */}
+                                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-red-950/30 via-slate-900 to-emerald-950/30 border border-white/10 space-y-2.5">
+                                    <h3 className="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-sm">shield</span>
+                                        <span>5. 실패 사전 차단 방어막 (Pre-mortem Shield) & 바이오 해킹</span>
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                                        <div className="space-y-1">
+                                            <p className="font-bold text-red-300">⚠️ 가장 주의해야 할 함정:</p>
+                                            <p className="text-[11px] leading-relaxed text-slate-400">
+                                                {userSajuProfile.axes.innovation.dark}
+                                            </p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="font-bold text-emerald-300">🌿 뇌신경 웰니스 처방전:</p>
+                                            <p className="text-[11px] leading-relaxed text-slate-400">
+                                                {userSajuProfile.vagusTip} • {userSajuProfile.peakHour}에 최우선 집중
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Report Modal Footer */}
+                            <div className="p-4 sm:p-5 border-t border-white/10 bg-[#0d0a1a] flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+                                <button
+                                    onClick={() => setActiveDeepReport(null)}
+                                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer"
+                                >
+                                    ✕ 리포트 닫기
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const prompt = `[${userSajuProfile.userName} 대표님의 ${activeDeepReport.title}] 리포트를 기반으로 1:1 비즈니스 심화 컨설팅 및 피벗 실행 전략을 구체적으로 지도해주세요.`;
+                                        setActiveDeepReport(null);
+                                        handleConsultation(prompt);
+                                    }}
+                                    className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500 hover:from-indigo-500 hover:to-amber-400 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                >
+                                    <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                                    <span>AI 코치와 리포트 내용으로 1:1 심화 코칭 이어가기 ➔</span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
 
                 {/* [NEW] 19,800원 무통장 입금 & 9,900원 도서 인증 VIP 열람 패스 모달 */}
                 {isStartupPassOpen && (
