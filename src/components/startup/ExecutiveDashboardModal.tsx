@@ -28,9 +28,9 @@ export default function ExecutiveDashboardModal({
         { quarter: '2026.Q1', label: '기틀 마련', score: 68, zone: 'neutral', status: '🟢 순항', desc: '초기 핵심 IP 특허 출원 및 B2B 타당성 검증 완료' },
         { quarter: '2026.Q3', label: '공식 승인 ★', score: 86, zone: 'expansion', status: '🟢 Expansion Zone (피크)', desc: '특허 승인 및 법인 자격 인정, B2B 신뢰도 극대화 골든 타임' },
         { quarter: '2027.Q2', label: '시장 확장', score: 74, zone: 'expansion', status: '🟢 Expansion Zone', desc: 'B2B / B2G 자금 조달(IR) 및 대형 제휴 계약 추진 최적기' },
-        { quarter: '2027.Q4', label: '조직 정비', score: 59, zone: 'consolidation', status: '🟡 Consolidation Zone', desc: '고정비 증대 억제 및 내실 내실화, 유동성 현금 비축 필요' },
-        { quarter: '2028.Q2', label: '자본 재구조화 ★', score: 32, zone: 'defense', status: '🔴 Defense Zone (경고)', desc: '세운 비겁 중첩 구간 — 현금 유통 압박 대비 보수적 운용' },
-        { quarter: '2028.Q4', label: '시스템 완성', score: 82, zone: 'expansion', status: '🟢 Recovery Zone', desc: '재성 기운 재활성화, 차세대 BM 시장 안착 및 2차 도약' }
+        { quarter: '2027.Q4', label: '조직 정비', score: 59, zone: 'consolidation', status: '🟡 Consolidation Zone', desc: '고정비 증대 억제 및 내실화, 유동성 현금 비축 필요' },
+        { quarter: '2028.Q2', label: '자본 재구조화 ★', score: 32, zone: 'defense', status: '🔴 Defense Zone (경고)', desc: '시장 경쟁 심화 구간 — 현금 유통 압박 대비 보수적 운용' },
+        { quarter: '2028.Q4', label: '시스템 완성', score: 82, zone: 'expansion', status: '🟢 Recovery Zone', desc: '자본 회전율 회복, 차세대 BM 시장 안착 및 2차 퀀텀점프' }
     ];
 
     useEffect(() => {
@@ -55,13 +55,13 @@ export default function ExecutiveDashboardModal({
         const summaryText = `[이사회 보고용 경영 모멘텀 브리핑]
 기업명: ${companyName} | 대상: ${ceoName}
 ----------------------------------------
-■ 종합 모멘텀 지수: 86 / 100점 (상위 5% 최상위 - 정관합 승인기)
-■ 주요 리스크: 군겁쟁재 (2028년 자금 유통 압박 대비 필요)
+■ 종합 모멘텀 지수: 86 / 100점 (상위 5% 최상위 - 공적 신뢰도 극대화 구간)
+■ 주요 리스크: 시장 경쟁 심화 (2028년 자금 유통 압박 대비 현금 확보 필요)
 
 ■ 3대 핵심 경영 지침:
 1. 2026년 하반기: 특허(IP) 및 법인 공식 자격 승인을 통한 B2B 신뢰도 극대화
 2. 2027년 상반기: 자금 조달(IR) 및 B2B/B2G 계약 체결 적극 추진
-3. 2028년 세운 방어: 2027년 하반기부터 현금 유동성 사전 확보
+3. 2028년 리스크 방어: 2027년 하반기부터 현금 유동성 사전 확보
 
 (출처: 명심코칭 Enterprise Solution)`;
 

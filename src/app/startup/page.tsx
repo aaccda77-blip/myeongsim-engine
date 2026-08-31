@@ -30,12 +30,12 @@ export default function StartupDashboard() {
             label: '사업 아이템 & 적성 적합도',
             title: '사업 아이템 & 적성 적합도',
             desc: '창업자의 선천적 역량 구조와 기질 데이터를 바탕으로 최적의 사업 아이템 및 분야를 매칭합니다.',
-            detail: '귀하의 선천적 기질 프로필에 나타난 식상(INNOVATION)과 재성(CAPITAL)의 흐름을 정밀 분석하여, 가장 사업적 타당성이 높은 아이템 카테고리를 도출합니다. 또한 현재 시장 트렌드와 결합하여 구체적인 제품·서비스 실행 전략을 수립해 드립니다.',
+            detail: '귀하의 본원적 역량 구조에 내재된 혁신 창출력(Innovation Engine)과 자본 최적화(Capital Flow) 역량을 정밀 분석하여, 비즈니스 성공 확률이 가장 높은 핵심 사업 아이템과 카테고리를 도출합니다. 거시적 시장 트렌드와 결합한 3단계 피벗 전략 및 실행 리스크 사전 방어 로드맵을 제공합니다.',
             prompt: '제 기질 프로필에 가장 잘 맞는 창업 아이템과 사업 분야를 추천해주세요.',
             highlights: [
-                { title: '선천적 식상·재성 역량 도출', desc: '창업가의 타고난 식상(INNOVATION)과 재성(CAPITAL) 데이터 기반 최적 사업 소재 매칭' },
-                { title: '시장 트렌드 & 피벗 전략', desc: '거시적 시장 트렌드와 결합한 고승률 사업 카테고리 선정 및 3단계 피벗 실행 로드맵' },
-                { title: '핵심 콤피턴시 리스크 검증', desc: '사업 추진 과정에서 나타날 수 있는 기질적 취약점 및 조직 실행력 리스크 사전 예방' }
+                { title: '창업가 본원적 혁신성(Innovation) 및 자본화 역량 도출', desc: '창업가의 타고난 혁신 실행력(INNOVATION)과 자본 최적화(CAPITAL) 데이터 기반 최적 사업 소재 매칭' },
+                { title: '시장 메가트렌드 결합 고승률 비즈니스 & 3단계 피벗 로드맵', desc: '거시적 시장 트렌드와 결합한 고승률 사업 카테고리 선정 및 3단계 피벗 실행 로드맵' },
+                { title: '창업가 핵심 역량(Core Competency) 및 실행 리스크 사전 방어', desc: '사업 추진 과정에서 나타날 수 있는 기질적 취약점 및 조직 실행력 리스크 사전 예방' }
             ]
         },
         {
@@ -44,7 +44,7 @@ export default function StartupDashboard() {
             label: '창업자 리더십 & 마인드셋',
             title: '창업자 리더십 & 마인드셋',
             desc: '완벽주의, 번아웃 등 대표자의 6대 핵심 인지 패턴을 정밀 분석하여 멘탈 회복력을 강화합니다.',
-            detail: '창업가는 극심한 불확실성과 결정 피로(Decision Fatigue) 속에서 조직을 이끌어야 합니다. 일간 및 인성 기전 기반의 의식 오류 패턴을 분석하여, 리더십 균열 시점을 사전 예방하고 지속 가능한 CEO 멘탈리티를 구축해 드립니다.',
+            detail: '창업가는 극심한 불확실성과 결정 피로(Decision Fatigue) 속에서 조직을 이끌어야 합니다. 본원적 기질 및 인지 프로세싱 기전 기반의 의식 오류 패턴을 분석하여, 리더십 균열 시점을 사전 예방하고 지속 가능한 CEO 멘탈리티를 구축해 드립니다.',
             prompt: '창업자로서 저의 심리적 강점과 약점, 그리고 주의해야 할 번아웃 패턴을 분석해주세요.',
             highlights: [
                 { title: '6대 핵심 인지 패턴 정밀 분석', desc: '완벽주의, 번아웃, 결정 피로(Decision Fatigue) 등 대표자의 심리적 스트레스 기전 분석' },
@@ -58,12 +58,12 @@ export default function StartupDashboard() {
             label: '기업 경영 모멘텀 & 전략',
             title: '기업 경영 모멘텀 & 전략',
             desc: '기업의 연간 성장 사이클을 분석하여, 공격적 확장과 조직 정실의 최적 타이밍을 제안합니다.',
-            detail: '세운과 대운의 거시적 경영 사이클을 분석하여, 올해 귀하의 기업이 맞이할 피벗 적기와 자금 집행 및 조직 확장 최적 타이밍을 정밀 분석합니다.',
+            detail: '기업 생애주기 및 연간 거시 경영 사이클을 다차원으로 분석하여, 올해 귀하의 기업이 맞이할 피벗 적기와 자금 집행 및 조직 확장 최적 타이밍을 정밀 분석합니다.',
             prompt: '올해 우리 회사의 사업 경영 모멘텀과 주요 전략적 타이밍을 분석해주세요.',
             highlights: [
                 { title: '연간 경영 모멘텀 타임라인', desc: '분기별/월별 사업 확장, 조직 재정비 및 리스크 방어 적기 도출' },
                 { title: '피벗 & 자금 집행 타이밍', desc: '자금 조달(IR) 및 B2B 대형 계약 체결 최적 구간 정밀 분석' },
-                { title: '조직 확장 리스크 제어', desc: '비겁/형살 구간에 대비한 HR 조직 개편 및 법률적 리스크 사전 방어책 제안' }
+                { title: '조직 급성장 및 이해관계 충돌 리스크 제어', desc: '조직 확장기에 대비한 HR 조직 개편 및 의사결정 리스크 사전 방어책 제안' }
             ]
         },
         {
@@ -72,12 +72,12 @@ export default function StartupDashboard() {
             label: '공동 창업자 케미스트리 & 시너지',
             title: '공동 창업자 케미스트리 & 시너지',
             desc: '공동 창업자 간 기질 상성, 갈등 해결 스타일 및 리더십 파트너십의 지속 가능성을 평가합니다.',
-            detail: '공동 창업은 기업의 생존을 결정짓는 핵심 요소입니다. 파트너 간 궁합 및 오행·기질 모달리티 시너지를 분석하여, 서로의 리더십 공백을 보완하는 최상의 조직 케미스트리를 분석하고 갈등 예방 가이드를 제공합니다.',
+            detail: '공동 창업은 기업의 생존을 결정짓는 핵심 요소입니다. 파트너 간 기질 모달리티와 리더십 상호 보완성을 분석하여, 서로의 리더십 공백을 메우는 최상의 조직 케미스트리를 구축하고 갈등 예방 가이드를 제공합니다.',
             prompt: '공동 창업자와의 시너지와 협업 평가를 분석하고 싶습니다.',
             highlights: [
-                { title: '파트너 기질 상성 & 오행 시너지', desc: '공동 창업자 간 오행 상생상극 및 비겁·관성 시너지를 통한 역량 보완성 평가' },
+                { title: '파트너 기질 상성 & 전략적 상호 보완성', desc: '공동 창업자 간 인지 기제 및 역량 모달리티 시너지를 통한 상호 보완성 정밀 평가' },
                 { title: '갈등 해결 & 의사결정 스타일', desc: '위기 시 의사결정 충돌 가능성 분석 및 파트너십 지속 가능성 리포트 도출' },
-                { title: '리더십 역할 분담 시스템', desc: 'CEO, CTO, COO 등 핵심 C-Level 간 역할 충돌 방지를 위한 최적 R&R 방안 설계' }
+                { title: 'C-Level 리더십 역할 분담 시스템', desc: 'CEO, CTO, COO 등 핵심 경영진 간 역할 충돌 방지를 위한 최적 R&R 방안 설계' }
             ]
         },
         {
@@ -86,11 +86,11 @@ export default function StartupDashboard() {
             label: '투자 유치 & 자금조달 타이밍',
             title: '투자 유치 & 자금조달 타이밍',
             desc: '최적의 자금 조달(IR) 적기를 도출하고, 기업 문화에 부합하는 투자자 페르소나를 매칭합니다.',
-            detail: '자금 조달 역시 정밀한 타이밍의 예술입니다. 귀하의 재성(財) 및 관성(官) 에너지가 최고조에 달하는 시점에 맞춰 IR 및 라운드 오픈을 진행할 때 유동성 성공 확률이 가장 높습니다. 적합한 투자자 페르소나 매칭 전략을 제공합니다.',
+            detail: '자금 조달 역시 정밀한 타이밍의 예술입니다. 귀하의 자본 모멘텀 및 시장 신뢰도 지수가 최고조에 달하는 시점에 맞춰 IR 및 라운드 오픈을 진행할 때 유동성 확보 성공 확률이 가장 높습니다. 적합한 투자자 페르소나 매칭 전략을 제공합니다.',
             prompt: '저에게 가장 유리한 투자 유치 시점과 적합한 투자자 유형을 알려주세요.',
             highlights: [
-                { title: '자금 조달(IR) 최적 타임윈도우', desc: '재성(財) 및 관성(官) 에너지가 최고조에 달하는 IR 및 라운드 오픈 시점 정밀 도출' },
-                { title: '투자자(VC/엔젤) 페르소나 매칭', desc: '기업의 상성 데이터에 잘 부합하고 장기 시너지를 극대화할 최적 투자자 유형 분석' },
+                { title: '자금 조달(IR) 최적 타임윈도우', desc: '자본 모멘텀 및 대외 신뢰도 지수가 최고조에 달하는 IR 및 라운드 오픈 시점 정밀 도출' },
+                { title: '투자자(VC/엔젤) 페르소나 매칭', desc: '기업의 비전과 성장 데이터에 부합하고 장기 시너지를 극대화할 최적 투자자 유형 분석' },
                 { title: '유동성 리스크 & 런웨이 방어 전략', desc: '자금 고갈 위험 구간 사전 인지 및 라운드 마감 타임라인 리스크 관리 제안' }
             ]
         },
@@ -100,10 +100,10 @@ export default function StartupDashboard() {
             label: '비즈니스 모델(BM) 타당성 검증',
             title: '비즈니스 모델(BM) 타당성 검증',
             desc: '현재 BM이 거시적 시장 흐름 및 기업의 선천적 시스템 역량에 부합하는지 정밀 검증합니다.',
-            detail: '아무리 독창적인 BM이라도 시장의 생태계 사이클과 조화를 이루지 못하면 정체됩니다. 귀하의 사업 모델 내 수익 창출 구조(식신생재) 및 시장 안착(재생관) 타당성을 명리·경영학적으로 종합 검증하고 피벗 가이드를 제공합니다.',
+            detail: '아무리 독창적인 BM이라도 시장의 생태계 사이클과 조화를 이루지 못하면 정체됩니다. 귀하의 사업 모델 내 가치 창출 구조(Value Proposition) 및 시장 확장성(Scalability) 타당성을 인지과학·경영학적으로 종합 검증하고 피벗 가이드를 제공합니다.',
             prompt: '제 비즈니스 모델이 현재 시장 흐름에 적합한지 검증해주세요.',
             highlights: [
-                { title: '식신생재 & 재생관 타당성 검증', desc: '수익 창출 구조(식신생재) 및 시장 안착(재생관) 타당성의 명리·경영학 종합 검증' },
+                { title: '가치 창출 구조 & 시장 확장성 검증', desc: '수익 창출 엔진 및 시장 안착 타당성의 인지과학·경영학 종합 검증' },
                 { title: '거시적 시장 사이클 부합도', desc: '현재 BM이 거시 경제 및 산업 생태계 사이클과 조화를 이루는지 적합도 정밀 분석' },
                 { title: 'BM 피벗 & 수익 모델 고도화 가이드', desc: '시장 정체 극복을 위한 비즈니스 모델 수정 방향성 및 차세대 수익 드라이버 제안' }
             ]
@@ -218,21 +218,34 @@ export default function StartupDashboard() {
                                         </div>
                                     </div>
 
-                                    <div className="pt-4">
+                                    <div className="pt-4 flex flex-col sm:flex-row gap-3">
+                                        <button
+                                            onClick={() => handleConsultation(selectedService.prompt)}
+                                            className="w-full sm:w-auto bg-gradient-to-r from-[#3211d4] to-[#5b36ff] hover:from-[#3211d4]/90 hover:to-[#5b36ff]/90 text-white px-8 py-4 rounded-xl font-extrabold text-base md:text-lg shadow-xl shadow-[#3211d4]/30 transition-all flex items-center justify-center gap-3 group cursor-pointer"
+                                        >
+                                            <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform text-amber-300">
+                                                {selectedService.id === 'content' ? 'rocket_launch' : 'bolt'}
+                                            </span>
+                                            <span>
+                                                {selectedService.id === 'content'
+                                                    ? '창업 기질 기반 사업 아이템 정밀 진단 시작하기'
+                                                    : `${selectedService.title} 정밀 분석 실행하기`}
+                                            </span>
+                                            <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                        </button>
                                         <button
                                             onClick={() => setIsExecutiveDashboardOpen(true)}
-                                            className="w-full sm:w-auto bg-gradient-to-r from-[#3211d4] to-[#5b36ff] hover:from-[#3211d4]/90 hover:to-[#5b36ff]/90 text-white px-8 py-4 rounded-xl font-extrabold text-base md:text-lg shadow-xl shadow-[#3211d4]/30 transition-all flex items-center justify-center gap-3 group"
+                                            className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-xl font-bold text-sm md:text-base transition-all flex items-center justify-center gap-2 cursor-pointer"
                                         >
-                                            <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform text-amber-300">bolt</span>
-                                            <span>경영 모멘텀 정밀 분석 실행하기</span>
-                                            <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                            <span className="material-symbols-outlined text-sm">bar_chart</span>
+                                            <span>임원 대시보드 뷰</span>
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Right Visual Emblem & Chart Box */}
-                                <div className="lg:col-span-5 bg-[#131022] border border-[#2b2839] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between min-h-[360px]">
-                                    <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+                                <div className="lg:col-span-5 bg-[#131022] border border-[#2b2839] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between min-h-[380px]">
+                                    <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
                                         <div className="flex items-center gap-2">
                                             <span className="material-symbols-outlined text-indigo-400 text-sm">verified_user</span>
                                             <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Enterprise Security</span>
@@ -241,11 +254,11 @@ export default function StartupDashboard() {
                                     </div>
 
                                     {/* Central Graphic Radar & Momentum Spectrum */}
-                                    <div className="flex-1 flex flex-col items-center justify-center py-4 relative">
-                                        <div className="size-48 rounded-full border border-indigo-500/30 flex items-center justify-center animate-[spin_120s_linear_infinite] relative">
-                                            <div className="size-36 rounded-full border border-dashed border-purple-500/40 animate-[spin_60s_linear_infinite_reverse]"></div>
+                                    <div className="flex-1 flex flex-col items-center justify-center py-2 relative">
+                                        <div className="size-44 rounded-full border border-indigo-500/30 flex items-center justify-center animate-[spin_120s_linear_infinite] relative">
+                                            <div className="size-32 rounded-full border border-dashed border-purple-500/40 animate-[spin_60s_linear_infinite_reverse]"></div>
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <svg className="w-36 h-36 text-indigo-400/40" viewBox="0 0 100 100">
+                                                <svg className="w-32 h-32 text-indigo-400/40" viewBox="0 0 100 100">
                                                     <polygon points="50,10 88,32 88,76 50,95 12,76 12,32" fill="none" stroke="currentColor" strokeWidth="0.8" />
                                                     <polygon points="50,22 75,36 65,70 50,82 25,68 28,34" fill="rgba(99,102,241,0.2)" stroke="#818cf8" strokeWidth="1.5" />
                                                 </svg>
@@ -253,14 +266,28 @@ export default function StartupDashboard() {
                                         </div>
 
                                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                                            <span className="text-[9px] font-extrabold text-indigo-400 uppercase tracking-widest">DATA-DRIVEN ENGINE</span>
-                                            <span className="text-xl font-black text-white font-mono my-0.5">N-DEEP-SYNC</span>
-                                            <span className="text-[10px] text-slate-400 font-medium">99.8% 정밀도 도출</span>
+                                            <span className="text-[8px] font-extrabold text-indigo-400 uppercase tracking-widest">108 NEURAL MATRIX</span>
+                                            <span className="text-lg font-black text-white font-mono my-0.5">N-DEEP-SYNC</span>
+                                            <span className="text-[9.5px] text-emerald-400 font-bold">High-Precision Engine</span>
                                         </div>
                                     </div>
 
+                                    {/* [NEW] Real-time Match Preview Mini Card */}
+                                    <div className="my-3 p-3 rounded-xl bg-white/5 border border-white/5 space-y-1.5 text-left">
+                                        <div className="flex items-center justify-between text-[11px]">
+                                            <span className="text-slate-400">기질-비즈니스 적합도</span>
+                                            <span className="text-indigo-300 font-mono font-bold">94.8% (최적 적합)</span>
+                                        </div>
+                                        <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full w-[94.8%]"></div>
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 pt-0.5 truncate">
+                                            💡 추천 분야: <strong className="text-white">B2B SaaS • 지식 플랫폼 • 에듀테크</strong>
+                                        </p>
+                                    </div>
+
                                     {/* Security Badges Footer */}
-                                    <div className="pt-4 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                                    <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-500 font-mono">
                                         <span>ISO-27001 ENCRYPTED</span>
                                         <span>DATA-DRIVEN AI</span>
                                     </div>
