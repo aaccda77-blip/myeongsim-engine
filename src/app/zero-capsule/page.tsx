@@ -18,25 +18,44 @@ interface PillData {
   target_date?: string;
 }
 
+// 🍬 성함 오타/누락 절대 복원 헬퍼
+function cleanPill(item: any): PillData | null {
+  if (!item) return null;
+  const fixText = (t: string) => {
+    if (!t || typeof t !== 'string') return t;
+    return t.replace(/이윤님/g, '이경윤님');
+  };
+  return {
+    ...item,
+    flavor: fixText(item.flavor),
+    keyword: fixText(item.keyword),
+    scan: fixText(item.scan),
+    sync: fixText(item.sync),
+    shift: fixText(item.shift),
+    log: fixText(item.log)
+  };
+}
+
 // 타이핑 애니메이션 효과를 주는 간단한 컴포넌트
 function TypingText({ text, speed = 25 }: { text: string; speed?: number }) {
   const [displayedText, setDisplayedText] = useState('');
+  const cleanTargetText = (text || '').replace(/이윤님/g, '이경윤님');
 
   useEffect(() => {
     setDisplayedText('');
-    if (!text) return;
+    if (!cleanTargetText) return;
     
     let i = 0;
     const interval = setInterval(() => {
-      setDisplayedText((prev) => prev + text.charAt(i));
+      setDisplayedText((prev) => prev + cleanTargetText.charAt(i));
       i++;
-      if (i >= text.length) {
+      if (i >= cleanTargetText.length) {
         clearInterval(interval);
       }
     }, speed);
 
     return () => clearInterval(interval);
-  }, [text, speed]);
+  }, [cleanTargetText, speed]);
 
   return <span className="whitespace-pre-line">{displayedText}</span>;
 }
@@ -66,14 +85,15 @@ export default function ZeroCapsulePage() {
       const res = await fetch('/api/zero-capsule/today');
       if (res.ok) {
         const json = await res.json();
-        setData(json);
+        setData(cleanPill(json));
       }
 
       // 전체 과거 복용 이력 획득
       const histRes = await fetch('/api/zero-capsule/history');
       if (histRes.ok) {
         const histJson = await histRes.json();
-        setHistory(histJson);
+        const cleanedList = Array.isArray(histJson) ? histJson.map(cleanPill).filter(Boolean) as PillData[] : [];
+        setHistory(cleanedList);
       }
     } catch (err) {
       console.error("알약 데이터 로딩 에러:", err);
@@ -176,8 +196,8 @@ export default function ZeroCapsulePage() {
     );
   }
 
-  // 데이터가 없을 경우를 대비한 가상 디폴트 셋 (오늘 자 알약 미생성 시 안내용)
-  const pill = data || {
+  // 데이터가 없을 경우를 대비한 가상 디폴트 셋 (오늘 자 알사탕 미생성 시 안내용)
+  const pill = cleanPill(data) || {
     flavor: "제로포인트 디지털 알사탕 (생성 대기 중)",
     keyword: "알사탕 생성 전 - 순수 의식 대기 상태",
     scan: "오늘 자 디지털 알사탕이 아직 컴파일되지 않았습니다. 우측 상단의 [📚 HISTORY] 버튼을 눌러 오늘의 디지털 알사탕을 발급받거나, 과거의 자각 기록을 불러와서 스캔을 진행하세요.",
