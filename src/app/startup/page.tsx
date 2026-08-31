@@ -15,6 +15,7 @@ export default function StartupDashboard() {
 
     // [New] 팝업 해설 및 결제/인증 잠금 상태
     const [selectedHighlight, setSelectedHighlight] = useState<any>(null);
+    const [selectedRadarAxis, setSelectedRadarAxis] = useState<any>(null);
     const [isStartupPassOpen, setIsStartupPassOpen] = useState(false);
     const [pendingHighlight, setPendingHighlight] = useState<any>(null);
     const [isUnlocked, setIsUnlocked] = useState(false);
@@ -777,121 +778,329 @@ export default function StartupDashboard() {
                                     </div>
                                 </div>
 
-                                {/* Right Visual: CEO 6-Power Radar Matrix & Business Fit */}
-                                <div className="lg:col-span-5 bg-[#131022] border border-[#2b2839] rounded-2xl p-5 md:p-6 relative overflow-hidden flex flex-col justify-between min-h-[440px]">
+                                {/* Right Visual: CEO 6-Power Radar Matrix & Wellness Bio-Sync */}
+                                <div className="lg:col-span-5 bg-gradient-to-b from-[#131022] to-[#0d0a1a] border border-indigo-500/30 rounded-2xl p-5 md:p-6 relative overflow-hidden flex flex-col justify-between min-h-[460px] shadow-2xl">
                                     {/* Card Header */}
-                                    <div className="flex items-center justify-between border-b border-white/10 pb-3.5 mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-indigo-400 text-base">radar</span>
-                                            <span className="text-xs font-black text-white uppercase tracking-wider">창업가 6대 역량 파워 매트릭스</span>
-                                        </div>
-                                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                            AI 역량 진단
-                                        </span>
+                                    <div className="flex items-center justify-between border-b border-white/10 pb-3.5 mb-2">
+                                         <div className="flex items-center gap-2">
+                                             <span className="material-symbols-outlined text-indigo-400 text-base animate-pulse">vital_signs</span>
+                                             <span className="text-xs font-black text-white uppercase tracking-wider">창업가 6대 역량 파워 매트릭스</span>
+                                         </div>
+                                         <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/30 to-purple-500/30 text-indigo-200 border border-indigo-400/40 flex items-center gap-1">
+                                             <Sparkles className="w-3 h-3 text-amber-300 animate-spin-slow" />
+                                             <span>터치 시 상세 웰니스 코칭</span>
+                                         </span>
                                     </div>
 
-                                    {/* Central 6-Axis CEO Power Radar Chart with Clear Labels */}
+                                    {/* Central 6-Axis CEO Power Radar Chart with Interactive Touch Feedback */}
                                     <div className="relative py-2 flex flex-col items-center justify-center">
-                                        <div className="w-full max-w-[280px] aspect-square relative flex items-center justify-center">
-                                            {/* Radar SVG Grid & Polygon */}
-                                            <svg className="w-full h-full" viewBox="0 0 240 240">
-                                                {/* Outer Guides */}
-                                                <polygon points="120,30 198,75 198,165 120,210 42,165 42,75" fill="none" stroke="#2b2839" strokeWidth="1" />
-                                                <polygon points="120,55 176,87 176,153 120,185 64,153 64,87" fill="none" stroke="#2b2839" strokeWidth="0.8" strokeDasharray="3,3" />
-                                                <polygon points="120,80 154,100 154,140 120,160 86,140 86,100" fill="none" stroke="#2b2839" strokeWidth="0.5" />
-                                                
-                                                {/* Axis Lines */}
-                                                <line x1="120" y1="120" x2="120" y2="30" stroke="#3730a3" strokeWidth="0.8" />
-                                                <line x1="120" y1="120" x2="198" y2="75" stroke="#3730a3" strokeWidth="0.8" />
-                                                <line x1="120" y1="120" x2="198" y2="165" stroke="#3730a3" strokeWidth="0.8" />
-                                                <line x1="120" y1="120" x2="120" y2="210" stroke="#3730a3" strokeWidth="0.8" />
-                                                <line x1="120" y1="120" x2="42" y2="165" stroke="#3730a3" strokeWidth="0.8" />
-                                                <line x1="120" y1="120" x2="42" y2="75" stroke="#3730a3" strokeWidth="0.8" />
+                                        <div className="w-full max-w-[290px] aspect-square relative flex items-center justify-center">
+                                             {/* Radar SVG Grid & Polygon */}
+                                             <svg className="w-full h-full filter drop-shadow-[0_0_15px_rgba(99,102,241,0.25)]" viewBox="0 0 240 240">
+                                                 {/* Outer Guides */}
+                                                 <polygon points="120,30 198,75 198,165 120,210 42,165 42,75" fill="none" stroke="#2b2839" strokeWidth="1" />
+                                                 <polygon points="120,55 176,87 176,153 120,185 64,153 64,87" fill="none" stroke="#2b2839" strokeWidth="0.8" strokeDasharray="3,3" />
+                                                 <polygon points="120,80 154,100 154,140 120,160 86,140 86,100" fill="none" stroke="#2b2839" strokeWidth="0.5" />
+                                                 
+                                                 {/* Axis Lines */}
+                                                 <line x1="120" y1="120" x2="120" y2="30" stroke="#4338ca" strokeWidth="0.8" />
+                                                 <line x1="120" y1="120" x2="198" y2="75" stroke="#4338ca" strokeWidth="0.8" />
+                                                 <line x1="120" y1="120" x2="198" y2="165" stroke="#4338ca" strokeWidth="0.8" />
+                                                 <line x1="120" y1="120" x2="120" y2="210" stroke="#4338ca" strokeWidth="0.8" />
+                                                 <line x1="120" y1="120" x2="42" y2="165" stroke="#4338ca" strokeWidth="0.8" />
+                                                 <line x1="120" y1="120" x2="42" y2="75" stroke="#4338ca" strokeWidth="0.8" />
 
-                                                {/* Filled Power Area (Calculated Polygon for 94, 92, 96, 91, 89, 88) */}
-                                                <polygon
-                                                    points="120,38 191,80 193,161 120,199 49,158 48,82"
-                                                    fill="rgba(99, 102, 241, 0.28)"
-                                                    stroke="#818cf8"
-                                                    strokeWidth="2.2"
-                                                />
+                                                 {/* Filled Power Area (Calculated Polygon for 94, 92, 96, 91, 89, 88) */}
+                                                 <polygon
+                                                     points="120,38 191,80 193,161 120,199 49,158 48,82"
+                                                     fill="url(#radarGradient)"
+                                                     stroke="#a855f7"
+                                                     strokeWidth="2.5"
+                                                 />
 
-                                                {/* Data Points */}
-                                                <circle cx="120" cy="38" r="3.5" fill="#a855f7" stroke="#fff" strokeWidth="1" />
-                                                <circle cx="191" cy="80" r="3.5" fill="#6366f1" stroke="#fff" strokeWidth="1" />
-                                                <circle cx="193" cy="161" r="3.5" fill="#3b82f6" stroke="#fff" strokeWidth="1" />
-                                                <circle cx="120" cy="199" r="3.5" fill="#06b6d4" stroke="#fff" strokeWidth="1" />
-                                                <circle cx="49" cy="158" r="3.5" fill="#10b981" stroke="#fff" strokeWidth="1" />
-                                                <circle cx="48" cy="82" r="3.5" fill="#f59e0b" stroke="#fff" strokeWidth="1" />
-                                            </svg>
+                                                 <defs>
+                                                     <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                         <stop offset="0%" stopColor="#a855f7" stopOpacity="0.45" />
+                                                         <stop offset="50%" stopColor="#6366f1" stopOpacity="0.3" />
+                                                         <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.35" />
+                                                     </linearGradient>
+                                                 </defs>
 
-                                            {/* Axis Labels Placed Around the Radar */}
-                                            <div className="absolute top-0 text-center">
-                                                <span className="text-[10px] font-black text-purple-300 block">💡 혁신 기획</span>
-                                                <span className="text-[9px] font-mono text-purple-400 font-bold">94점</span>
-                                            </div>
-                                            <div className="absolute top-[26%] right-0 text-right">
-                                                <span className="text-[10px] font-black text-indigo-300 block">💰 자본/수익</span>
-                                                <span className="text-[9px] font-mono text-indigo-400 font-bold">92점</span>
-                                            </div>
-                                            <div className="absolute bottom-[26%] right-0 text-right">
-                                                <span className="text-[10px] font-black text-blue-300 block">⚡ 빠른 실행</span>
-                                                <span className="text-[9px] font-mono text-blue-400 font-bold">96점</span>
-                                            </div>
-                                            <div className="absolute bottom-0 text-center">
-                                                <span className="text-[10px] font-black text-cyan-300 block">📈 시장 확장</span>
-                                                <span className="text-[9px] font-mono text-cyan-400 font-bold">91점</span>
-                                            </div>
-                                            <div className="absolute bottom-[26%] left-0 text-left">
-                                                <span className="text-[10px] font-black text-emerald-300 block">👥 팀 리더십</span>
-                                                <span className="text-[9px] font-mono text-emerald-400 font-bold">89점</span>
-                                            </div>
-                                            <div className="absolute top-[26%] left-0 text-left">
-                                                <span className="text-[10px] font-black text-amber-300 block">🛡️ 멘탈 회복</span>
-                                                <span className="text-[9px] font-mono text-amber-400 font-bold">88점</span>
-                                            </div>
+                                                 {/* Data Points */}
+                                                 <circle cx="120" cy="38" r="4.5" fill="#a855f7" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
+                                                 <circle cx="191" cy="80" r="4.5" fill="#6366f1" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
+                                                 <circle cx="193" cy="161" r="4.5" fill="#3b82f6" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
+                                                 <circle cx="120" cy="199" r="4.5" fill="#06b6d4" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
+                                                 <circle cx="49" cy="158" r="4.5" fill="#10b981" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
+                                                 <circle cx="48" cy="82" r="4.5" fill="#f59e0b" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
+                                             </svg>
 
-                                            {/* Center Badge */}
-                                            <div className="absolute size-14 rounded-full bg-[#181526]/90 border border-indigo-500/50 flex flex-col items-center justify-center shadow-lg backdrop-blur-sm pointer-events-none">
-                                                <span className="text-[8px] font-bold text-indigo-300 uppercase">CEO 파워</span>
-                                                <span className="text-xs font-black text-white font-mono">92.5</span>
-                                            </div>
+                                             {/* Interactive Touch Axis Buttons */}
+                                             <button 
+                                                 onClick={() => setSelectedRadarAxis({
+                                                     id: 'innovation',
+                                                     title: '💡 혁신 기획 (Innovation Strategy)',
+                                                     score: 94,
+                                                     icon: 'lightbulb',
+                                                     color: 'text-purple-300',
+                                                     badgeColor: 'bg-purple-500/20 text-purple-200 border-purple-400/40',
+                                                     bioWellness: '전두엽 고도화 & 직관적 아이데이션 (Peak Ideation State)',
+                                                     darkCode: '과도한 생각의 늪(Overthinking Trap)으로 인한 결정 지연 및 완벽주의 피로',
+                                                     neuralCode: '80% 미학 실행 원칙 도입, 핵심 가설을 24시간 내 MVP로 시각화하여 뇌 피로도 경감',
+                                                     metaCode: '우주 본연의 흐름과 동기화되어 힘들이지 않고 본질적 해답을 건져 올리는 영점 직관',
+                                                     action: '오늘 떠오른 가장 흥미로운 아이디어 1가지를 10분 내에 종이에 마인드맵으로 시각화하기'
+                                                 })}
+                                                 className="absolute top-[-4px] text-center p-1.5 rounded-xl hover:bg-purple-500/20 transition-all cursor-pointer active:scale-95 group"
+                                             >
+                                                 <span className="text-[10px] font-black text-purple-300 group-hover:text-white block transition-colors">💡 혁신 기획</span>
+                                                 <span className="text-[9px] font-mono text-purple-400 font-bold bg-purple-950/60 px-1.5 py-0.2 rounded border border-purple-500/30">94점 🔍</span>
+                                             </button>
+
+                                             <button 
+                                                 onClick={() => setSelectedRadarAxis({
+                                                     id: 'capital',
+                                                     title: '💰 자본/수익 (Capital Flow & ROI)',
+                                                     score: 92,
+                                                     icon: 'payments',
+                                                     color: 'text-indigo-300',
+                                                     badgeColor: 'bg-indigo-500/20 text-indigo-200 border-indigo-400/40',
+                                                     bioWellness: '심리적 자본 안정성 (Psychological Financial Immunity)',
+                                                     darkCode: '자금 고갈에 대한 무의식적 결핍 공포로 인한 단기적 조급증 및 무리한 베팅',
+                                                     neuralCode: '현금 흐름(Cashflow) 가시성 확보, 단위 경제성(Unit Economics) 재배선으로 심리적 여유 창출',
+                                                     metaCode: '풍요의 에너지를 순환시키는 자본 파이프라인의 주인으로서 절대적 안정감 회복',
+                                                     action: '고정비 다이어트 항목 2가지를 점검하고 수익 마진율을 10% 개선할 구조 정리하기'
+                                                 })}
+                                                 className="absolute top-[24%] right-[-10px] text-right p-1.5 rounded-xl hover:bg-indigo-500/20 transition-all cursor-pointer active:scale-95 group"
+                                             >
+                                                 <span className="text-[10px] font-black text-indigo-300 group-hover:text-white block transition-colors">💰 자본/수익</span>
+                                                 <span className="text-[9px] font-mono text-indigo-400 font-bold bg-indigo-950/60 px-1.5 py-0.2 rounded border border-indigo-500/30">92점 🔍</span>
+                                             </button>
+
+                                             <button 
+                                                 onClick={() => setSelectedRadarAxis({
+                                                     id: 'execution',
+                                                     title: '⚡ 빠른 실행 (Agile Peak Momentum)',
+                                                     score: 96,
+                                                     icon: 'bolt',
+                                                     color: 'text-blue-300',
+                                                     badgeColor: 'bg-blue-500/20 text-blue-200 border-blue-400/40',
+                                                     bioWellness: '도파민 리듬 최적화 & 즉각 몰입 (Frictionless Flow)',
+                                                     darkCode: '에너지 분산 및 조급증으로 인한 만성 피로와 번아웃 직전 과열 상태',
+                                                     neuralCode: '25분 집중 + 5분 이완 뽀모도로 바이오 리듬 적용, 단일 핵심 태스크 완수율 100% 달성',
+                                                     metaCode: '파도를 타듯 힘들이지 않고 자연스럽게 완결을 빚어내는 무위(無爲)의 기적적 실행',
+                                                     action: '가장 미루고 싶었던 핵심 과제 1개를 25분 타이머 맞추고 방해 요소 없이 끝내기'
+                                                 })}
+                                                 className="absolute bottom-[24%] right-[-10px] text-right p-1.5 rounded-xl hover:bg-blue-500/20 transition-all cursor-pointer active:scale-95 group"
+                                             >
+                                                 <span className="text-[10px] font-black text-blue-300 group-hover:text-white block transition-colors">⚡ 빠른 실행</span>
+                                                 <span className="text-[9px] font-mono text-blue-400 font-bold bg-blue-950/60 px-1.5 py-0.2 rounded border border-blue-500/30">96점 🔍</span>
+                                             </button>
+
+                                             <button 
+                                                 onClick={() => setSelectedRadarAxis({
+                                                     id: 'market',
+                                                     title: '📈 시장 확장 (Market Scaling & Viral)',
+                                                     score: 91,
+                                                     icon: 'trending_up',
+                                                     color: 'text-cyan-300',
+                                                     badgeColor: 'bg-cyan-500/20 text-cyan-200 border-cyan-400/40',
+                                                     bioWellness: '거절 민감성 극복 & 심리적 면역 (Psychological Resilience)',
+                                                     darkCode: '타인의 반응과 비판에 대한 과민 반응으로 인한 방어적 소통 패턴',
+                                                     neuralCode: '고객 피드백을 감정이 아닌 객관적 데이터로 수용하는 관조적 필터 장착',
+                                                     metaCode: '세상의 고통과 필요를 돕는 순수 공헌의 파동으로 저절로 끌어당기는 시장 흡인력',
+                                                     action: '잠재 고객 2명에게 솔직한 피드백 질문을 보내고 경청하기'
+                                                 })}
+                                                 className="absolute bottom-[-4px] text-center p-1.5 rounded-xl hover:bg-cyan-500/20 transition-all cursor-pointer active:scale-95 group"
+                                             >
+                                                 <span className="text-[10px] font-black text-cyan-300 group-hover:text-white block transition-colors">📈 시장 확장</span>
+                                                 <span className="text-[9px] font-mono text-cyan-400 font-bold bg-cyan-950/60 px-1.5 py-0.2 rounded border border-cyan-500/30">91점 🔍</span>
+                                             </button>
+
+                                             <button 
+                                                 onClick={() => setSelectedRadarAxis({
+                                                     id: 'leadership',
+                                                     title: '👥 팀 리더십 (Co-Creation & Resonance)',
+                                                     score: 89,
+                                                     icon: 'groups',
+                                                     color: 'text-emerald-300',
+                                                     badgeColor: 'bg-emerald-500/20 text-emerald-200 border-emerald-400/40',
+                                                     bioWellness: '거울 뉴런 공명 & 심리적 안전감 (Psychological Safety)',
+                                                     darkCode: '마이크로매니징 및 불신으로 인한 나홀로 고립과 책임 과중감',
+                                                     neuralCode: '권한 위임(Delegation)과 투명한 질문 중심 소통으로 팀원의 자발적 몰입 유도',
+                                                     metaCode: '존재 자체로 주변 사람들의 영혼의 잠재력을 일깨우는 등대형 메타 리더십',
+                                                     action: '오늘 함께하는 파트너나 팀원에게 진심 어린 인정과 칭찬 한마디 전하기'
+                                                 })}
+                                                 className="absolute bottom-[24%] left-[-10px] text-left p-1.5 rounded-xl hover:bg-emerald-500/20 transition-all cursor-pointer active:scale-95 group"
+                                             >
+                                                 <span className="text-[10px] font-black text-emerald-300 group-hover:text-white block transition-colors">👥 팀 리더십</span>
+                                                 <span className="text-[9px] font-mono text-emerald-400 font-bold bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-500/30">89점 🔍</span>
+                                             </button>
+
+                                             <button 
+                                                 onClick={() => setSelectedRadarAxis({
+                                                     id: 'mental',
+                                                     title: '🛡️ 멘탈 회복 (Vagus Nerve & Bio-Reset)',
+                                                     score: 88,
+                                                     icon: 'shield_moon',
+                                                     color: 'text-amber-300',
+                                                     badgeColor: 'bg-amber-500/20 text-amber-200 border-amber-400/40',
+                                                     bioWellness: '부교감신경 이완 & 뇌신경 힐링 (Autonomous Nervous Reset)',
+                                                     darkCode: '만성적 투쟁-도피(Fight-or-Flight) 모드로 인한 코르티솔 호르몬 과다와 수면 질 저하',
+                                                     neuralCode: '4-7-8 호흡 프로토콜 및 마인드 제로포인트 명상으로 5분 내 뇌파(Alpha Wave) 안정화',
+                                                     metaCode: '거친 파도 속에서도 깊은 바다의 고요함을 유지하는 제로포인트 절대 평정',
+                                                     action: '지금 3분간 눈을 감고 깊은 복식호흡 5회로 뇌신경 긴장 털어내기'
+                                                 })}
+                                                 className="absolute top-[24%] left-[-10px] text-left p-1.5 rounded-xl hover:bg-amber-500/20 transition-all cursor-pointer active:scale-95 group"
+                                             >
+                                                 <span className="text-[10px] font-black text-amber-300 group-hover:text-white block transition-colors">🛡️ 멘탈 회복</span>
+                                                 <span className="text-[9px] font-mono text-amber-400 font-bold bg-amber-950/60 px-1.5 py-0.2 rounded border border-amber-500/30">88점 🔍</span>
+                                             </button>
+
+                                             {/* Center Badge */}
+                                             <div className="absolute size-14 rounded-full bg-[#181526]/95 border-2 border-indigo-400/60 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] backdrop-blur-sm pointer-events-none">
+                                                 <span className="text-[7.5px] font-black text-indigo-300 uppercase tracking-tighter">CEO 파워</span>
+                                                 <span className="text-xs font-black text-white font-mono">92.5</span>
+                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Real-time Matching Result Box */}
-                                    <div className="mt-3 p-3.5 rounded-xl bg-white/5 border border-white/5 space-y-2 text-left">
+                                    {/* 🌿 세계 최고 웰니스 & 비즈니스 코칭 싱크 박스 */}
+                                    <div className="mt-2.5 p-3.5 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-[#161329] to-slate-950 border border-indigo-500/20 space-y-2 text-left">
                                         <div className="flex items-center justify-between text-xs">
-                                            <span className="text-slate-300 font-bold flex items-center gap-1">
-                                                <span>🎯 추천 비즈니스 적합도</span>
-                                            </span>
-                                            <span className="text-emerald-400 font-mono font-black">94.8% (최적 적합)</span>
+                                             <span className="text-slate-200 font-bold flex items-center gap-1.5">
+                                                 <span className="material-symbols-outlined text-amber-400 text-sm">psychology</span>
+                                                 <span>추천 비즈니스 & 웰니스 싱크</span>
+                                             </span>
+                                             <span className="text-emerald-400 font-mono font-black text-xs">94.8% (최적 적합)</span>
                                         </div>
                                         <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                            <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full rounded-full w-[94.8%]"></div>
+                                             <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full rounded-full w-[94.8%]"></div>
                                         </div>
-                                        <div className="pt-1 text-[11px] space-y-1 text-slate-300">
-                                            <div className="flex items-center gap-1.5">
-                                                <span className="text-amber-400 font-bold">1순위:</span>
-                                                <strong className="text-white">B2B 엔터프라이즈 SaaS / 솔루션</strong>
-                                            </div>
-                                            <div className="flex items-center gap-1.5 text-slate-400">
-                                                <span className="text-indigo-400 font-bold">2순위:</span>
-                                                <span>전문가 지식 플랫폼 & 데이터 서비스</span>
-                                            </div>
+                                        <div className="pt-0.5 text-[11px] space-y-1 text-slate-300">
+                                             <div className="flex items-center justify-between">
+                                                 <span className="text-amber-300 font-bold">1순위 추천:</span>
+                                                 <strong className="text-white font-extrabold truncate max-w-[200px]">B2B 엔터프라이즈 SaaS / 솔루션</strong>
+                                             </div>
+                                             <div className="flex items-center justify-between text-slate-400 text-[10px]">
+                                                 <span className="text-indigo-300 font-bold">⚡ 바이오 피크 타임:</span>
+                                                 <span className="text-cyan-300 font-mono font-bold">오전 09:00 ~ 11:30 (최대 몰입)</span>
+                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Security & Engine Footer */}
-                                    <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-500 font-mono">
-                                        <span>ISO-27001 ENCRYPTED</span>
-                                        <span>108 MATRIX AI ENGINE</span>
+                                    <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-[9.5px] text-slate-500 font-mono">
+                                         <span className="flex items-center gap-1">
+                                             <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                                             <span>WHOOP & OURA 웰니스 코칭 프로토콜 동기화</span>
+                                         </span>
+                                         <span>108 MATRIX AI ENGINE</span>
                                     </div>
                                 </div>
                             </div>
                         </motion.div>
                     </div>
                 </main>
+
+                {/* [NEW] 🌟 세계 최고급 6대 역량 웰니스 & 뇌신경 정밀 코칭 팝업 모달 */}
+                {selectedRadarAxis && (
+                    <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-lg animate-fade-in" onClick={() => setSelectedRadarAxis(null)}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative w-full max-w-lg bg-gradient-to-b from-[#18152c] to-[#0c0a18] border border-indigo-500/50 rounded-3xl shadow-[0_0_60px_rgba(99,102,241,0.3)] overflow-hidden flex flex-col max-h-[90vh] text-left text-white"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between p-5 border-b border-white/10 bg-[#120f24]">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-11 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/40">
+                                        <span className="material-symbols-outlined text-2xl">{selectedRadarAxis.icon}</span>
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="text-base sm:text-lg font-black text-white">{selectedRadarAxis.title}</h3>
+                                        </div>
+                                        <p className="text-xs text-indigo-300 font-medium mt-0.5">{selectedRadarAxis.bioWellness}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedRadarAxis(null)}
+                                    className="size-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-400 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="p-5 sm:p-6 space-y-4 overflow-y-auto max-h-[calc(85vh-130px)] no-scrollbar text-xs sm:text-sm">
+                                {/* Score Badge Banner */}
+                                <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-amber-400 text-lg">monitoring</span>
+                                        <span className="font-bold text-gray-200">현재 발현 지수</span>
+                                    </div>
+                                    <span className="text-base font-black text-amber-300 font-mono">{selectedRadarAxis.score}점 / 100점 (상위 3% 최상급)</span>
+                                </div>
+
+                                {/* 3-Layer Bio-Mind Coaching Code */}
+                                <div className="space-y-3">
+                                    {/* 1. Dark Code */}
+                                    <div className="p-4 rounded-2xl bg-red-950/20 border border-red-500/30 space-y-1.5">
+                                        <div className="flex items-center gap-2 text-red-300 font-black text-xs">
+                                            <span className="material-symbols-outlined text-sm">warning</span>
+                                            <span>🔴 다크코드 (과부하 & 에고 방어 기제)</span>
+                                        </div>
+                                        <p className="text-gray-300 leading-relaxed text-xs pl-5">{selectedRadarAxis.darkCode}</p>
+                                    </div>
+
+                                    {/* 2. Neural Code */}
+                                    <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-1.5">
+                                        <div className="flex items-center gap-2 text-indigo-300 font-black text-xs">
+                                            <span className="material-symbols-outlined text-sm">psychology_alt</span>
+                                            <span>🔵 뉴럴코드 (뇌신경 재배선 & 웰니스 처방)</span>
+                                        </div>
+                                        <p className="text-gray-300 leading-relaxed text-xs pl-5">{selectedRadarAxis.neuralCode}</p>
+                                    </div>
+
+                                    {/* 3. Meta Code */}
+                                    <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-400/40 space-y-1.5">
+                                        <div className="flex items-center gap-2 text-amber-300 font-black text-xs">
+                                            <span className="material-symbols-outlined text-sm">stars</span>
+                                            <span>✨ 메타코드 (순수 영점 몰입 & 파워 만개)</span>
+                                        </div>
+                                        <p className="text-gray-200 leading-relaxed text-xs pl-5 font-medium">{selectedRadarAxis.metaCode}</p>
+                                    </div>
+                                </div>
+
+                                {/* Today Action Prescription */}
+                                <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 to-teal-950/40 border border-emerald-500/40 space-y-1.5">
+                                    <div className="flex items-center gap-2 text-emerald-300 font-black text-xs">
+                                        <span className="material-symbols-outlined text-sm">check_circle</span>
+                                        <span>🎯 오늘 즉시 실천할 1분 웰니스 액션</span>
+                                    </div>
+                                    <p className="text-emerald-100 font-bold text-xs pl-5">{selectedRadarAxis.action}</p>
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="p-4 border-t border-white/10 bg-[#120f24] flex items-center justify-between">
+                                <button
+                                    onClick={() => {
+                                        const prompt = `제 6대 역량 중 [${selectedRadarAxis.title}]에 대한 1:1 맞춤 웰니스 비즈니스 코칭을 상세히 풀어서 설명해 주세요.`;
+                                        setSelectedRadarAxis(null);
+                                        handleConsultation(prompt);
+                                    }}
+                                    className="w-full py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500 hover:from-indigo-500 hover:to-amber-400 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                >
+                                    <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                                    <span>AI 코치와 1:1 심층 상담 이어가기 ➔</span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
 
                 {/* [NEW] 초보자용 3대 리포트 상세 해설 팝업 모달 */}
                 {selectedHighlight && (
