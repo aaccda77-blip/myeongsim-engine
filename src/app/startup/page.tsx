@@ -880,7 +880,199 @@ export default function StartupDashboard() {
         }
     ];
 
-    // [View Logic] 상세 보기 모드
+
+    // 🔒 [철통 보안 잠금장치] 무통장 입금(19,800원) 승인 또는 스마트스토어 도서 주문번호 인증 시에만 입장 가능!
+    if (!isUnlocked) {
+        return (
+            <div className="relative min-h-screen w-full bg-[#0d0a1a] flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden font-sans text-white">
+                {/* Background Ambient Glow */}
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-10 right-10 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    className="relative w-full max-w-lg bg-[#181526] border-2 border-amber-400/40 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(245,158,11,0.25)] overflow-hidden text-center space-y-5 my-auto"
+                >
+                    {/* Top Badge & Icon */}
+                    <div className="size-16 rounded-2xl bg-gradient-to-br from-amber-400/20 via-yellow-400/10 to-amber-500/20 border border-amber-400/40 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/20">
+                        <Lock className="w-8 h-8 text-amber-400" />
+                    </div>
+
+                    <div>
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-black tracking-wider uppercase mb-2">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-current" />
+                            <span>스타트업 코칭 19,800원 VIP 전용</span>
+                        </div>
+                        <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                            스타트업 6대 역량 심층 진단실
+                        </h2>
+                        <p className="text-xs sm:text-sm text-gray-300 mt-1 font-medium">
+                            본 프로그램은 <strong className="text-amber-300">무통장 입금(19,800원)</strong> 또는 <strong className="text-amber-300">청류스마트스토어 도서 구매자</strong> 전용 잠금 콘텐츠입니다.
+                        </p>
+                    </div>
+
+                    {/* 💡 초특급 앵커링 꿀팁 배너 */}
+                    <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-400/40 text-left space-y-2">
+                        <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
+                            <Sparkles className="w-4 h-4 text-amber-300 shrink-0 fill-current" />
+                            <span>👑 청류스마트스토어 구매자 단독 슈퍼 혜택</span>
+                        </div>
+                        <p className="text-[11px] text-gray-200 leading-relaxed">
+                            청류스마트스토어에서 9,900원에 도서를 구매하시면, 본 <strong className="text-amber-300 font-bold">19,800원 스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 1:1 맞춤 힐링송 + AI 챗봇 20회권(총 10만 원 상당)</strong>이 모두 무료로 자동 해금됩니다!
+                        </p>
+                        <a
+                            href="https://smartstore.naver.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/30 flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            <span>📖 청류스토어에서 9,900원에 구매하고 슈퍼패키지 받기</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                    </div>
+
+                    {/* Tab Switcher */}
+                    <div className="flex p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs">
+                        <button
+                            onClick={() => { setPassTab('bank'); setIsRequested(false); }}
+                            className={`flex-1 py-2.5 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                                passTab === 'bank'
+                                    ? 'bg-amber-400 text-slate-950 shadow-md font-black'
+                                    : 'text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            <Building2 className="w-3.5 h-3.5" />
+                            <span>1. 무통장 입금 (19,800원)</span>
+                        </button>
+                        <button
+                            onClick={() => setPassTab('code')}
+                            className={`flex-1 py-2.5 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                                passTab === 'code'
+                                    ? 'bg-amber-400 text-slate-950 shadow-md font-black'
+                                    : 'text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>2. 도서 주문/영수증 인증</span>
+                        </button>
+                    </div>
+
+                    {/* TAB 1: 무통장 입금 (19,800원) */}
+                    {passTab === 'bank' && (
+                        <>
+                            {!isRequested ? (
+                                <div className="space-y-3 text-left animate-fade-in">
+                                    <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-400/40 space-y-2">
+                                        <div className="flex items-center justify-between text-xs font-black text-amber-300">
+                                            <span>🏦 토스뱅크 무통장 입금 계좌</span>
+                                            <span className="text-amber-400 font-mono text-sm">19,800원</span>
+                                        </div>
+                                        <div className="bg-black/50 border border-amber-400/20 rounded-xl p-2.5 flex items-center justify-between">
+                                            <div>
+                                                <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (마인드플로우랩)</span>
+                                                <span className="text-sm font-black font-mono text-white tracking-wider">1002-6847-4899</span>
+                                            </div>
+                                            <button
+                                                onClick={handleCopyAccount}
+                                                className="px-3 py-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 text-xs font-bold flex items-center gap-1 border border-amber-400/30 transition-all cursor-pointer"
+                                            >
+                                                {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                                <span>{isCopied ? '복사됨' : '복사'}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-gray-300 flex items-center gap-1">
+                                            <span>입금자 성함 (실명 입력)</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={depositorName}
+                                            onChange={(e) => setDepositorName(e.target.value)}
+                                            placeholder="예: 홍길동"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-amber-400/30 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-amber-400"
+                                        />
+                                    </div>
+
+                                    <button
+                                        onClick={handleRequestApproval}
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                                    >
+                                        <span>⚡ 입금 완료 및 관리자 승인 요청</span>
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/40 text-center space-y-2 animate-fade-in">
+                                    <div className="size-10 rounded-full bg-amber-400/20 flex items-center justify-center mx-auto text-amber-400">
+                                        <ShieldCheck className="w-5 h-5" />
+                                    </div>
+                                    <h4 className="text-sm font-black text-white">승인 요청이 접수되었습니다!</h4>
+                                    <p className="text-xs text-gray-300 leading-relaxed">
+                                        입금 확인 후 관리자가 승인하면 <strong>스타트업 코칭</strong>이 자동으로 전면 해금됩니다.
+                                    </p>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* TAB 2: 도서 주문번호/영수증 인증 */}
+                    {passTab === 'code' && (
+                        <div className="space-y-3 text-left animate-fade-in">
+                            <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                                <p className="text-[11px] text-amber-300 font-bold">
+                                    👑 청류스마트스토어 주문번호(16자리) 입력 시:
+                                </p>
+                                <p className="text-[11px] text-gray-300 leading-relaxed">
+                                    <strong>스타트업 심층 리포트 + 다크코드 + 바이오케어 + 힐링송 + 20회 코칭</strong> 올인원 슈퍼패키지가 즉시 전면 해금됩니다!
+                                </p>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-gray-300">
+                                    주문번호 (16자리) 또는 영수증 승인번호
+                                </label>
+                                <input
+                                    type="text"
+                                    value={orderNumber}
+                                    onChange={(e) => { setOrderNumber(e.target.value); setOrderError(null); }}
+                                    placeholder="예: 2024090112345678"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-amber-400/30 text-white placeholder-gray-500 text-xs font-mono focus:outline-none focus:border-amber-400"
+                                />
+                                {orderError && (
+                                    <p className="text-[11px] text-red-400 font-medium pl-1">
+                                        {orderError}
+                                    </p>
+                                )}
+                            </div>
+
+                            <button
+                                onClick={handleVerifyOrderPass}
+                                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                            >
+                                <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
+                                <span>주문번호 인증하고 올인원 패키지 즉시 해금</span>
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Back Button */}
+                    <div className="pt-2">
+                        <button
+                            onClick={() => router.push('/report')}
+                            className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                        >
+                            ← 명심 리포트로 돌아가기
+                        </button>
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
+
+
+        // [View Logic] 상세 보기 모드
     if (selectedService) {
         return (
             <div className="flex h-screen overflow-hidden bg-[#0f0d1a]">
