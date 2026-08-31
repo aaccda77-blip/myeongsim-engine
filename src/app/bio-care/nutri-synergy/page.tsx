@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { NUTRIENT_SYNERGIES, DRUG_NUTRIENT_DEPLETIONS } from '@/data/BioCareData';
 
@@ -14,6 +14,55 @@ type TabType = 'synergy' | 'depletion';
 export default function NutriSynergyPage() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<TabType>('synergy');
+    const [isLocked, setIsLocked] = useState(true);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const isBioUnlocked = localStorage.getItem('myeongsim_bio_care_unlocked') === 'true';
+            const isPaidUser = localStorage.getItem('myeongsim_paid_user') === 'true';
+            const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true';
+            if (isBioUnlocked || isSmartVip || isPaidUser) {
+                setIsLocked(false);
+            }
+        }
+    }, []);
+
+    if (isLocked) {
+        return (
+            <div className="relative flex h-full min-h-screen w-full flex-col bg-[#1f2937] max-w-md mx-auto shadow-xl overflow-hidden font-sans items-center justify-center p-6">
+                <div className="max-w-sm w-full bg-[#181526] border border-amber-400/30 rounded-3xl p-8 text-center space-y-5 shadow-2xl">
+                    <div className="w-16 h-16 bg-gradient-to-br from-amber-400/10 to-amber-500/10 rounded-2xl flex items-center justify-center mx-auto border border-amber-400/20">
+                        <span className="material-symbols-outlined text-amber-400 text-4xl">lock</span>
+                    </div>
+                    <h2 className="text-xl font-black text-white">바이오케어 VIP 전용 콘텐츠</h2>
+                    <p className="text-sm text-gray-300 leading-relaxed">
+                        이 콘텐츠는 <strong className="text-amber-300">청류스마트스토어 구매자 단독 VIP 혜택</strong>으로 제공됩니다.
+                    </p>
+                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-left">
+                        <p className="text-[11px] text-amber-200 leading-relaxed">
+                            👑 <strong>청류스마트스토어</strong>에서 도서를 구매하시면 <span className="text-white font-bold">스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 힐링송 + 20회 코칭</span> 올인원 슈퍼패키지가 전면 무료 해금됩니다!
+                        </p>
+                    </div>
+                    <div className="flex flex-col gap-2.5">
+                        <a
+                            href="https://smartstore.naver.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+                        >
+                            📖 청류스마트스토어에서 구매하기
+                        </a>
+                        <button
+                            onClick={() => router.push('/bio-care')}
+                            className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 text-xs font-bold transition-all"
+                        >
+                            ← 뒤로 가기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative flex h-full min-h-screen w-full flex-col bg-[#1f2937] max-w-md mx-auto shadow-xl overflow-hidden font-sans">

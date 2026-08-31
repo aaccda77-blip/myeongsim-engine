@@ -20,6 +20,9 @@ export default function DarkCodeDebuggerPage() {
   const router = useRouter();
   const { reportData } = useReportStore();
 
+  // 🔒 잠금 상태 (스마트스토어 VIP 또는 유료 결제 시만 해금)
+  const [isLocked, setIsLocked] = useState(true);
+
   const userName = reportData?.userName || '명심가';
   const autoBirthDate = useMemo(() => {
     const data = reportData as any;
@@ -58,6 +61,18 @@ export default function DarkCodeDebuggerPage() {
   // Audio/Visual effects
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
+  // 🔒 잠금 해제 체크
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isDarkUnlocked = localStorage.getItem('myeongsim_dark_code_unlocked') === 'true';
+      const isPaidUser = localStorage.getItem('myeongsim_paid_user') === 'true';
+      const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true';
+      if (isDarkUnlocked || isSmartVip || isPaidUser) {
+        setIsLocked(false);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (autoBirthDate) {
       setBirthInput(autoBirthDate);
@@ -79,6 +94,48 @@ export default function DarkCodeDebuggerPage() {
       terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [scanLogs]);
+
+  // 🔒 잠금 화면 렌더링
+  if (isLocked) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#0f0d1a] p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md w-full bg-[#181526] border border-amber-400/30 rounded-3xl p-8 text-center space-y-5 shadow-2xl"
+        >
+          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-amber-400/10 border border-amber-400/20">
+            <ShieldAlert className="w-8 h-8 text-amber-400" />
+          </div>
+          <h2 className="text-xl font-black text-white">무의식 다크코드 디버거</h2>
+          <p className="text-sm text-gray-300 leading-relaxed">
+            이 콘텐츠는 <strong className="text-amber-300">청류스마트스토어 구매자 단독 VIP 혜택</strong>으로 제공됩니다.
+          </p>
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-left">
+            <p className="text-[11px] text-amber-200 leading-relaxed">
+              👑 <strong>청류스마트스토어</strong>에서 도서를 구매하시면 <span className="text-white font-bold">스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 힐링송 + 20회 코칭</span> 올인원 슈퍼패키지가 전면 무료 해금됩니다!
+            </p>
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <a
+              href="https://smartstore.naver.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+            >
+              📖 청류스마트스토어에서 구매하기
+            </a>
+            <button
+              onClick={() => router.back()}
+              className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 text-xs font-bold transition-all"
+            >
+              ← 뒤로 가기
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   const runScanningSimulation = (targetReport: DebuggerReport) => {
     setScanStep(0);
