@@ -309,16 +309,20 @@ export default function AdminUsersPage() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={fetchUsers}
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
                     >
                         <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> 새로고침
                     </button>
-                    <a
-                        href="/admin"
-                        className="px-4 py-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-xl text-xs font-bold hover:bg-amber-500/30 transition-all flex items-center gap-1"
+                    <button
+                        onClick={async () => {
+                            await fetch('/api/admin/auth', { method: 'POST', body: JSON.stringify({ action: 'logout' }) });
+                            setIsAuthenticated(false);
+                            setPassword('');
+                        }}
+                        className="px-3.5 py-2 bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                     >
-                        메인 관리자 <ChevronRight className="w-3.5 h-3.5" />
-                    </a>
+                        <span>🔒 로그아웃</span>
+                    </button>
                 </div>
             </div>
 
