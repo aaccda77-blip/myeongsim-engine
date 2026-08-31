@@ -27,11 +27,14 @@ export async function POST(request: NextRequest) {
         const now = new Date();
         let expiresAt: Date | null = null;
         let paymentAmount = 4900;
-        let tier: 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' | 'CHAT_PASS' = 'CHAT_PASS';
+        let chatTurnsLeft = 3;
+        let tier: 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' | 'CHAT_PASS' | 'STARTUP_VIP' = 'CHAT_PASS';
 
         // Flexible Tier Normalization
         const rawTierStr = String(rawTier).toUpperCase();
-        if (rawTierStr.includes('TRIAL') || rawTierStr.includes('30분')) {
+        if (rawTierStr.includes('STARTUP') || rawTierStr.includes('19800') || rawTierStr.includes('19,800') || rawTierStr.includes('스타트업')) {
+            tier = 'STARTUP_VIP';
+        } else if (rawTierStr.includes('TRIAL') || rawTierStr.includes('30분')) {
             tier = 'TRIAL_30M';
         } else if (rawTierStr.includes('PASS') || rawTierStr.includes('24시간')) {
             tier = 'PASS_24H';
@@ -42,25 +45,34 @@ export async function POST(request: NextRequest) {
         }
 
         switch (tier) {
+            case 'STARTUP_VIP':
+                expiresAt = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1년
+                paymentAmount = 19800;
+                chatTurnsLeft = 20;
+                break;
             case 'TRIAL_30M':
                 expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
                 paymentAmount = 4900;
+                chatTurnsLeft = 3;
                 break;
             case 'PASS_24H':
                 expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
                 paymentAmount = 4900;
+                chatTurnsLeft = 3;
                 break;
             case 'VIP_7D':
                 expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
                 paymentAmount = 19800;
+                chatTurnsLeft = 20;
                 break;
             case 'CHAT_PASS':
                 expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
                 paymentAmount = 4900;
+                chatTurnsLeft = 3;
                 break;
         }
 
-        console.log(`[Admin] Approving User: ${userId}, Tier: ${tier} (raw: ${rawTier})`);
+        console.log(`[Admin] Approving User: ${userId}, Tier: ${tier} (raw: ${rawTier}), ChatTurns: ${chatTurnsLeft}`);
 
         // Try updating Supabase users
         const { data, error } = await supabaseAdmin
@@ -71,7 +83,7 @@ export async function POST(request: NextRequest) {
                 is_active: true, // Force active
                 expires_at: expiresAt!.toISOString(),
                 payment_amount: paymentAmount,
-                chat_turns_left: 3,
+                chat_turns_left: chatTurnsLeft,
                 approved_at: now.toISOString(),
                 approved_by: 'admin_api'
             }, { onConflict: 'id' })
@@ -80,7 +92,15 @@ export async function POST(request: NextRequest) {
         // Mark as approved in pending memory store as well
         removePendingWireTransfer(userId);
 
-        return NextResponse.json({ success: true, tier, expiresAt: expiresAt!.toISOString() });
+        return NextResponse.json({
+            success: true,
+            tier,
+            chatTurnsLeft,
+            unlockedModules: tier === 'STARTUP_VIP'
+                ? ['startup_vip', 'dark_code_debugger', 'bio_care', 'zero_music', 'coaching_20']
+                : ['coaching_3'],
+            expiresAt: expiresAt!.toISOString()
+        });
 
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });

@@ -79,9 +79,11 @@ export default function AdminUsersPage() {
 
     const approveUser = async (userId: string, rawTier: string) => {
         try {
-            // Map display string to backend enum ('CHAT_3', 'TRIAL_30M', etc.)
-            let mappedTier: 'CHAT_3' | 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' = 'CHAT_3';
-            if (rawTier.includes('4900') || rawTier.includes('4,900') || rawTier.includes('890') || rawTier === 'CHAT_PASS' || rawTier === 'CHAT_3') {
+            // Map display string to backend enum
+            let mappedTier: 'CHAT_3' | 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' | 'STARTUP_VIP' = 'CHAT_3';
+            if (rawTier.includes('19800') || rawTier.includes('19,800') || rawTier.includes('STARTUP') || rawTier.includes('스타트업')) {
+                mappedTier = 'STARTUP_VIP';
+            } else if (rawTier.includes('4900') || rawTier.includes('4,900') || rawTier.includes('890') || rawTier === 'CHAT_PASS' || rawTier === 'CHAT_3') {
                 mappedTier = 'CHAT_3';
             } else if (rawTier.includes('무료') || rawTier.includes('TRIAL')) {
                 mappedTier = 'TRIAL_30M';
@@ -96,7 +98,11 @@ export default function AdminUsersPage() {
             });
             const data = await response.json();
             if (data.success) {
-                alert(`성공: 4,900원 무통장 입금 승인이 완료되었습니다! 챗봇 코칭 이용권이 활성화되었습니다. ✨`);
+                if (mappedTier === 'STARTUP_VIP') {
+                    alert(`✨ 스타트업 VIP 승인 완료! (19,800원)\n\n20회 AI 코칭 + 스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 힐링송이 모두 해금되었습니다.`);
+                } else {
+                    alert(`성공: 무통장 입금 승인이 완료되었습니다! 챗봇 코칭 이용권이 활성화되었습니다. ✨`);
+                }
                 fetchUsers();
             } else {
                 alert('승인 실패: ' + (data.error || '알 수 없는 오류'));
@@ -671,16 +677,17 @@ export default function AdminUsersPage() {
                                         <td className="p-4 text-center">
                                             <div className="flex items-center justify-center gap-2">
                                                 <select
-                                                    value={selectedTiers[u.id] || u.membership_tier || '4,900원 코칭 충전'}
+                                                    value={selectedTiers[u.id] || u.membership_tier || '19,800원 스타트업 VIP'}
                                                     onChange={(e) => setSelectedTiers({ ...selectedTiers, [u.id]: e.target.value })}
                                                     className="bg-slate-800 border border-white/15 rounded-lg px-2 py-1 text-xs text-white focus:outline-none"
                                                 >
-                                                    <option value="4,900원 코칭 충전">⚡ 4,900원 코칭 충전</option>
-                                                    <option value="도서 VIP 30회권">📖 도서 VIP 30회권</option>
+                                                    <option value="19,800원 스타트업 VIP">👑 19,800원 스타트업 VIP (리포트+다크코드+바이오케어+20회)</option>
+                                                    <option value="4,900원 코칭 충전">⚡ 4,900원 코칭 충전 (3회)</option>
+                                                    <option value="도서 VIP 20회권">📖 도서 VIP 20회권</option>
                                                     <option value="무료 체험 회원">🎁 무료 체험 회원</option>
                                                 </select>
                                                 <button
-                                                    onClick={() => approveUser(u.id, selectedTiers[u.id] || '4,900원 코칭 충전')}
+                                                    onClick={() => approveUser(u.id, selectedTiers[u.id] || '19,800원 스타트업 VIP')}
                                                     className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs transition-all shadow-sm cursor-pointer"
                                                 >
                                                     승인

@@ -22,11 +22,17 @@ export async function GET(req: NextRequest) {
         );
 
         if (pending && pending.is_active) {
+            const isStartup = pending.itemType?.includes('STARTUP') || pending.amount >= 19800;
             return NextResponse.json({
                 approved: true,
-                chatTurnsLeft: 3,
-                tier: 'CHAT_3',
-                message: '승인이 완료되었습니다! 3회 코칭이 즉시 활성화되었습니다.'
+                chatTurnsLeft: isStartup ? 20 : 3,
+                tier: isStartup ? 'STARTUP_VIP' : 'CHAT_3',
+                unlockedModules: isStartup
+                    ? ['startup_vip', 'dark_code_debugger', 'bio_care', 'zero_music', 'coaching_20']
+                    : ['coaching_3'],
+                message: isStartup
+                    ? '승인이 완료되었습니다! 스타트업 리포트 + 다크코드 + 바이오케어 + 20회 코칭이 활성화되었습니다.'
+                    : '승인이 완료되었습니다! 코칭이 즉시 활성화되었습니다.'
             });
         }
 
@@ -43,11 +49,17 @@ export async function GET(req: NextRequest) {
             if (!error && data && data.length > 0) {
                 const approvedUser = data.find(u => u.is_active === true || u.chat_turns_left > 0);
                 if (approvedUser) {
+                    const isStartup = approvedUser.membership_tier === 'STARTUP_VIP' || approvedUser.payment_amount >= 19800;
                     return NextResponse.json({
                         approved: true,
-                        chatTurnsLeft: approvedUser.chat_turns_left || 3,
-                        tier: approvedUser.membership_tier || 'CHAT_3',
-                        message: '승인이 완료되었습니다! 3회 코칭이 즉시 활성화되었습니다.'
+                        chatTurnsLeft: approvedUser.chat_turns_left || (isStartup ? 20 : 3),
+                        tier: approvedUser.membership_tier || (isStartup ? 'STARTUP_VIP' : 'CHAT_3'),
+                        unlockedModules: isStartup
+                            ? ['startup_vip', 'dark_code_debugger', 'bio_care', 'zero_music', 'coaching_20']
+                            : ['coaching_3'],
+                        message: isStartup
+                            ? '승인이 완료되었습니다! 스타트업 리포트 + 다크코드 + 바이오케어 + 20회 코칭이 활성화되었습니다.'
+                            : '승인이 완료되었습니다! 코칭이 즉시 활성화되었습니다.'
                     });
                 }
             }
