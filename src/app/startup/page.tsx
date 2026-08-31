@@ -1512,14 +1512,14 @@ export default function StartupDashboard() {
                                 </button>
                                 <button
                                     onClick={() => {
-                                        const q = selectedHighlight.recommendedQuestion || selectedService.prompt;
+                                        const target = selectedHighlight;
                                         setSelectedHighlight(null);
-                                        handleConsultation(q);
+                                        setActiveDeepReport(target);
                                     }}
-                                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#3211d4] via-indigo-600 to-[#5b36ff] hover:from-[#3211d4]/90 hover:to-[#5b36ff]/90 text-white font-extrabold text-xs shadow-lg shadow-[#3211d4]/30 transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                                    className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer group hover:scale-[1.02] active:scale-[0.98]"
                                 >
-                                    <span className="material-symbols-outlined text-sm group-hover:scale-110 transition-transform text-amber-300">bolt</span>
-                                    <span>이 질문으로 AI 전담 코칭 바로 시작하기 ➔</span>
+                                    <span className="material-symbols-outlined text-base group-hover:scale-110 transition-transform text-slate-950">analytics</span>
+                                    <span>📊 이 분석 핵심 심층 리포트 즉시 열람하기 ➔</span>
                                 </button>
                             </div>
                         </motion.div>
