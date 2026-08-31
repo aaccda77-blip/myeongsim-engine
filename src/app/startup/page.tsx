@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { useReportStore } from '@/store/useReportStore';
+import { calculateSaju } from '@/utils/SajuCalculator';
 import ExecutiveDashboardModal from '@/components/startup/ExecutiveDashboardModal';
 import { ShieldCheck, Copy, Check, Building2, KeyRound, Sparkles, BookOpen, ExternalLink, Lock } from 'lucide-react';
 
@@ -44,10 +45,45 @@ export default function StartupDashboard() {
             } catch (e) {}
         }
 
-        const rawDayMaster = reportData?.saju?.dayMaster || metaData?.dayMaster || '辛';
-        const dayMaster = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'].find(c => rawDayMaster.includes(c)) || '辛';
-        const userName = reportData?.userName || (reportData as any)?.name || metaData?.userName || '명심가';
-        const birthDate = reportData?.birthDate || (reportData as any)?.birth_date || metaData?.birthDate || '1990-01-01';
+        const userName = reportData?.userName || (reportData as any)?.name || metaData?.userName || metaData?.name || (typeof window !== 'undefined' ? localStorage.getItem('user_name') : null) || '명심가';
+        const birthDate = reportData?.birthDate || (reportData as any)?.birth_date || metaData?.birthDate || metaData?.birth_date || (typeof window !== 'undefined' ? localStorage.getItem('user_birth_date') : null) || '1990-01-01';
+        const birthTime = reportData?.birthTime || (reportData as any)?.birth_time || metaData?.birthTime || metaData?.birth_time || '12:00';
+        const calendarType = (reportData as any)?.calendarType || (reportData as any)?.calendar_type || metaData?.calendarType || 'solar';
+        const gender = reportData?.gender || metaData?.gender || 'female';
+
+        // 🌟 [실시간 만세력 엔진 가동] 생년월일로부터 직접 정확한 사주 일간(DayMaster) 100% 정밀 도출
+        let computedDayMaster = '辛';
+        try {
+            if (birthDate && birthDate.includes('-')) {
+                const sajuResult = calculateSaju(birthDate, birthTime, calendarType, gender);
+                if (sajuResult?.day?.gan?.hanja) {
+                    computedDayMaster = sajuResult.day.gan.hanja;
+                }
+            }
+        } catch (e) {
+            console.warn('Realtime saju calculation fallback:', e);
+        }
+
+        // 백업 추출 (한글 및 한자 모두 대응)
+        const HANJA_STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+        const KOR_STEMS_MAP: Record<string, string> = { '갑':'甲', '을':'乙', '병':'丙', '정':'丁', '무':'戊', '기':'己', '경':'庚', '신':'辛', '임':'壬', '계':'癸' };
+        
+        let finalDayMaster = computedDayMaster;
+        if (!finalDayMaster || finalDayMaster === '辛') {
+            const raw = reportData?.saju?.dayMaster || metaData?.dayMaster || metaData?.dayMasterChar || '';
+            const foundHanja = HANJA_STEMS.find(c => raw.includes(c));
+            if (foundHanja) {
+                finalDayMaster = foundHanja;
+            } else {
+                for (const [kor, han] of Object.entries(KOR_STEMS_MAP)) {
+                    if (raw.includes(kor)) {
+                        finalDayMaster = han;
+                        break;
+                    }
+                }
+            }
+        }
+        const dayMaster = finalDayMaster || '辛';
 
         // 10천간별 6대 역량 프로필 데이터셋 (세계 최고 웰니스 & 뇌신경 코칭 기준)
         const MATRIX_PROFILES: Record<string, any> = {
