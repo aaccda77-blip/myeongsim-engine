@@ -1088,16 +1088,25 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     <textarea
                         value={input}
                         onChange={handleInputChange}
+                        onClick={() => {
+                            if (userMessageCount >= 3 && !isPaidUser) {
+                                setShowMicroPassModal(true);
+                            }
+                        }}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
+                                if (userMessageCount >= 3 && !isPaidUser) {
+                                    setShowMicroPassModal(true);
+                                    return;
+                                }
                                 if (input.trim() && !isLoading) {
                                     e.currentTarget.form?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
                                 }
                             }
                         }}
-                        placeholder="마음속 고민이나 질문을 편하게 남겨주세요... (Enter 전송)"
-                        className="w-full bg-black/70 border border-white/15 focus:border-amber-400/60 rounded-2xl py-3.5 pl-4 pr-13 text-white placeholder:text-gray-500 outline-none transition-all resize-none overflow-y-auto no-scrollbar text-xs sm:text-sm font-medium"
+                        placeholder={userMessageCount >= 3 && !isPaidUser ? "🔒 첫 3회 무료 체험 완료! 도서 인증 또는 890원 충전 후 계속 대화 가능" : "마음속 고민이나 질문을 편하게 남겨주세요... (Enter 전송)"}
+                        className={`w-full bg-black/70 border rounded-2xl py-3.5 pl-4 pr-13 text-white outline-none transition-all resize-none overflow-y-auto no-scrollbar text-xs sm:text-sm font-medium ${userMessageCount >= 3 && !isPaidUser ? 'border-amber-500/60 bg-amber-950/20 text-amber-200 placeholder:text-amber-400/80 cursor-pointer' : 'border-white/15 focus:border-amber-400/60 placeholder:text-gray-500'}`}
                         rows={1}
                         style={{ minHeight: '50px', maxHeight: '130px' }}
                     />

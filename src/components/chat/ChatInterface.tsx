@@ -995,6 +995,13 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
         const msgToSend = overrideInput || input;
         if (!msgToSend.trim() || isLoading) return;
 
+        // 🔒 [Strict Chat Lock Guard]
+        if (isChatLocked) {
+            if (msgToSend.trim()) setPendingChoiceText(msgToSend);
+            setShowMicroPassModal(true);
+            return;
+        }
+
         // [Feature] Radio Mode Intervention (Simple Type)
         // If voice is playing, treat text input as a "listener comment" intervention
         let effectiveHiddenPayload = hiddenPayload;
