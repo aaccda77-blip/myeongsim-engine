@@ -103,7 +103,7 @@ export default function ZeroCapsulePage() {
   // AI 캡슐 생성 요청 핸들러
   const handleGenerateCapsule = async () => {
     if (isTodayGenerated) {
-      alert("이미 오늘의 디지털 알약이 생성되었습니다. 다음날 새롭게 생성 가능합니다.");
+      alert("이미 오늘의 디지털 알사탕이 생성되었습니다. 다음날 새롭게 생성 가능합니다.");
       return;
     }
 
@@ -147,15 +147,15 @@ export default function ZeroCapsulePage() {
           setHistory(await histRes.json());
         }
         
-        alert("오늘의 새로운 1:1 맞춤 사주 디지털 알약이 컴파일되어 포장되었습니다! 💊");
-        setPhase('intro'); // 생성된 알약을 복용할 수 있도록 인트로 단계로 세팅
+        alert("오늘의 새로운 1:1 맞춤 사주 디지털 알사탕이 컴파일되어 포장되었습니다! 🍬");
+        setPhase('intro'); // 생성된 알사탕을 복용할 수 있도록 인트로 단계로 세팅
         setShowHistory(false); // 모달 닫기
       } else {
-        throw new Error("알약 생성 실패");
+        throw new Error("알사탕 생성 실패");
       }
     } catch (err) {
-      console.error("알약 생성 에러:", err);
-      alert("알약을 생성하는 도중 에러가 발생했습니다. 다시 시도해 주세요.");
+      console.error("알사탕 생성 에러:", err);
+      alert("알사탕을 생성하는 도중 에러가 발생했습니다. 다시 시도해 주세요.");
     } finally {
       setIsGenerating(false);
     }
@@ -415,12 +415,12 @@ export default function ZeroCapsulePage() {
                     {isGenerating ? (
                       <>
                         <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-300" />
-                        <span>오늘의 알약 컴파일 중...</span>
+                        <span>오늘의 알사탕 컴파일 중...</span>
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                        <span>오늘의 디지털 알약 AI 생성하기</span>
+                        <span>오늘의 디지털 알사탕 AI 생성하기</span>
                       </>
                     )}
                   </button>

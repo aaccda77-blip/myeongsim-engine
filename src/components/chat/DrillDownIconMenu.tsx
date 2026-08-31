@@ -1565,11 +1565,11 @@ export default function DrillDownIconMenu({
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'bio') && (
                     <button style={styles.iconButton} onClick={() => router.push('/zero-capsule')}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(79, 70, 229, 0.2))', border: '1px solid rgba(59, 130, 246, 0.4)', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.2)', position: 'relative', zIndex: 10 }}>
-                            <span style={{ fontSize: '20px' }}>💊</span>
+                            <span style={{ fontSize: '20px' }}>🍬</span>
                         </div>
                         <div>
                             <div style={{ ...styles.iconLabel, color: '#60a5fa' }}>제로 캡슐</div>
-                            <div style={styles.neuroTrigger}>오늘의 디지털 알약</div>
+                            <div style={styles.neuroTrigger}>오늘의 디지털 알사탕</div>
                         </div>
                     </button>
                 )}
