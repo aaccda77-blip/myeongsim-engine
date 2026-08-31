@@ -2,12 +2,272 @@
 
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useReportStore } from '@/store/useReportStore';
 import ExecutiveDashboardModal from '@/components/startup/ExecutiveDashboardModal';
 import { ShieldCheck, Copy, Check, Building2, KeyRound, Sparkles, BookOpen, ExternalLink, Lock } from 'lucide-react';
 
 export default function StartupDashboard() {
-    const router = useRouter();
+        const router = useRouter();
+    const reportData = useReportStore((s) => s.reportData);
+
+    // 🔮 [실시간 사주 데이터 동기화 & 10천간 기반 동적 웰니스 매트릭스 엔진]
+    const userSajuProfile = useMemo(() => {
+        let metaData: any = {};
+        let psychData: any = {};
+
+        if (reportData) {
+            metaData = reportData.meta || {};
+            psychData = (reportData as any).psych || {};
+        }
+
+        if (typeof window !== 'undefined') {
+            try {
+                const rawOnboarding = localStorage.getItem('user_onboarding_data');
+                if (rawOnboarding) {
+                    const parsed = JSON.parse(rawOnboarding);
+                    metaData = { ...metaData, ...parsed, ...(parsed.meta || {}) };
+                    psychData = { ...psychData, ...parsed, ...(parsed.psych || {}) };
+                }
+                const storeRaw = localStorage.getItem('myeongsim_report_store');
+                if (storeRaw) {
+                    const parsed = JSON.parse(storeRaw);
+                    const stateData = parsed.state?.reportData || parsed;
+                    metaData = { ...metaData, ...(stateData.meta || {}) };
+                    psychData = { ...psychData, ...(stateData.psych || {}) };
+                }
+                const rawSaju = localStorage.getItem('user_saju_info');
+                if (rawSaju) {
+                    const parsed = JSON.parse(rawSaju);
+                    metaData = { ...metaData, ...parsed };
+                }
+            } catch (e) {}
+        }
+
+        const rawDayMaster = reportData?.saju?.dayMaster || metaData?.dayMaster || '辛';
+        const dayMaster = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'].find(c => rawDayMaster.includes(c)) || '辛';
+        const userName = reportData?.userName || (reportData as any)?.name || metaData?.userName || '명심가';
+        const birthDate = reportData?.birthDate || (reportData as any)?.birth_date || metaData?.birthDate || '1990-01-01';
+
+        // 10천간별 6대 역량 프로필 데이터셋 (세계 최고 웰니스 & 뇌신경 코칭 기준)
+        const MATRIX_PROFILES: Record<string, any> = {
+            '甲': {
+                dayMasterName: '甲木 (선구자/기획형)',
+                scores: { innovation: 98, capital: 86, execution: 89, market: 95, leadership: 92, mental: 82 },
+                ceoPower: 90.3,
+                businessFit: 95.4,
+                bizRank1: '신규 카테고리 창출 플랫폼 & 하이테크 스타트업',
+                bizRank2: '친환경/웰니스 에듀테크 & 커뮤니티 비즈니스',
+                peakHour: '오전 06:00 ~ 08:30 (새벽 영감 분출)',
+                vagusTip: '나무가 깊은 뿌리를 내리듯 복식호흡으로 뇌신경 진정',
+                axes: {
+                    innovation: { bioWellness: '전두엽 고도화 & 원초적 창의성', dark: '완벽주의 기획의 늪으로 인한 첫 삽 지연', neural: '작은 가지(MVP)부터 뻗는 24시간 내 가설 검증', meta: '새로운 시대를 여는 우주적 영감의 발원지', action: '떠오른 아이디어 중 가장 작은 1개 20분 내 문서화하기' },
+                    capital: { bioWellness: '자본 순환 흐름 수용', dark: '이상주의에 치우쳐 초기 현금 회전율 간과', neural: '단위 경제성(LTV/CAC)과 마진 구조 정렬', meta: '자본이 저절로 깃드는 가치 저장소 확립', action: '초기 매출 파이프라인 1개 구조화하기' },
+                    execution: { bioWellness: '기민한 신경계 순발력', dark: '장대한 계획에 압도당해 시작을 망설임', neural: '스프린트 쪼개기로 매일 1회 완결 경험', meta: '싹을 틔우듯 거침없는 생명력의 도약', action: '오늘 가장 중요한 과제 1개 25분 몰입 완수' },
+                    market: { bioWellness: '거시적 시장 통찰력', dark: '대중의 니즈보다 나의 비전에만 몰입', neural: '고객 현장 인터뷰 3회로 시장 접점 맞추기', meta: '세상이 갈망하는 숲을 가꾸는 카테고리 지배력', action: '타겟 고객 1명에게 질문 던지기' },
+                    leadership: { bioWellness: '큰 나무의 그늘 리더십', dark: '독단적 결정으로 팀원의 소외감 유발', neural: '비전 공유와 자율성 부여로 능동적 참여 유도', meta: '수많은 인재가 모여 쉬어가는 거목의 품격', action: '팀원에게 따뜻한 지지와 신뢰 표현하기' },
+                    mental: { bioWellness: '부교감신경 이완 회복', dark: '부러질 듯 팽팽한 긴장감과 과도한 책임감', neural: '녹색 자연 산책 15분으로 뇌파 쿨다운', meta: '비바람에도 흔들리지 않는 대자연의 고요', action: '창밖 나무나 하늘 보며 3분 깊은 호흡' }
+                }
+            },
+            '乙': {
+                dayMasterName: '乙木 (네트워크/적응형)',
+                scores: { innovation: 91, capital: 88, execution: 90, market: 97, leadership: 96, mental: 84 },
+                ceoPower: 91.0,
+                businessFit: 94.8,
+                bizRank1: '크리에이터/인플루언서 네트워크 & D2C 커머스',
+                bizRank2: '커뮤니티 기반 멤버십 & 지식 콘텐츠 구독',
+                peakHour: '오전 09:30 ~ 12:00 (협업 및 소통 극대화)',
+                vagusTip: '거절에 흔들리지 않는 심리적 안전지대 자각',
+                axes: {
+                    innovation: { bioWellness: '유연한 환경 적응 및 변용', dark: '트렌드에 휘둘려 핵심 정체성 희석', neural: '나만의 오리지널리티 코어 1개 규정', meta: '어떤 틈새에서도 꽃을 피워내는 무한 생명력', action: '기존 아이템에 독창적 한 끗 더하기' },
+                    capital: { bioWellness: '관계 자본의 현금화', dark: '거절하지 못해 불리한 조건 수용', neural: '명확한 계약서와 상호 윈윈 단가 책정', meta: '사람과 자본이 그물망처럼 얽히는 풍요', action: '미수금 및 정산 조건 명확히 재확인' },
+                    execution: { bioWellness: '유기적 연계 실행력', dark: '타인의 피드백에 일희일비하며 방향 선회', neural: '주간 핵심 KPI 3개에 집중하는 필터 장착', meta: '담쟁이덩굴처럼 장벽을 타고 넘는 유연한 전진', action: '오늘 목표한 연락 및 공유 10분 내 완료' },
+                    market: { bioWellness: '초연결 시장 바이럴', dark: '부정적 댓글에 대한 과민 반응과 위축', neural: '지지자(True Fans) 100명과의 깊은 유대 우선', meta: '입소문으로 들불처럼 번져나가는 시장 장악', action: '핵심 고객 2명에게 감사 메시지 전하기' },
+                    leadership: { bioWellness: '공감과 화합의 시너지', dark: '갈등 회피로 인한 문제 누적', neural: '부드럽지만 단호한 경계선 소통 훈련', meta: '존재 자체로 서로를 잇는 황금 네트워크', action: '파트너의 강점을 구체적으로 칭찬하기' },
+                    mental: { bioWellness: '미주신경 안정화', dark: '에너지 과소비로 인한 번아웃 방전', neural: '나 혼자만의 고요한 시간 30분 확보', meta: '봄바람에 춤추는 꽃잎 같은 자유로움', action: '차 한 잔 마시며 오프라인 휴식 취하기' }
+                }
+            },
+            '丙': {
+                dayMasterName: '丙火 (태양/폭발적 확장형)',
+                scores: { innovation: 94, capital: 85, execution: 98, market: 97, leadership: 88, mental: 80 },
+                ceoPower: 90.3,
+                businessFit: 96.2,
+                bizRank1: '글로벌 B2B/B2C 바이럴 마케팅 & 미디어 엔터테인먼트',
+                bizRank2: '임팩트 투자 & 트렌드 선도형 테크 솔루션',
+                peakHour: '오전 11:00 ~ 오후 01:30 (태양열 극대화 시간)',
+                vagusTip: '과열된 뇌를 식히는 쿨다운 냉각 호흡',
+                axes: {
+                    innovation: { bioWellness: '압도적 비전 투사력', dark: '현실적 디테일 결여로 인한 실행 오차', neural: 'CFO/COO와의 페어링으로 수치 검증 병행', meta: '온 세상을 밝히는 태양빛 같은 통찰', action: '비전을 1장의 로드맵으로 구조화하기' },
+                    capital: { bioWellness: '대형 펀딩 및 자본 유치', dark: '과도한 지출과 스케일업 조급증', neural: '런웨이(Runway) 12개월 안전마진 확보', meta: '황금빛 햇살처럼 쏟아져 들어오는 대자본', action: '이번 달 현금 지출 우선순위 3개 점검' },
+                    execution: { bioWellness: '폭발적 추진 에너지', dark: '단거리 질주 후 급격한 탈진(Crash)', neural: '페이스 조절을 위한 인터벌 휴식 도입', meta: '빛의 속도로 세상을 변화시키는 추진력', action: '가장 파급력 큰 일 1개에 화력 집중' },
+                    market: { bioWellness: '독보적 브랜드 파워', dark: '과장된 메시지로 인한 신뢰 하락 위험', neural: '진정성 있는 고객 성공 스토리 전면 배치', meta: '만인을 감화시키는 눈부신 브랜드 카리스마', action: '우리 서비스의 핵심 가치 1문장 선언' },
+                    leadership: { bioWellness: '열정과 사기 진작', dark: '팀원들에게 본인 수준의 에너지 강요', neural: '각자의 템포를 존중하는 서포트형 리더십', meta: '모든 구성원의 심장을 뛰게 만드는 태양', action: '팀원 한 명의 노고를 진심으로 격려' },
+                    mental: { bioWellness: '심장 열기 진정 & 릴랙스', dark: '밤에도 꺼지지 않는 뇌 각성으로 불면', neural: '취침 전 블루라이트 차단 및 차분한 명상', meta: '밤하늘 뒤에서도 변함없는 태양의 위엄', action: '찬물로 손과 얼굴 씻고 뇌 식히기' }
+                }
+            },
+            '丁': {
+                dayMasterName: '丁火 (등대/장인 솔루션형)',
+                scores: { innovation: 97, capital: 93, execution: 87, market: 86, leadership: 89, mental: 91 },
+                ceoPower: 90.5,
+                businessFit: 95.8,
+                bizRank1: '딥테크 R&D & 고부가가치 전문 컨설팅 SaaS',
+                bizRank2: '프리미엄 웰니스 & 1:1 맞춤형 멘탈 케어 솔루션',
+                peakHour: '오후 07:00 ~ 밤 10:30 (야간 딥워크 집중)',
+                vagusTip: '촛불처럼 고요히 타오르는 영점 집중',
+                axes: {
+                    innovation: { bioWellness: '정밀한 직관과 깊은 사유', dark: '마이크로 디테일에 빠져 숲을 놓침', neural: '전체 시스템 관점에서 모듈 최적화', meta: '어둠을 뚫고 길을 밝히는 혜안의 불꽃', action: '핵심 알고리즘/프로세스 1개 정교화' },
+                    capital: { bioWellness: '고단가 프리미엄 가치화', dark: '자신의 기술 가치를 저평가하는 경향', neural: '가치 기반 가격 책정(Value Pricing) 적용', meta: '소수 정예 고객으로부터의 안정적 고수익', action: '제안서 단가 체계 15% 상향 검토' },
+                    execution: { bioWellness: '장인적 완성도 달성', dark: '완벽주의로 인한 릴리즈 지연', neural: '80% 완성 시점에 얼리어답터 피드백 수렴', meta: '보석을 깎아내듯 빈틈없는 명품 완성', action: '미완성된 결과물 1개 오늘 바로 공유' },
+                    market: { bioWellness: '타겟 버티컬 침투력', dark: '대중 마케팅에 대한 심리적 거부감', neural: '타겟 고객군만을 겨냥한 니치 마케팅', meta: '필요한 자에게 정확히 가닿는 등대의 빛', action: '잠재 VIP 고객 1명에게 맞춤 솔루션 제안' },
+                    leadership: { bioWellness: '깊은 멘토링과 영감 부여', dark: '소통 부족으로 인한 오해 발생', neural: '글과 매뉴얼을 통한 명확한 기준 전파', meta: '사람의 영혼을 변화시키는 진정한 스승', action: '핵심 업무 가이드 1페이지 작성' },
+                    mental: { bioWellness: '내면의 평화와 온기', dark: '감정적 소용돌이를 혼자 삭히는 고립', neural: '감정 일기 쓰기를 통한 감정 배출', meta: '어떤 바람에도 꺼지지 않는 영원의 등불', action: '조용한 음악 들으며 5분간 마음 정리' }
+                }
+            },
+            '戊': {
+                dayMasterName: '戊土 (큰 산/스케일 플랫폼형)',
+                scores: { innovation: 87, capital: 95, execution: 82, market: 89, leadership: 94, mental: 98 },
+                ceoPower: 90.8,
+                businessFit: 94.6,
+                bizRank1: '인프라/물류 플랫폼 & 엔터프라이즈 B2B 솔루션',
+                bizRank2: '핀테크 자산 관리 & 부동산/리테일 거점 사업',
+                peakHour: '오후 01:30 ~ 04:00 (안정적 대형 의사결정)',
+                vagusTip: '바위처럼 든든한 척추 정렬과 그라운딩',
+                axes: {
+                    innovation: { bioWellness: '거대한 플랫폼 구조화', dark: '변화에 대한 둔감함과 관성 저항', neural: '사내 벤처형 빠른 실험 조직 분리 운영', meta: '만물이 깃들어 살아가는 거대한 생태계', action: '새로운 기술 트렌드 1개 조사' },
+                    capital: { bioWellness: '자본 축적 및 안정적 운용', dark: '투자를 아끼다가 성장 타이밍 실기', neural: '공격적 재투자와 방어적 현금의 황금비율', meta: '태산처럼 흔들리지 않는 자본 안전망', action: '장기 재무 포트폴리오 점검' },
+                    execution: { bioWellness: '우직하고 지속적인 전진', dark: '느린 실행 속도로 인한 기회 손실', neural: '일일 마이크로 마일스톤 도입', meta: '강을 막고 바다를 메우는 거대한 추진', action: '오늘 끝낼 1가지 즉시 착수' },
+                    market: { bioWellness: '압도적 시장 점유율', dark: '기존 시장 수성에만 안주하는 경향', neural: '인접 신규 시장으로의 점진적 영토 확장', meta: '국경을 넘어 대륙을 지배하는 플랫폼', action: '경쟁사 동향 및 틈새 시장 분석' },
+                    leadership: { bioWellness: '무한한 포용력과 신뢰', dark: '저성과자에 대한 온정주의로 효율 저하', neural: '따뜻한 마음과 냉철한 평가 체계 구축', meta: '모두가 의지하고 따르는 태산의 리더십', action: '조직의 핵심 원칙 재확인' },
+                    mental: { bioWellness: '절대적 회복탄력성', dark: '속마음을 드러내지 않아 쌓이는 내적 압력', neural: '신뢰할 수 있는 멘토와의 정기적 대화', meta: '천둥 번개 속에서도 고요한 산의 침묵', action: '맨발 걷기나 가벼운 산책으로 활력 충전' }
+                }
+            },
+            '己': {
+                dayMasterName: '己土 (비옥한 대지/운영 최적화형)',
+                scores: { innovation: 86, capital: 96, execution: 88, market: 87, leadership: 95, mental: 92 },
+                ceoPower: 90.7,
+                businessFit: 95.1,
+                bizRank1: 'CRM/고객 경험 최적화 & 온·오프라인 에듀케이션',
+                bizRank2: '구독형 헬스케어 & 라이프스타일 큐레이션',
+                peakHour: '오전 08:30 ~ 11:00 (세밀한 데이터 분석)',
+                vagusTip: '모든 세포를 편안하게 품어주는 대지의 이완',
+                axes: {
+                    innovation: { bioWellness: '섬세한 사용자 경험 설계', dark: '대담한 피벗에 대한 두려움', neural: '작은 A/B 테스트로 리스크 없는 혁신', meta: '씨앗을 싹틔워 결실을 맺게 하는 비옥함', action: '고객 온보딩 여정 1곳 개선' },
+                    capital: { bioWellness: '정밀한 단위 이익 극대화', dark: '지나친 절약으로 성장 동력 약화', neural: '수익성 높은 핵심 사업에 과감한 레버리지', meta: '수확의 기쁨이 넘쳐나는 풍요로운 대지', action: '매출 상위 20% 품목 강화 계획 수립' },
+                    execution: { bioWellness: '체계적이고 빈틈없는 운영', dark: '완벽한 정리를 위해 본질 과제 후순위', neural: '가장 수익과 직결되는 1순위 업무 먼저 처리', meta: '한 치의 오차도 없이 결실을 맺는 성실함', action: '오늘의 핵심 KPI 1개 집중' },
+                    market: { bioWellness: '높은 고객 리텐션(재구매)', dark: '신규 고객 유치(획득)의 소극성', neural: '기존 고객 추천(Referral) 엔진 구축', meta: '떠나지 않고 머무르는 충성 고객의 안식처', action: '우수 고객에게 특별 혜택 전달' },
+                    leadership: { bioWellness: '모성적 서포트와 배려', dark: '모든 일을 떠안아 혼자 지치는 현상', neural: '역할 분담과 권한 이양으로 자생력 부여', meta: '모든 팀원을 스타로 키워내는 어머니 대지', action: '팀원에게 책임과 자율권 위임하기' },
+                    mental: { bioWellness: '안정적 심리 균형', dark: '남들의 고민까지 짊어지는 감정 전이', neural: '내 감정과 타인의 감정을 분리하는 관조', meta: '온갖 오염을 정화하는 대지의 정화력', action: '따뜻한 물을 마시며 몸을 이완하기' }
+                }
+            },
+            '庚': {
+                dayMasterName: '庚金 (강철/돌파·실행형)',
+                scores: { innovation: 88, capital: 93, execution: 99, market: 94, leadership: 83, mental: 85 },
+                ceoPower: 90.3,
+                businessFit: 96.5,
+                bizRank1: '고속 스케일업 커머스 & 하드웨어/제조 테크',
+                bizRank2: 'B2B 영업 자동화 & 다이렉트 솔루션 공급',
+                peakHour: '오후 03:00 ~ 06:00 (결단력과 과감한 실행)',
+                vagusTip: '단단한 강철을 유연하게 템퍼링하는 호흡',
+                axes: {
+                    innovation: { bioWellness: '과감한 비즈니스 룰 파괴', dark: '과격한 변화로 조직 내부 피로 가중', neural: '변화의 당위성과 혜택을 명확히 설득', meta: '구시대를 베어내고 새 세상을 여는 명검', action: '불필요한 비효율 프로세스 1개 폐기' },
+                    capital: { bioWellness: '직접적이고 빠른 현금 회수', dark: '단기 이익을 좇다 장기 신뢰 훼손', neural: 'LTV(고객 생애 가치) 중심의 계약 구조화', meta: '황금을 캐내어 단련하는 강력한 자본력', action: '지연된 결제 및 계약 클로징' },
+                    execution: { bioWellness: '초인적인 탱크 추진력', dark: '무리한 질주로 건강과 팀워크 손상', neural: '휴식도 훈련의 일부로 강제 스케줄링', meta: '어떤 장벽도 가루로 부수는 압도적 돌파', action: '난관에 부딪힌 일 오늘 단칼에 해결' },
+                    market: { bioWellness: '공격적 공격 영토 확장', dark: '경쟁사를 향한 불필요한 적대감', neural: '경쟁자마저 아군으로 흡수하는 전략적 제휴', meta: '시장의 정상을 정복하는 깃발', action: '핵심 파트너사에게 제휴 제안' },
+                    leadership: { bioWellness: '카리스마적 지휘 통솔', dark: '직설적 화법으로 인한 팀원 상처', neural: '피드백 전달 시 칭찬-개선-칭찬 샌드위치 화법', meta: '전쟁터를 승리로 이끄는 위대한 사령관', action: '팀원에게 감사의 뜻 전하기' },
+                    mental: { bioWellness: '강철 멘탈과 근성', dark: '취약성을 인정하지 못하는 고통', neural: '약점을 인정할 때 생기는 진정한 강인함 수용', meta: '불 속에서 더욱 단단해지는 순수 다이아몬드', action: '근력 운동이나 스트레칭으로 긴장 해소' }
+                }
+            },
+            '辛': {
+                dayMasterName: '辛金 (다이아몬드/프리미엄 SaaS형)',
+                scores: { innovation: 96, capital: 93, execution: 94, market: 91, leadership: 89, mental: 88 },
+                ceoPower: 91.8,
+                businessFit: 94.8,
+                bizRank1: 'B2B 엔터프라이즈 SaaS & AI 분석 솔루션',
+                bizRank2: '전문가 지식 플랫폼 & 프리미엄 데이터 서비스',
+                peakHour: '오전 09:00 ~ 11:30 (최고 몰입 및 직관 발현)',
+                vagusTip: '보석의 여백을 빛내는 80% 미학 실천',
+                axes: {
+                    innovation: { bioWellness: '정밀한 아키텍처 및 미학', dark: '티끌 하나도 용납 못 하는 과도한 완벽주의', neural: '80% 완성도 릴리즈 원칙으로 뇌 피로도 경감', meta: '빛을 굴절시켜 무지개를 만드는 정밀한 지혜', action: '핵심 기능 1개 군더더기 덜어내기' },
+                    capital: { bioWellness: '고부가가치 구독 경제(SaaS)', dark: '초기 가격 책정을 너무 낮게 잡는 실수', neural: '엔터프라이즈 플랜 다단계 설계로 ARPU 극대화', meta: '영롱하게 빛나는 영구적 자본 파이프라인', action: '프리미엄 티어 기능 명세 점검' },
+                    execution: { bioWellness: '샤프하고 정확한 릴리즈', dark: '디테일에 집착해 출시 일정 지연', neural: '타임박싱(Time-boxing) 기법으로 납기 준수', meta: '레이저처럼 한 점을 꿰뚫는 예리한 실행', action: '오늘 할 일 1개 정확히 매듭짓기' },
+                    market: { bioWellness: '프리미엄 브랜드 포지셔닝', dark: '대중의 거친 반응에 대한 심리적 저항', neural: '정확한 타겟 고객의 극찬에 집중', meta: '누구나 선망하는 최고급 브랜드의 위상', action: '제품 소개 랜딩페이지 한 줄 카피 다듬기' },
+                    leadership: { bioWellness: '품격 있는 영감 리더십', dark: '높은 기준 미달 시 차가운 냉소', neural: '과정의 노력에 대한 따뜻한 인정과 피드백', meta: '팀원 각자의 재능을 다이아몬드로 세공하는 눈', action: '팀원의 작은 성과를 칭찬하기' },
+                    mental: { bioWellness: '맑은 영점 주파수 조율', dark: '스스로를 채찍질하는 가혹한 내면 검열', neural: '자기 자비(Self-Compassion)와 깊은 호흡', meta: '어떤 어둠 속에서도 스스로 빛을 내는 보석', action: '눈을 감고 3분간 나 자신을 인정하고 위로하기' }
+                }
+            },
+            '壬': {
+                dayMasterName: '壬水 (큰 바다/글로벌 확장형)',
+                scores: { innovation: 96, capital: 86, execution: 88, market: 98, leadership: 92, mental: 85 },
+                ceoPower: 90.8,
+                businessFit: 96.0,
+                bizRank1: '글로벌 크로스보더 플랫폼 & 핀테크/물류 테크',
+                bizRank2: 'AI 지능형 검색 & 빅데이터 애그리게이터',
+                peakHour: '밤 09:00 ~ 12:00 (거시적 전략 및 글로벌 싱크)',
+                vagusTip: '깊은 바다처럼 요동치지 않는 심해의 호흡',
+                axes: {
+                    innovation: { bioWellness: '거시적 글로벌 메가트렌드 조망', dark: '스케일만 크고 구체적 BM 설계 미흡', neural: '국내 검증 후 글로벌 확장하는 단계적 수로 구축', meta: '오대양 육대주를 감싸 안는 무한한 통찰력', action: '글로벌 벤치마킹 사례 1개 분석' },
+                    capital: { bioWellness: '거대한 투자 자본 유치', dark: '현금 유출 통제 미흡으로 인한 누수', neural: 'CFO 중심의 정밀한 자금 통제 시스템 완비', meta: '마르지 않는 거대한 자본의 대양', action: '월간 번레이트(Burn-rate) 재검토' },
+                    execution: { bioWellness: '도도하게 흐르는 거대한 물결', dark: '사소한 일들에 집중하지 못하는 산만함', neural: '핵심 실행 엔진을 팀에 위임하고 거시 조율', meta: '굽이쳐 흐르며 결국 바다에 이르는 필연의 승리', action: '가장 파급력 큰 전략 1개 실행 명령' },
+                    market: { bioWellness: '무경계 글로벌 시장 흡수', dark: '현지화(Localization) 실패 리스크', neural: '현지 전문가와의 긴밀한 파트너십 구축', meta: '세상의 모든 경계를 허무는 글로벌 네트워크', action: '해외 파트너 또는 바이어에게 이메일' },
+                    leadership: { bioWellness: '자유롭고 유연한 오픈 리더십', dark: '방임주의로 인한 기강 해이', neural: '명확한 비전과 자율 책임 문화의 균형', meta: '수많은 강물을 품어 바다로 만드는 대인배', action: '전체 회의에서 거시 비전 제시하기' },
+                    mental: { bioWellness: '심해의 절대 평정', dark: '거대한 파도에 휩쓸리는 불안감', neural: '표면의 파도가 아닌 심해의 고요함에 접속', meta: '폭풍우가 쳐도 흔들리지 않는 대양의 심장', action: '물소리 명상 음원을 들으며 뇌파 안정' }
+                }
+            },
+            '癸': {
+                dayMasterName: '癸水 (봄비/지혜·심리 테라피형)',
+                scores: { innovation: 97, capital: 87, execution: 85, market: 89, leadership: 93, mental: 94 },
+                ceoPower: 90.8,
+                businessFit: 95.5,
+                bizRank1: '멘탈헬스/바이오 웰니스 앱 & AI 심리 코칭',
+                bizRank2: 'IP/콘텐츠 스토리텔링 & 감성 디자인 솔루션',
+                peakHour: '오전 07:00 ~ 09:30 (고요한 묵상과 통찰)',
+                vagusTip: '모든 생명을 촉촉이 적시는 자비의 호흡',
+                axes: {
+                    innovation: { bioWellness: '인간 본성과 무의식 통찰', dark: '생각과 감정의 늪에 빠져 행동력 저하', neural: '매일 아침 햇살을 쬐며 10분 즉시 행동 루틴', meta: '마른 대지를 적셔 꽃을 피우는 지혜의 단비', action: '사용자 심리를 자극할 스토리라인 1편 작성' },
+                    capital: { bioWellness: '팬덤 기반의 안정적 후원/수익', dark: '돈에 대한 순수성 집착으로 수익화 회피', neural: '치유와 공헌의 정당한 대가로서의 수익 수용', meta: '샘물처럼 솟아나는 영속적인 풍요', action: '유료 서비스 가치 제안서 명확화' },
+                    execution: { bioWellness: '스며들듯 침투하는 정밀 실행', dark: '에너지 부족으로 중간 포기 위험', neural: '에너지 소모를 최소화하는 자동화 툴 적극 활용', meta: '바위를 뚫는 물방울 같은 기적의 끈기', action: '자동화할 수 있는 반복 업무 1개 세팅' },
+                    market: { bioWellness: '심금을 울리는 공감 마케팅', dark: '소수의 비판에 깊은 상처를 받음', neural: '내 진심을 알아주는 열성 팬덤과의 소통에 집중', meta: '사람들의 마음을 어루만지는 감동의 물결', action: '진심을 담은 뉴스레터/칼럼 1편 발행' },
+                    leadership: { bioWellness: '공감과 치유의 코칭 리더십', dark: '우유부단함으로 인한 결정 지연', neural: '직관을 믿고 빠른 결단을 내리는 훈련', meta: '구성원의 상처를 치유하고 잠재력을 깨우는 영적 지도자', action: '고민하는 팀원과 1:1 따뜻한 티타임' },
+                    mental: { bioWellness: '영점 무의식 정화', dark: '깊은 우울감과 감정의 침체', neural: '가벼운 유산소 운동과 밝은 조명 활용', meta: '더러움을 씻어내고 맑음만을 남기는 영점 정화', action: '햇살 받으며 15분 산책으로 기분 전환' }
+                }
+            }
+        };
+
+        const currentProfile = MATRIX_PROFILES[dayMaster] || MATRIX_PROFILES['辛'];
+        const s = currentProfile.scores;
+
+        // 수학적 레이더 SVG 포인트 계산 (중심 120, 120 / 최대 반경 80)
+        const p0 = `120,${(120 - 80 * (s.innovation / 100)).toFixed(1)}`;
+        const p1 = `${(120 + 80 * (s.capital / 100) * 0.866).toFixed(1)},${(120 - 80 * (s.capital / 100) * 0.5).toFixed(1)}`;
+        const p2 = `${(120 + 80 * (s.execution / 100) * 0.866).toFixed(1)},${(120 + 80 * (s.execution / 100) * 0.5).toFixed(1)}`;
+        const p3 = `120,${(120 + 80 * (s.market / 100)).toFixed(1)}`;
+        const p4 = `${(120 - 80 * (s.leadership / 100) * 0.866).toFixed(1)},${(120 + 80 * (s.leadership / 100) * 0.5).toFixed(1)}`;
+        const p5 = `${(120 - 80 * (s.mental / 100) * 0.866).toFixed(1)},${(120 - 80 * (s.mental / 100) * 0.5).toFixed(1)}`;
+
+        return {
+            userName,
+            birthDate,
+            dayMaster,
+            dayMasterName: currentProfile.dayMasterName,
+            scores: s,
+            ceoPower: currentProfile.ceoPower,
+            businessFit: currentProfile.businessFit,
+            bizRank1: currentProfile.bizRank1,
+            bizRank2: currentProfile.bizRank2,
+            peakHour: currentProfile.peakHour,
+            vagusTip: currentProfile.vagusTip,
+            axes: currentProfile.axes,
+            polygonPoints: `${p0} ${p1} ${p2} ${p3} ${p4} ${p5}`,
+            points: [
+                { x: 120, y: parseFloat((120 - 80 * (s.innovation / 100)).toFixed(1)) },
+                { x: parseFloat((120 + 80 * (s.capital / 100) * 0.866).toFixed(1)), y: parseFloat((120 - 80 * (s.capital / 100) * 0.5).toFixed(1)) },
+                { x: parseFloat((120 + 80 * (s.execution / 100) * 0.866).toFixed(1)), y: parseFloat((120 + 80 * (s.execution / 100) * 0.5).toFixed(1)) },
+                { x: 120, y: parseFloat((120 + 80 * (s.market / 100)).toFixed(1)) },
+                { x: parseFloat((120 - 80 * (s.leadership / 100) * 0.866).toFixed(1)), y: parseFloat((120 + 80 * (s.leadership / 100) * 0.5).toFixed(1)) },
+                { x: parseFloat((120 - 80 * (s.mental / 100) * 0.866).toFixed(1)), y: parseFloat((120 - 80 * (s.mental / 100) * 0.5).toFixed(1)) }
+            ]
+        };
+    }, [reportData]);
     const [activeMenu, setActiveMenu] = useState('dashboard');
     const [selectedService, setSelectedService] = useState<any>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -780,19 +1040,21 @@ export default function StartupDashboard() {
 
                                 {/* Right Visual: CEO 6-Power Radar Matrix & Wellness Bio-Sync */}
                                 <div className="lg:col-span-5 bg-gradient-to-b from-[#131022] to-[#0d0a1a] border border-indigo-500/30 rounded-2xl p-5 md:p-6 relative overflow-hidden flex flex-col justify-between min-h-[460px] shadow-2xl">
-                                    {/* Card Header */}
+                                    {/* Card Header with User Name & DayMaster */}
                                     <div className="flex items-center justify-between border-b border-white/10 pb-3.5 mb-2">
                                          <div className="flex items-center gap-2">
                                              <span className="material-symbols-outlined text-indigo-400 text-base animate-pulse">vital_signs</span>
-                                             <span className="text-xs font-black text-white uppercase tracking-wider">창업가 6대 역량 파워 매트릭스</span>
+                                             <span className="text-xs font-black text-white uppercase tracking-wider">
+                                                 [{userSajuProfile.userName} 대표] 6대 역량 매트릭스
+                                             </span>
                                          </div>
                                          <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/30 to-purple-500/30 text-indigo-200 border border-indigo-400/40 flex items-center gap-1">
                                              <Sparkles className="w-3 h-3 text-amber-300 animate-spin-slow" />
-                                             <span>터치 시 상세 웰니스 코칭</span>
+                                             <span>{userSajuProfile.dayMasterName}</span>
                                          </span>
                                     </div>
 
-                                    {/* Central 6-Axis CEO Power Radar Chart with Interactive Touch Feedback */}
+                                    {/* Central 6-Axis CEO Power Radar Chart with Dynamic Polygon & Real Points */}
                                     <div className="relative py-2 flex flex-col items-center justify-center">
                                         <div className="w-full max-w-[290px] aspect-square relative flex items-center justify-center">
                                              {/* Radar SVG Grid & Polygon */}
@@ -810,9 +1072,9 @@ export default function StartupDashboard() {
                                                  <line x1="120" y1="120" x2="42" y2="165" stroke="#4338ca" strokeWidth="0.8" />
                                                  <line x1="120" y1="120" x2="42" y2="75" stroke="#4338ca" strokeWidth="0.8" />
 
-                                                 {/* Filled Power Area (Calculated Polygon for 94, 92, 96, 91, 89, 88) */}
+                                                 {/* Dynamic Calculated Polygon based on Saju */}
                                                  <polygon
-                                                     points="120,38 191,80 193,161 120,199 49,158 48,82"
+                                                     points={userSajuProfile.polygonPoints}
                                                      fill="url(#radarGradient)"
                                                      stroke="#a855f7"
                                                      strokeWidth="2.5"
@@ -826,164 +1088,180 @@ export default function StartupDashboard() {
                                                      </linearGradient>
                                                  </defs>
 
-                                                 {/* Data Points */}
-                                                 <circle cx="120" cy="38" r="4.5" fill="#a855f7" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
-                                                 <circle cx="191" cy="80" r="4.5" fill="#6366f1" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
-                                                 <circle cx="193" cy="161" r="4.5" fill="#3b82f6" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
-                                                 <circle cx="120" cy="199" r="4.5" fill="#06b6d4" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
-                                                 <circle cx="49" cy="158" r="4.5" fill="#10b981" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
-                                                 <circle cx="48" cy="82" r="4.5" fill="#f59e0b" stroke="#fff" strokeWidth="1.5" className="animate-pulse cursor-pointer" />
+                                                 {/* Dynamic Data Points */}
+                                                 {userSajuProfile.points.map((pt: any, idx: number) => {
+                                                     const colors = ['#a855f7', '#6366f1', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b'];
+                                                     return (
+                                                         <circle
+                                                             key={idx}
+                                                             cx={pt.x}
+                                                             cy={pt.y}
+                                                             r="4.5"
+                                                             fill={colors[idx]}
+                                                             stroke="#fff"
+                                                             strokeWidth="1.5"
+                                                             className="animate-pulse cursor-pointer"
+                                                         />
+                                                     );
+                                                 })}
                                              </svg>
 
-                                             {/* Interactive Touch Axis Buttons */}
+                                             {/* Interactive Touch Axis Buttons with Dynamic Scores */}
                                              <button 
                                                  onClick={() => setSelectedRadarAxis({
                                                      id: 'innovation',
                                                      title: '💡 혁신 기획 (Innovation Strategy)',
-                                                     score: 94,
+                                                     score: userSajuProfile.scores.innovation,
                                                      icon: 'lightbulb',
                                                      color: 'text-purple-300',
                                                      badgeColor: 'bg-purple-500/20 text-purple-200 border-purple-400/40',
-                                                     bioWellness: '전두엽 고도화 & 직관적 아이데이션 (Peak Ideation State)',
-                                                     darkCode: '과도한 생각의 늪(Overthinking Trap)으로 인한 결정 지연 및 완벽주의 피로',
-                                                     neuralCode: '80% 미학 실행 원칙 도입, 핵심 가설을 24시간 내 MVP로 시각화하여 뇌 피로도 경감',
-                                                     metaCode: '우주 본연의 흐름과 동기화되어 힘들이지 않고 본질적 해답을 건져 올리는 영점 직관',
-                                                     action: '오늘 떠오른 가장 흥미로운 아이디어 1가지를 10분 내에 종이에 마인드맵으로 시각화하기'
+                                                     bioWellness: userSajuProfile.axes.innovation.bioWellness,
+                                                     darkCode: userSajuProfile.axes.innovation.dark,
+                                                     neuralCode: userSajuProfile.axes.innovation.neural,
+                                                     metaCode: userSajuProfile.axes.innovation.meta,
+                                                     action: userSajuProfile.axes.innovation.action
                                                  })}
                                                  className="absolute top-[-4px] text-center p-1.5 rounded-xl hover:bg-purple-500/20 transition-all cursor-pointer active:scale-95 group"
                                              >
                                                  <span className="text-[10px] font-black text-purple-300 group-hover:text-white block transition-colors">💡 혁신 기획</span>
-                                                 <span className="text-[9px] font-mono text-purple-400 font-bold bg-purple-950/60 px-1.5 py-0.2 rounded border border-purple-500/30">94점 🔍</span>
+                                                 <span className="text-[9px] font-mono text-purple-400 font-bold bg-purple-950/60 px-1.5 py-0.2 rounded border border-purple-500/30">{userSajuProfile.scores.innovation}점 🔍</span>
                                              </button>
 
                                              <button 
                                                  onClick={() => setSelectedRadarAxis({
                                                      id: 'capital',
                                                      title: '💰 자본/수익 (Capital Flow & ROI)',
-                                                     score: 92,
+                                                     score: userSajuProfile.scores.capital,
                                                      icon: 'payments',
                                                      color: 'text-indigo-300',
                                                      badgeColor: 'bg-indigo-500/20 text-indigo-200 border-indigo-400/40',
-                                                     bioWellness: '심리적 자본 안정성 (Psychological Financial Immunity)',
-                                                     darkCode: '자금 고갈에 대한 무의식적 결핍 공포로 인한 단기적 조급증 및 무리한 베팅',
-                                                     neuralCode: '현금 흐름(Cashflow) 가시성 확보, 단위 경제성(Unit Economics) 재배선으로 심리적 여유 창출',
-                                                     metaCode: '풍요의 에너지를 순환시키는 자본 파이프라인의 주인으로서 절대적 안정감 회복',
-                                                     action: '고정비 다이어트 항목 2가지를 점검하고 수익 마진율을 10% 개선할 구조 정리하기'
+                                                     bioWellness: userSajuProfile.axes.capital.bioWellness,
+                                                     darkCode: userSajuProfile.axes.capital.dark,
+                                                     neuralCode: userSajuProfile.axes.capital.neural,
+                                                     metaCode: userSajuProfile.axes.capital.meta,
+                                                     action: userSajuProfile.axes.capital.action
                                                  })}
                                                  className="absolute top-[24%] right-[-10px] text-right p-1.5 rounded-xl hover:bg-indigo-500/20 transition-all cursor-pointer active:scale-95 group"
                                              >
                                                  <span className="text-[10px] font-black text-indigo-300 group-hover:text-white block transition-colors">💰 자본/수익</span>
-                                                 <span className="text-[9px] font-mono text-indigo-400 font-bold bg-indigo-950/60 px-1.5 py-0.2 rounded border border-indigo-500/30">92점 🔍</span>
+                                                 <span className="text-[9px] font-mono text-indigo-400 font-bold bg-indigo-950/60 px-1.5 py-0.2 rounded border border-indigo-500/30">{userSajuProfile.scores.capital}점 🔍</span>
                                              </button>
 
                                              <button 
                                                  onClick={() => setSelectedRadarAxis({
                                                      id: 'execution',
                                                      title: '⚡ 빠른 실행 (Agile Peak Momentum)',
-                                                     score: 96,
+                                                     score: userSajuProfile.scores.execution,
                                                      icon: 'bolt',
                                                      color: 'text-blue-300',
                                                      badgeColor: 'bg-blue-500/20 text-blue-200 border-blue-400/40',
-                                                     bioWellness: '도파민 리듬 최적화 & 즉각 몰입 (Frictionless Flow)',
-                                                     darkCode: '에너지 분산 및 조급증으로 인한 만성 피로와 번아웃 직전 과열 상태',
-                                                     neuralCode: '25분 집중 + 5분 이완 뽀모도로 바이오 리듬 적용, 단일 핵심 태스크 완수율 100% 달성',
-                                                     metaCode: '파도를 타듯 힘들이지 않고 자연스럽게 완결을 빚어내는 무위(無爲)의 기적적 실행',
-                                                     action: '가장 미루고 싶었던 핵심 과제 1개를 25분 타이머 맞추고 방해 요소 없이 끝내기'
+                                                     bioWellness: userSajuProfile.axes.execution.bioWellness,
+                                                     darkCode: userSajuProfile.axes.execution.dark,
+                                                     neuralCode: userSajuProfile.axes.execution.neural,
+                                                     metaCode: userSajuProfile.axes.execution.meta,
+                                                     action: userSajuProfile.axes.execution.action
                                                  })}
                                                  className="absolute bottom-[24%] right-[-10px] text-right p-1.5 rounded-xl hover:bg-blue-500/20 transition-all cursor-pointer active:scale-95 group"
                                              >
                                                  <span className="text-[10px] font-black text-blue-300 group-hover:text-white block transition-colors">⚡ 빠른 실행</span>
-                                                 <span className="text-[9px] font-mono text-blue-400 font-bold bg-blue-950/60 px-1.5 py-0.2 rounded border border-blue-500/30">96점 🔍</span>
+                                                 <span className="text-[9px] font-mono text-blue-400 font-bold bg-blue-950/60 px-1.5 py-0.2 rounded border border-blue-500/30">{userSajuProfile.scores.execution}점 🔍</span>
                                              </button>
 
                                              <button 
                                                  onClick={() => setSelectedRadarAxis({
                                                      id: 'market',
                                                      title: '📈 시장 확장 (Market Scaling & Viral)',
-                                                     score: 91,
+                                                     score: userSajuProfile.scores.market,
                                                      icon: 'trending_up',
                                                      color: 'text-cyan-300',
                                                      badgeColor: 'bg-cyan-500/20 text-cyan-200 border-cyan-400/40',
-                                                     bioWellness: '거절 민감성 극복 & 심리적 면역 (Psychological Resilience)',
-                                                     darkCode: '타인의 반응과 비판에 대한 과민 반응으로 인한 방어적 소통 패턴',
-                                                     neuralCode: '고객 피드백을 감정이 아닌 객관적 데이터로 수용하는 관조적 필터 장착',
-                                                     metaCode: '세상의 고통과 필요를 돕는 순수 공헌의 파동으로 저절로 끌어당기는 시장 흡인력',
-                                                     action: '잠재 고객 2명에게 솔직한 피드백 질문을 보내고 경청하기'
+                                                     bioWellness: userSajuProfile.axes.market.bioWellness,
+                                                     darkCode: userSajuProfile.axes.market.dark,
+                                                     neuralCode: userSajuProfile.axes.market.neural,
+                                                     metaCode: userSajuProfile.axes.market.meta,
+                                                     action: userSajuProfile.axes.market.action
                                                  })}
                                                  className="absolute bottom-[-4px] text-center p-1.5 rounded-xl hover:bg-cyan-500/20 transition-all cursor-pointer active:scale-95 group"
                                              >
                                                  <span className="text-[10px] font-black text-cyan-300 group-hover:text-white block transition-colors">📈 시장 확장</span>
-                                                 <span className="text-[9px] font-mono text-cyan-400 font-bold bg-cyan-950/60 px-1.5 py-0.2 rounded border border-cyan-500/30">91점 🔍</span>
+                                                 <span className="text-[9px] font-mono text-cyan-400 font-bold bg-cyan-950/60 px-1.5 py-0.2 rounded border border-cyan-500/30">{userSajuProfile.scores.market}점 🔍</span>
                                              </button>
 
                                              <button 
                                                  onClick={() => setSelectedRadarAxis({
                                                      id: 'leadership',
                                                      title: '👥 팀 리더십 (Co-Creation & Resonance)',
-                                                     score: 89,
+                                                     score: userSajuProfile.scores.leadership,
                                                      icon: 'groups',
                                                      color: 'text-emerald-300',
                                                      badgeColor: 'bg-emerald-500/20 text-emerald-200 border-emerald-400/40',
-                                                     bioWellness: '거울 뉴런 공명 & 심리적 안전감 (Psychological Safety)',
-                                                     darkCode: '마이크로매니징 및 불신으로 인한 나홀로 고립과 책임 과중감',
-                                                     neuralCode: '권한 위임(Delegation)과 투명한 질문 중심 소통으로 팀원의 자발적 몰입 유도',
-                                                     metaCode: '존재 자체로 주변 사람들의 영혼의 잠재력을 일깨우는 등대형 메타 리더십',
-                                                     action: '오늘 함께하는 파트너나 팀원에게 진심 어린 인정과 칭찬 한마디 전하기'
+                                                     bioWellness: userSajuProfile.axes.leadership.bioWellness,
+                                                     darkCode: userSajuProfile.axes.leadership.dark,
+                                                     neuralCode: userSajuProfile.axes.leadership.neural,
+                                                     metaCode: userSajuProfile.axes.leadership.meta,
+                                                     action: userSajuProfile.axes.leadership.action
                                                  })}
                                                  className="absolute bottom-[24%] left-[-10px] text-left p-1.5 rounded-xl hover:bg-emerald-500/20 transition-all cursor-pointer active:scale-95 group"
                                              >
                                                  <span className="text-[10px] font-black text-emerald-300 group-hover:text-white block transition-colors">👥 팀 리더십</span>
-                                                 <span className="text-[9px] font-mono text-emerald-400 font-bold bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-500/30">89점 🔍</span>
+                                                 <span className="text-[9px] font-mono text-emerald-400 font-bold bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-500/30">{userSajuProfile.scores.leadership}점 🔍</span>
                                              </button>
 
                                              <button 
                                                  onClick={() => setSelectedRadarAxis({
                                                      id: 'mental',
                                                      title: '🛡️ 멘탈 회복 (Vagus Nerve & Bio-Reset)',
-                                                     score: 88,
+                                                     score: userSajuProfile.scores.mental,
                                                      icon: 'shield_moon',
                                                      color: 'text-amber-300',
                                                      badgeColor: 'bg-amber-500/20 text-amber-200 border-amber-400/40',
-                                                     bioWellness: '부교감신경 이완 & 뇌신경 힐링 (Autonomous Nervous Reset)',
-                                                     darkCode: '만성적 투쟁-도피(Fight-or-Flight) 모드로 인한 코르티솔 호르몬 과다와 수면 질 저하',
-                                                     neuralCode: '4-7-8 호흡 프로토콜 및 마인드 제로포인트 명상으로 5분 내 뇌파(Alpha Wave) 안정화',
-                                                     metaCode: '거친 파도 속에서도 깊은 바다의 고요함을 유지하는 제로포인트 절대 평정',
-                                                     action: '지금 3분간 눈을 감고 깊은 복식호흡 5회로 뇌신경 긴장 털어내기'
+                                                     bioWellness: userSajuProfile.axes.mental.bioWellness,
+                                                     darkCode: userSajuProfile.axes.mental.dark,
+                                                     neuralCode: userSajuProfile.axes.mental.neural,
+                                                     metaCode: userSajuProfile.axes.mental.meta,
+                                                     action: userSajuProfile.axes.mental.action
                                                  })}
                                                  className="absolute top-[24%] left-[-10px] text-left p-1.5 rounded-xl hover:bg-amber-500/20 transition-all cursor-pointer active:scale-95 group"
                                              >
                                                  <span className="text-[10px] font-black text-amber-300 group-hover:text-white block transition-colors">🛡️ 멘탈 회복</span>
-                                                 <span className="text-[9px] font-mono text-amber-400 font-bold bg-amber-950/60 px-1.5 py-0.2 rounded border border-amber-500/30">88점 🔍</span>
+                                                 <span className="text-[9px] font-mono text-amber-400 font-bold bg-amber-950/60 px-1.5 py-0.2 rounded border border-amber-500/30">{userSajuProfile.scores.mental}점 🔍</span>
                                              </button>
 
                                              {/* Center Badge */}
                                              <div className="absolute size-14 rounded-full bg-[#181526]/95 border-2 border-indigo-400/60 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] backdrop-blur-sm pointer-events-none">
                                                  <span className="text-[7.5px] font-black text-indigo-300 uppercase tracking-tighter">CEO 파워</span>
-                                                 <span className="text-xs font-black text-white font-mono">92.5</span>
+                                                 <span className="text-xs font-black text-white font-mono">{userSajuProfile.ceoPower}</span>
                                              </div>
                                         </div>
                                     </div>
 
-                                    {/* 🌿 세계 최고 웰니스 & 비즈니스 코칭 싱크 박스 */}
+                                    {/* 🌿 세계 최고 웰니스 & 비즈니스 코칭 싱크 박스 (동적 매칭) */}
                                     <div className="mt-2.5 p-3.5 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-[#161329] to-slate-950 border border-indigo-500/20 space-y-2 text-left">
                                         <div className="flex items-center justify-between text-xs">
                                              <span className="text-slate-200 font-bold flex items-center gap-1.5">
                                                  <span className="material-symbols-outlined text-amber-400 text-sm">psychology</span>
-                                                 <span>추천 비즈니스 & 웰니스 싱크</span>
+                                                 <span>{userSajuProfile.userName} 대표 맞춤 비즈니스 & 웰니스</span>
                                              </span>
-                                             <span className="text-emerald-400 font-mono font-black text-xs">94.8% (최적 적합)</span>
+                                             <span className="text-emerald-400 font-mono font-black text-xs">{userSajuProfile.businessFit}% (최적 적합)</span>
                                         </div>
                                         <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                             <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full rounded-full w-[94.8%]"></div>
+                                             <div
+                                                 className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full rounded-full transition-all duration-700"
+                                                 style={{ width: `${userSajuProfile.businessFit}%` }}
+                                             />
                                         </div>
                                         <div className="pt-0.5 text-[11px] space-y-1 text-slate-300">
                                              <div className="flex items-center justify-between">
                                                  <span className="text-amber-300 font-bold">1순위 추천:</span>
-                                                 <strong className="text-white font-extrabold truncate max-w-[200px]">B2B 엔터프라이즈 SaaS / 솔루션</strong>
+                                                 <strong className="text-white font-extrabold truncate max-w-[200px]">{userSajuProfile.bizRank1}</strong>
                                              </div>
                                              <div className="flex items-center justify-between text-slate-400 text-[10px]">
-                                                 <span className="text-indigo-300 font-bold">⚡ 바이오 피크 타임:</span>
-                                                 <span className="text-cyan-300 font-mono font-bold">오전 09:00 ~ 11:30 (최대 몰입)</span>
+                                                 <span className="text-indigo-300 font-bold">2순위:</span>
+                                                 <span className="text-slate-300 truncate max-w-[200px]">{userSajuProfile.bizRank2}</span>
+                                             </div>
+                                             <div className="flex items-center justify-between text-slate-400 text-[10px] pt-0.5 border-t border-white/5">
+                                                 <span className="text-cyan-300 font-bold">⚡ 바이오 피크 타임:</span>
+                                                 <span className="text-cyan-300 font-mono font-bold">{userSajuProfile.peakHour}</span>
                                              </div>
                                         </div>
                                     </div>
