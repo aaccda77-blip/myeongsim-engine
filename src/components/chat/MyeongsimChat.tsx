@@ -63,7 +63,6 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [sttError, setSttError] = useState<string | null>(null);
     const [isBgmPlaying, setIsBgmPlaying] = useState<boolean>(false);
     const [reactions, setReactions] = useState<Record<string, string>>({});
-    const [showCardModal, setShowCardModal] = useState<boolean>(false);
     const [showCompanyModal, setShowCompanyModal] = useState<boolean>(false);
     const [showMicroPassModal, setShowMicroPassModal] = useState<boolean>(false);
     const [showMindStateModal, setShowMindStateModal] = useState<boolean>(false);
@@ -879,16 +878,6 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                                 )}
                                             </button>
 
-                                            {/* 1:1 영혼 가이드 카드 보기 버튼 */}
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowCardModal(true)}
-                                                className="px-3 py-1.5 rounded-xl font-bold bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40 transition-all flex items-center gap-1.5 cursor-pointer text-xs min-h-[36px] shadow-sm"
-                                            >
-                                                <FileText size={12} />
-                                                <span>📜 1:1 가이드 카드</span>
-                                            </button>
-
                                             {/* 복사 버튼 */}
                                             <button
                                                 type="button"
@@ -933,7 +922,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     </motion.div>
                 )}
                 
-                {/* ── 3회 무료 완료 후 또는 승인 대기 중 챗봇 내 890원 블러 잠금 마케팅 카드 ── */}
+                {/* ── 3회 무료 완료 후 또는 승인 대기 중 챗봇 내 무통장/도서인증 잠금 마케팅 카드 ── */}
                 {(userMessageCount >= 3 || isPendingApproval) && !isPaidUser && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -960,49 +949,49 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                     ⏳ 무통장 입금 승인 확인 중입니다
                                 </h3>
                                 <p className="text-xs text-gray-200 leading-relaxed">
-                                    입금자 <strong className="text-amber-300">[{depositorName || '고객님'}]</strong> 성함으로 890원 입금 승인이 신청되었습니다.<br />
-                                    담당자 확인 후 <span className="text-emerald-300 font-bold">1~5분 이내 3회 수다권</span>이 자동 개방됩니다.
+                                    입금자 <strong className="text-amber-300">[{depositorName || '고객님'}]</strong> 성함으로 입금 승인이 신청되었습니다.<br />
+                                    관리자 확인 후 <span className="text-emerald-300 font-bold">1~5분 이내 1:1 맞춤 코칭권</span>이 자동 개방됩니다.
                                 </p>
                                 <button
                                     onClick={checkApprovalStatus}
                                     disabled={isCheckingApproval}
                                     className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                                 >
-                                    <span>{isCheckingApproval ? '승인 상태 확인 중...' : '🔄 1초 입금 승인 상태 확인하기'}</span>
+                                    <span>{isCheckingApproval ? '승인 상태 확인 중...' : '🔄 입금 승인 상태 새로고침'}</span>
                                 </button>
                             </div>
                         ) : (
                             <h3 className="text-lg sm:text-xl font-black text-white mb-2 leading-snug break-keep">
-                                ☕ 890원으로<br />
+                                📖 도서 구매 인증 또는<br />
                                 <span className="text-amber-300 underline decoration-amber-400/50 decoration-wavy underline-offset-4 font-black">
-                                    1:1 맞춤 영혼 코칭 3회 더 이어가기
+                                    무통장 입금으로 1:1 맞춤 영혼 코칭 이어가기
                                 </span>
                             </h3>
                         )}
 
                         <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-md mx-auto mb-4 font-medium break-keep">
-                            커피 한 잔보다 가벼운 금액으로,<br />
-                            내 안의 고민을 명심 멘토와 끊김 없이 해결해 보세요.
+                            도서 속 주문번호를 입력하시면 20회 대화권이 즉시 무료 충전되며,<br />
+                            책 미구매 시 무통장 입금으로 바로 충전하실 수 있습니다.
                         </p>
 
-                        {/* Patent Notice Box */}
+                        {/* Store vs General Book Notice Box */}
                         <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-left mb-6 max-w-md mx-auto space-y-1">
                             <p className="text-[11px] font-black text-amber-300 flex items-center gap-1">
-                                <span>📜 [명심코칭 오픈 & 특허 출원 한정 혜택]</span>
+                                <span>👑 [청류스마트스토어 구매자 단독 혜택]</span>
                             </p>
                             <p className="text-[11px] text-gray-200 font-medium leading-[1.65]">
-                                특허 정식 출원 승인 시까지 특별 혜택가 <strong className="text-amber-300 font-black">890원</strong>에 제공되며, 정식 등록 완료 후 <span className="text-amber-200 font-bold">B2C 99,000원</span> / <span className="text-amber-200 font-bold">B2B 기업용 300,000원(30만원)</span>으로 정상 인상될 예정입니다.
+                                네이버 스마트스토어 주문번호(16자리) 인증 시 <span className="text-amber-300 font-bold">스타트업 리포트 + 다크코드 + 바이오케어 + 힐링송 + 20회 코칭</span> 올인원 풀패키지가 전면 무료 해금됩니다!
                             </p>
                         </div>
 
-                        {/* 890원 Payment Button */}
+                        {/* Modal Trigger Button */}
                         <button
                             type="button"
                             onClick={() => setShowMicroPassModal(true)}
                             className="w-full max-w-md py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-base sm:text-lg shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer mx-auto"
                         >
                             <Zap className="w-5 h-5 text-slate-950 fill-slate-950" />
-                            <span>💳 890원에 3회 즉시 충전하기 ➔</span>
+                            <span>✨ 도서 인증 / 무통장 충전하기 ➔</span>
                         </button>
                     </motion.div>
                 )}
@@ -1018,13 +1007,13 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-amber-950/60 via-purple-950/60 to-slate-950 border-t border-amber-500/30 flex items-center justify-between text-xs gap-2 shrink-0">
                     <span className="text-gray-200 font-bold flex items-center gap-1.5 truncate text-[11px] sm:text-xs">
                         <Sparkles size={13} className="text-amber-400 shrink-0" />
-                        <span className="truncate">{userMessageCount < 3 ? `🎁 첫 3회 1:1 영혼 코칭 무료 체험 중 (${userMessageCount}/3회)` : `🔒 3회 무료 완료! [특허 출원 한정 890원 / 추후 B2C 9만9천원, B2B 30만원 인상 예정]` }</span>
+                        <span className="truncate">{userMessageCount < 3 ? `🎁 첫 3회 1:1 영혼 코칭 무료 체험 중 (${userMessageCount}/3회)` : `🔒 3회 무료 완료! [도서 구매 인증 시 20회 + 올인원 패키지 무료 해금]` }</span>
                     </span>
                     <button
                         onClick={() => setShowMicroPassModal(true)}
                         className="py-1 px-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black shadow-md transition-all active:scale-95 flex items-center gap-1 text-[11px] sm:text-xs shrink-0 whitespace-nowrap"
                     >
-                        ⚡ 890원 소장하기
+                        ⚡ 도서 인증 / 무통장
                     </button>
                 </div>
             )}
@@ -1232,70 +1221,6 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                             <p className="leading-relaxed">
                                 명심 AI 코치는 사용자와 대화하는 도중 사고 왜곡, 불안, 완벽주의를 실시간 감지하여 <strong>{selectedProtocol.name}({selectedProtocol.code})</strong>의 실전 코칭적 도구를 타고난 사주 오행 기운과 1:1로 맞물려 가동합니다.
                             </p>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
-            {/* ── 7. 1:1 영혼 가이드 카드 팝업 모달 ── */}
-            {showCardModal && (
-                <div className="fixed inset-0 bg-black/85 backdrop-blur-xl z-50 flex items-center justify-center p-4" onClick={() => setShowCardModal(false)}>
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.9, opacity: 0 }}
-                        onClick={(e) => e.stopPropagation()}
-                        className="bg-gradient-to-b from-[#0b1329] via-[#080d1f] to-black border-2 border-amber-400/50 p-6 sm:p-7 rounded-[32px] max-w-md w-full shadow-[0_0_80px_rgba(245,158,11,0.3)] space-y-5 relative text-left"
-                    >
-                        <button
-                            onClick={() => setShowCardModal(false)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
-                        >
-                            ✕ 닫기
-                        </button>
-
-                        <div className="flex items-center gap-3 border-b border-amber-400/20 pb-4">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center">
-                                <Crown className="w-6 h-6 text-amber-300" />
-                            </div>
-                            <div>
-                                <span className="text-[10px] font-mono text-amber-300 font-bold bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/30">
-                                    📜 2026 丙午年 1:1 웰니스 영혼 가이드전
-                                </span>
-                                <h3 className="text-white font-black text-lg sm:text-xl mt-1">
-                                    {clientSajuData?.userName || '경윤'}님의 영점 자각 카드
-                                </h3>
-                            </div>
-                        </div>
-
-                        <div className="space-y-3 text-xs text-gray-200 bg-white/5 p-4 rounded-2xl border border-white/10">
-                            <div className="flex justify-between items-center text-amber-300 font-bold border-b border-white/10 pb-2">
-                                <span>🔮 타고난 사주 일간:</span>
-                                <span className="font-mono text-sm font-extrabold">{clientSajuData?.dayMaster || '辛金 (신금)'}</span>
-                            </div>
-                            <div className="flex justify-between items-center text-cyan-300 font-bold border-b border-white/10 pb-2">
-                                <span>🧠 3세대 현장 코칭 심리 도구:</span>
-                                <span>ACT 인지탈융합 & MBSR</span>
-                            </div>
-                            <div className="flex justify-between items-center text-emerald-300 font-bold">
-                                <span>🎵 뇌파 공명 주파수:</span>
-                                <span className="font-mono">432Hz Alpha Waves</span>
-                            </div>
-                        </div>
-
-                        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 to-purple-500/10 border border-amber-400/30 text-xs text-amber-100 leading-relaxed font-medium">
-                            <p className="font-bold text-amber-300 mb-1 flex items-center gap-1">
-                                <Sparkles size={14} /> 오늘의 영점 각성 주문 (Affirmation):
-                            </p>
-                            "내 안의 불안은 살아있음을 증명하는 다정한 파수꾼이다. 생각은 흘려보내고, 2026년 오롯이 빛나는 본래의 나로 귀환한다."
-                        </div>
-
-                        <div className="flex items-center gap-2 pt-2">
-                            <button
-                                onClick={handlePrescriptionClick}
-                                className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black shadow-lg transition-all active:scale-95 text-xs text-center"
-                            >
-                                ⚡ 890원 정밀 가이드 리포트 발급
-                            </button>
                         </div>
                     </motion.div>
                 </div>

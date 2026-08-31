@@ -63,10 +63,12 @@ export default function PaymentLockOverlay({ onRefresh, userId }: { onRefresh: (
                 <span className="text-primary-gold font-bold">이용권 구매</span> 또는 <span className="text-indigo-400 font-bold">관리자 승인</span>이 필요합니다.
             </p>
 
-            {/* Payment Options - Pass handler to open modal */}
+            {/* Payment Options - Pass handler to refresh */}
             <div className="w-full max-w-sm">
                 <PaymentCard
-                    onDetailedReport={() => setShowPhoneAuth(true)}
+                    onDetailedReport={async () => {
+                        await onRefresh();
+                    }}
                 />
             </div>
 
@@ -97,16 +99,6 @@ export default function PaymentLockOverlay({ onRefresh, userId }: { onRefresh: (
             <div className="w-full mt-4">
                 <Footer />
             </div>
-
-            {/* Phone Auth Modal for Registration */}
-            <PhoneAuthModal
-                isOpen={showPhoneAuth}
-                onClose={() => setShowPhoneAuth(false)}
-                onLoginSuccess={handleLoginSuccess}
-                selectedTier={selectedTier}
-                mode="register" // [NEW] Hide Google Login
-                currentUserId={userId} // [NEW] Link current user
-            />
         </div>
     );
 }
