@@ -11,6 +11,8 @@ import MyeongsimSunLogo from '@/components/common/MyeongsimSunLogo';
 
 interface Subscriber {
     name?: string;
+    email?: string;
+    depositorName?: string;
     phone?: string;
     id: string;
     phone_hash: string;
@@ -628,15 +630,24 @@ export default function AdminUsersPage() {
                                 </tr>
                             ) : (
                                 filteredUsers.map((u, idx) => {
-                                    const displayName = u.name ? `👤 ${u.name}` : '👤 무통장 입금 신청자';
-                                    const maskedPhone = u.phone ? `🔒 ${u.phone}` : (u.phone_hash ? `🔒 010-****-${u.phone_hash.slice(-4)}` : '🔒 개인정보 보호');
+                                    const rawName = u.depositorName || u.name || (u.email ? u.email.split('@')[0] : '');
+                                    const isDepositApplicant = u.name?.includes('[입금신청]') || !!u.depositorName || u.email === '무통장 입금 신청';
+                                    const displayName = rawName ? (isDepositApplicant ? `💰 ${rawName.replace('[입금신청]', '').trim()}` : `👤 ${rawName}`) : `👤 회원_${u.id.slice(0, 6)}`;
+                                    const subInfo = u.email && u.email !== '무통장 입금 신청' ? u.email : (u.phone ? `🔒 ${u.phone}` : (u.phone_hash ? `🔒 010-****-${u.phone_hash.slice(-4)}` : ''));
 
                                     return (
                                         <tr key={u.id} className="hover:bg-slate-800/50 transition-colors">
                                             <td className="p-4">
-                                                <div className="font-bold text-sm text-amber-300 flex items-center gap-1.5">
-                                                    <span>{displayName}</span>
-                                                    <span className="text-[10px] bg-slate-800 text-cyan-300 font-mono px-2 py-0.5 rounded border border-cyan-500/30">{maskedPhone}</span>
+                                                <div className="font-bold text-sm text-amber-300 flex items-center gap-1.5 flex-wrap">
+                                                    <span className="text-white font-extrabold text-base">{displayName}</span>
+                                                    {isDepositApplicant && (
+                                                        <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-400/40">
+                                                            입금 확인 요청 ({u.payment_amount?.toLocaleString() || '890'}원)
+                                                        </span>
+                                                    )}
+                                                    {subInfo && (
+                                                        <span className="text-[10px] bg-slate-800 text-cyan-300 font-mono px-2 py-0.5 rounded border border-cyan-500/30">{subInfo}</span>
+                                                    )}
                                                 </div>
                                                 <div className="text-[10px] text-gray-400 font-mono mt-1 flex items-center gap-2">
                                                     <span>ID: {u.id.slice(0, 13)}...</span>
