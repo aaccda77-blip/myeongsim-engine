@@ -12,6 +12,8 @@ export default function StartupDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isExecutiveDashboardOpen, setIsExecutiveDashboardOpen] = useState(false);
 
+    const [selectedHighlight, setSelectedHighlight] = useState<any>(null);
+
     const handleConsultation = (prompt: string) => {
         // [Fix] Intent 대신 실제 질문(Prompt)을 전달하여 챗봇이 바로 대답하게 함
         router.push(`/report?intent=${encodeURIComponent(prompt)}`);
@@ -33,9 +35,51 @@ export default function StartupDashboard() {
             detail: '귀하의 본원적 역량 구조에 내재된 혁신 창출력(Innovation Engine)과 자본 최적화(Capital Flow) 역량을 정밀 분석하여, 비즈니스 성공 확률이 가장 높은 핵심 사업 아이템과 카테고리를 도출합니다. 거시적 시장 트렌드와 결합한 3단계 피벗 전략 및 실행 리스크 사전 방어 로드맵을 제공합니다.',
             prompt: '제 기질 프로필에 가장 잘 맞는 창업 아이템과 사업 분야를 추천해주세요.',
             highlights: [
-                { title: '창업가 본원적 혁신성(Innovation) 및 자본화 역량 도출', desc: '창업가의 타고난 혁신 실행력(INNOVATION)과 자본 최적화(CAPITAL) 데이터 기반 최적 사업 소재 매칭' },
-                { title: '시장 메가트렌드 결합 고승률 비즈니스 & 3단계 피벗 로드맵', desc: '거시적 시장 트렌드와 결합한 고승률 사업 카테고리 선정 및 3단계 피벗 실행 로드맵' },
-                { title: '창업가 핵심 역량(Core Competency) 및 실행 리스크 사전 방어', desc: '사업 추진 과정에서 나타날 수 있는 기질적 취약점 및 조직 실행력 리스크 사전 예방' }
+                {
+                    title: '창업가 본원적 혁신성(Innovation) 및 자본화 역량 도출',
+                    desc: '창업가의 타고난 혁신 실행력(INNOVATION)과 자본 최적화(CAPITAL) 데이터 기반 최적 사업 소재 매칭',
+                    tag: '역량 매칭',
+                    icon: 'psychology',
+                    easyConcept: '물고기가 물을 만나야 날아오르듯, 창업가마다 타고난 "성공 무기"가 완전히 다릅니다. 누구는 세상에 없던 새로운 제품을 만드는 창작형(기획·기술)이고, 누구는 사람을 모아 유통하고 현금을 회전시키는 사업형(플랫폼·마케팅)입니다. 내 본질에 맞지 않는 아이템을 잡으면 10년을 고생해도 실패하지만, 타고난 기질과 일치하는 아이템을 잡으면 1년 만에 시장을 장악합니다.',
+                    whyImportant: '스타트업 실패 원인의 42%는 "시장이 원하지 않는 제품을 창업가 혼자 고집했기 때문"입니다. 내 기질의 강점을 알면 무리한 삽질을 멈추고 가장 빠르고 확실한 고승률 사업에만 집중할 수 있습니다.',
+                    deliverables: [
+                        '나의 4대 창업 기질 유형(기술개발형 / 플랫폼유통형 / 지식컨설팅형 / 커뮤니티형) 도출',
+                        '내 사주·기질 에너지와 100% 매칭되는 추천 사업 아이템 카테고리 Top 3',
+                        '초기 창업 자본 대비 자본 회전율(ROI)이 가장 빠른 최적 비즈니스 소재 제안'
+                    ],
+                    sampleCase: '💡 사례: 기획력은 천재적이나 현금 관리가 취약했던 A 대표님 ➔ B2C 제조를 접고 [B2B 라이선스 & 솔루션 공급]으로 피벗 후 6개월 만에 흑자 전환 달성',
+                    recommendedQuestion: '제 기질과 역량 구조에서 가장 승률이 높고 자본이 잘 모이는 사업 아이템 3가지를 추천해 주세요.'
+                },
+                {
+                    title: '시장 메가트렌드 결합 고승률 비즈니스 & 3단계 피벗 로드맵',
+                    desc: '거시적 시장 트렌드와 결합한 고승률 사업 카테고리 선정 및 3단계 피벗 실행 로드맵',
+                    tag: '트렌드 & 피벗',
+                    icon: 'trending_up',
+                    easyConcept: '아무리 훌륭한 배라도 "역풍"을 맞으면 침몰하고, 돛단배라도 "순풍"을 타면 대양을 건넙니다. 지금 시장에서 거대한 자본이 몰리고 있는 메가트렌드(AI, 자동화, 고령화, B2B SaaS 등)와 나의 기질을 결합하여, 초기 진입부터 최종 시장 안착까지 단계별로 어떻게 진화(Pivot)해야 할지 친절한 나침반을 제공합니다.',
+                    whyImportant: '스타트업의 90%는 첫 번째 아이템 그대로 성공하지 못합니다. 고객 반응과 시장 변화에 맞춰 "언제, 어떻게 방향을 틀어야(Pivot) 하는가?"를 아는 기업만이 끝까지 살아남습니다.',
+                    deliverables: [
+                        '현재 시장 메가트렌드와 내 기질의 교집합 영역 고승률 비즈니스 모델 도출',
+                        '1단계(시장 진입 & 초기 고객 확보) ➔ 2단계(BM 고도화) ➔ 3단계(스케일업) 실행 로드맵',
+                        '초기 시장 저항을 최소화하는 린(Lean) 검증 및 피벗 시나리오 플랜'
+                    ],
+                    sampleCase: '💡 사례: 단순 교육업을 운영하던 B 대표님 ➔ AI 결합형 [B2B 기업 역량 진단 SaaS 플랫폼]으로 3단계 피벗하여 기업가치 5배 상승',
+                    recommendedQuestion: '현재 AI 및 시장 트렌드와 결합하여 제 비즈니스를 3단계로 확장하고 피벗할 수 있는 구체적 로드맵을 짜주세요.'
+                },
+                {
+                    title: '창업가 핵심 역량(Core Competency) 및 실행 리스크 사전 방어',
+                    desc: '사업 추진 과정에서 나타날 수 있는 기질적 취약점 및 조직 실행력 리스크 사전 예방',
+                    tag: '리스크 방어',
+                    icon: 'shield',
+                    easyConcept: '항아리에 아무리 물을 쏟아부어도 "밑에 작은 구멍"이 뚫려 있으면 물은 채워지지 않습니다. 아이디어는 좋은데 마무리를 못 하거나(실행력 부족), 제품에만 집착해 영업을 못 하거나(완벽주의), 사람을 너무 쉽게 믿어 계약 분쟁을 겪는 등 대표자마다 치명적인 "인지적 약점 구멍"이 있습니다. 이 리포트는 그 구멍을 미리 찾아 메꿔주는 안전벨트입니다.',
+                    whyImportant: '스타트업은 강점이 없어서 망하는 것이 아니라, 대표의 "인지적 사각지대" 하나 때문에 치명타를 입고 무너집니다. 리스크를 미리 알고 대비하면 회사의 생존율이 300% 이상 올라갑니다.',
+                    deliverables: [
+                        '대표자의 6대 잠재 리스크(완벽주의, 결정 지연, 마케팅 기피, 계약 부주의 등) 정밀 진단',
+                        '대표의 부족한 역량을 완벽하게 채워줄 공동 창업자 / 핵심 인재(C-Level) 채용 가이드',
+                        '위기 상황 발생 시 멘탈 붕괴를 막고 조직 붕괴를 예방하는 CEO 리스크 매뉴얼'
+                    ],
+                    sampleCase: '💡 사례: 개발에만 몰두해 마케팅을 놓치던 C 대표님 ➔ 사업 시작 전 [영업형 파트너 영입 & 세일즈 자동화 파이프라인] 구축으로 위기 돌파',
+                    recommendedQuestion: '제가 사업할 때 가장 주의해야 할 기질적 취약점과 이를 보완할 핵심 팀 빌딩 전략을 알려주세요.'
+                }
             ]
         },
         {
@@ -47,9 +91,39 @@ export default function StartupDashboard() {
             detail: '창업가는 극심한 불확실성과 결정 피로(Decision Fatigue) 속에서 조직을 이끌어야 합니다. 본원적 기질 및 인지 프로세싱 기전 기반의 의식 오류 패턴을 분석하여, 리더십 균열 시점을 사전 예방하고 지속 가능한 CEO 멘탈리티를 구축해 드립니다.',
             prompt: '창업자로서 저의 심리적 강점과 약점, 그리고 주의해야 할 번아웃 패턴을 분석해주세요.',
             highlights: [
-                { title: '6대 핵심 인지 패턴 정밀 분석', desc: '완벽주의, 번아웃, 결정 피로(Decision Fatigue) 등 대표자의 심리적 스트레스 기전 분석' },
-                { title: '리더십 균열 시점 예방 가이드', desc: '조직 확장 및 위기 상황 시 발동되는 무의식적 방어 기제 분석 및 멘탈 회복력 강화' },
-                { title: 'CEO 맞춤형 수석 리더십 프로필', desc: '지속 가능한 최고경영자 멘탈리티 유지를 위한 마인드 버그 디버깅 및 자기조율 전략' }
+                {
+                    title: '6대 핵심 인지 패턴 정밀 분석',
+                    desc: '완벽주의, 번아웃, 결정 피로(Decision Fatigue) 등 대표자의 심리적 스트레스 기전 분석',
+                    tag: '멘탈 분석',
+                    icon: 'neurology',
+                    easyConcept: '대표님 혼자 모든 짐을 짊어지고 가다 보면 뇌가 과열되어 "결정 마비"나 "극심한 번아웃"이 찾아옵니다. 내가 어떤 상황에서 화가 나고, 어떤 순간에 에너지가 방전되는지 내면의 심리 알고리즘을 해부하여 맑은 정신을 회복시켜 드립니다.',
+                    whyImportant: '대표의 멘탈이 흔들리면 회사의 모든 중요한 결정(채용, 투자, 계약)이 왜곡됩니다. 대표의 멘탈 안정도가 곧 회사의 시가총액입니다.',
+                    deliverables: ['대표자 스트레스 및 인지 오류 6대 패턴 진단', '번아웃 전조 증상 자가 체크리스트', '에너지 급속 충전을 위한 데일리 마인드 리셋 루틴'],
+                    sampleCase: '💡 사례: 완벽주의로 모든 일을 직접 챙기다 번아웃이 온 D 대표 ➔ 위임 프로세스 구축 후 업무 스트레스 70% 감소',
+                    recommendedQuestion: '제가 창업 과정에서 겪을 수 있는 결정 피로와 번아웃을 예방할 수 있는 멘탈 관리법을 알려주세요.'
+                },
+                {
+                    title: '리더십 균열 시점 예방 가이드',
+                    desc: '조직 확장 및 위기 상황 시 발동되는 무의식적 방어 기제 분석 및 멘탈 회복력 강화',
+                    tag: '리더십 케어',
+                    icon: 'groups',
+                    easyConcept: '조직이 5명에서 20명, 50명으로 커질 때 대표의 리더십 스타일도 완전히 바뀌어야 합니다. 위기가 닥쳤을 때 나도 모르게 팀원들에게 상처를 주거나 폐쇄적으로 변하는 방어기제를 분석하여 따뜻하고 단단한 리더십을 갖추도록 돕습니다.',
+                    whyImportant: '팀원들이 퇴사하는 1위 원인은 회사의 비전이 아니라 "대표의 감정 기복과 소통 부재"입니다.',
+                    deliverables: ['조직 규모별 리더십 전환 가이드', '위기 소통 및 팀 신뢰 회복 매뉴얼', 'C-Level 및 팀장급 동기부여 프레임워크'],
+                    sampleCase: '💡 사례: 팀원들과 소통 단절로 핵심 개발자 퇴사 위기에 처했던 E 대표 ➔ 감정 분리 피드백 훈련 후 팀 퇴사율 0% 달성',
+                    recommendedQuestion: '조직이 커질 때 제가 팀원들과 신뢰를 잃지 않고 강력한 리더십을 발휘하는 소통법을 알려주세요.'
+                },
+                {
+                    title: 'CEO 맞춤형 수석 리더십 프로필',
+                    desc: '지속 가능한 최고경영자 멘탈리티 유지를 위한 마인드 버그 디버깅 및 자기조율 전략',
+                    tag: '최고경영자 멘탈',
+                    icon: 'verified_user',
+                    easyConcept: '스티브 잡스나 일론 머스크를 억지로 흉내 낼 필요가 없습니다. 내가 가진 고유한 카리스마와 장점을 극대화하여 세상에 단 하나뿐인 "나만의 수석 CEO 스타일"을 완성합니다.',
+                    whyImportant: '남의 옷을 입으면 오래 달릴 수 없습니다. 나다운 리더십을 확립해야 10년, 20년 지치지 않고 기업을 성장시킬 수 있습니다.',
+                    deliverables: ['나만의 고유한 CEO 리더십 아이덴티티 확립', '일과 삶의 균형을 지키는 경영자 에너지 관리법', '장기 비전 수립 및 의사결정 원칙 헌장'],
+                    sampleCase: '💡 사례: 권위적 리더십을 억지로 연기하던 F 대표 ➔ 진정성 기반의 코칭형 리더십으로 전환 후 사내 만족도 95점 달성',
+                    recommendedQuestion: '제 성향에 가장 잘 어울리고 팀원들을 열광시킬 수 있는 저만의 CEO 리더십 스타일을 정의해주세요.'
+                }
             ]
         },
         {
@@ -61,9 +135,39 @@ export default function StartupDashboard() {
             detail: '기업 생애주기 및 연간 거시 경영 사이클을 다차원으로 분석하여, 올해 귀하의 기업이 맞이할 피벗 적기와 자금 집행 및 조직 확장 최적 타이밍을 정밀 분석합니다.',
             prompt: '올해 우리 회사의 사업 경영 모멘텀과 주요 전략적 타이밍을 분석해주세요.',
             highlights: [
-                { title: '연간 경영 모멘텀 타임라인', desc: '분기별/월별 사업 확장, 조직 재정비 및 리스크 방어 적기 도출' },
-                { title: '피벗 & 자금 집행 타이밍', desc: '자금 조달(IR) 및 B2B 대형 계약 체결 최적 구간 정밀 분석' },
-                { title: '조직 급성장 및 이해관계 충돌 리스크 제어', desc: '조직 확장기에 대비한 HR 조직 개편 및 의사결정 리스크 사전 방어책 제안' }
+                {
+                    title: '연간 경영 모멘텀 타임라인',
+                    desc: '분기별/월별 사업 확장, 조직 재정비 및 리스크 방어 적기 도출',
+                    tag: '타이밍 전략',
+                    icon: 'event_available',
+                    easyConcept: '농사지을 때 봄에 씨를 뿌리고 가을에 거두듯, 기업 경영에도 "공격해야 할 달"과 "숨고르기를 해야 할 달"이 있습니다. 올해 우리 회사의 운기가 최고조에 이르는 황금 분기와 수비해야 할 분기를 짚어드립니다.',
+                    whyImportant: '타이밍이 맞지 않을 때 무리하게 신제품을 내거나 광고비를 쏟아부으면 돈만 날립니다. 타이밍을 맞추면 절반의 비용으로 3배의 성과를 냅니다.',
+                    deliverables: ['2026-2027 연간 경영 모멘텀 분기별 캘린더', '분기별 핵심 액션 아이템(공격/수비/내실/확장) 가이드', '투자 및 마케팅 예산 집중 집행 추천 구간'],
+                    sampleCase: '💡 사례: 비수기에 무리하게 마케팅하던 G사 ➔ 모멘텀 피크인 가을에 마케팅 집중 후 전년 대비 매출 400% 급증',
+                    recommendedQuestion: '올해 우리 회사가 가장 공격적으로 사업을 확장해야 할 최적의 타이밍과 분기를 짚어주세요.'
+                },
+                {
+                    title: '피벗 & 자금 집행 타이밍',
+                    desc: '자금 조달(IR) 및 B2B 대형 계약 체결 최적 구간 정밀 분석',
+                    tag: '자금 & 계약',
+                    icon: 'account_balance',
+                    easyConcept: '투자 유치(IR)와 대기업 제휴 계약은 대표자의 신뢰 기운이 최고점에 달했을 때 진행해야 가장 유리한 조건으로 도장을 찍을 수 있습니다. 성공 확률이 90% 이상인 협상 골든 타임을 찾아드립니다.',
+                    whyImportant: '불리한 시기에 투자 협상에 들어가면 밸류에이션(기업가치)을 후려치기당합니다.',
+                    deliverables: ['IR 피칭 및 텀시트(Term Sheet) 서명 최적 타임윈도우', 'B2B/B2G 대형 파트너십 체결 골든 타임', '자금 집행 시 ROI를 극대화하는 예산 집행 시기'],
+                    sampleCase: '💡 사례: 3번 거절당했던 H사 ➔ 자본 모멘텀 상승기에 재도전하여 15억 원 규모 시리즈A 투자 유치 성공',
+                    recommendedQuestion: '저희 회사의 대형 계약 체결 및 투자 유치를 추진하기에 가장 유리한 골든 타임은 언제인가요?'
+                },
+                {
+                    title: '조직 급성장 및 이해관계 충돌 리스크 제어',
+                    desc: '조직 확장기에 대비한 HR 조직 개편 및 의사결정 리스크 사전 방어책 제안',
+                    tag: '조직 리스크',
+                    icon: 'security',
+                    easyConcept: '회사가 잘나갈 때 가장 위험한 것이 "내부 분열"과 "계약 분쟁"입니다. 사람이 급격히 늘어날 때 발생하기 쉬운 사내 파벌, 지분 다툼, 법적 분쟁 리스크를 미리 인지하고 차단합니다.',
+                    whyImportant: '수많은 유망 스타트업이 외부 경쟁자가 아니라 "내부 창업진의 지분 갈등과 불화"로 무너집니다.',
+                    deliverables: ['조직 급성장기 사내 갈등 사전 모니터링 체크리스트', '주주 간 계약서 및 스톡옵션 분쟁 예방 가이드', '핵심 인력 이탈 방지 리텐션 전략'],
+                    sampleCase: '💡 사례: 초기 지분 분쟁 위기에 놓였던 I사 ➔ 사전 R&R 및 주주 계약 재정비로 유니콘 성장 기반 확립',
+                    recommendedQuestion: '향후 1~2년 내 조직 확장 시 발생할 수 있는 내부 갈등과 법적 리스크를 예방하는 방법을 알려주세요.'
+                }
             ]
         },
         {
@@ -75,9 +179,39 @@ export default function StartupDashboard() {
             detail: '공동 창업은 기업의 생존을 결정짓는 핵심 요소입니다. 파트너 간 기질 모달리티와 리더십 상호 보완성을 분석하여, 서로의 리더십 공백을 메우는 최상의 조직 케미스트리를 구축하고 갈등 예방 가이드를 제공합니다.',
             prompt: '공동 창업자와의 시너지와 협업 평가를 분석하고 싶습니다.',
             highlights: [
-                { title: '파트너 기질 상성 & 전략적 상호 보완성', desc: '공동 창업자 간 인지 기제 및 역량 모달리티 시너지를 통한 상호 보완성 정밀 평가' },
-                { title: '갈등 해결 & 의사결정 스타일', desc: '위기 시 의사결정 충돌 가능성 분석 및 파트너십 지속 가능성 리포트 도출' },
-                { title: 'C-Level 리더십 역할 분담 시스템', desc: 'CEO, CTO, COO 등 핵심 경영진 간 역할 충돌 방지를 위한 최적 R&R 방안 설계' }
+                {
+                    title: '파트너 기질 상성 & 전략적 상호 보완성',
+                    desc: '공동 창업자 간 인지 기제 및 역량 모달리티 시너지를 통한 상호 보완성 정밀 평가',
+                    tag: '케미스트리',
+                    icon: 'handshake',
+                    easyConcept: '공동 창업은 비즈니스 결혼과 같습니다. 성향이 너무 똑같으면 둘 다 같은 실수를 저지르고, 너무 다르면 매일 싸웁니다. 두 사람의 기질이 서로의 빈틈을 어떻게 채워주는지 "상호 보완성 궁합"을 냉정하게 평가합니다.',
+                    whyImportant: 'VC(투자자)들이 스타트업에 투자할 때 가장 중요하게 보는 요소 1위가 바로 "공동 창업자 간의 결속력과 역량 보완성"입니다.',
+                    deliverables: ['공동 창업자 간 기질 궁합 및 시너지 지수(100점 만점)', '상호 역량 보완 영역(기획, 개발, 영업, 재무) 매트릭스', '파트너십 지속 가능성 위험도 평가 리포트'],
+                    sampleCase: '💡 사례: 성격 차이로 매일 대립하던 공동창업자 ➔ 상호 인지 성향 이해 후 "기획-개발" 완벽 분업 체제로 전환',
+                    recommendedQuestion: '저와 공동 창업자의 기질적 시너지와 보완해야 할 협업 포인트를 분석해주세요.'
+                },
+                {
+                    title: '갈등 해결 & 의사결정 스타일',
+                    desc: '위기 시 의사결정 충돌 가능성 분석 및 파트너십 지속 가능성 리포트 도출',
+                    tag: '갈등 해결',
+                    icon: 'balance',
+                    easyConcept: '의견이 갈렸을 때 감정싸움으로 번지지 않고, 5분 만에 깔끔하게 합의에 도달할 수 있는 "우리 팀만의 의사결정 그라운드 룰"을 세워드립니다.',
+                    whyImportant: '갈등 자체는 나쁜 것이 아니지만, "해결되지 않고 쌓이는 갈등"은 기업을 파멸로 이끕니다.',
+                    deliverables: ['두 창업자의 위기 시 스트레스 반응 및 갈등 패턴 분석', '최종 결정권(Tie-breaker) 룰 설계 가이드', '상호 감정 소모를 없애는 팩트 기반 커뮤니케이션 툴킷'],
+                    sampleCase: '💡 사례: 의사결정 지연으로 사업이 멈췄던 J사 ➔ 명확한 영역별 전결권 룰 확립 후 제품 런칭 속도 2배 향상',
+                    recommendedQuestion: '저희 창업팀이 의견이 충돌할 때 가장 빠르고 잡음 없이 의사결정을 내릴 수 있는 최적의 룰을 제안해주세요.'
+                },
+                {
+                    title: 'C-Level 리더십 역할 분담 시스템',
+                    desc: 'CEO, CTO, COO 등 핵심 경영진 간 역할 충돌 방지를 위한 최적 R&R 방안 설계',
+                    tag: 'R&R 설계',
+                    icon: 'account_tree',
+                    easyConcept: 'CEO는 외향적 비전과 투자에 집중하고, CTO는 내실 있는 기술 개발에 전념할 수 있도록 역할과 책임(R&R)의 경계를 칼같이 나누어 업무 효율을 극대화합니다.',
+                    whyImportant: '역할이 겹치면 사공이 많아 배가 산으로 가고, 팀원들은 누구 말을 따라야 할지 혼란에 빠집니다.',
+                    deliverables: ['CEO/CTO/COO 핵심 직무별 권한과 책임 정의서', '주간/월간 경영진 회의 표준 템플릿', '지분율 대비 기여도 평가 및 밸런스 가이드'],
+                    sampleCase: '💡 사례: 서로 모든 일에 간섭하던 경영진 ➔ R&R 분리 후 각 분야 전문성 극대화 및 기업 매출 3배 성장',
+                    recommendedQuestion: '저희 경영진의 성향에 맞는 가장 이상적인 C-Level 역할 분담(R&R) 가이드를 작성해주세요.'
+                }
             ]
         },
         {
@@ -89,9 +223,39 @@ export default function StartupDashboard() {
             detail: '자금 조달 역시 정밀한 타이밍의 예술입니다. 귀하의 자본 모멘텀 및 시장 신뢰도 지수가 최고조에 달하는 시점에 맞춰 IR 및 라운드 오픈을 진행할 때 유동성 확보 성공 확률이 가장 높습니다. 적합한 투자자 페르소나 매칭 전략을 제공합니다.',
             prompt: '저에게 가장 유리한 투자 유치 시점과 적합한 투자자 유형을 알려주세요.',
             highlights: [
-                { title: '자금 조달(IR) 최적 타임윈도우', desc: '자본 모멘텀 및 대외 신뢰도 지수가 최고조에 달하는 IR 및 라운드 오픈 시점 정밀 도출' },
-                { title: '투자자(VC/엔젤) 페르소나 매칭', desc: '기업의 비전과 성장 데이터에 부합하고 장기 시너지를 극대화할 최적 투자자 유형 분석' },
-                { title: '유동성 리스크 & 런웨이 방어 전략', desc: '자금 고갈 위험 구간 사전 인지 및 라운드 마감 타임라인 리스크 관리 제안' }
+                {
+                    title: '자금 조달(IR) 최적 타임윈도우',
+                    desc: '자본 모멘텀 및 대외 신뢰도 지수가 최고조에 달하는 IR 및 라운드 오픈 시점 정밀 도출',
+                    tag: 'IR 타이밍',
+                    icon: 'payments',
+                    easyConcept: '투자 시장의 유동성 사이클과 대표님의 자본 운세가 일치할 때 IR 문을 두드려야 투자자들의 러브콜을 한몸에 받을 수 있습니다. 가장 유리한 밸류에이션을 받을 수 있는 타임윈도우를 도출합니다.',
+                    whyImportant: '잘못된 시점에 IR을 시작하면 6개월 내내 피칭만 다니다가 런웨이(통장 잔고)가 고갈되는 비극을 겪습니다.',
+                    deliverables: ['투자 유치(시드/프리A/시리즈A) 성공 확률이 가장 높은 추천 월(Month)', '투자자 미팅 시작부터 클로징까지 3개월 단축 로드맵', '투자 유치 시 IR 피칭 덱 핵심 강조 포인트'],
+                    sampleCase: '💡 사례: 6개월간 투자 유치에 실패하던 K사 ➔ IR 최적 타이밍에 피칭 시작하여 2개월 만에 10억 투자 확약 완료',
+                    recommendedQuestion: '저희 회사가 다음 투자 라운드를 오픈하고 피칭을 시작하기에 가장 완벽한 시점은 언제인가요?'
+                },
+                {
+                    title: '투자자(VC/엔젤) 페르소나 매칭',
+                    desc: '기업의 비전과 성장 데이터에 부합하고 장기 시너지를 극대화할 최적 투자자 유형 분석',
+                    tag: '투자자 매칭',
+                    icon: 'person_search',
+                    easyConcept: '단순히 돈만 주고 사사건건 간섭하는 "독이 되는 투자자"가 있고, 사업 인프라와 후속 투자까지 연결해 주는 "귀인 투자자"가 있습니다. 우리 팀의 성향과 찰떡궁합인 투자자 페르소나를 매칭해 드립니다.',
+                    whyImportant: '나쁜 투자자를 받으면 회사 지분을 뺏기거나 경영권 분쟁에 휘말려 회사가 공중분해될 수 있습니다.',
+                    deliverables: ['우리 기업에 최적인 VC/AC 투자사 성향 및 투자 철학 프로파일링', '투자자 미팅 시 대표가 던져야 할 "역검증 질문 리스트"', '투자 계약 시 독소조항 방어 핵심 체크포인트'],
+                    sampleCase: '💡 사례: 시너지가 없는 VC를 거절하고 [업계 네트워크 전문 투자사]를 선택하여 글로벌 진출 성공한 L사',
+                    recommendedQuestion: '저희 기업 문화와 비전에 가장 잘 맞고 사업 확장을 적극 도와줄 이상적인 투자자 유형을 알려주세요.'
+                },
+                {
+                    title: '유동성 리스크 & 런웨이 방어 전략',
+                    desc: '자금 고갈 위험 구간 사전 인지 및 라운드 마감 타임라인 리스크 관리 제안',
+                    tag: '런웨이 방어',
+                    icon: 'shield_with_heart',
+                    easyConcept: '비행기가 활주로(런웨이)가 끝나기 전에 이륙해야 하듯, 스타트업도 통장 잔고가 0이 되기 전에 손익분기점(BEP)을 넘거나 다음 투자를 유치해야 합니다. 자금 고갈 위험 구간을 6개월 전에 미리 감지하고 방어합니다.',
+                    whyImportant: '흑자 도산을 막고, 어떤 경제 위기 속에서도 최소 18개월 이상 버틸 수 있는 현금 흐름 안전망을 만듭니다.',
+                    deliverables: ['현금 소진율(Burn Rate) 기반 런웨이 안전 진단', '정부 지원금 및 정책 자금 최적 수혜 로드맵', '비상 시 고정비 절감 및 유동성 비축 플랜 B'],
+                    sampleCase: '💡 사례: 자금 고갈 3개월 전 정부 과제 및 매출 전환 플랜 가동으로 위기를 넘기고 흑자 기업으로 안착한 M사',
+                    recommendedQuestion: '저희 회사의 자금 고갈 리스크를 사전에 예방하고 안전한 런웨이를 확보하는 현금 관리 전략을 알려주세요.'
+                }
             ]
         },
         {
@@ -103,9 +267,39 @@ export default function StartupDashboard() {
             detail: '아무리 독창적인 BM이라도 시장의 생태계 사이클과 조화를 이루지 못하면 정체됩니다. 귀하의 사업 모델 내 가치 창출 구조(Value Proposition) 및 시장 확장성(Scalability) 타당성을 인지과학·경영학적으로 종합 검증하고 피벗 가이드를 제공합니다.',
             prompt: '제 비즈니스 모델이 현재 시장 흐름에 적합한지 검증해주세요.',
             highlights: [
-                { title: '가치 창출 구조 & 시장 확장성 검증', desc: '수익 창출 엔진 및 시장 안착 타당성의 인지과학·경영학 종합 검증' },
-                { title: '거시적 시장 사이클 부합도', desc: '현재 BM이 거시 경제 및 산업 생태계 사이클과 조화를 이루는지 적합도 정밀 분석' },
-                { title: 'BM 피벗 & 수익 모델 고도화 가이드', desc: '시장 정체 극복을 위한 비즈니스 모델 수정 방향성 및 차세대 수익 드라이버 제안' }
+                {
+                    title: '가치 창출 구조 & 시장 확장성 검증',
+                    desc: '수익 창출 엔진 및 시장 안착 타당성의 인지과학·경영학 종합 검증',
+                    tag: 'BM 타당성',
+                    icon: 'query_stats',
+                    easyConcept: '고객이 내 제품을 샀을 때 느끼는 가치가 가격보다 10배 높아야 사업이 폭발합니다. 일회성 판매로 끝나는 구조인지, 고객이 매달 돈을 내는 반복 수익(구독/수수료) 구조인지 비즈니스 모델의 엔진을 해부합니다.',
+                    whyImportant: '좋은 제품을 만드는 것과 "돈이 저절로 벌리는 비즈니스 모델"을 설계하는 것은 완전히 다른 영역입니다.',
+                    deliverables: ['비즈니스 모델 캔버스(BMC) 기반 9대 핵심 요소 정밀 진단', '고객 획득 비용(CAC) 대비 고객 평생 가치(LTV) 수익성 분석', '시장 확장성(Scalability)을 가로막는 병목 구간 도출'],
+                    sampleCase: '💡 사례: 단품 판매 쇼핑몰에서 [정기 구독 멤버십 모델]로 전환하여 재구매율 65% 달성한 N사',
+                    recommendedQuestion: '현재 제 비즈니스 모델의 수익 구조와 시장 확장성을 냉정하게 검증하고 개선점을 알려주세요.'
+                },
+                {
+                    title: '거시적 시장 사이클 부합도',
+                    desc: '현재 BM이 거시 경제 및 산업 생태계 사이클과 조화를 이루는지 적합도 정밀 분석',
+                    tag: '시장 사이클',
+                    icon: 'public',
+                    easyConcept: '지금 세상의 규제, 기술, 인구 구조가 우리 사업을 밀어주는 방향으로 가고 있는지(순풍), 아니면 가로막는 방향으로 가고 있는지(역풍) 거시 환경 적합도를 평가합니다.',
+                    whyImportant: '시대의 흐름을 거스르는 사업은 아무리 열심히 뛰어도 성장 한계에 부딪힙니다.',
+                    deliverables: ['PEST(정치, 경제, 사회, 기술) 거시 환경 적합도 지수', '경쟁사 대비 차별화된 언페어 어드밴티지(Unfair Advantage) 분석', '규제 및 법적 리스크 사전 우회 전략'],
+                    sampleCase: '💡 사례: 규제 리스크가 큰 영역을 우회하여 [B2B 엔터프라이즈 솔루션]으로 타겟을 바꿔 대기업 공급망에 진입한 O사',
+                    recommendedQuestion: '제 사업이 현재 거시 경제 및 산업 트렌드의 순풍을 타고 있는지 종합적으로 분석해주세요.'
+                },
+                {
+                    title: 'BM 피벗 & 수익 모델 고도화 가이드',
+                    desc: '시장 정체 극복을 위한 비즈니스 모델 수정 방향성 및 차세대 수익 드라이버 제안',
+                    tag: '수익 고도화',
+                    icon: 'auto_awesome',
+                    easyConcept: '현재 모델에서 마진율을 2배, 매출을 5배로 끌어올릴 수 있는 고부가가치 프리미엄 기능이나 데이터 기반 차세대 수익원을 추가하는 업그레이드 전략을 제시합니다.',
+                    whyImportant: '수익 모델을 한 단계만 고도화해도 같은 고객 수로 3배 이상의 순이익을 창출할 수 있습니다.',
+                    deliverables: ['고마진 차세대 수익원(Revenue Stream) 3가지 제안', '프리미엄 요금제(Tiered Pricing) 설계 가이드', '플랫폼 및 생태계 락인(Lock-in) 전략'],
+                    sampleCase: '💡 사례: 단순 컨설팅 기업에서 [진단 알고리즘 SaaS 툴 라이선스] 판매를 덧붙여 영업이익률 45% 달성한 P사',
+                    recommendedQuestion: '저희 회사의 비즈니스 모델을 한 단계 고도화하여 매출과 마진을 극대화할 수 있는 차세대 수익원을 제안해주세요.'
+                }
             ]
         }
     ];
@@ -193,22 +387,44 @@ export default function StartupDashboard() {
 
                                     <div className="h-px w-full bg-[#2b2839]"></div>
 
-                                    {/* [NEW] 3대 핵심 리포트 Bullet Points */}
+                                    {/* [NEW] 3대 핵심 리포트 Bullet Points (Interactive Cards) */}
                                     <div className="space-y-4">
-                                        <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                                            <span className="text-amber-400">📌</span>
-                                            본 분석에서 제공되는 3대 핵심 리포트
-                                        </h3>
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                                <span className="text-amber-400">📌</span>
+                                                본 분석에서 제공되는 3대 핵심 리포트
+                                            </h3>
+                                            <span className="text-[11px] text-indigo-400 font-medium">카드를 클릭하면 상세 해설이 열립니다 💡</span>
+                                        </div>
                                         <div className="space-y-3">
                                             {selectedService.highlights ? (
                                                 selectedService.highlights.map((h: any, idx: number) => (
-                                                    <div key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/30 transition-all">
-                                                        <div className="size-6 rounded-lg bg-[#3211d4]/20 border border-[#3211d4]/40 flex items-center justify-center text-indigo-300 font-bold text-xs flex-shrink-0 mt-0.5">
+                                                    <div
+                                                        key={idx}
+                                                        onClick={() => setSelectedHighlight(h)}
+                                                        className="group flex items-start gap-3.5 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/50 hover:bg-white/[0.08] hover:shadow-lg hover:shadow-indigo-500/10 transition-all cursor-pointer relative overflow-hidden"
+                                                    >
+                                                        <div className="size-7 rounded-lg bg-[#3211d4]/30 border border-[#3211d4]/50 group-hover:bg-[#3211d4] group-hover:border-indigo-400 flex items-center justify-center text-indigo-300 group-hover:text-white font-black text-xs flex-shrink-0 mt-0.5 transition-all">
                                                             {idx + 1}
                                                         </div>
-                                                        <div>
-                                                            <p className="text-xs font-bold text-white mb-0.5">{h.title}</p>
-                                                            <p className="text-[11px] text-slate-400 leading-relaxed">{h.desc}</p>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center justify-between gap-2 mb-1">
+                                                                <p className="text-xs md:text-sm font-bold text-white group-hover:text-indigo-300 transition-colors truncate">
+                                                                    {h.title}
+                                                                </p>
+                                                                {h.tag && (
+                                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex-shrink-0 font-medium">
+                                                                        {h.tag}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-[11px] md:text-xs text-slate-400 group-hover:text-slate-300 leading-relaxed">
+                                                                {h.desc}
+                                                            </p>
+                                                            <div className="mt-2 flex items-center gap-1.5 text-[10.5px] font-bold text-indigo-400 opacity-80 group-hover:opacity-100 transition-opacity">
+                                                                <span>🔍 초보자용 상세 해설 & 적용 사례 보기</span>
+                                                                <span className="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 ))
@@ -296,6 +512,115 @@ export default function StartupDashboard() {
                         </motion.div>
                     </div>
                 </main>
+
+                {/* [NEW] 초보자용 3대 리포트 상세 해설 팝업 모달 */}
+                {selectedHighlight && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-2xl bg-[#181526] border border-indigo-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between p-5 border-b border-[#2b2839] bg-[#131022]">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 rounded-xl bg-gradient-to-br from-[#3211d4] to-[#5b36ff] flex items-center justify-center text-white shadow-lg shadow-[#3211d4]/30">
+                                        <span className="material-symbols-outlined text-xl">{selectedHighlight.icon || 'lightbulb'}</span>
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                                {selectedHighlight.tag || '핵심 리포트'}
+                                            </span>
+                                            <span className="text-[10px] text-slate-400 font-mono">초보자 친화 가이드</span>
+                                        </div>
+                                        <h3 className="text-base md:text-lg font-black text-white leading-tight">
+                                            {selectedHighlight.title}
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedHighlight(null)}
+                                    className="size-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    <span className="material-symbols-outlined text-base">close</span>
+                                </button>
+                            </div>
+
+                            {/* Modal Body */}
+                            <div className="p-5 md:p-6 overflow-y-auto space-y-5 custom-scrollbar text-left text-sm">
+                                {/* 1. 쉬운 개념 비유 */}
+                                <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-indigo-500/10 border border-indigo-500/20 space-y-1.5">
+                                    <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wider">
+                                        <span className="material-symbols-outlined text-sm">auto_stories</span>
+                                        <span>한눈에 쏙 이해하는 쉬운 개념</span>
+                                    </div>
+                                    <p className="text-xs md:text-sm text-slate-200 leading-relaxed font-medium">
+                                        {selectedHighlight.easyConcept}
+                                    </p>
+                                </div>
+
+                                {/* 2. 왜 중요한가? */}
+                                <div className="space-y-1.5">
+                                    <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                                        <span className="material-symbols-outlined text-sm">priority_high</span>
+                                        <span>왜 창업가에게 결정적인가요?</span>
+                                    </h4>
+                                    <p className="text-xs text-slate-300 leading-relaxed pl-1">
+                                        {selectedHighlight.whyImportant}
+                                    </p>
+                                </div>
+
+                                {/* 3. 제공되는 3대 결과물 */}
+                                {selectedHighlight.deliverables && (
+                                    <div className="space-y-2">
+                                        <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                                            <span className="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
+                                            <span>이 분석을 통해 얻게 되는 핵심 리포트 내용</span>
+                                        </h4>
+                                        <div className="space-y-1.5 pl-1">
+                                            {selectedHighlight.deliverables.map((item: string, dIdx: number) => (
+                                                <div key={dIdx} className="flex items-start gap-2 text-xs text-slate-300">
+                                                    <span className="text-emerald-400 font-bold">✔</span>
+                                                    <span>{item}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 4. 실제 스타트업 적용 사례 */}
+                                {selectedHighlight.sampleCase && (
+                                    <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 leading-relaxed">
+                                        <p className="font-medium text-slate-200">{selectedHighlight.sampleCase}</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Modal Footer (Action Buttons) */}
+                            <div className="p-4 md:p-5 border-t border-[#2b2839] bg-[#131022] flex flex-col sm:flex-row items-center justify-between gap-3">
+                                <button
+                                    onClick={() => setSelectedHighlight(null)}
+                                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer"
+                                >
+                                    닫기
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const q = selectedHighlight.recommendedQuestion || selectedService.prompt;
+                                        setSelectedHighlight(null);
+                                        handleConsultation(q);
+                                    }}
+                                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#3211d4] via-indigo-600 to-[#5b36ff] hover:from-[#3211d4]/90 hover:to-[#5b36ff]/90 text-white font-extrabold text-xs shadow-lg shadow-[#3211d4]/30 transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                                >
+                                    <span className="material-symbols-outlined text-sm group-hover:scale-110 transition-transform text-amber-300">bolt</span>
+                                    <span>이 질문으로 AI 전담 코칭 바로 시작하기 ➔</span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
             </div>
         );
     }
