@@ -312,6 +312,8 @@ export default function StartupDashboard() {
     // [New] 팝업 해설 및 결제/인증 잠금 상태
     const [selectedHighlight, setSelectedHighlight] = useState<any>(null);
     const [activeDeepReport, setActiveDeepReport] = useState<any>(null);
+    const [isMarketingToolkitOpen, setIsMarketingToolkitOpen] = useState(false);
+    const [copiedToolIdx, setCopiedToolIdx] = useState<number | null>(null);
     const [selectedRadarAxis, setSelectedRadarAxis] = useState<any>(null);
     const [isStartupPassOpen, setIsStartupPassOpen] = useState(false);
     const [pendingHighlight, setPendingHighlight] = useState<any>(null);
@@ -1303,6 +1305,31 @@ export default function StartupDashboard() {
                                         </div>
                                     </div>
 
+                                    {/* 🚀 [대표님 실전 마케팅 툴킷 & 3단계 밸류 래더 바] */}
+                                    <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-indigo-500/20 border border-amber-400/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="size-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-sm shrink-0 shadow-md">
+                                                💎
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="text-xs font-black text-amber-300">辛金 다이아몬드 실전 마케팅 툴킷</span>
+                                                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-200 border border-amber-400/30">대표님 전용</span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-300 font-medium">
+                                                    스마트스토어·스레드·B2B 제휴에 바로 복사해 쓰는 1초 완판 카피라이팅 팩
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => setIsMarketingToolkitOpen(true)}
+                                            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shrink-0 active:scale-95"
+                                        >
+                                            <Sparkles className="w-3.5 h-3.5 text-slate-950 fill-current" />
+                                            <span>📋 홍보용 완판 카피 복사하기</span>
+                                        </button>
+                                    </div>
+
                                     {/* Security & Engine Footer */}
                                     <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-[9.5px] text-slate-500 font-mono">
                                          <span className="flex items-center gap-1">
@@ -1527,6 +1554,128 @@ export default function StartupDashboard() {
                 )}
 
                 
+                
+                {/* 🌟 [대표님 전용] 辛金 다이아몬드 고부가가치 1초 완판 마케팅 툴킷 모달 */}
+                {isMarketingToolkitOpen && (
+                    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-xl animate-fade-in" onClick={() => setIsMarketingToolkitOpen(false)}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative w-full max-w-2xl bg-gradient-to-b from-[#18152c] to-[#0c0a18] border-2 border-amber-400/50 rounded-3xl shadow-[0_0_80px_rgba(245,158,11,0.3)] overflow-hidden flex flex-col max-h-[92vh] text-left text-white"
+                        >
+                            {/* Modal Header */}
+                            <div className="p-5 sm:p-6 border-b border-white/10 bg-[#120f24] flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-11 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-950 flex items-center justify-center font-black text-xl shadow-lg">
+                                        💎
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                                                이경윤 대표님 전용 마케팅 자산
+                                            </span>
+                                        </div>
+                                        <h3 className="text-base sm:text-lg font-black text-white mt-0.5">
+                                            辛金 다이아몬드 실전 3대 채널 완판 카피 팩
+                                        </h3>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsMarketingToolkitOpen(false)}
+                                    className="size-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-400 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            {/* Modal Body */}
+                            <div className="p-5 sm:p-6 space-y-4 overflow-y-auto max-h-[calc(85vh-130px)] custom-scrollbar text-xs sm:text-sm">
+                                {/* Copy Item 1: 스마트스토어 상세페이지 앵커링 문구 */}
+                                <div className="p-4 rounded-2xl bg-white/5 border border-amber-400/30 space-y-2.5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-black text-amber-300 text-xs flex items-center gap-1.5">
+                                            <span>🛒 [스마트스토어 상세페이지 상단 배너 문구]</span>
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                const text = "[🎁 도서 구매자 단독 20만 원 상당 올인원 슈퍼패키지 100% 무료 증정!]\n\n📖 본 도서를 구매하신 모든 독자님께는 네이버 주문번호 인증 시 아래 5대 VIP 혜택이 즉시 전면 해금됩니다!\n\n1. 📊 19,800원 상당의 AI 스타트업 6대 역량 심층 정밀 진단서\n2. 🧬 무의식 다크코드 디버거 + 5대 바이오케어 처방전\n3. 🎵 1:1 맞춤형 헌정 힐링송 음원 제작권\n4. 🤖 AI 전담 코치 20회 심층 상담권\n\n지금 바로 도서를 구매하시고, 책 한 권 값으로 나만의 AI 전략 코치를 평생 소장하세요!";
+                                                navigator.clipboard.writeText(text);
+                                                setCopiedToolIdx(1);
+                                                setTimeout(() => setCopiedToolIdx(null), 2000);
+                                            }}
+                                            className="px-3 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[11px] flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                                        >
+                                            {copiedToolIdx === 1 ? '✅ 복사 완료!' : '📋 1초 복사'}
+                                        </button>
+                                    </div>
+                                    <p className="text-[11px] text-gray-300 leading-relaxed bg-black/40 p-3 rounded-xl border border-white/5 font-mono">
+                                        🎁 [도서 구매자 20만 원 상당 슈퍼패키지 무료 증정] 도서 구매 시 AI 스타트업 진단서 + 다크코드 + 바이오케어 + 힐링송 + 20회 코칭 전면 해금!
+                                    </p>
+                                </div>
+
+                                {/* Copy Item 2: 스레드/인스타그램 창업가 바이럴 챌린지 */}
+                                <div className="p-4 rounded-2xl bg-white/5 border border-purple-400/30 space-y-2.5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-black text-purple-300 text-xs flex items-center gap-1.5">
+                                            <span>📱 [스레드 / 인스타그램 / 링크드인 바이럴 챌린지]</span>
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                const text = "스타트업 실패 원인의 42%는 '시장이 원하지 않는 제품을 창업가 혼자 고집했기 때문'입니다.\n\n물고기가 물을 만나야 날아오르듯, 창업가마다 타고난 성공 무기가 완전히 다릅니다.\n\n기술개발형? 플랫폼유통형? 지식컨설팅형? 커뮤니티형?\n\n내 사주 기질과 108 매트릭스가 분석해 주는 6대 역량 파워 매트릭스를 무료로 진단해 보세요!\n\n👉 프로필 링크에서 1분 만에 CEO 파워 지수 확인하기";
+                                                navigator.clipboard.writeText(text);
+                                                setCopiedToolIdx(2);
+                                                setTimeout(() => setCopiedToolIdx(null), 2000);
+                                            }}
+                                            className="px-3 py-1 rounded-lg bg-purple-400 hover:bg-purple-300 text-slate-950 font-black text-[11px] flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                                        >
+                                            {copiedToolIdx === 2 ? '✅ 복사 완료!' : '📋 1초 복사'}
+                                        </button>
+                                    </div>
+                                    <p className="text-[11px] text-gray-300 leading-relaxed bg-black/40 p-3 rounded-xl border border-white/5 font-mono">
+                                        스타트업 42%가 실패하는 이유? 내 사주 기질과 사업 아이템이 충돌하기 때문입니다. [내 CEO 파워 지수 무료 진단]
+                                    </p>
+                                </div>
+
+                                {/* Copy Item 3: B2B 스타트업 제휴 및 기업 복지 제안서 */}
+                                <div className="p-4 rounded-2xl bg-white/5 border border-cyan-400/30 space-y-2.5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-black text-cyan-300 text-xs flex items-center gap-1.5">
+                                            <span>🏢 [B2B 기업 복지 & 스타트업 제휴 제안서 문구]</span>
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                const text = "[스타트업 대표 & 핵심 인재를 위한 24시간 AI 웰니스 CSO 솔루션 제안]\n\n스타트업의 가장 큰 보이지 않는 비용은 '대표와 핵심 임원의 번아웃 및 의사결정 피로'입니다.\n\n마인드플로우랩의 [명심 108 매트릭스]는 생체 바이오리듬과 사주 의식 구조를 동기화하여:\n- 팀원별 역량 시너지 및 갈등 사전 디버깅\n- 일간 최적 몰입(Peak Flow) 시간대 브리핑\n- 1:1 맞춤형 뇌신경 힐링 케어 솔루션을 제공합니다.\n\n월 50만 원으로 5명의 핵심 인재를 위한 전담 AI 코칭 인프라를 구축하세요.";
+                                                navigator.clipboard.writeText(text);
+                                                setCopiedToolIdx(3);
+                                                setTimeout(() => setCopiedToolIdx(null), 2000);
+                                            }}
+                                            className="px-3 py-1 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-[11px] flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                                        >
+                                            {copiedToolIdx === 3 ? '✅ 복사 완료!' : '📋 1초 복사'}
+                                        </button>
+                                    </div>
+                                    <p className="text-[11px] text-gray-300 leading-relaxed bg-black/40 p-3 rounded-xl border border-white/5 font-mono">
+                                        [스타트업 대표 & 핵심 인재를 위한 24시간 AI 웰니스 CSO 솔루션] 월 50만 원으로 5명의 전담 AI 코칭 인프라 구축
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="p-4 border-t border-white/10 bg-[#120f24] flex items-center justify-end">
+                                <button
+                                    onClick={() => setIsMarketingToolkitOpen(false)}
+                                    className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
+                                >
+                                    닫기
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+
                 {/* 🌟 [세계 최고 수준 UX/UI] 창업가 1:1 맞춤형 핵심 심층 정밀 리포트 뷰어 모달 */}
                 {activeDeepReport && (
                     <div className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-xl animate-fade-in" onClick={() => setActiveDeepReport(null)}>
