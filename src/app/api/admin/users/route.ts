@@ -16,13 +16,14 @@ export async function GET(request: NextRequest) {
     let authUserMap: Record<string, { email?: string; name?: string; phone?: string }> = {};
 
     if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-        // 1. Fetch Supabase Auth Users for accurate emails & names
+        // 1. Fetch Supabase Auth Users for accurate emails, providers, and names
         try {
             const { data: authData } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
             if (authData?.users) {
                 authData.users.forEach(au => {
                     const meta = au.user_metadata || {};
-                    const name = meta.full_name || meta.name || meta.display_name || meta.userName || '';
+                    const provider = au.app_metadata?.provider || '이메일';
+                    const name = meta.full_name || meta.name || meta.display_name || meta.userName || meta.user_name || '';
                     authUserMap[au.id] = {
                         email: au.email || '',
                         name: name,
@@ -45,14 +46,43 @@ export async function GET(request: NextRequest) {
                 const authInfo = authUserMap[u.id] || {};
                 const resolvedEmail = u.email || authInfo.email || '';
                 const emailPrefix = resolvedEmail.includes('@') ? resolvedEmail.split('@')[0] : '';
-                const resolvedName = u.name || u.depositor_name || u.depositorName || authInfo.name || (emailPrefix ? `${emailPrefix}님` : `회원_${u.id.slice(0, 6)}`);
+                
+                // 이름 결정: 입금자명 > DB 이름 > Auth 메타데이터 이름 > 이메일 ID > 기본 식별자
+                let resolvedName = u.depositor_name || u.depositorName || u.name || authInfo.name || '';
+                if (!resolvedName && emailPrefix) {
+                    resolvedName = `${emailPrefix}`;
+                }
+                if (!resolvedName) {
+                    resolvedName = `회원_${u.id.slice(0, 8)}`;
+                }
 
                 return {
                     ...u,
                     email: resolvedEmail,
                     name: resolvedName,
                     phone: u.phone || authInfo.phone || '',
+                    raw_id: u.id,
                 };
+            });
+        }
+
+        // 3. Add any Auth Users who are not yet in the `users` table
+        if (authUserMap) {
+            Object.entries(authUserMap).forEach(([authId, info]) => {
+                const exists = users.some(u => u.id === authId);
+                if (!exists) {
+                    const emailPrefix = (info.email && info.email.includes('@')) ? info.email.split('@')[0] : '';
+                    const resolvedName = info.name || (emailPrefix ? `${emailPrefix}` : `가입자_${authId.slice(0, 8)}`);
+                    users.push({
+                        id: authId,
+                        email: info.email || '',
+                        name: resolvedName,
+                        phone: info.phone || '',
+                        membership_tier: 'TRIAL',
+                        is_active: true,
+                        created_at: new Date().toISOString(),
+                    });
+                }
             });
         }
     }
@@ -60,7 +90,7 @@ export async function GET(request: NextRequest) {
     // Merge in-memory pending wire transfers
     const pendingMemoryItems = getPendingWireTransfers();
     pendingMemoryItems.forEach(pending => {
-        const existingIndex = users.findIndex(u => u.id === pending.id || u.name === pending.depositorName);
+        const existingIndex = users.findIndex(u => u.id === pending.id || u.name === pending.depositorName || (u.depositorName && u.depositorName === pending.depositorName));
         if (existingIndex === -1) {
             users.unshift({
                 id: pending.id,
@@ -100,7 +130,7 @@ export async function GET(request: NextRequest) {
         const rawPhone = user.phone || '';
         return {
             ...user,
-            name: user.name || user.depositorName || (user.email ? user.email.split('@')[0] : `가입자_${user.id.slice(0, 6)}`),
+            name: user.name || user.depositorName || (user.email ? user.email.split('@')[0] : `가입자_${user.id.slice(0, 8)}`),
             phone: rawPhone ? maskPhoneNumber(rawPhone) : '',
             originalPhoneMasked: rawPhone ? maskPhoneNumber(rawPhone) : '',
         };

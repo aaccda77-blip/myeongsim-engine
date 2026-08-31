@@ -98,7 +98,12 @@ ${line}효: ${lineData?.title || ''} / 뉴럴코드: ${lineData?.potential || ''
 ✨ 메타코드 (초월적 알아차림): ${metaCodeText || '미확인'}
 ${ragText}
 
-위 "${label}" 지표의 다크코드/뉴럴코드/메타코드를 중심으로, ${userName || '명심가'}님의 사주 기질과 연결하여 이 지표만의 고유한 감동 해설을 작성하세요. 절대 중간에 짤리지 않게 끝까지 마침표와 문장 종결 부호로 완성도 높게 작성해 주세요.`;
+[구성 형식 - 절대 중간에 끊기지 않도록 3단계를 각 3~4문장으로 밀도 있게 완결성 있게 작성]:
+1. **1. Scan (다크코드 자각 & 수용)**: 내면의 긴장과 불안이 나를 지키려던 다정한 보호막이었음을 자비롭게 위로하고 자각시켜 줍니다.
+2. **2. Sync (뉴럴코드 조율 & 정렬)**: 일상에서 어깨의 힘을 빼고 현실을 유연하게 조율해나가는 지혜로운 마음의 밸런스를 제시합니다.
+3. **3. Shift (메타코드 영점 각성 & 만개)**: 파도가 아닌 바다 자체가 되는 순수 영점 자각 상태로 시프트하며, 본래의 찬란한 평화와 축복으로 완벽히 문장을 종결합니다.
+
+마지막은 반드시 따뜻한 축복 문장으로 완성도 높게 끝내세요 (예: "당신의 빛나는 여정을 온 마음으로 응원하고 축복합니다. 💖").`;
 
     const model = genAI.getGenerativeModel({ model: modelName });
     
@@ -110,8 +115,8 @@ ${ragText}
       const result = await model.generateContent({
         contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
         generationConfig: {
-          maxOutputTokens: 4096, // 대용량 토큰 상한으로 토큰 브레이크 완전 해제
-          temperature: attempt === 0 ? 0.7 : 0.5,
+          maxOutputTokens: 6144, // 대용량 토큰 상한으로 토큰 브레이크 완전 해제
+          temperature: attempt === 0 ? 0.7 : 0.4,
         }
       });
 
@@ -127,7 +132,7 @@ ${ragText}
       if (attempt === maxRetries) {
         // 마지막 시도에서도 미완성이면 마무리 문장 강제 추가
         if (responseText.length > 100 && !isResponseComplete(responseText)) {
-          responseText += '\n\n✨ 당신의 내면에 잠든 빛이 깨어나는 그 여정을, 명심코칭이 늘 응원하고 축복합니다.';
+          responseText += '\n\n✨ 당신의 내면에 잠든 빛이 깨어나는 그 여정을, 명심코칭이 늘 응원하고 축복합니다. 💖';
         }
       }
     }

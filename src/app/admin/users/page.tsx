@@ -631,40 +631,67 @@ export default function AdminUsersPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredUsers.map((u, idx) => {
-                                    const rawName = u.depositorName || u.name || (u.email ? u.email.split('@')[0] : '');
-                                    const isDepositApplicant = u.name?.includes('[입금신청]') || !!u.depositorName || u.email === '무통장 입금 신청';
-                                    const displayName = rawName ? (isDepositApplicant ? `💰 ${rawName.replace('[입금신청]', '').trim()}` : `👤 ${rawName}`) : `👤 회원_${u.id.slice(0, 6)}`;
-                                    const subInfo = u.email && u.email !== '무통장 입금 신청' ? u.email : (u.phone ? `🔒 ${u.phone}` : (u.phone_hash ? `🔒 010-****-${u.phone_hash.slice(-4)}` : ''));
+                                    filteredUsers.map((u, idx) => {
+                                        const cleanDepositor = (u.depositorName || '').replace('[입금신청]', '').trim();
+                                        const cleanName = (u.name || '').replace('[입금신청]', '').trim();
+                                        const emailPrefix = (u.email && u.email.includes('@')) ? u.email.split('@')[0] : '';
+                                        
+                                        const isDepositApplicant = !!cleanDepositor || (u.name && u.name.includes('[입금신청]')) || u.email === '무통장 입금 신청' || !u.is_active;
+                                        
+                                        // 최우선 실명 표기
+                                        const mainName = cleanDepositor || cleanName || (emailPrefix ? `${emailPrefix}님` : `가입자_${u.id.slice(0, 8)}`);
+                                        const emailInfo = (u.email && u.email !== '무통장 입금 신청') ? u.email : '';
+                                        const phoneInfo = u.phone || (u.phone_hash ? `010-****-${u.phone_hash.slice(-4)}` : '');
 
-                                    return (
-                                        <tr key={u.id} className="hover:bg-slate-800/50 transition-colors">
-                                            <td className="p-4">
-                                                <div className="font-bold text-sm text-amber-300 flex items-center gap-1.5 flex-wrap">
-                                                    <span className="text-white font-extrabold text-base">{displayName}</span>
-                                                    {isDepositApplicant && (
-                                                        <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-400/40">
-                                                            입금 확인 요청 ({u.payment_amount?.toLocaleString() || '890'}원)
-                                                        </span>
-                                                    )}
-                                                    {subInfo && (
-                                                        <span className="text-[10px] bg-slate-800 text-cyan-300 font-mono px-2 py-0.5 rounded border border-cyan-500/30">{subInfo}</span>
-                                                    )}
-                                                </div>
-                                                <div className="text-[10px] text-gray-400 font-mono mt-1 flex items-center gap-2">
-                                                    <span>ID: {u.id.slice(0, 13)}...</span>
-                                                    <button
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(u.id);
-                                                            alert('가입자 ID가 클립보드에 복사되었습니다! 📋');
-                                                        }}
-                                                        className="px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/15 text-[9px] text-amber-400 border border-amber-400/30 transition-all"
-                                                        title="전체 ID 복사"
-                                                    >
-                                                        📋 복사
-                                                    </button>
-                                                </div>
-                                            </td>
+                                        return (
+                                            <tr key={u.id} className={`transition-colors ${isDepositApplicant ? 'bg-amber-500/10 hover:bg-amber-500/15 border-l-4 border-l-amber-400' : 'hover:bg-slate-800/50'}`}>
+                                                <td className="p-4">
+                                                    <div className="flex flex-col gap-1">
+                                                        <div className="font-bold text-sm text-amber-300 flex items-center gap-2 flex-wrap">
+                                                            {isDepositApplicant ? (
+                                                                <span className="text-amber-200 font-black text-base flex items-center gap-1.5">
+                                                                    <span>💰</span>
+                                                                    <span className="bg-amber-400/20 px-2 py-0.5 rounded-lg border border-amber-400/40 text-amber-100">{mainName}</span>
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-white font-extrabold text-base flex items-center gap-1">
+                                                                    <span>👤</span>
+                                                                    <span>{mainName}</span>
+                                                                </span>
+                                                            )}
+                                                            {isDepositApplicant && (
+                                                                <span className="text-[11px] bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black px-2.5 py-0.5 rounded-full shadow animate-pulse">
+                                                                    ⚡ 입금확인 대기 ({u.payment_amount?.toLocaleString() || '890'}원)
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-2 flex-wrap text-xs text-gray-300">
+                                                            {emailInfo && (
+                                                                <span className="bg-slate-800/90 text-cyan-300 font-mono px-2 py-0.5 rounded border border-cyan-500/30 font-medium">
+                                                                    ✉️ {emailInfo}
+                                                                </span>
+                                                            )}
+                                                            {phoneInfo && (
+                                                                <span className="bg-slate-800/90 text-emerald-300 font-mono px-2 py-0.5 rounded border border-emerald-500/30 font-medium">
+                                                                    📞 {phoneInfo}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="text-[10px] text-gray-400 font-mono flex items-center gap-2 mt-0.5">
+                                                            <span>UID: {u.id.slice(0, 15)}...</span>
+                                                            <button
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(u.id);
+                                                                    alert('가입자 고유 ID가 복사되었습니다! 📋');
+                                                                }}
+                                                                className="px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/15 text-[9px] text-amber-400 border border-amber-400/30 transition-all"
+                                                                title="전체 ID 복사"
+                                                            >
+                                                                📋 복사
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
                                         <td className="p-4 text-gray-400">
                                             {u.created_at ? new Date(u.created_at).toLocaleString('ko-KR') : '-'}
                                         </td>

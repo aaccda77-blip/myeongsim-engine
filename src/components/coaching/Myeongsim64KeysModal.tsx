@@ -10,6 +10,7 @@ import MicroPassModal from './MicroPassModal';
 import DailyScanWidget from './DailyScanWidget';
 import TeaserBlurPaywall from './TeaserBlurPaywall';
 import PaymentCard from '@/components/chat/PaymentCard';
+import MicroChatPassModal from '@/components/modals/MicroChatPassModal';
 
 interface Myeongsim64KeysModalProps {
   isOpen: boolean;
@@ -1008,6 +1009,15 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
 
   const handleDocentRequest = async (item: any) => {
     if (!item || !data) return;
+
+    // 🔒 [890원 무통장 입금 승인 또는 도서 구매 VIP 잠금 가드]
+    if (typeof window !== 'undefined') {
+      const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true' || localStorage.getItem('myeongsim_smartstore_vip') === 'true';
+      if (!isPaid) {
+        setShowMicroPassModal(true);
+        return;
+      }
+    }
     
     // [보안] 로딩 중이면 추가 호출 차단
     if (docentLoading) return;
@@ -2815,10 +2825,12 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
       term={selectedMyeongliTerm} 
     />
 
-    <MicroPassModal
+    <MicroChatPassModal
       isOpen={showMicroPassModal}
       onClose={() => setShowMicroPassModal(false)}
-      userSajuData={data}
+      onSuccessPay={() => {
+        setShowMicroPassModal(false);
+      }}
     />
     </>
   );
