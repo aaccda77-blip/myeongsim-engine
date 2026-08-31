@@ -419,6 +419,138 @@ export default function StartupDashboard() {
                     recommendedQuestion: '저희 회사의 비즈니스 모델을 한 단계 고도화하여 매출과 마진을 극대화할 수 있는 차세대 수익원을 제안해주세요.'
                 }
             ]
+        },
+        {
+            id: 'strategy',
+            icon: 'analytics',
+            label: '데이터 기반 전략 분석',
+            title: '데이터 기반 비즈니스 전략 & 피벗 분석',
+            desc: '창업가의 선천적 실행 데이터와 시장 지표를 결합하여 고승률 피벗 및 확장 전략을 수립합니다.',
+            detail: '창업가의 타고난 혁신 역량과 실제 시장의 고객 반응 지표를 결합하여, 가장 승률이 높은 3단계 시장 진입 전략과 피벗 로드맵을 도출합니다.',
+            prompt: '제 기질 데이터와 현재 사업 모델을 바탕으로 최적의 3단계 시장 진입 전략 및 피벗 로드맵을 설계해주세요.',
+            highlights: [
+                {
+                    title: '블루오션 니치 포지셔닝 & 진입 전략',
+                    desc: '대기업과 직접 경쟁하지 않고 독보적 1위를 장악할 최적의 틈새 타깃 도출',
+                    tag: '포지셔닝',
+                    icon: 'gps_fixed',
+                    easyConcept: '치열한 레드오션에서 대기업과 싸우지 않고, 우리만의 독보적인 틈새시장을 찾아 1등이 되는 진입 전략을 설계합니다.',
+                    whyImportant: '스타트업은 모든 고객을 만족시킬 수 없습니다. 가장 절실한 1,000명의 열광팬이 있는 틈새시장에 집중해야 생존합니다.',
+                    deliverables: ['타깃 고객 페르소나 및 핵심 지불 용의(WTP) 분석', '경쟁사 빈틈을 파고드는 차별화 포지셔닝 맵', '초기 시장 침투(Go-To-Market) 90일 로드맵'],
+                    sampleCase: '💡 사례: 대형 교육 플랫폼과 경쟁하지 않고 [스타트업 대표 전용 실전 코칭 틈새]를 장악하여 월매출 5천 돌파',
+                    recommendedQuestion: '저희 사업이 대기업과 경쟁하지 않고 빠르게 1등을 차지할 수 있는 가장 확실한 블루오션 틈새시장을 분석해주세요.'
+                },
+                {
+                    title: '유닛 이코노믹스 & CAC/LTV 최적화',
+                    desc: '고객 획득 비용(CAC) 대비 고객 평생 가치(LTV) 극대화로 자금 고갈 방어',
+                    tag: '수익성 방어',
+                    icon: 'price_check',
+                    easyConcept: '고객 1명을 데려오는 데 드는 비용(CAC)보다 그 고객이 평생 쓰는 돈(LTV)이 3배 이상 높아야 회사가 흑자로 질주합니다.',
+                    whyImportant: '광고비만 많이 쓰고 밑 빠진 독에 물 붓는 마케팅을 하면 순식간에 자금이 고갈됩니다.',
+                    deliverables: ['고객 1인당 획득 비용(CAC) 대비 순이익률 계산표', '전환율을 2배 높이는 마케팅 퍼널 병목 진단', '광고비 없이 고객이 모이는 오가닉 바이럴 루프 설계'],
+                    sampleCase: '💡 사례: 유료 광고비를 70% 줄이고 콘텐츠 바이럴 퍼널로 전환하여 고객 획득 비용 1/4로 절감',
+                    recommendedQuestion: '저희 제품의 고객 획득 비용(CAC)을 낮추고 고객 평생 가치(LTV)를 극대화할 수 있는 마케팅 퍼널을 점검해주세요.'
+                },
+                {
+                    title: '연간 마일스톤 & KPI 실행 로드맵',
+                    desc: '전체 팀원이 한 방향으로 질주하는 분기별 단 하나의 핵심 지표(OMTM) 설정',
+                    tag: '실행 로드맵',
+                    icon: 'flag',
+                    easyConcept: '막연한 목표가 아닌, 이번 달, 이번 분기에 반드시 달성해야 하는 "단 하나의 핵심 지표(OMTM)"를 명확히 세워드립니다.',
+                    whyImportant: '지표가 불명확하면 팀원들이 각자 딴 곳을 보고 달려 에너지가 분산됩니다.',
+                    deliverables: ['분기별 핵심 성과 지표(OKRs / KPIs) 셋업 가이드', '경영진 주간 우선순위 점검 체크리스트', '목표 달성 실패 시 즉각 대처하는 비상 플랜(Plan B)'],
+                    sampleCase: '💡 사례: 10개 지표를 보느라 혼란스럽던 팀 ➔ [주간 활성 유료 고객수] 1개에 집중하여 6개월 만에 지표 4배 성장',
+                    recommendedQuestion: '올해 저희 스타트업이 반드시 달성해야 할 분기별 핵심 마일스톤과 최우선 집중 KPI를 설정해주세요.'
+                }
+            ]
+        },
+        {
+            id: 'legal',
+            icon: 'balance',
+            label: '법률/행정 리스크 점검',
+            title: '스타트업 법률·지분·행정 리스크 사전 방어',
+            desc: '주주 간 계약, 지분 분쟁, 노동/세무, 정부 규제 등 창업가를 위협하는 치명적 리스크를 사전에 차단합니다.',
+            detail: '스타트업이 성장하는 과정에서 마주치는 지분 분쟁, 동업 파기, 규제 이슈 등 치명적 법률·행정 리스크를 사전에 점검하고 방어 안전장치를 수립합니다.',
+            prompt: '저희 스타트업의 지분 구조와 비즈니스 모델에서 발생할 수 있는 법률·행정적 리스크와 주주간 계약 필수 조항을 점검해주세요.',
+            highlights: [
+                {
+                    title: '공동 창업자 주주 간 계약(SHA) & 베스팅 설계',
+                    desc: '동업자 이탈 시 지분 먹튀를 방지하는 4년 근속 베스팅 및 경영권 방어 룰',
+                    tag: '지분 분쟁 방어',
+                    icon: 'gavel',
+                    easyConcept: '처음엔 친하게 시작했지만 중간에 팀원이 나갈 때 지분을 다 들고 나가면 회사가 망합니다. 4년 근속 조건(Vesting) 등 안전장치를 완벽히 걸어드립니다.',
+                    whyImportant: '스타트업 폐업 원인 중 가장 뼈아픈 것이 "동업자 간 지분 분쟁"입니다. 초기 계약서 한 장이 회사를 살립니다.',
+                    deliverables: ['주주 간 계약서(SHA) 필수 5대 핵심 특약 조항 가이드', '지분 회수(Call Option) 및 의결권 위임 표준 룰', '대표이사 경영권 방어를 위한 최적 지분율 시뮬레이션'],
+                    sampleCase: '💡 사례: 창업 1년 만에 이탈한 공동창업자의 지분을 베스팅 조항 덕분에 무상 회수하여 후속 투자 유치 성공',
+                    recommendedQuestion: '저희 팀의 지분 분쟁을 원천 차단하기 위해 주주 간 계약서에 반드시 넣어야 할 필수 특약 조항을 점검해주세요.'
+                },
+                {
+                    title: '정부 지원 사업 & 규제 샌드박스 적합성 진단',
+                    desc: '지분 희석 없는 수억 원대 무상 정부 창업 지원금(TIPS 등) 최적 매칭',
+                    tag: '정부 지원금',
+                    icon: 'assured_workload',
+                    easyConcept: '내 돈 들이지 않고 정부에서 수천만~수억 원의 창업 지원금(예창패, 초창패, TIPS)을 받을 수 있는 최적의 지원 트랙을 매칭합니다.',
+                    whyImportant: '지분 희석 없는 정부 무상 지원금을 잘 활용하면 초기 2년의 데스밸리(Death Valley)를 가뿐히 넘길 수 있습니다.',
+                    deliverables: ['우리 기업 맞춤형 추천 정부 지원 사업 리스트 (TIPS, 청창사 등)', '지원 사업 선정 확률을 높이는 사업계획서 차별화 포인트', '신산업 규제 이슈 및 규제 샌드박스 신청 가이드'],
+                    sampleCase: '💡 사례: 기질 기반 기술력을 인정받아 예비창업패키지 및 TIPS 5억 연계 지원금 동시 선정',
+                    recommendedQuestion: '현재 저희 사업 모델로 가장 높은 확률로 선정될 수 있는 정부 지원 사업과 사업계획서 핵심 전략을 알려주세요.'
+                },
+                {
+                    title: '스톡옵션 & 비밀유지(NDA) 안전장치 수립',
+                    desc: '특급 인재 영입용 스톡옵션 설계 및 핵심 소스코드/영업비밀 유출 방어',
+                    tag: '기술 보호',
+                    icon: 'lock_person',
+                    easyConcept: '돈이 부족한 스타트업이 특급 인재를 모셔오는 필살기(스톡옵션)와, 우리 핵심 기술이 외부로 유출되지 않게 막는 비밀유지 계약을 설계합니다.',
+                    whyImportant: '핵심 개발자가 소스코드를 들고 나가 경쟁사를 차리는 순간 스타트업의 가치는 0이 됩니다.',
+                    deliverables: ['임직원 스톡옵션 부여 한도 및 행사 조건 가이드라인', '영업비밀 보호 및 전직 금지 서약서 표준 조항', '지식재산권(특허/상표권) 법인 귀속 체크리스트'],
+                    sampleCase: '💡 사례: 체계적인 스톡옵션 플랜으로 대기업 출신 핵심 개발자 영입 성공 및 기술 유출 리스크 방어',
+                    recommendedQuestion: '초기 핵심 인재 영입을 위한 매력적인 스톡옵션 부여 방안과 기술 보호를 위한 NDA 가이드를 작성해주세요.'
+                }
+            ]
+        },
+        {
+            id: 'org',
+            icon: 'hub',
+            label: '조직 구조 및 시스템 설계',
+            title: '조직 구조 & C-Level 분업 시스템 설계',
+            desc: '초기 3~10인 팀부터 스케일업 단계까지, 사공이 많아 산으로 가지 않도록 명확한 R&R과 전결권을 구축합니다.',
+            detail: '창업 멤버들의 기질과 인지 스타일을 고려하여 직무 충돌을 방지하고, 대표가 없어도 스스로 굴러가는 자율 분산형 업무 시스템을 설계합니다.',
+            prompt: '현재 저희 팀원들의 성향과 성장 단계에 맞는 최적의 C-Level 조직 구조와 R&R 분업 가이드를 설계해주세요.',
+            highlights: [
+                {
+                    title: 'C-Level 직무 권한(R&R) & 전결권 설계',
+                    desc: 'CEO, CTO, COO 간 업무 경계를 확립하여 의사결정 지연 및 월권 완벽 차단',
+                    tag: 'R&R 확립',
+                    icon: 'schema',
+                    easyConcept: 'CEO는 비전과 영업, CTO는 제품 개발, COO는 운영을 전담하도록 선을 그어주어 "서로 남의 일에 감 놔라 배 놔라" 하는 비효율을 없앱니다.',
+                    whyImportant: '경영진의 역할 중복은 팀원들에게 혼란을 주고, 의사결정 속도를 절반으로 떨어뜨립니다.',
+                    deliverables: ['CEO/CTO/COO 핵심 직무별 전결권 및 의사결정 권한표', '경영진 주간 전략 회의(Executive Sync) 30분 표준 룰', '경영진 평가 및 성과 보상 연동 시스템'],
+                    sampleCase: '💡 사례: 매일 밤샘 회의로 지치던 3인 창업팀 ➔ 전결권 확립 후 의사결정 속도 3배 향상 및 회의 시간 70% 감축',
+                    recommendedQuestion: '저희 경영진의 성향에 맞는 가장 이상적인 C-Level 역할 분담(R&R)과 전결권 룰을 설계해주세요.'
+                },
+                {
+                    title: '초기 핵심 인재(Key Talent) 채용 우선순위',
+                    desc: '팀의 기질적 빈틈을 메울 1순위 필수 채용 포지션 및 컬처핏 검증 가이드',
+                    tag: '인재 영입',
+                    icon: 'person_add',
+                    easyConcept: '지금 우리 팀에 가장 부족한 빈틈(영업인지, 개발인지, 기획인지)을 데이터로 진단하여 1순위로 뽑아야 할 인재를 도출합니다.',
+                    whyImportant: '잘못된 사람 1명을 뽑으면 그 사람 월급뿐만 아니라 기존 팀 전체의 분위기가 무너집니다.',
+                    deliverables: ['현재 팀 역량 갭(Gap) 분석 및 1순위 채용 직무 정의서(JD)', '문화 적합도(Culture-fit) 검증을 위한 핵심 인터뷰 질문 리스트', '초기 인재 온보딩(Onboarding) 30일 안착 프로그램'],
+                    sampleCase: '💡 사례: 무작정 개발자만 늘리던 팀 ➔ [B2B 영업 리드] 1명을 우선 채용하여 당월 매출 300% 달성',
+                    recommendedQuestion: '현재 저희 팀 역량 구조에서 가장 시급하게 영입해야 할 1순위 핵심 인재 포지션과 채용 기준을 알려주세요.'
+                },
+                {
+                    title: '자율 분산형 실행 시스템 & 스프린트 구축',
+                    desc: '대표의 마이크로매니징 없이도 팀이 1주일 단위로 질주하는 자율 위임 체계',
+                    tag: '자율 위임',
+                    icon: 'published_with_changes',
+                    easyConcept: '대표가 일일이 지시하지 않아도 팀원들이 1주일 단위로 목표를 쪼개어 스스로 실행하고 보고하는 자율 조직 시스템을 만듭니다.',
+                    whyImportant: '대표가 모든 실무에 갇혀 있으면 회사의 확장이 멈추고 대표는 번아웃에 빠집니다.',
+                    deliverables: ['1주일 단위 애자일 스프린트(Sprint) 운영 템플릿', '비동기 업무 보고(Slack/Notion) 커뮤니케이션 룰', '대표의 마이크로매니징을 없애는 자율 위임 프레임워크'],
+                    sampleCase: '💡 사례: 대표 1인에게 모든 결재가 몰리던 회사 ➔ 주간 스프린트 시스템 도입 후 대표 실무 시간 80% 위임 성공',
+                    recommendedQuestion: '대표가 실무에서 벗어나 비즈니스 확장에만 집중할 수 있는 자율 분산형 스프린트 시스템 구축 방안을 제안해주세요.'
+                }
+            ]
         }
     ];
 
@@ -437,9 +569,9 @@ export default function StartupDashboard() {
                             <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Enterprise Solution</p>
                         </div>
                     </div>
-                    <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                        <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">컨설팅 메뉴</p>
-                        {menuItems.map((item) => (
+                    <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+                        <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">컨설팅 메뉴</p>
+                        {menuItems.filter(i => ['dashboard', 'content', 'psychology', 'timing', 'partner', 'investment', 'bm'].includes(i.id)).map((item) => (
                             <a
                                 key={item.id}
                                 onClick={() => {
@@ -462,8 +594,31 @@ export default function StartupDashboard() {
                                 </span>
                             </a>
                         ))}
-                        <div className="pt-8 px-4">
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">특별 기능</p>
+
+                        <div className="pt-6 px-4">
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">전문 분석 서비스</p>
+                            <div className="space-y-1">
+                                {menuItems.filter(i => ['strategy', 'legal', 'org'].includes(i.id)).map((item) => (
+                                    <a
+                                        key={item.id}
+                                        onClick={() => {
+                                            setSelectedService(item);
+                                            setActiveMenu(item.id);
+                                        }}
+                                        className={`flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all text-sm cursor-pointer ${activeMenu === item.id
+                                            ? 'bg-indigo-500/20 text-indigo-300 font-bold border-l-2 border-indigo-400'
+                                            : 'text-[#a19db9] hover:text-white hover:bg-white/5 font-medium'
+                                            }`}
+                                    >
+                                        <span className="material-symbols-outlined text-[20px] text-indigo-400">{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="pt-6 px-4">
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">특별 기능</p>
                             <a onClick={() => router.push('/startup/facilitation')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
                                 <span className="material-symbols-outlined text-[20px]">groups</span> 창업팀 다자간 코칭
                             </a>
@@ -1066,9 +1221,9 @@ export default function StartupDashboard() {
                     </button>
                 </div>
 
-                <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                    <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">컨설팅 메뉴</p>
-                    {menuItems.map((item) => (
+                <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+                    <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">컨설팅 메뉴</p>
+                    {menuItems.filter(i => ['dashboard', 'content', 'psychology', 'timing', 'partner', 'investment', 'bm'].includes(i.id)).map((item) => (
                         <a
                             key={item.id}
                             onClick={() => {
@@ -1077,7 +1232,7 @@ export default function StartupDashboard() {
                                     setSelectedService(null);
                                 } else {
                                     setActiveMenu(item.id);
-                                    setSelectedService(item); // 바로 상세 보기로 이동
+                                    setSelectedService(item);
                                 }
                             }}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg group transition-all cursor-pointer ${activeMenu === item.id
@@ -1092,8 +1247,30 @@ export default function StartupDashboard() {
                         </a>
                     ))}
 
-                    <div className="pt-8 px-4">
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">특별 기능</p>
+                    <div className="pt-6 px-4">
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">전문 분석 서비스</p>
+                        <div className="space-y-1">
+                            {menuItems.filter(i => ['strategy', 'legal', 'org'].includes(i.id)).map((item) => (
+                                <a
+                                    key={item.id}
+                                    onClick={() => {
+                                        setSelectedService(item);
+                                        setActiveMenu(item.id);
+                                    }}
+                                    className={`flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all text-sm cursor-pointer ${activeMenu === item.id
+                                        ? 'bg-indigo-500/20 text-indigo-300 font-bold border-l-2 border-indigo-400'
+                                        : 'text-[#a19db9] hover:text-white hover:bg-white/5 font-medium'
+                                        }`}
+                                >
+                                    <span className="material-symbols-outlined text-[20px] text-indigo-400">{item.icon}</span>
+                                    <span>{item.label}</span>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-6 px-4">
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">특별 기능</p>
                         <a
                             onClick={() => router.push('/startup/facilitation')}
                             className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer"
@@ -1104,38 +1281,6 @@ export default function StartupDashboard() {
                         <a onClick={() => router.push('/startup/mastermind')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
                             <span className="material-symbols-outlined text-[20px]">diversity_3</span> 수석 아키텍트 그룹 자문
                         </a>
-                    </div>
-
-                    {/* [NEW] Status Section moved from main header for mobile visibility */}
-                    <div className="pt-8 px-4 mt-4 border-t border-[#2b2839]/50">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">기업 컨설팅 대시보드</p>
-                        <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                            <div className="flex items-start gap-3 text-indigo-400 mb-1">
-                                <span className="material-symbols-outlined text-lg">insights</span>
-                                <span className="text-xs font-bold">현재 경영 모멘텀</span>
-                            </div>
-                            <p className="text-[11px] text-slate-300 leading-relaxed">
-                                점진적 성장기 • 안정적 확장 단계
-                            </p>
-                            <div className="mt-3 text-[9px] text-slate-500 font-bold uppercase tracking-tight">
-                                분석: 2일 전
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="pt-8 px-4 pb-10">
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">전문 분석 서비스</p>
-                        <div className="space-y-2">
-                            <a className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">analytics</span> 데이터 기반 전략 분석
-                            </a>
-                            <a className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">balance</span> 법률/행정 리스크 점검
-                            </a>
-                            <a className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">hub</span> 조직 구조 및 시스템 설계
-                            </a>
-                        </div>
                     </div>
                 </nav>
 
