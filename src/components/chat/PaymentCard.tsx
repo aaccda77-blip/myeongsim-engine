@@ -22,7 +22,7 @@ export default function PaymentCard({ onDetailedReport, userId = 'guest-id' }: P
         bank: '토스뱅크',
         account: '1002-6847-4899',
         holder: '마인드플로우랩',
-        price: 4900,
+        price: 890,
     };
 
     const handleCopyAccount = () => {
@@ -45,7 +45,7 @@ export default function PaymentCard({ onDetailedReport, userId = 'guest-id' }: P
                 body: JSON.stringify({
                     amount: BANK_INFO.price,
                     depositorName: depositorName.trim(),
-                    orderName: '명심 챗봇 코칭 충전권 (4,900원)',
+                    orderName: '명심 챗봇 코칭 충전권 (890원)',
                     itemType: 'CHAT_PASS',
                     userId,
                 })

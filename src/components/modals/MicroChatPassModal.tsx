@@ -37,7 +37,7 @@ export default function MicroChatPassModal({
         bank: '토스뱅크',
         account: '1002-6847-4899',
         holder: '마인드플로우랩',
-        price: 4900,
+        price: 890,
     };
 
     const handleCopyAccount = () => {
@@ -60,7 +60,7 @@ export default function MicroChatPassModal({
                 body: JSON.stringify({
                     amount: BANK_INFO.price,
                     depositorName: depositorName.trim(),
-                    orderName: '명심코칭 챗봇 이용 충전권',
+                    orderName: '명심코칭 챗봇 이용 충전권 (890원)',
                     itemType: 'CHAT_PASS',
                     userId,
                 })
@@ -121,27 +121,18 @@ export default function MicroChatPassModal({
             const data = await res.json();
 
             if (res.ok && data.success) {
-                const isSmartVerified = data.record?.isSmartStore || isSmart;
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('myeongsim_paid_user', 'true');
                     localStorage.setItem('myeongsim_total_user_messages', '0');
                     localStorage.setItem('myeongsim_verified_order', cleaned);
-                    localStorage.removeItem('myeongsim_pending_approval');
-
-                    if (isSmartVerified) {
-                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
-                        localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
-                        localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+                    localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                    localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
+                    localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+                    if (isSmart) {
                         localStorage.setItem('myeongsim_smartstore_vip', 'true');
                     }
                 }
-
-                if (isSmartVerified) {
-                    alert('🎉 청류스마트스토어 VIP 인증 완료!\n\nAI 챗봇 20회 코칭 + 1:1 맞춤 힐링송 + 19,800원 스타트업 심층 리포트 + 무의식 다크코드 디버거 + 바이오케어 올인원 슈퍼패키지가 모두 무료 해금되었습니다.');
-                } else {
-                    alert('🎉 도서 구매 인증 완료!\n\n1:1 맞춤 헌정 힐링송 신청 및 20회 AI 코칭 대화가 활성화되었습니다.');
-                }
-
+                alert(data.message || '🎉 도서 구매 인증이 완료되었습니다! 20회 VIP 코칭 대화가 활성화되었습니다.');
                 if (onSuccessPay) onSuccessPay();
                 onClose();
             } else {
@@ -149,34 +140,17 @@ export default function MicroChatPassModal({
             }
         } catch (e) {
             console.error('Order verify error:', e);
-            if (cleaned.length >= 8) {
-                const isSmart = /^\d{16}$/.test(cleaned.replace(/-/g, ''));
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('myeongsim_paid_user', 'true');
-                    localStorage.setItem('myeongsim_total_user_messages', '0');
-                    if (isSmart) {
-                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
-                        localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
-                        localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
-                        localStorage.setItem('myeongsim_smartstore_vip', 'true');
-                    }
-                }
-                alert('🎉 도서 구매 인증이 완료되었습니다! 20회 VIP 코칭 대화가 활성화되었습니다.');
-                if (onSuccessPay) onSuccessPay();
-                onClose();
-            } else {
-                setCodeError('주문번호/영수증 인증 중 오류가 발생했습니다.');
-            }
+            setCodeError('인증 처리 중 네트워크 오류가 발생했습니다. 다시 시도해 주세요.');
         }
     };
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    initial={{ opacity: 0, scale: 0.95, y: 15 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 15 }}
                     className="relative w-full max-w-sm rounded-3xl bg-gradient-to-b from-slate-900 via-[#0D1525] to-slate-950 border border-amber-400/40 shadow-2xl p-5 overflow-hidden text-center text-white max-h-[90vh] overflow-y-auto hide-scrollbar gpu-smooth"
                 >
                     {/* Golden Glow Effect */}
@@ -200,10 +174,10 @@ export default function MicroChatPassModal({
 
                     {/* Title */}
                     <h3 className="text-base font-black tracking-tight text-white mb-1.5 leading-snug">
-                        1:1 명심 챗봇 코칭 이어가기
+                        1:1 명심 챗봇 코칭 충전
                     </h3>
                     <p className="text-[11px] text-gray-300 font-light leading-relaxed mb-3">
-                        무통장 입금 후 관리자 승인을 받으시거나,<br />
+                        무통장 입금(890원) 후 관리자 승인을 받으시거나,<br />
                         <strong>도서 구매 주문/영수증 번호</strong>를 입력하시면 20회 코칭이 즉시 활성화됩니다.
                     </p>
 
@@ -218,7 +192,7 @@ export default function MicroChatPassModal({
                             }`}
                         >
                             <Building2 className="w-3.5 h-3.5" />
-                            <span>1. 무통장 입금</span>
+                            <span>1. 무통장 입금 (890원)</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('code')}
