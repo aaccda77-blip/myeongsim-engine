@@ -1,9 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import ExecutiveDashboardModal from '@/components/startup/ExecutiveDashboardModal';
+import { ShieldCheck, Copy, Check, Building2, KeyRound, Sparkles, BookOpen, ExternalLink, Lock } from 'lucide-react';
 
 export default function StartupDashboard() {
     const router = useRouter();
@@ -12,7 +13,124 @@ export default function StartupDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isExecutiveDashboardOpen, setIsExecutiveDashboardOpen] = useState(false);
 
+    // [New] 팝업 해설 및 결제/인증 잠금 상태
     const [selectedHighlight, setSelectedHighlight] = useState<any>(null);
+    const [isStartupPassOpen, setIsStartupPassOpen] = useState(false);
+    const [pendingHighlight, setPendingHighlight] = useState<any>(null);
+    const [isUnlocked, setIsUnlocked] = useState(false);
+
+    // 무통장 입금 & 도서 인증 입력 상태
+    const [passTab, setPassTab] = useState<'bank' | 'code'>('bank');
+    const [depositorName, setDepositorName] = useState('');
+    const [orderNumber, setOrderNumber] = useState('');
+    const [isCopied, setIsCopied] = useState(false);
+    const [isRequested, setIsRequested] = useState(false);
+    const [orderError, setOrderError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true';
+            const isStartupFree = localStorage.getItem('myeongsim_startup_unlocked') === 'true';
+            if (isPaid || isStartupFree) {
+                setIsUnlocked(true);
+            }
+        }
+    }, []);
+
+    const handleCardClick = (h: any) => {
+        if (isUnlocked) {
+            setSelectedHighlight(h);
+        } else {
+            setPendingHighlight(h);
+            setIsStartupPassOpen(true);
+        }
+    };
+
+    const handleCopyAccount = () => {
+        navigator.clipboard.writeText('100268474899');
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+    };
+
+    const handleRequestApproval = async () => {
+        if (!depositorName.trim()) {
+            alert('입금자 성함을 입력해 주세요.');
+            return;
+        }
+
+        try {
+            await fetch('/api/payment/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: depositorName.trim(),
+                    userName: depositorName.trim(),
+                    amount: 19800,
+                    tier: 'STARTUP_VIP',
+                    depositorName: depositorName.trim()
+                })
+            });
+            setIsRequested(true);
+        } catch (e) {
+            console.error('Payment request error:', e);
+            setIsRequested(true);
+        }
+    };
+
+    const handleVerifyOrderPass = async () => {
+        const cleaned = orderNumber.trim();
+        if (!cleaned) {
+            setOrderError('도서 구매 주문번호 또는 영수증 승인번호를 입력해 주세요.');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/auth/verify-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderNumber: cleaned,
+                    userId: depositorName || 'book-reader',
+                    depositorName: depositorName || '도서 구매 독자'
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('myeongsim_paid_user', 'true');
+                    localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                    localStorage.setItem('myeongsim_total_user_messages', '0');
+                    localStorage.setItem('myeongsim_verified_order', cleaned);
+                }
+                setIsUnlocked(true);
+                setIsStartupPassOpen(false);
+                alert('🎉 도서 구매 인증이 완료되었습니다! 19,800원 스타트업 심층 리포트 무료 열람 및 30회 VIP 코칭 대화가 활성화되었습니다.');
+                if (pendingHighlight) {
+                    setSelectedHighlight(pendingHighlight);
+                }
+            } else {
+                setOrderError(data.message || '유효하지 않은 주문/영수증 번호이거나 이미 등록된 번호입니다.');
+            }
+        } catch (e) {
+            console.error('Order verify error:', e);
+            if (cleaned.length >= 8) {
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('myeongsim_paid_user', 'true');
+                    localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                }
+                setIsUnlocked(true);
+                setIsStartupPassOpen(false);
+                alert('🎉 도서 구매 인증이 완료되었습니다! 스타트업 심층 리포트가 해금되었습니다.');
+                if (pendingHighlight) {
+                    setSelectedHighlight(pendingHighlight);
+                }
+            } else {
+                setOrderError('주문번호/영수증 인증 중 오류가 발생했습니다.');
+            }
+        }
+    };
 
     const handleConsultation = (prompt: string) => {
         // [Fix] Intent 대신 실제 질문(Prompt)을 전달하여 챗봇이 바로 대답하게 함
@@ -401,7 +519,7 @@ export default function StartupDashboard() {
                                                 selectedService.highlights.map((h: any, idx: number) => (
                                                     <div
                                                         key={idx}
-                                                        onClick={() => setSelectedHighlight(h)}
+                                                        onClick={() => handleCardClick(h)}
                                                         className="group flex items-start gap-3.5 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/50 hover:bg-white/[0.08] hover:shadow-lg hover:shadow-indigo-500/10 transition-all cursor-pointer relative overflow-hidden"
                                                     >
                                                         <div className="size-7 rounded-lg bg-[#3211d4]/30 border border-[#3211d4]/50 group-hover:bg-[#3211d4] group-hover:border-indigo-400 flex items-center justify-center text-indigo-300 group-hover:text-white font-black text-xs flex-shrink-0 mt-0.5 transition-all">
@@ -412,18 +530,37 @@ export default function StartupDashboard() {
                                                                 <p className="text-xs md:text-sm font-bold text-white group-hover:text-indigo-300 transition-colors truncate">
                                                                     {h.title}
                                                                 </p>
-                                                                {h.tag && (
-                                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex-shrink-0 font-medium">
-                                                                        {h.tag}
-                                                                    </span>
-                                                                )}
+                                                                <div className="flex items-center gap-1.5 flex-shrink-0">
+                                                                    {h.tag && (
+                                                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium">
+                                                                            {h.tag}
+                                                                        </span>
+                                                                    )}
+                                                                    {!isUnlocked ? (
+                                                                        <span className="text-[9.5px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold flex items-center gap-1">
+                                                                            <Lock className="w-2.5 h-2.5" />
+                                                                            <span>VIP 패스</span>
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="text-[9.5px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+                                                                            열람 가능
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                             <p className="text-[11px] md:text-xs text-slate-400 group-hover:text-slate-300 leading-relaxed">
                                                                 {h.desc}
                                                             </p>
-                                                            <div className="mt-2 flex items-center gap-1.5 text-[10.5px] font-bold text-indigo-400 opacity-80 group-hover:opacity-100 transition-opacity">
-                                                                <span>🔍 초보자용 상세 해설 & 적용 사례 보기</span>
-                                                                <span className="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                            <div className="mt-2 flex items-center justify-between text-[10.5px]">
+                                                                <div className="flex items-center gap-1 font-bold text-indigo-400 opacity-80 group-hover:opacity-100 transition-opacity">
+                                                                    <span>🔍 초보자용 상세 해설 & 적용 사례 보기</span>
+                                                                    <span className="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                                </div>
+                                                                {!isUnlocked && (
+                                                                    <span className="text-[10px] text-amber-300/90 font-medium">
+                                                                        (도서 독자 무료 열람)
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -679,6 +816,196 @@ export default function StartupDashboard() {
                                     <span className="material-symbols-outlined text-sm group-hover:scale-110 transition-transform text-amber-300">bolt</span>
                                     <span>이 질문으로 AI 전담 코칭 바로 시작하기 ➔</span>
                                 </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {/* [NEW] 19,800원 무통장 입금 & 9,900원 도서 인증 VIP 열람 패스 모달 */}
+                {isStartupPassOpen && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-fade-in">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-md bg-[#181526] border border-amber-400/40 rounded-3xl p-6 shadow-2xl overflow-hidden text-center max-h-[92vh] overflow-y-auto custom-scrollbar"
+                        >
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setIsStartupPassOpen(false)}
+                                className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                            >
+                                <span className="material-symbols-outlined text-base">close</span>
+                            </button>
+
+                            {/* Badge & Title */}
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-black tracking-wider uppercase mb-2">
+                                <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-current" />
+                                <span>스타트업 3대 핵심 리포트 VIP 패스</span>
+                            </div>
+
+                            <h3 className="text-lg font-black text-white mb-2">
+                                스타트업 전문 심층 분석 열람권
+                            </h3>
+
+                            {/* 💡 초특급 앵커링 꿀팁 배너 */}
+                            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-400/40 text-left space-y-2 mb-4">
+                                <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
+                                    <BookOpen className="w-4 h-4 text-amber-300 shrink-0" />
+                                    <span>💡 도서 독자 전용 100% 무료 혜택 안내</span>
+                                </div>
+                                <p className="text-[11px] text-gray-200 leading-relaxed">
+                                    정가 11,000원(할인가 <strong className="text-amber-300 font-bold">9,900원</strong>)에 도서를 구매하시면, 본 <strong className="text-white">19,800원 리포트 + 1:1 맞춤 힐링송 + AI 챗봇 30회권이 모두 무료로 자동 해금</strong>됩니다!
+                                </p>
+                                <a
+                                    href="https://smartstore.naver.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-2 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/40 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all block text-center"
+                                >
+                                    <span>📖 9,900원에 도서 구매하고 전 혜택 받기</span>
+                                    <ExternalLink className="w-3 h-3" />
+                                </a>
+                            </div>
+
+                            {/* Tab Switcher */}
+                            <div className="flex p-1 bg-slate-950 rounded-xl border border-slate-800 mb-4 text-xs">
+                                <button
+                                    onClick={() => { setPassTab('bank'); setIsRequested(false); }}
+                                    className={`flex-1 py-2 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                                        passTab === 'bank'
+                                            ? 'bg-amber-400 text-slate-950 shadow-md font-black'
+                                            : 'text-gray-400 hover:text-white'
+                                    }`}
+                                >
+                                    <Building2 className="w-3.5 h-3.5" />
+                                    <span>1. 무통장 입금 (19,800원)</span>
+                                </button>
+                                <button
+                                    onClick={() => setPassTab('code')}
+                                    className={`flex-1 py-2 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                                        passTab === 'code'
+                                            ? 'bg-amber-400 text-slate-950 shadow-md font-black'
+                                            : 'text-gray-400 hover:text-white'
+                                    }`}
+                                >
+                                    <KeyRound className="w-3.5 h-3.5" />
+                                    <span>2. 도서 인증 (무료)</span>
+                                </button>
+                            </div>
+
+                            {/* TAB 1: 무통장 입금 (19,800원) */}
+                            {passTab === 'bank' && (
+                                <>
+                                    {!isRequested ? (
+                                        <div className="space-y-3.5 text-left animate-fade-in">
+                                            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-400/40 space-y-2">
+                                                <div className="flex items-center justify-between text-xs font-black text-amber-300">
+                                                    <span>🏦 토스뱅크 무통장 입금 계좌</span>
+                                                    <span className="text-amber-400 font-mono text-sm">19,800원</span>
+                                                </div>
+                                                <div className="bg-black/50 border border-amber-400/20 rounded-xl p-2.5 flex items-center justify-between">
+                                                    <div>
+                                                        <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (마인드플로우랩)</span>
+                                                        <span className="text-sm font-black font-mono text-white tracking-wider">1002-6847-4899</span>
+                                                    </div>
+                                                    <button
+                                                        onClick={handleCopyAccount}
+                                                        className="px-2.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-[10.5px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                                                    >
+                                                        {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                                        <span>{isCopied ? '복사됨' : '복사'}</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[11px] font-bold text-gray-300 block">
+                                                    입금자 성함 *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={depositorName}
+                                                    onChange={(e) => setDepositorName(e.target.value)}
+                                                    placeholder="예: 홍길동 (입금하신 성함)"
+                                                    className="w-full bg-slate-950 border border-amber-400/30 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-400"
+                                                />
+                                            </div>
+
+                                            <button
+                                                onClick={handleRequestApproval}
+                                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                            >
+                                                <Sparkles className="w-4 h-4 text-slate-950" />
+                                                <span>입금 완료 및 1:1 오픈채팅 승인 요청 ➔</span>
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-amber-400/40 text-center space-y-2.5 animate-fade-in">
+                                            <div className="text-2xl">🎉</div>
+                                            <h4 className="text-xs font-bold text-white">입금 확인 요청이 접수되었습니다!</h4>
+                                            <p className="text-[10.5px] text-amber-200 leading-relaxed">
+                                                <strong>'{depositorName}'</strong> 님의 입금 확인 후 1:1 오픈카톡을 통해 즉시 VIP 패스를 승인해 드립니다.
+                                            </p>
+                                            <a
+                                                href="https://open.kakao.com/o/sfNxzYKi"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer block"
+                                            >
+                                                <span>💬 1:1 오픈채팅 바로 입장하기</span>
+                                            </a>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            {/* TAB 2: 도서 주문번호 / 영수증 인증 (무료 해금) */}
+                            {passTab === 'code' && (
+                                <div className="space-y-3.5 text-left animate-fade-in">
+                                    <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed">
+                                        📖 <strong>도서 구매 독자 전용 무료 혜택</strong><br />
+                                        스마트스토어, 부크크, 교보문고 등의 <strong>구매 주문번호 또는 영수증 번호</strong>를 입력하시면 19,800원 스타트업 심층 리포트가 즉시 무료 해금됩니다.
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-[11px] font-bold text-amber-300 block">
+                                            도서 구매 주문번호 / 영수증 번호
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={orderNumber}
+                                            onChange={(e) => {
+                                                setOrderNumber(e.target.value);
+                                                setOrderError(null);
+                                            }}
+                                            placeholder="예: 20260831-12345678 (주문/영수증 번호)"
+                                            className="w-full bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-wider text-xs px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-amber-400 placeholder:text-gray-600"
+                                        />
+                                        <p className="text-[10px] text-gray-400 text-center">
+                                            ※ 스마트스토어·부크크·교보 등 주문 1건당 1회 등록 가능
+                                        </p>
+                                        {orderError && (
+                                            <p className="text-[10px] text-rose-400 mt-1 text-center font-medium">
+                                                {orderError}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <button
+                                        onClick={handleVerifyOrderPass}
+                                        className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                    >
+                                        <Sparkles className="w-4 h-4 fill-current" />
+                                        <span>주문/영수증 인증하고 무료 해금 ➔</span>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Footer Info */}
+                            <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
+                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>인증 또는 승인 완료 시 스타트업 전 리포트 영구 열람</span>
                             </div>
                         </motion.div>
                     </div>
