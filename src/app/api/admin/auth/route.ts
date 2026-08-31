@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { securityLogs } from '../security-status/route';
 import { rateLimit } from '@/lib/rateLimit';
+import { getExpectedAdminToken } from '@/lib/adminAuth';
 
 // 관리자 로그인 전용 Rate Limiter: 15분 내 최대 5회 실패 시 잠금
 const adminLoginLimiter = rateLimit({
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
         const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin2025';
 
         if (password === ADMIN_PASSWORD) {
-            const sessionToken = Buffer.from(password).toString('base64');
+            const sessionToken = getExpectedAdminToken(password);
             const response = NextResponse.json({ success: true });
 
             response.cookies.set('admin_session', sessionToken, {
