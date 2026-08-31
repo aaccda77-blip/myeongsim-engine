@@ -317,7 +317,7 @@ export default function ZeroCapsulePage() {
                   const currentUserName = reportData?.userName || (reportData as any)?.name || '이경윤';
                   const fixPillName = (text: string) => {
                     if (!text || typeof text !== 'string') return text;
-                    let fixed = text;
+                    let fixed = text.replace(/이윤님/g, '이경윤님');
                     if (currentUserName && currentUserName.length === 3) {
                       const c1 = currentUserName[0];
                       const c2 = currentUserName[1];

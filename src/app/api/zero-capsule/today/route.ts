@@ -41,8 +41,39 @@ async function handleCapsuleRequest(request: Request, isPost: boolean = false) {
       console.warn("daily_capsules 테이블 조회 실패:", dbErr);
     }
 
+    // [성함 오타/누락 자동 보정 헬퍼]
+    const fixCapsuleData = (pill: any, name: string) => {
+      if (!pill) return pill;
+      const targetName = name || userName || '이경윤';
+      const fixText = (text: string) => {
+        if (!text || typeof text !== 'string') return text;
+        let fixed = text;
+        // 1. 직통 치환
+        fixed = fixed.replace(/이윤님/g, '이경윤님');
+        // 2. 동적 패턴 치환
+        if (targetName && targetName.length === 3) {
+          const c1 = targetName[0];
+          const c2 = targetName[1];
+          const c3 = targetName[2];
+          fixed = fixed.replace(new RegExp(`${c1}${c3}님`, 'g'), `${targetName}님`);
+          fixed = fixed.replace(new RegExp(`(?<![가-힣])${c2}${c3}님`, 'g'), `${targetName}님`);
+        }
+        return fixed;
+      };
+
+      return {
+        ...pill,
+        flavor: fixText(pill.flavor),
+        keyword: fixText(pill.keyword),
+        scan: fixText(pill.scan),
+        sync: fixText(pill.sync),
+        shift: fixText(pill.shift),
+        log: fixText(pill.log)
+      };
+    };
+
     if (cachedPill && !searchParams.get('force')) {
-      return NextResponse.json(cachedPill);
+      return NextResponse.json(fixCapsuleData(cachedPill, '이경윤'));
     }
 
     if (!shouldGenerate) {

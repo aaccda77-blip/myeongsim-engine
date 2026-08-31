@@ -26,7 +26,24 @@ export async function GET(request: Request) {
       throw error;
     }
 
-    return NextResponse.json(data || []);
+    const rawData = data || [];
+    const fixedData = rawData.map((pill: any) => {
+      const fixText = (text: string) => {
+        if (!text || typeof text !== 'string') return text;
+        return text.replace(/이윤님/g, '이경윤님');
+      };
+      return {
+        ...pill,
+        flavor: fixText(pill.flavor),
+        keyword: fixText(pill.keyword),
+        scan: fixText(pill.scan),
+        sync: fixText(pill.sync),
+        shift: fixText(pill.shift),
+        log: fixText(pill.log)
+      };
+    });
+
+    return NextResponse.json(fixedData);
   } catch (error: any) {
     console.error("제로 캡슐 히스토리 API 에러:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
