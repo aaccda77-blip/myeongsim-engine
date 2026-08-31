@@ -263,10 +263,13 @@ export class TextSanitizer {
         result = result.replace(/\[\s*자유로운 준비 기간\s*\(\s*자유로운 준비 기간\s*\)\s*\]/g, '자유로운 준비 기간');
         result = result.replace(/\(\s*자유로운 준비 기간\s*\(\s*자유로운 준비 기간\s*\)\s*\)/g, '(자유로운 준비 기간)');
         result = result.replace(/\[\s*지친 마음의 상태\s*\(\s*지친 마음의 상태[^\)]*\)\s*\]/g, '지친 마음의 상태');
-        result = result.replace(/\(\s*지친 마음의 상태\s*\(\s*지친 마음의 상태[^\)]*\)\s*\)/g, '(지친 마음의 상태)');
-        result = result.replace(/([가-힣\s]+)\(\1\)/g, '$1');
-        result = result.replace(/\(([가-힣\s]+)\(\1\)\)/g, '($1)');
-    
+        // 4. [XSS & HTML Injection 방어] 악성 태그 및 스크립트 무력화
+        result = result.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        result = result.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+        result = result.replace(/javascript:/gi, '');
+        result = result.replace(/onload\s*=/gi, '');
+        result = result.replace(/onerror\s*=/gi, '');
+
         return result;
     }
 }
