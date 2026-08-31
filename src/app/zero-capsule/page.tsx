@@ -312,11 +312,30 @@ export default function ZeroCapsulePage() {
                   </span>
                 )}
 
-                <p className="text-sm text-zinc-300 leading-relaxed tracking-tight">
-                  {phase === 'scan' && <TypingText text={pill.scan} speed={15} />}
-                  {phase === 'sync' && <TypingText text={pill.sync} speed={15} />}
-                  {phase === 'shift' && <TypingText text={pill.shift} speed={15} />}
-                </p>
+                {/* 텍스트 렌더링 시 성함 글자 누락 자동 복원 */}
+                {(() => {
+                  const currentUserName = reportData?.userName || (reportData as any)?.name || '이경윤';
+                  const fixPillName = (text: string) => {
+                    if (!text || typeof text !== 'string') return text;
+                    let fixed = text;
+                    if (currentUserName && currentUserName.length === 3) {
+                      const c1 = currentUserName[0];
+                      const c2 = currentUserName[1];
+                      const c3 = currentUserName[2];
+                      fixed = fixed.replace(new RegExp(`${c1}${c3}님`, 'g'), `${currentUserName}님`);
+                      fixed = fixed.replace(new RegExp(`(?<![가-힣])${c2}${c3}님`, 'g'), `${currentUserName}님`);
+                    }
+                    return fixed;
+                  };
+
+                  return (
+                    <p className="text-sm text-zinc-300 leading-relaxed tracking-tight">
+                      {phase === 'scan' && <TypingText text={fixPillName(pill.scan)} speed={15} />}
+                      {phase === 'sync' && <TypingText text={fixPillName(pill.sync)} speed={15} />}
+                      {phase === 'shift' && <TypingText text={fixPillName(pill.shift)} speed={15} />}
+                    </p>
+                  );
+                })()}
               </div>
 
               {phase === 'shift' && (

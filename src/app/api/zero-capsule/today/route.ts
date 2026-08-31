@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { calculateSaju } from '@/lib/saju/SajuEngine';
@@ -183,8 +183,10 @@ ${mbti ? `- 심리 성향: ${mbti}` : ''}
 오늘 사용자가 겪을 수 있는 다크코드(무의식적 불안/조급함/예민함)를 뉴럴코드(성장/지혜/안목)로 뒤집고, 
 생각과 감정이 지워진 텅 빈 목격자 의식인 메타코드(제로포인트)로 주파수를 리셋해주는 데일리 디지털 알약 캡슐을 처방하라.
 
-★ 호칭 규칙 (절대 준수): 
-사용자를 부를 때 사주 일간("신금님", "갑목님" 등)이나 임의의 닉네임("명이님" 등)을 쓰지 말고, 반드시 "${userName}님"으로 호칭하라.
+★ 호칭 및 성함 표기 절대 규칙 (최우선 엄수): 
+1. 사용자의 성함은 반드시 정확히 "${userName}님"으로만 일관되게 표기하라.
+2. 성함의 글자를 임의로 축약하거나 누락하여 부르는 행위(예: "이경윤님"을 "이윤님", "경윤님" 등으로 왜곡)를 절대 엄금한다.
+3. 사주 일간("신금님", "갑목님" 등)이나 임의의 닉네임("명이님" 등)을 절대 쓰지 말고, 문장의 첫머리와 본문 어디서든 100% "${userName}님"으로만 정확히 호칭하라.
 
 반드시 다음 JSON 스펙을 엄수하여 한국어로 출력하라:
 {
@@ -197,7 +199,7 @@ ${mbti ? `- 심리 성향: ${mbti}` : ''}
 }
 `;
 
-    const prompt = `사용자 사주 및 생년월일 조건:\n${userSajuSummary}\n\n위 사용자 맞춤 조건을 완벽히 반영하여 오늘의 제로 캡슐 알약을 정교하게 프로그래밍해라. 사용자를 반드시 "${userName}님"으로 부르고 친절하고 감동적인 뇌 쿨링 에세이를 처방하라.`;
+    const prompt = `사용자 성함: ${userName}\n사용자 사주 및 생년월일 조건:\n${userSajuSummary}\n\n위 사용자 맞춤 조건을 완벽히 반영하여 오늘의 제로 캡슐 알약을 정교하게 프로그래밍해라. 사용자의 성함은 반드시 한 글자도 빠짐없이 정확하게 "${userName}님"으로만 부르고 친절하고 감동적인 뇌 쿨링 에세이를 처방하라.`;
 
     const result = await model.generateContent({
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
@@ -207,6 +209,30 @@ ${mbti ? `- 심리 성향: ${mbti}` : ''}
     const responseText = result.response.text();
     const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
     const pillData = JSON.parse(cleanedText);
+
+    // [성함 오타/누락 자동 보정 필터] AI가 글자를 빼먹거나 축약했을 경우 원본 성함으로 완벽 복구
+    const fixName = (text: string) => {
+      if (!text || typeof text !== 'string' || !userName || userName === '명심가') return text;
+      let fixed = text;
+      // 예: 이경윤님인데 '이윤님'으로 출력된 경우
+      if (userName.length === 3) {
+        const char1 = userName[0];
+        const char2 = userName[1];
+        const char3 = userName[2];
+        const missingMiddle = new RegExp(`${char1}${char3}님`, 'g'); // 이윤님 -> 이경윤님
+        const missingFirst = new RegExp(`(?<![가-힣])${char2}${char3}님`, 'g'); // 경윤님 -> 이경윤님
+        fixed = fixed.replace(missingMiddle, `${userName}님`);
+        fixed = fixed.replace(missingFirst, `${userName}님`);
+      }
+      return fixed;
+    };
+
+    if (pillData.scan) pillData.scan = fixName(pillData.scan);
+    if (pillData.sync) pillData.sync = fixName(pillData.sync);
+    if (pillData.shift) pillData.shift = fixName(pillData.shift);
+    if (pillData.log) pillData.log = fixName(pillData.log);
+    if (pillData.flavor) pillData.flavor = fixName(pillData.flavor);
+    if (pillData.keyword) pillData.keyword = fixName(pillData.keyword);
 
     const resultPill = {
       user_id: userId,
