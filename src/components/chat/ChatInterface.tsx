@@ -385,14 +385,26 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     // [Auth Guard - Session Management]
     const { userStatus, shouldShowPaymentModal } = useAuthGuard();
 
-    // [Free Trial System]
-    const [freeTurns, setFreeTurns] = useState(0);
+    // [Free Trial System - Permanent LocalStorage Sync]
+    const [freeTurns, setFreeTurns] = useState<number>(() => {
+        if (typeof window !== 'undefined') {
+            const totalMsg = localStorage.getItem('myeongsim_total_user_messages');
+            const savedTurns = localStorage.getItem('myeongsim_free_turns') || sessionStorage.getItem('freeTurns');
+            const val1 = totalMsg ? parseInt(totalMsg, 10) : 0;
+            const val2 = savedTurns ? parseInt(savedTurns, 10) : 0;
+            return Math.max(val1, val2);
+        }
+        return 0;
+    });
     const [isTrialMode, setIsTrialMode] = useState(true);
     const FREE_TRIAL_LIMIT = 3;
     const [pendingChoiceText, setPendingChoiceText] = useState<string | null>(null);
 
+    // Check paid/VIP status from localStorage directly
+    const isPaidInStorage = typeof window !== 'undefined' ? localStorage.getItem('myeongsim_paid_user') === 'true' : false;
+
     const remainingChats = Math.max(0, FREE_TRIAL_LIMIT - freeTurns);
-    const isChatLocked = isExpired || (isTrialMode && !isPremiumMember && remainingChats <= 0);
+    const isChatLocked = isExpired || (isTrialMode && !isPremiumMember && !isPaidInStorage && remainingChats <= 0);
 
     // [Init] UUID for Guest, but replaceable by Auth + Free Trial Counter
     // [Init] UUID for Guest, Persistence, and Auth Listener
@@ -422,9 +434,12 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                         console.log("👤 [Guest] Generated & Saved ID:", guestId);
                     }
 
-                    // Load free trial turns
-                    const savedTurns = sessionStorage.getItem('freeTurns');
-                    if (savedTurns) setFreeTurns(parseInt(savedTurns, 10));
+                    // Load permanent free trial turns
+                    const totalMsg = localStorage.getItem('myeongsim_total_user_messages');
+                    const savedTurns = localStorage.getItem('myeongsim_free_turns') || sessionStorage.getItem('freeTurns');
+                    const val1 = totalMsg ? parseInt(totalMsg, 10) : 0;
+                    const val2 = savedTurns ? parseInt(savedTurns, 10) : 0;
+                    setFreeTurns(Math.max(val1, val2));
 
                     // [Persistence] Restore Scan Status
                     const savedScanStatus = localStorage.getItem('myeongsim_deep_scan_completed');
@@ -1112,11 +1127,13 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
         }).catch(err => console.error("Memory Save Error (User):", err));
 
         // [Free Trial System] Increment turn counter (trial mode only)
-        if (isTrialMode && !isPremiumMember) {
+        if (isTrialMode && !isPremiumMember && !isPaidInStorage) {
             const newTurns = freeTurns + 1;
             setFreeTurns(newTurns);
             if (typeof window !== 'undefined') {
                 sessionStorage.setItem('freeTurns', newTurns.toString());
+                localStorage.setItem('myeongsim_free_turns', newTurns.toString());
+                localStorage.setItem('myeongsim_total_user_messages', newTurns.toString());
             }
 
             // Check if limit reached
