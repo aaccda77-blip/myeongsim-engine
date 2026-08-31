@@ -97,7 +97,7 @@ export default function MicroChatPassModal({
     };
 
     // 🎫 네이버 스마트스토어 주문번호 인증 핸들러 (1건당 1회 30회 충전)
-    // 🎫 도서 구매 주문번호 / 영수증 인증 핸들러 (1건당 1회 30회 충전)
+    // 🎫 도서 구매 주문번호 / 영수증 인증 핸들러 (1건당 1회 20회 충전)
     const handleVerifySecretCode = async () => {
         const cleaned = secretCode.trim();
         if (!cleaned) {
@@ -125,7 +125,7 @@ export default function MicroChatPassModal({
                     localStorage.setItem('myeongsim_verified_order', cleaned);
                     localStorage.removeItem('myeongsim_pending_approval');
                 }
-                alert('🎉 도서 구매 주문/영수증 인증이 완료되었습니다! 30회 VIP 코칭 대화가 충전되었습니다.');
+                alert('🎉 도서 구매 주문/영수증 인증이 완료되었습니다! 20회 VIP 코칭 대화가 충전되었습니다.');
                 if (onSuccessPay) onSuccessPay();
                 onClose();
             } else {
@@ -138,7 +138,7 @@ export default function MicroChatPassModal({
                     localStorage.setItem('myeongsim_paid_user', 'true');
                     localStorage.setItem('myeongsim_total_user_messages', '0');
                 }
-                alert('🎉 도서 구매 인증이 완료되었습니다! 30회 VIP 코칭 대화가 충전되었습니다.');
+                alert('🎉 도서 구매 인증이 완료되었습니다! 20회 VIP 코칭 대화가 충전되었습니다.');
                 if (onSuccessPay) onSuccessPay();
                 onClose();
             } else {
@@ -181,7 +181,7 @@ export default function MicroChatPassModal({
                     </h3>
                     <p className="text-[11px] text-gray-300 font-light leading-relaxed mb-3">
                         무통장 입금 후 관리자 승인을 받으시거나,<br />
-                        <strong>도서 구매 주문/영수증 번호</strong>를 입력하시면 30회 코칭이 즉시 활성화됩니다.
+                        <strong>도서 구매 주문/영수증 번호</strong>를 입력하시면 20회 코칭이 즉시 활성화됩니다.
                     </p>
 
                     {/* Tab Switcher */}

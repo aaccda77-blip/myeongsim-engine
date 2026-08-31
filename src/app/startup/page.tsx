@@ -106,7 +106,7 @@ export default function StartupDashboard() {
                 }
                 setIsUnlocked(true);
                 setIsStartupPassOpen(false);
-                alert('🎉 도서 구매 인증이 완료되었습니다! 19,800원 스타트업 심층 리포트 무료 열람 및 30회 VIP 코칭 대화가 활성화되었습니다.');
+                alert('🎉 도서 구매 인증이 완료되었습니다! 19,800원 스타트업 심층 리포트 무료 열람 및 20회 VIP 코칭 대화가 활성화되었습니다.');
                 if (pendingHighlight) {
                     setSelectedHighlight(pendingHighlight);
                 }
@@ -855,7 +855,7 @@ export default function StartupDashboard() {
                                     <span>💡 도서 독자 전용 100% 무료 혜택 안내</span>
                                 </div>
                                 <p className="text-[11px] text-gray-200 leading-relaxed">
-                                    정가 11,000원(할인가 <strong className="text-amber-300 font-bold">9,900원</strong>)에 도서를 구매하시면, 본 <strong className="text-white">19,800원 리포트 + 1:1 맞춤 힐링송 + AI 챗봇 30회권이 모두 무료로 자동 해금</strong>됩니다!
+                                    정가 11,000원(할인가 <strong className="text-amber-300 font-bold">9,900원</strong>)에 도서를 구매하시면, 본 <strong className="text-white">19,800원 리포트 + 1:1 맞춤 힐링송 + AI 챗봇 20회권이 모두 무료로 자동 해금</strong>됩니다!
                                 </p>
                                 <a
                                     href="https://smartstore.naver.com"
