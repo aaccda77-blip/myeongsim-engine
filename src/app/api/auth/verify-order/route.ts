@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json().catch(() => ({}));
-        const { orderNumber = '', userId = '', depositorName = '' } = body;
+        const { orderNumber = '', userId = '', depositorName = '', channel } = body;
 
         if (!orderNumber || typeof orderNumber !== 'string') {
             return NextResponse.json({
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
             }, { status: 400 });
         }
 
-        const result = await verifySmartStoreOrder(orderNumber, userId, depositorName);
+        const result = await verifySmartStoreOrder(orderNumber, userId, depositorName, channel);
 
         if (!result.success) {
             return NextResponse.json({

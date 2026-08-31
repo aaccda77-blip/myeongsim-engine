@@ -97,7 +97,7 @@ export default function MicroChatPassModal({
     };
 
     // 🎫 네이버 스마트스토어 주문번호 인증 핸들러 (1건당 1회 30회 충전)
-    // 🎫 도서 구매 주문번호 / 영수증 인증 핸들러 (1건당 1회 20회 충전)
+    // 🎫 도서 구매 주문번호 / 영수증 인증 핸들러 (1건당 1회 20회 충전 & 스마트스토어 올인원 패키지)
     const handleVerifySecretCode = async () => {
         const cleaned = secretCode.trim();
         if (!cleaned) {
@@ -106,26 +106,42 @@ export default function MicroChatPassModal({
         }
 
         try {
+            const isSmart = /^\d{16}$/.test(cleaned.replace(/-/g, ''));
             const res = await fetch('/api/auth/verify-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     orderNumber: cleaned,
                     userId,
-                    depositorName
+                    depositorName,
+                    channel: isSmart ? 'smartstore' : 'general'
                 })
             });
 
             const data = await res.json();
 
             if (res.ok && data.success) {
+                const isSmartVerified = data.record?.isSmartStore || isSmart;
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('myeongsim_paid_user', 'true');
                     localStorage.setItem('myeongsim_total_user_messages', '0');
                     localStorage.setItem('myeongsim_verified_order', cleaned);
                     localStorage.removeItem('myeongsim_pending_approval');
+
+                    if (isSmartVerified) {
+                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                        localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
+                        localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+                        localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                    }
                 }
-                alert('🎉 도서 구매 주문/영수증 인증이 완료되었습니다! 20회 VIP 코칭 대화가 충전되었습니다.');
+
+                if (isSmartVerified) {
+                    alert('🎉 청류스마트스토어 VIP 인증 완료!\n\nAI 챗봇 20회 코칭 + 1:1 맞춤 힐링송 + 19,800원 스타트업 심층 리포트 + 무의식 다크코드 디버거 + 바이오케어 올인원 슈퍼패키지가 모두 무료 해금되었습니다.');
+                } else {
+                    alert('🎉 도서 구매 인증 완료!\n\n1:1 맞춤 헌정 힐링송 신청 및 20회 AI 코칭 대화가 활성화되었습니다.');
+                }
+
                 if (onSuccessPay) onSuccessPay();
                 onClose();
             } else {
@@ -134,11 +150,18 @@ export default function MicroChatPassModal({
         } catch (e) {
             console.error('Order verify error:', e);
             if (cleaned.length >= 8) {
+                const isSmart = /^\d{16}$/.test(cleaned.replace(/-/g, ''));
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('myeongsim_paid_user', 'true');
                     localStorage.setItem('myeongsim_total_user_messages', '0');
+                    if (isSmart) {
+                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                        localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
+                        localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+                        localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                    }
                 }
-                alert('🎉 도서 구매 인증이 완료되었습니다! 20회 VIP 코칭 대화가 충전되었습니다.');
+                alert('🎉 도서 구매 인증이 완료되었습니다! 20회 VIP 코칭 대화가 활성화되었습니다.');
                 if (onSuccessPay) onSuccessPay();
                 onClose();
             } else {
@@ -324,9 +347,10 @@ export default function MicroChatPassModal({
                     {/* TAB 2: 도서 구매 주문번호 / 영수증 인증 */}
                     {activeTab === 'code' && (
                         <div className="space-y-3.5 text-left animate-fade-in">
-                            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed">
-                                📖 <strong>도서 구매 독자 전용 혜택</strong><br />
-                                스마트스토어, 부크크, 교보문고 등의 <strong>구매 주문번호 또는 영수증 번호</strong>를 입력하시면 30회 VIP 코칭 대화가 즉시 충전됩니다.
+                            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed space-y-1">
+                                <p className="font-bold text-amber-300">👑 청류스토어 vs 📖 일반 서점 독자 혜택</p>
+                                <p>• <strong>청류스마트스토어 주문번호(16자리)</strong>: ➔ <span className="text-white font-bold">20회 코칭 + 힐링송 + 스타트업 리포트 + 다크코드 + 바이오케어</span> 슈퍼패키지 전면 무료 해금!</p>
+                                <p>• <strong>교보/예스24/부크크 영수증 번호</strong>: ➔ <span className="text-white font-bold">1:1 맞춤 힐링송 + 20회 코칭 대화권</span> 즉시 충전!</p>
                             </div>
 
                             <div className="space-y-1">
@@ -340,7 +364,7 @@ export default function MicroChatPassModal({
                                         setSecretCode(e.target.value);
                                         setCodeError(null);
                                     }}
-                                    placeholder="예: 20260829-12345678 (주문/영수증 번호)"
+                                    placeholder="예: 20260829-12345678 또는 네이버 주문번호 16자리"
                                     className="w-full bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-wider text-xs px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-amber-400 placeholder:text-gray-600"
                                 />
                                 <p className="text-[10px] text-gray-400 text-center">
@@ -358,7 +382,7 @@ export default function MicroChatPassModal({
                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                                 <Sparkles className="w-4 h-4 fill-current" />
-                                <span>주문/영수증 인증하고 30회 코칭 충전 ➔</span>
+                                <span>주문/영수증 인증하고 혜택 해금 ➔</span>
                             </button>
                         </div>
                     )}

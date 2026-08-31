@@ -4,6 +4,9 @@ export interface VerifiedOrderRecord {
     orderNumber: string;
     userId?: string;
     depositorName?: string;
+    channel?: 'smartstore' | 'general';
+    isSmartStore: boolean;
+    unlockedModules: string[];
     verifiedAt: string;
 }
 
@@ -11,9 +14,16 @@ export interface VerifiedOrderRecord {
 const usedOrderNumbersStore: Map<string, VerifiedOrderRecord> = new Map();
 
 /**
- * Verify and register a Naver SmartStore Order Number (Single-Use Guarantee)
+ * Verify and register a Book Purchase Order / Receipt Number (Single-Use Guarantee)
+ * - SmartStore: 20 chats + Healing Song + Startup Reports + Dark Code Debugger + Bio-Care
+ * - General Bookstores (Kyobo, Yes24, Bookk): 20 chats + Healing Song
  */
-export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: string, depositorName?: string): Promise<{ success: boolean; message: string; record?: VerifiedOrderRecord }> {
+export async function verifySmartStoreOrder(
+    orderNumberRaw: string,
+    userId?: string,
+    depositorName?: string,
+    channel?: 'smartstore' | 'general'
+): Promise<{ success: boolean; message: string; record?: VerifiedOrderRecord }> {
     const cleanOrder = orderNumberRaw.trim().replace(/[^a-zA-Z0-9-]/g, '').toUpperCase();
 
     if (!cleanOrder || cleanOrder.length < 8) {
@@ -52,12 +62,22 @@ export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: str
         }
     }
 
+    // Determine if SmartStore (either explicit channel, or 16-digit standard Naver SmartStore order pattern)
+    const isSmartStore = channel === 'smartstore' || (!channel && /^\d{16}$/.test(cleanOrder.replace(/-/g, '')));
+
+    const unlockedModules = isSmartStore
+        ? ['zero_music', 'coaching_20', 'startup_vip', 'dark_code_debugger', 'bio_care']
+        : ['zero_music', 'coaching_20'];
+
     // 3. Mark as used
     const nowIso = new Date().toISOString();
     const record: VerifiedOrderRecord = {
         orderNumber: cleanOrder,
         userId: userId || `user-${cleanOrder.slice(0, 8)}`,
-        depositorName: depositorName || '도서 구매 독자',
+        depositorName: depositorName || (isSmartStore ? '청류스토어 VIP 독자' : '도서 구매 독자'),
+        channel: isSmartStore ? 'smartstore' : 'general',
+        isSmartStore,
+        unlockedModules,
         verifiedAt: nowIso
     };
 
@@ -69,10 +89,10 @@ export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: str
             await supabaseAdmin.from('users').upsert({
                 id: userId,
                 access_key: `ORDER-${cleanOrder}`,
-                membership_tier: 'BOOK_VIP',
+                membership_tier: isSmartStore ? 'SMARTSTORE_SUPER_VIP' : 'BOOK_VIP',
                 is_active: true,
-                payment_amount: 19800,
-                chat_turns_left: 30,
+                payment_amount: isSmartStore ? 87600 : 19800,
+                chat_turns_left: 20,
                 approved_at: nowIso
             });
         } catch (e) {
@@ -80,9 +100,13 @@ export async function verifySmartStoreOrder(orderNumberRaw: string, userId?: str
         }
     }
 
+    const message = isSmartStore
+        ? '🎉 청류스마트스토어 VIP 인증 완료! AI 챗봇 20회 코칭 + 1:1 맞춤 힐링송 + 스타트업 19,800원 리포트 + 다크코드 디버거 + 바이오케어 올인원 슈퍼패키지가 모두 무료 해금되었습니다.'
+        : '🎉 도서 구매 인증이 완료되었습니다! 1:1 맞춤 헌정 힐링송 신청 및 20회 AI 명심 챗봇 코칭 혜택이 활성화되었습니다.';
+
     return {
         success: true,
-        message: '🎉 도서 구매 주문번호/영수증 인증이 완료되었습니다! 1:1 맞춤 힐링송 신청 및 30회 VIP 코칭 혜택이 활성화되었습니다.',
+        message,
         record
     };
 }

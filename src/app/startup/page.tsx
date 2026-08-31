@@ -91,24 +91,38 @@ export default function StartupDashboard() {
                 body: JSON.stringify({
                     orderNumber: cleaned,
                     userId: depositorName || 'book-reader',
-                    depositorName: depositorName || '도서 구매 독자'
+                    depositorName: depositorName || '도서 구매 독자',
+                    channel: /^\d{16}$/.test(cleaned.replace(/-/g, '')) ? 'smartstore' : 'general'
                 })
             });
 
             const data = await res.json();
 
             if (res.ok && data.success) {
+                const isSmart = data.record?.isSmartStore || /^\d{16}$/.test(cleaned.replace(/-/g, ''));
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('myeongsim_paid_user', 'true');
-                    localStorage.setItem('myeongsim_startup_unlocked', 'true');
                     localStorage.setItem('myeongsim_total_user_messages', '0');
                     localStorage.setItem('myeongsim_verified_order', cleaned);
+
+                    if (isSmart) {
+                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                        localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
+                        localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+                        localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                    }
                 }
-                setIsUnlocked(true);
-                setIsStartupPassOpen(false);
-                alert('🎉 도서 구매 인증이 완료되었습니다! 19,800원 스타트업 심층 리포트 무료 열람 및 20회 VIP 코칭 대화가 활성화되었습니다.');
-                if (pendingHighlight) {
-                    setSelectedHighlight(pendingHighlight);
+
+                if (isSmart) {
+                    setIsUnlocked(true);
+                    setIsStartupPassOpen(false);
+                    alert('🎉 청류스마트스토어 VIP 인증 완료!\n\nAI 챗봇 20회 코칭 + 1:1 맞춤 힐링송 + 19,800원 스타트업 심층 리포트 + 무의식 다크코드 디버거 + 바이오케어 올인원 슈퍼패키지가 모두 무료 해금되었습니다.');
+                    if (pendingHighlight) {
+                        setSelectedHighlight(pendingHighlight);
+                    }
+                } else {
+                    alert('🎉 도서 구매 인증이 완료되었습니다!\n\n1:1 맞춤 헌정 힐링송 신청 및 20회 AI 코칭 대화가 활성화되었습니다.\n\n(※ 스타트업 심층 리포트·다크코드·바이오케어는 청류스마트스토어 단독 혜택으로, 19,800원 패스 결제 또는 스마트스토어 주문번호로 추가 해금하실 수 있습니다.)');
+                    setIsStartupPassOpen(false);
                 }
             } else {
                 setOrderError(data.message || '유효하지 않은 주문/영수증 번호이거나 이미 등록된 번호입니다.');
@@ -116,15 +130,27 @@ export default function StartupDashboard() {
         } catch (e) {
             console.error('Order verify error:', e);
             if (cleaned.length >= 8) {
+                const isSmart = /^\d{16}$/.test(cleaned.replace(/-/g, ''));
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('myeongsim_paid_user', 'true');
-                    localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                    localStorage.setItem('myeongsim_total_user_messages', '0');
+                    if (isSmart) {
+                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                        localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
+                        localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+                        localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                    }
                 }
-                setIsUnlocked(true);
-                setIsStartupPassOpen(false);
-                alert('🎉 도서 구매 인증이 완료되었습니다! 스타트업 심층 리포트가 해금되었습니다.');
-                if (pendingHighlight) {
-                    setSelectedHighlight(pendingHighlight);
+                if (isSmart) {
+                    setIsUnlocked(true);
+                    setIsStartupPassOpen(false);
+                    alert('🎉 청류스마트스토어 VIP 인증 완료! 20회 코칭 + 힐링송 + 스타트업 리포트 올인원 패키지가 해금되었습니다.');
+                    if (pendingHighlight) {
+                        setSelectedHighlight(pendingHighlight);
+                    }
+                } else {
+                    alert('🎉 도서 구매 인증이 완료되었습니다! 1:1 맞춤 힐링송 및 20회 AI 코칭이 활성화되었습니다.');
+                    setIsStartupPassOpen(false);
                 }
             } else {
                 setOrderError('주문번호/영수증 인증 중 오류가 발생했습니다.');
@@ -1006,19 +1032,19 @@ export default function StartupDashboard() {
                             {/* 💡 초특급 앵커링 꿀팁 배너 */}
                             <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-400/40 text-left space-y-2 mb-4">
                                 <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
-                                    <BookOpen className="w-4 h-4 text-amber-300 shrink-0" />
-                                    <span>💡 도서 독자 전용 100% 무료 혜택 안내</span>
+                                    <Sparkles className="w-4 h-4 text-amber-300 shrink-0 fill-current" />
+                                    <span>👑 청류스마트스토어 구매자 단독 슈퍼 혜택</span>
                                 </div>
                                 <p className="text-[11px] text-gray-200 leading-relaxed">
-                                    정가 11,000원(할인가 <strong className="text-amber-300 font-bold">9,900원</strong>)에 도서를 구매하시면, 본 <strong className="text-white">19,800원 리포트 + 1:1 맞춤 힐링송 + AI 챗봇 20회권이 모두 무료로 자동 해금</strong>됩니다!
+                                    청류스마트스토어에서 9,900원에 도서를 구매하시면, 본 <strong className="text-amber-300 font-bold">19,800원 스타트업 리포트 + 무의식 다크코드 디버거 + 바이오케어 + 1:1 맞춤 힐링송 + AI 챗봇 20회권(총 10만 원 상당)</strong>이 모두 무료로 자동 해금됩니다!
                                 </p>
                                 <a
                                     href="https://smartstore.naver.com"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-full py-2 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/40 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all block text-center"
+                                    className="w-full py-2 rounded-xl bg-gradient-to-r from-amber-400/20 via-yellow-400/20 to-amber-400/20 hover:from-amber-400/30 hover:to-yellow-400/30 text-amber-200 border border-amber-400/40 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all block text-center"
                                 >
-                                    <span>📖 9,900원에 도서 구매하고 전 혜택 받기</span>
+                                    <span>📖 청류스토어에서 9,900원에 구매하고 슈퍼패키지 받기</span>
                                     <ExternalLink className="w-3 h-3" />
                                 </a>
                             </div>
@@ -1045,7 +1071,7 @@ export default function StartupDashboard() {
                                     }`}
                                 >
                                     <KeyRound className="w-3.5 h-3.5" />
-                                    <span>2. 도서 인증 (무료)</span>
+                                    <span>2. 도서 주문/영수증 인증</span>
                                 </button>
                             </div>
 
@@ -1118,9 +1144,10 @@ export default function StartupDashboard() {
                             {/* TAB 2: 도서 주문번호 / 영수증 인증 (무료 해금) */}
                             {passTab === 'code' && (
                                 <div className="space-y-3.5 text-left animate-fade-in">
-                                    <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed">
-                                        📖 <strong>도서 구매 독자 전용 무료 혜택</strong><br />
-                                        스마트스토어, 부크크, 교보문고 등의 <strong>구매 주문번호 또는 영수증 번호</strong>를 입력하시면 19,800원 스타트업 심층 리포트가 즉시 무료 해금됩니다.
+                                    <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed space-y-1">
+                                        <p className="font-bold text-amber-300">👑 청류스토어 vs 📖 일반 서점 혜택 안내</p>
+                                        <p>• <strong>청류스마트스토어 주문번호(16자리)</strong> 입력 시: ➔ <span className="text-white font-bold">스타트업 리포트 + 다크코드 + 바이오케어 + 힐링송 + 20회 코칭</span> 올인원 슈퍼패키지 전면 무료 해금!</p>
+                                        <p>• <strong>교보/예스24/부크크 영수증 번호</strong> 입력 시: ➔ <span className="text-white font-bold">1:1 맞춤 힐링송 + 20회 코칭 대화권</span> 즉시 지급!</p>
                                     </div>
 
                                     <div className="space-y-1">
@@ -1134,7 +1161,7 @@ export default function StartupDashboard() {
                                                 setOrderNumber(e.target.value);
                                                 setOrderError(null);
                                             }}
-                                            placeholder="예: 20260831-12345678 (주문/영수증 번호)"
+                                            placeholder="예: 20260831-12345678 또는 네이버 주문번호 16자리"
                                             className="w-full bg-slate-950 border border-slate-700 text-white font-mono text-center tracking-wider text-xs px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-amber-400 placeholder:text-gray-600"
                                         />
                                         <p className="text-[10px] text-gray-400 text-center">
@@ -1152,7 +1179,7 @@ export default function StartupDashboard() {
                                         className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                     >
                                         <Sparkles className="w-4 h-4 fill-current" />
-                                        <span>주문/영수증 인증하고 무료 해금 ➔</span>
+                                        <span>주문/영수증 인증하고 혜택 해금 ➔</span>
                                     </button>
                                 </div>
                             )}
@@ -1160,7 +1187,7 @@ export default function StartupDashboard() {
                             {/* Footer Info */}
                             <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
                                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>인증 또는 승인 완료 시 스타트업 전 리포트 영구 열람</span>
+                                <span>인증 또는 승인 완료 시 부여된 모듈 영구 열람</span>
                             </div>
                         </motion.div>
                     </div>
