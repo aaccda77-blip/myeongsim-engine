@@ -1083,12 +1083,15 @@ export default function StartupDashboard() {
                             <span className="material-symbols-outlined text-2xl">auto_awesome</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">Startup Coaching</h1>
-                            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Enterprise Solution</p>
+                            <div className="flex items-center gap-1.5">
+                                <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">B2B Startup Coaching</h1>
+                                <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">B2B 전용</span>
+                            </div>
+                            <p className="text-[10px] uppercase tracking-widest text-indigo-400 font-black mt-1">B2B ENTERPRISE SOLUTION & CSO</p>
                         </div>
                     </div>
                     <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
-                        <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">컨설팅 메뉴</p>
+                        <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B 거버넌스 메뉴</p>
                         {menuItems.filter(i => ['dashboard', 'content', 'psychology', 'timing', 'partner', 'investment', 'bm'].includes(i.id)).map((item) => (
                             <a
                                 key={item.id}
@@ -1114,7 +1117,7 @@ export default function StartupDashboard() {
                         ))}
 
                         <div className="pt-6 px-4">
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">전문 분석 서비스</p>
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B C-Level 전문 분석</p>
                             <div className="space-y-1">
                                 {menuItems.filter(i => ['strategy', 'legal', 'org'].includes(i.id)).map((item) => (
                                     <a
@@ -1136,12 +1139,12 @@ export default function StartupDashboard() {
                         </div>
 
                         <div className="pt-6 px-4">
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">특별 기능</p>
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B 파트너십 & 거버넌스</p>
                             <a onClick={() => router.push('/startup/facilitation')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">groups</span> 창업팀 다자간 코칭
+                                <span className="material-symbols-outlined text-[20px]">groups</span> B2B C-Level 다자간 거버넌스 코칭
                             </a>
                             <a onClick={() => router.push('/startup/mastermind')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">diversity_3</span> 수석 아키텍트 그룹 자문
+                                <span className="material-symbols-outlined text-[20px]">diversity_3</span> B2B 수석 아키텍트 CSO 그룹 자문
                             </a>
                         </div>
                     </nav>
@@ -1170,7 +1173,7 @@ export default function StartupDashboard() {
                                     </div>
                                     <div>
                                         <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-3">
-                                            Enterprise Diagnosis Core
+                                            B2B Enterprise Diagnosis & Governance Suite
                                         </div>
                                         <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-3">{selectedService.title}</h2>
                                         <p className="text-base md:text-lg text-[#a19db9] leading-relaxed">{selectedService.desc}</p>
@@ -1183,7 +1186,7 @@ export default function StartupDashboard() {
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                                                 <span className="text-amber-400">📌</span>
-                                                본 분석에서 제공되는 3대 핵심 리포트
+                                                📌 [B2B 전용] 본 분석에서 제공되는 3대 핵심 경영 리포트
                                             </h3>
                                             <span className="text-[11px] text-indigo-400 font-medium">카드를 클릭하면 상세 해설이 열립니다 💡</span>
                                         </div>
@@ -1528,7 +1531,7 @@ export default function StartupDashboard() {
                                              <ShieldCheck className="w-3 h-3 text-emerald-400" />
                                              <span>WHOOP & OURA 웰니스 코칭 프로토콜 동기화</span>
                                          </span>
-                                         <span>108 MATRIX AI ENGINE</span>
+                                         <span>108 MATRIX B2B ENTERPRISE AI ENGINE</span>
                                     </div>
                                 </div>
                             </div>
@@ -2773,7 +2776,10 @@ export default function StartupDashboard() {
                         <div className="size-8 rounded-lg bg-[#3211d4] flex items-center justify-center text-white">
                             <span className="material-symbols-outlined text-xl">auto_awesome</span>
                         </div>
-                        <span className="text-sm font-black text-white">Startup Coaching</span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-black text-white">B2B Startup Coaching</span>
+                            <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">B2B 전용</span>
+                        </div>
                     </div>
                     {/* [NEW] Quick Status Badge for mobile visibility */}
                     <div className="mt-1 flex items-center gap-2">
@@ -2801,8 +2807,11 @@ export default function StartupDashboard() {
                             <span className="material-symbols-outlined text-2xl">auto_awesome</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">Startup Coaching</h1>
-                            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Enterprise Solution</p>
+                            <div className="flex items-center gap-1.5">
+                                <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">B2B Startup Coaching</h1>
+                                <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">B2B 전용</span>
+                            </div>
+                            <p className="text-[10px] uppercase tracking-widest text-indigo-400 font-black mt-1">B2B ENTERPRISE SOLUTION & CSO</p>
                         </div>
                     </div>
                     {/* [NEW] Close button - navigates to main app */}
@@ -2816,7 +2825,7 @@ export default function StartupDashboard() {
                 </div>
 
                 <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
-                    <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">컨설팅 메뉴</p>
+                    <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B 거버넌스 메뉴</p>
                     {menuItems.filter(i => ['dashboard', 'content', 'psychology', 'timing', 'partner', 'investment', 'bm'].includes(i.id)).map((item) => (
                         <a
                             key={item.id}
@@ -2842,7 +2851,7 @@ export default function StartupDashboard() {
                     ))}
 
                     <div className="pt-6 px-4">
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">전문 분석 서비스</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B C-Level 전문 분석</p>
                         <div className="space-y-1">
                             {menuItems.filter(i => ['strategy', 'legal', 'org'].includes(i.id)).map((item) => (
                                 <a
@@ -2864,16 +2873,16 @@ export default function StartupDashboard() {
                     </div>
 
                     <div className="pt-6 px-4">
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">특별 기능</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B 파트너십 & 거버넌스</p>
                         <a
                             onClick={() => router.push('/startup/facilitation')}
                             className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer"
                         >
                             <span className="material-symbols-outlined text-[20px]">groups</span>
-                            창업팀 다자간 코칭
+                            B2B C-Level 다자간 거버넌스 코칭
                         </a>
                         <a onClick={() => router.push('/startup/mastermind')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                            <span className="material-symbols-outlined text-[20px]">diversity_3</span> 수석 아키텍트 그룹 자문
+                            <span className="material-symbols-outlined text-[20px]">diversity_3</span> B2B 수석 아키텍트 CSO 그룹 자문
                         </a>
                     </div>
                 </nav>
@@ -3036,4 +3045,4 @@ export default function StartupDashboard() {
             />
         </div>
     );
-}
+}
