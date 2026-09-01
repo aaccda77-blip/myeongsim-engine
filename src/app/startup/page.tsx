@@ -1911,7 +1911,243 @@ export default function StartupDashboard() {
 
                             {/* Report Scrollable Body */}
                             <div className="p-5 sm:p-8 overflow-y-auto space-y-6 custom-scrollbar text-xs sm:text-sm">
-                                {activeDeepReport.tag === '리더십 케어' || activeDeepReport.title?.includes('리더십 균열') || activeDeepReport.title?.includes('신뢰 회복') ? (
+                                {activeDeepReport.tag === '리스크 방어' || activeDeepReport.title?.includes('실행 리스크') || activeDeepReport.title?.includes('핵심 역량') || activeDeepReport.title?.includes('리스크 사전 방어') ? (
+                                    /* 🛡️ [창업가 핵심 역량 및 실행 리스크 사전 방어 전용 세계 최강 뷰어] */
+                                    <div className="space-y-6">
+                                        {/* Section 1: Executive Summary */}
+                                        <div className="p-5 rounded-3xl bg-gradient-to-br from-indigo-950/70 via-red-950/30 to-slate-950 border border-indigo-400/40 space-y-3 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-72 h-72 bg-red-500/10 rounded-full blur-3xl pointer-events-none" />
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                <h3 className="text-sm font-black text-indigo-300 flex items-center gap-2">
+                                                    <ShieldCheck className="w-4 h-4 text-amber-400" />
+                                                    <span>1. 창업가 인지 사각지대 & 리스크 쉴드 총평 (Risk Defense Core)</span>
+                                                </h3>
+                                                <span className="text-xs font-black text-emerald-400 font-mono bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                                                    리스크 방어 안전도 94.6% (철통 방어 안전권)
+                                                </span>
+                                            </div>
+                                            <p className="text-slate-200 leading-relaxed font-medium text-xs sm:text-sm">
+                                                {userSajuProfile.userName} 대표님의 <strong className="text-amber-300">[{userSajuProfile.dayMasterName}]</strong> 기질은 뛰어난 제품 기획력과 디테일 분석력을 지녔으나, <strong className="text-red-300">‘완벽주의 출시 지연’</strong>과 <strong className="text-red-300">‘아웃바운드 영업 기피’</strong>라는 인지적 사각지대(밑 빠진 구멍)를 보유하고 있습니다. 
+                                                <strong className="text-cyan-300">세일즈 자동화 파이프라인</strong>과 <strong className="text-emerald-300">영업형 C-Level 파트너십</strong>을 선제적으로 결합하여 생존율을 300% 이상 극대화합니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Section 2: 대표자 6대 잠재 실행 리스크 정밀 진단 매트릭스 */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Activity className="w-4 h-4 text-indigo-400" />
+                                                        <span>2. 대표자 6대 잠재 실행 리스크 & 인지 사각지대 정밀 진단</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        108 매트릭스와 뇌인지과학으로 도출한 대표자 특유의 약점 구멍 분석
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-xl border border-indigo-500/30 font-mono">
+                                                    사전 방어율 96%
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
+                                                {/* Risk 1 */}
+                                                <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-purple-300">🎯 완벽주의 결정 마비</span>
+                                                        <span className="text-[11px] font-mono text-purple-200 font-bold">위험도 88점</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full w-[88%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        100% 완벽을 추구하다 출시와 피드백 타이밍을 놓침 ➔ <strong className="text-emerald-300">"70% 확신 시 즉시 출시"</strong> 룰 적용.
+                                                    </p>
+                                                </div>
+
+                                                {/* Risk 2 */}
+                                                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-amber-300">📢 아웃바운드 영업 기피</span>
+                                                        <span className="text-[11px] font-mono text-amber-200 font-bold">위험도 76점</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-amber-500 to-yellow-500 h-full rounded-full w-[76%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        직접 대면 영업의 심리적 부담 ➔ <strong className="text-cyan-300">"콘텐츠 인바운드 & 자동화 퍼널"</strong>로 완전 대체.
+                                                    </p>
+                                                </div>
+
+                                                {/* Risk 3 */}
+                                                <div className="p-4 rounded-2xl bg-red-950/30 border border-red-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-red-300">📜 계약 & 지분 부주의</span>
+                                                        <span className="text-[11px] font-mono text-red-200 font-bold">위험도 68점</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-red-500 to-rose-500 h-full rounded-full w-[68%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        사람을 믿고 구두 합의 ➔ <strong className="text-white">"4년 베스팅 & 표준 주주간계약서(SHA)"</strong> 100% 필수 작성.
+                                                    </p>
+                                                </div>
+
+                                                {/* Risk 4 */}
+                                                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-indigo-300">⚠️ 마이크로매니징 번아웃</span>
+                                                        <span className="text-[11px] font-mono text-indigo-200 font-bold">위험도 82점</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-indigo-500 to-blue-500 h-full rounded-full w-[82%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        모든 실무를 직접 챙겨 병목 발생 ➔ <strong className="text-emerald-300">"목표와 결과 지표만 정하고 80% 위임"</strong>.
+                                                    </p>
+                                                </div>
+
+                                                {/* Risk 5 */}
+                                                <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-cyan-300">⏳ 단기 즉각 보상 편향</span>
+                                                        <span className="text-[11px] font-mono text-cyan-200 font-bold">위험도 79점</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-cyan-500 to-teal-500 h-full rounded-full w-[79%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        일회성 매출에 쫓겨 시스템 구축 소홀 ➔ <strong className="text-amber-300">"주 5시간은 자동화 파이프라인 투자"</strong>.
+                                                    </p>
+                                                </div>
+
+                                                {/* Risk 6 */}
+                                                <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-emerald-300">⚡ 도파민 크래시 & 방전</span>
+                                                        <span className="text-[11px] font-mono text-emerald-200 font-bold">위험도 74점</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full w-[74%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        과로와 수면 부족으로 판단력 저하 ➔ <strong className="text-cyan-300">"서카디안 리듬 기반 1분 바이오 리셋"</strong> 장착.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 3: 대표 결손 역량 100% 보완 C-Level & 공동 창업자 채용 가이드 */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Building2 className="w-4 h-4 text-indigo-400" />
+                                                        <span>3. 대표 결손 역량을 채워줄 필수 공동 창업자 & C-Level 채용 가이드</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        대표 1인의 한계를 메우고 기업 밸류를 5배 끌어올릴 핵심 파트너 조합
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-xl border border-amber-500/30 font-mono">
+                                                    팀 시너지 지수 98%
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                                                {/* Role 1: Current CEO */}
+                                                <div className="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 space-y-2 relative">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">현재 대표 (CEO)</span>
+                                                    <h4 className="text-xs font-black text-white">비전 & 정밀 제품 아키텍처</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        108 매트릭스 웰니스 솔루션 설계, 하이엔드 서비스 기획, 투자 유치 비전 제시.
+                                                    </p>
+                                                </div>
+
+                                                {/* Role 2: 1순위 파트너 */}
+                                                <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 space-y-2 relative">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">🥇 1순위 영입 파트너 (CMO/영업 리드)</span>
+                                                    <h4 className="text-xs font-black text-white">B2B 세일즈 & 공격적 그로스</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        대표의 영업 부담을 100% 덜어주고, 대기업/기관 B2B 라이선스 공급망을 발로 뛸 영업형 인재.
+                                                    </p>
+                                                </div>
+
+                                                {/* Role 3: 2순위 파트너 */}
+                                                <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-2 relative">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">🥈 2순위 영입 파트너 (COO/재무)</span>
+                                                    <h4 className="text-xs font-black text-white">운영 거버넌스 & 재무/계약 관리</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        지분 베스팅 관리, 정부지원금 정산, 세무 및 계약 리스크를 빈틈없이 틀어막는 살림꾼 인재.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 4: 위기 상황 발생 시 멘탈 붕괴 & 조직 와해 방지 CEO 리스크 매뉴얼 */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                                <Zap className="w-4 h-4 text-amber-400" />
+                                                <span>4. 위기 상황 발생 시 멘탈 붕괴 & 조직 와해 방지 CEO 리스크 매뉴얼</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                {/* Step 1 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-2">
+                                                    <div className="flex items-center gap-2 text-indigo-300 font-black text-xs">
+                                                        <span className="size-5 rounded-full bg-indigo-500/30 flex items-center justify-center text-[10px]">1</span>
+                                                        <span>1초 멘탈 안정 (Freeze 방어)</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        위기 감지 즉시 [생리학적 한숨 3회]로 편도체 공포 반응을 차단하고 뇌 전두엽을 100% 정상 가동.
+                                                    </p>
+                                                </div>
+
+                                                {/* Step 2 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-2">
+                                                    <div className="flex items-center gap-2 text-amber-300 font-black text-xs">
+                                                        <span className="size-5 rounded-full bg-amber-500/30 flex items-center justify-center text-[10px]">2</span>
+                                                        <span>24시간 감정 격리 & 팩트 시트</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        감정적 반응을 일체 멈추고, 실제 손실 규모와 원인을 1장의 객관적 팩트 시트로 정리.
+                                                    </p>
+                                                </div>
+
+                                                {/* Step 3 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-2">
+                                                    <div className="flex items-center gap-2 text-emerald-300 font-black text-xs">
+                                                        <span className="size-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-[10px]">3</span>
+                                                        <span>Plan B 즉각 실행 & 팀 안정화</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        핵심 팀원에게 솔직한 상황과 플랜 B 극복 로드맵을 투명하게 공유하여 이탈 심리를 완벽 진정.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 5: CEO 인지 사각지대 디버깅 & 웰니스 처방전 */}
+                                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/40 space-y-2.5">
+                                            <h3 className="text-xs sm:text-sm font-black text-emerald-300 flex items-center gap-2">
+                                                <HeartPulse className="w-4 h-4 text-emerald-400" />
+                                                <span>5. CEO 위기 시 신경계 긴급 리셋 & 미주신경 웰니스 처방전</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-emerald-200">🫁 4-7-8 코르티솔 배출 호흡:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        4초 흡입 ➔ 7초 멈춤 ➔ 8초간 길게 내쉬기 (스트레스 호르몬 수치 40% 급속 저하)
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-amber-300">☕ 중요 계약 체결 안전 룰:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        결정 피로가 몰려오는 14:00~15:30에는 중요 계약 서명을 보류하고, 15분 햇볕 산책 후 재검토.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : activeDeepReport.tag === '리더십 케어' || activeDeepReport.title?.includes('리더십 균열') || activeDeepReport.title?.includes('신뢰 회복') ? (
                                     /* 👥 [리더십 균열 시점 예방 가이드 & 팀 신뢰 회복 전용 세계 최강 뷰어] */
                                     <div className="space-y-6">
                                         {/* Section 1: Executive Summary */}
