@@ -1908,7 +1908,219 @@ export default function StartupDashboard() {
 
                             {/* Report Scrollable Body */}
                             <div className="p-5 sm:p-8 overflow-y-auto space-y-6 custom-scrollbar text-xs sm:text-sm">
-                                {activeDeepReport.tag === '멘탈 분석' || activeDeepReport.title?.includes('인지 패턴') || activeDeepReport.title?.includes('마인드셋') || activeDeepReport.title?.includes('리더십') ? (
+                                {activeDeepReport.tag === '트렌드 & 피벗' || activeDeepReport.title?.includes('피벗') || activeDeepReport.title?.includes('메가트렌드') ? (
+                                    /* 🚀 [시장 메가트렌드 결합 고승률 비즈니스 & 3단계 피벗 로드맵 전용 세계 최강 뷰어] */
+                                    <div className="space-y-6">
+                                        {/* Section 1: Mega-Trend Executive Summary */}
+                                        <div className="p-5 rounded-3xl bg-gradient-to-br from-indigo-950/70 via-purple-950/40 to-slate-950 border border-indigo-400/40 space-y-3 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                <h3 className="text-sm font-black text-indigo-300 flex items-center gap-2">
+                                                    <Sparkles className="w-4 h-4 text-amber-400" />
+                                                    <span>1. 메가트렌드 결합 고승률 BM 총평 (Trend & Pivot Core)</span>
+                                                </h3>
+                                                <span className="text-xs font-black text-emerald-400 font-mono bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                                                    거시 순풍 지수 96.8% (최상급 순풍)
+                                                </span>
+                                            </div>
+                                            <p className="text-slate-200 leading-relaxed font-medium text-xs sm:text-sm">
+                                                {userSajuProfile.userName} 대표님의 <strong className="text-amber-300">[{userSajuProfile.dayMasterName}]</strong> 기질은 현재 글로벌 3대 메가트렌드인 <strong className="text-cyan-300">AI 지능형 자동화, 뇌신경 웰니스, 고단가 B2B SaaS</strong>와 100% 교집합을 형성하고 있습니다. 
+                                                B2C 저단가 출혈 경쟁을 피해 <strong className="text-emerald-300">‘B2B 뇌신경 멘탈케어 & 독점 진단 라이선스’</strong>로 진입할 때 역풍 없는 최단기 손익분기점(BEP) 달성이 확정됩니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Section 2: 3대 거대 메가트렌드 교차 검증 & 순풍 매트릭스 */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Activity className="w-4 h-4 text-indigo-400" />
+                                                        <span>2. 3대 메가트렌드 × 대표 기질 교차 검증 매트릭스</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        산업 거시 환경과 대표자 선천적 에너지의 순풍 결합도
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/20 px-2.5 py-1 rounded-xl border border-emerald-500/30 font-mono">
+                                                    역풍 위험도: 0.0% (완전 안전)
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+                                                {/* Trend 1 */}
+                                                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2 relative overflow-hidden">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-indigo-300">🤖 AI & 지능형 자동화</span>
+                                                        <span className="text-[11px] font-mono text-indigo-200 font-bold">98% 순풍</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full w-[98%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        대표 1인이 AI 전담 코치를 통해 100인분의 코칭 및 진단 생산성을 발휘하는 무한 확장성 확보.
+                                                    </p>
+                                                </div>
+
+                                                {/* Trend 2 */}
+                                                <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-purple-300">🧬 뇌신경 웰니스 & 멘탈</span>
+                                                        <span className="text-[11px] font-mono text-purple-200 font-bold">96% 순풍</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full w-[96%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        기업 CEO 및 핵심 인재의 결정 피로와 번아웃을 방어하는 하이엔드 웰니스 시장 폭발적 성장.
+                                                    </p>
+                                                </div>
+
+                                                {/* Trend 3 */}
+                                                <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-black text-cyan-300">💎 B2B 고단가 라이선스</span>
+                                                        <span className="text-[11px] font-mono text-cyan-200 font-bold">95% 순풍</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-cyan-500 to-emerald-500 h-full rounded-full w-[95%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        일회성 B2C 판매를 탈피하여 매달 안정적 현금 유입(MRR)을 창출하는 기업 구독 모델 장착.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 3: 3단계 고속 피벗 실행 로드맵 (Phase 1, 2, 3) */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Zap className="w-4 h-4 text-amber-400" />
+                                                        <span>3. 3단계 고속 피벗 & 스케일업 실행 로드맵</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        초기 린 검증부터 B2B 확장까지 단계별 핵심 비즈니스 & 웰니스 행동 강령
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-xl border border-amber-500/30 font-mono">
+                                                    목표 ROI: 9.4x (3~6개월 내 BEP)
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                                                {/* Phase 1 */}
+                                                <div className="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 space-y-2.5 relative">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Phase 1 (1~3개월)</span>
+                                                        <span className="text-xs">🌱</span>
+                                                    </div>
+                                                    <h4 className="text-xs font-black text-white">0원 린(Lean) 검증 & 얼리어답터 10인 확보</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        거대 개발 없이 노코드 랜딩과 1초 마케팅 카피로 10명의 유료 얼리어답터를 확보하여 시장 수요 100% 확증.
+                                                    </p>
+                                                    <div className="pt-1 border-t border-white/5 text-[10px] text-indigo-300">
+                                                        🌿 <strong>웰니스:</strong> 기상 15분 자연광 쬐기로 출시 불안감 및 도파민 과소진 차단.
+                                                    </div>
+                                                </div>
+
+                                                {/* Phase 2 */}
+                                                <div className="p-4 rounded-2xl bg-purple-950/40 border border-purple-500/40 space-y-2.5 relative">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">Phase 2 (4~8개월)</span>
+                                                        <span className="text-xs">⚡</span>
+                                                    </div>
+                                                    <h4 className="text-xs font-black text-white">단위 경제성 확립 & 자동화 파이프라인</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        LTV/CAC 비율을 3.0 이상으로 맞추고, 도서 및 스마트스토어와 연계하여 대표의 시간 여유를 200% 창출.
+                                                    </p>
+                                                    <div className="pt-1 border-t border-white/5 text-[10px] text-purple-300">
+                                                        🌿 <strong>웰니스:</strong> 90분 울트라디안 집중 사이클로 핵심 의사결정을 100% 완결.
+                                                    </div>
+                                                </div>
+
+                                                {/* Phase 3 */}
+                                                <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 space-y-2.5 relative">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">Phase 3 (9~12개월)</span>
+                                                        <span className="text-xs">👑</span>
+                                                    </div>
+                                                    <h4 className="text-xs font-black text-white">플랫폼 스케일업 & B2B 라이선스 확장</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        검증된 솔루션을 기반으로 B2B 엔터프라이즈 및 공공기관에 라이선스를 공급하여 기업가치 5배 퀀텀점프.
+                                                    </p>
+                                                    <div className="pt-1 border-t border-white/5 text-[10px] text-amber-300">
+                                                        🌿 <strong>웰니스:</strong> 서카디안 생체 리듬 자동화로 번아웃 없는 흑자 궤도 안착.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 4: 린(Lean) 검증 & 3대 피벗 시나리오 (Plan A / B / C) */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                                                <span>4. 초기 시장 저항 최소화 린(Lean) 검증 & 3대 피벗 시나리오</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                {/* Plan A */}
+                                                <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-emerald-300 font-black text-xs">
+                                                        <span>🟢 Plan A (주력 고승률 모델)</span>
+                                                        <span className="text-[10px] font-mono bg-emerald-500/20 px-2 py-0.5 rounded">승률 95%</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        <strong className="text-white">B2B 기업 복지 솔루션:</strong> 대표 및 임직원 대상 24시간 AI 웰니스 CSO 진단 & 맞춤 멘탈 케어 구독.
+                                                    </p>
+                                                </div>
+
+                                                {/* Plan B */}
+                                                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-amber-300 font-black text-xs">
+                                                        <span>🟡 Plan B (현금 회전형 모델)</span>
+                                                        <span className="text-[10px] font-mono bg-amber-500/20 px-2 py-0.5 rounded">승률 89%</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        <strong className="text-white">도서 연계 슈퍼패키지:</strong> 9,900원 도서 구매자 대상 고단가 1:1 맞춤 힐링송 및 심화 코칭 업셀링.
+                                                    </p>
+                                                </div>
+
+                                                {/* Plan C */}
+                                                <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-purple-300 font-black text-xs">
+                                                        <span>🔵 Plan C (피벗 안전망 모델)</span>
+                                                        <span className="text-[10px] font-mono bg-purple-500/20 px-2 py-0.5 rounded">승률 84%</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        <strong className="text-white">버티컬 웰니스 데이터:</strong> 개인 맞춤형 바이오케어 및 뇌파 동기화 사운드 테라피 라이선스 공급.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 5: CEO 피벗 웰니스 처방전 */}
+                                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/40 space-y-2.5">
+                                            <h3 className="text-xs sm:text-sm font-black text-emerald-300 flex items-center gap-2">
+                                                <HeartPulse className="w-4 h-4 text-emerald-400" />
+                                                <span>5. 피벗 성공을 위한 창업가 신경계 에너지 방어 3계명</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-emerald-200">🫁 피벗 불안증 급속 완화:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        코로 2번 깊게 들이마시고 입으로 길게 내쉬는 [생리학적 한숨] 3회로 전두엽 인지 오류 방어.
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-amber-300">☕ 도파민 번아웃 사전 차단:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        기상 후 90분간 카페인 지연 + 오전 09:00~11:30 골든 타임에 피벗 핵심 계약 집중.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : activeDeepReport.tag === '멘탈 분석' || activeDeepReport.title?.includes('인지 패턴') || activeDeepReport.title?.includes('마인드셋') || activeDeepReport.title?.includes('리더십') ? (
                                     /* 🧠 [창업자 리더십 & 6대 인지 패턴 마인드셋 전용 세계 최강 뷰어] */
                                     <div className="space-y-6">
                                         {/* Section 1: Leadership Executive Summary */}
