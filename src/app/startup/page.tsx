@@ -1911,7 +1911,210 @@ export default function StartupDashboard() {
 
                             {/* Report Scrollable Body */}
                             <div className="p-5 sm:p-8 overflow-y-auto space-y-6 custom-scrollbar text-xs sm:text-sm">
-                                {activeDeepReport.tag === '트렌드 & 피벗' || activeDeepReport.title?.includes('피벗') || activeDeepReport.title?.includes('메가트렌드') ? (
+                                {activeDeepReport.tag === '리더십 케어' || activeDeepReport.title?.includes('리더십 균열') || activeDeepReport.title?.includes('신뢰 회복') ? (
+                                    /* 👥 [리더십 균열 시점 예방 가이드 & 팀 신뢰 회복 전용 세계 최강 뷰어] */
+                                    <div className="space-y-6">
+                                        {/* Section 1: Executive Summary */}
+                                        <div className="p-5 rounded-3xl bg-gradient-to-br from-indigo-950/70 via-purple-950/40 to-slate-950 border border-indigo-400/40 space-y-3 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                <h3 className="text-sm font-black text-indigo-300 flex items-center gap-2">
+                                                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                                                    <span>1. 리더십 균열 방어 & 감정 거버넌스 총평 (Leadership Core)</span>
+                                                </h3>
+                                                <span className="text-xs font-black text-emerald-400 font-mono bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                                                    팀 퇴사율 0% 방어 지수 95.8% (상위 1% 최우수)
+                                                </span>
+                                            </div>
+                                            <p className="text-slate-200 leading-relaxed font-medium text-xs sm:text-sm">
+                                                {userSajuProfile.userName} 대표님의 <strong className="text-amber-300">[{userSajuProfile.dayMasterName}]</strong> 기질은 뛰어난 비전과 빠른 실행력을 발휘하지만, 압박감이 높아질 때 <strong className="text-red-300">‘감정적 지시 및 소통 단절’</strong>로 팀원의 불안을 유발할 수 있습니다. 
+                                                <strong className="text-cyan-300">감정 분리 피드백(Facts-Impact-Next)</strong>과 <strong className="text-emerald-300">주간 30분 C-Level 동기화 룰</strong>을 장착하여 핵심 인재 이탈 없는 단단한 조직을 구축합니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Section 2: 조직 규모별 3단계 리더십 전환 가이드 */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Building2 className="w-4 h-4 text-indigo-400" />
+                                                        <span>2. 조직 규모별 리더십 전환 가이드 (1~5인 ➔ 10~30인 ➔ 50인+)</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        회사 성장 단계별 대표자의 역할 진화 및 필수 위임 프로토콜
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-xl border border-indigo-500/30 font-mono">
+                                                    위임 성공률 94%
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
+                                                {/* Stage 1 */}
+                                                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2 relative">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">1~5인 (창업 극초기)</span>
+                                                        <span className="text-xs">🏃</span>
+                                                    </div>
+                                                    <h4 className="text-xs font-black text-white">플레이어형 리더십 & 원팀 질주</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        대표가 영업/개발 전면에 서며 솔선수범. 매일 10분 모닝 스탠드업으로 즉각적 목표 공유.
+                                                    </p>
+                                                    <div className="pt-1 border-t border-white/5 text-[10px] text-indigo-300">
+                                                        🌿 <strong>웰니스:</strong> 대표의 조급증이 팀원에게 전이되지 않도록 1분 호흡 리셋.
+                                                    </div>
+                                                </div>
+
+                                                {/* Stage 2 */}
+                                                <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2 relative">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">10~30인 (성장기)</span>
+                                                        <span className="text-xs">🤝</span>
+                                                    </div>
+                                                    <h4 className="text-xs font-black text-white">코치형 위임 리더십 & 전결권 부여</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        마이크로매니징 중단. 팀장에게 권한 80% 위임하고 목표와 결과 지표(KPI)로만 평가.
+                                                    </p>
+                                                    <div className="pt-1 border-t border-white/5 text-[10px] text-purple-300">
+                                                        🌿 <strong>웰니스:</strong> 주 1회 디지털 디톡스 산책으로 CEO 결정 피로도 차단.
+                                                    </div>
+                                                </div>
+
+                                                {/* Stage 3 */}
+                                                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2 relative">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">50인+ (스케일업)</span>
+                                                        <span className="text-xs">👑</span>
+                                                    </div>
+                                                    <h4 className="text-xs font-black text-white">비전·문화형 리더십 & 거버넌스</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        기업 철학과 사명 전파, C-Level 핵심 인재 영입 및 자본 배분에 집중.
+                                                    </p>
+                                                    <div className="pt-1 border-t border-white/5 text-[10px] text-amber-300">
+                                                        🌿 <strong>웰니스:</strong> 서카디안 리듬 기반 고품질 수면으로 장기 판단력 극대화.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 3: 위기 소통 및 팀 신뢰 회복 매뉴얼 (Facts-Impact-Next) */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Activity className="w-4 h-4 text-emerald-400" />
+                                                        <span>3. 위기 소통 & 팀 신뢰 회복 매뉴얼 (감정 분리 피드백 훈련)</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        감정 섞인 질책 대신 데이터와 미래 행동으로 신뢰를 200% 복원하는 피드백 공식
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-emerald-300 bg-emerald-500/20 px-2.5 py-1 rounded-xl border border-emerald-500/30 font-mono">
+                                                    심리적 안전감 98%
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                                                {/* Step 1 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-2">
+                                                    <div className="flex items-center gap-2 text-indigo-300 font-black text-xs">
+                                                        <span className="size-5 rounded-full bg-indigo-500/30 flex items-center justify-center text-[10px]">1</span>
+                                                        <span>Fact (사실 명시)</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        "이번 신규 기능 배포 중 결제 모듈에서 3건의 에러가 발생했습니다." (인격 비난 배제)
+                                                    </p>
+                                                </div>
+
+                                                {/* Step 2 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-2">
+                                                    <div className="flex items-center gap-2 text-amber-300 font-black text-xs">
+                                                        <span className="size-5 rounded-full bg-amber-500/30 flex items-center justify-center text-[10px]">2</span>
+                                                        <span>Impact (영향 공유)</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        "이로 인해 초기 유료 전환 고객 12명의 결제 이탈과 응대 지연이 발생했습니다."
+                                                    </p>
+                                                </div>
+
+                                                {/* Step 3 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-2">
+                                                    <div className="flex items-center gap-2 text-emerald-300 font-black text-xs">
+                                                        <span className="size-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-[10px]">3</span>
+                                                        <span>Next Action (재발 방지책)</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        "다음 스프린트부터 스테이징 사전 테스트 체크리스트를 어떻게 보강하면 좋을까요?"
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 4: C-Level 및 팀장급 3대 동기부여 프레임워크 */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                                <Zap className="w-4 h-4 text-amber-400" />
+                                                <span>4. C-Level 및 팀장급 3대 동기부여 프레임워크</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                {/* Card 1 */}
+                                                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-indigo-300 font-black text-xs">
+                                                        <span>🚀 1. 자율성 (Autonomy)</span>
+                                                        <span className="text-[10px] font-mono bg-indigo-500/20 px-2 py-0.5 rounded">실행 권한 100%</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        목표만 명확히 제시하고, 실행 방식과 도구 선택은 팀장과 C-Level이 100% 주도하도록 권한 부여.
+                                                    </p>
+                                                </div>
+
+                                                {/* Card 2 */}
+                                                <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-purple-300 font-black text-xs">
+                                                        <span>🏆 2. 숙련도 (Mastery)</span>
+                                                        <span className="text-[10px] font-mono bg-purple-500/20 px-2 py-0.5 rounded">역량 고속 성장</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        도전적 과제와 R&D 예산을 배정하여 팀원이 회사와 함께 업계 최고 전문가로 성장하는 환경 제공.
+                                                    </p>
+                                                </div>
+
+                                                {/* Card 3 */}
+                                                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-amber-300 font-black text-xs">
+                                                        <span>🌟 3. 목적성 (Purpose)</span>
+                                                        <span className="text-[10px] font-mono bg-amber-500/20 px-2 py-0.5 rounded">사회적 임팩트</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        단순 매출 숫자가 아닌, 우리 제품이 고객의 삶과 웰니스를 어떻게 혁신하는지 가치 비전 공유.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 5: CEO 감정 기복 제로화 & 뇌신경 웰니스 처방전 */}
+                                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/40 space-y-2.5">
+                                            <h3 className="text-xs sm:text-sm font-black text-emerald-300 flex items-center gap-2">
+                                                <HeartPulse className="w-4 h-4 text-emerald-400" />
+                                                <span>5. CEO 감정 기복 제로화 & 미주신경 웰니스 처방전 (팀 이탈 방지)</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-emerald-200">🫁 회의 직전 1분 신경계 쿨다운:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        어려운 피드백 회의 전 [생리학적 한숨] 3회로 편도체 흥분을 가라앉혀 차분하고 단호한 소통 유지.
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-amber-300">☕ 도파민 크래시 방지:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        오후 2~3시 결정 피로 시간대에는 팀 평가나 지적을 피하고, 15분 산책으로 혈류를 재충전.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : activeDeepReport.tag === '트렌드 & 피벗' || activeDeepReport.title?.includes('피벗') || activeDeepReport.title?.includes('메가트렌드') ? (
                                     /* 🚀 [시장 메가트렌드 결합 고승률 비즈니스 & 3단계 피벗 로드맵 전용 세계 최강 뷰어] */
                                     <div className="space-y-6">
                                         {/* Section 1: Mega-Trend Executive Summary */}
