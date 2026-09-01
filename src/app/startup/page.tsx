@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju } from '@/utils/SajuCalculator';
 import ExecutiveDashboardModal from '@/components/startup/ExecutiveDashboardModal';
-import { ShieldCheck, Copy, Check, Building2, KeyRound, Sparkles, BookOpen, ExternalLink, Lock } from 'lucide-react';
+import { ShieldCheck, Copy, Check, Building2, KeyRound, Sparkles, BookOpen, ExternalLink, Lock, Brain, Activity, Zap, HeartPulse } from 'lucide-react';
 
 export default function StartupDashboard() {
         const router = useRouter();
@@ -1908,183 +1908,428 @@ export default function StartupDashboard() {
 
                             {/* Report Scrollable Body */}
                             <div className="p-5 sm:p-8 overflow-y-auto space-y-6 custom-scrollbar text-xs sm:text-sm">
-                                {/* Section 1: Executive Summary Card */}
-                                <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-900/30 via-purple-900/20 to-transparent border border-indigo-400/30 space-y-3 relative">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-sm font-black text-indigo-300 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-amber-400 text-base">verified</span>
-                                            <span>1. 핵심 요약 (Executive Summary)</span>
-                                        </h3>
-                                        <span className="text-xs font-black text-emerald-400 font-mono">성공 승률 {userSajuProfile.businessFit}%</span>
-                                    </div>
-                                    <p className="text-slate-200 leading-relaxed font-medium text-xs sm:text-sm">
-                                        {userSajuProfile.userName} 대표님의 기질 구조는 <strong className="text-amber-300">[{userSajuProfile.dayMasterName}]</strong>의 정밀 에너지와 일치합니다. 
-                                        무리한 B2C 소모전보다는 <strong className="text-emerald-300">고단가 지식 자산 및 B2B 구독 솔루션</strong>에서 가장 빠른 현금 회전율(ROI)을 달성할 수 있습니다.
-                                    </p>
-                                </div>
+                                {activeDeepReport.tag === '멘탈 분석' || activeDeepReport.title?.includes('인지 패턴') || activeDeepReport.title?.includes('마인드셋') || activeDeepReport.title?.includes('리더십') ? (
+                                    /* 🧠 [창업자 리더십 & 6대 인지 패턴 마인드셋 전용 세계 최강 뷰어] */
+                                    <div className="space-y-6">
+                                        {/* Section 1: Leadership Executive Summary */}
+                                        <div className="p-5 rounded-3xl bg-gradient-to-br from-indigo-950/60 via-purple-950/40 to-slate-950 border border-indigo-400/40 space-y-3 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                <h3 className="text-sm font-black text-indigo-300 flex items-center gap-2">
+                                                    <Brain className="w-4 h-4 text-purple-400" />
+                                                    <span>1. 창업가 리더십 마인드셋 총평 (Leadership Core)</span>
+                                                </h3>
+                                                <span className="text-xs font-black text-emerald-400 font-mono bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                                                    멘탈 방어율 94.2% (상위 2% 최상위)
+                                                </span>
+                                            </div>
+                                            <p className="text-slate-200 leading-relaxed font-medium text-xs sm:text-sm">
+                                                {userSajuProfile.userName} 대표님은 <strong className="text-amber-300">[{userSajuProfile.dayMasterName}]</strong> 기질 특유의 <strong className="text-purple-300">초정밀 분석력과 높은 완결주의</strong>를 보유하고 있습니다. 다만 책임감이 과도해지면 모든 실무를 직접 통제하려는 <strong className="text-red-300">‘완벽주의 결정 마비’</strong>가 발생할 수 있으므로, 80% 수준에서 위임하고 결과 지표(KPI)로만 소통하는 <strong className="text-emerald-300">시스템형 위임 리더십</strong>이 핵심 성공 열쇠입니다.
+                                            </p>
+                                        </div>
 
-                                {/* Section 2: 4-Type Entrepreneur Matrix & Match Rates */}
-                                <div className="space-y-3">
-                                    <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-indigo-400 text-base">grid_view</span>
-                                        <span>2. 4대 창업 기질 유형별 적합도 진단</span>
-                                    </h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <div className="p-4 rounded-2xl bg-white/5 border border-indigo-500/30 space-y-2 relative overflow-hidden">
+                                        {/* Section 2: 6대 핵심 인지 패턴 & 멘탈 방어력 레이더 차트 (SVG) */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Activity className="w-4 h-4 text-indigo-400" />
+                                                        <span>2. 6대 창업가 핵심 인지 패턴 & 멘탈 방어력 레이더</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        108 매트릭스와 뇌인지과학 기반 창업자 심리 알고리즘 진단
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-xl border border-indigo-500/30 font-mono">
+                                                    HRV 94% · Flow 최상태
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pt-2">
+                                                {/* Left: 6-Axis Radar SVG */}
+                                                <div className="lg:col-span-6 relative size-64 sm:size-72 mx-auto flex items-center justify-center">
+                                                    <svg className="w-full h-full text-indigo-500/25" viewBox="0 0 200 200">
+                                                        {/* Hexagon Grid Background */}
+                                                        <polygon points="100,20 170,60 170,140 100,180 30,140 30,60" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" />
+                                                        <polygon points="100,40 152,70 152,130 100,160 48,130 48,70" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.6" />
+                                                        <polygon points="100,60 135,80 135,120 100,140 65,120 65,80" fill="none" stroke="currentColor" strokeWidth="0.6" opacity="0.4" />
+                                                        {/* Axis Lines */}
+                                                        <line x1="100" y1="20" x2="100" y2="180" stroke="currentColor" strokeWidth="0.6" />
+                                                        <line x1="30" y1="60" x2="170" y2="140" stroke="currentColor" strokeWidth="0.6" />
+                                                        <line x1="30" y1="140" x2="170" y2="60" stroke="currentColor" strokeWidth="0.6" />
+                                                        {/* Data Polygon */}
+                                                        <polygon points="100,28 162,68 155,133 100,166 42,132 40,68" fill="rgba(129, 140, 248, 0.35)" stroke="#818cf8" strokeWidth="2.5" />
+                                                        {/* Points */}
+                                                        <circle cx="100" cy="28" r="3.5" fill="#a78bfa" className="animate-pulse" />
+                                                        <circle cx="162" cy="68" r="3.5" fill="#6366f1" />
+                                                        <circle cx="155" cy="133" r="3.5" fill="#38bdf8" />
+                                                        <circle cx="100" cy="166" r="3.5" fill="#34d399" />
+                                                        <circle cx="42" cy="132" r="3.5" fill="#fbbf24" />
+                                                        <circle cx="40" cy="68" r="3.5" fill="#f87171" />
+                                                    </svg>
+                                                    {/* Labels */}
+                                                    <span className="absolute top-1 text-[10px] font-black text-purple-300 bg-black/80 px-2 py-0.5 rounded-lg border border-purple-500/30">완벽주의 (92점)</span>
+                                                    <span className="absolute top-14 right-0 text-[10px] font-black text-indigo-300 bg-black/80 px-2 py-0.5 rounded-lg border border-indigo-500/30">결정력 (88점)</span>
+                                                    <span className="absolute bottom-14 right-0 text-[10px] font-black text-cyan-300 bg-black/80 px-2 py-0.5 rounded-lg border border-cyan-500/30">피드백수용 (94점)</span>
+                                                    <span className="absolute bottom-1 text-[10px] font-black text-emerald-300 bg-black/80 px-2 py-0.5 rounded-lg border border-emerald-500/30">회복탄력 (91점)</span>
+                                                    <span className="absolute bottom-14 left-0 text-[10px] font-black text-amber-300 bg-black/80 px-2 py-0.5 rounded-lg border border-amber-500/30">보상지연 (85점)</span>
+                                                    <span className="absolute top-14 left-0 text-[10px] font-black text-red-300 bg-black/80 px-2 py-0.5 rounded-lg border border-red-500/30">통제집착 (76점)</span>
+                                                </div>
+
+                                                {/* Right: 6 Cognitive Axis Score Bars */}
+                                                <div className="lg:col-span-6 space-y-2.5">
+                                                    <div className="p-2.5 rounded-xl bg-white/5 border border-purple-500/30 space-y-1">
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <span className="font-bold text-purple-300">🎯 완벽주의 vs 출시 속도 (92점)</span>
+                                                            <span className="font-mono text-purple-200 font-black">최상급 퀄리티 추구</span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full w-[92%]"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="p-2.5 rounded-xl bg-white/5 border border-cyan-500/30 space-y-1">
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <span className="font-bold text-cyan-300">💬 피드백 수용성 & 열린 경청 (94점)</span>
+                                                            <span className="font-mono text-cyan-200 font-black">데이터 기반 겸손함</span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                            <div className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full w-[94%]"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="p-2.5 rounded-xl bg-white/5 border border-emerald-500/30 space-y-1">
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <span className="font-bold text-emerald-300">🛡️ 번아웃 회복탄력성 (91점)</span>
+                                                            <span className="font-mono text-emerald-200 font-black">위기 멘탈 회복 빠름</span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full w-[91%]"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="p-2.5 rounded-xl bg-white/5 border border-red-500/30 space-y-1">
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <span className="font-bold text-red-300">⚠️ 통제 집착 & 마이크로매니징 (76점)</span>
+                                                            <span className="font-mono text-red-200 font-black">위임 프로세스 필요</span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                            <div className="bg-gradient-to-r from-amber-500 to-red-500 h-full rounded-full w-[76%]"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 3: 24시간 창업가 인지 결단력 & 도파민 파동 그래프 (Cognitive Wave) */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Zap className="w-4 h-4 text-amber-400" />
+                                                        <span>3. 창업가 24시간 인지 결단력 & 도파민 파동 (Cognitive Energy Wave)</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        하루 중 전두엽 의사결정 최고 피크 시간과 결정 피로 위험 구간 시각화
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-xl border border-amber-500/30 font-mono">
+                                                    골든 피크: 09:00 ~ 11:30
+                                                </span>
+                                            </div>
+
+                                            {/* 24-Hour Wave SVG */}
+                                            <div className="relative h-44 w-full pt-2">
+                                                <svg className="w-full h-full overflow-visible" viewBox="0 0 700 140" preserveAspectRatio="none">
+                                                    <line x1="0" y1="30" x2="700" y2="30" stroke="#2b2839" strokeDasharray="3,3" />
+                                                    <line x1="0" y1="70" x2="700" y2="70" stroke="#2b2839" strokeDasharray="3,3" />
+                                                    <line x1="0" y1="110" x2="700" y2="110" stroke="#2b2839" opacity="0.4" />
+
+                                                    <defs>
+                                                        <linearGradient id="cogGradient" x1="0" y1="0" x2="0" y2="1">
+                                                            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.4" />
+                                                            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.0" />
+                                                        </linearGradient>
+                                                    </defs>
+
+                                                    {/* Area */}
+                                                    <path d="M 30,110 Q 150,15 250,25 T 380,95 T 500,60 T 670,120 L 670,130 L 30,130 Z" fill="url(#cogGradient)" />
+                                                    {/* Line */}
+                                                    <path d="M 30,110 Q 150,15 250,25 T 380,95 T 500,60 T 670,120" fill="none" stroke="#fbbf24" strokeWidth="3" />
+                                                </svg>
+
+                                                {/* Timeline Keypoints */}
+                                                <div className="absolute inset-0 flex justify-between items-end px-4 pb-1 text-center">
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="text-[10px] font-bold text-slate-400">07:00</span>
+                                                        <span className="text-[9px] text-indigo-300">자연광 쬐기</span>
+                                                    </div>
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="px-1.5 py-0.5 rounded bg-emerald-500 text-slate-950 font-black text-[9px] mb-1 animate-bounce">최고 피크</span>
+                                                        <span className="text-[10px] font-black text-amber-300">09:00 ~ 11:30</span>
+                                                        <span className="text-[9px] text-emerald-400 font-bold">핵심 계약/투자 결정</span>
+                                                    </div>
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="px-1.5 py-0.5 rounded bg-red-500 text-white font-black text-[9px] mb-1">피로 저하</span>
+                                                        <span className="text-[10px] font-bold text-red-300">14:00 ~ 15:30</span>
+                                                        <span className="text-[9px] text-slate-400">15분 산책/수분 충전</span>
+                                                    </div>
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="text-[10px] font-bold text-cyan-300">16:30 ~ 18:30</span>
+                                                        <span className="text-[9px] text-cyan-200">팀 피드백 & 소통</span>
+                                                    </div>
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="text-[10px] font-bold text-purple-300">22:00</span>
+                                                        <span className="text-[9px] text-purple-200">블루라이트 차단</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 4: 6대 인지 오류 패턴별 1초 리더십 디버깅 처방 카드 */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                                                <span>4. 창업가 3대 인지 오류 디버깅 & 행동과학 처방전</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                {/* Card 1 */}
+                                                <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                                                    <div className="flex items-center gap-1.5 text-purple-300 font-black text-xs">
+                                                        <span>🐞 1. 완벽주의 결정 마비</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        <strong className="text-white">버그:</strong> 제품이 완벽해질 때까지 출시와 영업을 미룸.<br />
+                                                        <strong className="text-emerald-300">처방:</strong> "70% 완성 시점에 즉시 고객에게 던져라."
+                                                    </p>
+                                                </div>
+                                                {/* Card 2 */}
+                                                <div className="p-4 rounded-2xl bg-red-950/30 border border-red-500/30 space-y-2">
+                                                    <div className="flex items-center gap-1.5 text-red-300 font-black text-xs">
+                                                        <span>🐞 2. 마이크로매니징 통제욕</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        <strong className="text-white">버그:</strong> 팀원의 사소한 방식까지 간섭하여 병목 발생.<br />
+                                                        <strong className="text-amber-300">처방:</strong> "목표와 결과 지표만 정하고 방식은 100% 위임."
+                                                    </p>
+                                                </div>
+                                                {/* Card 3 */}
+                                                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                                                    <div className="flex items-center gap-1.5 text-amber-300 font-black text-xs">
+                                                        <span>🐞 3. 단기 즉각 보상 편향</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        <strong className="text-white">버그:</strong> 일회성 매출에 쫓겨 자동화 시스템 구축 소홀.<br />
+                                                        <strong className="text-cyan-300">처방:</strong> "주 5시간은 무조건 시스템 파이프라인에 투자."
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 5: CEO 1분 바이오 멘탈 리셋 프로토콜 */}
+                                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/40 space-y-2.5">
+                                            <h3 className="text-xs sm:text-sm font-black text-emerald-300 flex items-center gap-2">
+                                                <HeartPulse className="w-4 h-4 text-emerald-400" />
+                                                <span>5. CEO 위기 시 1분 즉각 멘탈 리셋 (앤드류 후버만 생리학적 한숨)</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-emerald-200">🫁 1분 호흡 프로토콜:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        코로 깊게 2번 연속 흡입 ➔ 입으로 길게 5초간 내쉬기 (3회 반복 시 코르티솔 즉시 감소)
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-amber-300">☕ 도파민 고갈 방지 룰:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        기상 후 90분간 카페인 지연 ➔ 오후 2시 결정 피로 및 에너지 크래시 100% 예방
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* 📊 [사업 아이템, BM 타당성, 전략 피벗 기본 뷰어] */
+                                    <div className="space-y-6">
+                                        {/* Section 1: Executive Summary Card */}
+                                        <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-900/30 via-purple-900/20 to-transparent border border-indigo-400/30 space-y-3 relative">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-xs font-bold text-indigo-300">🛠️ 기술·솔루션 개발형</span>
-                                                <span className="text-xs font-black font-mono text-purple-300">96% (최상급)</span>
+                                                <h3 className="text-sm font-black text-indigo-300 flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-amber-400 text-base">verified</span>
+                                                    <span>1. 핵심 요약 (Executive Summary)</span>
+                                                </h3>
+                                                <span className="text-xs font-black text-emerald-400 font-mono">성공 승률 {userSajuProfile.businessFit}%</span>
                                             </div>
-                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full w-[96%]"></div>
-                                            </div>
-                                            <p className="text-[11px] text-slate-300 leading-relaxed">
-                                                세상에 없던 정밀한 가치와 아키텍처를 설계하여 압도적 제품력으로 시장을 장악하는 1순위 적성.
+                                            <p className="text-slate-200 leading-relaxed font-medium text-xs sm:text-sm">
+                                                {userSajuProfile.userName} 대표님의 기질 구조는 <strong className="text-amber-300">[{userSajuProfile.dayMasterName}]</strong>의 정밀 에너지와 일치합니다. 
+                                                무리한 B2C 소모전보다는 <strong className="text-emerald-300">고단가 지식 자산 및 B2B 구독 솔루션</strong>에서 가장 빠른 현금 회전율(ROI)을 달성할 수 있습니다.
                                             </p>
                                         </div>
 
-                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs font-bold text-cyan-300">💡 전문가 지식·컨설팅형</span>
-                                                <span className="text-xs font-black font-mono text-cyan-300">94% (우수)</span>
+                                        {/* Section 2: 4-Type Entrepreneur Matrix & Match Rates */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-indigo-400 text-base">grid_view</span>
+                                                <span>2. 4대 창업 기질 유형별 적합도 진단</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <div className="p-4 rounded-2xl bg-white/5 border border-indigo-500/30 space-y-2 relative overflow-hidden">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-indigo-300">🛠️ 기술·솔루션 개발형</span>
+                                                        <span className="text-xs font-black font-mono text-purple-300">96% (최상급)</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full w-[96%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        세상에 없던 정밀한 가치와 아키텍처를 설계하여 압도적 제품력으로 시장을 장악하는 1순위 적성.
+                                                    </p>
+                                                </div>
+
+                                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-cyan-300">💡 전문가 지식·컨설팅형</span>
+                                                        <span className="text-xs font-black font-mono text-cyan-300">94% (우수)</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full w-[94%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        깊이 있는 전문 데이터와 인사이트를 고단가 멤버십 및 B2B 라이선스로 전환하는 역량.
+                                                    </p>
+                                                </div>
+
+                                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-amber-300">🌐 플랫폼·유통 네트워크형</span>
+                                                        <span className="text-xs font-black font-mono text-amber-300">91% (양호)</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-amber-500 to-yellow-500 h-full rounded-full w-[91%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        공급자와 수요자를 잇고 단위 경제성을 확보하여 자본 선순환을 유도하는 비즈니스.
+                                                    </p>
+                                                </div>
+
+                                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-emerald-300">👥 커뮤니티·팬덤형</span>
+                                                        <span className="text-xs font-black font-mono text-emerald-300">88% (보통)</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                                        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full w-[88%]"></div>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        충성도 높은 고객 커뮤니티를 구축하여 리텐션을 극대화하는 서포트 모델.
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                                <div className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full w-[94%]"></div>
-                                            </div>
-                                            <p className="text-[11px] text-slate-300 leading-relaxed">
-                                                깊이 있는 전문 데이터와 인사이트를 고단가 멤버십 및 B2B 라이선스로 전환하는 역량.
-                                            </p>
                                         </div>
 
-                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs font-bold text-amber-300">🌐 플랫폼·유통 네트워크형</span>
-                                                <span className="text-xs font-black font-mono text-amber-300">91% (양호)</span>
+                                        {/* Section 3: Recommended Business Item Top 3 & ROI Table */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-amber-400 text-base">rocket_launch</span>
+                                                <span>3. 사주 기질 100% 일치 최적 사업 아이템 Top 3 & ROI 분석</span>
+                                            </h3>
+                                            <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#0d0a1a]">
+                                                <table className="w-full text-left text-xs border-collapse">
+                                                    <thead>
+                                                        <tr className="bg-white/5 border-b border-white/10 text-slate-300 text-[11px] font-bold">
+                                                            <th className="p-3">순위 & 아이템 카테고리</th>
+                                                            <th className="p-3">목표 타겟</th>
+                                                            <th className="p-3 text-center">예상 ROI</th>
+                                                            <th className="p-3 text-center">손익분기(BEP)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-white/5 text-slate-200">
+                                                        <tr className="bg-indigo-500/10 hover:bg-indigo-500/15 transition-colors">
+                                                            <td className="p-3 font-black text-amber-300 flex items-center gap-1.5">
+                                                                <span className="size-5 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-[10px] font-black shrink-0">1</span>
+                                                                <span>{userSajuProfile.bizRank1}</span>
+                                                            </td>
+                                                            <td className="p-3 text-slate-300">B2B 중소/중견기업, 전문직</td>
+                                                            <td className="p-3 text-center font-bold text-emerald-400 font-mono">9.4x (최고)</td>
+                                                            <td className="p-3 text-center font-mono text-cyan-300">3 ~ 6개월</td>
+                                                        </tr>
+                                                        <tr className="hover:bg-white/5 transition-colors">
+                                                            <td className="p-3 font-bold text-white flex items-center gap-1.5">
+                                                                <span className="size-5 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px] font-black shrink-0">2</span>
+                                                                <span>{userSajuProfile.bizRank2}</span>
+                                                            </td>
+                                                            <td className="p-3 text-slate-300">스타트업 창업가, 전문가</td>
+                                                            <td className="p-3 text-center font-bold text-emerald-400 font-mono">8.8x</td>
+                                                            <td className="p-3 text-center font-mono text-cyan-300">2 ~ 4개월</td>
+                                                        </tr>
+                                                        <tr className="hover:bg-white/5 transition-colors">
+                                                            <td className="p-3 font-bold text-slate-300 flex items-center gap-1.5">
+                                                                <span className="size-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-black shrink-0">3</span>
+                                                                <span>버티컬 웰니스 & 1:1 맞춤형 뇌신경 멘탈케어</span>
+                                                            </td>
+                                                            <td className="p-3 text-slate-400">하이엔드 B2C, VIP 고객</td>
+                                                            <td className="p-3 text-center font-bold text-emerald-400 font-mono">8.2x</td>
+                                                            <td className="p-3 text-center font-mono text-cyan-300">4 ~ 8개월</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                                <div className="bg-gradient-to-r from-amber-500 to-yellow-500 h-full rounded-full w-[91%]"></div>
-                                            </div>
-                                            <p className="text-[11px] text-slate-300 leading-relaxed">
-                                                공급자와 수요자를 잇고 단위 경제성을 확보하여 자본 선순환을 유도하는 비즈니스.
-                                            </p>
                                         </div>
 
-                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs font-bold text-emerald-300">👥 커뮤니티·팬덤형</span>
-                                                <span className="text-xs font-black font-mono text-emerald-300">88% (보통)</span>
+                                        {/* Section 4: 3-Stage Agile Pivot Roadmap */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-purple-400 text-base">timeline</span>
+                                                <span>4. 3단계 고속 피벗 & 스케일업 로드맵</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Phase 1 (1~3개월)</span>
+                                                    <h4 className="text-xs font-bold text-white">0원 MVP 가설 검증</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        거대한 개발 없이 노코드/원페이지 랜딩으로 10명의 유료 얼리어답터를 확보하여 시장 수요를 100% 확증.
+                                                    </p>
+                                                </div>
+                                                <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">Phase 2 (4~8개월)</span>
+                                                    <h4 className="text-xs font-bold text-white">단위 경제성 & 자동화</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        LTV/CAC 비율을 3.0 이상으로 맞추고, 핵심 파이프라인을 시스템화하여 대표의 시간 여유를 창출.
+                                                    </p>
+                                                </div>
+                                                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">Phase 3 (9~12개월)</span>
+                                                    <h4 className="text-xs font-bold text-white">플랫폼 스케일업 & 확장</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        검증된 솔루션을 기반으로 인접 산업군으로 영토를 확장하고 B2B 엔터프라이즈 라이선스 계약 체결.
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                                <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full w-[88%]"></div>
+                                        </div>
+
+                                        {/* Section 5: Pre-mortem Risk Shield & Wellness */}
+                                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-red-950/30 via-slate-900 to-emerald-950/30 border border-white/10 space-y-2.5">
+                                            <h3 className="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-sm">shield</span>
+                                                <span>5. 실패 사전 차단 방어막 (Pre-mortem Shield) & 바이오 해킹</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-red-300">⚠️ 가장 주의해야 할 함정:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-400">
+                                                        {userSajuProfile.axes.innovation.dark}
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-emerald-300">🌿 뇌신경 웰니스 처방전:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-400">
+                                                        {userSajuProfile.vagusTip} • {userSajuProfile.peakHour}에 최우선 집중
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <p className="text-[11px] text-slate-300 leading-relaxed">
-                                                충성도 높은 고객 커뮤니티를 구축하여 리텐션을 극대화하는 서포트 모델.
-                                            </p>
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Section 3: Recommended Business Item Top 3 & ROI Table */}
-                                <div className="space-y-3">
-                                    <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-amber-400 text-base">rocket_launch</span>
-                                        <span>3. 사주 기질 100% 일치 최적 사업 아이템 Top 3 & ROI 분석</span>
-                                    </h3>
-                                    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#0d0a1a]">
-                                        <table className="w-full text-left text-xs border-collapse">
-                                            <thead>
-                                                <tr className="bg-white/5 border-b border-white/10 text-slate-300 text-[11px] font-bold">
-                                                    <th className="p-3">순위 & 아이템 카테고리</th>
-                                                    <th className="p-3">목표 타겟</th>
-                                                    <th className="p-3 text-center">예상 ROI</th>
-                                                    <th className="p-3 text-center">손익분기(BEP)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-white/5 text-slate-200">
-                                                <tr className="bg-indigo-500/10 hover:bg-indigo-500/15 transition-colors">
-                                                    <td className="p-3 font-black text-amber-300 flex items-center gap-1.5">
-                                                        <span className="size-5 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-[10px] font-black shrink-0">1</span>
-                                                        <span>{userSajuProfile.bizRank1}</span>
-                                                    </td>
-                                                    <td className="p-3 text-slate-300">B2B 중소/중견기업, 전문직</td>
-                                                    <td className="p-3 text-center font-bold text-emerald-400 font-mono">9.4x (최고)</td>
-                                                    <td className="p-3 text-center font-mono text-cyan-300">3 ~ 6개월</td>
-                                                </tr>
-                                                <tr className="hover:bg-white/5 transition-colors">
-                                                    <td className="p-3 font-bold text-white flex items-center gap-1.5">
-                                                        <span className="size-5 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px] font-black shrink-0">2</span>
-                                                        <span>{userSajuProfile.bizRank2}</span>
-                                                    </td>
-                                                    <td className="p-3 text-slate-300">스타트업 창업가, 전문가</td>
-                                                    <td className="p-3 text-center font-bold text-emerald-400 font-mono">8.8x</td>
-                                                    <td className="p-3 text-center font-mono text-cyan-300">2 ~ 4개월</td>
-                                                </tr>
-                                                <tr className="hover:bg-white/5 transition-colors">
-                                                    <td className="p-3 font-bold text-slate-300 flex items-center gap-1.5">
-                                                        <span className="size-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-black shrink-0">3</span>
-                                                        <span>버티컬 웰니스 & 1:1 맞춤형 뇌신경 멘탈케어</span>
-                                                    </td>
-                                                    <td className="p-3 text-slate-400">하이엔드 B2C, VIP 고객</td>
-                                                    <td className="p-3 text-center font-bold text-emerald-400 font-mono">8.2x</td>
-                                                    <td className="p-3 text-center font-mono text-cyan-300">4 ~ 8개월</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                {/* Section 4: 3-Stage Agile Pivot Roadmap */}
-                                <div className="space-y-3">
-                                    <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-purple-400 text-base">timeline</span>
-                                        <span>4. 3단계 고속 피벗 & 스케일업 로드맵</span>
-                                    </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
-                                            <span className="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Phase 1 (1~3개월)</span>
-                                            <h4 className="text-xs font-bold text-white">0원 MVP 가설 검증</h4>
-                                            <p className="text-[11px] text-slate-300 leading-relaxed">
-                                                거대한 개발 없이 노코드/원페이지 랜딩으로 10명의 유료 얼리어답터를 확보하여 시장 수요를 100% 확증.
-                                            </p>
-                                        </div>
-                                        <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
-                                            <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">Phase 2 (4~8개월)</span>
-                                            <h4 className="text-xs font-bold text-white">단위 경제성 & 자동화</h4>
-                                            <p className="text-[11px] text-slate-300 leading-relaxed">
-                                                LTV/CAC 비율을 3.0 이상으로 맞추고, 핵심 파이프라인을 시스템화하여 대표의 시간 여유를 창출.
-                                            </p>
-                                        </div>
-                                        <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
-                                            <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">Phase 3 (9~12개월)</span>
-                                            <h4 className="text-xs font-bold text-white">플랫폼 스케일업 & 확장</h4>
-                                            <p className="text-[11px] text-slate-300 leading-relaxed">
-                                                검증된 솔루션을 기반으로 인접 산업군으로 영토를 확장하고 B2B 엔터프라이즈 라이선스 계약 체결.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Section 5: Pre-mortem Risk Shield & Wellness */}
-                                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-red-950/30 via-slate-900 to-emerald-950/30 border border-white/10 space-y-2.5">
-                                    <h3 className="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-sm">shield</span>
-                                        <span>5. 실패 사전 차단 방어막 (Pre-mortem Shield) & 바이오 해킹</span>
-                                    </h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
-                                        <div className="space-y-1">
-                                            <p className="font-bold text-red-300">⚠️ 가장 주의해야 할 함정:</p>
-                                            <p className="text-[11px] leading-relaxed text-slate-400">
-                                                {userSajuProfile.axes.innovation.dark}
-                                            </p>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="font-bold text-emerald-300">🌿 뇌신경 웰니스 처방전:</p>
-                                            <p className="text-[11px] leading-relaxed text-slate-400">
-                                                {userSajuProfile.vagusTip} • {userSajuProfile.peakHour}에 최우선 집중
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                                )}
                             </div>
 
                             {/* Report Modal Footer */}
