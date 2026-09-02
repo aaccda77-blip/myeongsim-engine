@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useReportStore } from '@/store/useReportStore';
 import { calculateSaju } from '@/utils/SajuCalculator';
 import ExecutiveDashboardModal from '@/components/startup/ExecutiveDashboardModal';
-import { ShieldCheck, Copy, Check, Building2, KeyRound, Sparkles, BookOpen, ExternalLink, Lock, Brain, Activity, Zap, HeartPulse } from 'lucide-react';
+import { ShieldCheck, Copy, Check, Building2, KeyRound, Sparkles, BookOpen, ExternalLink, Lock, Brain, Activity, Zap, HeartPulse, Crown } from 'lucide-react';
 
 export default function StartupDashboard() {
         const router = useRouter();
@@ -1928,7 +1928,208 @@ export default function StartupDashboard() {
 
                             {/* Report Scrollable Body */}
                             <div className="p-5 sm:p-8 overflow-y-auto space-y-6 custom-scrollbar text-xs sm:text-sm">
-                                {activeDeepReport.tag === '리스크 방어' || activeDeepReport.title?.includes('실행 리스크') || activeDeepReport.title?.includes('핵심 역량') || activeDeepReport.title?.includes('리스크 사전 방어') ? (
+                                {activeDeepReport.tag === '최고경영자 멘탈' || activeDeepReport.title?.includes('수석 리더십') || activeDeepReport.title?.includes('CEO 맞춤형') || activeDeepReport.title?.includes('리더십 프로필') ? (
+                                    /* 👑 [CEO 맞춤형 수석 리더십 프로필 & 의사결정 헌장 전용 세계 최강 뷰어] */
+                                    <div className="space-y-6">
+                                        {/* Section 1: Executive Identity Summary */}
+                                        <div className="p-5 rounded-3xl bg-gradient-to-br from-indigo-950/70 via-purple-950/40 to-slate-950 border border-indigo-400/40 space-y-3 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                <h3 className="text-sm font-black text-indigo-300 flex items-center gap-2">
+                                                    <Crown className="w-4 h-4 text-amber-400" />
+                                                    <span>1. 고유한 수석 CEO 리더십 아이덴티티 총평 (Leadership Identity Core)</span>
+                                                </h3>
+                                                <span className="text-xs font-black text-emerald-400 font-mono bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                                                    리더십 오리지널리티 96.8% (독보적 카리스마)
+                                                </span>
+                                            </div>
+                                            <p className="text-slate-200 leading-relaxed font-medium text-xs sm:text-sm">
+                                                {userSajuProfile.userName} 대표님의 <strong className="text-amber-300">[{userSajuProfile.dayMasterName}]</strong> 기질은 스티브 잡스나 일론 머스크를 억지로 모방할 필요가 전혀 없는 <strong className="text-cyan-300">‘독창적 카리스마와 진정성’</strong>을 내재하고 있습니다. 
+                                                남의 옷(권위주의)을 벗고 대표자 본연의 <strong className="text-emerald-300">‘비전형 코칭 리더십과 24시간 에너지 아키텍처’</strong>를 장착할 때 10년, 20년 지치지 않는 영속 기업으로 성장합니다.
+                                            </p>
+                                        </div>
+
+                                        {/* Section 2: 나만의 고유한 수석 CEO 리더십 4대 아키타입 매트릭스 */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Building2 className="w-4 h-4 text-indigo-400" />
+                                                        <span>2. 수석 CEO 리더십 4대 핵심 아키타입 진단</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        사주 기질과 인지과학으로 도출한 대표자 고유의 리더십 스타일
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-xl border border-indigo-500/30 font-mono">
+                                                    팀 장악력 95점
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+                                                {/* Type 1 */}
+                                                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">아키타입 1</span>
+                                                    <h4 className="text-xs font-black text-white">🌲 비전 선구자형</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        거시적 미래 방향을 명확히 제시하고, 자율권을 팀장에게 100% 위임하여 자생적 조직 구축.
+                                                    </p>
+                                                </div>
+
+                                                {/* Type 2 */}
+                                                <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">아키타입 2</span>
+                                                    <h4 className="text-xs font-black text-white">💎 정밀 품질 설계자형</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        디테일한 시스템과 하이엔드 럭셔리 포지셔닝으로 타사가 넘볼 수 없는 제품 완성도 확보.
+                                                    </p>
+                                                </div>
+
+                                                {/* Type 3 */}
+                                                <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-2">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">아키타입 3</span>
+                                                    <h4 className="text-xs font-black text-white">🤝 진정성 코칭형</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        권위적 지시 대신 1:1 강점 코칭과 심리적 안전감을 부여하여 팀 만족도 95점 달성.
+                                                    </p>
+                                                </div>
+
+                                                {/* Type 4 */}
+                                                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">아키타입 4</span>
+                                                    <h4 className="text-xs font-black text-white">⚡ 전략적 돌파자형</h4>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        위기 국면에서 과감한 결단과 스프린트 추진으로 시장의 병목을 단칼에 해결.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 3: 일과 삶의 균형을 지키는 경영자 24시간 에너지 관리법 */}
+                                        <div className="bg-[#181526] border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                                                        <Activity className="w-4 h-4 text-cyan-400" />
+                                                        <span>3. 경영자 24시간 에너지 아키텍처 & 워라밸 관리법</span>
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        결정 피로를 없애고 뇌신경 에너지를 200% 보존하는 시간대별 행동 규칙
+                                                    </p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-cyan-300 bg-cyan-500/20 px-2.5 py-1 rounded-xl border border-cyan-500/30 font-mono">
+                                                    번아웃 방어율 98%
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                                                {/* Slot 1 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-indigo-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-indigo-300 font-black text-xs">
+                                                        <span>🌅 오전 (06:00 ~ 11:30)</span>
+                                                        <span className="text-[10px] font-mono bg-indigo-500/20 px-2 py-0.5 rounded">창조적 딥워크</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        모든 외부 회의와 이메일 확인을 전면 차단하고, 가장 중요한 핵심 전략 문서화 및 비전 설계에 몰입.
+                                                    </p>
+                                                </div>
+
+                                                {/* Slot 2 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-amber-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-amber-300 font-black text-xs">
+                                                        <span>☀️ 오후 (13:30 ~ 16:00)</span>
+                                                        <span className="text-[10px] font-mono bg-amber-500/20 px-2 py-0.5 rounded">소통 & 제휴 싱크</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        팀원 피드백, B2B 제휴 미팅 진행. 중요 계약 서명은 피하고 15분 햇볕 산책으로 결정 피로 해소.
+                                                    </p>
+                                                </div>
+
+                                                {/* Slot 3 */}
+                                                <div className="p-4 rounded-2xl bg-slate-900/80 border border-purple-500/30 space-y-2">
+                                                    <div className="flex items-center justify-between text-purple-300 font-black text-xs">
+                                                        <span>🌙 야간 (20:00 이후)</span>
+                                                        <span className="text-[10px] font-mono bg-purple-500/20 px-2 py-0.5 rounded">신경계 셧다운</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        디지털 디톡스(블루라이트 차단) 및 따뜻한 차와 함께 부교감신경을 이완시켜 다음 날 맑은 뇌 확보.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 4: 장기 비전 수립 및 CEO 5대 절대 의사결정 원칙 헌장 */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                                <Zap className="w-4 h-4 text-amber-400" />
+                                                <span>4. 장기 비전 수립 및 CEO 5대 절대 의사결정 원칙 헌장</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                {/* Principle 1 */}
+                                                <div className="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-1.5">
+                                                    <span className="text-indigo-300 font-black text-xs">📜 제1조: 미션 정렬의 원칙</span>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        단기 이익이 크더라도 회사의 본질적 미션과 고객 웰니스에 반하는 사업은 단호히 거절한다.
+                                                    </p>
+                                                </div>
+
+                                                {/* Principle 2 */}
+                                                <div className="p-3.5 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-1.5">
+                                                    <span className="text-purple-300 font-black text-xs">📜 제2조: 80% 위임의 원칙</span>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        C-Level과 팀장이 80% 이상 확신하는 실행 안은 CEO가 반대하지 않고 100% 승인하고 지지한다.
+                                                    </p>
+                                                </div>
+
+                                                {/* Principle 3 */}
+                                                <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
+                                                    <span className="text-emerald-300 font-black text-xs">📜 제3조: 팩트 기반 결단의 원칙</span>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        감정이나 추측이 아닌, 냉정한 시장 데이터와 따뜻한 인간적 가치가 만나는 지점에서 결단한다.
+                                                    </p>
+                                                </div>
+
+                                                {/* Principle 4 */}
+                                                <div className="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-1.5">
+                                                    <span className="text-amber-300 font-black text-xs">📜 제4조: 신속한 철회의 원칙</span>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        틀린 결정임을 인지했을 때는 체면을 버리고 24시간 내에 솔직하게 인정하고 방향을 선회한다.
+                                                    </p>
+                                                </div>
+
+                                                {/* Principle 5 */}
+                                                <div className="p-3.5 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 space-y-1.5 sm:col-span-2 lg:col-span-2">
+                                                    <span className="text-cyan-300 font-black text-xs">📜 제5조: 지속 가능한 에너지의 원칙</span>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                                        대표의 몸과 마음이 건강해야 회사도 건강하다. 건강을 담보로 하는 무리한 야근과 번아웃을 원천 금한다.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 5: CEO 멘탈 회복 & 웰니스 처방전 */}
+                                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/40 space-y-2.5">
+                                            <h3 className="text-xs sm:text-sm font-black text-emerald-300 flex items-center gap-2">
+                                                <HeartPulse className="w-4 h-4 text-emerald-400" />
+                                                <span>5. CEO 장기 경영 생명력 & 미주신경 웰니스 처방전</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-emerald-200">🫁 압박감 해소 1초 루틴:</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        중요한 발표나 이사회 전 [생리학적 한숨 3회]로 심박수를 낮추고 중후하고 안정된 보이스 유지.
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="font-bold text-amber-300">🌿 주말 완전 단절(No-Screen):</p>
+                                                    <p className="text-[11px] leading-relaxed text-slate-300">
+                                                        주말 중 최소 반나절은 스마트폰을 끄고 자연과 호흡하며 뇌의 직관력과 영감을 100% 재충전.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : activeDeepReport.tag === '리스크 방어' || activeDeepReport.title?.includes('실행 리스크') || activeDeepReport.title?.includes('핵심 역량') || activeDeepReport.title?.includes('리스크 사전 방어') ? (
                                     /* 🛡️ [창업가 핵심 역량 및 실행 리스크 사전 방어 전용 세계 최강 뷰어] */
                                     <div className="space-y-6">
                                         {/* Section 1: Executive Summary */}
