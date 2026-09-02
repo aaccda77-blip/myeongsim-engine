@@ -1909,7 +1909,7 @@ export default function StartupDashboard() {
                                         <span className="text-[10px] font-mono text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-500/30">
                                             {userSajuProfile.dayMasterName}
                                         </span>
-                                        <span className="text-[10px] font-mono text-emerald-400">ISO-27001 AI VERIFIED</span>
+                                        <span className="text-[10px] font-mono text-emerald-400">🛡️ AES-256 데이터 암호화</span>
                                         <span className="text-[10px] font-mono text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-400/40">🔬 특허출원 제10-2025-0166877호</span>
                                     </div>
                                     <h2 className="text-lg sm:text-2xl font-black text-white leading-tight">
