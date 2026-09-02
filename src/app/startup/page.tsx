@@ -1910,12 +1910,13 @@ export default function StartupDashboard() {
                                             {userSajuProfile.dayMasterName}
                                         </span>
                                         <span className="text-[10px] font-mono text-emerald-400">ISO-27001 AI VERIFIED</span>
+                                        <span className="text-[10px] font-mono text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-400/40">🔬 특허출원 제10-2025-0166877호</span>
                                     </div>
                                     <h2 className="text-lg sm:text-2xl font-black text-white leading-tight">
                                         [{userSajuProfile.userName} 대표] {activeDeepReport.title}
                                     </h2>
                                     <p className="text-xs text-indigo-200/80 font-medium">
-                                        생년월일({userSajuProfile.birthDate}) 본원 기질과 108 매트릭스 알고리즘을 융합한 정밀 사업 진단서
+                                        생년월일({userSajuProfile.birthDate}) 본원 기질과 특허 출원된 [심리·생체데이터 기반 스트레스 관리 솔루션(출원 제10-2025-0166877호)] 4대 모듈을 융합한 정밀 사업 진단서
                                     </p>
                                 </div>
                                 <button

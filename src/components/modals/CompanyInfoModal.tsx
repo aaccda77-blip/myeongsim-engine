@@ -56,9 +56,13 @@ export default function CompanyInfoModal({ isOpen, onClose }: CompanyInfoModalPr
                             <span className="text-gray-400">사업자등록번호</span>
                             <span className="font-mono text-gray-200 font-semibold">838-03-03892</span>
                         </div>
-                        <div className="flex justify-between items-center py-1">
+                        <div className="flex justify-between items-center py-1 border-b border-white/5">
                             <span className="text-gray-400">통신판매업신고번호</span>
                             <span className="font-mono text-gray-200 font-semibold">2026-세종-0576</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1 text-amber-300">
+                            <span className="text-gray-400">특허출원번호</span>
+                            <span className="font-mono font-bold">제10-2025-0166877호</span>
                         </div>
                     </div>
 

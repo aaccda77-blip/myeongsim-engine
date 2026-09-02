@@ -167,17 +167,22 @@ export default function MicroChatPassModal({
                     {/* Header */}
                     <div className="flex flex-col items-center mt-1 mb-2.5">
                         <MyeongsimSunLogo size={46} className="mb-1.5" />
-                        <span className="px-3 py-0.5 rounded-full text-[11px] font-bold bg-amber-400/15 text-amber-300 border border-amber-400/30 flex items-center gap-1 shadow-sm">
-                            <Sparkles className="w-3.5 h-3.5 fill-amber-300" /> 3회 무료 코칭 완료
-                        </span>
+                        <div className="flex flex-wrap items-center justify-center gap-1.5 mb-1">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 text-amber-300 border border-amber-400/30 flex items-center gap-1 shadow-sm">
+                                <Sparkles className="w-3 h-3 fill-amber-300" /> 3회 무료 코칭 완료
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                                🔬 특허출원 제10-2025-0166877호
+                            </span>
+                        </div>
                     </div>
 
                     {/* Title */}
                     <h3 className="text-base font-black tracking-tight text-white mb-1.5 leading-snug">
-                        1:1 명심 챗봇 코칭 충전
+                        1:1 명심 AI 특허 웰니스 코칭 충전
                     </h3>
                     <p className="text-[11px] text-gray-300 font-light leading-relaxed mb-3">
-                        스마트스토어 1달 무제한 프리패스를 이용하시거나,<br />
+                        특허 출원된 [심리·생체 4단계 웰니스 솔루션] 1달 무제한 패스를 이용하시거나,<br />
                         <strong>도서 구매 주문/영수증 번호</strong>를 입력하시면 20회 코칭이 즉시 활성화됩니다.
                     </p>
 

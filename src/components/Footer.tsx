@@ -14,6 +14,7 @@ export default function Footer() {
                         <p>대표 <strong className="text-gray-300 font-normal">이경윤</strong></p>
                         <p>사업자등록번호 <strong className="text-gray-300 font-normal">838-03-03892</strong></p>
                         <p>통신판매업신고번호 <strong className="text-gray-300 font-normal">2026-세종-0576</strong></p>
+                        <p>특허출원번호 <strong className="text-amber-300 font-mono font-normal">제10-2025-0166877호</strong> (심리 및 생체데이터 기반 스트레스 관리 솔루션)</p>
                     </div>
                 </div>
 
@@ -45,7 +46,7 @@ export default function Footer() {
 
                 {/* Copyright */}
                 <div className="text-[11px] text-gray-500 pt-1">
-                    © 2026 MindFlow Lab LLC. All rights reserved.
+                    © 2026 마인드플로우랩 (MindFlow Lab). All rights reserved. 대한민국 특허법에 의해 기술을 보호받습니다.
                 </div>
 
             </div>

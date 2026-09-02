@@ -611,6 +611,17 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     </div>
                 </div>
 
+                {/* ── 🔬 대한민국 특허 출원 공식 인증 뱃지 바 ── */}
+                <div className="bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-indigo-500/20 border border-amber-400/40 px-3 py-1.5 rounded-xl sm:rounded-2xl flex items-center justify-between gap-2 shadow-inner text-[10px] sm:text-xs">
+                    <div className="flex items-center gap-1.5 text-amber-300 font-black">
+                        <Sparkles size={13} className="text-amber-400 animate-spin" />
+                        <span>🔬 특허출원 제10-2025-0166877호 탑재</span>
+                    </div>
+                    <span className="text-[9px] sm:text-[10px] text-amber-200/90 font-mono font-bold truncate">
+                        심리·기질 × 뇌신경 인지재구성 공인 알고리즘
+                    </span>
+                </div>
+
                 {/* ── 3세대 최신 심리 과학적 도구 8대 라이브 오라 바 (모바일 콤팩트) ── */}
                 <div className="bg-slate-900/90 border border-cyan-500/30 px-3 py-1.5 rounded-xl sm:rounded-2xl flex items-center justify-between gap-2 shadow-inner overflow-hidden">
                     <div className="flex items-center gap-1.5 shrink-0">
