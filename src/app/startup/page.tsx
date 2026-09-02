@@ -88,6 +88,16 @@ export default function StartupDashboard() {
         // 3. 기본값은 甲 (선구자/기획형 거목)으로 안전 설정
         const dayMaster = computedDayMaster || '甲';
 
+        // 4. 출생연도 기준 만 나이 및 조특법 제6조 창업중소기업 세액감면율 1:1 맞춤 계산
+        const birthYear = parseInt(birthDate.split('-')[0], 10) || 1990;
+        const currentYear = new Date().getFullYear();
+        const userAge = Math.max(18, currentYear - birthYear);
+        const isYouthFounder = userAge <= 34;
+        const taxReductionPercent = isYouthFounder ? 100 : 50;
+        const taxReductionLabel = isYouthFounder
+            ? `청년 창업 100% 감면 (만 ${userAge}세 / 비과밀지역 5개년 소득세 100% 전액 면제)`
+            : `일반 창업 50% 감면 (만 ${userAge}세 / 비과밀지역 5개년 소득세 50% 감면)`;
+
         // 10천간별 6대 역량 프로필 데이터셋 (세계 최고 웰니스 & 뇌신경 코칭 기준)
         const MATRIX_PROFILES: Record<string, any> = {
             '甲': {
@@ -286,6 +296,10 @@ export default function StartupDashboard() {
         return {
             userName,
             birthDate,
+            userAge,
+            isYouthFounder,
+            taxReductionPercent,
+            taxReductionLabel,
             dayMaster,
             dayMasterName: currentProfile.dayMasterName,
             scores: s,
