@@ -37,7 +37,7 @@ export default function MicroChatPassModal({
         bank: '토스뱅크',
         account: '1002-6847-4899',
         holder: '마인드플로우랩',
-        price: 890,
+        price: 98000,
     };
 
     const handleCopyAccount = () => {
@@ -60,7 +60,7 @@ export default function MicroChatPassModal({
                 body: JSON.stringify({
                     amount: BANK_INFO.price,
                     depositorName: depositorName.trim(),
-                    orderName: '명심코칭 챗봇 이용 충전권 (890원)',
+                    orderName: '명심코칭 1달 무제한 프리패스 (98,000원)',
                     itemType: 'CHAT_PASS',
                     userId,
                 })
@@ -177,7 +177,7 @@ export default function MicroChatPassModal({
                         1:1 명심 챗봇 코칭 충전
                     </h3>
                     <p className="text-[11px] text-gray-300 font-light leading-relaxed mb-3">
-                        무통장 입금(890원) 후 관리자 승인을 받으시거나,<br />
+                        스마트스토어 1달 무제한 프리패스를 이용하시거나,<br />
                         <strong>도서 구매 주문/영수증 번호</strong>를 입력하시면 20회 코칭이 즉시 활성화됩니다.
                     </p>
 
@@ -192,7 +192,7 @@ export default function MicroChatPassModal({
                             }`}
                         >
                             <Building2 className="w-3.5 h-3.5" />
-                            <span>1. 무통장 입금 (890원)</span>
+                            <span>1. 1달 무제한 패스</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('code')}

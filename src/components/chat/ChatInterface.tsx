@@ -2524,7 +2524,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                                             <span className="text-gray-100 text-sm font-medium flex-1">{option}</span>
                                                             {isChatLocked ? (
                                                                 <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-amber-400 text-black shrink-0 flex items-center gap-1 shadow-md group-hover:scale-105 transition-all">
-                                                                    🔒 890원 충전 후 선택
+                                                                    🔒 VIP 패스 해금 후 선택
                                                                 </span>
                                                             ) : (
                                                                 <ArrowUp className="w-4 h-4 ml-auto text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity transform rotate-90" />
@@ -3099,7 +3099,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     </span>
                                 ) : (
                                     <span className="px-2 py-0.5 rounded-full bg-red-950/90 border border-red-500/60 text-red-300 font-mono text-[10px] font-bold animate-pulse shrink-0">
-                                        🔒 수다 소진 (890원 충전 필요)
+                                        🔒 무료 체험 완료 (VIP 패스 해금)
                                     </span>
                                 )}
                             </div>
@@ -3110,7 +3110,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     onClick={() => setShowMicroPassModal(true)}
                                     className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
                                 >
-                                    <span>⚡ 890원 충전</span>
+                                    <span>⚡ VIP 패스 해금</span>
                                 </button>
                                 <button
                                     type="button"
@@ -3140,7 +3140,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder={isChatLocked ? "🔒 3회 수다권을 다 썼어요! 890원 충전 후 계속 대화 가능" : "대화를 시작해보세요..."}
+                                placeholder={isChatLocked ? "🔒 첫 3회 무료 체험 완료! 도서 인증 또는 VIP 패스로 계속 대화 가능" : "대화를 시작해보세요..."}
                                 className={`w-full bg-deep-slate/80 backdrop-blur-xl border rounded-2xl pl-4 sm:pl-5 pr-12 sm:pr-14 py-3.5 sm:py-4 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-sm sm:text-base shadow-inner ${isChatLocked ? 'border-amber-500/60 bg-amber-950/20 text-amber-200 placeholder-amber-400/80 cursor-pointer' : 'border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30'}`}
                                 autoFocus
                                 onClick={() => {

@@ -29,7 +29,7 @@ export const MicroPassModal: React.FC<MicroPassModalProps> = ({
             fetch('/api/payment/request', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, userName, tier: 'CHAT_3', amount: 890 })
+                body: JSON.stringify({ userId, userName, tier: 'CHAT_3', amount: 98000 })
             }).catch(e => console.error("Payment request error:", e));
         }
     };

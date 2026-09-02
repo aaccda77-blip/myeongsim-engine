@@ -216,7 +216,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
         ],
         '조바심·스트레스': [
             '🔥 "속도만 내다 번아웃 올 것 같은데 메타인지로 정밀 교정해줘"',
-            '⚡ "890원 마이크로 퍼널 ➔ B2C/B2B 수익화 구조 사주 풀이해줘"',
+            '⚡ "108 매트릭스 ➔ B2B 스케일업 수익화 구조 사주 풀이해줘"',
             '🧘 "조급함이 솟구칠 때 뇌 편도체 리셋 1분 3S 스위치 알려줘"',
             '📜 "내 사주에 수(水) 냉각수 부족한지 4D 풀 스캔해줘"'
         ],
@@ -1064,7 +1064,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     </button>
 
                     {[
-                        '💰 "사주 기반 재물·사업 890원 ➔ B2B 30만원 스케일업 정밀 분석"',
+                        '💰 "사주 기반 재물·사업 ➔ B2B 30만원 스케일업 정밀 분석"',
                         '🌙 "밤/새벽 집중형 vs 낮 활동형 듀얼트랙 시간대 처방"',
                         '🧠 "64괘 뇌 신경망 3S 1분 리셋 알고리즘"',
                         '🔮 "내 일간 기질에 맞는 80% 미학 실천 가이드"'
@@ -1105,7 +1105,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                 }
                             }
                         }}
-                        placeholder={userMessageCount >= 3 && !isPaidUser ? "🔒 첫 3회 무료 체험 완료! 도서 인증 또는 890원 충전 후 계속 대화 가능" : "마음속 고민이나 질문을 편하게 남겨주세요... (Enter 전송)"}
+                        placeholder={userMessageCount >= 3 && !isPaidUser ? "🔒 첫 3회 무료 체험 완료! 도서 인증 또는 VIP 프리패스로 계속 대화 가능" : "마음속 고민이나 질문을 편하게 남겨주세요... (Enter 전송)"}
                         className={`w-full bg-black/70 border rounded-2xl py-3.5 pl-4 pr-13 text-white outline-none transition-all resize-none overflow-y-auto no-scrollbar text-xs sm:text-sm font-medium ${userMessageCount >= 3 && !isPaidUser ? 'border-amber-500/60 bg-amber-950/20 text-amber-200 placeholder:text-amber-400/80 cursor-pointer' : 'border-white/15 focus:border-amber-400/60 placeholder:text-gray-500'}`}
                         rows={1}
                         style={{ minHeight: '50px', maxHeight: '130px' }}

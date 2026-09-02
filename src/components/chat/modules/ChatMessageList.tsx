@@ -218,14 +218,14 @@ export default function ChatMessageList({
                     </div>
 
                     <h3 className="text-lg sm:text-xl font-black text-white mb-2 leading-snug break-keep">
-                        ☕ 890원으로<br />
+                        ✨ 도서 인증 또는 VIP 프리패스로<br />
                         <span className="text-amber-300 underline decoration-amber-400/50 decoration-wavy underline-offset-4 font-black">
-                            1:1 맞춤 영혼 코칭 3회 더 이어가기
+                            1:1 맞춤 영혼 코칭 계속 이어가기
                         </span>
                     </h3>
 
                     <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-md mx-auto mb-4 font-medium break-keep">
-                        커피 한 잔보다 가벼운 금액으로,<br />
+                        도서 구매 인증 또는 스마트스토어 1달 무제한 패스로,<br />
                         내 안의 고민을 명심 멘토와 끊김 없이 해결해 보세요.
                     </p>
 
@@ -234,7 +234,7 @@ export default function ChatMessageList({
                             <span>📜 [명심코칭 오픈 & 특허 출원 한정 혜택]</span>
                         </p>
                         <p className="text-[11px] text-gray-200 font-medium leading-[1.65]">
-                            특허 정식 출원 승인 시까지 특별 혜택가 <strong className="text-amber-300 font-black">890원</strong>에 제공되며, 정식 등록 완료 후 <span className="text-amber-200 font-bold">B2C 99,000원</span> / <span className="text-amber-200 font-bold">B2B 기업용 300,000원(30만원)</span>으로 정상 인상될 예정입니다.
+                            《제로 포인트》 도서 구매 시 100만 원 상당의 올인원 패키지가 무료 해금되며, 스마트스토어 1달 무제한 프리패스로 매일 100회 이상의 깊은 대화를 나눌 수 있습니다.
                         </p>
                     </div>
 
@@ -244,7 +244,7 @@ export default function ChatMessageList({
                         className="w-full max-w-md py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 to-yellow-500 text-slate-950 font-black text-base sm:text-lg shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer mx-auto"
                     >
                         <Zap className="w-5 h-5 text-slate-950 fill-slate-950" />
-                        <span>💳 890원에 3회 즉시 충전하기 ➔</span>
+                        <span>✨ VIP 프리패스 & 도서 인증으로 계속 대화하기 ➔</span>
                     </button>
                 </motion.div>
             )}
