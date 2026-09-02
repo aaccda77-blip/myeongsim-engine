@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { PromptFirewall } from '@/modules/Security/PromptFirewall';
+import { FairUsagePolicy } from '@/lib/fairUsagePolicy';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'; // Use Service Role Key if strict backend needed, but Anon is okay for reading public history if policies valid
@@ -66,49 +67,39 @@ export class SecurityMiddleware {
     }
 
     /**
-     * Checks if the user has exceeded the message rate limit.
+     * Checks if the user has exceeded the message rate limit & Fair Usage Policy.
      * @param userId The User ID or Access Key.
+     * @param isVip VIP or Free user.
+     * @param sessionId Optional client session ID.
      * @returns Promise<void> Throws error if limit exceeded.
      */
-    static async checkRateLimit(userId: string): Promise<void> {
-        // 1. Define Limit Rules
-        const LIMIT_PER_MINUTE = 10;
-        const LIMIT_PER_DAY = 100;
-
-        const now = new Date();
-        const oneMinuteAgo = new Date(now.getTime() - 60 * 1000).toISOString();
-        const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
-
-        // 2. Check Minute Limit
-        const { count: minuteCount, error: minuteError } = await supabase
-            .from('chat_history')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', userId)
-            .gte('created_at', oneMinuteAgo);
-
-        if (minuteError) {
-            console.error("Rate Limit Check Error (Minute):", minuteError);
-            // Fail open or closed? Fail open to avoid blocking users on DB error, but log it.
-            return;
+    static async checkRateLimit(userId: string, isVip: boolean = true, sessionId?: string): Promise<void> {
+        // 1. Fast in-memory Fair Usage Policy Check (Daily Cap 100 & Burst Defense)
+        const fupResult = FairUsagePolicy.verifyAndIncrement(userId, isVip, sessionId);
+        if (!fupResult.allowed) {
+            console.warn(`🚨 [FUP Blocked] User ${userId}: ${fupResult.reason}`);
+            throw new Error(fupResult.userMessage || "일일 대화 한도를 초과했습니다.");
         }
 
-        if ((minuteCount || 0) >= LIMIT_PER_MINUTE) {
-            console.warn(`🚨 [Rate Limit] User ${userId} exceeded minute limit.`);
-            throw new Error("Rate limit exceeded (Max 10 messages/min). Please wait.");
-        }
+        // 2. DB-level fallback check (if Supabase configured)
+        try {
+            const LIMIT_PER_MINUTE = 15;
+            const now = new Date();
+            const oneMinuteAgo = new Date(now.getTime() - 60 * 1000).toISOString();
 
-        // 3. Check Daily Limit (Optional - preventing token drain)
-        // Only verify if minute check passed to save DB reads? No, need to check total volume.
-        /* 
-        const { count: dayCount, error: dayError } = await supabase
-             .from('chat_history')
-             .select('*', { count: 'exact', head: true })
-             .eq('user_id', userId)
-             .gte('created_at', oneDayAgo);
+            const { count: minuteCount, error: minuteError } = await supabase
+                .from('chat_history')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .gte('created_at', oneMinuteAgo);
 
-        if ((dayCount || 0) >= LIMIT_PER_DAY) {
-             throw new Error("Daily limit exceeded.");
+            if (!minuteError && (minuteCount || 0) >= LIMIT_PER_MINUTE) {
+                console.warn(`🚨 [Rate Limit] User ${userId} exceeded minute DB limit.`);
+                throw new Error("너무 빠른 연속 요청입니다. 잠시 후 다시 입력해 주세요.");
+            }
+        } catch (dbErr: any) {
+            if (dbErr.message?.includes("너무 빠른")) throw dbErr;
+            // Silent fallback to FUP memory check on DB error
         }
-        */
     }
 }

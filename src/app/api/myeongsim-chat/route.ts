@@ -6,6 +6,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Solar, Lunar } from 'lunar-javascript';
 import { optionalAuth } from '@/lib/auth';
 import { rateLimit } from '@/lib/rateLimit';
+import { FairUsagePolicy } from '@/lib/fairUsagePolicy';
 
 const chatLimiter = rateLimit({
     interval: 60 * 1000, // 1분
@@ -34,6 +35,22 @@ export async function POST(req: NextRequest) {
         const authResult = await optionalAuth(req);
         // If authenticated, trust server's userId. Otherwise, fallback to client's (guest) id.
         const effectiveUserId = authResult.userId || clientUserId;
+
+        // 🛡️ [FUP: 공정 이용 정책 및 일일 대화 상한선(100회) & 매크로 방어]
+        const userIdentifier = effectiveUserId || ip || 'guest';
+        const isVipUser = !userIdentifier.startsWith('guest-') && userIdentifier !== 'anonymous';
+        const fupCheck = FairUsagePolicy.verifyAndIncrement(userIdentifier, isVipUser, sessionId);
+        
+        if (!fupCheck.allowed) {
+            return new Response(JSON.stringify({ 
+                error: fupCheck.userMessage || '일일 대화 한도를 초과했습니다.',
+                remaining: fupCheck.remaining,
+                resetAt: fupCheck.resetAt
+            }), {
+                status: 429,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
         const apiKey = process.env.GEMINI_API_KEY || 
                        process.env.GOOGLE_GENERATIVE_AI_API_KEY || 
