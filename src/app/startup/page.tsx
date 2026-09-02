@@ -52,38 +52,41 @@ export default function StartupDashboard() {
         const gender = reportData?.gender || metaData?.gender || 'female';
 
         // 🌟 [실시간 만세력 엔진 가동] 생년월일로부터 직접 정확한 사주 일간(DayMaster) 100% 정밀 도출
-        let computedDayMaster = '辛';
-        try {
-            if (birthDate && birthDate.includes('-')) {
-                const sajuResult = calculateSaju(birthDate, birthTime, calendarType, gender);
-                if (sajuResult?.day?.gan?.hanja) {
-                    computedDayMaster = sajuResult.day.gan.hanja;
-                }
-            }
-        } catch (e) {
-            console.warn('Realtime saju calculation fallback:', e);
-        }
-
-        // 백업 추출 (한글 및 한자 모두 대응)
         const HANJA_STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
         const KOR_STEMS_MAP: Record<string, string> = { '갑':'甲', '을':'乙', '병':'丙', '정':'丁', '무':'戊', '기':'己', '경':'庚', '신':'辛', '임':'壬', '계':'癸' };
-        
-        let finalDayMaster = computedDayMaster;
-        if (!finalDayMaster || finalDayMaster === '辛') {
-            const raw = reportData?.saju?.dayMaster || metaData?.dayMaster || metaData?.dayMasterChar || '';
-            const foundHanja = HANJA_STEMS.find(c => raw.includes(c));
+
+        let computedDayMaster = '';
+
+        // 1. 직접 저장된 사주 일간(dayMaster / dayMasterChar / fourPillars)이 있는지 우선 확인
+        const rawDayMaster = reportData?.saju?.dayMaster || (reportData as any)?.dayMaster || (reportData as any)?.dayMasterChar || metaData?.dayMaster || metaData?.dayMasterChar || (typeof window !== 'undefined' ? localStorage.getItem('user_day_master') : '') || '';
+        if (rawDayMaster) {
+            const foundHanja = HANJA_STEMS.find(c => rawDayMaster.includes(c));
             if (foundHanja) {
-                finalDayMaster = foundHanja;
+                computedDayMaster = foundHanja;
             } else {
                 for (const [kor, han] of Object.entries(KOR_STEMS_MAP)) {
-                    if (raw.includes(kor)) {
-                        finalDayMaster = han;
+                    if (rawDayMaster.includes(kor)) {
+                        computedDayMaster = han;
                         break;
                     }
                 }
             }
         }
-        const dayMaster = finalDayMaster || '辛';
+
+        // 2. 만세력 엔진 직접 계산
+        if (!computedDayMaster && birthDate && birthDate.includes('-')) {
+            try {
+                const sajuResult = calculateSaju(birthDate, birthTime, calendarType, gender);
+                if (sajuResult?.day?.gan?.hanja) {
+                    computedDayMaster = sajuResult.day.gan.hanja;
+                }
+            } catch (e) {
+                console.warn('Realtime saju calculation error:', e);
+            }
+        }
+
+        // 3. 기본값은 甲 (선구자/기획형 거목)으로 안전 설정
+        const dayMaster = computedDayMaster || '甲';
 
         // 10천간별 6대 역량 프로필 데이터셋 (세계 최고 웰니스 & 뇌신경 코칭 기준)
         const MATRIX_PROFILES: Record<string, any> = {
@@ -1508,7 +1511,7 @@ export default function StartupDashboard() {
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-1.5">
-                                                    <span className="text-xs font-black text-amber-300">辛金 다이아몬드 실전 마케팅 툴킷</span>
+                                                    <span className="text-xs font-black text-amber-300">{userSajuProfile.dayMasterName} 실전 마케팅 툴킷</span>
                                                     <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-200 border border-amber-400/30">대표님 전용</span>
                                                 </div>
                                                 <p className="text-[11px] text-slate-300 font-medium">
@@ -1773,7 +1776,7 @@ export default function StartupDashboard() {
                                             </span>
                                         </div>
                                         <h3 className="text-base sm:text-lg font-black text-white mt-0.5">
-                                            辛金 다이아몬드 실전 3대 채널 완판 카피 팩
+                                            {userSajuProfile.dayMasterName} 실전 3대 채널 완판 카피 팩
                                         </h3>
                                     </div>
                                 </div>
