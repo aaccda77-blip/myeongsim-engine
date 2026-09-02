@@ -219,7 +219,7 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
     businessArchitectureMap: {
         infra: '정보통신 / 소프트웨어 / 데이터베이스 (724000)',
         solution: '전문 경영·심리 컨설팅 / 1:1 진단 자문 (741400)',
-        contentIp: '단행본·전자책 출판 (581101) / 온라인 VOD 교육 (930921)',
+        contentIp: '단행본·전자책 출판 (581101) / 기타 개인서비스·심리상담 (930921) / 교육지원서비스 (809003)',
         targetPlatform: '1인 부트스트래핑 지식 플랫폼'
     },
     taxonomyTable: [
@@ -248,7 +248,7 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
             mainIndustry: '출판 및 교육 서비스업',
             subIndustryAndCodes: [
                 { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
-                { name: '교육관련 자문 및 평가업', code: '930921' }
+                { name: '기타 개인 서비스업 (심리상담·운명상담·개인자문)', code: '930921' }
             ],
             businessModel: '도서·e-Book 발행, 온라인 VOD 클래스, 전문 워크숍 및 라이선스',
             colorTheme: 'purple'
@@ -295,7 +295,7 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
         colorTheme: 'purple',
         subCategories: [
             { code: '581101', title: '일반서적 출판업', businessModel: '종이책, 전자책(e-Book), 오디오북 출판' },
-            { code: '930921', title: '교육관련 자문 및 평가업', businessModel: '온라인 코칭 과정, 전문가 양성 워크숍' },
+            { code: '930921', title: '기타 개인 서비스업 (심리상담·운명상담·개인자문)', businessModel: '1:1 심리·웰니스 상담, 개인 맞춤형 라이프 코칭 자문' },
             { code: '525101', title: '전자상거래 소매업', businessModel: '디지털 템플릿, 웰니스 플래너 온라인 유통' }
         ],
         realWorldApplication: '단행본 출간을 통한 브랜드 권위 확보 ➔ VOD 강의 ➔ 디지털 템플릿 판매로 이어지는 퍼널'
@@ -340,7 +340,7 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
         subSelections: [
             '전문, 과학 및 기술 서비스업 / 경영 컨설팅업 (741400)',
             '출판업 / 일반서적 출판업 (581101) ※ 지자체 출판사 신고 후 추가',
-            '교육 서비스업 / 교육관련 자문 및 평가업 (930921)',
+            '협회 및 단체, 수리 및 기타 개인 서비스업 / 기타 개인 서비스업 (930921)',
             '도매 및 소매업 / 전자상거래 소매업 (525101)'
         ],
         adminChecklist: [
@@ -389,7 +389,7 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
         },
         financeTax: {
             sajuEngine: '인성(未土) + 관성(巳火)',
-            taxReductionRate: '청년 창업 시 5년간 소득세 100% 감면 (수도권 과밀억제권역 외 724000 코드 적용 시)',
+            taxReductionRate: '조특법 제6조: 청년(만34세 이하) 비과밀 창업 시 5년간 100% 감면, 일반 창업자(만34세 초과) 비과밀(세종 등) 5년간 50% 감면',
             recommendedLocation: '비과밀억제권역 비상주 공유오피스 활용하여 세액감면 극대화',
             legalStructure: '초기 간이과세/일반과세자 ➔ 연매출 1.5억 초과 시 법인 전환 검토'
         },
@@ -431,9 +431,9 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
             prompt: '내 기질에서 정보통신업(724000)을 주업종으로 잡고 첫 달에 무자본으로 론칭할 수 있는 1인 지식 MVP 모델을 구체화해줘.'
         },
         {
-            title: '2. 청년창업 100% 감면 행정',
+            title: '2. 창업중소기업 세액감면(50~100%) 행정',
             icon: '🏛️',
-            prompt: '국세청 홈택스 사업자등록 시 724000과 741400을 묶어 5개년 소득세 감면을 최대로 받는 비상주 사업장 등록 팁을 알려줘.'
+            prompt: '국세청 홈택스 사업자등록 시 724000과 741400을 묶어 연령별(청년 100%, 일반 50%) 5개년 소득세 감면을 안전하게 받는 비상주 사업장 등록 팁을 알려줘.'
         },
         {
             title: '3. 예비창업패키지 PSST 작성',
@@ -982,7 +982,7 @@ function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
                 mainIndustry: '출판 및 교육 서비스업',
                 subIndustryAndCodes: [
                     { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
-                    { name: '교육관련 자문 및 평가업', code: '930921' }
+                    { name: '기타 개인 서비스업 (심리상담·운명상담·개인자문)', code: '930921' }
                 ],
                 businessModel: `나만의 성장 노하우 단행본·e-Book 출판, 온라인 VOD 마스터 클래스, 전문 워크숍`,
                 colorTheme: 'purple' as const
@@ -1024,7 +1024,7 @@ function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
                 mainIndustry: '출판 및 교육 서비스업',
                 subIndustryAndCodes: [
                     { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
-                    { name: '직업훈련 및 온라인 VOD 교육업', code: '930921' }
+                    { name: '기타 개인 서비스업 (심리상담·개인자문)', code: '930921' }
                 ],
                 businessModel: `트렌드 브랜딩 전자책 발행, 라이브 쇼케이스 코칭, 온라인 VOD 강의`,
                 colorTheme: 'purple' as const
@@ -1066,7 +1066,7 @@ function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
                 mainIndustry: '출판 및 교육 서비스업',
                 subIndustryAndCodes: [
                     { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
-                    { name: '교육관련 자문 및 평가업', code: '930921' }
+                    { name: '기타 개인 서비스업 (심리상담·운명상담·개인자문)', code: '930921' }
                 ],
                 businessModel: `알짜배기 실전 살림 매뉴얼, 비즈니스 운영 가이드북 및 서식 라이브러리`,
                 colorTheme: 'purple' as const
@@ -1108,7 +1108,7 @@ function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
                 mainIndustry: '출판 및 글로벌 교육 서비스업',
                 subIndustryAndCodes: [
                     { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
-                    { name: '온라인 원격 평생교육업', code: '930921' }
+                    { name: '기타 개인 서비스업 (심리상담·운명자문)', code: '930921' }
                 ],
                 businessModel: `글로벌 e-Book 출판, 국경 없는 온라인 웨비나, 심리/지식 구독형 뉴스레터`,
                 colorTheme: 'emerald' as const
@@ -1151,7 +1151,7 @@ function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
                 mainIndustry: '출판 및 교육 서비스업',
                 subIndustryAndCodes: [
                     { name: '일반서적 출판업 (전자책 포함)', code: '581101' },
-                    { name: '교육관련 자문 및 평가업', code: '930921' }
+                    { name: '기타 개인 서비스업 (심리상담·운명상담·개인자문)', code: '930921' }
                 ],
                 businessModel: `전문 표준 매뉴얼 출판, 마스터클래스 VOD 클래스, 전문 자격 평가`,
                 colorTheme: 'purple' as const
@@ -1319,7 +1319,7 @@ export function generatePersonalizedPsstArchitecture(
     let mainCode = '724000';
     let mainTitle = '데이터베이스 및 온라인정보 제공업';
     let requiredPermits = ['통신판매업 신고 (지자체)'];
-    let taxBenefit = '창업중소기업 세액감면 대상 업종 (수도권 과밀억제권역 외 창업 시 5개년 소득세/법인세 최대 50~100% 감면)';
+    let taxBenefit = '조특법 제6조 세액감면 대상 업종 (수도권 과밀억제권역 외 창업 시: 청년 만34세 이하 100%, 일반 창업자 50% 감면)';
 
     if (answers.businessType === 'knowledge_ip') {
         mainCode = '724000';
@@ -1332,7 +1332,7 @@ export function generatePersonalizedPsstArchitecture(
         taxBenefit = '벤처기업 인증 및 소프트웨어 진흥법 세제 혜택 최대 100% 감면';
     } else if (answers.businessType === 'b2b_consulting') {
         mainCode = '741400';
-        mainTitle = '경영 컨설팅업 (741400) / 교육관련 자문 및 평가업 (930921)';
+        mainTitle = '경영 컨설팅업 (741400) / 기타 개인 서비스업 (930921) / 교육지원 서비스업 (809003)';
         requiredPermits = ['통신판매업 신고 (온라인 교육 진행 시)', '원격평생교육원 인허가 (규모 확장 시)'];
     } else if (answers.businessType === 'commerce_goods') {
         mainCode = '525101';
