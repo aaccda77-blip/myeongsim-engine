@@ -25,6 +25,7 @@ import OhaengContributionModal from '../coaching/OhaengContributionModal';
 import MyeongsimGeniusReportModal from '../coaching/MyeongsimGeniusReportModal';
 import NtsBusinessCareerModal from '../coaching/NtsBusinessCareerModal';
 import SupportInquiryModal from '../modals/SupportInquiryModal';
+import { ViewModeSwitcher } from '../simple/ViewModeSwitcher';
 
 export default function BookLayout({ children }: { children: React.ReactNode }) {
     const { 
@@ -198,8 +199,9 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                        {/* [Removed] Login/Charge Button hidden by user request */}
+                    <div className="flex items-center gap-1.5">
+                        {/* 🌟 [간편모드 / 기본모드 전환 스위처] 🌟 */}
+                        <ViewModeSwitcher />
 
                         {/* [NEW] 맞춤 코칭 플래너 적용 시 나타나는 🧭 버튼 */}
                         {isPlannerApplied && (

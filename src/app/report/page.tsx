@@ -9,6 +9,8 @@ import { supabase } from '@/lib/supabaseClient';
 import { Loader2 } from 'lucide-react';
 import { ConsentService } from '@/lib/services/ConsentService';
 import DailyMindWelcomeModal from '@/components/modals/DailyMindWelcomeModal';
+import { useViewMode } from '@/hooks/useViewMode';
+import { SimpleDashboard } from '@/components/simple/dashboard/SimpleDashboard';
 
 // [Optimization] 무거운 컴포넌트는 필요할 때만 로드합니다 (Code Splitting)
 // ssr: false로 설정하여 클라이언트 전용 라이브러리(Recharts, Framer Motion) 충돌 방지
@@ -218,6 +220,21 @@ export default function ReportPage() {
         return null;
     }
 
+    const { isSimple, setViewMode } = useViewMode();
+
+    // 🌟 [간편모드 Presentation Layer] 기존 로직 무수정, 렌더링 레이어만 분기 🌟
+    if (isSimple) {
+        return (
+            <SimpleDashboard
+                onSwitchToClassicReport={() => {
+                    setViewMode('classic');
+                    useReportStore.getState().setStep(3);
+                }}
+            />
+        );
+    }
+
+    // 🏛️ [기본모드 Classic Layer] 기존 UI 100% 무수정 보존
     return (
         <BookLayout>
             <ReportContent />
