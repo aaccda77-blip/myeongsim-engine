@@ -13,6 +13,7 @@ import { useViewMode } from '@/hooks/useViewMode';
 import { SimpleDashboard } from '@/components/simple/dashboard/SimpleDashboard';
 import { WearableDashboard } from '@/components/wearable/WearableDashboard';
 import { RefinedCoverView } from '@/components/refined/onboarding/RefinedCoverView';
+import { RefinedDashboard } from '@/components/refined/dashboard/RefinedDashboard';
 
 // [Optimization] 무거운 컴포넌트는 필요할 때만 로드합니다 (Code Splitting)
 // ssr: false로 설정하여 클라이언트 전용 라이브러리(Recharts, Framer Motion) 충돌 방지
@@ -223,11 +224,27 @@ export default function ReportPage() {
         return null;
     }
 
-    const { isSimple, isWearable, setViewMode } = useViewMode();
+    const { isSimple, isWearable, isRefined, setViewMode } = useViewMode();
 
     // ⌚ [웨어러블 워치모드 Presentation Layer] 초소형 스마트워치 최적화 뷰
     if (isWearable) {
         return <WearableDashboard />;
+    }
+
+    // ⭐ [리파인모드 Presentation Layer] 프로덕션 프리미엄 AI 코칭 대시보드
+    if (isRefined) {
+        const { currentStep } = useReportStore.getState();
+        // Step 1에서 아직 생년정보를 입력하지 않은 신규 유저에게는 리파인 온보딩 폼을 보여줌
+        if (currentStep === 1 && !useReportStore.getState().reportData?.birthDate) {
+            return <RefinedCoverView />;
+        }
+        return (
+            <RefinedDashboard
+                onOpenReport={() => {
+                    useReportStore.getState().setStep(3);
+                }}
+            />
+        );
     }
 
     // 🌟 [간편모드 Presentation Layer] 기존 로직 무수정, 렌더링 레이어만 분기 🌟
