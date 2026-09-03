@@ -8,7 +8,7 @@ import {
     Cpu, Key, Orbit, Rocket, Layers, Radio, Volume2, VolumeX,
     CheckCircle2, RefreshCw, MessageSquare, AlertCircle, ArrowUpRight,
     TrendingUp, Award, BarChart3, ChevronRight, Sliders, Play, Atom,
-    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame, Clock, Dna, Lock, Unlock
+    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame, Clock, Dna, Lock, Unlock, HelpCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { calculateSaju } from '@/utils/SajuCalculator';
@@ -23,6 +23,40 @@ const TAB_CONFIG: { id: DiagnosticTab; label: string; icon: string; badge: strin
     { id: 'z_axis', label: 'Z축: 에너지 벡터', icon: '🧭', badge: '위험도 진단' },
     { id: 'decoder', label: '64 뉴럴 DNA', icon: '🔑', badge: '원형 해독' },
     { id: 'action_3s', label: '3S 솔루션 실행', icon: '🚀', badge: '긴급 처방' }
+];
+
+// 3문항 실시간 의식 스캐너 질문 정의
+const CONSCIOUSNESS_QUESTIONS = [
+    {
+        id: 1,
+        category: '위기/스트레스 반응',
+        question: '예상치 못한 비난이나 돌발 위기를 마주했을 때, 나의 첫 번째 내면 반응은?',
+        options: [
+            { id: 'dark', text: '다 내 탓이거나 상대방이 밉고 가슴이 쿵쾅거리며 속을 끓인다.', code: 'Dark Code (결핍/방어)', weight: 1 },
+            { id: 'neural', text: '일단 멈추고 심호흡하며 상황과 내 감정을 분리해 객관적으로 본다.', code: 'Neural Code (영점 관찰)', weight: 2 },
+            { id: 'meta', text: '이 위기 속에 숨겨진 새로운 창조적 기회를 직관적으로 포착한다.', code: 'Meta Code (초월/주권자)', weight: 3 }
+        ]
+    },
+    {
+        id: 2,
+        category: '동기부여의 원천',
+        question: '오늘 하루 나를 움직인 가장 지배적인 내면의 심리 동력은?',
+        options: [
+            { id: 'dark', text: '남들에게 뒤처지거나 인정받지 못할까 봐 생기는 불안과 조급증.', code: 'Dark Code (결핍/방어)', weight: 1 },
+            { id: 'neural', text: '나에게 주어진 역할과 시스템적 책임을 성실하게 완수하려는 의무감.', code: 'Neural Code (영점 관찰)', weight: 2 },
+            { id: 'meta', text: '세상에 독창적인 가치를 창조하고 기여하는 순수한 기쁨과 주권자 의식.', code: 'Meta Code (초월/주권자)', weight: 3 }
+        ]
+    },
+    {
+        id: 3,
+        category: '제로포인트 분리 자각도',
+        question: '부정적 감정이 소용돌이칠 때, 감정과 \'나 자신\'을 분리할 수 있는가?',
+        options: [
+            { id: 'dark', text: '감정에 완전히 매몰되어 며칠 동안 분노나 무기력에서 헤어나오지 못한다.', code: 'Dark Code (결핍/방어)', weight: 1 },
+            { id: 'neural', text: '시간이 조금 지나면 이성적으로 내 상태를 진정시키고 수습할 수 있다.', code: 'Neural Code (영점 관찰)', weight: 2 },
+            { id: 'meta', text: '요동치는 감정을 한 발짝 뒤에서 밤하늘의 구름처럼 고요히 지켜본다.', code: 'Meta Code (초월/주권자)', weight: 3 }
+        ]
+    }
 ];
 
 // 오행 매핑 헬퍼
@@ -88,20 +122,24 @@ function NeuralDiagnosisContent() {
     // 동적 계산된 사주 및 오행 분석 스펙
     const [sajuSpecs, setSajuSpecs] = useState<any>(null);
 
-    // 실시간 스캔 상태
-    const [isScanning, setIsScanning] = useState(false);
-    const [scanProgress, setScanProgress] = useState(100);
-
-    // 🌟 핵심: X축 잠재 기회(Potential) vs 현실 실현 영점 레벨(Realized Level) 🌟
-    const [xPotential, setXPotential] = useState(88); // 오늘 우주가 열어준 잠재 기회 (88% Meta 3.0 찬스)
-    const [xRealized, setXRealized] = useState(35); // 현재 내면 제로포인트 미수련으로 락걸린 실제 레벨 (35% Dark Code)
+    // X축 의식 좌표 (잠재력 vs 실제 영점 레벨)
+    const [xPotential, setXPotential] = useState(88);
+    const [xRealized, setXRealized] = useState(35);
     const [yVal, setYVal] = useState(285);
     const [zVal, setZVal] = useState(-18);
+
+    // 🌟 [핵심 신규] 실시간 3문항 의식 스캐너 & AI 엉터리 답변 감지 상태 🌟
+    const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+    const [currentQIndex, setCurrentQIndex] = useState(0);
+    const [userAnswers, setUserAnswers] = useState<number[]>([]);
+    const [questionStartTime, setQuestionStartTime] = useState<number>(0);
+    const [aiWarning, setAiWarning] = useState<string | null>(null);
+    const [lastScanRealized, setLastScanRealized] = useState<number | null>(null);
 
     // 3S 퀘스트 완료 상태
     const [is3SCompleted, setIs3SCompleted] = useState(false);
 
-    // ── 사주 4주 8자 & 5대 오행 비율 정밀 연산 엔진 ──
+    // 사주 분석 엔진
     const analyzeSajuDetail = (bDateStr: string, nameStr: string) => {
         try {
             const cleanBirth = bDateStr.trim() || '2003-01-25';
@@ -157,13 +195,12 @@ function NeuralDiagnosisContent() {
                 ringColor: 'border-amber-400/60'
             };
 
-            // ── 2-Layer 분리 연산: 평생 선천 체질 vs 2026년 실시간 운 ──
             let statusBadge = '안정권';
             let statusColor = 'text-emerald-300 bg-emerald-500/20 border-emerald-400/30';
             let lifetimeBlueprint = '';
             let realtimeFlow = '';
-            let calcPotential = 88; // 오늘 우주가 준 잠재 기회
-            let calcRealized = 35;  // 제로포인트 미수련 시 락걸린 실제 의식 레벨
+            let calcPotential = 88;
+            let calcRealized = 35;
             let calcY = 285;
             let calcZ = -18;
 
@@ -171,15 +208,11 @@ function NeuralDiagnosisContent() {
                 if (dominantOh[0] === '토') {
                     statusBadge = '⚠️ 2026 실시간: 내면 압축 주의군';
                     statusColor = 'text-amber-300 bg-amber-500/20 border-amber-400/40 animate-pulse';
-                    calcPotential = 85; // 메타코드 잠재 기회
-                    calcRealized = 35;  // 제로포인트 영점 미도달로 다크코드 35%에 락걸림
+                    calcPotential = 85;
+                    calcRealized = 35;
                     calcY = 285;
                     calcZ = -18;
-                    
-                    // 1계층: 평생 타고난 체질
                     lifetimeBlueprint = `${nameStr}님은 평생 사주 원국에 흙(土)이 ${dominantOh[1]}%로 비대한 【우직한 대지(戊土)형】 하드웨어 체질입니다. 어떤 풍파도 묵묵히 혼자 짊어지고 버텨내지만, 감정과 스트레스를 밖으로 표출하지 않고 속으로 삭히는 성향이 평생의 기저에 깔려 있습니다.`;
-                    
-                    // 2계층: 2026년 丙午년 & 오늘 실시간 상태
                     realtimeFlow = `현재 2026년(병오년)은 매우 뜨거운 불(火)의 기운이 지배합니다. 이미 많은 흙(土)에 뜨거운 불이 쏟아져 들어오니(화생토), 안 그래도 무거운 에너지가 바짝 굳어 【지금 이 시기】에 유독 내면 압축과 가슴 답답함, 소화기 피로(Z: -18 함몰, Y: 285Hz 저주파)가 극대화되는 타이밍입니다!`;
                 } else if (dominantOh[0] === '화') {
                     statusBadge = '🔥 2026 실시간: 과열·번아웃 폭발 주의';
@@ -297,6 +330,62 @@ function NeuralDiagnosisContent() {
         }
     }, []);
 
+    // 🌟 3문항 실시간 의식 스캐너 시작
+    const handleStartQuestionnaire = () => {
+        setCurrentQIndex(0);
+        setUserAnswers([]);
+        setAiWarning(null);
+        setQuestionStartTime(Date.now());
+        setIsQuestionModalOpen(true);
+    };
+
+    // 🌟 답변 선택 및 AI 불성실/모순 감지 알고리즘
+    const handleSelectOption = (weight: number) => {
+        const nextAnswers = [...userAnswers, weight];
+        setUserAnswers(nextAnswers);
+
+        if (currentQIndex < CONSCIOUSNESS_QUESTIONS.length - 1) {
+            setCurrentQIndex(currentQIndex + 1);
+        } else {
+            // 3문항 모두 완료 ➔ AI 무결성 및 모순 검증 실행
+            const totalElapsedSec = (Date.now() - questionStartTime) / 1000;
+            
+            // 검증 1: 스피드 트랩 (3초 미만 광속 클릭 = 읽지도 않고 마구잡이 클릭)
+            if (totalElapsedSec < 3.2) {
+                setAiWarning('⚠️ [AI 실시간 무결성 경고: 광속 어뷰징 감지]\n문항을 읽지 않고 3.2초 만에 연속 클릭하셨습니다. 장난스러운 응답으로는 대한민국 특허 기반 3D 정밀 진단 결과를 산출할 수 없습니다. 진지하게 질문을 읽고 솔직하게 다시 응답해주세요.');
+                return;
+            }
+
+            // 검증 2: 극단적 논리 모순 감지 (Q1에 1번 Dark 골라놓고 Q3에 3번 Meta 고른 극단 모순)
+            if (nextAnswers[0] === 1 && nextAnswers[2] === 3) {
+                setAiWarning('⚠️ [AI 심리 모순 검증 경고]\n1번 문항에서는 \'극심한 불안과 분노로 속을 끓인다\'고 체크하셨으나, 3번 문항에서는 \'감정을 완벽히 초월해 고요하다\'고 답하셨습니다. 상반된 무의식 방어기제가 감지되어 신뢰할 수 없는 결과입니다. 자신의 실제 감정에 솔직하게 다시 응답해주세요.');
+                return;
+            }
+
+            // 검증 3: 단일 번호 올인 감지 (생각 없이 전부 1번 또는 전부 3번)
+            if (nextAnswers.every(a => a === 1) && totalElapsedSec < 4.5) {
+                setAiWarning('⚠️ [AI 불성실 응답 경고]\n모든 문항을 동일한 1번으로 성의 없이 연속 선택하셨습니다. 정밀한 내면 좌표 도출을 위해 각 상황별 실제 반응을 신중하게 선택해 주세요.');
+                return;
+            }
+
+            // ✅ 정상 통과: 3문항 가중치 합산 ➔ 실제 의식 레벨 산출
+            const sum = nextAnswers.reduce((a, b) => a + b, 0); // 3 ~ 9
+            // 3점 = Dark 20%, 6점 = Neural 50%, 9점 = Meta 85%
+            const calculatedRealized = Math.round(20 + ((sum - 3) / 6) * 65);
+
+            setXRealized(calculatedRealized);
+            setLastScanRealized(calculatedRealized);
+            setIsQuestionModalOpen(false);
+
+            confetti({
+                particleCount: 70,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#06b6d4', '#6366f1', '#f59e0b']
+            });
+        }
+    };
+
     // 생년월일 수동 저장
     const handleSaveProfile = () => {
         if (!tempBirth) return;
@@ -320,7 +409,7 @@ function NeuralDiagnosisContent() {
             localStorage.setItem('saju_user_name', tempName);
         }
 
-        setSyncAlert(`🟢 ${tempName}님의 생년월일(${tempBirth}) 오행 분석 및 영점 락(Lock) 3D 좌표 1:1 동기화 완료!`);
+        setSyncAlert(`🟢 ${tempName}님의 생년월일(${tempBirth}) 오행 분석 및 3D 좌표 1:1 동기화 완료!`);
         confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
         setTimeout(() => setSyncAlert(null), 4000);
     };
@@ -356,25 +445,6 @@ function NeuralDiagnosisContent() {
                 setIsPlayingSound(false);
             }
         }
-    };
-
-    const handleRunFullScan = () => {
-        setIsScanning(true);
-        setScanProgress(0);
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 10;
-            setScanProgress(progress);
-            if (progress >= 100) {
-                clearInterval(interval);
-                setIsScanning(false);
-                confetti({
-                    particleCount: 70,
-                    spread: 80,
-                    origin: { y: 0.6 }
-                });
-            }
-        }, 120);
     };
 
     const handleExecute3S = () => {
@@ -484,7 +554,7 @@ function NeuralDiagnosisContent() {
                         >
                             <p className="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
                                 <Calendar size={13} />
-                                <span>생년월일 변경 ➔ 실시간 영점 락(Lock) 3D 좌표 재계산</span>
+                                <span>생년월일 변경 ➔ 실시간 3D 좌표 재계산</span>
                             </p>
                             
                             <div className="grid grid-cols-2 gap-2">
@@ -514,7 +584,7 @@ function NeuralDiagnosisContent() {
                                 className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                             >
                                 <Check size={14} />
-                                <span>이 생년월일로 오행 분석 및 영점 락 좌표 즉시 동기화</span>
+                                <span>이 생년월일로 오행 분석 및 좌표 즉시 동기화</span>
                             </button>
                         </motion.div>
                     )}
@@ -575,7 +645,7 @@ function NeuralDiagnosisContent() {
             <main className="relative z-20 px-4 pt-3.5 space-y-4">
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 1: 3D 종합 좌표 스캔 + [잠재력 vs 영점 락]
+                    MODULE 1: 3D 종합 좌표 스캔 + [3문항 정밀 의식 스캐너]
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'full_scan' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -641,7 +711,7 @@ function NeuralDiagnosisContent() {
 
                                 <div className="absolute top-2 left-3 text-[9px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-400/30 flex items-center gap-1">
                                     <Lock size={10} className="text-rose-400" />
-                                    <span>X: Dark {xRealized}% / 잠재 {xPotential}%</span>
+                                    <span>X: 실제 {xRealized}% / 잠재 {xPotential}%</span>
                                 </div>
                                 <div className="absolute top-2 right-3 text-[9px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-400/30">
                                     Y: {yVal}Hz 파동
@@ -680,10 +750,9 @@ function NeuralDiagnosisContent() {
                                 </div>
                             </div>
 
-                            {/* 🌟 3차원 축 인포그래픽: X축 잠재력 vs 현실 영점 락(Lock) 분리 🌟 */}
+                            {/* 3차원 축 인포그래픽 수치 카드 */}
                             <div className="grid grid-cols-3 gap-2 text-center">
                                 
-                                {/* X축: 잠재 기회 vs 실제 레벨 */}
                                 <div className="p-3 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-1.5">
                                     <div className="flex items-center justify-between text-[10px] font-mono text-cyan-300 font-bold">
                                         <span>X축(의식)</span>
@@ -691,7 +760,6 @@ function NeuralDiagnosisContent() {
                                     </div>
                                     <p className="text-xs font-black text-rose-300 leading-tight">Dark {xRealized}%</p>
                                     
-                                    {/* 듀얼 프로그레스 바 (잠재력 점선 vs 실현 실선) */}
                                     <div className="space-y-0.5">
                                         <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden border border-cyan-400/40">
                                             <div className="h-full bg-cyan-400/60 rounded-full" style={{ width: `${xPotential}%` }} title="우주 잠재 기회" />
@@ -727,10 +795,8 @@ function NeuralDiagnosisContent() {
                                 </div>
                             </div>
 
-                            {/* 🌟 2-LAYER 정밀 리포트 + 제로포인트 락 팩트 폭격 🌟 */}
+                            {/* 🌟 2-LAYER 정밀 리포트 🌟 */}
                             <div className="space-y-3 pt-1">
-                                
-                                {/* 🧬 1계층: 평생 선천 체질 (하드웨어 Blueprint) */}
                                 <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/70 to-slate-950 border border-indigo-500/30 space-y-2">
                                     <div className="flex items-center justify-between">
                                         <span className="text-[11px] font-black text-indigo-300 flex items-center gap-1.5">
@@ -746,7 +812,6 @@ function NeuralDiagnosisContent() {
                                     </p>
                                 </div>
 
-                                {/* ⚡ 2계층: 2026년 丙午년 & 오늘 실시간 상태 + 제로포인트 락 경고 */}
                                 <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-950/40 via-purple-950/40 to-slate-950 border border-amber-400/40 space-y-2.5 shadow-lg">
                                     <div className="flex items-center justify-between">
                                         <span className="text-[11px] font-black text-amber-300 flex items-center gap-1.5">
@@ -761,14 +826,13 @@ function NeuralDiagnosisContent() {
                                         {sajuSpecs?.realtimeFlow}
                                     </p>
 
-                                    {/* ⚠️ 제로포인트 락 팩트 폭격 박스 */}
                                     <div className="p-3 rounded-xl bg-rose-950/50 border border-rose-500/40 space-y-1.5 text-left">
                                         <p className="text-[11px] font-black text-rose-300 flex items-center gap-1.5">
                                             <Lock size={13} className="text-rose-400" />
                                             <span>왜 88% 메타코드 찬스가 Dark 35%에 갇혀있는가?</span>
                                         </p>
                                         <p className="text-[11px] text-gray-200 leading-relaxed">
-                                            오늘 우주는 <strong>88% 메타코드의 절호의 실행 기회</strong>를 열어주었지만, {userName}님 내면의 <strong>제로포인트(영점) 자각 훈련</strong>이 되어 있지 않아 무의식의 방어기제와 불안(Dark 35%)이 이 기운을 튕겨내고 있습니다! 아무리 좋은 운이 와도 영점(0)이 닫혀 있으면 낭비됩니다.
+                                            오늘 우주는 <strong>88% 메타코드의 절호의 실행 기회</strong>를 열어주었지만, {userName}님 내면의 <strong>실제 심리 측정 결과(문진)</strong> 영점(0) 자각이 닫혀 있어 무의식의 방어기제와 불안(Dark {xRealized}%)이 이 기운을 튕겨내고 있습니다!
                                         </p>
                                     </div>
 
@@ -778,18 +842,18 @@ function NeuralDiagnosisContent() {
                                 </div>
                             </div>
 
-                            {/* 액션 버튼 2종 */}
+                            {/* 🌟 3문항 실시간 의식 스캐너 실행 버튼 🌟 */}
                             <div className="pt-2 flex flex-col gap-2">
                                 <button
-                                    onClick={() => router.push('/quantum-awakening?tab=quest')}
-                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                    onClick={handleStartQuestionnaire}
+                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                                 >
-                                    <Unlock size={15} />
-                                    <span>🔓 제로포인트 영점 훈련으로 88% 메타코드 해금하기 ➔</span>
+                                    <Sparkles size={15} />
+                                    <span>🔬 3문항 실시간 의식 심리 스캔 시작하기 (AI 무결성 검증)</span>
                                 </button>
 
                                 <button
-                                    onClick={() => handleConsultAI(`${userName}님의 [우주 기회 잠재력: 88% 메타코드]와 [현재 내면 영점 미도달: Dark 35% 락] 상태를 정밀 분석하여, 무의식의 저항을 풀고 오늘 즉각 메타코드의 성과를 실현할 수 있는 1:1 영점 조율 코칭을 해주세요.`)}
+                                    onClick={() => handleConsultAI(`${userName}님의 [우주 기회 잠재력: 88% 메타코드]와 [실제 심리 측정치: Dark ${xRealized}% 락] 상태를 정밀 분석하여, 무의식의 저항을 풀고 오늘 즉각 메타코드의 성과를 실현할 수 있는 1:1 영점 조율 코칭을 해주세요.`)}
                                     className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
                                     <MessageSquare size={14} className="text-cyan-400" />
@@ -801,7 +865,7 @@ function NeuralDiagnosisContent() {
                 )}
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 2: X축 의식 코드 (잠재력 vs 실제 영점 레벨)
+                    MODULE 2: X축 의식 코드 (영점 락 해금 탭)
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'x_axis' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -820,7 +884,6 @@ function NeuralDiagnosisContent() {
                                 </span>
                             </div>
 
-                            {/* 듀얼 레벨 비교 카드 */}
                             <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-3">
                                 <div>
                                     <div className="flex justify-between text-xs font-bold mb-1">
@@ -850,7 +913,7 @@ function NeuralDiagnosisContent() {
                                 <div className="p-3 rounded-2xl bg-rose-950/30 border border-rose-500/40 space-y-1">
                                     <span className="text-xs font-black text-rose-300 flex items-center gap-1">
                                         <Lock size={12} />
-                                        <span>Level 1. Dark Code (현재 상태: 35%)</span>
+                                        <span>Level 1. Dark Code (현재 측정치: {xRealized}%)</span>
                                     </span>
                                     <p className="text-[11px] text-gray-300 leading-relaxed">
                                         제로포인트를 모르면 좋은 운이 와도 두려움과 과도한 책임감 때문에 속으로 삭히고 방어기제를 세웁니다.
@@ -875,13 +938,23 @@ function NeuralDiagnosisContent() {
                                 </div>
                             </div>
 
-                            <button
-                                onClick={() => router.push('/quantum-awakening?tab=quest')}
-                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-600 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-                            >
-                                <Unlock size={15} />
-                                <span>양자 각성 퀘스트로 영점 락(Lock) 해금하기 ➔</span>
-                            </button>
+                            <div className="pt-1 flex flex-col gap-2">
+                                <button
+                                    onClick={handleStartQuestionnaire}
+                                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-600 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                >
+                                    <Sparkles size={14} />
+                                    <span>🔬 3문항 실시간 문진으로 내 의식 레벨 다시 측정하기</span>
+                                </button>
+
+                                <button
+                                    onClick={() => router.push('/quantum-awakening?tab=quest')}
+                                    className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                >
+                                    <Unlock size={14} />
+                                    <span>양자 각성 퀘스트로 영점 락(Lock) 해금하기 ➔</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -1111,6 +1184,97 @@ function NeuralDiagnosisContent() {
                 )}
 
             </main>
+
+            {/* ══════════════════════════════════════════════════════
+                🌟 [핵심 신규] 3문항 실시간 의식 스캐너 & AI 경고 모달 🌟
+               ══════════════════════════════════════════════════════ */}
+            <AnimatePresence>
+                {isQuestionModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, y: 15 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.95, y: 15 }}
+                            className="w-full max-w-sm rounded-3xl bg-[#110b28] border border-cyan-400/40 p-5 shadow-2xl space-y-4 text-left relative overflow-hidden"
+                        >
+                            {/* AI 불성실/모순 경고 팝업 화면 */}
+                            {aiWarning ? (
+                                <div className="space-y-4 text-center py-2 animate-fade-in">
+                                    <div className="size-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center mx-auto text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.4)]">
+                                        <AlertTriangle size={24} />
+                                    </div>
+                                    <div className="space-y-2 text-left">
+                                        <h3 className="text-sm font-black text-rose-300 text-center">
+                                            ⚠️ AI 실시간 무결성 검증 경고
+                                        </h3>
+                                        <div className="p-3.5 rounded-2xl bg-rose-950/60 border border-rose-500/30 text-xs text-rose-100 whitespace-pre-line leading-relaxed font-medium">
+                                            {aiWarning}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={handleStartQuestionnaire}
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                                    >
+                                        <RefreshCw size={14} />
+                                        <span>진지하게 마음을 가다듬고 다시 시작하기</span>
+                                    </button>
+                                </div>
+                            ) : (
+                                /* 3문항 질문 스텝 화면 */
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                                        <div>
+                                            <span className="text-[10px] font-mono text-cyan-300 font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-400/30">
+                                                문항 {currentQIndex + 1} / 3
+                                            </span>
+                                            <p className="text-xs font-bold text-gray-300 mt-1">
+                                                [{CONSCIOUSNESS_QUESTIONS[currentQIndex].category}]
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => setIsQuestionModalOpen(false)}
+                                            className="text-gray-400 hover:text-white text-xs p-1"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+
+                                    <h4 className="text-sm font-black text-white leading-snug">
+                                        {CONSCIOUSNESS_QUESTIONS[currentQIndex].question}
+                                    </h4>
+
+                                    <div className="space-y-2">
+                                        {CONSCIOUSNESS_QUESTIONS[currentQIndex].options.map((opt, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleSelectOption(opt.weight)}
+                                                className="w-full p-3 rounded-2xl bg-black/40 hover:bg-cyan-950/40 border border-white/10 hover:border-cyan-400/50 text-left transition-all group cursor-pointer active:scale-98"
+                                            >
+                                                <p className="text-[10px] font-mono font-bold text-cyan-300 mb-0.5 group-hover:text-cyan-200">
+                                                    {opt.code}
+                                                </p>
+                                                <p className="text-xs text-gray-200 font-medium leading-relaxed">
+                                                    {opt.text}
+                                                </p>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <p className="text-[10px] text-gray-400 text-center font-mono">
+                                        🔬 AI가 응답 시간 및 심리 일관성을 실시간 분석 중입니다.
+                                    </p>
+                                </div>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
         </div>
     );
 }
