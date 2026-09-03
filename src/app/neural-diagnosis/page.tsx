@@ -7,7 +7,7 @@ import {
     Activity, ArrowLeft, Sparkles, Zap, Shield, Eye, Compass, 
     Cpu, Key, Orbit, Rocket, Layers, Radio, Volume2, VolumeX,
     CheckCircle2, RefreshCw, MessageSquare, AlertCircle, ArrowUpRight,
-    TrendingUp, Award, BarChart3, ChevronRight, Sliders, Play
+    TrendingUp, Award, BarChart3, ChevronRight, Sliders, Play, Atom
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { calculateSaju } from '@/utils/SajuCalculator';
@@ -15,13 +15,13 @@ import { calculateSaju } from '@/utils/SajuCalculator';
 // ── 6대 핵심 진단 탭 정의 ──
 type DiagnosticTab = 'full_scan' | 'x_axis' | 'y_axis' | 'z_axis' | 'decoder' | 'action_3s';
 
-const TAB_CONFIG: { id: DiagnosticTab; label: string; icon: string; shortDesc: string }[] = [
-    { id: 'full_scan', label: '3D 종합 스캔', icon: '🧬', shortDesc: 'XYZ 3차원 에너지 통합 진단' },
-    { id: 'x_axis', label: 'X축: 의식 코드', icon: '⚡', shortDesc: 'Dark vs Neural vs Meta' },
-    { id: 'y_axis', label: 'Y축: 주파수(Hz)', icon: '📡', shortDesc: '행동 주파수 이퀄라이저' },
-    { id: 'z_axis', label: 'Z축: 에너지 벡터', icon: '🧭', shortDesc: '폭발 vs 함몰 밸런스' },
-    { id: 'decoder', label: '64 뉴럴 DNA', icon: '🔑', shortDesc: 'DNA 64 원형 디코더' },
-    { id: 'action_3s', label: '3S 솔루션 실행', icon: '🚀', shortDesc: 'Scan-Sync-Shift 실행' }
+const TAB_CONFIG: { id: DiagnosticTab; label: string; icon: string; badge: string }[] = [
+    { id: 'full_scan', label: '3D 종합 스캔', icon: '🧬', badge: 'XYZ 좌표' },
+    { id: 'x_axis', label: 'X축: 의식 코드', icon: '⚡', badge: 'Dark·Meta' },
+    { id: 'y_axis', label: 'Y축: 주파수(Hz)', icon: '📡', badge: '528Hz' },
+    { id: 'z_axis', label: 'Z축: 에너지 벡터', icon: '🧭', badge: '영점 밸런스' },
+    { id: 'decoder', label: '64 뉴럴 DNA', icon: '🔑', badge: '원형 해독' },
+    { id: 'action_3s', label: '3S 솔루션 실행', icon: '🚀', badge: 'Scan-Shift' }
 ];
 
 function NeuralDiagnosisContent() {
@@ -164,13 +164,13 @@ function NeuralDiagnosisContent() {
     return (
         <div className="relative flex h-full min-h-screen w-full flex-col bg-[#05030b] max-w-md mx-auto shadow-2xl overflow-hidden font-sans pb-28 text-white">
             
-            {/* 🌌 Neural Hologram Cyber Ambient Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[350px] bg-gradient-to-b from-cyan-600/15 via-purple-700/15 to-transparent rounded-full blur-[100px] pointer-events-none" />
+            {/* 🌌 Deep Cyber Ambient Glows */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[420px] h-[360px] bg-gradient-to-b from-cyan-600/15 via-purple-700/15 to-transparent rounded-full blur-[110px] pointer-events-none" />
             <div className="absolute top-1/2 right-[-60px] w-64 h-64 bg-indigo-500/15 rounded-full blur-[90px] pointer-events-none" />
             <div className="absolute bottom-16 left-[-60px] w-72 h-72 bg-amber-500/10 rounded-full blur-[90px] pointer-events-none" />
 
-            {/* ── 1. Top Header Navigation ── */}
-            <header className="relative z-30 flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/[0.08] bg-[#080514]/80 backdrop-blur-xl">
+            {/* ── 1. Top Header Navigation (Refined) ── */}
+            <header className="relative z-30 flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/[0.08] bg-[#080514]/85 backdrop-blur-xl">
                 <button
                     onClick={() => router.push('/report')}
                     className="flex items-center gap-1.5 text-gray-300 hover:text-white text-xs font-bold transition-all px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] active:scale-95 cursor-pointer"
@@ -190,7 +190,7 @@ function NeuralDiagnosisContent() {
 
                 <button
                     onClick={toggleFrequency}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                         isPlayingSound 
                             ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 border-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.6)] animate-pulse' 
                             : 'bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 border-white/[0.08]'
@@ -198,7 +198,7 @@ function NeuralDiagnosisContent() {
                     title="실시간 주파수 튜닝"
                 >
                     {isPlayingSound ? <VolumeX size={14} className="text-slate-950" /> : <Volume2 size={14} className="text-cyan-400" />}
-                    <span className="text-[10px] font-mono font-bold">{isPlayingSound ? `${yVal}Hz ON` : `${yVal}Hz`}</span>
+                    <span className="text-[10px] font-mono font-bold">{isPlayingSound ? `${yVal}Hz` : `${yVal}Hz`}</span>
                 </button>
             </header>
 
@@ -226,39 +226,45 @@ function NeuralDiagnosisContent() {
                 </div>
             </div>
 
-            {/* ── 3. 6-Tab Interactive Horizontal Switcher ── */}
+            {/* ── 3. 6대 탭 2x3 럭셔리 그리드 스위처 (짤림 현상 100% 완전 해결!) ── */}
             <div className="relative z-20 px-4 pt-3">
-                <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
+                <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-[#0d091e]/90 border border-white/[0.08] shadow-inner">
                     {TAB_CONFIG.map((tab) => {
                         const isSelected = activeTab === tab.id;
                         return (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`px-3 py-2 rounded-2xl font-bold text-xs transition-all shrink-0 border flex items-center gap-1.5 cursor-pointer ${
+                                className={`py-2 px-1 rounded-xl font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer text-center relative overflow-hidden ${
                                     isSelected
-                                        ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white border-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.4)] scale-105'
-                                        : 'bg-[#0e0a1e]/80 text-gray-400 border-white/[0.08] hover:bg-white/[0.06] hover:text-gray-200'
+                                        ? 'bg-gradient-to-b from-cyan-500 to-indigo-600 text-white shadow-lg border border-cyan-300/40 scale-[1.02]'
+                                        : 'bg-white/[0.03] text-gray-400 border border-white/[0.05] hover:bg-white/[0.06] hover:text-gray-200'
                                 }`}
                             >
-                                <span>{tab.icon}</span>
-                                <span className="tracking-tight">{tab.label}</span>
+                                <span className="text-xs">{tab.icon}</span>
+                                <span className="text-[10px] font-bold tracking-tight whitespace-nowrap leading-tight">{tab.label}</span>
+                                <span className={`text-[8px] font-mono opacity-80 ${isSelected ? 'text-cyan-100' : 'text-gray-500'}`}>
+                                    {tab.badge}
+                                </span>
                             </button>
                         );
                     })}
                 </div>
             </div>
 
-            {/* ── 4. Main Diagnostic Display Body ── */}
+            {/* ── 4. Main Diagnostic Interactive Body ── */}
             <main className="relative z-20 px-4 pt-3.5 space-y-4">
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 1: 3D 종합 좌표 스캔 (Full Scan)
+                    MODULE 1: 3D 종합 좌표 스캔 (Full Scan) + 리얼 3D 홀로그램
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'full_scan' && (
                     <div className="space-y-4 animate-fade-in text-left">
-                        {/* 3D Coordinate Hologram Card */}
-                        <div className="p-5 rounded-3xl bg-gradient-to-b from-[#140e30] via-[#0c0820] to-[#060312] border border-cyan-400/40 shadow-2xl space-y-4">
+                        
+                        {/* 🌟 진짜 3D 입체 홀로그램 자이로스코프 챔버 카드 🌟 */}
+                        <div className="p-5 rounded-3xl bg-gradient-to-b from-[#150f33] via-[#0c0822] to-[#060312] border border-cyan-400/40 shadow-2xl space-y-4 relative overflow-hidden">
+                            
+                            {/* 헤더 */}
                             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                                 <div>
                                     <h3 className="text-sm font-black text-white flex items-center gap-1.5">
@@ -266,7 +272,7 @@ function NeuralDiagnosisContent() {
                                         <span>3D 내면 에너지 좌표계 (Hologram)</span>
                                     </h3>
                                     <p className="text-[10px] text-gray-400 font-mono mt-0.5">
-                                        {sajuSpecs?.fourPillarsStr || '辛巳일주 辛金 다이아몬드 코어'}
+                                        {sajuSpecs?.fourPillarsStr || '庚申년 癸未월 辛巳일 乙未시'}
                                     </p>
                                 </div>
                                 <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
@@ -274,28 +280,98 @@ function NeuralDiagnosisContent() {
                                 </span>
                             </div>
 
-                            {/* 3차원 축 실시간 스펙트럼 뷰 */}
+                            {/* 🛸 3D 네온 자이로스코프 홀로그램 비주얼 (Animated Gyroscope & Pulsing Core) */}
+                            <div className="relative h-48 w-full flex items-center justify-center bg-black/40 rounded-2xl border border-cyan-500/20 overflow-hidden">
+                                
+                                {/* 배경 레이더 그리드 원형 링 */}
+                                <div className="absolute size-44 rounded-full border border-cyan-500/10 animate-pulse" />
+                                <div className="absolute size-36 rounded-full border border-dashed border-indigo-500/20" />
+                                <div className="absolute size-28 rounded-full border border-purple-500/20" />
+
+                                {/* 3D X축 회전 링 (Cyan) */}
+                                <motion.div 
+                                    className="absolute size-36 rounded-full border-2 border-cyan-400/40 border-t-cyan-300"
+                                    animate={{ rotate: 360, rotateX: [45, 60, 45], rotateY: [20, 45, 20] }}
+                                    transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                                    style={{ transformStyle: 'preserve-3d' }}
+                                />
+
+                                {/* 3D Y축 회전 링 (Purple/Magenta) */}
+                                <motion.div 
+                                    className="absolute size-32 rounded-full border-2 border-purple-400/40 border-r-purple-300"
+                                    animate={{ rotate: -360, rotateY: [40, 70, 40], rotateX: [30, 50, 30] }}
+                                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                                    style={{ transformStyle: 'preserve-3d' }}
+                                />
+
+                                {/* 3D Z축 회전 링 (Emerald/Gold) */}
+                                <motion.div 
+                                    className="absolute size-28 rounded-full border border-emerald-400/50 border-b-emerald-300"
+                                    animate={{ rotate: 360, rotateZ: [15, 45, 15] }}
+                                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                />
+
+                                {/* 중앙 다이아몬드 코어 (Pulsing Diamond Core) */}
+                                <motion.div 
+                                    className="relative z-10 size-12 rounded-xl bg-gradient-to-tr from-cyan-400 via-indigo-400 to-amber-300 flex items-center justify-center shadow-[0_0_25px_rgba(6,182,212,0.8)]"
+                                    animate={{ scale: [1, 1.15, 1], rotate: [0, 90, 180, 270, 360] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                >
+                                    <span className="text-xs font-black text-slate-950">辛金</span>
+                                </motion.div>
+
+                                {/* 홀로그램 타깃 태그 오버레이 */}
+                                <div className="absolute top-2 left-3 text-[9px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-400/30">
+                                    X: Meta 3.0 (78%)
+                                </div>
+                                <div className="absolute top-2 right-3 text-[9px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-400/30">
+                                    Y: 528Hz Solfeggio
+                                </div>
+                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] font-mono text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-400/30">
+                                    Z: Vector +12 (Zero Equilibrium)
+                                </div>
+                            </div>
+
+                            {/* 🌟 3차원 축 인포그래픽 수치 카드 (진짜 게이지 & 파동 인디케이터 장착) */}
                             <div className="grid grid-cols-3 gap-2 text-center">
-                                <div className="p-3 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-1">
+                                
+                                {/* X축 카드 */}
+                                <div className="p-3 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-1.5">
                                     <p className="text-[10px] font-mono text-cyan-300 font-bold">X축 (의식)</p>
-                                    <p className="text-base font-black text-white">Meta 3.0</p>
-                                    <p className="text-[9px] text-cyan-400/80 font-mono">지수: {xVal}/100</p>
+                                    <p className="text-sm font-black text-white leading-tight">Meta 3.0</p>
+                                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                        <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${xVal}%` }} />
+                                    </div>
+                                    <p className="text-[9px] text-cyan-400/80 font-mono">레벨: {xVal}%</p>
                                 </div>
 
-                                <div className="p-3 rounded-2xl bg-black/40 border border-purple-500/30 space-y-1">
-                                    <p className="text-[10px] font-mono text-purple-300 font-bold">Y축 (주파수)</p>
-                                    <p className="text-base font-black text-amber-300">{yVal} Hz</p>
-                                    <p className="text-[9px] text-purple-400/80 font-mono">솔페지오 사랑</p>
+                                {/* Y축 카드 */}
+                                <div className="p-3 rounded-2xl bg-black/40 border border-amber-500/30 space-y-1.5">
+                                    <p className="text-[10px] font-mono text-amber-300 font-bold">Y축 (주파수)</p>
+                                    <p className="text-sm font-black text-amber-300 leading-tight">{yVal} Hz</p>
+                                    {/* 미니 이퀄라이저 파동 */}
+                                    <div className="flex items-center justify-center gap-0.5 h-1.5">
+                                        {[40, 70, 100, 60, 80].map((h, i) => (
+                                            <div key={i} className="w-1 bg-amber-400 rounded-full" style={{ height: `${h}%` }} />
+                                        ))}
+                                    </div>
+                                    <p className="text-[9px] text-amber-400/80 font-mono">사랑의 주파수</p>
                                 </div>
 
-                                <div className="p-3 rounded-2xl bg-black/40 border border-emerald-500/30 space-y-1">
+                                {/* Z축 카드 */}
+                                <div className="p-3 rounded-2xl bg-black/40 border border-emerald-500/30 space-y-1.5">
                                     <p className="text-[10px] font-mono text-emerald-300 font-bold">Z축 (벡터)</p>
-                                    <p className="text-base font-black text-emerald-200">+{zVal} (안정)</p>
+                                    <p className="text-sm font-black text-emerald-200 leading-tight">+{zVal} (안정)</p>
+                                    {/* 영점 중심 밸런스 바 */}
+                                    <div className="relative w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                        <div className="absolute left-1/2 -translate-x-1/2 w-0.5 h-full bg-emerald-400 z-10" />
+                                        <div className="h-full bg-emerald-400" style={{ width: `${50 + zVal}%` }} />
+                                    </div>
                                     <p className="text-[9px] text-emerald-400/80 font-mono">영점 밸런스</p>
                                 </div>
                             </div>
 
-                            {/* 레이더 진단 요약 */}
+                            {/* 종합 에너지 진단 리포트 */}
                             <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 space-y-1.5">
                                 <p className="text-[10px] text-cyan-300 font-bold uppercase tracking-wider flex items-center gap-1">
                                     <Activity size={13} />
@@ -306,12 +382,12 @@ function NeuralDiagnosisContent() {
                                 </p>
                             </div>
 
-                            {/* 스캔 리프레시 버튼 */}
+                            {/* 액션 버튼 2종 */}
                             <div className="pt-2 flex flex-col gap-2">
                                 <button
                                     onClick={handleRunFullScan}
                                     disabled={isScanning}
-                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                                 >
                                     <RefreshCw size={15} className={isScanning ? 'animate-spin' : ''} />
                                     <span>{isScanning ? `3D 뉴럴 스캐닝 중... (${scanProgress}%)` : '⚡ 3D 좌표 정밀 재스캔 실행하기'}</span>
@@ -350,7 +426,6 @@ function NeuralDiagnosisContent() {
 
                             {/* 3단계 의식 스펙트럼 카드 */}
                             <div className="space-y-2.5">
-                                {/* 1. Dark Code */}
                                 <div className="p-3 rounded-2xl bg-black/40 border border-rose-500/30 space-y-1">
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs font-black text-rose-300">Level 1. Dark Code (결핍/생존)</span>
@@ -361,7 +436,6 @@ function NeuralDiagnosisContent() {
                                     </p>
                                 </div>
 
-                                {/* 2. Neural Code */}
                                 <div className="p-3 rounded-2xl bg-black/40 border border-indigo-500/30 space-y-1">
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs font-black text-indigo-300">Level 2. Neural Code (자각/균형)</span>
@@ -372,7 +446,6 @@ function NeuralDiagnosisContent() {
                                     </p>
                                 </div>
 
-                                {/* 3. Meta Code */}
                                 <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-400/50 space-y-1 shadow-inner">
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs font-black text-cyan-200 flex items-center gap-1">
