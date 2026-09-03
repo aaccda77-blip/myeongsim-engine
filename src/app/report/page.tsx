@@ -83,7 +83,8 @@ function ReportContent() {
 
 export default function ReportPage() {
     const router = useRouter();
-    // [Fix Hydration] 클라이언트 마운트 여부 체크
+    // 🌟 [Rule of Hooks 준수] 모든 훅을 early return 이전에 컴포넌트 최상단에서 무조건 호출 🌟
+    const { isSimple, isWearable, isRefined, setViewMode } = useViewMode();
     const [isMounted, setIsMounted] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -225,8 +226,6 @@ export default function ReportPage() {
     if (!isAuthenticated) {
         return null;
     }
-
-    const { isSimple, isWearable, isRefined, setViewMode } = useViewMode();
 
     // ⌚ [웨어러블 워치모드 Presentation Layer] 초소형 스마트워치 최적화 뷰
     if (isWearable) {
