@@ -489,23 +489,14 @@ export default function LibraryPage() {
                 {/* 📘 《ZERO POINT》 3D 책 쇼케이스 카드 */}
                 <div className="p-5 rounded-3xl bg-gradient-to-br from-[#160c33] via-[#0e0824] to-[#060312] border border-cyan-400/40 shadow-2xl space-y-4">
                     <div className="flex items-start gap-3.5">
-                        {/* 3D 북 커버 비주얼 */}
-                        <div className="w-24 h-34 rounded-xl bg-[#faf7ee] p-2 flex flex-col justify-between items-center text-center shadow-[0_10px_25px_rgba(0,0,0,0.7)] border border-amber-300/40 shrink-0 relative overflow-hidden group">
-                            <div className="space-y-0.5">
-                                <p className="text-[12px] font-black text-slate-900 tracking-wider leading-tight">ZERO POINT</p>
-                                <p className="text-[6px] text-gray-600 font-mono tracking-tighter">AWARENESS OF AWARENESS</p>
-                            </div>
-
-                            <div className="size-14 rounded-full border border-indigo-900/40 flex items-center justify-center relative">
-                                <div className="size-11 rounded-full border border-dashed border-indigo-950/60 flex items-center justify-center">
-                                    <div className="size-2 rounded-full bg-amber-600" />
-                                </div>
-                            </div>
-
-                            <div>
-                                <p className="text-[7px] text-slate-800 font-bold">저자 이경윤</p>
-                                <p className="text-[6px] text-slate-600 font-mono">청류출판사</p>
-                            </div>
+                        {/* 📘 3D 북 커버 비주얼 (공식 고화질 정식 표지) */}
+                        <div className="relative group shrink-0">
+                            <img
+                                src="/images/zero_point_cover.jpg"
+                                alt="ZERO POINT 공식 도서 표지"
+                                className="w-24 h-36 object-cover rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] border border-amber-300/40 transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20 pointer-events-none" />
                         </div>
 
                         {/* 도서 상세 설명 */}
@@ -947,9 +938,24 @@ export default function LibraryPage() {
                                     </h3>
                                 </div>
 
-                                <div className="text-gray-200 text-xs leading-loose whitespace-pre-line font-medium text-justify select-none">
-                                    {PREVIEW_PAGES[previewPageIndex].content}
-                                </div>
+                                {previewPageIndex === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-2 space-y-3">
+                                        <img
+                                            src="/images/zero_point_cover.jpg"
+                                            alt="ZERO POINT 공식 표지"
+                                            className="w-48 h-72 object-cover rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.9)] border-2 border-amber-300/40"
+                                        />
+                                        <div className="text-center space-y-1">
+                                            <h3 className="text-sm font-black text-white">ZERO POINT (제로 포인트)</h3>
+                                            <p className="text-xs text-amber-300 font-mono">AWARENESS OF AWARENESS</p>
+                                            <p className="text-[11px] text-gray-400">저자 이경윤 | 출판 청류</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-gray-200 text-xs leading-loose whitespace-pre-line font-medium text-justify select-none">
+                                        {PREVIEW_PAGES[previewPageIndex].content}
+                                    </div>
+                                )}
 
                                 {/* 마지막 페이지 도달 시 구매 안내 카드 */}
                                 {previewPageIndex === PREVIEW_PAGES.length - 1 && (
