@@ -128,13 +128,24 @@ function NeuralDiagnosisContent() {
     const [yVal, setYVal] = useState(285);
     const [zVal, setZVal] = useState(-18);
 
-    // 🌟 [핵심 신규] 실시간 3문항 의식 스캐너 & AI 엉터리 답변 감지 상태 🌟
+    // 🌟 [핵심 신규] 실시간 3문항 의식 스캐너 & AI 엉터리 답변 감지 상태
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
     const [currentQIndex, setCurrentQIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<number[]>([]);
     const [questionStartTime, setQuestionStartTime] = useState<number>(0);
     const [aiWarning, setAiWarning] = useState<string | null>(null);
-    const [lastScanRealized, setLastScanRealized] = useState<number | null>(null);
+
+    // 🌟 [신규] 분석 연산 로딩 & 결과 리포트 모달 상태
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState<{
+        prevLevel: number;
+        newLevel: number;
+        codeName: string;
+        darkRatio: number;
+        neuralRatio: number;
+        metaRatio: number;
+        summary: string;
+    } | null>(null);
 
     // 3S 퀘스트 완료 상태
     const [is3SCompleted, setIs3SCompleted] = useState(false);
@@ -335,11 +346,13 @@ function NeuralDiagnosisContent() {
         setCurrentQIndex(0);
         setUserAnswers([]);
         setAiWarning(null);
+        setAnalysisResult(null);
+        setIsAnalyzing(false);
         setQuestionStartTime(Date.now());
         setIsQuestionModalOpen(true);
     };
 
-    // 🌟 답변 선택 및 AI 불성실/모순 감지 알고리즘
+    // 🌟 답변 선택 및 AI 불성실/모순 감지 알고리즘 + 결과 분석 연출
     const handleSelectOption = (weight: number) => {
         const nextAnswers = [...userAnswers, weight];
         setUserAnswers(nextAnswers);
@@ -350,39 +363,72 @@ function NeuralDiagnosisContent() {
             // 3문항 모두 완료 ➔ AI 무결성 및 모순 검증 실행
             const totalElapsedSec = (Date.now() - questionStartTime) / 1000;
             
-            // 검증 1: 스피드 트랩 (3초 미만 광속 클릭 = 읽지도 않고 마구잡이 클릭)
+            // 검증 1: 스피드 트랩 (3.2초 미만 광속 클릭)
             if (totalElapsedSec < 3.2) {
                 setAiWarning('⚠️ [AI 실시간 무결성 경고: 광속 어뷰징 감지]\n문항을 읽지 않고 3.2초 만에 연속 클릭하셨습니다. 장난스러운 응답으로는 대한민국 특허 기반 3D 정밀 진단 결과를 산출할 수 없습니다. 진지하게 질문을 읽고 솔직하게 다시 응답해주세요.');
                 return;
             }
 
-            // 검증 2: 극단적 논리 모순 감지 (Q1에 1번 Dark 골라놓고 Q3에 3번 Meta 고른 극단 모순)
+            // 검증 2: 극단적 논리 모순 감지
             if (nextAnswers[0] === 1 && nextAnswers[2] === 3) {
                 setAiWarning('⚠️ [AI 심리 모순 검증 경고]\n1번 문항에서는 \'극심한 불안과 분노로 속을 끓인다\'고 체크하셨으나, 3번 문항에서는 \'감정을 완벽히 초월해 고요하다\'고 답하셨습니다. 상반된 무의식 방어기제가 감지되어 신뢰할 수 없는 결과입니다. 자신의 실제 감정에 솔직하게 다시 응답해주세요.');
                 return;
             }
 
-            // 검증 3: 단일 번호 올인 감지 (생각 없이 전부 1번 또는 전부 3번)
+            // 검증 3: 단일 번호 올인 감지
             if (nextAnswers.every(a => a === 1) && totalElapsedSec < 4.5) {
                 setAiWarning('⚠️ [AI 불성실 응답 경고]\n모든 문항을 동일한 1번으로 성의 없이 연속 선택하셨습니다. 정밀한 내면 좌표 도출을 위해 각 상황별 실제 반응을 신중하게 선택해 주세요.');
                 return;
             }
 
-            // ✅ 정상 통과: 3문항 가중치 합산 ➔ 실제 의식 레벨 산출
+            // ✅ 정상 통과: 1.5초간 AI 신경망 분석 연출 후 결과 리포트 팝업 오픈!
+            setIsAnalyzing(true);
             const sum = nextAnswers.reduce((a, b) => a + b, 0); // 3 ~ 9
-            // 3점 = Dark 20%, 6점 = Neural 50%, 9점 = Meta 85%
             const calculatedRealized = Math.round(20 + ((sum - 3) / 6) * 65);
 
-            setXRealized(calculatedRealized);
-            setLastScanRealized(calculatedRealized);
-            setIsQuestionModalOpen(false);
+            setTimeout(() => {
+                setIsAnalyzing(false);
+                const prev = xRealized;
+                setXRealized(calculatedRealized);
 
-            confetti({
-                particleCount: 70,
-                spread: 80,
-                origin: { y: 0.6 },
-                colors: ['#06b6d4', '#6366f1', '#f59e0b']
-            });
+                // 세부 비율 및 멘트 계산
+                let codeName = 'Dark Code (결핍/방어)';
+                let darkRatio = 65;
+                let neuralRatio = 25;
+                let metaRatio = 10;
+                let summary = '현재 외부 비난이나 돌발 상황에 대해 무의식의 방어기제와 과도한 책임감(Dark Code)이 에너지를 가두고 있습니다. 혼자 모든 것을 감당하려는 생각을 0(Zero)으로 내려놓는 영점 호흡이 시급합니다.';
+
+                if (calculatedRealized >= 70) {
+                    codeName = 'Meta Code (초월/주권자)';
+                    darkRatio = 15;
+                    neuralRatio = 35;
+                    metaRatio = 50;
+                    summary = '감정과 자신을 훌륭하게 분리하여 주권자(Meta Code)로서 기회를 창조하는 에너지가 강력하게 활성화되어 있습니다. 잠재력을 100% 실현할 최적의 타이밍입니다!';
+                } else if (calculatedRealized >= 45) {
+                    codeName = 'Neural Code (영점 관찰)';
+                    darkRatio = 35;
+                    neuralRatio = 50;
+                    metaRatio = 15;
+                    summary = '상황을 객관적으로 관찰하고 시스템적으로 수습하려는 균형 감각(Neural Code)이 작동 중입니다. 감정 연금술을 통해 한 단계 더 높은 창조성으로 도약할 수 있습니다.';
+                }
+
+                setAnalysisResult({
+                    prevLevel: prev,
+                    newLevel: calculatedRealized,
+                    codeName,
+                    darkRatio,
+                    neuralRatio,
+                    metaRatio,
+                    summary
+                });
+
+                confetti({
+                    particleCount: 80,
+                    spread: 85,
+                    origin: { y: 0.6 },
+                    colors: ['#06b6d4', '#6366f1', '#f59e0b']
+                });
+            }, 1400);
         }
     };
 
@@ -758,7 +804,7 @@ function NeuralDiagnosisContent() {
                                         <span>X축(의식)</span>
                                         <Lock size={11} className="text-rose-400" />
                                     </div>
-                                    <p className="text-xs font-black text-rose-300 leading-tight">Dark {xRealized}%</p>
+                                    <p className="text-xs font-black text-rose-300 leading-tight">실제 {xRealized}%</p>
                                     
                                     <div className="space-y-0.5">
                                         <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden border border-cyan-400/40">
@@ -829,10 +875,10 @@ function NeuralDiagnosisContent() {
                                     <div className="p-3 rounded-xl bg-rose-950/50 border border-rose-500/40 space-y-1.5 text-left">
                                         <p className="text-[11px] font-black text-rose-300 flex items-center gap-1.5">
                                             <Lock size={13} className="text-rose-400" />
-                                            <span>왜 88% 메타코드 찬스가 Dark 35%에 갇혀있는가?</span>
+                                            <span>왜 88% 메타코드 찬스가 실제 {xRealized}%에 갇혀있는가?</span>
                                         </p>
                                         <p className="text-[11px] text-gray-200 leading-relaxed">
-                                            오늘 우주는 <strong>88% 메타코드의 절호의 실행 기회</strong>를 열어주었지만, {userName}님 내면의 <strong>실제 심리 측정 결과(문진)</strong> 영점(0) 자각이 닫혀 있어 무의식의 방어기제와 불안(Dark {xRealized}%)이 이 기운을 튕겨내고 있습니다!
+                                            오늘 우주는 <strong>88% 메타코드의 절호의 실행 기회</strong>를 열어주었지만, {userName}님 내면의 <strong>실제 심리 측정 결과</strong> 영점(0) 자각이 닫혀 있어 무의식의 방어기제(실제 {xRealized}%)가 이 기운을 튕겨내고 있습니다!
                                         </p>
                                     </div>
 
@@ -880,7 +926,7 @@ function NeuralDiagnosisContent() {
                                 </div>
                                 <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30 flex items-center gap-1">
                                     <Lock size={10} />
-                                    <span>실제 도달: Dark {xRealized}%</span>
+                                    <span>실제 도달: {xRealized}%</span>
                                 </span>
                             </div>
 
@@ -901,7 +947,7 @@ function NeuralDiagnosisContent() {
                                             <Lock size={12} />
                                             <span>내면의 실제 제로포인트 도달률 (Realized)</span>
                                         </span>
-                                        <span className="text-rose-400 font-mono">{xRealized}% (Dark Code 락)</span>
+                                        <span className="text-rose-400 font-mono">{xRealized}% (실제 측정치)</span>
                                     </div>
                                     <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-rose-500/40">
                                         <div className="h-full bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.8)]" style={{ width: `${xRealized}%` }} />
@@ -913,7 +959,7 @@ function NeuralDiagnosisContent() {
                                 <div className="p-3 rounded-2xl bg-rose-950/30 border border-rose-500/40 space-y-1">
                                     <span className="text-xs font-black text-rose-300 flex items-center gap-1">
                                         <Lock size={12} />
-                                        <span>Level 1. Dark Code (현재 측정치: {xRealized}%)</span>
+                                        <span>Level 1. Dark Code (실제 측정치: {xRealized}%)</span>
                                     </span>
                                     <p className="text-[11px] text-gray-300 leading-relaxed">
                                         제로포인트를 모르면 좋은 운이 와도 두려움과 과도한 책임감 때문에 속으로 삭히고 방어기제를 세웁니다.
@@ -960,7 +1006,7 @@ function NeuralDiagnosisContent() {
                 )}
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 3: Y축 주파수 측정 (Freq Equalizer)
+                    MODULE 3: Y축 주파수 측정
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'y_axis' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -990,7 +1036,7 @@ function NeuralDiagnosisContent() {
                                         className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                                             yVal === p.hz
                                                 ? 'bg-amber-400 text-slate-950 font-black border-amber-300 shadow-md'
-                                                : 'bg-white/[0.04] text-gray-300 border-white/[0.08] hover:bg-white/[0.08]'
+                                                : 'bg-white/[0.04] text-gray-300 border-white/[0.08]'
                                         }`}
                                     >
                                         <p className="text-xs font-mono font-bold">{p.hz}Hz</p>
@@ -1015,7 +1061,7 @@ function NeuralDiagnosisContent() {
                 )}
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 4: Z축 에너지 벡터 (Vector Balance)
+                    MODULE 4: Z축 에너지 벡터
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'z_axis' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -1065,7 +1111,7 @@ function NeuralDiagnosisContent() {
                 )}
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 5: 64 뉴럴 DNA 디코더 (Decoder)
+                    MODULE 5: 64 뉴럴 DNA 디코더
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'decoder' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -1112,7 +1158,7 @@ function NeuralDiagnosisContent() {
                 )}
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 6: 3S 솔루션 실행 (Scan-Sync-Shift)
+                    MODULE 6: 3S 솔루션 실행
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'action_3s' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -1186,7 +1232,7 @@ function NeuralDiagnosisContent() {
             </main>
 
             {/* ══════════════════════════════════════════════════════
-                🌟 [핵심 신규] 3문항 실시간 의식 스캐너 & AI 경고 모달 🌟
+                🌟 [핵심 신규] 3문항 실시간 의식 스캐너 & 결과 리포트 모달 🌟
                ══════════════════════════════════════════════════════ */}
             <AnimatePresence>
                 {isQuestionModalOpen && (
@@ -1202,7 +1248,7 @@ function NeuralDiagnosisContent() {
                             exit={{ scale: 0.95, y: 15 }}
                             className="w-full max-w-sm rounded-3xl bg-[#110b28] border border-cyan-400/40 p-5 shadow-2xl space-y-4 text-left relative overflow-hidden"
                         >
-                            {/* AI 불성실/모순 경고 팝업 화면 */}
+                            {/* 1. AI 불성실/모순 경고 팝업 화면 */}
                             {aiWarning ? (
                                 <div className="space-y-4 text-center py-2 animate-fade-in">
                                     <div className="size-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center mx-auto text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.4)]">
@@ -1224,8 +1270,99 @@ function NeuralDiagnosisContent() {
                                         <span>진지하게 마음을 가다듬고 다시 시작하기</span>
                                     </button>
                                 </div>
+                            ) : isAnalyzing ? (
+                                /* 2. AI 신경망 실시간 연산 중 로딩 연출 */
+                                <div className="py-8 text-center space-y-4 animate-fade-in">
+                                    <div className="size-16 rounded-full border-4 border-cyan-400/20 border-t-cyan-400 animate-spin mx-auto shadow-[0_0_25px_rgba(6,182,212,0.8)]" />
+                                    <div className="space-y-1">
+                                        <h3 className="text-sm font-black text-cyan-200">
+                                            🧠 AI 신경망 심리 데이터 동기화 중...
+                                        </h3>
+                                        <p className="text-[11px] text-gray-400 font-mono">
+                                            [사주 원국 30% + 일진 20% + 실시간 문진 50%] 결합 연산 중
+                                        </p>
+                                    </div>
+                                </div>
+                            ) : analysisResult ? (
+                                /* 3. 🌟 문진 완료 종합 결과 리포트 카드 (Actionable Result Card) 🌟 */
+                                <div className="space-y-4 animate-fade-in">
+                                    <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="size-7 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300">
+                                                <CheckCircle2 size={16} />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xs font-black text-white">
+                                                    실시간 심리 스캔 분석 완료
+                                                </h3>
+                                                <p className="text-[10px] text-cyan-300 font-mono">
+                                                    {analysisResult.codeName}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => setIsQuestionModalOpen(false)}
+                                            className="text-gray-400 hover:text-white text-xs p-1"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+
+                                    {/* Before ➔ After 비교 인포그래픽 */}
+                                    <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2.5">
+                                        <div className="flex items-center justify-between text-xs font-bold">
+                                            <span className="text-gray-400">문진 반영 전: {analysisResult.prevLevel}%</span>
+                                            <span className="text-emerald-400 text-sm font-mono font-black">
+                                                ➔ 실제 측정치: {analysisResult.newLevel}%
+                                            </span>
+                                        </div>
+
+                                        {/* 3대 의식 스펙트럼 비율 바 */}
+                                        <div className="h-2.5 w-full bg-slate-900 rounded-full overflow-hidden flex border border-white/10">
+                                            <div style={{ width: `${analysisResult.darkRatio}%` }} className="bg-rose-500" title="Dark" />
+                                            <div style={{ width: `${analysisResult.neuralRatio}%` }} className="bg-indigo-500" title="Neural" />
+                                            <div style={{ width: `${analysisResult.metaRatio}%` }} className="bg-cyan-400" title="Meta" />
+                                        </div>
+
+                                        <div className="flex justify-between text-[9px] font-mono text-gray-300 pt-0.5">
+                                            <span className="text-rose-400 font-bold">Dark {analysisResult.darkRatio}%</span>
+                                            <span className="text-indigo-300 font-bold">Neural {analysisResult.neuralRatio}%</span>
+                                            <span className="text-cyan-300 font-bold">Meta {analysisResult.metaRatio}%</span>
+                                        </div>
+                                    </div>
+
+                                    {/* 분석 총평 */}
+                                    <div className="p-3 rounded-2xl bg-indigo-950/40 border border-indigo-400/30 text-xs text-gray-200 leading-relaxed font-medium">
+                                        {analysisResult.summary}
+                                    </div>
+
+                                    {/* 액션 버튼 2종 */}
+                                    <div className="flex flex-col gap-2 pt-1">
+                                        <button
+                                            onClick={() => {
+                                                setIsQuestionModalOpen(false);
+                                                router.push('/quantum-awakening?tab=quest');
+                                            }}
+                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                                        >
+                                            <Unlock size={14} />
+                                            <span>🔓 지금 즉시 영점(0)으로 정화하기 ➔ 감정 연금술 이동</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                setIsQuestionModalOpen(false);
+                                                handleConsultAI(`${userName}님의 [3문항 심리 스캔 실제 측정치: ${analysisResult.newLevel}%, ${analysisResult.codeName}] 분석 결과를 바탕으로, 지금 당장 무의식의 방어기제를 해체하고 주권자 의식으로 전환하는 1:1 맞춤 처방을 내려주세요.`);
+                                            }}
+                                            className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-cyan-200 border border-white/10 text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                                        >
+                                            <MessageSquare size={13} className="text-cyan-400" />
+                                            <span>이 결과로 AI 코치와 1:1 심층 상담하기 ➔</span>
+                                        </button>
+                                    </div>
+                                </div>
                             ) : (
-                                /* 3문항 질문 스텝 화면 */
+                                /* 4. 3문항 질문 스텝 화면 */
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between border-b border-white/10 pb-3">
                                         <div>
