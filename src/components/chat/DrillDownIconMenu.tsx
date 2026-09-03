@@ -1211,6 +1211,27 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* 🌟 [대표님 요청 신규] 📖 명심코칭도서관 (도서 《제로 포인트》 독자 전용 서재) 🌟 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => router.push('/library')}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(99, 102, 241, 0.25))',
+                        border: '1px solid rgba(6, 182, 212, 0.5)',
+                        boxShadow: '0 4px 15px rgba(6, 182, 212, 0.35)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>📖</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#38bdf8', fontWeight: 'bold' }}>명심코칭도서관</div>
+                        <div style={styles.neuroTrigger}>제로포인트 e-Book</div>
+                    </div>
+                </button>
+
                 {/* [NEW] 🎧 기질 1:1 맞춤 코칭 에세이노래 (432Hz 주파수 리셋) - 나의 리포트 바로 옆 */}
                 <button
                     style={styles.iconButton}

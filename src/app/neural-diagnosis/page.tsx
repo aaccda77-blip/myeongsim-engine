@@ -1264,8 +1264,49 @@ function NeuralDiagnosisContent() {
                                         </button>
                                     )}
 
-                                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[10px] text-amber-200 leading-relaxed font-medium">
-                                        📖 <strong>도서 《제로 포인트》 필연적 수련:</strong> 방금 경험하신 30초의 영점 상태를 24시간 내 일상과 사업의 무기로 체화하는 비법이 바로 도서 《제로 포인트》 제3장 '영점 감정 연금술'에 수록되어 있습니다.
+                                    <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-cyan-500/15 border border-amber-400/40 space-y-2.5 text-left">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-[11px] font-black text-amber-300 flex items-center gap-1.5">
+                                                <span>📖 도서 《제로 포인트》 필연적 구매 & 독자 특전</span>
+                                            </p>
+                                            <span className="text-[9px] font-mono text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-400/30">
+                                                전자책/종이책
+                                            </span>
+                                        </div>
+                                        <p className="text-[10px] text-gray-200 leading-relaxed">
+                                            방금 경험하신 30초의 영점 상태를 24시간 내 일상과 사업의 무기로 체화하는 비법이 도서 《제로 포인트》 제3장에 수록되어 있습니다. 구매 후 <strong>[명심코칭도서관]</strong>에서 인증하시면 전자책을 즉시 읽으실 수 있습니다!
+                                        </p>
+
+                                        {/* 🛒 구매 링크 버튼 2종 */}
+                                        <div className="grid grid-cols-2 gap-1.5 pt-1">
+                                            <a
+                                                href="https://www.yes24.com/product/goods/195946431"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-[10px] flex items-center justify-center gap-1 shadow transition-all cursor-pointer"
+                                            >
+                                                <span>📗 YES24 구매하기</span>
+                                                <ArrowUpRight size={12} />
+                                            </a>
+                                            <a
+                                                href="https://smartstore.naver.com"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-[10px] flex items-center justify-center gap-1 shadow transition-all cursor-pointer"
+                                            >
+                                                <span>🛍️ 스마트스토어 구매</span>
+                                                <ArrowUpRight size={12} />
+                                            </a>
+                                        </div>
+
+                                        {/* 📖 명심코칭도서관 바로가기 */}
+                                        <button
+                                            onClick={() => router.push('/library')}
+                                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md hover:brightness-110 transition-all cursor-pointer mt-1"
+                                        >
+                                            <BookOpen size={14} />
+                                            <span>📖 구매 인증하고 [명심코칭도서관]에서 e-Book 바로 읽기 ➔</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

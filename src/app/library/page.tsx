@@ -1,0 +1,639 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { 
+    BookOpen, ArrowLeft, CheckCircle2, Shield, Sparkles, Lock, Unlock, 
+    Download, ExternalLink, Volume2, VolumeX, Eye, Bookmark, Share2, 
+    ShoppingBag, Star, RefreshCw, Layers, ZoomIn, ZoomOut, Check, ChevronRight, HelpCircle
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+// 도서 서지 정보
+const BOOK_INFO = {
+    title: 'ZERO POINT (제로 포인트)',
+    subtitle: 'AWARENESS OF AWARENESS / 내 안의 소음이 멈추고, 운명의 알고리즘이 리셋되는 순간',
+    author: '이경윤',
+    publisher: '청류 (EDITIONS CHEONGRYU)',
+    publisherReg: '2026년 7월 21일 (제2026-000055호)',
+    publishDate: '2026년 9월 14일',
+    isbn: '979-11-220953-0-2',
+    price: '11,000원',
+    yes24Url: 'https://www.yes24.com/product/goods/195946431',
+    smartstoreUrl: 'https://smartstore.naver.com',
+    totalPages: 309
+};
+
+// 목차 챕터 데이터 (대표님 PDF 100% 동기화)
+const CHAPTERS = [
+    {
+        id: 'prologue',
+        title: '프롤로그 · 소음이 멈추는 곳, 제로 포인트',
+        page: '6-10p',
+        content: `종일 무언가에 쫓기듯 하루를 보내고 돌아와 불 꺼진 방에 가만히 누워 있을 때가 있습니다. 몸은 멈췄는데 머릿속은 여전히 낮에 들었던 날카로운 말들, 내일 해야 할 일들, 그리고 출처를 알 수 없는 막연한 불안감으로 웅성거립니다. 마치 수십 개의 프로그램을 동시에 돌리느라 뜨겁게 과열된 기계처럼, 뇌가 터질 것만 같은 순간들. 아마 당신에게도 그리 낯선 풍경은 아닐 겁니다.
+
+그럴 때마다 우리는 습관적으로 세상을 향해 돋보기를 들이댑니다. 내가 왜 이렇게 불안한지 이유를 분석하고, 상황을 바꾸려 애쓰고, 마음을 고쳐먹으려 스스로를 다그칩니다. 조금 더 강해지면, 조금 더 많이 가지면 이 소란이 가라앉을까 싶어 정신의 배터리가 붉은빛을 깜빡이는데도 자꾸만 무언가를 더 채우려 듭니다.
+
+하지만 채울수록 허기는 더해졌고, 세상과 촘촘히 연결될수록 외로움은 정직하게 깊어만 갔습니다. 내 삶의 주인이 정말 나인지, 아니면 세상이 짜 놓은 정교한 알고리즘에 끌려다니는 인형인지 분간하기조차 힘겨워질 때쯤, 저는 비로소 돋보기를 내려놓았습니다. 그리고 바깥으로만 향해 있던 시선을 안으로, 아주 천천히 돌려보았습니다.
+
+그것은 내 상태를 날카롭게 분석하는 차가운 감시자가 되는 일이 아니었습니다. 그저, 이 소란스러운 생각과 감정들을 한 걸음 물러서서 가만히 지켜보는 투명한 눈을 갖는 일이었습니다.
+
+옛사람들은 이 마음의 자리를 '공적영지(空寂靈知)'라는 깊은 언어로 불렀고, 현대의 심리학자들은 '알아차림을 알아차리는 상태'라고 말합니다. 복잡한 용어들을 다 걷어내고 나면, 결국 하나의 고요한 지점에 닿게 됩니다. 모든 소음이 멈추고 온전한 평정심만 남는 곳, 바로 이 책이 내내 머물게 될 '제로 포인트(Zero Point)'입니다.`
+    },
+    {
+        id: 'part1_1',
+        title: '제1부 1장. 달리는 자전거 위에서는 풍경이 보이지 않는다',
+        page: '12-15p',
+        content: `자전거를 타고 가파른 내리막길을 전속력으로 질주할 때를 떠올려 봅니다. 페달을 밟는 발에 힘이 들어가고 바퀴에 속도가 붙을수록, 기이하게도 눈앞의 시야는 점점 좁아집니다. 시속 10킬로미터로 달릴 때는 다정하게 인사하던 길가의 가로수와 이름 모를 들꽃들이, 속도가 올라갈수록 그저 하나의 흐릿한 선으로 초점 없이 뭉개져 스쳐 갈 뿐입니다.
+
+그 순간 부딪히는 거센 바람 속에서 우리가 할 수 있는 일은 오직 하나입니다. 넘어지지 않기 위해, 살아남기 위해 바로 앞의 차가운 아스팔트 바닥만 매섭게 노려보는 것. 가속도가 붙은 자전거 위에서 풍경의 아름다움을 음미하기란 애초에 불가능한 일입니다.
+
+어쩌면 지금을 살아가는 현대인들의 삶이 정확히 이 가파른 내리막길 위의 자전거를 닮아있는지도 모르겠습니다.
+
+문제는 속도가 한계치를 넘어설 때, 우리의 뇌와 마음에도 '시야 협착'이 일어난다는 사실입니다. 과속하는 삶 속에서는 내가 지금 어디로 가고 있는지, 내 마음이 얼마나 지쳐 부서지고 있는지 보이지 않습니다.
+
+꽉 쥐고 있던 핸들의 힘을 빼고, 서서히 브레이크를 잡아 속도를 줄이는 것입니다. 바퀴의 회전이 멈추고 자전거에서 완전히 내려와 발을 땅에 딛는 순간, 비로소 뭉개졌던 풍경들이 제 형태를 드러내며 선명하게 눈에 들어오기 시작합니다. 이것이 바로 내 삶의 고정된 패턴을 바꾸기 위한 첫 번째 관문, 모든 자극을 멈추고 나를 정밀하게 읽어내는 '스캔(Scan)'의 시작입니다.`
+    },
+    {
+        id: 'part1_5',
+        title: '제1부 5장. 타고난 기질이라는 생각의 감옥 & MSC 자기연민 에세이',
+        page: '28-34p',
+        content: `"나도 내가 왜 이러는지 모르겠어. 조금만 서운한 소리를 들으면 나도 모르게 차갑게 벽을 치고 문을 닫아버려. 타고난 팔자고 기질인데 어쩌겠어."
+
+우리는 살아가며 얼마나 자주 이 무서운 문장에 스스로를 가두곤 할까요? "나는 원래 예민해." "나는 다혈질이라 화를 못 참아." 마치 태어날 때부터 영혼 깊숙한 곳에 새겨진 불가항력의 각인이라도 되는 것처럼, 우리는 특정한 자극 앞에서 어김없이 똑같은 방식으로 일그러지고, 분노하며 마음의 닫힌 방 안으로 숨어버립니다.
+
+하지만 가만히 숨을 죽이고 내면의 뜰을 들여다보면, 그것은 결코 온전한 '진짜 나'의 모습이 아닙니다. 낯선 세상의 위협으로부터 스스로를 보호하기 위해 만들어 넣었던 조잡한 방어기제일 뿐입니다.
+
+"아, 지금 내 안에서 또 '상처받기 두려워 벽을 치는 낡은 프로그램'이 자동으로 실행되고 있구나." 이 짧고 명징한 알아차림 하나. 바로 이 순간이 감옥의 문이 열리는 기적의 시작입니다.
+
+제로 포인트는 기질을 '버리는 곳'이 아니라, 그 기질을 온전한 자비로 '안아주는 곳'입니다. 감옥에서 벗어나는 진짜 방법은 쇠창살을 망치로 부수는 물리적 파괴가 아닙니다. 그 창살을 가만히 만져보며 "그동안 이 좁은 공간에서 나를 지켜주느라 참 애썼구나" 하고 수용하는 마음, 바로 MSC(Mindful Self-Compassion, 마음챙김 자기연민)의 태도를 갖출 때 감옥은 순식간에 사라집니다.`
+    },
+    {
+        id: 'part2_1',
+        title: '제2부 1장. 가장 완벽한 멈춤, 제로 포인트 (Zero Point)',
+        page: '36-39p',
+        content: `스마트폰을 오래 쥐고 쓰다 보면 기기가 눈에 띄게 느려지거나 화면이 뚝뚝 끊기는 순간을 마주합니다. 화면 뒤편, 즉 백그라운드에서 나도 모르게 켜져 있던 수십 개의 앱들이 보이지 않게 메모리와 에너지를 갉아먹고 있었기 때문입니다.
+
+이럴 때 우리가 할 수 있는 가장 명쾌한 처방은 하나입니다. 하단의 버튼을 눌러 실행 중인 '모든 앱 강제 종료'를 선택하거나, 전원 버튼을 길게 눌러 시스템을 완전히 껐다 켜는 것. 화면이 잠시 까맣게 암전되었다가 다시 부팅되는 찰나, 어떤 프로그램도 구동되지 않은 채 오직 첫 신호만을 기다리고 있는 순수한 운영체제(OS)의 깨끗한 바탕화면을 마주할 때, 우리는 묘한 쾌적함과 안정감을 느낍니다.
+
+우리의 마음이 제로 포인트에 들어서는 과정도 이와 정확히 닮아 있습니다.
+
+제로 포인트는 아무것도 존재하지 않는 차가운 허무의 공간이 아닙니다. 오히려 모든 소음이 사라졌기에 비로소 '진짜 나'라는 존재의 무게감이 온전히 드러나는 가장 밀도 높은 평정의 영토입니다.`
+    },
+    {
+        id: 'part2_3',
+        title: '제2부 3장. 내 마음의 스크린은 결코 찢어지지 않는다',
+        page: '43-45p',
+        content: `스크린 위로 거대한 불길이 치솟고, 사나운 폭풍우가 몰아치며, 참혹한 비극이 펼쳐집니다. 관객은 숨을 죽이고 공포에 떨거나 눈물을 흘립니다. 그러나 상영이 끝나고 조명이 켜진 뒤 스크린을 만져보면, 하얀 천은 단 한 군데도 그을리지 않았고 단 한 방울의 물기조차 묻어 있지 않습니다. 극 중 어떤 재난도 스크린 자체를 훼손할 수는 없습니다.
+
+우리의 내면도 이와 완전히 같습니다. 슬픔, 절망, 걷잡을 수 없는 불안은 삶이라는 영사기가 의식의 스크린 위에 쏘아 올린 찰나의 빛과 그림자에 불과합니다. 감정의 파고가 아무리 거세게 몰아쳐도, 그 모든 경험을 담아내고 있는 '순수 관찰자'의 자리는 결코 찢어지거나 오염되지 않습니다.
+
+우리가 고통에 압도당했던 유일한 이유는 스크린의 존재를 잊은 채 스크린 속 주인공과 나를 동일시했기 때문입니다. 타오르는 불길을 보며 "내가 불타고 있다"고 착각하고, 쏟아지는 폭우를 보며 "내가 익사하고 있다"고 믿어버린 탓입니다. 그러나 화염을 비추는 스크린은 뜨거워지지 않으며, 바다를 비추는 스크린은 젖지 않습니다.`
+    },
+    {
+        id: 'practice_20',
+        title: '소음이 멈추는 그 찰나, 당신이라는 제로포인트 (20일 과정 전문)',
+        page: '75-185p',
+        content: `[1일차] 스크린은 영화 뒤에 언제나 있었다 — 불타오르던 불길도 스크린을 태우지 못했다.
+[2일차] 당신이라는 거대한 하늘, 흘러가는 날씨에 속지 마세요 — 100미터 바다 아래 압도적 고요.
+[3일차] 모든 것이 스쳐 가도 결코 닳지 않는 유일한 자리 — 무엇을 비추어도 물들지 않는 거울.
+[4일차] 조건 없이 흐르는 생명, 당신이라는 완벽한 바탕 — 태피스트리를 수놓은 단 하나의 실.
+[5일차] 슬픔을 연기하는 동안에도 당신은 늘 안전했습니다 — 배역이 끝나면 집으로 돌아가는 명배우.
+[6일차] 흔들리는 세상의 중심에서 당신이라는 영점을 만나다 — 어떤 무게도 기억하지 않는 저울.
+[7일차] 당신이라는 고요한 여백, 삶의 모든 글씨를 품다 — 그릇은 깨어져도 흙은 다치지 않는다.
+[8일차] 거센 소용돌이 속에서 결코 흔들리지 않는 축(軸) — 회전하는 바퀴의 움직이지 않는 중심축.
+[9일차] 흔들릴수록 더욱 선명해지는 당신이라는 고향 — 사정없이 흔들리는 나침반 바늘의 중심 핀.
+[10일차] 움켜쥔 손을 놓는 순간 시작되는 거대한 고요 — 비눗방울의 두려움과 터지는 찰나의 자유.
+[11일차] 당신이라는 무한한 우주, 그려진 운명의 선을 지우다 — 얼음도 수증기도 결국 H₂O.
+[12일차] 상처 입지 않는 투명함, 당신이라는 가장 아름다운 기적 — 폭풍우 속에서도 홀로 투명한 유리창.
+[13일차] 상처를 비출 뿐 상처 입지 않는 눈부신 원천 — 어떤 비극을 담아도 얼룩지지 않는 카메라 렌즈.
+[14일차] 가상 현실의 헤드셋을 벗는 순간, 진짜 세계 — 게임 속 캐릭터의 부상과 소파 위 플레이어.
+[15일차] 모든 소란이 멈춘 자리에 핀 절대적 평온 — 격렬한 독무를 받쳐주는 움직이지 않는 무대.
+[16일차] 두려움의 온도를 낮추는 고요한 기점 — 시속 200km 폭풍 속 단 하나의 무풍지대 태풍의 눈.
+[17일차] 흔들림의 끝에서 마주하는 가장 정직한 평화 — 흙탕물이 되어도 마르지 않는 지하의 수원.
+[18일차] 스스로 묶은 매듭을 푸는 찰나, 부드러운 실크 — 수많은 흉터의 나이테 속 태초의 수심(樹心).
+[19일차] 세상을 움직이되 스스로는 움직이지 않는 거룩한 정적 — 폭발하는 별들을 품은 99.9% 우주 허공.
+[20일차] 세상의 모든 소음이 조율되는 자리, 근원적 조음 — 천 가지 목소리를 내어도 다치지 않는 성우.`
+    }
+];
+
+export default function LibraryPage() {
+    const router = useRouter();
+
+    // 구매 인증 상태 (로컬스토리지 연동)
+    const [isVerified, setIsVerified] = useState(false);
+    const [buyerName, setBuyerName] = useState('');
+    const [orderNumber, setOrderNumber] = useState('');
+    const [purchasePlatform, setPurchasePlatform] = useState('smartstore');
+    const [verificationError, setVerificationError] = useState('');
+
+    // 뷰어 설정 상태
+    const [activeTab, setActiveTab] = useState<'reader' | 'pdf' | 'benefits'>('reader');
+    const [selectedChapter, setSelectedChapter] = useState(CHAPTERS[0]);
+    const [fontSize, setFontSize] = useState<number>(15);
+
+    // 528Hz 사운드
+    const [isPlayingSound, setIsPlayingSound] = useState(false);
+    const audioCtxRef = useRef<AudioContext | null>(null);
+    const oscRef = useRef<OscillatorNode | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const verified = localStorage.getItem('myeongsim_book_verified') === 'true' || 
+                             localStorage.getItem('myeongsim_paid_user') === 'true' || 
+                             localStorage.getItem('myeongsim_smartstore_vip') === 'true';
+            if (verified) {
+                setIsVerified(true);
+            }
+        }
+    }, []);
+
+    // 구매 인증 처리
+    const handleVerifyPurchase = (e: React.FormEvent) => {
+        e.preventDefault();
+        setVerificationError('');
+
+        if (!buyerName.trim() || !orderNumber.trim()) {
+            setVerificationError('구매자 성함과 주문번호(또는 핸드폰 뒷자리)를 입력해주세요.');
+            return;
+        }
+
+        // 인증 성공 처리
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('myeongsim_book_verified', 'true');
+            localStorage.setItem('myeongsim_book_buyer', buyerName);
+            localStorage.setItem('myeongsim_book_order', orderNumber);
+        }
+
+        setIsVerified(true);
+        confetti({
+            particleCount: 100,
+            spread: 90,
+            origin: { y: 0.6 },
+            colors: ['#06b6d4', '#6366f1', '#f59e0b', '#10b981']
+        });
+    };
+
+    // 빠른 체험 인증 (관리자/테스트용)
+    const handleFastVerify = () => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('myeongsim_book_verified', 'true');
+        }
+        setIsVerified(true);
+        confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+    };
+
+    // 528Hz 사운드 토글
+    const toggleFrequency = () => {
+        if (isPlayingSound) {
+            if (oscRef.current) {
+                try { oscRef.current.stop(); } catch (e) {}
+            }
+            setIsPlayingSound(false);
+        } else {
+            try {
+                const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+                const ctx = new AudioCtx();
+                audioCtxRef.current = ctx;
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(528, ctx.currentTime);
+
+                gain.gain.setValueAtTime(0.001, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + 1.5);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                oscRef.current = osc;
+                setIsPlayingSound(true);
+            } catch (e) {
+                console.error('Audio frequency error:', e);
+                setIsPlayingSound(false);
+            }
+        }
+    };
+
+    return (
+        <div className="relative flex h-full min-h-screen w-full flex-col bg-[#05030b] max-w-md mx-auto shadow-2xl overflow-hidden font-sans pb-28 text-white">
+            
+            {/* 🌌 Deep Cyber Ambient Glows */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[420px] h-[360px] bg-gradient-to-b from-cyan-600/15 via-purple-700/15 to-transparent rounded-full blur-[110px] pointer-events-none" />
+            <div className="absolute top-1/2 right-[-60px] w-64 h-64 bg-indigo-500/15 rounded-full blur-[90px] pointer-events-none" />
+            <div className="absolute bottom-16 left-[-60px] w-72 h-72 bg-amber-500/10 rounded-full blur-[90px] pointer-events-none" />
+
+            {/* ── 1. Top Header ── */}
+            <header className="relative z-30 flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/[0.08] bg-[#080514]/85 backdrop-blur-xl">
+                <button
+                    onClick={() => router.push('/report')}
+                    className="flex items-center gap-1.5 text-gray-300 hover:text-white text-xs font-bold transition-all px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] active:scale-95 cursor-pointer"
+                >
+                    <ArrowLeft size={15} />
+                    <span>홈으로</span>
+                </button>
+
+                <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-indigo-100 to-purple-200">
+                        명심코칭 디지털 도서관
+                    </span>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                        Cheongryu
+                    </span>
+                </div>
+
+                <button
+                    onClick={toggleFrequency}
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                        isPlayingSound 
+                            ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 border-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.6)] animate-pulse' 
+                            : 'bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 border-white/[0.08]'
+                    }`}
+                    title="528Hz 독서 명상 사운드"
+                >
+                    {isPlayingSound ? <VolumeX size={14} className="text-slate-950" /> : <Volume2 size={14} className="text-cyan-400" />}
+                    <span className="text-[10px] font-mono font-bold">{isPlayingSound ? '528Hz ON' : '528Hz'}</span>
+                </button>
+            </header>
+
+            {/* ── 2. 메인 바디 ── */}
+            <main className="relative z-20 px-4 pt-4 space-y-4 text-left">
+
+                {/* 📘 《ZERO POINT》 3D 책 쇼케이스 카드 */}
+                <div className="p-5 rounded-3xl bg-gradient-to-br from-[#160c33] via-[#0e0824] to-[#060312] border border-cyan-400/40 shadow-2xl space-y-4">
+                    <div className="flex items-start gap-3.5">
+                        {/* 3D 북 커버 비주얼 */}
+                        <div className="w-24 h-34 rounded-xl bg-[#faf7ee] p-2 flex flex-col justify-between items-center text-center shadow-[0_10px_25px_rgba(0,0,0,0.7)] border border-amber-300/40 shrink-0 relative overflow-hidden group">
+                            <div className="space-y-0.5">
+                                <p className="text-[12px] font-black text-slate-900 tracking-wider leading-tight">ZERO POINT</p>
+                                <p className="text-[6px] text-gray-600 font-mono tracking-tighter">AWARENESS OF AWARENESS</p>
+                            </div>
+
+                            {/* 원형 심볼 */}
+                            <div className="size-14 rounded-full border border-indigo-900/40 flex items-center justify-center relative">
+                                <div className="size-11 rounded-full border border-dashed border-indigo-950/60 flex items-center justify-center">
+                                    <div className="size-2 rounded-full bg-amber-600" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-[7px] text-slate-800 font-bold">저자 이경윤</p>
+                                <p className="text-[6px] text-slate-600 font-mono">청류출판사</p>
+                            </div>
+                        </div>
+
+                        {/* 도서 상세 설명 */}
+                        <div className="space-y-1.5 flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                                    공식 출판 도서
+                                </span>
+                                <span className="text-[9px] text-gray-400 font-mono">
+                                    총 {BOOK_INFO.totalPages}p
+                                </span>
+                            </div>
+
+                            <h2 className="text-sm font-black text-white leading-snug">
+                                《{BOOK_INFO.title}》
+                            </h2>
+                            <p className="text-[10px] text-gray-300 leading-relaxed font-medium">
+                                내 안의 소음이 멈추고 운명의 알고리즘이 리셋되는 순간
+                            </p>
+
+                            <div className="pt-1 space-y-0.5 text-[10px] text-gray-400 font-mono">
+                                <p>• 지은이: {BOOK_INFO.author} | 출판: {BOOK_INFO.publisher}</p>
+                                <p>• e-ISBN: {BOOK_INFO.isbn}</p>
+                                <p>• 정가: <span className="text-amber-300 font-bold">{BOOK_INFO.price}</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 🛒 외부 구매 링크 버튼 2종 */}
+                    <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/[0.08]">
+                        <a
+                            href={BOOK_INFO.yes24Url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="py-2.5 px-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-[11px] shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer text-center"
+                        >
+                            <span>📗 YES24에서 구매</span>
+                            <ExternalLink size={12} />
+                        </a>
+
+                        <a
+                            href={BOOK_INFO.smartstoreUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="py-2.5 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-[11px] shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer text-center"
+                        >
+                            <span>🛍️ 스마트스토어 구매</span>
+                            <ExternalLink size={12} />
+                        </a>
+                    </div>
+                </div>
+
+                {/* ── 3. 미인증 독자: 구매 인증 폼 ── */}
+                {!isVerified ? (
+                    <div className="p-5 rounded-3xl bg-[#0f0a22]/90 border border-amber-400/40 shadow-2xl space-y-4 text-center">
+                        <div className="size-12 rounded-2xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center mx-auto text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+                            <Lock size={24} />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <h3 className="text-sm font-black text-white">
+                                독자 구매 인증 후 전자책 무료 열람
+                            </h3>
+                            <p className="text-xs text-gray-300 leading-relaxed">
+                                스마트스토어 또는 YES24에서 도서를 구매하신 후, 아래에 <strong className="text-amber-300">구매자 성함</strong>과 <strong className="text-amber-300">주문번호</strong>를 입력하시면 《제로 포인트》 전자책 전문(총 309페이지)이 즉시 영구 해금됩니다!
+                            </p>
+                        </div>
+
+                        {verificationError && (
+                            <div className="p-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-xs font-bold text-rose-300">
+                                {verificationError}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleVerifyPurchase} className="space-y-2.5 text-left">
+                            <div>
+                                <label className="text-[10px] text-gray-400 block mb-1">구매처</label>
+                                <select
+                                    value={purchasePlatform}
+                                    onChange={(e) => setPurchasePlatform(e.target.value)}
+                                    className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                                >
+                                    <option value="smartstore">네이버 스마트스토어 (청류출판사)</option>
+                                    <option value="yes24">YES24</option>
+                                    <option value="kyobo">교보문고</option>
+                                    <option value="bookk">부크크</option>
+                                    <option value="other">기타 서점</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] text-gray-400 block mb-1">구매자 성함</label>
+                                <input
+                                    type="text"
+                                    value={buyerName}
+                                    onChange={(e) => setBuyerName(e.target.value)}
+                                    placeholder="예: 강미숙"
+                                    className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] text-gray-400 block mb-1">주문번호 또는 휴대폰 뒷자리</label>
+                                <input
+                                    type="text"
+                                    value={orderNumber}
+                                    onChange={(e) => setOrderNumber(e.target.value)}
+                                    placeholder="예: 20260904-123456 또는 1234"
+                                    className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                            >
+                                <CheckCircle2 size={16} />
+                                <span>구매 인증하고 제로포인트 전자책 해금하기</span>
+                            </button>
+                        </form>
+
+                        <button
+                            onClick={handleFastVerify}
+                            className="w-full py-2 text-[11px] text-gray-400 hover:text-cyan-300 transition-colors cursor-pointer"
+                        >
+                            ⚡ [체험하기] 구매 인증 없이 즉시 1초 해금 (테스트 모드)
+                        </button>
+                    </div>
+                ) : (
+                    /* ── 4. 인증 완료 독자: 럭셔리 전자책 뷰어 ── */
+                    <div className="space-y-4 animate-fade-in">
+                        
+                        {/* 인증 완료 뱃지 */}
+                        <div className="p-3 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-between shadow-lg">
+                            <div className="flex items-center gap-2">
+                                <div className="size-7 rounded-xl bg-emerald-500/30 flex items-center justify-center text-emerald-300">
+                                    <CheckCircle2 size={15} />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-black text-emerald-300">
+                                        독자 구매 인증 완료 (VIP 프리패스)
+                                    </p>
+                                    <p className="text-[10px] text-emerald-100">
+                                        전자책 전문 및 부록 워크북을 자유롭게 열람하실 수 있습니다.
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-400/30">
+                                해금됨
+                            </span>
+                        </div>
+
+                        {/* 뷰어 탭 네비게이션 */}
+                        <div className="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-[#0d091e] border border-white/10">
+                            {[
+                                { id: 'reader', label: 'e-Book 리더', icon: '📖' },
+                                { id: 'pdf', label: '원문 PDF', icon: '📑' },
+                                { id: 'benefits', label: '독자 특전', icon: '🎁' }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id as any)}
+                                    className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                                        activeTab === tab.id
+                                            ? 'bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black shadow-md'
+                                            : 'text-gray-400 hover:text-white'
+                                    }`}
+                                >
+                                    <span>{tab.icon}</span>
+                                    <span>{tab.label}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* 탭 1: 인터랙티브 전자책 리더 */}
+                        {activeTab === 'reader' && (
+                            <div className="space-y-3">
+                                {/* 챕터 셀렉터 & 폰트 조절 바 */}
+                                <div className="p-3 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-between gap-2">
+                                    <select
+                                        value={selectedChapter.id}
+                                        onChange={(e) => {
+                                            const ch = CHAPTERS.find(c => c.id === e.target.value);
+                                            if (ch) setSelectedChapter(ch);
+                                        }}
+                                        className="bg-[#140c2e] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:border-cyan-400 focus:outline-none flex-1 truncate"
+                                    >
+                                        {CHAPTERS.map(ch => (
+                                            <option key={ch.id} value={ch.id}>
+                                                {ch.title} ({ch.page})
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    <div className="flex items-center gap-1 shrink-0">
+                                        <button
+                                            onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
+                                            className="size-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs font-bold text-gray-300"
+                                            title="글자 작게"
+                                        >
+                                            <ZoomOut size={13} />
+                                        </button>
+                                        <span className="text-[10px] font-mono text-cyan-300 px-1">{fontSize}px</span>
+                                        <button
+                                            onClick={() => setFontSize(prev => Math.min(20, prev + 1))}
+                                            className="size-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs font-bold text-gray-300"
+                                            title="글자 크게"
+                                        >
+                                            <ZoomIn size={13} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* 전자책 본문 컨테이너 */}
+                                <div className="p-5 rounded-3xl bg-[#0e0a22]/95 border border-cyan-400/30 shadow-2xl space-y-4">
+                                    <div className="border-b border-white/10 pb-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[10px] font-mono text-cyan-300 font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-400/30">
+                                                {selectedChapter.page}
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 font-mono">
+                                                《ZERO POINT》 by 이경윤
+                                            </span>
+                                        </div>
+                                        <h3 className="text-sm font-black text-white mt-1.5 leading-snug">
+                                            {selectedChapter.title}
+                                        </h3>
+                                    </div>
+
+                                    {/* 본문 텍스트 */}
+                                    <div 
+                                        className="text-gray-200 leading-loose whitespace-pre-line font-medium text-justify select-text"
+                                        style={{ fontSize: `${fontSize}px` }}
+                                    >
+                                        {selectedChapter.content}
+                                    </div>
+
+                                    {/* 챕터 네비게이션 버튼 */}
+                                    <div className="pt-3 border-t border-white/10 flex justify-between gap-2">
+                                        <button
+                                            onClick={() => {
+                                                const idx = CHAPTERS.findIndex(c => c.id === selectedChapter.id);
+                                                if (idx > 0) setSelectedChapter(CHAPTERS[idx - 1]);
+                                            }}
+                                            disabled={CHAPTERS.findIndex(c => c.id === selectedChapter.id) === 0}
+                                            className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-300 disabled:opacity-30 cursor-pointer"
+                                        >
+                                            ← 이전 챕터
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                const idx = CHAPTERS.findIndex(c => c.id === selectedChapter.id);
+                                                if (idx < CHAPTERS.length - 1) setSelectedChapter(CHAPTERS[idx + 1]);
+                                            }}
+                                            disabled={CHAPTERS.findIndex(c => c.id === selectedChapter.id) === CHAPTERS.length - 1}
+                                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 text-xs font-black disabled:opacity-30 cursor-pointer"
+                                        >
+                                            다음 챕터 →
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 탭 2: 원문 PDF 뷰어 */}
+                        {activeTab === 'pdf' && (
+                            <div className="space-y-3">
+                                <div className="p-3 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-between">
+                                    <div>
+                                        <p className="text-xs font-bold text-white">출판 원본 PDF (총 309페이지)</p>
+                                        <p className="text-[10px] text-gray-400">종이책과 100% 동일한 전자책 원문</p>
+                                    </div>
+
+                                    <a
+                                        href="/books/zero-point.pdf"
+                                        download="ZERO_POINT_이경윤.pdf"
+                                        className="py-1.5 px-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs flex items-center gap-1 transition-all shadow"
+                                    >
+                                        <Download size={13} />
+                                        <span>PDF 다운로드</span>
+                                    </a>
+                                </div>
+
+                                <div className="w-full h-[520px] rounded-2xl bg-black border border-cyan-400/40 overflow-hidden shadow-2xl">
+                                    <iframe
+                                        src="/books/zero-point.pdf#toolbar=1"
+                                        className="w-full h-full border-none"
+                                        title="ZERO POINT PDF Reader"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 탭 3: 독자 한정 특별 제공 혜택 */}
+                        {activeTab === 'benefits' && (
+                            <div className="space-y-3">
+                                <div className="p-5 rounded-3xl bg-gradient-to-br from-purple-950/60 via-[#130a2a] to-slate-950 border border-purple-400/40 space-y-4">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="size-9 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300">
+                                            <Sparkles size={18} />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-black text-white">
+                                                《제로포인트》 독자 한정 2대 특별 특전
+                                            </h3>
+                                            <p className="text-[10px] text-purple-200">
+                                                책 2페이지 및 308페이지 수록 혜택
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2.5 text-xs">
+                                        <div className="p-3.5 rounded-2xl bg-black/50 border border-purple-500/30 space-y-1.5">
+                                            <p className="font-black text-amber-300 flex items-center gap-1.5">
+                                                <span>1. 1:1 맞춤 헌정 힐링송(MP3) 무료 작곡 신청</span>
+                                            </p>
+                                            <p className="text-[11px] text-gray-300 leading-relaxed font-medium">
+                                                대표님의 사주 기질과 주파수(432Hz/528Hz)를 분석하여 세상에 단 하나뿐인 전용 치유 음원을 무료로 작곡하여 증정합니다.
+                                            </p>
+                                            <button
+                                                onClick={() => router.push('/support?topic=healing_song')}
+                                                className="w-full py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-black text-xs transition-all mt-1"
+                                            >
+                                                🎵 헌정 힐링송 무료 작곡 신청하기 ➔
+                                            </button>
+                                        </div>
+
+                                        <div className="p-3.5 rounded-2xl bg-black/50 border border-cyan-500/30 space-y-1.5">
+                                            <p className="font-black text-cyan-300 flex items-center gap-1.5">
+                                                <span>2. 명심 AI 챗봇 20회 VIP 코칭 대화권 즉시 활성화</span>
+                                            </p>
+                                            <p className="text-[11px] text-gray-300 leading-relaxed font-medium">
+                                                책을 읽다 생긴 의문이나 다크코드 디버깅을 명심 AI 수석 코치와 20회 동안 1:1 심층 상담할 수 있는 VIP 이용권이 자동 지급되었습니다.
+                                            </p>
+                                            <button
+                                                onClick={() => router.push('/myeongsim-chat')}
+                                                className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all mt-1"
+                                            >
+                                                💬 명심 AI VIP 코칭 시작하기 ➔
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+                )}
+
+            </main>
+
+        </div>
+    );
+}
