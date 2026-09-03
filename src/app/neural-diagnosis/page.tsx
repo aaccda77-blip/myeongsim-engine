@@ -1149,6 +1149,127 @@ function NeuralDiagnosisContent() {
                                 </div>
                             </div>
 
+                            {/* 🌟 [대표님 요청 진단 보드 상시 장착] 도서 《제로 포인트》 지금 즉시 영점(0)으로 들어가는 3단계 실천 공식 🌟 */}
+                            <div className="p-4 rounded-3xl bg-gradient-to-br from-indigo-950/70 via-[#150b33] to-slate-950 border border-cyan-400/50 space-y-3.5 shadow-2xl text-left">
+                                <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="size-8 rounded-xl bg-cyan-400/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
+                                            <Sparkles size={16} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black text-white">
+                                                도서 《제로 포인트》 3단계 영점 실천 공식
+                                            </h4>
+                                            <p className="text-[10px] text-cyan-300 font-mono">
+                                                1초 정지 ➔ 4초 호흡 ➔ 자각 질문
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[9px] font-mono font-black text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-lg border border-amber-400/30">
+                                        즉각 해금
+                                    </span>
+                                </div>
+
+                                <div className="space-y-2 text-xs">
+                                    <div className="p-3 rounded-2xl bg-black/50 border border-white/[0.08] space-y-1">
+                                        <div className="flex items-center justify-between text-[11px] font-bold text-cyan-300">
+                                            <span>1단계. 【1초 정지 & 감정 분리 (Decoupling)】</span>
+                                            <span className="text-[9px] font-mono text-gray-400">STOP</span>
+                                        </div>
+                                        <p className="text-[11px] text-gray-200 leading-relaxed font-medium">
+                                            "지금 느끼는 불안·분노는 '나'가 아닙니다. 마음의 하늘을 잠시 지나가는 '비구름'일 뿐입니다. 비구름을 나라고 착각하지 마세요."
+                                        </p>
+                                    </div>
+
+                                    <div className="p-3 rounded-2xl bg-black/50 border border-white/[0.08] space-y-1">
+                                        <div className="flex items-center justify-between text-[11px] font-bold text-indigo-300">
+                                            <span>2단계. 【4-4-4 영점 호흡 (Zero-Breath)】</span>
+                                            <span className="text-[9px] font-mono text-gray-400">Box Breathing</span>
+                                        </div>
+                                        <p className="text-[11px] text-gray-200 leading-relaxed font-medium">
+                                            4초간 깊게 들이마시고 ➔ 4초간 숨을 멈춰 '영점(0)'을 잡고 ➔ 4초간 천천히 비워냅니다. 편도체(공포 회로)가 꺼지고 전두엽(메타코드)이 켜집니다!
+                                        </p>
+                                    </div>
+
+                                    <div className="p-3 rounded-2xl bg-black/50 border border-white/[0.08] space-y-1">
+                                        <div className="flex items-center justify-between text-[11px] font-bold text-amber-300">
+                                            <span>3단계. 【영점 자각 질문 (The Zero-Question)】</span>
+                                            <span className="text-[9px] font-mono text-gray-400">Inquiry</span>
+                                        </div>
+                                        <p className="text-[11px] text-amber-100 font-bold leading-relaxed">
+                                            "이 요동치는 감정을 뒤에서 고요히 바라보고 있는 '진짜 나'는 누구인가?" 질문을 던지는 순간, 의식은 번뇌가 사라진 0(Zero Point)에 도달합니다!
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* 🌟 [상시 실습] 30초 인터랙티브 영점 호흡기 위젯 🌟 */}
+                                <div className="p-4 rounded-2xl bg-black/70 border border-cyan-500/40 text-center space-y-3">
+                                    <p className="text-xs font-bold text-cyan-300 flex items-center justify-center gap-1.5">
+                                        <Wind size={14} />
+                                        <span>지금 화면을 보며 30초 영점 호흡 실습하기</span>
+                                    </p>
+
+                                    {isBreathingActive ? (
+                                        <div className="space-y-3 py-1">
+                                            <div className="relative size-32 mx-auto flex items-center justify-center">
+                                                <motion.div
+                                                    className="absolute inset-0 rounded-full bg-cyan-500/20 border-2 border-cyan-400"
+                                                    animate={{
+                                                        scale: breathPhase === 'inhale' ? [1, 1.3] : breathPhase === 'hold' ? 1.3 : breathPhase === 'exhale' ? [1.3, 1] : 1,
+                                                        opacity: breathPhase === 'hold' ? [0.6, 1, 0.6] : 0.8
+                                                    }}
+                                                    transition={{ duration: 4, ease: "easeInOut" }}
+                                                />
+                                                <div className="relative z-10">
+                                                    <p className="text-2xl font-black text-white font-mono">{breathSeconds}s</p>
+                                                    <p className="text-[11px] font-bold text-cyan-300 mt-0.5">
+                                                        {breathPhase === 'inhale' && '들이마시기 (Inhale)'}
+                                                        {breathPhase === 'hold' && '✨ 영점 멈춤 (Zero Point)'}
+                                                        {breathPhase === 'exhale' && '비워내기 (Exhale)'}
+                                                        {breathPhase === 'rest' && '순수 현존 (Presence)'}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={handleStopBreathing}
+                                                className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-xs font-bold transition-all cursor-pointer"
+                                            >
+                                                호흡 멈추기
+                                            </button>
+                                        </div>
+                                    ) : isBreathingDone ? (
+                                        <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-400/40 space-y-1.5 animate-fade-in">
+                                            <p className="text-xs font-black text-emerald-300 flex items-center justify-center gap-1">
+                                                <CheckCircle2 size={15} />
+                                                <span>🎉 30초 영점(Zero Point) 평온 체험 완료!</span>
+                                            </p>
+                                            <p className="text-[11px] text-emerald-100">
+                                                방금 영점(0)의 감각을 깨우셨습니다! 닫혀 있던 88% 메타코드가 현실로 연결됩니다.
+                                            </p>
+                                            <button
+                                                onClick={handleStartBreathing}
+                                                className="px-3 py-1 rounded-lg bg-emerald-500 text-slate-950 text-xs font-bold"
+                                            >
+                                                다시 호흡하기
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={handleStartBreathing}
+                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                                        >
+                                            <Wind size={15} />
+                                            <span>🧘 지금 30초 영점 호흡으로 리셋하기 (Start)</span>
+                                        </button>
+                                    )}
+
+                                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[10px] text-amber-200 leading-relaxed font-medium">
+                                        📖 <strong>도서 《제로 포인트》 필연적 수련:</strong> 방금 경험하신 30초의 영점 상태를 24시간 내 일상과 사업의 무기로 체화하는 비법이 바로 도서 《제로 포인트》 제3장 '영점 감정 연금술'에 수록되어 있습니다.
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* 🌟 3문항 실시간 의식 스캐너 실행 버튼 🌟 */}
                             <div className="pt-2 flex flex-col gap-2">
                                 <button
