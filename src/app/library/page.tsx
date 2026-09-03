@@ -255,6 +255,11 @@ export default function LibraryPage() {
     const [purchasePlatform, setPurchasePlatform] = useState('smartstore');
     const [verificationError, setVerificationError] = useState('');
 
+    // 🔍 확대/축소 및 🖥️ 전체화면 상태
+    const [pdfZoom, setPdfZoom] = useState<number>(100);
+    const [isPdfFullscreen, setIsPdfFullscreen] = useState(false);
+    const [isReaderFullscreen, setIsReaderFullscreen] = useState(false);
+
     // 📖 YES24 스타일 무료 미리보기 상태
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [previewPageIndex, setPreviewPageIndex] = useState(0);
@@ -792,34 +797,112 @@ export default function LibraryPage() {
                             </div>
                         )}
 
-                        {/* 탭 2: 원문 PDF 보안 스트리밍 뷰어 (워터마크 오버레이 보호) */}
+                        {/* 탭 2: 원문 PDF 보안 스트리밍 뷰어 (확대/축소 + 모바일/PC 전체화면 지원) */}
                         {activeTab === 'pdf' && (
                             <div className="space-y-3">
-                                <div className="p-3 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs font-bold text-white">보안 스트리밍 열람 (총 309페이지)</p>
-                                        <p className="text-[10px] text-gray-400">포렌식 워터마킹 암호화 적용</p>
+                                {/* 상단 툴바: 확대/축소 & 전체화면 컨트롤러 */}
+                                <div className="p-3 rounded-2xl bg-black/70 border border-cyan-500/30 flex flex-wrap items-center justify-between gap-2 shadow-lg">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="size-6 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-300">
+                                            <FileText size={13} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-white leading-none">원문 PDF 열람</p>
+                                            <p className="text-[9px] text-gray-400 font-mono mt-0.5">총 309p 정품 스트림</p>
+                                        </div>
                                     </div>
 
-                                    <span className="py-1 px-2.5 rounded-xl bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px] border border-indigo-400/30 flex items-center gap-1">
-                                        <Shield size={12} />
-                                        <span>DRM PROTECTED</span>
-                                    </span>
+                                    {/* 🔍 확대/축소 컨트롤러 */}
+                                    <div className="flex items-center gap-1 bg-[#150d30] border border-white/10 px-2 py-1 rounded-xl">
+                                        <button
+                                            onClick={() => setPdfZoom(prev => Math.max(80, prev - 15))}
+                                            className="size-6 rounded bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-300 hover:text-white"
+                                            title="축소"
+                                        >
+                                            <ZoomOut size={12} />
+                                        </button>
+                                        <span className="text-[10px] font-mono text-cyan-300 font-bold px-1.5 min-w-[42px] text-center">
+                                            {pdfZoom}%
+                                        </span>
+                                        <button
+                                            onClick={() => setPdfZoom(prev => Math.min(250, prev + 15))}
+                                            className="size-6 rounded bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-300 hover:text-white"
+                                            title="확대"
+                                        >
+                                            <ZoomIn size={12} />
+                                        </button>
+                                        <button
+                                            onClick={() => setPdfZoom(100)}
+                                            className="text-[9px] text-gray-400 hover:text-white px-1 ml-0.5 border-l border-white/10"
+                                        >
+                                            100%
+                                        </button>
+                                    </div>
+
+                                    {/* 🖥️ 전체화면 버튼 */}
+                                    <button
+                                        onClick={() => setIsPdfFullscreen(true)}
+                                        className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer"
+                                    >
+                                        <Layers size={13} />
+                                        <span>🖥️ 전체화면 크게보기</span>
+                                    </button>
                                 </div>
 
-                                <div className="relative w-full h-[520px] rounded-2xl bg-black border border-cyan-400/40 overflow-hidden shadow-2xl">
-                                    {/* PDF 상단 워터마크 오버레이 바 */}
-                                    <div className="absolute top-0 left-0 right-0 z-20 bg-slate-950/85 backdrop-blur-md px-3 py-1.5 border-b border-white/10 flex items-center justify-between text-[10px] font-mono text-cyan-300">
-                                        <span>👤 {buyerName}님 전용 정품 열람</span>
-                                        <span className="text-amber-300">{serialKey}</span>
+                                {/* 인라인 PDF 컨테이너 */}
+                                <div className="relative w-full h-[580px] rounded-3xl bg-[#080512] border-2 border-cyan-400/40 overflow-hidden shadow-2xl">
+                                    {/* 상단 워터마크 바 */}
+                                    <div className="absolute top-0 left-0 right-0 z-20 bg-slate-950/90 backdrop-blur-md px-3.5 py-1.5 border-b border-white/10 flex items-center justify-between text-[10px] font-mono text-cyan-300">
+                                        <span className="flex items-center gap-1">
+                                            <Shield size={11} className="text-cyan-400" />
+                                            <span>👤 {buyerName}님 전용 정품 열람</span>
+                                        </span>
+                                        <span className="text-amber-300 font-bold">{serialKey}</span>
                                     </div>
 
-                                    {/* PDF 뷰어 */}
-                                    <iframe
-                                        src="/books/zero-point.pdf#toolbar=0&navpanes=0&scrollbar=1"
-                                        className="w-full h-full border-none pt-7"
-                                        title="ZERO POINT PDF DRM Reader"
-                                    />
+                                    {/* 모바일 최적화 PDF 뷰어 프레임 (확대 배율 스타일 적용) */}
+                                    <div className="w-full h-full pt-7 overflow-auto flex items-center justify-center bg-[#1a162b]">
+                                        <div 
+                                            className="w-full h-full transition-transform duration-200 origin-top"
+                                            style={{ transform: `scale(${pdfZoom / 100})`, transformOrigin: 'top center' }}
+                                        >
+                                            <object
+                                                data="/books/zero-point.pdf#toolbar=1&navpanes=0&scrollbar=1"
+                                                type="application/pdf"
+                                                className="w-full h-full border-none"
+                                            >
+                                                {/* 모바일 폴백 iframe */}
+                                                <iframe
+                                                    src="/books/zero-point.pdf#toolbar=1"
+                                                    className="w-full h-full border-none"
+                                                    title="ZERO POINT PDF Reader"
+                                                >
+                                                    <div className="p-6 text-center text-xs text-gray-300 space-y-3">
+                                                        <p>모바일 브라우저에서는 아래의 [전체화면 크게보기] 또는 [새 탭에서 열기]를 눌러주세요.</p>
+                                                        <a
+                                                            href="/books/zero-point.pdf"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-block px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold"
+                                                        >
+                                                            📖 새 탭에서 전체화면으로 읽기
+                                                        </a>
+                                                    </div>
+                                                </iframe>
+                                            </object>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 모바일 사용자를 위한 안내 배너 */}
+                                <div className="p-3 rounded-2xl bg-indigo-950/40 border border-indigo-400/30 flex items-center justify-between text-xs text-gray-300">
+                                    <span>📱 화면이 작게 느껴지시나요?</span>
+                                    <button
+                                        onClick={() => setIsPdfFullscreen(true)}
+                                        className="text-cyan-300 font-bold flex items-center gap-1 hover:underline"
+                                    >
+                                        <span>전체화면 모드로 전환 ➔</span>
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -881,6 +964,104 @@ export default function LibraryPage() {
                 )}
 
             </main>
+
+
+            {/* 🌟 🖥️ PDF 전체화면 모드 (모바일 & PC 전체화면 확대 뷰어) 🌟 */}
+            <AnimatePresence>
+                {isPdfFullscreen && (
+                    <div className="fixed inset-0 z-50 flex flex-col bg-black text-white select-none">
+                        {/* 전체화면 상단 컨트롤 바 */}
+                        <header className="relative z-30 flex items-center justify-between px-4 py-2.5 bg-slate-950/95 border-b border-white/15 backdrop-blur-xl shrink-0">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setIsPdfFullscreen(false)}
+                                    className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-300 flex items-center gap-1 cursor-pointer"
+                                >
+                                    <ArrowLeft size={14} />
+                                    <span>닫기</span>
+                                </button>
+                                <span className="text-xs font-black text-white hidden sm:inline">
+                                    《ZERO POINT》 전체화면 뷰어
+                                </span>
+                            </div>
+
+                            {/* 🔍 전체화면 확대/축소 버튼 */}
+                            <div className="flex items-center gap-1.5 bg-[#170e30] border border-white/10 px-2.5 py-1 rounded-xl">
+                                <button
+                                    onClick={() => setPdfZoom(prev => Math.max(80, prev - 20))}
+                                    className="size-7 rounded bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-300"
+                                    title="축소"
+                                >
+                                    <ZoomOut size={14} />
+                                </button>
+                                <span className="text-xs font-mono text-cyan-300 font-bold px-1.5 min-w-[48px] text-center">
+                                    {pdfZoom}%
+                                </span>
+                                <button
+                                    onClick={() => setPdfZoom(prev => Math.min(300, prev + 20))}
+                                    className="size-7 rounded bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-300"
+                                    title="확대"
+                                >
+                                    <ZoomIn size={14} />
+                                </button>
+                                <button
+                                    onClick={() => setPdfZoom(100)}
+                                    className="text-[10px] text-gray-400 hover:text-white px-1.5 ml-1 border-l border-white/10"
+                                >
+                                    100%
+                                </button>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-mono text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-400/30 hidden sm:inline">
+                                    {buyerName}님 라이선스
+                                </span>
+                                <button
+                                    onClick={() => setIsPdfFullscreen(false)}
+                                    className="size-8 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 flex items-center justify-center text-sm font-bold transition-all cursor-pointer"
+                                    title="전체화면 닫기"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        </header>
+
+                        {/* 전체화면 바디 & 워터마크 오버레이 */}
+                        <div className="relative flex-1 w-full h-full bg-[#110d22] overflow-auto flex items-center justify-center">
+                            {/* 은은한 전체화면 포렌식 워터마크 타일 */}
+                            <div 
+                                className="absolute inset-0 pointer-events-none z-20 flex flex-col justify-around opacity-[0.08] select-none text-xs font-mono text-cyan-200 font-bold overflow-hidden"
+                                style={{ transform: 'rotate(-18deg) scale(1.15)' }}
+                            >
+                                {[1, 2, 3, 4, 5, 6, 7, 8].map((row) => (
+                                    <div key={row} className="whitespace-nowrap flex justify-around">
+                                        <span>🔒 {buyerName} | {orderNumber} | {serialKey} | 무단배포금지</span>
+                                        <span>⚠️ 저작권법 제136조 형사책임 추적 | {purchaseDate}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* 줌 배율이 적용된 PDF 프레임 */}
+                            <div 
+                                className="w-full h-full transition-transform duration-150 origin-top flex items-center justify-center"
+                                style={{ transform: `scale(${pdfZoom / 100})`, transformOrigin: 'top center' }}
+                            >
+                                <object
+                                    data="/books/zero-point.pdf#toolbar=1&navpanes=1"
+                                    type="application/pdf"
+                                    className="w-full h-full border-none"
+                                >
+                                    <iframe
+                                        src="/books/zero-point.pdf#toolbar=1"
+                                        className="w-full h-full border-none"
+                                        title="ZERO POINT Fullscreen PDF"
+                                    />
+                                </object>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* 🌟 📖 YES24 스타일 무료 미리보기 모달 (Look-Inside Reader) 🌟 */}
             <AnimatePresence>
