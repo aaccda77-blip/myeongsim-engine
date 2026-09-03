@@ -3339,7 +3339,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                     </button>
 
                                     <a
-                                        href="https://smartstore.naver.com"
+                                        href="https://smartstore.naver.com/cheongryubooks"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 hover:text-white font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1 border border-slate-700"
@@ -3421,7 +3421,7 @@ export default function ZeroPoint3SMatrixModal({ isOpen, onClose, userProfile }:
                                         </button>
 
                                         <a
-                                            href="https://smartstore.naver.com"
+                                            href="https://smartstore.naver.com/cheongryubooks"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-amber-300 hover:text-amber-200 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1 border border-amber-400/30 text-center"

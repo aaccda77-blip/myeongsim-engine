@@ -939,7 +939,7 @@ export default function StartupDashboard() {
                             청류스마트스토어에서 9,900원에 도서를 구매하시면, 본 <strong className="text-amber-300 font-bold">19,800원 스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 1:1 맞춤 힐링송 + AI 챗봇 20회권(총 10만 원 상당)</strong>이 모두 무료로 자동 해금됩니다!
                         </p>
                         <a
-                            href="https://smartstore.naver.com"
+                            href="https://smartstore.naver.com/cheongryubooks"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/30 flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -3302,7 +3302,7 @@ export default function StartupDashboard() {
                                     청류스마트스토어에서 9,900원에 도서를 구매하시면, 본 <strong className="text-amber-300 font-bold">19,800원 스타트업 리포트 + 무의식 다크코드 디버거 + 바이오케어 + 1:1 맞춤 힐링송 + AI 챗봇 20회권(총 10만 원 상당)</strong>이 모두 무료로 자동 해금됩니다!
                                 </p>
                                 <a
-                                    href="https://smartstore.naver.com"
+                                    href="https://smartstore.naver.com/cheongryubooks"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="w-full py-2 rounded-xl bg-gradient-to-r from-amber-400/20 via-yellow-400/20 to-amber-400/20 hover:from-amber-400/30 hover:to-yellow-400/30 text-amber-200 border border-amber-400/40 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all block text-center"

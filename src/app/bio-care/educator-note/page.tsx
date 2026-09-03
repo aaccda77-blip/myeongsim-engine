@@ -88,7 +88,7 @@ export default function EducatorNotePage() {
                     </div>
                     <div className="flex flex-col gap-2.5">
                         <a
-                            href="https://smartstore.naver.com"
+                            href="https://smartstore.naver.com/cheongryubooks"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"

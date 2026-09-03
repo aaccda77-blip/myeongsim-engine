@@ -24,7 +24,7 @@ const BOOK_INFO = {
     isbn: '979-11-220953-0-2',
     price: '11,000원',
     yes24Url: 'https://www.yes24.com/product/goods/195946431',
-    smartstoreUrl: 'https://smartstore.naver.com',
+    smartstoreUrl: 'https://smartstore.naver.com/cheongryubooks',
     totalPages: 309
 };
 
@@ -288,17 +288,40 @@ export default function LibraryPage() {
         setPurchaseDate(nowStr);
 
         if (typeof window !== 'undefined') {
-            const verified = localStorage.getItem('myeongsim_book_verified') === 'true' || 
-                             localStorage.getItem('myeongsim_paid_user') === 'true' || 
-                             localStorage.getItem('myeongsim_smartstore_vip') === 'true';
-            if (verified) {
-                setIsVerified(true);
-            }
+            const searchParams = new URLSearchParams(window.location.search);
+            const urlOrder = searchParams.get('order') || searchParams.get('order_id');
+            const urlName = searchParams.get('name') || searchParams.get('buyer');
+            const urlAutoVerify = searchParams.get('verify') === 'true' || searchParams.get('auto') === 'true';
 
-            const savedName = localStorage.getItem('myeongsim_book_buyer') || localStorage.getItem('user_name') || '강미숙';
-            const savedOrder = localStorage.getItem('myeongsim_book_order') || '2026-SEJONG-0576';
-            setBuyerName(savedName);
-            setOrderNumber(savedOrder);
+            let savedName = localStorage.getItem('myeongsim_book_buyer') || localStorage.getItem('user_name') || '강미숙';
+            let savedOrder = localStorage.getItem('myeongsim_book_order') || '2026-SEJONG-0576';
+
+            if (urlOrder || urlName || urlAutoVerify) {
+                savedName = urlName || savedName;
+                savedOrder = urlOrder || 'SMARTSTORE-VIP';
+                setBuyerName(savedName);
+                setOrderNumber(savedOrder);
+                localStorage.setItem('myeongsim_book_verified', 'true');
+                localStorage.setItem('myeongsim_book_buyer', savedName);
+                localStorage.setItem('myeongsim_book_order', savedOrder);
+                localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                localStorage.setItem('myeongsim_paid_user', 'true');
+                localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+                localStorage.setItem('myeongsim_site_access', 'granted');
+                document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                setIsVerified(true);
+                setShowVerifySuccessModal(true);
+                confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+            } else {
+                const verified = localStorage.getItem('myeongsim_book_verified') === 'true' || 
+                                 localStorage.getItem('myeongsim_paid_user') === 'true' || 
+                                 localStorage.getItem('myeongsim_smartstore_vip') === 'true';
+                if (verified) {
+                    setIsVerified(true);
+                }
+                setBuyerName(savedName);
+                setOrderNumber(savedOrder);
+            }
 
             // 포렌식 고유 시리얼 생성
             const rawSeed = `${savedName}_${savedOrder}_CHEONGRYU`;
@@ -373,9 +396,15 @@ export default function LibraryPage() {
         setSerialKey(sKey);
 
         if (typeof window !== 'undefined') {
+            // 🌟 명심코칭 앱 전면 VIP & 정품 독자 라이선스 동시 영구 해금 🌟
             localStorage.setItem('myeongsim_book_verified', 'true');
             localStorage.setItem('myeongsim_book_buyer', buyerName);
             localStorage.setItem('myeongsim_book_order', orderNumber);
+            localStorage.setItem('myeongsim_smartstore_vip', 'true');
+            localStorage.setItem('myeongsim_paid_user', 'true');
+            localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+            localStorage.setItem('myeongsim_site_access', 'granted');
+            document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
         }
 
         setIsVerified(true);
@@ -589,11 +618,15 @@ export default function LibraryPage() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <h3 className="text-sm font-black text-white">
-                                독자 구매 인증 후 전자책 무료 열람
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-[11px] font-mono font-bold">
+                                <Sparkles size={12} />
+                                <span>네이버 스마트스토어 & 서점 독자 전용</span>
+                            </div>
+                            <h3 className="text-base font-black text-white">
+                                정품 구매 인증 및 전면 VIP 해금
                             </h3>
                             <p className="text-xs text-gray-300 leading-relaxed">
-                                스마트스토어 또는 YES24에서 도서를 구매하신 후, 아래에 <strong className="text-amber-300">구매자 성함</strong>과 <strong className="text-amber-300">주문번호</strong>를 입력하시면 《제로 포인트》 전자책 전문(총 309페이지)이 즉시 영구 해금됩니다!
+                                네이버 스마트스토어에서 결제하신 <strong className="text-amber-300">구매자 성함</strong>과 <strong className="text-amber-300">주문번호</strong>를 입력하시면, 《ZERO POINT》 309페이지 전자책과 3대 VIP 슈퍼패키지가 즉시 영구 해금됩니다!
                             </p>
                         </div>
 
@@ -646,7 +679,7 @@ export default function LibraryPage() {
                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                             >
                                 <CheckCircle2 size={16} />
-                                <span>구매 인증하고 제로포인트 전자책 해금하기</span>
+                                <span>👑 네이버 스마트스토어 정품 등록 및 전면 해금하기</span>
                             </button>
                         </form>
 

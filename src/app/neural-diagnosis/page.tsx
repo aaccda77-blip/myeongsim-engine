@@ -1289,7 +1289,7 @@ function NeuralDiagnosisContent() {
                                                 <ArrowUpRight size={12} />
                                             </a>
                                             <a
-                                                href="https://smartstore.naver.com"
+                                                href="https://smartstore.naver.com/cheongryubooks"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-[10px] flex items-center justify-center gap-1 shadow transition-all cursor-pointer"
