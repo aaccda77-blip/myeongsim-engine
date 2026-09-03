@@ -263,6 +263,7 @@ export default function LibraryPage() {
     const [isReaderFullscreen, setIsReaderFullscreen] = useState(false);
     const [showHealingSongModal, setShowHealingSongModal] = useState(false);
     const [showVerifySuccessModal, setShowVerifySuccessModal] = useState(false);
+    const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
 
     // 📖 YES24 스타일 무료 미리보기 상태
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -499,13 +500,22 @@ export default function LibraryPage() {
                 {/* 📘 《ZERO POINT》 3D 책 쇼케이스 카드 */}
                 <div className="p-5 rounded-3xl bg-gradient-to-br from-[#160c33] via-[#0e0824] to-[#060312] border border-cyan-400/40 shadow-2xl space-y-4">
                     <div className="flex items-start gap-3.5">
-                        {/* 📘 3D 북 커버 비주얼 (공식 고화질 정식 표지) */}
-                        <div className="relative group shrink-0">
+                        {/* 📘 3D 북 커버 비주얼 (클릭 시 원본 크기 모달 팝업) */}
+                        <div 
+                            onClick={() => setIsCoverModalOpen(true)}
+                            className="relative group shrink-0 cursor-zoom-in"
+                            title="클릭하여 표지 원본 크기로 크게보기"
+                        >
                             <img
                                 src="/images/zero_point_cover.jpg"
                                 alt="ZERO POINT 공식 도서 표지"
-                                className="w-24 h-36 object-cover rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] border border-amber-300/40 transition-transform duration-300 group-hover:scale-105"
+                                className="w-24 h-36 object-cover rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] border border-amber-300/40 transition-all duration-300 group-hover:scale-105 group-hover:border-amber-300"
                             />
+                            {/* 호버 시 나타나는 돋보기 오버레이 */}
+                            <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-amber-300">
+                                <ZoomIn size={18} className="animate-pulse" />
+                                <span className="text-[9px] font-bold">크게보기</span>
+                            </div>
                             <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20 pointer-events-none" />
                         </div>
 
@@ -1065,6 +1075,60 @@ export default function LibraryPage() {
                             </div>
                         </div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            {/* 🌟 🔍 《ZERO POINT》 공식 도서 표지 원본 크기 확대 모달 (라이트박스) 🌟 */}
+            <AnimatePresence>
+                {isCoverModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsCoverModalOpen(false)}
+                        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-xl p-4 cursor-zoom-out select-none"
+                    >
+                        {/* 닫기 버튼 */}
+                        <button
+                            onClick={() => setIsCoverModalOpen(false)}
+                            className="absolute top-5 right-5 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-50 shadow-lg border border-white/20"
+                            title="닫기"
+                        >
+                            <ZoomOut size={20} />
+                        </button>
+
+                        {/* 대형 원본 이미지 카드 */}
+                        <motion.div
+                            initial={{ scale: 0.85, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.85, y: 20 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative max-w-sm sm:max-w-md w-full flex flex-col items-center cursor-default"
+                        >
+                            <div className="relative rounded-3xl overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.95)] border-2 border-amber-400/40">
+                                <img
+                                    src="/images/zero_point_cover.jpg"
+                                    alt="ZERO POINT 공식 도서 표지 원본"
+                                    className="max-h-[75vh] w-auto object-contain rounded-3xl"
+                                />
+                                <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-3xl pointer-events-none" />
+                            </div>
+
+                            {/* 하단 캡션 안내 */}
+                            <div className="mt-4 text-center space-y-1">
+                                <h3 className="text-base font-black text-white">
+                                    《ZERO POINT (제로 포인트)》 공식 출판 표지
+                                </h3>
+                                <p className="text-xs text-gray-300 font-mono">
+                                    지은이: 이경윤 | 출판: 청류 (EDITIONS CHEONGRYU) · 979-11-220953-0-2
+                                </p>
+                                <p className="text-[11px] text-amber-300/80 pt-1 cursor-pointer hover:underline" onClick={() => setIsCoverModalOpen(false)}>
+                                    (화면 아무 곳이나 누르면 닫힙니다)
+                                </p>
+                            </div>
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 
