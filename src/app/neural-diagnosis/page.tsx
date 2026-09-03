@@ -8,7 +8,7 @@ import {
     Cpu, Key, Orbit, Rocket, Layers, Radio, Volume2, VolumeX,
     CheckCircle2, RefreshCw, MessageSquare, AlertCircle, ArrowUpRight,
     TrendingUp, Award, BarChart3, ChevronRight, Sliders, Play, Atom,
-    Calendar, User, Edit3, Check, X
+    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { calculateSaju } from '@/utils/SajuCalculator';
@@ -19,35 +19,48 @@ type DiagnosticTab = 'full_scan' | 'x_axis' | 'y_axis' | 'z_axis' | 'decoder' | 
 const TAB_CONFIG: { id: DiagnosticTab; label: string; icon: string; badge: string }[] = [
     { id: 'full_scan', label: '3D 종합 스캔', icon: '🧬', badge: 'XYZ 좌표' },
     { id: 'x_axis', label: 'X축: 의식 코드', icon: '⚡', badge: 'Dark·Meta' },
-    { id: 'y_axis', label: 'Y축: 주파수(Hz)', icon: '📡', badge: '528Hz' },
-    { id: 'z_axis', label: 'Z축: 에너지 벡터', icon: '🧭', badge: '영점 밸런스' },
+    { id: 'y_axis', label: 'Y축: 주파수(Hz)', icon: '📡', badge: '파동 측정' },
+    { id: 'z_axis', label: 'Z축: 에너지 벡터', icon: '🧭', badge: '위험도 진단' },
     { id: 'decoder', label: '64 뉴럴 DNA', icon: '🔑', badge: '원형 해독' },
-    { id: 'action_3s', label: '3S 솔루션 실행', icon: '🚀', badge: 'Scan-Shift' }
+    { id: 'action_3s', label: '3S 솔루션 실행', icon: '🚀', badge: '긴급 처방' }
 ];
 
-// 오행 및 일간별 코어 정보 맵
+// 오행 매핑 헬퍼
+const GAN_OHAENG: Record<string, string> = {
+    '甲': '목', '乙': '목', '丙': '화', '丁': '화',
+    '戊': '토', '己': '토', '庚': '금', '辛': '금',
+    '壬': '수', '癸': '수'
+};
+const JI_OHAENG: Record<string, string> = {
+    '寅': '목', '卯': '목',
+    '巳': '화', '午': '화',
+    '辰': '토', '戌': '토', '丑': '토', '未': '토',
+    '申': '금', '酉': '금',
+    '亥': '수', '子': '수'
+};
+
 const DAY_MASTER_INFO: Record<string, { name: string; title: string; element: string; color: string; ringColor: string }> = {
-    '甲': { name: '甲木 (갑목)', title: '창조적 개척 리더 코어', element: '목(木)', color: 'from-emerald-400 to-teal-300', ringColor: 'border-emerald-400/60' },
-    '乙': { name: '乙木 (을목)', title: '유연한 적응 네트워크 코어', element: '목(木)', color: 'from-teal-400 to-cyan-300', ringColor: 'border-teal-400/60' },
-    '丙': { name: '丙火 (병화)', title: '뜨거운 태양 비전 코어', element: '화(火)', color: 'from-rose-500 to-amber-400', ringColor: 'border-rose-400/60' },
-    '丁': { name: '丁火 (정화)', title: '섬세한 등불 통찰 코어', element: '화(火)', color: 'from-purple-400 to-rose-300', ringColor: 'border-purple-400/60' },
-    '戊': { name: '戊土 (무토)', title: '포용적 수용 닻 코어', element: '토(土)', color: 'from-amber-400 to-yellow-300', ringColor: 'border-amber-400/60' },
-    '己': { name: '己土 (기토)', title: '조용히 경작하는 결실 코어', element: '토(土)', color: 'from-yellow-500 to-amber-400', ringColor: 'border-yellow-400/60' },
-    '庚': { name: '庚金 (경금)', title: '용맹한 결단 무쇠 코어', element: '금(金)', color: 'from-slate-200 to-cyan-200', ringColor: 'border-slate-300/60' },
-    '辛': { name: '辛金 (신금)', title: '초정밀 관찰자 다이아몬드 코어', element: '금(金)', color: 'from-cyan-300 via-indigo-300 to-amber-200', ringColor: 'border-cyan-400/60' },
-    '壬': { name: '壬水 (임수)', title: '무한 침잠 지혜 바다 코어', element: '수(水)', color: 'from-blue-500 to-indigo-400', ringColor: 'border-blue-400/60' },
-    '癸': { name: '癸水 (계수)', title: '깊은 단비 감성 시뮬레이터 코어', element: '수(水)', color: 'from-indigo-400 to-sky-300', ringColor: 'border-indigo-400/60' }
+    '甲': { name: '갑목(甲木)', title: '창조적 개척 리더 코어', element: '목(木)', color: 'from-emerald-400 to-teal-300', ringColor: 'border-emerald-400/60' },
+    '乙': { name: '을목(乙木)', title: '유연한 적응 네트워크 코어', element: '목(木)', color: 'from-teal-400 to-cyan-300', ringColor: 'border-teal-400/60' },
+    '丙': { name: '병화(丙火)', title: '뜨거운 태양 비전 코어', element: '화(火)', color: 'from-rose-500 to-amber-400', ringColor: 'border-rose-400/60' },
+    '丁': { name: '정화(丁火)', title: '섬세한 등불 통찰 코어', element: '화(火)', color: 'from-purple-400 to-rose-300', ringColor: 'border-purple-400/60' },
+    '戊': { name: '무토(戊土)', title: '포용적 수용 대지 코어', element: '토(土)', color: 'from-amber-400 to-yellow-300', ringColor: 'border-amber-400/60' },
+    '己': { name: '기토(己土)', title: '조용히 경작하는 결실 코어', element: '토(土)', color: 'from-yellow-500 to-amber-400', ringColor: 'border-yellow-400/60' },
+    '庚': { name: '경금(庚金)', title: '용맹한 결단 무쇠 코어', element: '금(金)', color: 'from-slate-200 to-cyan-200', ringColor: 'border-slate-300/60' },
+    '辛': { name: '신금(辛金)', title: '초정밀 관찰자 다이아몬드 코어', element: '금(金)', color: 'from-cyan-300 via-indigo-300 to-amber-200', ringColor: 'border-cyan-400/60' },
+    '壬': { name: '임수(壬水)', title: '무한 침잠 지혜 바다 코어', element: '수(水)', color: 'from-blue-500 to-indigo-400', ringColor: 'border-blue-400/60' },
+    '癸': { name: '계수(癸水)', title: '깊은 단비 감성 시뮬레이터 코어', element: '수(水)', color: 'from-indigo-400 to-sky-300', ringColor: 'border-indigo-400/60' }
 };
 
 const HEXAGRAM_TITLES: Record<number, { title: string; shadow: string; gift: string; siddhi: string }> = {
-    1: { title: '중건천 (The Creator)', shadow: '독선적 고립', gift: '창조적 시작', siddhi: '순수 현존' },
-    2: { title: '중곤지 (The Mother)', shadow: '무기력한 순응', gift: '무한한 수용', siddhi: '일체화' },
+    1: { title: '중건천 (The Creator)', shadow: '독선적 고립과 오만', gift: '창조적 돌파력', siddhi: '순수 현존' },
+    2: { title: '중곤지 (The Mother)', shadow: '무기력한 수동성', gift: '무한한 수용', siddhi: '일체화' },
     14: { title: '화천대유 (The Abundance)', shadow: '소유욕과 집착', gift: '풍요의 나눔', siddhi: '영적 부' },
-    15: { title: '지산겸 (The Humility)', shadow: '자기 비하', gift: '당당한 겸양', siddhi: '완전한 조화' },
-    28: { title: '택풍대과 (The Overload)', shadow: '과부하와 독박', gift: '불굴의 돌파력', siddhi: '불멸의 창조' },
-    29: { title: '감위수 (The Deep Diver)', shadow: '끝없는 두려움', gift: '깊은 헌신과 몰입', siddhi: '순수 헌신' },
-    30: { title: '이위화 (The Visionary)', shadow: '타오르는 갈망', gift: '명석한 통찰력', siddhi: '영적 광명' },
-    64: { title: '화수미제 (Before Completion)', shadow: '혼란과 미완성', gift: '끝없는 가능성', siddhi: '영원한 시작' }
+    15: { title: '지산겸 (The Humility)', shadow: '자기 비하와 위축', gift: '당당한 겸양', siddhi: '완전한 조화' },
+    28: { title: '택풍대과 (The Overload)', shadow: '과부하와 독박 책임감', gift: '불굴의 돌파력', siddhi: '불멸의 창조' },
+    29: { title: '감위수 (The Deep Diver)', shadow: '끝없는 두려움과 심연', gift: '깊은 헌신과 몰입', siddhi: '순수 헌신' },
+    30: { title: '이위화 (The Visionary)', shadow: '타오르는 조급증과 갈망', gift: '명석한 통찰력', siddhi: '영적 광명' },
+    64: { title: '화수미제 (Before Completion)', shadow: '혼란과 미완성의 불안', gift: '끝없는 가능성', siddhi: '영원한 시작' }
 };
 
 function NeuralDiagnosisContent() {
@@ -65,32 +78,179 @@ function NeuralDiagnosisContent() {
     const oscRef = useRef<OscillatorNode | null>(null);
 
     // 사용자 정보 및 생년월일 상태
-    const [userName, setUserName] = useState<string>('이경윤');
-    const [birthDate, setBirthDate] = useState<string>('1980-07-07');
+    const [userName, setUserName] = useState<string>('강미숙');
+    const [birthDate, setBirthDate] = useState<string>('2003-01-25');
     const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
-    const [tempBirth, setTempBirth] = useState<string>('1980-07-07');
-    const [tempName, setTempName] = useState<string>('이경윤');
+    const [tempBirth, setTempBirth] = useState<string>('2003-01-25');
+    const [tempName, setTempName] = useState<string>('강미숙');
     const [syncAlert, setSyncAlert] = useState<string | null>(null);
 
-    // 동적 계산된 사주 스펙
+    // 동적 계산된 사주 및 오행 분석 스펙
     const [sajuSpecs, setSajuSpecs] = useState<any>(null);
 
-    // 실시간 스캔 시뮬레이션 상태
+    // 실시간 스캔 상태
     const [isScanning, setIsScanning] = useState(false);
     const [scanProgress, setScanProgress] = useState(100);
 
     // 3D 좌표 상태
-    const [xVal, setXVal] = useState(78);
-    const [yVal, setYVal] = useState(528);
-    const [zVal, setZVal] = useState(12);
+    const [xVal, setXVal] = useState(65);
+    const [yVal, setYVal] = useState(285);
+    const [zVal, setZVal] = useState(-18);
 
     // 3S 퀘스트 완료 상태
     const [is3SCompleted, setIs3SCompleted] = useState(false);
 
-    // ── 핵심: 모든 로컬스토리지 소스로부터 실제 사용자 생년월일 자동 감지 ──
+    // ── 사주 4주 8자 & 5대 오행 비율 정밀 연산 엔진 ──
+    const analyzeSajuDetail = (bDateStr: string, nameStr: string) => {
+        try {
+            const cleanBirth = bDateStr.trim() || '2003-01-25';
+            const saju = calculateSaju(cleanBirth, '14:00');
+
+            // 8글자 오행 계산
+            const ohaengCounts: Record<string, number> = { '목': 0, '화': 0, '토': 0, '금': 0, '수': 0 };
+            
+            const gans = [saju.year.gan.hanja, saju.month.gan.hanja, saju.day.gan.hanja, saju.time.gan.hanja];
+            const jis = [saju.year.ji.hanja, saju.month.ji.hanja, saju.day.ji.hanja, saju.time.ji.hanja];
+
+            gans.forEach(g => {
+                const oh = GAN_OHAENG[g];
+                if (oh) ohaengCounts[oh] = (ohaengCounts[oh] || 0) + 1;
+            });
+            jis.forEach(j => {
+                const oh = JI_OHAENG[j];
+                if (oh) ohaengCounts[oh] = (ohaengCounts[oh] || 0) + 1;
+            });
+
+            // 오행 퍼센트 산출 (총 8글자 기준)
+            const ohaengPercent: Record<string, number> = {
+                '목': Math.round((ohaengCounts['목'] / 8) * 100),
+                '화': Math.round((ohaengCounts['화'] / 8) * 100),
+                '토': Math.round((ohaengCounts['토'] / 8) * 100),
+                '금': Math.round((ohaengCounts['금'] / 8) * 100),
+                '수': Math.round((ohaengCounts['수'] / 8) * 100)
+            };
+
+            // 가장 지배적인 오행 & 결핍 오행
+            const sortedOhaeng = Object.entries(ohaengPercent).sort((a, b) => b[1] - a[1]);
+            const dominantOh = sortedOhaeng[0]; // [오행명, 퍼센트]
+            const deficientOh = sortedOhaeng.filter(item => item[1] === 0).map(item => item[0]);
+
+            // 안전한 한글+한자 병기 표기 (인코딩 깨짐 100% 방지)
+            const fourPillarsKor = `${saju.year.gan.char}${saju.year.ji.char}(${saju.year.gan.hanja}${saju.year.ji.hanja})년 ${saju.month.gan.char}${saju.month.ji.char}(${saju.month.gan.hanja}${saju.month.ji.hanja})월 ${saju.day.gan.char}${saju.day.ji.char}(${saju.day.gan.hanja}${saju.day.ji.hanja})일 ${saju.time.gan.char}${saju.time.ji.char}(${saju.time.gan.hanja}${saju.time.ji.hanja})시`;
+            const dayGanHanja = saju.day.gan.hanja;
+            const dayGanKor = saju.day.gan.char;
+
+            const parts = cleanBirth.split('-');
+            const y = parseInt(parts[0]) || 2003;
+            const m = parseInt(parts[1]) || 1;
+            const d = parseInt(parts[2]) || 25;
+            
+            const codeNum = ((y + m * 3 + d * 7) % 64) + 1;
+            const hexInfo = HEXAGRAM_TITLES[codeNum] || {
+                title: `Code ${String(codeNum).padStart(2, '0')}. 64비트 뉴럴 코드`,
+                shadow: '내면의 정체와 두려움',
+                gift: '독창적인 잠재 역량',
+                siddhi: '우주적 지혜의 초월 현존'
+            };
+
+            const masterInfo = DAY_MASTER_INFO[dayGanHanja] || {
+                name: `${dayGanKor}토(${dayGanHanja}土)`,
+                title: '포용적 수용 대지 코어',
+                element: '토(土)',
+                color: 'from-amber-400 to-yellow-300',
+                ringColor: 'border-amber-400/60'
+            };
+
+            // ── 실제 오행 근거 기반 X·Y·Z 좌표 동적 산출 ──
+            let statusBadge = '안정권';
+            let statusColor = 'text-emerald-300 bg-emerald-500/20 border-emerald-400/30';
+            let diagSummary = '';
+            let diagEvidence = '';
+            let calcX = 70;
+            let calcY = 528;
+            let calcZ = 0;
+
+            if (dominantOh[1] >= 45) {
+                // 특정 오행이 45% 이상 과다한 경우 (편중/압축/과열 위험)
+                if (dominantOh[0] === '토') {
+                    statusBadge = '⚠️ 내면 압축/정체 위험군';
+                    statusColor = 'text-amber-300 bg-amber-500/20 border-amber-400/40 animate-pulse';
+                    calcX = 65; // 고집 및 생각 과부하로 Meta 3.0 진입 정체
+                    calcY = 285; // 무겁게 가라앉은 저주파
+                    calcZ = -18; // 에너지가 밖으로 돌지 못하고 안으로 갇힌 함몰 상태
+                    diagSummary = `${nameStr}님은 사주 내 토(土) 기운이 ${dominantOh[1]}%로 극심하게 과밀집되어, 에너지가 밖으로 방출되지 못하고 속으로 삭히는 '내면 고립/정체형' 상태입니다.`;
+                    diagEvidence = `근거: 사주 8자 중 토(土)가 ${ohaengCounts['토']}개(${dominantOh[1]}%)로 비대하며, 소통과 흐름을 돕는 ${deficientOh.length > 0 ? deficientOh.join(', ') : '목(木)'} 기운이 결핍되어 에너지 체증(Traffic Jam)이 발생하고 있습니다.`;
+                } else if (dominantOh[0] === '화') {
+                    statusBadge = '🔥 과열 및 번아웃 폭발 위험군';
+                    statusColor = 'text-rose-300 bg-rose-500/20 border-rose-400/40 animate-pulse';
+                    calcX = 58;
+                    calcY = 190;
+                    calcZ = +28;
+                    diagSummary = `${nameStr}님은 화(火) 에너지가 ${dominantOh[1]}%로 과열되어 충동적 에너지 방출과 번아웃 위험이 매우 높습니다.`;
+                    diagEvidence = `근거: 화(火) 기운의 과열로 냉각수 역할을 하는 수(水)가 증발하여 심리적 조급증과 분노 노이즈가 발생 중입니다.`;
+                } else if (dominantOh[0] === '수') {
+                    statusBadge = '🌊 깊은 침잠/우울 주의군';
+                    statusColor = 'text-blue-300 bg-blue-500/20 border-blue-400/40 animate-pulse';
+                    calcX = 60;
+                    calcY = 210;
+                    calcZ = -25;
+                    diagSummary = `${nameStr}님은 수(水) 기운이 ${dominantOh[1]}%로 너무 깊이 가라앉아 무기력과 고립감이 발생하기 쉬운 상태입니다.`;
+                    diagEvidence = `근거: 차가운 수(水)의 범람으로 열정과 온기를 공급하는 화(火)가 꺼져 있어 의욕 저하가 감지됩니다.`;
+                } else {
+                    statusBadge = '⚡ 에너지 편중 주의군';
+                    statusColor = 'text-purple-300 bg-purple-500/20 border-purple-400/40';
+                    calcX = 68;
+                    calcY = 340;
+                    calcZ = -12;
+                    diagSummary = `${nameStr}님은 ${dominantOh[0]} 기운이 ${dominantOh[1]}%로 편중되어 균형 완충이 필요합니다.`;
+                    diagEvidence = `근거: 5대 오행의 순환이 특정 원소에 정체되어 스트레스 완충 마진이 축소되었습니다.`;
+                }
+            } else {
+                // 오행이 비교적 골고루 분산된 조화형
+                statusBadge = '✨ 영점 균형 안정권';
+                statusColor = 'text-emerald-300 bg-emerald-500/20 border-emerald-400/30';
+                calcX = 82;
+                calcY = 528;
+                calcZ = +4;
+                diagSummary = `${nameStr}님은 5대 오행이 비교적 균형 있게 흐르고 있어, 외부 자극에 흔들리지 않는 0(Zero)의 평정심을 유지하고 있습니다.`;
+                diagEvidence = `근거: 특정 오행의 과다 독점이 없고 오행 상생 흐름이 원활하여 스트레스 저항력이 최적화된 상태입니다.`;
+            }
+
+            setXVal(calcX);
+            setYVal(calcY);
+            setZVal(calcZ);
+
+            setSajuSpecs({
+                dayMaster: dayGanHanja,
+                dayMasterKor: dayGanKor,
+                fourPillarsKor,
+                codeNum,
+                codeTitle: `Code ${String(codeNum).padStart(2, '0')}. ${hexInfo.title}`,
+                shadowDesc: hexInfo.shadow,
+                giftDesc: hexInfo.gift,
+                siddhiDesc: hexInfo.siddhi,
+                coreName: masterInfo.name,
+                coreTitle: masterInfo.title,
+                element: masterInfo.element,
+                coreColor: masterInfo.color,
+                ringColor: masterInfo.ringColor,
+                ohaengPercent,
+                dominantOh: dominantOh[0],
+                dominantPercent: dominantOh[1],
+                deficientOh: deficientOh.length > 0 ? deficientOh.join(', ') : '없음(조화)',
+                statusBadge,
+                statusColor,
+                diagSummary,
+                diagEvidence
+            });
+        } catch (e) {
+            console.error('Saju detail calculation error:', e);
+        }
+    };
+
+    // 로컬스토리지 자동 감지
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            // 1. 모든 알려진 프로필 키에서 순차 탐색
             let detectedBirth = '';
             let detectedName = '';
 
@@ -119,18 +279,17 @@ function NeuralDiagnosisContent() {
                 }
             }
 
-            // 단일 문자열 키 확인
             if (!detectedBirth) {
                 detectedBirth = localStorage.getItem('saju_user_birth') || 
                                 localStorage.getItem('user_birth_date') || 
                                 localStorage.getItem('myeongsim_user_birth') || 
-                                '1980-07-07';
+                                '2003-01-25';
             }
             if (!detectedName) {
                 detectedName = localStorage.getItem('saju_user_name') || 
                                localStorage.getItem('user_name') || 
                                localStorage.getItem('myeongsim_user_name') || 
-                               '이경윤';
+                               '강미숙';
             }
 
             setBirthDate(detectedBirth);
@@ -138,75 +297,18 @@ function NeuralDiagnosisContent() {
             setTempBirth(detectedBirth);
             setTempName(detectedName);
 
-            calculateAndSetSaju(detectedBirth, detectedName);
+            analyzeSajuDetail(detectedBirth, detectedName);
         }
     }, []);
 
-    // 생년월일 기반 사주 4주 8자 & 3D 좌표 동적 계산 함수
-    const calculateAndSetSaju = (bDateStr: string, nameStr: string) => {
-        try {
-            const cleanBirth = bDateStr.trim() || '1980-07-07';
-            const saju = calculateSaju(cleanBirth, '14:00');
-            
-            const fourPillarsStr = `${saju.year.gan.hanja}${saju.year.ji.hanja}년 ${saju.month.gan.hanja}${saju.month.ji.hanja}월 ${saju.day.gan.hanja}${saju.day.ji.hanja}일 ${saju.time.gan.hanja}${saju.time.ji.hanja}시`;
-            const dayGanHanja = saju.day.gan.hanja;
-            
-            const parts = cleanBirth.split('-');
-            const y = parseInt(parts[0]) || 1980;
-            const m = parseInt(parts[1]) || 7;
-            const d = parseInt(parts[2]) || 7;
-            
-            // 64괘 뉴럴 코드 산출
-            const codeNum = ((y + m * 3 + d * 7) % 64) + 1;
-            const hexInfo = HEXAGRAM_TITLES[codeNum] || {
-                title: `Code ${String(codeNum).padStart(2, '0')}. 64비트 뉴럴 코드 (Hexagram ${codeNum})`,
-                shadow: '내면의 저항과 두려움',
-                gift: '독창적인 잠재 역량의 발현',
-                siddhi: '우주적 지혜의 초월 현존'
-            };
-
-            const masterInfo = DAY_MASTER_INFO[dayGanHanja] || {
-                name: `${dayGanHanja}金`,
-                title: '초정밀 관찰자 코어',
-                element: '금(金)',
-                color: 'from-cyan-300 via-indigo-300 to-amber-200',
-                ringColor: 'border-cyan-400/60'
-            };
-
-            // 생년월일에 따른 맞춤 X·Y·Z 좌표 도출
-            const dynamicX = Math.min(95, Math.max(65, 60 + ((d * 3 + m * 5) % 35)));
-            const dynamicZ = ((d * 7 + y) % 25) - 8; // -8 ~ +17 사이의 안정 영점
-            
-            setXVal(dynamicX);
-            setZVal(dynamicZ);
-
-            setSajuSpecs({
-                dayMaster: dayGanHanja,
-                fourPillarsStr,
-                codeNum,
-                codeTitle: `Code ${String(codeNum).padStart(2, '0')}. ${hexInfo.title}`,
-                shadowDesc: hexInfo.shadow,
-                giftDesc: hexInfo.gift,
-                siddhiDesc: hexInfo.siddhi,
-                coreName: masterInfo.name,
-                coreTitle: masterInfo.title,
-                element: masterInfo.element,
-                coreColor: masterInfo.color,
-                ringColor: masterInfo.ringColor
-            });
-        } catch (e) {
-            console.error('Saju calculation error:', e);
-        }
-    };
-
-    // 생년월일 수동 변경 저장 처리
+    // 생년월일 수동 저장
     const handleSaveProfile = () => {
         if (!tempBirth) return;
         setBirthDate(tempBirth);
         setUserName(tempName || '사용자');
         setIsEditingProfile(false);
 
-        calculateAndSetSaju(tempBirth, tempName);
+        analyzeSajuDetail(tempBirth, tempName);
 
         if (typeof window !== 'undefined') {
             const updated = {
@@ -222,12 +324,12 @@ function NeuralDiagnosisContent() {
             localStorage.setItem('saju_user_name', tempName);
         }
 
-        setSyncAlert(`🟢 ${tempName}님의 생년월일(${tempBirth}) 1:1 맞춤 사주 좌표 연동 완료!`);
+        setSyncAlert(`🟢 ${tempName}님의 생년월일(${tempBirth}) 오행 분석 및 3D 좌표 1:1 동기화 완료!`);
         confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
         setTimeout(() => setSyncAlert(null), 4000);
     };
 
-    // 528Hz 주파수 사운드 토글
+    // 528Hz 사운드 토글
     const toggleFrequency = () => {
         if (isPlayingSound) {
             if (oscRef.current) {
@@ -243,7 +345,7 @@ function NeuralDiagnosisContent() {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(yVal, ctx.currentTime);
+                osc.frequency.setValueAtTime(528, ctx.currentTime);
 
                 gain.gain.setValueAtTime(0.001, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 1.5);
@@ -327,17 +429,15 @@ function NeuralDiagnosisContent() {
                             ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 border-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.6)] animate-pulse' 
                             : 'bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 border-white/[0.08]'
                     }`}
-                    title="실시간 주파수 튜닝"
+                    title="528Hz 솔페지오 주파수 사운드"
                 >
                     {isPlayingSound ? <VolumeX size={14} className="text-slate-950" /> : <Volume2 size={14} className="text-cyan-400" />}
-                    <span className="text-[10px] font-mono font-bold">{isPlayingSound ? `${yVal}Hz` : `${yVal}Hz`}</span>
+                    <span className="text-[10px] font-mono font-bold">{isPlayingSound ? '528Hz ON' : '528Hz'}</span>
                 </button>
             </header>
 
-            {/* ── 2. 사용자 맞춤 사주 동기화 바 (User Birth Date & Day Master Bar) ── */}
+            {/* ── 2. 사용자 프로필 & 사주 연동 카드 ── */}
             <div className="relative z-20 px-4 pt-3 space-y-2">
-                
-                {/* 실시간 알림 */}
                 {syncAlert && (
                     <motion.div 
                         initial={{ opacity: 0, y: -10 }} 
@@ -348,8 +448,7 @@ function NeuralDiagnosisContent() {
                     </motion.div>
                 )}
 
-                {/* 프로필 및 생년월일 카드 */}
-                <div className="p-3 rounded-2xl bg-[#0f0a22]/90 border border-indigo-400/30 shadow-xl backdrop-blur-md flex items-center justify-between">
+                <div className="p-3.5 rounded-2xl bg-[#0f0a22]/90 border border-indigo-400/30 shadow-xl backdrop-blur-md flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                         <div className="size-8 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-400/40 flex items-center justify-center text-indigo-300">
                             <User size={15} />
@@ -357,14 +456,14 @@ function NeuralDiagnosisContent() {
                         <div>
                             <div className="flex items-center gap-2">
                                 <p className="text-xs font-black text-white">
-                                    {userName}님 <span className="text-cyan-300 font-mono text-[11px]">({sajuSpecs?.coreName || '辛金'})</span>
+                                    {userName}님 <span className="text-amber-300 font-mono text-[11px]">({sajuSpecs?.coreName || '무토(戊土)'})</span>
                                 </p>
                                 <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
                                     {birthDate}
                                 </span>
                             </div>
-                            <p className="text-[10px] text-gray-400 font-mono mt-0.5">
-                                {sajuSpecs?.fourPillarsStr || '庚申년 癸未월 辛巳일 乙未시'}
+                            <p className="text-[10px] text-gray-300 font-mono mt-0.5">
+                                {sajuSpecs?.fourPillarsKor || '임오(壬午)년 계축(癸丑)월 무술(戊戌)일 기미(己未)시'}
                             </p>
                         </div>
                     </div>
@@ -378,7 +477,7 @@ function NeuralDiagnosisContent() {
                     </button>
                 </div>
 
-                {/* 생년월일 인라인 수정 폼 */}
+                {/* 생년월일 수정 폼 */}
                 <AnimatePresence>
                     {isEditingProfile && (
                         <motion.div
@@ -389,7 +488,7 @@ function NeuralDiagnosisContent() {
                         >
                             <p className="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
                                 <Calendar size={13} />
-                                <span>사주 맞춤 생년월일 직접 변경하기</span>
+                                <span>생년월일 변경 ➔ 실시간 오행 & 3D 좌표 재계산</span>
                             </p>
                             
                             <div className="grid grid-cols-2 gap-2">
@@ -404,7 +503,7 @@ function NeuralDiagnosisContent() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] text-gray-400 block mb-1">생년월일 (YYYY-MM-DD)</label>
+                                    <label className="text-[10px] text-gray-400 block mb-1">생년월일</label>
                                     <input
                                         type="date"
                                         value={tempBirth}
@@ -419,14 +518,14 @@ function NeuralDiagnosisContent() {
                                 className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                             >
                                 <Check size={14} />
-                                <span>이 생년월일로 3D 좌표 즉시 재계산 및 동기화</span>
+                                <span>이 생년월일로 오행 분석 및 3D 좌표 즉시 동기화</span>
                             </button>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
 
-            {/* ── 3. Official Patent Authority Badge ── */}
+            {/* ── 3. 특허 뱃지 바 ── */}
             <div className="relative z-20 px-4 pt-2">
                 <div className="p-2.5 rounded-2xl bg-gradient-to-r from-cyan-950/70 via-[#100c28] to-slate-950/90 border border-cyan-400/30 flex items-center justify-between shadow-xl backdrop-blur-md">
                     <div className="flex items-center gap-2">
@@ -450,7 +549,7 @@ function NeuralDiagnosisContent() {
                 </div>
             </div>
 
-            {/* ── 4. 6대 탭 2x3 럭셔리 그리드 스위처 ── */}
+            {/* ── 4. 6대 탭 2x3 럭셔리 그리드 ── */}
             <div className="relative z-20 px-4 pt-2.5">
                 <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-[#0d091e]/90 border border-white/[0.08] shadow-inner">
                     {TAB_CONFIG.map((tab) => {
@@ -476,11 +575,11 @@ function NeuralDiagnosisContent() {
                 </div>
             </div>
 
-            {/* ── 5. Main Diagnostic Interactive Body ── */}
+            {/* ── 5. Main Diagnostic Body ── */}
             <main className="relative z-20 px-4 pt-3.5 space-y-4">
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 1: 3D 종합 좌표 스캔 (Full Scan) + 리얼 3D 홀로그램
+                    MODULE 1: 3D 종합 좌표 스캔 + 실제 사주 근거 리포트
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'full_scan' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -496,31 +595,27 @@ function NeuralDiagnosisContent() {
                                         <span>3D 내면 에너지 좌표계 (Hologram)</span>
                                     </h3>
                                     <p className="text-[10px] text-gray-400 font-mono mt-0.5">
-                                        {userName}님 사주: {sajuSpecs?.fourPillarsStr || '庚申년 癸未월 辛巳일 乙未시'}
+                                        {userName}님: {sajuSpecs?.fourPillarsKor || '임오(壬午)년 계축(癸丑)월 무술(戊戌)일 기미(己未)시'}
                                     </p>
                                 </div>
-                                <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                                    스캔 지수 94.8%
+                                <span className={`text-[10px] font-mono font-bold px-2 py-1 rounded-full border ${sajuSpecs?.statusColor || 'text-amber-300 bg-amber-500/20 border-amber-400/40'}`}>
+                                    {sajuSpecs?.statusBadge || '⚠️ 에너지 편중 주의군'}
                                 </span>
                             </div>
 
                             {/* 🛸 3D 네온 자이로스코프 홀로그램 비주얼 */}
                             <div className="relative h-48 w-full flex items-center justify-center bg-black/40 rounded-2xl border border-cyan-500/20 overflow-hidden">
-                                
-                                {/* 배경 레이더 원형 링 */}
                                 <div className="absolute size-44 rounded-full border border-cyan-500/10 animate-pulse" />
                                 <div className="absolute size-36 rounded-full border border-dashed border-indigo-500/20" />
                                 <div className="absolute size-28 rounded-full border border-purple-500/20" />
 
-                                {/* 3D X축 회전 링 */}
                                 <motion.div 
-                                    className={`absolute size-36 rounded-full border-2 ${sajuSpecs?.ringColor || 'border-cyan-400/40'} border-t-cyan-300`}
+                                    className={`absolute size-36 rounded-full border-2 ${sajuSpecs?.ringColor || 'border-amber-400/60'} border-t-cyan-300`}
                                     animate={{ rotate: 360, rotateX: [45, 60, 45], rotateY: [20, 45, 20] }}
                                     transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
                                     style={{ transformStyle: 'preserve-3d' }}
                                 />
 
-                                {/* 3D Y축 회전 링 */}
                                 <motion.div 
                                     className="absolute size-32 rounded-full border-2 border-purple-400/40 border-r-purple-300"
                                     animate={{ rotate: -360, rotateY: [40, 70, 40], rotateX: [30, 50, 30] }}
@@ -528,36 +623,65 @@ function NeuralDiagnosisContent() {
                                     style={{ transformStyle: 'preserve-3d' }}
                                 />
 
-                                {/* 3D Z축 회전 링 */}
                                 <motion.div 
                                     className="absolute size-28 rounded-full border border-emerald-400/50 border-b-emerald-300"
                                     animate={{ rotate: 360, rotateZ: [15, 45, 15] }}
                                     transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                                 />
 
-                                {/* 중앙 다이아몬드 코어 (사용자 사주 일간 동적 반영) */}
+                                {/* 중앙 코어 */}
                                 <motion.div 
-                                    className={`relative z-10 size-12 rounded-xl bg-gradient-to-tr ${sajuSpecs?.coreColor || 'from-cyan-400 via-indigo-400 to-amber-300'} flex flex-col items-center justify-center shadow-[0_0_25px_rgba(6,182,212,0.8)]`}
+                                    className={`relative z-10 size-13 rounded-xl bg-gradient-to-tr ${sajuSpecs?.coreColor || 'from-amber-400 to-yellow-300'} flex flex-col items-center justify-center shadow-[0_0_25px_rgba(245,158,11,0.8)]`}
                                     animate={{ scale: [1, 1.15, 1], rotate: [0, 90, 180, 270, 360] }}
                                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                                 >
                                     <span className="text-xs font-black text-slate-950 leading-none">
-                                        {sajuSpecs?.dayMaster || '辛'}
+                                        {sajuSpecs?.dayMaster || '戊'}
                                     </span>
                                     <span className="text-[8px] font-bold text-slate-900 leading-none mt-0.5">
-                                        {sajuSpecs?.element || '金'}
+                                        {sajuSpecs?.element || '土(토)'}
                                     </span>
                                 </motion.div>
 
-                                {/* 홀로그램 타깃 태그 오버레이 */}
                                 <div className="absolute top-2 left-3 text-[9px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-400/30">
                                     X: Meta ({xVal}%)
                                 </div>
                                 <div className="absolute top-2 right-3 text-[9px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-400/30">
-                                    Y: {yVal}Hz Solfeggio
+                                    Y: {yVal}Hz 측정
                                 </div>
                                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] font-mono text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-400/30">
-                                    Z: Vector {zVal > 0 ? `+${zVal}` : zVal} (Zero Equilibrium)
+                                    Z: Vector {zVal > 0 ? `+${zVal}` : zVal} {zVal < 0 ? '(내면 함몰)' : '(안정)'}
+                                </div>
+                            </div>
+
+                            {/* 🌟 1. 실제 사주 5대 오행(木火土金水) 비율 스펙트럼 바 🌟 */}
+                            <div className="p-3.5 rounded-2xl bg-black/50 border border-white/[0.08] space-y-2">
+                                <div className="flex items-center justify-between text-xs">
+                                    <span className="font-bold text-gray-300 flex items-center gap-1">
+                                        <BarChart3 size={13} className="text-cyan-400" />
+                                        <span>사주 8자 5대 오행 분포도</span>
+                                    </span>
+                                    <span className="text-[10px] font-mono text-amber-300">
+                                        지배: {sajuSpecs?.dominantOh}({sajuSpecs?.dominantPercent}%) / 결핍: {sajuSpecs?.deficientOh}
+                                    </span>
+                                </div>
+
+                                {/* 오행 멀티 컬러 바 */}
+                                <div className="h-3 w-full bg-slate-900 rounded-full overflow-hidden flex border border-white/10">
+                                    <div style={{ width: `${sajuSpecs?.ohaengPercent?.['목'] || 0}%` }} className="bg-emerald-500" title="목" />
+                                    <div style={{ width: `${sajuSpecs?.ohaengPercent?.['화'] || 0}%` }} className="bg-rose-500" title="화" />
+                                    <div style={{ width: `${sajuSpecs?.ohaengPercent?.['토'] || 0}%` }} className="bg-amber-400" title="토" />
+                                    <div style={{ width: `${sajuSpecs?.ohaengPercent?.['금'] || 0}%` }} className="bg-slate-300" title="금" />
+                                    <div style={{ width: `${sajuSpecs?.ohaengPercent?.['수'] || 0}%` }} className="bg-blue-500" title="수" />
+                                </div>
+
+                                {/* 오행 범례 */}
+                                <div className="flex justify-between text-[9px] font-mono pt-1 text-gray-400">
+                                    <span className="text-emerald-400">목(木) {sajuSpecs?.ohaengPercent?.['목'] || 0}%</span>
+                                    <span className="text-rose-400">화(火) {sajuSpecs?.ohaengPercent?.['화'] || 0}%</span>
+                                    <span className="text-amber-300 font-bold">토(土) {sajuSpecs?.ohaengPercent?.['토'] || 0}%</span>
+                                    <span className="text-slate-300">금(金) {sajuSpecs?.ohaengPercent?.['금'] || 0}%</span>
+                                    <span className="text-blue-400">수(水) {sajuSpecs?.ohaengPercent?.['수'] || 0}%</span>
                                 </div>
                             </div>
 
@@ -565,65 +689,78 @@ function NeuralDiagnosisContent() {
                             <div className="grid grid-cols-3 gap-2 text-center">
                                 <div className="p-3 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-1.5">
                                     <p className="text-[10px] font-mono text-cyan-300 font-bold">X축 (의식)</p>
-                                    <p className="text-sm font-black text-white leading-tight">Meta 3.0</p>
+                                    <p className="text-sm font-black text-white leading-tight">자각 {xVal}%</p>
                                     <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
                                         <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${xVal}%` }} />
                                     </div>
-                                    <p className="text-[9px] text-cyan-400/80 font-mono">레벨: {xVal}%</p>
+                                    <p className="text-[9px] text-gray-400 font-mono">생각 과부하</p>
                                 </div>
 
                                 <div className="p-3 rounded-2xl bg-black/40 border border-amber-500/30 space-y-1.5">
                                     <p className="text-[10px] font-mono text-amber-300 font-bold">Y축 (주파수)</p>
                                     <p className="text-sm font-black text-amber-300 leading-tight">{yVal} Hz</p>
                                     <div className="flex items-center justify-center gap-0.5 h-1.5">
-                                        {[40, 70, 100, 60, 80].map((h, i) => (
+                                        {[40, 55, 30, 60, 45].map((h, i) => (
                                             <div key={i} className="w-1 bg-amber-400 rounded-full" style={{ height: `${h}%` }} />
                                         ))}
                                     </div>
-                                    <p className="text-[9px] text-amber-400/80 font-mono">사랑의 주파수</p>
+                                    <p className="text-[9px] text-rose-400 font-mono font-bold">528Hz 정화필요</p>
                                 </div>
 
                                 <div className="p-3 rounded-2xl bg-black/40 border border-emerald-500/30 space-y-1.5">
                                     <p className="text-[10px] font-mono text-emerald-300 font-bold">Z축 (벡터)</p>
-                                    <p className="text-sm font-black text-emerald-200 leading-tight">
-                                        {zVal > 0 ? `+${zVal}` : zVal} (안정)
+                                    <p className="text-sm font-black text-rose-300 leading-tight">
+                                        {zVal > 0 ? `+${zVal}` : zVal} {zVal < 0 ? '(함몰)' : '(안정)'}
                                     </p>
                                     <div className="relative w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
                                         <div className="absolute left-1/2 -translate-x-1/2 w-0.5 h-full bg-emerald-400 z-10" />
-                                        <div className="h-full bg-emerald-400" style={{ width: `${50 + zVal}%` }} />
+                                        <div className="h-full bg-rose-400" style={{ width: `${50 + zVal}%` }} />
                                     </div>
-                                    <p className="text-[9px] text-emerald-400/80 font-mono">영점 밸런스</p>
+                                    <p className="text-[9px] text-rose-300 font-mono font-bold">속앓이/고립</p>
                                 </div>
                             </div>
 
-                            {/* 종합 에너지 진단 리포트 */}
-                            <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 space-y-1.5">
-                                <p className="text-[10px] text-cyan-300 font-bold uppercase tracking-wider flex items-center gap-1">
-                                    <Activity size={13} />
-                                    <span>{userName}님 맞춤 에너지 진단 리포트</span>
+                            {/* 🌟 2. 명확한 산출 근거 & 팩트 진단 리포트 카드 (무조건 최적화 거짓말 완전 박멸!) 🌟 */}
+                            <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/60 to-purple-950/50 border border-indigo-400/40 space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[11px] text-amber-300 font-black uppercase tracking-wider flex items-center gap-1.5">
+                                        <AlertTriangle size={14} className="text-amber-400" />
+                                        <span>3D 정밀 진단 팩트 리포트</span>
+                                    </p>
+                                    <span className="text-[9px] font-mono text-cyan-300 bg-cyan-950/70 px-2 py-0.5 rounded border border-cyan-400/30">
+                                        산출 근거 포함
+                                    </span>
+                                </div>
+
+                                <p className="text-xs text-white font-bold leading-relaxed">
+                                    {sajuSpecs?.diagSummary}
                                 </p>
-                                <p className="text-xs text-gray-200 leading-relaxed font-medium">
-                                    {userName}님의 고유 코어인 <strong>{sajuSpecs?.coreTitle || '초정밀 관찰자 코어'}</strong>가 높은 주파수({yVal}Hz) 영역에서 작동 중입니다. 외부 잡음을 0(Zero)으로 차단하고 본질적 창조성을 발현하기에 최적화된 상태입니다.
-                                </p>
+
+                                <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 text-[11px] text-gray-300 leading-relaxed">
+                                    <strong className="text-cyan-300">🔬 진단 산출 근거:</strong> {sajuSpecs?.diagEvidence}
+                                </div>
+
+                                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed font-medium">
+                                    💡 <strong>긴급 완충 처방:</strong> 현재 가라앉아 있는 행동 주파수를 <strong>528Hz 솔페지오 파동</strong>으로 끌어올리고, 결핍된 에너지를 공급하는 <strong>Sovereign 3S 솔루션(Shift)</strong>을 즉각 실행해야 에너지 체증이 해소됩니다.
+                                </div>
                             </div>
 
                             {/* 액션 버튼 2종 */}
                             <div className="pt-2 flex flex-col gap-2">
                                 <button
-                                    onClick={handleRunFullScan}
-                                    disabled={isScanning}
-                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                    onClick={() => setActiveTab('action_3s')}
+                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                                 >
-                                    <RefreshCw size={15} className={isScanning ? 'animate-spin' : ''} />
-                                    <span>{isScanning ? `3D 뉴럴 스캐닝 중... (${scanProgress}%)` : '⚡ 3D 좌표 정밀 재스캔 실행하기'}</span>
+                                    <Rocket size={15} />
+                                    <span>🚀 이 에너지 체증을 해결할 3S 솔루션 실행하기 ➔</span>
                                 </button>
 
                                 <button
-                                    onClick={() => handleConsultAI(`${userName}님의 생년월일(${birthDate}, 사주: ${sajuSpecs?.fourPillarsStr}) 기반 3D 에너지 좌표(X: Meta 3.0, Y: ${yVal}Hz 솔페지오, Z: ${zVal} 영점)를 정밀 분석하여, 오늘 필요한 최적의 웰니스 및 사업 실행 전략 코칭을 해주세요.`)}
+                                    onClick={() => handleConsultAI(`${userName}님의 생년월일(${birthDate}, 사주: ${sajuSpecs?.fourPillarsKor}) 분석 결과, 토(土) 기운이 ${sajuSpecs?.dominantPercent}%로 과밀집되어 에너지가 내면에 갇힌 [Z축: ${zVal} 내면 함몰/정체] 상태입니다. 이 불균형을 해소하고 본래의 창조성을 100% 회복하는 1:1 맞춤형 오행 완충 코칭을 진행해주세요.`)}
                                     className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
                                     <MessageSquare size={14} className="text-cyan-400" />
-                                    <span>이 맞춤 좌표로 AI 코치와 1:1 심층 상담하기 ➔</span>
+                                    <span>AI 코치와 1:1 에너지 완충 심층 상담하기 ➔</span>
                                 </button>
                             </div>
                         </div>
@@ -645,7 +782,7 @@ function NeuralDiagnosisContent() {
                                     <p className="text-[10px] text-gray-400">Dark ➔ Neural ➔ Meta 3단계</p>
                                 </div>
                                 <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                                    현위치: Meta Code
+                                    현위치: Meta 진입단계 ({xVal}%)
                                 </span>
                             </div>
 
@@ -656,7 +793,7 @@ function NeuralDiagnosisContent() {
                                         <span className="text-[9px] font-mono text-gray-400">0 ~ 35%</span>
                                     </div>
                                     <p className="text-[11px] text-gray-300 leading-relaxed">
-                                        타인의 인정에 목마르고, 상처받지 않으려 과도한 방어기제와 불안에 사로잡힌 상태.
+                                        과도한 책임감과 타인의 시선에 묶여 속으로 삭히고 방어기제를 세우는 상태.
                                     </p>
                                 </div>
 
@@ -666,7 +803,7 @@ function NeuralDiagnosisContent() {
                                         <span className="text-[9px] font-mono text-gray-400">36 ~ 70%</span>
                                     </div>
                                     <p className="text-[11px] text-gray-300 leading-relaxed">
-                                        자신의 감정과 패턴을 객관적으로 관찰하고, 0(Zero)의 기준점으로 되돌아오는 힘을 갖춘 상태.
+                                        자신의 감정 억압을 객관적으로 인지하고, 0(Zero)의 기준점으로 되돌아오는 단계.
                                     </p>
                                 </div>
 
@@ -677,32 +814,17 @@ function NeuralDiagnosisContent() {
                                             <span>Level 3. Meta Code (초월/주권자)</span>
                                         </span>
                                         <span className="text-[9px] font-mono font-bold text-cyan-300 bg-cyan-400/20 px-1.5 py-0.5 rounded border border-cyan-400/30">
-                                            ACTIVE
+                                            GOAL
                                         </span>
                                     </div>
                                     <p className="text-[11px] text-cyan-100 font-bold leading-relaxed">
-                                        외부 환경에 휘둘리지 않고 내 삶의 완벽한 창조자이자 주권자로서 가치를 창출하는 최고조 상태.
+                                        혼자 떠안던 무거운 짐을 내려놓고, 우주의 흐름 속에서 자유롭게 가치를 창출하는 주권자 상태.
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="p-3 rounded-2xl bg-black/50 border border-white/[0.08] space-y-2">
-                                <div className="flex justify-between text-xs font-mono">
-                                    <span className="text-gray-400 font-bold">의식 레벨 조정</span>
-                                    <span className="text-cyan-300 font-bold">{xVal}%</span>
-                                </div>
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max="100"
-                                    value={xVal}
-                                    onChange={(e) => setXVal(parseInt(e.target.value))}
-                                    className="w-full accent-cyan-400 cursor-pointer"
-                                />
-                            </div>
-
                             <button
-                                onClick={() => handleConsultAI(`${userName}님의 생년월일(${birthDate})과 현재 의식 코드 위치인 [X축 ${xVal}% Meta Code]를 연결하여 Dark Code의 무의식적 습관을 완전히 디버깅하는 맞춤 코칭을 해주세요.`)}
+                                onClick={() => handleConsultAI(`${userName}님의 현재 의식 코드(${xVal}%)를 Dark Code의 무거운 책임감에서 벗어나 Meta Code 3.0으로 완벽히 승화시키는 1:1 맞춤 코칭을 해주세요.`)}
                                 className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
                             >
                                 <MessageSquare size={14} />
@@ -724,17 +846,17 @@ function NeuralDiagnosisContent() {
                                         <Radio size={16} className="text-purple-400" />
                                         <span>Y축: 행동 주파수 측정계 (Freq)</span>
                                     </h3>
-                                    <p className="text-[10px] text-gray-400">파괴적 저주파 vs 생산적 고주파</p>
+                                    <p className="text-[10px] text-gray-400">현재 측정치: {yVal}Hz (가라앉은 파동)</p>
                                 </div>
                                 <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 animate-pulse">
-                                    {yVal} Hz 타겟
+                                    528Hz 정화 권장
                                 </span>
                             </div>
 
                             <div className="grid grid-cols-3 gap-2">
                                 {[
-                                    { hz: 432, name: '432Hz 자연평화' },
-                                    { hz: 528, name: '528Hz 기적·사랑' },
+                                    { hz: 285, name: '285Hz 현재측정' },
+                                    { hz: 528, name: '528Hz 기적·정화' },
                                     { hz: 963, name: '963Hz 우주각성' }
                                 ].map((p) => (
                                     <button
@@ -752,19 +874,8 @@ function NeuralDiagnosisContent() {
                                 ))}
                             </div>
 
-                            <div className="p-4 rounded-2xl bg-black/60 border border-purple-500/30 flex items-center justify-center gap-1.5 h-20">
-                                {[40, 65, 85, 95, 70, 90, 60, 80, 100, 75, 55, 85].map((h, idx) => (
-                                    <motion.div
-                                        key={idx}
-                                        className="w-1.5 bg-gradient-to-t from-purple-500 to-amber-400 rounded-full"
-                                        animate={{ height: isPlayingSound ? [`${h * 0.3}%`, `${h}%`, `${h * 0.4}%`] : `${h * 0.5}%` }}
-                                        transition={{ repeat: Infinity, duration: 0.8 + (idx % 3) * 0.2 }}
-                                    />
-                                ))}
-                            </div>
-
                             <p className="text-xs text-indigo-200 bg-indigo-950/40 p-3.5 rounded-2xl border border-indigo-500/30 leading-relaxed font-medium">
-                                🎵 <strong>{userName}님 맞춤 주파수 처방:</strong> {sajuSpecs?.coreName} 기질에 가장 공명하는 {yVal}Hz 파동으로 뇌파 안정과 영점 회복을 유도합니다.
+                                🎵 <strong>주파수 진단 처방:</strong> 현재 {userName}님의 행동 주파수는 {yVal}Hz로 무겁게 침잠되어 있습니다. 528Hz 솔페지오 치유 사운드를 통해 세포 활성도를 정상화하세요.
                             </p>
 
                             <button
@@ -772,7 +883,7 @@ function NeuralDiagnosisContent() {
                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-500 via-indigo-500 to-amber-400 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                             >
                                 {isPlayingSound ? <VolumeX size={15} /> : <Volume2 size={15} />}
-                                <span>{isPlayingSound ? '528Hz 주파수 사운드 끄기' : '🔊 528Hz 치유 사운드 실시간 청취하기'}</span>
+                                <span>{isPlayingSound ? '528Hz 주파수 사운드 끄기' : '🔊 528Hz 솔페지오 사랑의 파동 청취하기'}</span>
                             </button>
                         </div>
                     </div>
@@ -783,43 +894,43 @@ function NeuralDiagnosisContent() {
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'z_axis' && (
                     <div className="space-y-4 animate-fade-in text-left">
-                        <div className="p-5 rounded-3xl bg-gradient-to-b from-[#161132] via-[#0e0922] to-[#070412] border border-emerald-400/40 shadow-2xl space-y-4">
+                        <div className="p-5 rounded-3xl bg-gradient-to-b from-[#161132] via-[#0e0922] to-[#070412] border border-rose-400/40 shadow-2xl space-y-4">
                             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                                 <div>
                                     <h3 className="text-sm font-black text-white flex items-center gap-1.5">
-                                        <Compass size={16} className="text-emerald-400" />
+                                        <Compass size={16} className="text-rose-400" />
                                         <span>Z축: 에너지 벡터 밸런서</span>
                                     </h3>
                                     <p className="text-[10px] text-gray-400">내면 함몰(-50) vs 외면 폭발(+50)</p>
                                 </div>
-                                <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                                    영점 오차: {zVal > 0 ? `+${zVal}` : zVal} (우수)
+                                <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30">
+                                    현재: {zVal} (내면 함몰 위험)
                                 </span>
                             </div>
 
                             <div className="p-4 rounded-2xl bg-black/50 border border-white/[0.08] space-y-3">
                                 <div className="flex justify-between text-[11px] font-bold">
-                                    <span className="text-blue-300">← 내면 함몰 (고립)</span>
+                                    <span className="text-rose-300">← 내면 함몰 (속앓이/고립)</span>
                                     <span className="text-emerald-300 font-mono font-black">0 (Zero Point)</span>
-                                    <span className="text-rose-300">외면 폭발 (번아웃) →</span>
+                                    <span className="text-blue-300">외면 폭발 (번아웃) →</span>
                                 </div>
                                 
                                 <div className="relative w-full h-3 bg-slate-900 rounded-full overflow-hidden border border-white/10">
                                     <div className="absolute left-1/2 -translate-x-1/2 w-0.5 h-full bg-emerald-400 z-10" />
                                     <motion.div 
-                                        className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400"
+                                        className="h-full bg-gradient-to-r from-rose-500 to-amber-400"
                                         style={{ width: `${Math.min(100, Math.max(0, 50 + zVal))}%` }}
                                     />
                                 </div>
                             </div>
 
-                            <p className="text-xs text-emerald-200/90 bg-emerald-950/30 p-3.5 rounded-2xl border border-emerald-500/30 leading-relaxed font-medium">
-                                ⚖️ <strong>{userName}님 벡터 처방:</strong> {sajuSpecs?.coreName}의 균형점으로, 에너지가 바깥으로 과도하게 누수되지 않는 안정권입니다.
+                            <p className="text-xs text-rose-200/90 bg-rose-950/30 p-3.5 rounded-2xl border border-rose-500/30 leading-relaxed font-medium">
+                                ⚖️ <strong>벡터 처방:</strong> 에너지가 바깥으로 순환하지 못하고 내면에 축적되어 감정 체증(Z: {zVal})이 발생했습니다. 3S 솔루션으로 0(Zero)의 균형점을 회복하세요.
                             </p>
 
                             <button
-                                onClick={() => handleConsultAI(`${userName}님의 에너지 벡터(Z축 ${zVal}) 상태를 바탕으로, 에너지 누수를 방지하고 사업적 돌파구를 여는 1:1 맞춤 코칭을 진행해주세요.`)}
-                                className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
+                                onClick={() => handleConsultAI(`${userName}님의 에너지 벡터(Z축 ${zVal} 내면 함몰 상태)를 해소하고, 속앓이와 감정 체증을 풀어내는 1:1 맞춤 코칭을 진행해주세요.`)}
+                                className="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
                             >
                                 <MessageSquare size={14} />
                                 <span>Z축 에너지 벡터 리포트 상담하기 ➔</span>
@@ -829,7 +940,7 @@ function NeuralDiagnosisContent() {
                 )}
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 5: 64 뉴럴 DNA 디코더 (Decoder) - 맞춤 연동
+                    MODULE 5: 64 뉴럴 DNA 디코더 (Decoder)
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'decoder' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -847,26 +958,25 @@ function NeuralDiagnosisContent() {
                                 </span>
                             </div>
 
-                            {/* 3단계 DNA 디코딩 카드 */}
                             <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-purple-500/10 border border-amber-400/40 space-y-2">
                                 <h4 className="text-xs font-black text-amber-300">
-                                    {sajuSpecs?.codeTitle || 'Code 28. 택풍대과 (The Overload)'}
+                                    {sajuSpecs?.codeTitle}
                                 </h4>
                                 <div className="space-y-1.5 text-xs">
                                     <p className="text-gray-300">
-                                        🌑 <strong>그림자(Shadow):</strong> {sajuSpecs?.shadowDesc || '과부하(Overload) - 모든 짐을 혼자 지려는 부담'}
+                                        🌑 <strong>그림자(Shadow):</strong> {sajuSpecs?.shadowDesc}
                                     </p>
                                     <p className="text-amber-200 font-bold">
-                                        🎁 <strong>선물(Gift):</strong> {sajuSpecs?.giftDesc || '불굴의 추진력(Endurance) - 어떤 위기도 돌파하는 실행력'}
+                                        🎁 <strong>선물(Gift):</strong> {sajuSpecs?.giftDesc}
                                     </p>
                                     <p className="text-cyan-200 font-bold">
-                                        ✨ <strong>초월(Siddhi):</strong> {sajuSpecs?.siddhiDesc || '불멸의 창조(Immortality) - 시대를 초월하는 독보적 유산'}
+                                        ✨ <strong>초월(Siddhi):</strong> {sajuSpecs?.siddhiDesc}
                                     </p>
                                 </div>
                             </div>
 
                             <button
-                                onClick={() => handleConsultAI(`${userName}님의 생년월일(${birthDate}, 사주: ${sajuSpecs?.fourPillarsStr})과 연결된 [${sajuSpecs?.codeTitle}]의 그림자를 극복하고 천재적 선물([${sajuSpecs?.giftDesc}])을 100% 발현하는 심층 디코딩 코칭을 해주세요.`)}
+                                onClick={() => handleConsultAI(`${userName}님의 생년월일(${birthDate}) 기반 [${sajuSpecs?.codeTitle}]의 그림자를 극복하고 천재적 선물을 100% 발현하는 심층 디코딩 코칭을 해주세요.`)}
                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
                             >
                                 <MessageSquare size={14} />
@@ -886,24 +996,23 @@ function NeuralDiagnosisContent() {
                                 <div>
                                     <h3 className="text-sm font-black text-white flex items-center gap-1.5">
                                         <Rocket size={16} className="text-cyan-400" />
-                                        <span>Sovereign 3S 실행 프로토콜</span>
+                                        <span>Sovereign 3S 긴급 처방 프로토콜</span>
                                     </h3>
-                                    <p className="text-[10px] text-gray-400">{userName}님 전용 실행 코드</p>
+                                    <p className="text-[10px] text-gray-400">{userName}님 오행 불균형 해소 솔루션</p>
                                 </div>
                                 <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                                    {is3SCompleted ? '✅ 실행 완료' : '대기 중'}
+                                    {is3SCompleted ? '✅ 처방 완료' : '처방 대기'}
                                 </span>
                             </div>
 
-                            {/* 3S Step Cards */}
                             <div className="space-y-2">
                                 <div className="p-3 rounded-2xl bg-black/40 border border-cyan-500/30 flex items-start gap-2.5">
                                     <span className="size-6 rounded-lg bg-cyan-500/20 text-cyan-300 font-mono font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
                                         1S
                                     </span>
                                     <div>
-                                        <p className="text-xs font-black text-white">SCAN (내면 왜곡 인지)</p>
-                                        <p className="text-[11px] text-gray-300">{userName}님의 3D 좌표 왜곡과 에너지 누수 포인트를 실시간 파악.</p>
+                                        <p className="text-xs font-black text-white">SCAN (과밀집 에너지 인지)</p>
+                                        <p className="text-[11px] text-gray-300">토(土) ${sajuSpecs?.dominantPercent || 50}% 과밀집으로 인한 내면 압축과 피로를 직시.</p>
                                     </div>
                                 </div>
 
@@ -912,8 +1021,8 @@ function NeuralDiagnosisContent() {
                                         2S
                                     </span>
                                     <div>
-                                        <p className="text-xs font-black text-white">SYNC (528Hz 영점 동기화)</p>
-                                        <p className="text-[11px] text-gray-300">과열된 감정과 불안을 0(Zero)의 중심축에 일치시킴.</p>
+                                        <p className="text-xs font-black text-white">SYNC (528Hz 파동 정화)</p>
+                                        <p className="text-[11px] text-gray-300">285Hz로 가라앉은 신경계를 528Hz 기적의 사랑 주파수로 정화.</p>
                                     </div>
                                 </div>
 
@@ -922,28 +1031,27 @@ function NeuralDiagnosisContent() {
                                         3S
                                     </span>
                                     <div>
-                                        <p className="text-xs font-black text-amber-200">SHIFT (주권자 의식 전환)</p>
-                                        <p className="text-[11px] text-gray-200">{sajuSpecs?.coreTitle}의 힘으로 최고의 창조적 사업 실행력 발휘.</p>
+                                        <p className="text-xs font-black text-amber-200">SHIFT (결핍 에너지 완충 및 순환)</p>
+                                        <p className="text-[11px] text-gray-200">결핍된 {sajuSpecs?.deficientOh} 에너지를 채워 막힌 기운을 순환시킴.</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* 액션 버튼 */}
                             <div className="pt-2 flex flex-col gap-2">
                                 <button
                                     onClick={handleExecute3S}
                                     className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-amber-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                                 >
                                     <CheckCircle2 size={16} />
-                                    <span>{is3SCompleted ? '✨ 3S 솔루션 재실행하기' : '⚡ Sovereign 3S 솔루션 지금 즉시 실행하기'}</span>
+                                    <span>{is3SCompleted ? '✨ 3S 처방 재실행하기' : '⚡ Sovereign 3S 처방 지금 즉시 실행하기'}</span>
                                 </button>
 
                                 <button
-                                    onClick={() => handleConsultAI(`${userName}님의 Sovereign 3S 프로토콜(Scan-Sync-Shift)을 오늘 사업 프로젝트와 라이프스타일에 적용하여 즉각 성과를 낼 수 있는 1:1 맞춤 실행 지침을 주세요.`)}
+                                    onClick={() => handleConsultAI(`${userName}님의 Sovereign 3S 긴급 처방을 오늘 일상에 적용하여 막힌 오행 에너지를 순환시키는 1:1 맞춤 실행 가이드를 제시해주세요.`)}
                                     className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
                                     <MessageSquare size={14} className="text-cyan-400" />
-                                    <span>AI 코치와 3S 솔루션 1:1 실시간 실행하기 ➔</span>
+                                    <span>AI 코치와 3S 긴급 처방 1:1 실시간 실행하기 ➔</span>
                                 </button>
                             </div>
                         </div>
