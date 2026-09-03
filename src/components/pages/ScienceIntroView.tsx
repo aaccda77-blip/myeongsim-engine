@@ -203,17 +203,17 @@ export default function ScienceIntroView() {
                 </div>
 
                 <p className="text-gray-300 text-xs mb-4 leading-relaxed italic">
-                    &quot;특허로 검증된 독보적인 [예측-검증] 융합 시스템&quot;
+                    &quot;특허출원(제10-2025-0166877호) 기반의 독보적인 [예측-검증] 융합 시스템&quot;
                 </p>
 
                 <div className="space-y-3">
                     <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-4">
                         <h3 className="text-purple-300 font-bold text-sm mb-2 flex items-center gap-2">
                             <span className="material-symbols-outlined text-xs">verified</span>
-                            🔒 특허 기반 바이오-싱크 기술
+                            🔒 특허출원 기반 바이오-싱크 기술
                         </h3>
                         <p className="text-gray-300 text-[10px] leading-relaxed mb-2">
-                            <strong>특허 명칭:</strong> 심리 및 생체데이터 기반 스트레스 관리 솔루션
+                            <strong>특허출원 명칭:</strong> 심리 및 생체데이터 기반 스트레스 관리 솔루션
                         </p>
                         <p className="text-gray-400 text-[10px] leading-relaxed mb-2">
                             <strong>출원 번호:</strong> 10-2025-0166877

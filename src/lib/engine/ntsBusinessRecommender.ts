@@ -489,7 +489,7 @@ export const EARLY_STARTUP_REPORT: NtsBusinessArchitectureReport = {
         solution: {
             title: '2. 실현 가능성 (Solution)',
             coreMvp: '다차원 기질 설계도 기반 팀 빌딩 최적화 & 실시간 갈등 예방 B2B 웰니스 SaaS (명심 OS)',
-            differentiation: '동양 명리 인지과학과 서양 성격유형론을 융합한 독자적 특허 알고리즘 및 실시간 AI 코칭'
+            differentiation: '동양 명리 인지과학과 서양 성격유형론을 융합한 독자적 특허출원 알고리즘(출원 제10-2025-0166877호) 및 실시간 AI 코칭'
         },
         scaleUp: {
             title: '3. 성장 전략 (Scale-up)',

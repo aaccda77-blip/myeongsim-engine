@@ -184,7 +184,7 @@ export const PsychSajuFusionView: React.FC<{ isOpen: boolean; onClose: () => voi
                         </p>
                         
                         <div className="mt-2.5 flex flex-col justify-center border-t border-gray-700/50 pt-2">
-                            <span className="text-[11px] sm:text-xs text-blue-400/90 font-mono tracking-wider">🧬 원천 기술: 동서양 기질 융합 스캐너 (특허 기술)</span>
+                            <span className="text-[11px] sm:text-xs text-blue-400/90 font-mono tracking-wider">🧬 원천 기술: 동서양 기질 융합 스캐너 (특허출원 기술 제10-2025-0166877호)</span>
                             <span className="text-[9px] sm:text-[10px] text-gray-400 font-mono mt-0.5">Western 5대 성격 지표 & 16가지 행동 기질 × Eastern Saju & Neural Code</span>
                         </div>
                     </div>
