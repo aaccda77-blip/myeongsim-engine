@@ -12,6 +12,7 @@ import {
 import confetti from 'canvas-confetti';
 import HealingSongApplyModal from '@/components/modals/HealingSongApplyModal';
 import BookVerificationSuccessModal from '@/components/modals/BookVerificationSuccessModal';
+import RefinedEBookReader from '@/components/library/RefinedEBookReader';
 
 // 도서 서지 정보
 const BOOK_INFO = {
@@ -736,113 +737,19 @@ export default function LibraryPage() {
                             ))}
                         </div>
 
-                        {/* 탭 1: 인터랙티브 전자책 리더 (포렌식 워터마크 레이어 탑재) */}
+                        {/* 탭 1: 🌟 세계 최고 수준 명품 전자책 리더기 (5대 시력보호 테마, 서체, AI 오디오북, 목차 드로어) 🌟 */}
                         {activeTab === 'reader' && (
-                            <div className="space-y-3">
-                                {/* 챕터 셀렉터 & 폰트 조절 바 */}
-                                <div className="p-3 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-between gap-2">
-                                    <select
-                                        value={selectedChapter.id}
-                                        onChange={(e) => {
-                                            const ch = CHAPTERS.find(c => c.id === e.target.value);
-                                            if (ch) setSelectedChapter(ch);
-                                        }}
-                                        className="bg-[#140c2e] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:border-cyan-400 focus:outline-none flex-1 truncate"
-                                    >
-                                        {CHAPTERS.map(ch => (
-                                            <option key={ch.id} value={ch.id}>
-                                                {ch.title} ({ch.page})
-                                            </option>
-                                        ))}
-                                    </select>
-
-                                    <div className="flex items-center gap-1 shrink-0">
-                                        <button
-                                            onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                                            className="size-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs font-bold text-gray-300"
-                                            title="글자 작게"
-                                        >
-                                            <ZoomOut size={13} />
-                                        </button>
-                                        <span className="text-[10px] font-mono text-cyan-300 px-1">{fontSize}px</span>
-                                        <button
-                                            onClick={() => setFontSize(prev => Math.min(20, prev + 1))}
-                                            className="size-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs font-bold text-gray-300"
-                                            title="글자 크게"
-                                        >
-                                            <ZoomIn size={13} />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* 🌟 [핵심] 전자책 본문 컨테이너 + 연한 포렌식 동적 워터마크 오버레이 🌟 */}
-                                <div className="relative p-5 rounded-3xl bg-[#0e0a22]/95 border border-cyan-400/30 shadow-2xl space-y-4 overflow-hidden">
-                                    
-                                    {/* 🕵️‍♂️ 은은한 대각선 포렌식 워터마크 배경 타일 */}
-                                    <div 
-                                        className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-around opacity-[0.11] select-none text-[11px] font-mono text-cyan-200 font-bold overflow-hidden"
-                                        style={{ transform: 'rotate(-18deg) scale(1.15)' }}
-                                    >
-                                        {[1, 2, 3, 4, 5, 6, 7].map((row) => (
-                                            <div key={row} className="whitespace-nowrap flex justify-around">
-                                                <span>🔒 {buyerName} | {orderNumber} | {serialKey} | 무단배포금지</span>
-                                                <span className="hidden sm:inline">⚠️ 저작권법 제136조 형사책임 추적 | {purchaseDate}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="border-b border-white/10 pb-3 relative z-20">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-mono text-cyan-300 font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-400/30">
-                                                {selectedChapter.page}
-                                            </span>
-                                            <span className="text-[10px] text-gray-400 font-mono">
-                                                《ZERO POINT》 by 이경윤
-                                            </span>
-                                        </div>
-                                        <h3 className="text-sm font-black text-white mt-1.5 leading-snug">
-                                            {selectedChapter.title}
-                                        </h3>
-                                    </div>
-
-                                    {/* 본문 텍스트 (복사/드래그 차단 방어) */}
-                                    <div 
-                                        className="text-gray-200 leading-loose whitespace-pre-line font-medium text-justify relative z-20 select-none"
-                                        style={{ fontSize: `${fontSize}px`, userSelect: 'none', WebkitUserSelect: 'none' }}
-                                        onCopy={(e) => {
-                                            e.preventDefault();
-                                            setSecurityAlert('⚠️ 복사 불가: 본 도서는 저작권법 보호를 받으며 무단 전재가 금지됩니다.');
-                                        }}
-                                    >
-                                        {selectedChapter.content}
-                                    </div>
-
-                                    {/* 챕터 네비게이션 버튼 */}
-                                    <div className="pt-3 border-t border-white/10 flex justify-between gap-2 relative z-20">
-                                        <button
-                                            onClick={() => {
-                                                const idx = CHAPTERS.findIndex(c => c.id === selectedChapter.id);
-                                                if (idx > 0) setSelectedChapter(CHAPTERS[idx - 1]);
-                                            }}
-                                            disabled={CHAPTERS.findIndex(c => c.id === selectedChapter.id) === 0}
-                                            className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-300 disabled:opacity-30 cursor-pointer"
-                                        >
-                                            ← 이전 챕터
-                                        </button>
-
-                                        <button
-                                            onClick={() => {
-                                                const idx = CHAPTERS.findIndex(c => c.id === selectedChapter.id);
-                                                if (idx < CHAPTERS.length - 1) setSelectedChapter(CHAPTERS[idx + 1]);
-                                            }}
-                                            disabled={CHAPTERS.findIndex(c => c.id === selectedChapter.id) === CHAPTERS.length - 1}
-                                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 text-xs font-black disabled:opacity-30 cursor-pointer"
-                                        >
-                                            다음 챕터 →
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <RefinedEBookReader
+                                chapters={CHAPTERS}
+                                buyerName={buyerName}
+                                orderNumber={orderNumber}
+                                serialKey={serialKey}
+                                purchaseDate={purchaseDate}
+                                onReportSecurityAlert={(msg) => {
+                                    setSecurityAlert(msg);
+                                    setTimeout(() => setSecurityAlert(null), 3500);
+                                }}
+                            />
                         )}
 
                         {/* 탭 2: 원문 PDF 보안 스트리밍 뷰어 (확대/축소 + 모바일/PC 전체화면 지원) */}
