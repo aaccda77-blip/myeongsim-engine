@@ -11,6 +11,7 @@ import { ConsentService } from '@/lib/services/ConsentService';
 import DailyMindWelcomeModal from '@/components/modals/DailyMindWelcomeModal';
 import { useViewMode } from '@/hooks/useViewMode';
 import { SimpleDashboard } from '@/components/simple/dashboard/SimpleDashboard';
+import { WearableDashboard } from '@/components/wearable/WearableDashboard';
 
 // [Optimization] 무거운 컴포넌트는 필요할 때만 로드합니다 (Code Splitting)
 // ssr: false로 설정하여 클라이언트 전용 라이브러리(Recharts, Framer Motion) 충돌 방지
@@ -220,7 +221,12 @@ export default function ReportPage() {
         return null;
     }
 
-    const { isSimple, setViewMode } = useViewMode();
+    const { isSimple, isWearable, setViewMode } = useViewMode();
+
+    // ⌚ [웨어러블 워치모드 Presentation Layer] 초소형 스마트워치 최적화 뷰
+    if (isWearable) {
+        return <WearableDashboard />;
+    }
 
     // 🌟 [간편모드 Presentation Layer] 기존 로직 무수정, 렌더링 레이어만 분기 🌟
     if (isSimple) {

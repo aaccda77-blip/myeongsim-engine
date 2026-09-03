@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-export type ViewMode = 'classic' | 'simple';
+export type ViewMode = 'classic' | 'simple' | 'wearable';
 
 const STORAGE_KEY = 'im-report:view-mode';
 
@@ -16,7 +16,7 @@ export function useViewMode() {
         try {
             if (typeof window !== 'undefined') {
                 const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved === 'simple' || saved === 'classic') {
+                if (saved === 'simple' || saved === 'classic' || saved === 'wearable') {
                     setViewModeState(saved);
                 }
             }
@@ -45,7 +45,7 @@ export function useViewMode() {
         const handleSync = () => {
             try {
                 const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved === 'simple' || saved === 'classic') {
+                if (saved === 'simple' || saved === 'classic' || saved === 'wearable') {
                     setViewModeState(saved);
                 }
             } catch (e) {}
@@ -62,6 +62,7 @@ export function useViewMode() {
         viewMode,
         isSimple: viewMode === 'simple',
         isClassic: viewMode === 'classic',
+        isWearable: viewMode === 'wearable',
         setViewMode,
         toggleViewMode,
         isMounted

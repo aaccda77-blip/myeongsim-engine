@@ -39,6 +39,18 @@ export interface DashboardViewModel {
     vip: {
         isVip: boolean;
     };
+    action: {
+        title: string;
+        description: string;
+    };
+    streak: {
+        days: number;
+        weekStatus: boolean[];
+    };
+    quickCoach: {
+        question: string;
+        options: string[];
+    };
 }
 
 export function useDashboardViewModel(): DashboardViewModel {
@@ -136,12 +148,39 @@ export function useDashboardViewModel(): DashboardViewModel {
         return { isVip };
     }, [isExpired]);
 
+    // 7. 오늘 추천 행동 (Wearable Action)
+    const action = useMemo(() => {
+        return {
+            title: '오늘 하나만 한다면',
+            description: '익숙한 방법 대신 한 가지 새로운 방법을 시도해보세요.'
+        };
+    }, []);
+
+    // 8. 연속 기록 (Wearable Streak)
+    const streak = useMemo(() => {
+        return {
+            days: 7,
+            weekStatus: [true, true, true, true, true, false, false]
+        };
+    }, []);
+
+    // 9. 퀵 코칭 (Wearable Quick Coach)
+    const quickCoach = useMemo(() => {
+        return {
+            question: '지금 가장 바꾸고 싶은 것은?',
+            options: ['일', '관계', '마음', '건강']
+        };
+    }, []);
+
     return {
         user,
         flow,
         dailyInsight,
         coaching,
         coreTraits,
-        vip
+        vip,
+        action,
+        streak,
+        quickCoach
     };
 }
