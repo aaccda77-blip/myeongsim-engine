@@ -12,6 +12,7 @@ import DailyMindWelcomeModal from '@/components/modals/DailyMindWelcomeModal';
 import { useViewMode } from '@/hooks/useViewMode';
 import { SimpleDashboard } from '@/components/simple/dashboard/SimpleDashboard';
 import { WearableDashboard } from '@/components/wearable/WearableDashboard';
+import { RefinedCoverView } from '@/components/refined/onboarding/RefinedCoverView';
 
 // [Optimization] 무거운 컴포넌트는 필요할 때만 로드합니다 (Code Splitting)
 // ssr: false로 설정하여 클라이언트 전용 라이브러리(Recharts, Framer Motion) 충돌 방지
@@ -47,6 +48,7 @@ const PlaceholderView = ({ step }: { step: number }) => (
 function ReportContent() {
     const { currentStep, reportData } = useReportStore();
     const router = useRouter();
+    const { isRefined } = useViewMode();
 
     // [Guard Logic] 데이터가 없는데 중간 페이지로 진입하면 커버로 보냄
     useEffect(() => {
@@ -59,7 +61,7 @@ function ReportContent() {
     }, [currentStep, reportData]);
 
     switch (currentStep) {
-        case 1: return <CoverView />;
+        case 1: return isRefined ? <RefinedCoverView /> : <CoverView />;
         case 2: return <ScienceIntroView />;
         case 3: return <SajuPaljaView />;
         case 4: return <IdentityView />;
