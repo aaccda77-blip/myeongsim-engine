@@ -10,6 +10,8 @@ import {
     AlertTriangle, ShieldAlert, FileText, AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import HealingSongApplyModal from '@/components/modals/HealingSongApplyModal';
+import BookVerificationSuccessModal from '@/components/modals/BookVerificationSuccessModal';
 
 // 도서 서지 정보
 const BOOK_INFO = {
@@ -259,6 +261,8 @@ export default function LibraryPage() {
     const [pdfZoom, setPdfZoom] = useState<number>(100);
     const [isPdfFullscreen, setIsPdfFullscreen] = useState(false);
     const [isReaderFullscreen, setIsReaderFullscreen] = useState(false);
+    const [showHealingSongModal, setShowHealingSongModal] = useState(false);
+    const [showVerifySuccessModal, setShowVerifySuccessModal] = useState(false);
 
     // 📖 YES24 스타일 무료 미리보기 상태
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -374,6 +378,7 @@ export default function LibraryPage() {
         }
 
         setIsVerified(true);
+        setShowVerifySuccessModal(true);
         confetti({
             particleCount: 100,
             spread: 90,
@@ -934,8 +939,8 @@ export default function LibraryPage() {
                                                 대표님의 사주 기질과 주파수(432Hz/528Hz)를 분석하여 세상에 단 하나뿐인 전용 치유 음원을 무료로 작곡하여 증정합니다.
                                             </p>
                                             <button
-                                                onClick={() => router.push('/support?topic=healing_song')}
-                                                className="w-full py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-black text-xs transition-all mt-1"
+                                                onClick={() => setShowHealingSongModal(true)}
+                                                className="w-full py-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-black text-xs transition-all mt-1 cursor-pointer active:scale-98 shadow-md"
                                             >
                                                 🎵 헌정 힐링송 무료 작곡 신청하기 ➔
                                             </button>
@@ -1062,6 +1067,27 @@ export default function LibraryPage() {
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* 🌟 🎵 1:1 맞춤 헌정 힐링송 작곡 신청 전용 모달 🌟 */}
+            <HealingSongApplyModal
+                isOpen={showHealingSongModal}
+                onClose={() => setShowHealingSongModal(false)}
+                defaultName={buyerName}
+                defaultOrder={orderNumber}
+            />
+
+            {/* 🌟 👑 독자 정품 인증 축하 모달 🌟 */}
+            <BookVerificationSuccessModal
+                isOpen={showVerifySuccessModal}
+                onClose={() => setShowVerifySuccessModal(false)}
+                buyerName={buyerName}
+                serialKey={serialKey}
+                onStartReading={() => {
+                    setActiveTab('reader');
+                    window.scrollTo({ top: 450, behavior: 'smooth' });
+                }}
+                onOpenHealingSong={() => setShowHealingSongModal(true)}
+            />
 
             {/* 🌟 📖 YES24 스타일 무료 미리보기 모달 (Look-Inside Reader) 🌟 */}
             <AnimatePresence>
