@@ -119,6 +119,130 @@ const CHAPTERS = [
     }
 ];
 
+
+// 📖 YES24 스타일 무료 미리보기 데이터 (총 15페이지 분량)
+const PREVIEW_PAGES = [
+    {
+        pageNumber: 1,
+        tag: '표지 (Cover)',
+        title: 'ZERO POINT',
+        content: `ZERO POINT
+AWARENESS OF AWARENESS
+
+내 안의 소음이 멈추고, 운명의 알고리즘이 리셋되는 순간
+
+저자 이경윤
+청 류 (EDITIONS CHEONGRYU)`
+    },
+    {
+        pageNumber: 2,
+        tag: '독자 전용 (Reader Exclusive)',
+        title: '《제로포인트》 3-Code 실전 인터랙티브 가이드',
+        content: `[독자 전용]
+《제로포인트》 3-Code 실전 인터랙티브 가이드
+다크코드 스캔 ➔ 메타인지 동기화 ➔ 알아차림의 알아차림
+
+※ 스마트폰 카메라로 스캔하여 바로 접속하세요.
+명심코칭의 3단계 변화는 [명심코칭 웹앱]과 함께 완성됩니다.
+
+등록 독자 한정 특별 제공
+1. 1:1 맞춤 헌정 힐링송(MP3) 무료 작곡 신청
+2. 명심 AI 챗봇 20회 VIP 코칭 대화권 즉시 활성화
+직접 접속 주소: https://myeongsimcoaching.com`
+    },
+    {
+        pageNumber: 3,
+        tag: '속표지 (Title Page)',
+        title: '제로 포인트 (Zero Point)',
+        content: `ZERO POINT
+제로 포인트 (Zero Point)
+
+내 안의 소음이 멈추고, 운명의 알고리즘이 리셋되는 순간
+
+저자 이경윤
+청 류`
+    },
+    {
+        pageNumber: 4,
+        tag: '목차 (Contents 1/2)',
+        title: '전체 차례',
+        content: `CONTENTS 목차
+
+프롤로그 · 소음이 멈추는 곳, 제로 포인트 ...................................................... 6
+제1부. 노이즈 오프 (Noise Off) : 자동 구동되는 앱을 끄다 ........................11
+  1장. 달리는 자전거 위에서는 풍경이 보이지 않는다 ......................................12
+  2장. 외로운 섬들의 연결망 / 상즉상입(相卽相入)을 잊은 고립감 ..................16
+  3장. 무의식의 낡은 스크립트 스캔하기 ....................................................20
+  4장. 정신의 배터리가 방전 신호를 보낼 때 / 자발적 로그아웃 .......................24
+  5장. 타고난 기질이라는 생각의 감옥 / 오래된 알고리즘의 발견 .....................28
+
+제2부. 제로 포인트 (Zero Point) : 알아차림을 알아차리다 ........................35
+  1장. 가장 완벽한 멈춤, 제로 포인트 / 모든 앱 강제 종료의 순간 ..................36
+  2장. 알아차림을 알아차릴 때 일어나는 일 ....................................................40
+  3장. 내 마음의 스크린은 결코 찢어지지 않는다 ............................................43
+  4장. 공적영지(空寂靈知), 텅 빈 고요 속의 신령한 빛 ...................................46`
+    },
+    {
+        pageNumber: 5,
+        tag: '목차 (Contents 2/2)',
+        title: '전체 차례 (계속)',
+        content: `제3부. 리라이트 (Rewrite) : 삶의 운영체제를 다시 쓰다 ...........................55
+  1장. 순수 OS 레벨에서 코드를 수정하라 / 자동 반응의 고리를 끊는 자유 ......56
+  2장. 프로그래밍된 운명을 해킹하는 법 / 사주와 기질의 한계를 뛰어넘다 ......59
+  3장. 이완된 집중, 가장 부드럽고 강력한 에너지 ..........................................62
+  4장. 인공지능의 시대, 인간이 인간으로 남는 단 하나의 영역 .........................65
+  5장. 제로에서 시작하는 하루 / 매일 아침의 새로운 알고리즘 루틴 ...............69
+
+에필로그 · 산은 다시 산이 되고, 물은 다시 물이 된다 (대자유의 여정) .....72
+소음이 멈추는 그 찰나, 당신이라는 제로포인트 (20일과정) .......................75
+자각 질문 (Self-Inquiry), 존재의 스펙트럼을 넓히는 시선 기법 (15일과정) ..186
+[특별 섹션] 실전 명심코칭 워크북 가이드 (30일과정) ...............................248`
+    },
+    {
+        pageNumber: 6,
+        tag: '프롤로그 (Prologue 1/2)',
+        title: '소음이 멈추는 곳, 제로 포인트',
+        content: `종일 무언가에 쫓기듯 하루를 보내고 돌아와 불 꺼진 방에 가만히 누워 있을 때가 있습니다. 몸은 멈췄는데 머릿속은 여전히 낮에 들었던 날카로운 말들, 내일 해야 할 일들, 그리고 출처를 알 수 없는 막연한 불안감으로 웅성거립니다. 마치 수십 개의 프로그램을 동시에 돌리느라 뜨겁게 과열된 기계처럼, 뇌가 터질 것만 같은 순간들. 아마 당신에게도 그리 낯선 풍경은 아닐 겁니다.
+
+그럴 때마다 우리는 습관적으로 세상을 향해 돋보기를 들이댑니다. 내가 왜 이렇게 불안한지 이유를 분석하고, 상황을 바꾸려 애쓰고, 마음을 고쳐먹으려 스스로를 다그칩니다. 조금 더 강해지면, 조금 더 많이 가지면 이 소란이 가라앉을까 싶어 정신의 배터리가 붉은빛을 깜빡이는데도 자꾸만 무언가를 더 채우려 듭니다.`
+    },
+    {
+        pageNumber: 7,
+        tag: '프롤로그 (Prologue 2/2)',
+        title: '소음이 멈추는 곳, 제로 포인트',
+        content: `하지만 채울수록 허기는 더해졌고, 세상과 촘촘히 연결될수록 외로움은 정직하게 깊어만 갔습니다. 내 삶의 주인이 정말 나인지, 아니면 세상이 짜 놓은 정교한 알고리즘에 끌려다니는 인형인지 분간하기조차 힘겨워질 때쯤, 저는 비로소 돋보기를 내려놓았습니다. 그리고 바깥으로만 향해 있던 시선을 안으로, 아주 천천히 돌려보았습니다.
+
+그것은 내 상태를 날카롭게 분석하는 차가운 감시자가 되는 일이 아니었습니다. 그저, 이 소란스러운 생각과 감정들을 한 걸음 물러서서 가만히 지켜보는 투명한 눈을 갖는 일이었습니다.
+
+옛사람들은 이 마음의 자리를 '공적영지(空寂靈知)'라는 깊은 언어로 불렀고, 현대의 심리학자들은 '알아차림을 알아차리는 상태'라고 말합니다. 복잡한 용어들을 다 걷어내고 나면, 결국 하나의 고요한 지점에 닿게 됩니다. 모든 소음이 멈추고 온전한 평정심만 남는 곳, 바로 이 책이 내내 머물게 될 '제로 포인트(Zero Point)'입니다.`
+    },
+    {
+        pageNumber: 8,
+        tag: '제1부 (Noise Off)',
+        title: '1장. 달리는 자전거 위에서는 풍경이 보이지 않는다 (1/2)',
+        content: `자전거를 타고 가파른 내리막길을 전속력으로 질주할 때를 떠올려 봅니다. 페달을 밟는 발에 힘이 들어가고 바퀴에 속도가 붙을수록, 기이하게도 눈앞의 시야는 점점 좁아집니다. 시속 10킬로미터로 달릴 때는 다정하게 인사하던 길가의 가로수와 이름 모를 들꽃들이, 속도가 올라갈수록 그저 하나의 흐릿한 선으로 초점 없이 뭉개져 스쳐 갈 뿐입니다.
+
+그 순간 부딪히는 거센 바람 속에서 우리가 할 수 있는 일은 오직 하나입니다. 넘어지지 않기 위해, 살아남기 위해 바로 앞의 차가운 아스팔트 바닥만 매섭게 노려보는 것. 가속도가 붙은 자전거 위에서 풍경의 아름다움을 음미하기란 애초에 불가능한 일입니다.
+
+어쩌면 지금을 살아가는 현대인들의 삶이 정확히 이 가파른 내리막길 위의 자전거를 닮아있는지도 모르겠습니다.`
+    },
+    {
+        pageNumber: 9,
+        tag: '제1부 (Noise Off)',
+        title: '1장. 달리는 자전거 위에서는 풍경이 보이지 않는다 (2/2)',
+        content: `문제는 속도가 한계치를 넘어설 때, 우리의 뇌와 마음에도 '시야 협착'이 일어난다는 사실입니다.
+과속하는 삶 속에서는 내가 지금 어디로 가고 있는지, 내 마음이 얼마나 지쳐 부서지고 있는지 보이지 않습니다.
+
+그저 나를 스쳐 지나가는 스트레스와 불안, 타인의 시선이라는 자극들이 거대하게 뭉개진 노이즈가 되어 내면을 가득 채울 뿐입니다. 뇌는 끊임없이 밀려드는 데이터를 처리하느라 쉴 새 없이 과열되고, 어느 순간부터는 내가 왜 이 페달을 밟고 있었는지 목적조차 잊어버린 채 그저 '달리는 상태' 자체에 중독되어 버립니다. 번아웃과 우울은 그 과속이 만들어낸 필연적인 급브레이크의 흔적입니다.
+
+우리는 내 삶의 문제를 고치고 싶을 때 자꾸만 더 세게 페달을 밟으려 합니다. 하지만 틀렸습니다. 가속도가 붙은 상태에서는 내 안의 오래된 알고리즘이 어떻게 오작동하고 있는지 절대 읽어낼 수 없습니다.
+
+꽉 쥐고 있던 핸들의 힘을 빼고, 서서히 브레이크를 잡아 속도를 줄이는 것입니다. 바퀴의 회전이 멈추고 자전거에서 완전히 내려와 발을 땅에 딛는 순간, 비로소 뭉개졌던 풍경들이 제 형태를 드러내며 선명하게 눈에 들어오기 시작합니다. 내 주위를 감싸고 있던 공기의 온도, 거칠어진 나의 숨소리, 그리고 내 안에서 쉼 없이 들끓던 생각의 정체들이 온전한 제 모습을 드러내는 순간입니다.
+
+이것이 바로 내 삶의 고정된 패턴을 바꾸기 위한 첫 번째 관문, 모든 자극을 멈추고 나를 정밀하게 읽어내는 '스캔(Scan)'의 시작입니다. 멈춰 서야 비로소, 제대로 보이기 시작합니다.`
+    }
+];
+
 export default function LibraryPage() {
     const router = useRouter();
 
@@ -130,6 +254,10 @@ export default function LibraryPage() {
     const [serialKey, setSerialKey] = useState('');
     const [purchasePlatform, setPurchasePlatform] = useState('smartstore');
     const [verificationError, setVerificationError] = useState('');
+
+    // 📖 YES24 스타일 무료 미리보기 상태
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [previewPageIndex, setPreviewPageIndex] = useState(0);
 
     // 뷰어 설정 상태
     const [activeTab, setActiveTab] = useState<'reader' | 'pdf' | 'benefits'>('reader');
@@ -405,6 +533,18 @@ export default function LibraryPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* 📖 [YES24 스타일 무료 미리보기 버튼] 🌟 */}
+                    <button
+                        onClick={() => {
+                            setIsPreviewOpen(true);
+                            setPreviewPageIndex(0);
+                        }}
+                        className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                    >
+                        <BookOpen size={16} />
+                        <span>📖 YES24 스타일 무료 미리보기 (Look Inside - 무료 15p)</span>
+                    </button>
 
                     {/* 🛒 외부 구매 링크 버튼 2종 */}
                     <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/[0.08]">
@@ -751,6 +891,139 @@ export default function LibraryPage() {
 
             </main>
 
+            {/* 🌟 📖 YES24 스타일 무료 미리보기 모달 (Look-Inside Reader) 🌟 */}
+            <AnimatePresence>
+                {isPreviewOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 select-none">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-md h-[90vh] bg-[#0c081e] border border-cyan-400/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-left"
+                        >
+                            {/* 🕵️‍♂️ 미리보기 포렌식 워터마크 레이어 */}
+                            <div 
+                                className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-around opacity-[0.09] select-none text-[10px] font-mono text-cyan-200 font-bold overflow-hidden"
+                                style={{ transform: 'rotate(-20deg) scale(1.2)' }}
+                            >
+                                {[1, 2, 3, 4, 5, 6].map((row) => (
+                                    <div key={row} className="whitespace-nowrap flex justify-around">
+                                        <span>📖 청류출판사 《ZERO POINT》 YES24 공식 미리보기 | 무단배포금지</span>
+                                        <span>저작권자 이경윤 | Copyright 2026</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* 모달 상단 헤더 */}
+                            <div className="relative z-20 flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#120b2c]/90 backdrop-blur-md">
+                                <div className="flex items-center gap-2">
+                                    <div className="size-7 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
+                                        <BookOpen size={14} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-black text-white leading-tight">《ZERO POINT》 미리보기</p>
+                                        <p className="text-[10px] text-cyan-300 font-mono">
+                                            {PREVIEW_PAGES[previewPageIndex].tag} ({previewPageIndex + 1} / {PREVIEW_PAGES.length})
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => setIsPreviewOpen(false)}
+                                    className="size-8 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 flex items-center justify-center text-xs font-bold transition-all cursor-pointer"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            {/* 본문 스크롤 영역 */}
+                            <div className="relative z-20 flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin scrollbar-thumb-cyan-500/30">
+                                <div className="border-b border-white/10 pb-2.5">
+                                    <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-400/30">
+                                        {PREVIEW_PAGES[previewPageIndex].tag}
+                                    </span>
+                                    <h3 className="text-sm font-black text-white mt-1.5 leading-snug">
+                                        {PREVIEW_PAGES[previewPageIndex].title}
+                                    </h3>
+                                </div>
+
+                                <div className="text-gray-200 text-xs leading-loose whitespace-pre-line font-medium text-justify select-none">
+                                    {PREVIEW_PAGES[previewPageIndex].content}
+                                </div>
+
+                                {/* 마지막 페이지 도달 시 구매 안내 카드 */}
+                                {previewPageIndex === PREVIEW_PAGES.length - 1 && (
+                                    <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-950/60 via-purple-950/60 to-slate-950 border border-amber-400/50 space-y-3 text-center animate-fade-in mt-4">
+                                        <div className="size-10 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center mx-auto text-amber-300">
+                                            <Lock size={20} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h4 className="text-xs font-black text-white">
+                                                🎉 무료 미리보기가 여기까지입니다!
+                                            </h4>
+                                            <p className="text-[11px] text-gray-300 leading-relaxed">
+                                                다음 장부터 <strong className="text-amber-300">제2부 제로포인트의 감정 연금술</strong>과 <strong className="text-cyan-300">20일 기적의 실전 자각 훈련(75~185p)</strong> 전문이 본격적으로 펼쳐집니다!
+                                            </p>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2 pt-1">
+                                            <a
+                                                href={BOOK_INFO.yes24Url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs shadow-md flex items-center justify-center gap-1.5"
+                                            >
+                                                <span>📗 YES24에서 구매하고 전편 읽기 ➔</span>
+                                                <ExternalLink size={13} />
+                                            </a>
+                                            <a
+                                                href={BOOK_INFO.smartstoreUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs shadow-md flex items-center justify-center gap-1.5"
+                                            >
+                                                <span>🛍️ 청류스마트스토어 올인원 패키지 구매 ➔</span>
+                                                <ExternalLink size={13} />
+                                            </a>
+                                            <button
+                                                onClick={() => {
+                                                    setIsPreviewOpen(false);
+                                                }}
+                                                className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/15 text-cyan-200 text-[11px] font-bold"
+                                            >
+                                                🔑 이미 구매하셨다면? 구매 인증하고 전편 해금하기
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* 모달 하단 페이지 넘김 네비게이션 */}
+                            <div className="relative z-20 px-4 py-3 border-t border-white/10 bg-[#0c081e] flex items-center justify-between">
+                                <button
+                                    onClick={() => setPreviewPageIndex(prev => Math.max(0, prev - 1))}
+                                    disabled={previewPageIndex === 0}
+                                    className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-300 disabled:opacity-30 cursor-pointer"
+                                >
+                                    ← 이전 페이지
+                                </button>
+
+                                <span className="text-[11px] font-mono text-cyan-300 font-bold">
+                                    {previewPageIndex + 1} / {PREVIEW_PAGES.length}
+                                </span>
+
+                                <button
+                                    onClick={() => setPreviewPageIndex(prev => Math.min(PREVIEW_PAGES.length - 1, prev + 1))}
+                                    disabled={previewPageIndex === PREVIEW_PAGES.length - 1}
+                                    className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 text-xs font-black disabled:opacity-30 cursor-pointer"
+                                >
+                                    다음 페이지 →
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
