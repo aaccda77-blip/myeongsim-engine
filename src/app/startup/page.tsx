@@ -1092,27 +1092,61 @@ export default function StartupDashboard() {
         // [View Logic] 상세 보기 모드
     if (selectedService) {
         return (
-            <div className="flex h-screen overflow-hidden bg-[#0f0d1a]">
-                {/* Same Sidebar (Simplified for brevity implies layout consistency) */}
-                <aside className="w-72 bg-[#131022] border-r border-[#2b2839] flex flex-col h-full z-50">
-                    <div className="p-6 flex items-center gap-3">
-                        <div className="flex items-center justify-center size-10 rounded-xl bg-[#3211d4] shadow-lg shadow-[#3211d4]/20 text-white">
-                            <span className="material-symbols-outlined text-2xl">auto_awesome</span>
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-1.5">
-                                <h1 className="text-lg font-extrabold tracking-tight leading-none text-white">B2B Startup Coaching</h1>
-                                <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">B2B 전용</span>
-                            </div>
-                            <p className="text-[10px] uppercase tracking-widest text-indigo-400 font-black mt-1">B2B ENTERPRISE SOLUTION & CSO</p>
-                        </div>
+            <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-[#0f0d1a]">
+                {/* ── Mobile Header for selectedService view ── */}
+                <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#131022] border-b border-[#2b2839] z-40 shrink-0">
+                    <button
+                        onClick={() => setSelectedService(null)}
+                        className="flex items-center gap-1.5 text-indigo-300 hover:text-white text-xs font-bold transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-lg">arrow_back</span>
+                        <span>대시보드</span>
+                    </button>
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-bold text-white truncate max-w-[150px]">{selectedService.title}</span>
                     </div>
-                    <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
-                        <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B 거버넌스 메뉴</p>
+                    <button
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="material-symbols-outlined text-slate-300 p-1 rounded-lg bg-white/5 hover:bg-white/10"
+                    >
+                        {isSidebarOpen ? 'close' : 'menu'}
+                    </button>
+                </div>
+
+                {/* ── Responsive Sidebar ── */}
+                <aside className={`
+                    ${isSidebarOpen ? 'flex' : 'hidden md:flex'} 
+                    fixed md:relative inset-0 md:inset-auto 
+                    w-full md:w-72 bg-[#131022] border-r border-[#2b2839] flex-col h-full z-50
+                `}>
+                    <div className="p-4 sm:p-6 flex items-center justify-between gap-3 border-b md:border-b-0 border-[#2b2839]">
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center size-9 sm:size-10 rounded-xl bg-[#3211d4] shadow-lg shadow-[#3211d4]/20 text-white shrink-0">
+                                <span className="material-symbols-outlined text-xl sm:text-2xl">auto_awesome</span>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-1.5">
+                                    <h1 className="text-base sm:text-lg font-extrabold tracking-tight leading-none text-white">B2B Startup Coaching</h1>
+                                    <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">B2B 전용</span>
+                                </div>
+                                <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-indigo-400 font-black mt-1">B2B ENTERPRISE SOLUTION & CSO</p>
+                            </div>
+                        </div>
+                        {/* Mobile Close button */}
+                        <button
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="md:hidden material-symbols-outlined text-slate-400 hover:text-white p-1"
+                        >
+                            close
+                        </button>
+                    </div>
+                    <nav className="flex-1 px-3 sm:px-4 py-4 sm:py-6 space-y-1 overflow-y-auto custom-scrollbar">
+                        <p className="px-3 sm:px-4 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 sm:mb-3">B2B 거버넌스 메뉴</p>
                         {menuItems.filter(i => ['dashboard', 'content', 'psychology', 'timing', 'partner', 'investment', 'bm'].includes(i.id)).map((item) => (
                             <a
                                 key={item.id}
                                 onClick={() => {
+                                    setIsSidebarOpen(false);
                                     if (item.id === 'dashboard') {
                                         setSelectedService(null);
                                         setActiveMenu('dashboard');
@@ -1121,79 +1155,80 @@ export default function StartupDashboard() {
                                         setActiveMenu(item.id);
                                     }
                                 }}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-lg group transition-all cursor-pointer ${activeMenu === item.id
-                                    ? 'bg-[#3211d4]/10 text-[#3211d4] border-r-2 border-[#3211d4]'
+                                className={`flex items-center gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg group transition-all cursor-pointer ${activeMenu === item.id
+                                    ? 'bg-[#3211d4]/20 text-indigo-300 font-bold border-l-2 md:border-l-0 md:border-r-2 border-indigo-400'
                                     : 'text-[#a19db9] hover:bg-white/5'
                                     }`}
                             >
-                                <span className="material-symbols-outlined">{item.icon}</span>
-                                <span className={`text-sm ${activeMenu === item.id ? 'font-bold' : 'font-medium'}`}>
+                                <span className="material-symbols-outlined text-lg sm:text-xl">{item.icon}</span>
+                                <span className={`text-xs sm:text-sm ${activeMenu === item.id ? 'font-bold' : 'font-medium'}`}>
                                     {item.label}
                                 </span>
                             </a>
                         ))}
 
-                        <div className="pt-6 px-4">
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B C-Level 전문 분석</p>
+                        <div className="pt-4 sm:pt-6 px-3 sm:px-4">
+                            <p className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 sm:mb-3">B2B C-Level 전문 분석</p>
                             <div className="space-y-1">
                                 {menuItems.filter(i => ['strategy', 'legal', 'org'].includes(i.id)).map((item) => (
                                     <a
                                         key={item.id}
                                         onClick={() => {
+                                            setIsSidebarOpen(false);
                                             setSelectedService(item);
                                             setActiveMenu(item.id);
                                         }}
-                                        className={`flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all text-sm cursor-pointer ${activeMenu === item.id
+                                        className={`flex items-center gap-3 py-2 sm:py-2.5 px-3 rounded-lg transition-all text-xs sm:text-sm cursor-pointer ${activeMenu === item.id
                                             ? 'bg-indigo-500/20 text-indigo-300 font-bold border-l-2 border-indigo-400'
                                             : 'text-[#a19db9] hover:text-white hover:bg-white/5 font-medium'
                                             }`}
                                     >
-                                        <span className="material-symbols-outlined text-[20px] text-indigo-400">{item.icon}</span>
+                                        <span className="material-symbols-outlined text-[18px] sm:text-[20px] text-indigo-400">{item.icon}</span>
                                         <span>{item.label}</span>
                                     </a>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="pt-6 px-4">
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">B2B 파트너십 & 거버넌스</p>
-                            <a onClick={() => router.push('/startup/facilitation')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">groups</span> B2B C-Level 다자간 거버넌스 코칭
+                        <div className="pt-4 sm:pt-6 px-3 sm:px-4">
+                            <p className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 sm:mb-3">B2B 파트너십 & 거버넌스</p>
+                            <a onClick={() => { setIsSidebarOpen(false); router.push('/startup/facilitation'); }} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-xs sm:text-sm font-medium cursor-pointer">
+                                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">groups</span> B2B C-Level 다자간 거버넌스 코칭
                             </a>
-                            <a onClick={() => router.push('/startup/mastermind')} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-sm font-medium cursor-pointer">
-                                <span className="material-symbols-outlined text-[20px]">diversity_3</span> B2B 수석 아키텍트 CSO 그룹 자문
+                            <a onClick={() => { setIsSidebarOpen(false); router.push('/startup/mastermind'); }} className="flex items-center gap-3 py-2 text-[#a19db9] hover:text-[#3211d4] transition-colors text-xs sm:text-sm font-medium cursor-pointer">
+                                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">diversity_3</span> B2B 수석 아키텍트 CSO 그룹 자문
                             </a>
                         </div>
                     </nav>
                 </aside>
 
                 <main className="flex-1 overflow-y-auto bg-[#0f0d1a] relative custom-scrollbar">
-                    <div className="max-w-5xl mx-auto px-6 md:px-10 py-12">
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-10 py-6 sm:py-12">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-[#181526] border border-[#2b2839] rounded-2xl p-8 md:p-12 relative overflow-hidden"
+                            className="bg-[#181526] border border-[#2b2839] rounded-2xl p-5 sm:p-8 md:p-12 relative overflow-hidden"
                         >
                             {/* Background Glow */}
                             <div className="absolute top-0 right-0 w-96 h-96 bg-[#3211d4]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
-                            <button onClick={() => setSelectedService(null)} className="absolute top-6 left-8 flex items-center gap-2 text-[#a19db9] hover:text-white transition-colors text-sm font-bold">
+                            <button onClick={() => setSelectedService(null)} className="hidden md:flex absolute top-6 left-8 items-center gap-2 text-[#a19db9] hover:text-white transition-colors text-sm font-bold">
                                 <span className="material-symbols-outlined text-lg">arrow_back</span>
                                 대시보드로 돌아가기
                             </button>
 
-                            <div className="mt-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                            <div className="mt-2 sm:mt-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-start">
                                 {/* Left Info Column */}
-                                <div className="lg:col-span-7 space-y-6">
-                                    <div className="size-16 rounded-2xl bg-[#3211d4]/10 border border-[#3211d4]/20 flex items-center justify-center text-[#3211d4]">
-                                        <span className="material-symbols-outlined text-4xl">{selectedService.icon}</span>
+                                <div className="lg:col-span-7 space-y-4 sm:space-y-6">
+                                    <div className="size-12 sm:size-16 rounded-2xl bg-[#3211d4]/10 border border-[#3211d4]/20 flex items-center justify-center text-[#3211d4]">
+                                        <span className="material-symbols-outlined text-2xl sm:text-4xl">{selectedService.icon}</span>
                                     </div>
                                     <div>
-                                        <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-3">
+                                        <div className="inline-block px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3">
                                             B2B Enterprise Diagnosis & Governance Suite
                                         </div>
-                                        <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-3">{selectedService.title}</h2>
-                                        <p className="text-base md:text-lg text-[#a19db9] leading-relaxed">{selectedService.desc}</p>
+                                        <h2 className="text-xl sm:text-2xl md:text-4xl font-black text-white leading-tight mb-2 sm:mb-3">{selectedService.title}</h2>
+                                        <p className="text-xs sm:text-sm md:text-base text-[#a19db9] leading-relaxed">{selectedService.desc}</p>
                                     </div>
 
                                     <div className="h-px w-full bg-[#2b2839]"></div>
