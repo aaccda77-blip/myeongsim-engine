@@ -8,7 +8,7 @@ import {
     Cpu, Key, Orbit, Rocket, Layers, Radio, Volume2, VolumeX,
     CheckCircle2, RefreshCw, MessageSquare, AlertCircle, ArrowUpRight,
     TrendingUp, Award, BarChart3, ChevronRight, Sliders, Play, Atom,
-    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame
+    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame, Clock, Dna
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { calculateSaju } from '@/utils/SajuCalculator';
@@ -100,15 +100,13 @@ function NeuralDiagnosisContent() {
     // 3S 퀘스트 완료 상태
     const [is3SCompleted, setIs3SCompleted] = useState(false);
 
-    // ── 사주 4주 8자 & 5대 오행 비율 정밀 연산 엔진 ──
+    // ── 사주 4주 8자 & 5대 오행 비율 정밀 연산 엔진 (2-Layer Blueprint vs Real-time) ──
     const analyzeSajuDetail = (bDateStr: string, nameStr: string) => {
         try {
             const cleanBirth = bDateStr.trim() || '2003-01-25';
             const saju = calculateSaju(cleanBirth, '14:00');
 
-            // 8글자 오행 계산
             const ohaengCounts: Record<string, number> = { '목': 0, '화': 0, '토': 0, '금': 0, '수': 0 };
-            
             const gans = [saju.year.gan.hanja, saju.month.gan.hanja, saju.day.gan.hanja, saju.time.gan.hanja];
             const jis = [saju.year.ji.hanja, saju.month.ji.hanja, saju.day.ji.hanja, saju.time.ji.hanja];
 
@@ -121,7 +119,6 @@ function NeuralDiagnosisContent() {
                 if (oh) ohaengCounts[oh] = (ohaengCounts[oh] || 0) + 1;
             });
 
-            // 오행 퍼센트 산출 (총 8글자 기준)
             const ohaengPercent: Record<string, number> = {
                 '목': Math.round((ohaengCounts['목'] / 8) * 100),
                 '화': Math.round((ohaengCounts['화'] / 8) * 100),
@@ -130,12 +127,10 @@ function NeuralDiagnosisContent() {
                 '수': Math.round((ohaengCounts['수'] / 8) * 100)
             };
 
-            // 가장 지배적인 오행 & 결핍 오행
             const sortedOhaeng = Object.entries(ohaengPercent).sort((a, b) => b[1] - a[1]);
-            const dominantOh = sortedOhaeng[0]; // [오행명, 퍼센트]
+            const dominantOh = sortedOhaeng[0];
             const deficientOh = sortedOhaeng.filter(item => item[1] === 0).map(item => item[0]);
 
-            // 안전한 한글+한자 병기 표기 (인코딩 깨짐 100% 방지)
             const fourPillarsKor = `${saju.year.gan.char}${saju.year.ji.char}(${saju.year.gan.hanja}${saju.year.ji.hanja})년 ${saju.month.gan.char}${saju.month.ji.char}(${saju.month.gan.hanja}${saju.month.ji.hanja})월 ${saju.day.gan.char}${saju.day.ji.char}(${saju.day.gan.hanja}${saju.day.ji.hanja})일 ${saju.time.gan.char}${saju.time.ji.char}(${saju.time.gan.hanja}${saju.time.ji.hanja})시`;
             const dayGanHanja = saju.day.gan.hanja;
             const dayGanKor = saju.day.gan.char;
@@ -161,59 +156,53 @@ function NeuralDiagnosisContent() {
                 ringColor: 'border-amber-400/60'
             };
 
-            // ── 실제 오행 근거 기반 X·Y·Z 좌표 동적 산출 ──
+            // ── 2-Layer 분리 연산: 평생 선천 체질 vs 2026년 실시간 운 ──
             let statusBadge = '안정권';
             let statusColor = 'text-emerald-300 bg-emerald-500/20 border-emerald-400/30';
-            let diagSummary = '';
-            let diagEvidence = '';
+            let lifetimeBlueprint = '';
+            let realtimeFlow = '';
             let calcX = 70;
             let calcY = 528;
             let calcZ = 0;
 
             if (dominantOh[1] >= 45) {
-                // 특정 오행이 45% 이상 과다한 경우 (편중/압축/과열 위험)
                 if (dominantOh[0] === '토') {
-                    statusBadge = '⚠️ 내면 압축/정체 위험군';
+                    statusBadge = '⚠️ 2026 실시간: 내면 압축 주의군';
                     statusColor = 'text-amber-300 bg-amber-500/20 border-amber-400/40 animate-pulse';
-                    calcX = 65; // 고집 및 생각 과부하로 Meta 3.0 진입 정체
-                    calcY = 285; // 무겁게 가라앉은 저주파
-                    calcZ = -18; // 에너지가 밖으로 돌지 못하고 안으로 갇힌 함몰 상태
-                    diagSummary = `${nameStr}님은 사주 내 토(土) 기운이 ${dominantOh[1]}%로 극심하게 과밀집되어, 에너지가 밖으로 방출되지 못하고 속으로 삭히는 '내면 고립/정체형' 상태입니다.`;
-                    diagEvidence = `근거: 사주 8자 중 토(土)가 ${ohaengCounts['토']}개(${dominantOh[1]}%)로 비대하며, 소통과 흐름을 돕는 ${deficientOh.length > 0 ? deficientOh.join(', ') : '목(木)'} 기운이 결핍되어 에너지 체증(Traffic Jam)이 발생하고 있습니다.`;
+                    calcX = 65;
+                    calcY = 285;
+                    calcZ = -18;
+                    
+                    // 1계층: 평생 타고난 체질 (하드웨어 Blueprint)
+                    lifetimeBlueprint = `${nameStr}님은 평생 사주 원국에 흙(土)이 ${dominantOh[1]}%로 비대한 【우직한 대지(戊土)형】 하드웨어 체질입니다. 어떤 풍파도 묵묵히 혼자 짊어지고 버텨내지만, 감정과 스트레스를 밖으로 표출하지 않고 속으로 삭히는 성향이 평생의 기저에 깔려 있습니다.`;
+                    
+                    // 2계층: 2026년 丙午년 & 오늘 실시간 상태 (현재 흐름)
+                    realtimeFlow = `현재 2026년(병오년 붉은 말의 해)은 매우 뜨거운 불(火)의 기운이 지배합니다. 이미 많은 흙(土)에 뜨거운 불이 쏟아져 들어오니(화생토), 안 그래도 무거운 에너지가 바짝 굳어 【지금 이 시기】에 유독 내면 압축과 가슴 답답함, 소화기 피로(Z: -18 함몰, Y: 285Hz 저주파)가 극대화되는 타이밍입니다!`;
                 } else if (dominantOh[0] === '화') {
-                    statusBadge = '🔥 과열 및 번아웃 폭발 위험군';
+                    statusBadge = '🔥 2026 실시간: 과열·번아웃 폭발 주의';
                     statusColor = 'text-rose-300 bg-rose-500/20 border-rose-400/40 animate-pulse';
                     calcX = 58;
                     calcY = 190;
                     calcZ = +28;
-                    diagSummary = `${nameStr}님은 화(火) 에너지가 ${dominantOh[1]}%로 과열되어 충동적 에너지 방출과 번아웃 위험이 매우 높습니다.`;
-                    diagEvidence = `근거: 화(火) 기운의 과열로 냉각수 역할을 하는 수(水)가 증발하여 심리적 조급증과 분노 노이즈가 발생 중입니다.`;
-                } else if (dominantOh[0] === '수') {
-                    statusBadge = '🌊 깊은 침잠/우울 주의군';
-                    statusColor = 'text-blue-300 bg-blue-500/20 border-blue-400/40 animate-pulse';
-                    calcX = 60;
-                    calcY = 210;
-                    calcZ = -25;
-                    diagSummary = `${nameStr}님은 수(水) 기운이 ${dominantOh[1]}%로 너무 깊이 가라앉아 무기력과 고립감이 발생하기 쉬운 상태입니다.`;
-                    diagEvidence = `근거: 차가운 수(水)의 범람으로 열정과 온기를 공급하는 화(火)가 꺼져 있어 의욕 저하가 감지됩니다.`;
+                    lifetimeBlueprint = `${nameStr}님은 평생 사주에 불(火)이 ${dominantOh[1]}%로 활활 타오르는 【열정적 태양형】 체질입니다. 행동력이 폭발적이나 쉽게 조급해지는 성향을 타고났습니다.`;
+                    realtimeFlow = `2026년 丙午년의 강력한 화(火) 기운이 겹치면서, 화(火) 에너지가 한계치를 초과하여 【지금 이 시기】에 극심한 번아웃과 충동적 분노 노이즈(Z: +28 폭발)가 위험 수준에 달해 있습니다.`;
                 } else {
-                    statusBadge = '⚡ 에너지 편중 주의군';
+                    statusBadge = '⚡ 2026 실시간: 에너지 편중 주의군';
                     statusColor = 'text-purple-300 bg-purple-500/20 border-purple-400/40';
                     calcX = 68;
                     calcY = 340;
                     calcZ = -12;
-                    diagSummary = `${nameStr}님은 ${dominantOh[0]} 기운이 ${dominantOh[1]}%로 편중되어 균형 완충이 필요합니다.`;
-                    diagEvidence = `근거: 5대 오행의 순환이 특정 원소에 정체되어 스트레스 완충 마진이 축소되었습니다.`;
+                    lifetimeBlueprint = `${nameStr}님은 평생 사주 원국에 ${dominantOh[0]} 기운이 ${dominantOh[1]}%로 편중된 고유 체질을 지니고 있습니다.`;
+                    realtimeFlow = `2026년의 기운과 맞물려 특정 에너지 회로에 체증이 발생하고 있으므로 528Hz 정화 튜닝이 요구됩니다.`;
                 }
             } else {
-                // 오행이 비교적 골고루 분산된 조화형
-                statusBadge = '✨ 영점 균형 안정권';
+                statusBadge = '✨ 2026 실시간: 영점 균형 안정권';
                 statusColor = 'text-emerald-300 bg-emerald-500/20 border-emerald-400/30';
                 calcX = 82;
                 calcY = 528;
                 calcZ = +4;
-                diagSummary = `${nameStr}님은 5대 오행이 비교적 균형 있게 흐르고 있어, 외부 자극에 흔들리지 않는 0(Zero)의 평정심을 유지하고 있습니다.`;
-                diagEvidence = `근거: 특정 오행의 과다 독점이 없고 오행 상생 흐름이 원활하여 스트레스 저항력이 최적화된 상태입니다.`;
+                lifetimeBlueprint = `${nameStr}님은 평생 사주 원국에 5대 오행이 골고루 분산된 【오행 조화형】 체질입니다.`;
+                realtimeFlow = `2026년 세운의 흐름 속에서도 큰 왜곡 없이 영점(0)의 평정심을 원활하게 유지하고 있습니다.`;
             }
 
             setXVal(calcX);
@@ -240,8 +229,8 @@ function NeuralDiagnosisContent() {
                 deficientOh: deficientOh.length > 0 ? deficientOh.join(', ') : '없음(조화)',
                 statusBadge,
                 statusColor,
-                diagSummary,
-                diagEvidence
+                lifetimeBlueprint,
+                realtimeFlow
             });
         } catch (e) {
             console.error('Saju detail calculation error:', e);
@@ -324,7 +313,7 @@ function NeuralDiagnosisContent() {
             localStorage.setItem('saju_user_name', tempName);
         }
 
-        setSyncAlert(`🟢 ${tempName}님의 생년월일(${tempBirth}) 오행 분석 및 3D 좌표 1:1 동기화 완료!`);
+        setSyncAlert(`🟢 ${tempName}님의 생년월일(${tempBirth}) 오행 분석 및 2-Layer 3D 좌표 1:1 동기화 완료!`);
         confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
         setTimeout(() => setSyncAlert(null), 4000);
     };
@@ -488,7 +477,7 @@ function NeuralDiagnosisContent() {
                         >
                             <p className="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
                                 <Calendar size={13} />
-                                <span>생년월일 변경 ➔ 실시간 오행 & 3D 좌표 재계산</span>
+                                <span>생년월일 변경 ➔ 실시간 2-Layer 3D 좌표 재계산</span>
                             </p>
                             
                             <div className="grid grid-cols-2 gap-2">
@@ -518,7 +507,7 @@ function NeuralDiagnosisContent() {
                                 className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                             >
                                 <Check size={14} />
-                                <span>이 생년월일로 오행 분석 및 3D 좌표 즉시 동기화</span>
+                                <span>이 생년월일로 오행 분석 및 2-Layer 좌표 즉시 동기화</span>
                             </button>
                         </motion.div>
                     )}
@@ -579,7 +568,7 @@ function NeuralDiagnosisContent() {
             <main className="relative z-20 px-4 pt-3.5 space-y-4">
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 1: 3D 종합 좌표 스캔 + 실제 사주 근거 리포트
+                    MODULE 1: 3D 종합 좌표 스캔 + [2-Layer 평생 vs 2026실시간]
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'full_scan' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -599,7 +588,7 @@ function NeuralDiagnosisContent() {
                                     </p>
                                 </div>
                                 <span className={`text-[10px] font-mono font-bold px-2 py-1 rounded-full border ${sajuSpecs?.statusColor || 'text-amber-300 bg-amber-500/20 border-amber-400/40'}`}>
-                                    {sajuSpecs?.statusBadge || '⚠️ 에너지 편중 주의군'}
+                                    {sajuSpecs?.statusBadge || '⚠️ 2026 실시간: 내면 압축 주의'}
                                 </span>
                             </div>
 
@@ -647,14 +636,14 @@ function NeuralDiagnosisContent() {
                                     X: Meta ({xVal}%)
                                 </div>
                                 <div className="absolute top-2 right-3 text-[9px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-400/30">
-                                    Y: {yVal}Hz 측정
+                                    Y: {yVal}Hz 파동
                                 </div>
                                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] font-mono text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-400/30">
                                     Z: Vector {zVal > 0 ? `+${zVal}` : zVal} {zVal < 0 ? '(내면 함몰)' : '(안정)'}
                                 </div>
                             </div>
 
-                            {/* 🌟 1. 실제 사주 5대 오행(木火土金水) 비율 스펙트럼 바 🌟 */}
+                            {/* 5대 오행 분포도 바 */}
                             <div className="p-3.5 rounded-2xl bg-black/50 border border-white/[0.08] space-y-2">
                                 <div className="flex items-center justify-between text-xs">
                                     <span className="font-bold text-gray-300 flex items-center gap-1">
@@ -666,7 +655,6 @@ function NeuralDiagnosisContent() {
                                     </span>
                                 </div>
 
-                                {/* 오행 멀티 컬러 바 */}
                                 <div className="h-3 w-full bg-slate-900 rounded-full overflow-hidden flex border border-white/10">
                                     <div style={{ width: `${sajuSpecs?.ohaengPercent?.['목'] || 0}%` }} className="bg-emerald-500" title="목" />
                                     <div style={{ width: `${sajuSpecs?.ohaengPercent?.['화'] || 0}%` }} className="bg-rose-500" title="화" />
@@ -675,7 +663,6 @@ function NeuralDiagnosisContent() {
                                     <div style={{ width: `${sajuSpecs?.ohaengPercent?.['수'] || 0}%` }} className="bg-blue-500" title="수" />
                                 </div>
 
-                                {/* 오행 범례 */}
                                 <div className="flex justify-between text-[9px] font-mono pt-1 text-gray-400">
                                     <span className="text-emerald-400">목(木) {sajuSpecs?.ohaengPercent?.['목'] || 0}%</span>
                                     <span className="text-rose-400">화(火) {sajuSpecs?.ohaengPercent?.['화'] || 0}%</span>
@@ -720,28 +707,42 @@ function NeuralDiagnosisContent() {
                                 </div>
                             </div>
 
-                            {/* 🌟 2. 명확한 산출 근거 & 팩트 진단 리포트 카드 (무조건 최적화 거짓말 완전 박멸!) 🌟 */}
-                            <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/60 to-purple-950/50 border border-indigo-400/40 space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-[11px] text-amber-300 font-black uppercase tracking-wider flex items-center gap-1.5">
-                                        <AlertTriangle size={14} className="text-amber-400" />
-                                        <span>3D 정밀 진단 팩트 리포트</span>
+                            {/* 🌟 2-LAYER 정밀 리포트: 평생 선천 체질 vs 2026년 실시간 흐름 🌟 */}
+                            <div className="space-y-3 pt-1">
+                                
+                                {/* 🧬 1계층: 평생 선천 체질 (하드웨어 Blueprint) */}
+                                <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/70 to-slate-950 border border-indigo-500/30 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-black text-indigo-300 flex items-center gap-1.5">
+                                            <Dna size={14} className="text-indigo-400" />
+                                            <span>[1계층] 평생 선천 체질 (하드웨어 Blueprint)</span>
+                                        </span>
+                                        <span className="text-[9px] font-mono text-indigo-200 bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-400/30">
+                                            평생 사주 원국
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-gray-200 leading-relaxed font-medium">
+                                        {sajuSpecs?.lifetimeBlueprint}
                                     </p>
-                                    <span className="text-[9px] font-mono text-cyan-300 bg-cyan-950/70 px-2 py-0.5 rounded border border-cyan-400/30">
-                                        산출 근거 포함
-                                    </span>
                                 </div>
 
-                                <p className="text-xs text-white font-bold leading-relaxed">
-                                    {sajuSpecs?.diagSummary}
-                                </p>
-
-                                <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 text-[11px] text-gray-300 leading-relaxed">
-                                    <strong className="text-cyan-300">🔬 진단 산출 근거:</strong> {sajuSpecs?.diagEvidence}
-                                </div>
-
-                                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed font-medium">
-                                    💡 <strong>긴급 완충 처방:</strong> 현재 가라앉아 있는 행동 주파수를 <strong>528Hz 솔페지오 파동</strong>으로 끌어올리고, 결핍된 에너지를 공급하는 <strong>Sovereign 3S 솔루션(Shift)</strong>을 즉각 실행해야 에너지 체증이 해소됩니다.
+                                {/* ⚡ 2계층: 2026년 丙午년 & 오늘 실시간 진단 (현재 에너지 상태) */}
+                                <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-950/40 via-purple-950/40 to-slate-950 border border-amber-400/40 space-y-2 shadow-lg">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-black text-amber-300 flex items-center gap-1.5">
+                                            <Clock size={14} className="text-amber-400 animate-pulse" />
+                                            <span>[2계층] 2026년 丙午년 & 오늘 실시간 상태 (현재 흐름)</span>
+                                        </span>
+                                        <span className="text-[9px] font-mono text-amber-200 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-400/30">
+                                            실시간 세운·일진
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-white font-bold leading-relaxed">
+                                        {sajuSpecs?.realtimeFlow}
+                                    </p>
+                                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed font-medium">
+                                        💡 <strong>지금 필요한 솔루션:</strong> 현재 과열된 흙(土)의 기운을 식히고 528Hz로 파동을 조율한 뒤, 결핍된 목(木) 에너지를 순환시키는 <strong>Sovereign 3S 처방(Shift)</strong>이 시급합니다.
+                                    </div>
                                 </div>
                             </div>
 
@@ -752,15 +753,15 @@ function NeuralDiagnosisContent() {
                                     className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                                 >
                                     <Rocket size={15} />
-                                    <span>🚀 이 에너지 체증을 해결할 3S 솔루션 실행하기 ➔</span>
+                                    <span>🚀 2026년 실시간 체증을 해결할 3S 솔루션 실행하기 ➔</span>
                                 </button>
 
                                 <button
-                                    onClick={() => handleConsultAI(`${userName}님의 생년월일(${birthDate}, 사주: ${sajuSpecs?.fourPillarsKor}) 분석 결과, 토(土) 기운이 ${sajuSpecs?.dominantPercent}%로 과밀집되어 에너지가 내면에 갇힌 [Z축: ${zVal} 내면 함몰/정체] 상태입니다. 이 불균형을 해소하고 본래의 창조성을 100% 회복하는 1:1 맞춤형 오행 완충 코칭을 진행해주세요.`)}
+                                    onClick={() => handleConsultAI(`${userName}님의 [평생 사주 원국: 토 62% 과다, 목 0% 결핍]과 [2026년 병오년 세운 화생토 과열로 인한 실시간 Z축 -18 함몰 정체] 상태를 정밀 분석하여, 지금 당장 가슴 답답함과 에너지 체증을 뚫어낼 수 있는 1:1 맞춤형 솔루션을 코칭해주세요.`)}
                                     className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
                                     <MessageSquare size={14} className="text-cyan-400" />
-                                    <span>AI 코치와 1:1 에너지 완충 심층 상담하기 ➔</span>
+                                    <span>AI 코치와 2026 실시간 완충 1:1 심층 상담하기 ➔</span>
                                 </button>
                             </div>
                         </div>
@@ -1012,7 +1013,7 @@ function NeuralDiagnosisContent() {
                                     </span>
                                     <div>
                                         <p className="text-xs font-black text-white">SCAN (과밀집 에너지 인지)</p>
-                                        <p className="text-[11px] text-gray-300">토(土) ${sajuSpecs?.dominantPercent || 50}% 과밀집으로 인한 내면 압축과 피로를 직시.</p>
+                                        <p className="text-[11px] text-gray-300">토(土) {sajuSpecs?.dominantPercent || 50}% 과밀집으로 인한 2026년 실시간 내면 압축과 피로 직시.</p>
                                     </div>
                                 </div>
 
@@ -1032,7 +1033,7 @@ function NeuralDiagnosisContent() {
                                     </span>
                                     <div>
                                         <p className="text-xs font-black text-amber-200">SHIFT (결핍 에너지 완충 및 순환)</p>
-                                        <p className="text-[11px] text-gray-200">결핍된 {sajuSpecs?.deficientOh} 에너지를 채워 막힌 기운을 순환시킴.</p>
+                                        <p className="text-[11px] text-gray-200">결핍된 {sajuSpecs?.deficientOh} 에너지를 채워 2026년 막힌 기운을 뚫어냄.</p>
                                     </div>
                                 </div>
                             </div>
@@ -1047,7 +1048,7 @@ function NeuralDiagnosisContent() {
                                 </button>
 
                                 <button
-                                    onClick={() => handleConsultAI(`${userName}님의 Sovereign 3S 긴급 처방을 오늘 일상에 적용하여 막힌 오행 에너지를 순환시키는 1:1 맞춤 실행 가이드를 제시해주세요.`)}
+                                    onClick={() => handleConsultAI(`${userName}님의 Sovereign 3S 긴급 처방을 오늘 일상에 적용하여 2026년 막힌 오행 에너지를 시원하게 순환시키는 1:1 맞춤 실행 가이드를 제시해주세요.`)}
                                     className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
                                     <MessageSquare size={14} className="text-cyan-400" />
