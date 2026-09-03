@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
@@ -152,7 +152,7 @@ const SHADOW_ARCHETYPES = [
     }
 ];
 
-export default function QuantumAwakeningPage() {
+function QuantumAwakeningContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const initialTab = searchParams.get('tab') || 'quest';
@@ -719,5 +719,17 @@ export default function QuantumAwakeningPage() {
 
             </main>
         </div>
+    );
+}
+
+export default function QuantumAwakeningPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-[#080612] flex items-center justify-center text-indigo-300 font-mono text-xs">
+                <span>🌌 양자 의식 챔버 동기화 중...</span>
+            </div>
+        }>
+            <QuantumAwakeningContent />
+        </Suspense>
     );
 }
