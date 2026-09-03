@@ -687,6 +687,12 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] NEURAL_ENGINEERING (3D 정밀 진단) 아이콘 클릭 시 전용 대시보드로 이동
+        if (icon.id === 'NEURAL_ENGINEERING') {
+            window.location.href = '/neural-diagnosis';
+            return;
+        }
+
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         setSelectedIcon(icon);
 
@@ -851,6 +857,38 @@ export default function DrillDownIconMenu({
         if (subItem.intent === 'ms_quantum_shadow' || subItem.intent === 'shadow_work_view') {
             setSelectedIcon(null);
             window.location.href = '/quantum-awakening?tab=shadow';
+            return;
+        }
+
+        // [NEW] 3D 정밀 진단 6대 서브메뉴 라우팅
+        if (subItem.intent === 'ms_3d_full_scan') {
+            setSelectedIcon(null);
+            window.location.href = '/neural-diagnosis?tab=full_scan';
+            return;
+        }
+        if (subItem.intent === 'ms_3d_x_axis') {
+            setSelectedIcon(null);
+            window.location.href = '/neural-diagnosis?tab=x_axis';
+            return;
+        }
+        if (subItem.intent === 'ms_3d_y_axis') {
+            setSelectedIcon(null);
+            window.location.href = '/neural-diagnosis?tab=y_axis';
+            return;
+        }
+        if (subItem.intent === 'ms_3d_z_axis') {
+            setSelectedIcon(null);
+            window.location.href = '/neural-diagnosis?tab=z_axis';
+            return;
+        }
+        if (subItem.intent === 'ms_64_neural_code') {
+            setSelectedIcon(null);
+            window.location.href = '/neural-diagnosis?tab=decoder';
+            return;
+        }
+        if (subItem.intent === 'ms_3s_protocol_start') {
+            setSelectedIcon(null);
+            window.location.href = '/neural-diagnosis?tab=action_3s';
             return;
         }
 

@@ -349,7 +349,7 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
     // 7. [3D 정밀 분석] (Neural Engineering) - System Persona Mode
     NEURAL_ENGINEERING: {
         id: 'NEURAL_ENGINEERING',
-        label: "3D 정밀 분석",
+        label: "3D 정밀 진단",
         icon: "🧬",
         neuro_trigger: "내면의 3차원 에너지 좌표 분석",
         style: 'premium_purple',
