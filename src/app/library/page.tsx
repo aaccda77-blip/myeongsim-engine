@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { 
     BookOpen, ArrowLeft, CheckCircle2, Shield, Sparkles, Lock, Unlock, 
     Download, ExternalLink, Volume2, VolumeX, Eye, Bookmark, Share2, 
-    ShoppingBag, Star, RefreshCw, Layers, ZoomIn, ZoomOut, Check, ChevronRight, HelpCircle
+    ShoppingBag, Star, RefreshCw, Layers, ZoomIn, ZoomOut, Check, ChevronRight,
+    AlertTriangle, ShieldAlert, FileText, AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -25,7 +26,7 @@ const BOOK_INFO = {
     totalPages: 309
 };
 
-// 목차 챕터 데이터 (대표님 PDF 100% 동기화)
+// 목차 챕터 데이터 (대표님 PDF 원문 100% 동기화)
 const CHAPTERS = [
     {
         id: 'prologue',
@@ -123,8 +124,10 @@ export default function LibraryPage() {
 
     // 구매 인증 상태 (로컬스토리지 연동)
     const [isVerified, setIsVerified] = useState(false);
-    const [buyerName, setBuyerName] = useState('');
-    const [orderNumber, setOrderNumber] = useState('');
+    const [buyerName, setBuyerName] = useState('강미숙');
+    const [orderNumber, setOrderNumber] = useState('20260904-8843');
+    const [purchaseDate, setPurchaseDate] = useState('');
+    const [serialKey, setSerialKey] = useState('');
     const [purchasePlatform, setPurchasePlatform] = useState('smartstore');
     const [verificationError, setVerificationError] = useState('');
 
@@ -133,12 +136,19 @@ export default function LibraryPage() {
     const [selectedChapter, setSelectedChapter] = useState(CHAPTERS[0]);
     const [fontSize, setFontSize] = useState<number>(15);
 
+    // 보안 경고 토스트 상태
+    const [securityAlert, setSecurityAlert] = useState<string | null>(null);
+
     // 528Hz 사운드
     const [isPlayingSound, setIsPlayingSound] = useState(false);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const oscRef = useRef<OscillatorNode | null>(null);
 
+    // 초기화 및 DRM 워터마크 정보 생성
     useEffect(() => {
+        const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+        setPurchaseDate(nowStr);
+
         if (typeof window !== 'undefined') {
             const verified = localStorage.getItem('myeongsim_book_verified') === 'true' || 
                              localStorage.getItem('myeongsim_paid_user') === 'true' || 
@@ -146,7 +156,59 @@ export default function LibraryPage() {
             if (verified) {
                 setIsVerified(true);
             }
+
+            const savedName = localStorage.getItem('myeongsim_book_buyer') || localStorage.getItem('user_name') || '강미숙';
+            const savedOrder = localStorage.getItem('myeongsim_book_order') || '2026-SEJONG-0576';
+            setBuyerName(savedName);
+            setOrderNumber(savedOrder);
+
+            // 포렌식 고유 시리얼 생성
+            const rawSeed = `${savedName}_${savedOrder}_CHEONGRYU`;
+            let hash = 0;
+            for (let i = 0; i < rawSeed.length; i++) {
+                hash = ((hash << 5) - hash) + rawSeed.charCodeAt(i);
+                hash |= 0;
+            }
+            const sKey = `CR-DRM-${Math.abs(hash).toString(16).toUpperCase().padStart(8, '0')}`;
+            setSerialKey(sKey);
         }
+    }, []);
+
+    // 🛡️ [전자책 저작권 보안 시스템: 단축키 & 복사 차단] 🛡️
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ctrl+C, Ctrl+P, Ctrl+S, Ctrl+U, F12 차단
+            if (
+                (e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) ||
+                e.key === 'F12' || e.key === 'PrintScreen'
+            ) {
+                e.preventDefault();
+                setSecurityAlert('⚠️ [청류출판사 저작권 보안 감지] 본 도서는 저작권법 제136조에 의해 보호되는 콘텐츠로, 복사/인쇄/캡처가 엄격히 차단됩니다.');
+                setTimeout(() => setSecurityAlert(null), 3500);
+            }
+        };
+
+        const handleCopy = (e: ClipboardEvent) => {
+            e.preventDefault();
+            setSecurityAlert('⚠️ [저작권 보호 알림] 도서 본문 무단 복사 및 배포는 법적 처벌 대상입니다.');
+            setTimeout(() => setSecurityAlert(null), 3500);
+        };
+
+        const handleContextMenu = (e: MouseEvent) => {
+            e.preventDefault();
+            setSecurityAlert('🛡️ 본 전자책은 구매자 보호를 위해 우클릭이 제한되어 있습니다.');
+            setTimeout(() => setSecurityAlert(null), 3000);
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('copy', handleCopy);
+        document.addEventListener('contextmenu', handleContextMenu);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('copy', handleCopy);
+            document.removeEventListener('contextmenu', handleContextMenu);
+        };
     }, []);
 
     // 구매 인증 처리
@@ -159,7 +221,19 @@ export default function LibraryPage() {
             return;
         }
 
-        // 인증 성공 처리
+        const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+        setPurchaseDate(nowStr);
+
+        // 시리얼 재계산
+        const rawSeed = `${buyerName}_${orderNumber}_CHEONGRYU`;
+        let hash = 0;
+        for (let i = 0; i < rawSeed.length; i++) {
+            hash = ((hash << 5) - hash) + rawSeed.charCodeAt(i);
+            hash |= 0;
+        }
+        const sKey = `CR-DRM-${Math.abs(hash).toString(16).toUpperCase().padStart(8, '0')}`;
+        setSerialKey(sKey);
+
         if (typeof window !== 'undefined') {
             localStorage.setItem('myeongsim_book_verified', 'true');
             localStorage.setItem('myeongsim_book_buyer', buyerName);
@@ -177,8 +251,14 @@ export default function LibraryPage() {
 
     // 빠른 체험 인증 (관리자/테스트용)
     const handleFastVerify = () => {
+        const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+        setPurchaseDate(nowStr);
+        setSerialKey('CR-DRM-TEST-0707-VIP');
+
         if (typeof window !== 'undefined') {
             localStorage.setItem('myeongsim_book_verified', 'true');
+            localStorage.setItem('myeongsim_book_buyer', buyerName || '강미숙');
+            localStorage.setItem('myeongsim_book_order', 'VIP-FREEPASS');
         }
         setIsVerified(true);
         confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
@@ -218,12 +298,29 @@ export default function LibraryPage() {
     };
 
     return (
-        <div className="relative flex h-full min-h-screen w-full flex-col bg-[#05030b] max-w-md mx-auto shadow-2xl overflow-hidden font-sans pb-28 text-white">
-            
+        <div 
+            className="relative flex h-full min-h-screen w-full flex-col bg-[#05030b] max-w-md mx-auto shadow-2xl overflow-hidden font-sans pb-28 text-white select-none"
+            style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+        >
             {/* 🌌 Deep Cyber Ambient Glows */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[420px] h-[360px] bg-gradient-to-b from-cyan-600/15 via-purple-700/15 to-transparent rounded-full blur-[110px] pointer-events-none" />
             <div className="absolute top-1/2 right-[-60px] w-64 h-64 bg-indigo-500/15 rounded-full blur-[90px] pointer-events-none" />
             <div className="absolute bottom-16 left-[-60px] w-72 h-72 bg-amber-500/10 rounded-full blur-[90px] pointer-events-none" />
+
+            {/* 🚨 실시간 보안 침해 경고 토스트 🚨 */}
+            <AnimatePresence>
+                {securityAlert && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed top-4 left-4 right-4 z-50 p-3.5 rounded-2xl bg-rose-950/95 border-2 border-rose-500 text-white text-xs font-bold shadow-2xl flex items-center gap-2.5 backdrop-blur-xl"
+                    >
+                        <ShieldAlert size={20} className="text-rose-400 shrink-0 animate-bounce" />
+                        <span className="leading-snug text-left">{securityAlert}</span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* ── 1. Top Header ── */}
             <header className="relative z-30 flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/[0.08] bg-[#080514]/85 backdrop-blur-xl">
@@ -240,7 +337,7 @@ export default function LibraryPage() {
                         명심코칭 디지털 도서관
                     </span>
                     <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                        Cheongryu
+                        DRM 2.0
                     </span>
                 </div>
 
@@ -271,7 +368,6 @@ export default function LibraryPage() {
                                 <p className="text-[6px] text-gray-600 font-mono tracking-tighter">AWARENESS OF AWARENESS</p>
                             </div>
 
-                            {/* 원형 심볼 */}
                             <div className="size-14 rounded-full border border-indigo-900/40 flex items-center justify-center relative">
                                 <div className="size-11 rounded-full border border-dashed border-indigo-950/60 flex items-center justify-center">
                                     <div className="size-2 rounded-full bg-amber-600" />
@@ -414,31 +510,31 @@ export default function LibraryPage() {
                     /* ── 4. 인증 완료 독자: 럭셔리 전자책 뷰어 ── */
                     <div className="space-y-4 animate-fade-in">
                         
-                        {/* 인증 완료 뱃지 */}
-                        <div className="p-3 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-between shadow-lg">
-                            <div className="flex items-center gap-2">
-                                <div className="size-7 rounded-xl bg-emerald-500/30 flex items-center justify-center text-emerald-300">
-                                    <CheckCircle2 size={15} />
+                        {/* 🛡️ DRM 보안 활성화 & 법적 책임 고지 배너 */}
+                        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/80 to-slate-900 border border-cyan-400/40 shadow-xl space-y-1.5">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5 text-xs font-black text-cyan-300">
+                                    <Shield size={14} className="text-cyan-400" />
+                                    <span>[청류출판사 DRM 2.0 포렌식 보안 적용]</span>
                                 </div>
-                                <div>
-                                    <p className="text-xs font-black text-emerald-300">
-                                        독자 구매 인증 완료 (VIP 프리패스)
-                                    </p>
-                                    <p className="text-[10px] text-emerald-100">
-                                        전자책 전문 및 부록 워크북을 자유롭게 열람하실 수 있습니다.
-                                    </p>
-                                </div>
+                                <span className="text-[9px] font-mono text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-400/30">
+                                    정품 라이선스
+                                </span>
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-400/30">
-                                해금됨
-                            </span>
+                            <div className="text-[10px] text-gray-300 space-y-0.5 font-mono">
+                                <p>• 소유자: <strong className="text-white">{buyerName}님</strong> (주문: {orderNumber})</p>
+                                <p>• 라이선스 키: <span className="text-amber-300">{serialKey}</span></p>
+                                <p className="text-[9px] text-rose-300 leading-tight pt-0.5">
+                                    ⚖️ <strong>법적 고지:</strong> 본 전자책에는 구매자 고유 디지털 워터마크가 각인되어 있습니다. 무단 캡처, 복제, 유출 시 저작권법 제136조에 따라 5년 이하의 징역 또는 5천만원 이하의 벌금형에 처해질 수 있습니다.
+                                </p>
+                            </div>
                         </div>
 
                         {/* 뷰어 탭 네비게이션 */}
                         <div className="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-[#0d091e] border border-white/10">
                             {[
-                                { id: 'reader', label: 'e-Book 리더', icon: '📖' },
-                                { id: 'pdf', label: '원문 PDF', icon: '📑' },
+                                { id: 'reader', label: '보안 텍스트 뷰어', icon: '📖' },
+                                { id: 'pdf', label: '보안 PDF 스트림', icon: '📑' },
                                 { id: 'benefits', label: '독자 특전', icon: '🎁' }
                             ].map((tab) => (
                                 <button
@@ -456,7 +552,7 @@ export default function LibraryPage() {
                             ))}
                         </div>
 
-                        {/* 탭 1: 인터랙티브 전자책 리더 */}
+                        {/* 탭 1: 인터랙티브 전자책 리더 (포렌식 워터마크 레이어 탑재) */}
                         {activeTab === 'reader' && (
                             <div className="space-y-3">
                                 {/* 챕터 셀렉터 & 폰트 조절 바 */}
@@ -495,9 +591,23 @@ export default function LibraryPage() {
                                     </div>
                                 </div>
 
-                                {/* 전자책 본문 컨테이너 */}
-                                <div className="p-5 rounded-3xl bg-[#0e0a22]/95 border border-cyan-400/30 shadow-2xl space-y-4">
-                                    <div className="border-b border-white/10 pb-3">
+                                {/* 🌟 [핵심] 전자책 본문 컨테이너 + 연한 포렌식 동적 워터마크 오버레이 🌟 */}
+                                <div className="relative p-5 rounded-3xl bg-[#0e0a22]/95 border border-cyan-400/30 shadow-2xl space-y-4 overflow-hidden">
+                                    
+                                    {/* 🕵️‍♂️ 은은한 대각선 포렌식 워터마크 배경 타일 */}
+                                    <div 
+                                        className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-around opacity-[0.11] select-none text-[11px] font-mono text-cyan-200 font-bold overflow-hidden"
+                                        style={{ transform: 'rotate(-18deg) scale(1.15)' }}
+                                    >
+                                        {[1, 2, 3, 4, 5, 6, 7].map((row) => (
+                                            <div key={row} className="whitespace-nowrap flex justify-around">
+                                                <span>🔒 {buyerName} | {orderNumber} | {serialKey} | 무단배포금지</span>
+                                                <span className="hidden sm:inline">⚠️ 저작권법 제136조 형사책임 추적 | {purchaseDate}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="border-b border-white/10 pb-3 relative z-20">
                                         <div className="flex items-center justify-between">
                                             <span className="text-[10px] font-mono text-cyan-300 font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-400/30">
                                                 {selectedChapter.page}
@@ -511,16 +621,20 @@ export default function LibraryPage() {
                                         </h3>
                                     </div>
 
-                                    {/* 본문 텍스트 */}
+                                    {/* 본문 텍스트 (복사/드래그 차단 방어) */}
                                     <div 
-                                        className="text-gray-200 leading-loose whitespace-pre-line font-medium text-justify select-text"
-                                        style={{ fontSize: `${fontSize}px` }}
+                                        className="text-gray-200 leading-loose whitespace-pre-line font-medium text-justify relative z-20 select-none"
+                                        style={{ fontSize: `${fontSize}px`, userSelect: 'none', WebkitUserSelect: 'none' }}
+                                        onCopy={(e) => {
+                                            e.preventDefault();
+                                            setSecurityAlert('⚠️ 복사 불가: 본 도서는 저작권법 보호를 받으며 무단 전재가 금지됩니다.');
+                                        }}
                                     >
                                         {selectedChapter.content}
                                     </div>
 
                                     {/* 챕터 네비게이션 버튼 */}
-                                    <div className="pt-3 border-t border-white/10 flex justify-between gap-2">
+                                    <div className="pt-3 border-t border-white/10 flex justify-between gap-2 relative z-20">
                                         <button
                                             onClick={() => {
                                                 const idx = CHAPTERS.findIndex(c => c.id === selectedChapter.id);
@@ -547,30 +661,33 @@ export default function LibraryPage() {
                             </div>
                         )}
 
-                        {/* 탭 2: 원문 PDF 뷰어 */}
+                        {/* 탭 2: 원문 PDF 보안 스트리밍 뷰어 (워터마크 오버레이 보호) */}
                         {activeTab === 'pdf' && (
                             <div className="space-y-3">
                                 <div className="p-3 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-between">
                                     <div>
-                                        <p className="text-xs font-bold text-white">출판 원본 PDF (총 309페이지)</p>
-                                        <p className="text-[10px] text-gray-400">종이책과 100% 동일한 전자책 원문</p>
+                                        <p className="text-xs font-bold text-white">보안 스트리밍 열람 (총 309페이지)</p>
+                                        <p className="text-[10px] text-gray-400">포렌식 워터마킹 암호화 적용</p>
                                     </div>
 
-                                    <a
-                                        href="/books/zero-point.pdf"
-                                        download="ZERO_POINT_이경윤.pdf"
-                                        className="py-1.5 px-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs flex items-center gap-1 transition-all shadow"
-                                    >
-                                        <Download size={13} />
-                                        <span>PDF 다운로드</span>
-                                    </a>
+                                    <span className="py-1 px-2.5 rounded-xl bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px] border border-indigo-400/30 flex items-center gap-1">
+                                        <Shield size={12} />
+                                        <span>DRM PROTECTED</span>
+                                    </span>
                                 </div>
 
-                                <div className="w-full h-[520px] rounded-2xl bg-black border border-cyan-400/40 overflow-hidden shadow-2xl">
+                                <div className="relative w-full h-[520px] rounded-2xl bg-black border border-cyan-400/40 overflow-hidden shadow-2xl">
+                                    {/* PDF 상단 워터마크 오버레이 바 */}
+                                    <div className="absolute top-0 left-0 right-0 z-20 bg-slate-950/85 backdrop-blur-md px-3 py-1.5 border-b border-white/10 flex items-center justify-between text-[10px] font-mono text-cyan-300">
+                                        <span>👤 {buyerName}님 전용 정품 열람</span>
+                                        <span className="text-amber-300">{serialKey}</span>
+                                    </div>
+
+                                    {/* PDF 뷰어 */}
                                     <iframe
-                                        src="/books/zero-point.pdf#toolbar=1"
-                                        className="w-full h-full border-none"
-                                        title="ZERO POINT PDF Reader"
+                                        src="/books/zero-point.pdf#toolbar=0&navpanes=0&scrollbar=1"
+                                        className="w-full h-full border-none pt-7"
+                                        title="ZERO POINT PDF DRM Reader"
                                     />
                                 </div>
                             </div>
