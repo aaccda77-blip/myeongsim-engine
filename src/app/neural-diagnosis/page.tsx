@@ -8,7 +8,7 @@ import {
     Cpu, Key, Orbit, Rocket, Layers, Radio, Volume2, VolumeX,
     CheckCircle2, RefreshCw, MessageSquare, AlertCircle, ArrowUpRight,
     TrendingUp, Award, BarChart3, ChevronRight, Sliders, Play, Atom,
-    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame, Clock, Dna
+    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame, Clock, Dna, Lock, Unlock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { calculateSaju } from '@/utils/SajuCalculator';
@@ -18,7 +18,7 @@ type DiagnosticTab = 'full_scan' | 'x_axis' | 'y_axis' | 'z_axis' | 'decoder' | 
 
 const TAB_CONFIG: { id: DiagnosticTab; label: string; icon: string; badge: string }[] = [
     { id: 'full_scan', label: '3D 종합 스캔', icon: '🧬', badge: 'XYZ 좌표' },
-    { id: 'x_axis', label: 'X축: 의식 코드', icon: '⚡', badge: 'Dark·Meta' },
+    { id: 'x_axis', label: 'X축: 의식 코드', icon: '⚡', badge: '영점 락(Lock)' },
     { id: 'y_axis', label: 'Y축: 주파수(Hz)', icon: '📡', badge: '파동 측정' },
     { id: 'z_axis', label: 'Z축: 에너지 벡터', icon: '🧭', badge: '위험도 진단' },
     { id: 'decoder', label: '64 뉴럴 DNA', icon: '🔑', badge: '원형 해독' },
@@ -92,15 +92,16 @@ function NeuralDiagnosisContent() {
     const [isScanning, setIsScanning] = useState(false);
     const [scanProgress, setScanProgress] = useState(100);
 
-    // 3D 좌표 상태
-    const [xVal, setXVal] = useState(65);
+    // 🌟 핵심: X축 잠재 기회(Potential) vs 현실 실현 영점 레벨(Realized Level) 🌟
+    const [xPotential, setXPotential] = useState(88); // 오늘 우주가 열어준 잠재 기회 (88% Meta 3.0 찬스)
+    const [xRealized, setXRealized] = useState(35); // 현재 내면 제로포인트 미수련으로 락걸린 실제 레벨 (35% Dark Code)
     const [yVal, setYVal] = useState(285);
     const [zVal, setZVal] = useState(-18);
 
     // 3S 퀘스트 완료 상태
     const [is3SCompleted, setIs3SCompleted] = useState(false);
 
-    // ── 사주 4주 8자 & 5대 오행 비율 정밀 연산 엔진 (2-Layer Blueprint vs Real-time) ──
+    // ── 사주 4주 8자 & 5대 오행 비율 정밀 연산 엔진 ──
     const analyzeSajuDetail = (bDateStr: string, nameStr: string) => {
         try {
             const cleanBirth = bDateStr.trim() || '2003-01-25';
@@ -161,35 +162,39 @@ function NeuralDiagnosisContent() {
             let statusColor = 'text-emerald-300 bg-emerald-500/20 border-emerald-400/30';
             let lifetimeBlueprint = '';
             let realtimeFlow = '';
-            let calcX = 70;
-            let calcY = 528;
-            let calcZ = 0;
+            let calcPotential = 88; // 오늘 우주가 준 잠재 기회
+            let calcRealized = 35;  // 제로포인트 미수련 시 락걸린 실제 의식 레벨
+            let calcY = 285;
+            let calcZ = -18;
 
             if (dominantOh[1] >= 45) {
                 if (dominantOh[0] === '토') {
                     statusBadge = '⚠️ 2026 실시간: 내면 압축 주의군';
                     statusColor = 'text-amber-300 bg-amber-500/20 border-amber-400/40 animate-pulse';
-                    calcX = 65;
+                    calcPotential = 85; // 메타코드 잠재 기회
+                    calcRealized = 35;  // 제로포인트 영점 미도달로 다크코드 35%에 락걸림
                     calcY = 285;
                     calcZ = -18;
                     
-                    // 1계층: 평생 타고난 체질 (하드웨어 Blueprint)
+                    // 1계층: 평생 타고난 체질
                     lifetimeBlueprint = `${nameStr}님은 평생 사주 원국에 흙(土)이 ${dominantOh[1]}%로 비대한 【우직한 대지(戊土)형】 하드웨어 체질입니다. 어떤 풍파도 묵묵히 혼자 짊어지고 버텨내지만, 감정과 스트레스를 밖으로 표출하지 않고 속으로 삭히는 성향이 평생의 기저에 깔려 있습니다.`;
                     
-                    // 2계층: 2026년 丙午년 & 오늘 실시간 상태 (현재 흐름)
-                    realtimeFlow = `현재 2026년(병오년 붉은 말의 해)은 매우 뜨거운 불(火)의 기운이 지배합니다. 이미 많은 흙(土)에 뜨거운 불이 쏟아져 들어오니(화생토), 안 그래도 무거운 에너지가 바짝 굳어 【지금 이 시기】에 유독 내면 압축과 가슴 답답함, 소화기 피로(Z: -18 함몰, Y: 285Hz 저주파)가 극대화되는 타이밍입니다!`;
+                    // 2계층: 2026년 丙午년 & 오늘 실시간 상태
+                    realtimeFlow = `현재 2026년(병오년)은 매우 뜨거운 불(火)의 기운이 지배합니다. 이미 많은 흙(土)에 뜨거운 불이 쏟아져 들어오니(화생토), 안 그래도 무거운 에너지가 바짝 굳어 【지금 이 시기】에 유독 내면 압축과 가슴 답답함, 소화기 피로(Z: -18 함몰, Y: 285Hz 저주파)가 극대화되는 타이밍입니다!`;
                 } else if (dominantOh[0] === '화') {
                     statusBadge = '🔥 2026 실시간: 과열·번아웃 폭발 주의';
                     statusColor = 'text-rose-300 bg-rose-500/20 border-rose-400/40 animate-pulse';
-                    calcX = 58;
+                    calcPotential = 90;
+                    calcRealized = 32;
                     calcY = 190;
                     calcZ = +28;
                     lifetimeBlueprint = `${nameStr}님은 평생 사주에 불(火)이 ${dominantOh[1]}%로 활활 타오르는 【열정적 태양형】 체질입니다. 행동력이 폭발적이나 쉽게 조급해지는 성향을 타고났습니다.`;
-                    realtimeFlow = `2026년 丙午년의 강력한 화(火) 기운이 겹치면서, 화(火) 에너지가 한계치를 초과하여 【지금 이 시기】에 극심한 번아웃과 충동적 분노 노이즈(Z: +28 폭발)가 위험 수준에 달해 있습니다.`;
+                    realtimeFlow = `2026년 丙午년의 강력한 화(火) 기운이 겹치면서 화(火) 에너지가 한계치를 초과하여, 번아웃과 충동적 분노 노이즈(Z: +28 폭발)가 위험 수준에 달해 있습니다.`;
                 } else {
                     statusBadge = '⚡ 2026 실시간: 에너지 편중 주의군';
                     statusColor = 'text-purple-300 bg-purple-500/20 border-purple-400/40';
-                    calcX = 68;
+                    calcPotential = 82;
+                    calcRealized = 40;
                     calcY = 340;
                     calcZ = -12;
                     lifetimeBlueprint = `${nameStr}님은 평생 사주 원국에 ${dominantOh[0]} 기운이 ${dominantOh[1]}%로 편중된 고유 체질을 지니고 있습니다.`;
@@ -198,14 +203,16 @@ function NeuralDiagnosisContent() {
             } else {
                 statusBadge = '✨ 2026 실시간: 영점 균형 안정권';
                 statusColor = 'text-emerald-300 bg-emerald-500/20 border-emerald-400/30';
-                calcX = 82;
+                calcPotential = 92;
+                calcRealized = 70;
                 calcY = 528;
                 calcZ = +4;
                 lifetimeBlueprint = `${nameStr}님은 평생 사주 원국에 5대 오행이 골고루 분산된 【오행 조화형】 체질입니다.`;
                 realtimeFlow = `2026년 세운의 흐름 속에서도 큰 왜곡 없이 영점(0)의 평정심을 원활하게 유지하고 있습니다.`;
             }
 
-            setXVal(calcX);
+            setXPotential(calcPotential);
+            setXRealized(calcRealized);
             setYVal(calcY);
             setZVal(calcZ);
 
@@ -313,7 +320,7 @@ function NeuralDiagnosisContent() {
             localStorage.setItem('saju_user_name', tempName);
         }
 
-        setSyncAlert(`🟢 ${tempName}님의 생년월일(${tempBirth}) 오행 분석 및 2-Layer 3D 좌표 1:1 동기화 완료!`);
+        setSyncAlert(`🟢 ${tempName}님의 생년월일(${tempBirth}) 오행 분석 및 영점 락(Lock) 3D 좌표 1:1 동기화 완료!`);
         confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
         setTimeout(() => setSyncAlert(null), 4000);
     };
@@ -477,7 +484,7 @@ function NeuralDiagnosisContent() {
                         >
                             <p className="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
                                 <Calendar size={13} />
-                                <span>생년월일 변경 ➔ 실시간 2-Layer 3D 좌표 재계산</span>
+                                <span>생년월일 변경 ➔ 실시간 영점 락(Lock) 3D 좌표 재계산</span>
                             </p>
                             
                             <div className="grid grid-cols-2 gap-2">
@@ -507,7 +514,7 @@ function NeuralDiagnosisContent() {
                                 className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                             >
                                 <Check size={14} />
-                                <span>이 생년월일로 오행 분석 및 2-Layer 좌표 즉시 동기화</span>
+                                <span>이 생년월일로 오행 분석 및 영점 락 좌표 즉시 동기화</span>
                             </button>
                         </motion.div>
                     )}
@@ -568,7 +575,7 @@ function NeuralDiagnosisContent() {
             <main className="relative z-20 px-4 pt-3.5 space-y-4">
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 1: 3D 종합 좌표 스캔 + [2-Layer 평생 vs 2026실시간]
+                    MODULE 1: 3D 종합 좌표 스캔 + [잠재력 vs 영점 락]
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'full_scan' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -632,8 +639,9 @@ function NeuralDiagnosisContent() {
                                     </span>
                                 </motion.div>
 
-                                <div className="absolute top-2 left-3 text-[9px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-400/30">
-                                    X: Meta ({xVal}%)
+                                <div className="absolute top-2 left-3 text-[9px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-400/30 flex items-center gap-1">
+                                    <Lock size={10} className="text-rose-400" />
+                                    <span>X: Dark {xRealized}% / 잠재 {xPotential}%</span>
                                 </div>
                                 <div className="absolute top-2 right-3 text-[9px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-400/30">
                                     Y: {yVal}Hz 파동
@@ -672,15 +680,27 @@ function NeuralDiagnosisContent() {
                                 </div>
                             </div>
 
-                            {/* 3차원 축 인포그래픽 수치 카드 */}
+                            {/* 🌟 3차원 축 인포그래픽: X축 잠재력 vs 현실 영점 락(Lock) 분리 🌟 */}
                             <div className="grid grid-cols-3 gap-2 text-center">
+                                
+                                {/* X축: 잠재 기회 vs 실제 레벨 */}
                                 <div className="p-3 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-1.5">
-                                    <p className="text-[10px] font-mono text-cyan-300 font-bold">X축 (의식)</p>
-                                    <p className="text-sm font-black text-white leading-tight">자각 {xVal}%</p>
-                                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                                        <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${xVal}%` }} />
+                                    <div className="flex items-center justify-between text-[10px] font-mono text-cyan-300 font-bold">
+                                        <span>X축(의식)</span>
+                                        <Lock size={11} className="text-rose-400" />
                                     </div>
-                                    <p className="text-[9px] text-gray-400 font-mono">생각 과부하</p>
+                                    <p className="text-xs font-black text-rose-300 leading-tight">Dark {xRealized}%</p>
+                                    
+                                    {/* 듀얼 프로그레스 바 (잠재력 점선 vs 실현 실선) */}
+                                    <div className="space-y-0.5">
+                                        <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden border border-cyan-400/40">
+                                            <div className="h-full bg-cyan-400/60 rounded-full" style={{ width: `${xPotential}%` }} title="우주 잠재 기회" />
+                                        </div>
+                                        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                            <div className="h-full bg-rose-500 rounded-full" style={{ width: `${xRealized}%` }} title="실제 영점 도달률" />
+                                        </div>
+                                    </div>
+                                    <p className="text-[8px] text-amber-300 font-mono font-bold">잠재 {xPotential}% 🔒 락</p>
                                 </div>
 
                                 <div className="p-3 rounded-2xl bg-black/40 border border-amber-500/30 space-y-1.5">
@@ -707,7 +727,7 @@ function NeuralDiagnosisContent() {
                                 </div>
                             </div>
 
-                            {/* 🌟 2-LAYER 정밀 리포트: 평생 선천 체질 vs 2026년 실시간 흐름 🌟 */}
+                            {/* 🌟 2-LAYER 정밀 리포트 + 제로포인트 락 팩트 폭격 🌟 */}
                             <div className="space-y-3 pt-1">
                                 
                                 {/* 🧬 1계층: 평생 선천 체질 (하드웨어 Blueprint) */}
@@ -726,8 +746,8 @@ function NeuralDiagnosisContent() {
                                     </p>
                                 </div>
 
-                                {/* ⚡ 2계층: 2026년 丙午년 & 오늘 실시간 진단 (현재 에너지 상태) */}
-                                <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-950/40 via-purple-950/40 to-slate-950 border border-amber-400/40 space-y-2 shadow-lg">
+                                {/* ⚡ 2계층: 2026년 丙午년 & 오늘 실시간 상태 + 제로포인트 락 경고 */}
+                                <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-950/40 via-purple-950/40 to-slate-950 border border-amber-400/40 space-y-2.5 shadow-lg">
                                     <div className="flex items-center justify-between">
                                         <span className="text-[11px] font-black text-amber-300 flex items-center gap-1.5">
                                             <Clock size={14} className="text-amber-400 animate-pulse" />
@@ -740,8 +760,20 @@ function NeuralDiagnosisContent() {
                                     <p className="text-xs text-white font-bold leading-relaxed">
                                         {sajuSpecs?.realtimeFlow}
                                     </p>
+
+                                    {/* ⚠️ 제로포인트 락 팩트 폭격 박스 */}
+                                    <div className="p-3 rounded-xl bg-rose-950/50 border border-rose-500/40 space-y-1.5 text-left">
+                                        <p className="text-[11px] font-black text-rose-300 flex items-center gap-1.5">
+                                            <Lock size={13} className="text-rose-400" />
+                                            <span>왜 88% 메타코드 찬스가 Dark 35%에 갇혀있는가?</span>
+                                        </p>
+                                        <p className="text-[11px] text-gray-200 leading-relaxed">
+                                            오늘 우주는 <strong>88% 메타코드의 절호의 실행 기회</strong>를 열어주었지만, {userName}님 내면의 <strong>제로포인트(영점) 자각 훈련</strong>이 되어 있지 않아 무의식의 방어기제와 불안(Dark 35%)이 이 기운을 튕겨내고 있습니다! 아무리 좋은 운이 와도 영점(0)이 닫혀 있으면 낭비됩니다.
+                                        </p>
+                                    </div>
+
                                     <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed font-medium">
-                                        💡 <strong>지금 필요한 솔루션:</strong> 현재 과열된 흙(土)의 기운을 식히고 528Hz로 파동을 조율한 뒤, 결핍된 목(木) 에너지를 순환시키는 <strong>Sovereign 3S 처방(Shift)</strong>이 시급합니다.
+                                        💡 <strong>영점 락(Lock) 해금 처방:</strong> 【도서 《제로 포인트》 20일 수련】과 【양자 각성 감정 연금술】로 내면의 영점(0)을 회복해야 88% 메타코드가 온전히 현실로 실현됩니다!
                                     </div>
                                 </div>
                             </div>
@@ -749,19 +781,19 @@ function NeuralDiagnosisContent() {
                             {/* 액션 버튼 2종 */}
                             <div className="pt-2 flex flex-col gap-2">
                                 <button
-                                    onClick={() => setActiveTab('action_3s')}
+                                    onClick={() => router.push('/quantum-awakening?tab=quest')}
                                     className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                                 >
-                                    <Rocket size={15} />
-                                    <span>🚀 2026년 실시간 체증을 해결할 3S 솔루션 실행하기 ➔</span>
+                                    <Unlock size={15} />
+                                    <span>🔓 제로포인트 영점 훈련으로 88% 메타코드 해금하기 ➔</span>
                                 </button>
 
                                 <button
-                                    onClick={() => handleConsultAI(`${userName}님의 [평생 사주 원국: 토 62% 과다, 목 0% 결핍]과 [2026년 병오년 세운 화생토 과열로 인한 실시간 Z축 -18 함몰 정체] 상태를 정밀 분석하여, 지금 당장 가슴 답답함과 에너지 체증을 뚫어낼 수 있는 1:1 맞춤형 솔루션을 코칭해주세요.`)}
+                                    onClick={() => handleConsultAI(`${userName}님의 [우주 기회 잠재력: 88% 메타코드]와 [현재 내면 영점 미도달: Dark 35% 락] 상태를 정밀 분석하여, 무의식의 저항을 풀고 오늘 즉각 메타코드의 성과를 실현할 수 있는 1:1 영점 조율 코칭을 해주세요.`)}
                                     className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
                                     <MessageSquare size={14} className="text-cyan-400" />
-                                    <span>AI 코치와 2026 실시간 완충 1:1 심층 상담하기 ➔</span>
+                                    <span>AI 코치와 영점 락(Lock) 해금 1:1 심층 상담 ➔</span>
                                 </button>
                             </div>
                         </div>
@@ -769,7 +801,7 @@ function NeuralDiagnosisContent() {
                 )}
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 2: X축 의식 코드 (Dark vs Neural vs Meta)
+                    MODULE 2: X축 의식 코드 (잠재력 vs 실제 영점 레벨)
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'x_axis' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -778,58 +810,77 @@ function NeuralDiagnosisContent() {
                                 <div>
                                     <h3 className="text-sm font-black text-white flex items-center gap-1.5">
                                         <Zap size={16} className="text-cyan-400" />
-                                        <span>X축: 의식 코드 스펙트럼</span>
+                                        <span>X축: 의식 코드 & 영점 락(Lock)</span>
                                     </h3>
-                                    <p className="text-[10px] text-gray-400">Dark ➔ Neural ➔ Meta 3단계</p>
+                                    <p className="text-[10px] text-gray-400">우주 기회 잠재력 vs 실제 제로포인트 레벨</p>
                                 </div>
-                                <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                                    현위치: Meta 진입단계 ({xVal}%)
+                                <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30 flex items-center gap-1">
+                                    <Lock size={10} />
+                                    <span>실제 도달: Dark {xRealized}%</span>
                                 </span>
                             </div>
 
-                            <div className="space-y-2.5">
-                                <div className="p-3 rounded-2xl bg-black/40 border border-rose-500/30 space-y-1">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs font-black text-rose-300">Level 1. Dark Code (결핍/생존)</span>
-                                        <span className="text-[9px] font-mono text-gray-400">0 ~ 35%</span>
+                            {/* 듀얼 레벨 비교 카드 */}
+                            <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-3">
+                                <div>
+                                    <div className="flex justify-between text-xs font-bold mb-1">
+                                        <span className="text-cyan-300">🌌 오늘 우주의 기회 잠재력 (Opportunity)</span>
+                                        <span className="text-cyan-400 font-mono">{xPotential}% (Meta 3.0 찬스)</span>
                                     </div>
+                                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-cyan-400/40">
+                                        <div className="h-full bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.8)]" style={{ width: `${xPotential}%` }} />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="flex justify-between text-xs font-bold mb-1">
+                                        <span className="text-rose-300 flex items-center gap-1">
+                                            <Lock size={12} />
+                                            <span>내면의 실제 제로포인트 도달률 (Realized)</span>
+                                        </span>
+                                        <span className="text-rose-400 font-mono">{xRealized}% (Dark Code 락)</span>
+                                    </div>
+                                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-rose-500/40">
+                                        <div className="h-full bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.8)]" style={{ width: `${xRealized}%` }} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2.5">
+                                <div className="p-3 rounded-2xl bg-rose-950/30 border border-rose-500/40 space-y-1">
+                                    <span className="text-xs font-black text-rose-300 flex items-center gap-1">
+                                        <Lock size={12} />
+                                        <span>Level 1. Dark Code (현재 상태: 35%)</span>
+                                    </span>
                                     <p className="text-[11px] text-gray-300 leading-relaxed">
-                                        과도한 책임감과 타인의 시선에 묶여 속으로 삭히고 방어기제를 세우는 상태.
+                                        제로포인트를 모르면 좋은 운이 와도 두려움과 과도한 책임감 때문에 속으로 삭히고 방어기제를 세웁니다.
                                     </p>
                                 </div>
 
                                 <div className="p-3 rounded-2xl bg-black/40 border border-indigo-500/30 space-y-1">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs font-black text-indigo-300">Level 2. Neural Code (자각/균형)</span>
-                                        <span className="text-[9px] font-mono text-gray-400">36 ~ 70%</span>
-                                    </div>
+                                    <span className="text-xs font-black text-indigo-300">Level 2. Neural Code (자각 훈련: 36~70%)</span>
                                     <p className="text-[11px] text-gray-300 leading-relaxed">
-                                        자신의 감정 억압을 객관적으로 인지하고, 0(Zero)의 기준점으로 되돌아오는 단계.
+                                        도서 《제로 포인트》 20일 자각 수련을 통해 감정을 관찰하고 0점(Zero Point)의 중심축을 잡는 단계.
                                     </p>
                                 </div>
 
                                 <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-400/50 space-y-1 shadow-inner">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs font-black text-cyan-200 flex items-center gap-1">
-                                            <Sparkles size={13} className="text-amber-300" />
-                                            <span>Level 3. Meta Code (초월/주권자)</span>
-                                        </span>
-                                        <span className="text-[9px] font-mono font-bold text-cyan-300 bg-cyan-400/20 px-1.5 py-0.5 rounded border border-cyan-400/30">
-                                            GOAL
-                                        </span>
-                                    </div>
+                                    <span className="text-xs font-black text-cyan-200 flex items-center gap-1">
+                                        <Sparkles size={13} className="text-amber-300" />
+                                        <span>Level 3. Meta Code (오늘의 잠재 목표: {xPotential}%)</span>
+                                    </span>
                                     <p className="text-[11px] text-cyan-100 font-bold leading-relaxed">
-                                        혼자 떠안던 무거운 짐을 내려놓고, 우주의 흐름 속에서 자유롭게 가치를 창출하는 주권자 상태.
+                                        영점이 완전히 열렸을 때 우주의 모든 기운을 100% 흡수하여 압도적 창조성과 성과를 실현하는 주권자 상태.
                                     </p>
                                 </div>
                             </div>
 
                             <button
-                                onClick={() => handleConsultAI(`${userName}님의 현재 의식 코드(${xVal}%)를 Dark Code의 무거운 책임감에서 벗어나 Meta Code 3.0으로 완벽히 승화시키는 1:1 맞춤 코칭을 해주세요.`)}
-                                className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
+                                onClick={() => router.push('/quantum-awakening?tab=quest')}
+                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-600 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                             >
-                                <MessageSquare size={14} />
-                                <span>X축 의식 코드 최적화 솔루션 받기 ➔</span>
+                                <Unlock size={15} />
+                                <span>양자 각성 퀘스트로 영점 락(Lock) 해금하기 ➔</span>
                             </button>
                         </div>
                     </div>
