@@ -8,7 +8,8 @@ import {
     Cpu, Key, Orbit, Rocket, Layers, Radio, Volume2, VolumeX,
     CheckCircle2, RefreshCw, MessageSquare, AlertCircle, ArrowUpRight,
     TrendingUp, Award, BarChart3, ChevronRight, Sliders, Play, Atom,
-    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame, Clock, Dna, Lock, Unlock, HelpCircle
+    Calendar, User, Edit3, Check, X, AlertTriangle, ShieldCheck, Flame, Clock, Dna, Lock, Unlock, HelpCircle,
+    ChevronLeft, BookOpen, Wind, Smile, Target, BookmarkCheck
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { calculateSaju } from '@/utils/SajuCalculator';
@@ -18,11 +19,215 @@ type DiagnosticTab = 'full_scan' | 'x_axis' | 'y_axis' | 'z_axis' | 'decoder' | 
 
 const TAB_CONFIG: { id: DiagnosticTab; label: string; icon: string; badge: string }[] = [
     { id: 'full_scan', label: '3D 종합 스캔', icon: '🧬', badge: 'XYZ 좌표' },
-    { id: 'x_axis', label: 'X축: 의식 코드', icon: '⚡', badge: '영점 락(Lock)' },
+    { id: 'x_axis', label: 'X축: 영점 자각', icon: '⚡', badge: '20일 코스' },
     { id: 'y_axis', label: 'Y축: 주파수(Hz)', icon: '📡', badge: '파동 측정' },
     { id: 'z_axis', label: 'Z축: 에너지 벡터', icon: '🧭', badge: '위험도 진단' },
     { id: 'decoder', label: '64 뉴럴 DNA', icon: '🔑', badge: '원형 해독' },
     { id: 'action_3s', label: '3S 솔루션 실행', icon: '🚀', badge: '긴급 처방' }
+];
+
+// ── 20일간 중복 없는 초보자 맞춤 제로포인트 자각 커리큘럼 (도서 《제로 포인트》 100% 연동) ──
+const ZERO_POINT_20_DAYS = [
+    {
+        day: 1,
+        title: "영화관 스크린의 비밀",
+        subtitle: "모든 생각과 감정이 지나가는 하얀 바탕",
+        metaphor: "영화 속에서 빌딩이 무너지고 폭우가 쏟아져도, 뒤에 있는 하얀 스크린은 단 1mm도 타거나 젖지 않습니다. 불안이나 슬픔이라는 영화가 아무리 격렬해도, 당신의 본래 마음(스크린)은 언제나 흠집 하나 없이 깨끗합니다.",
+        inquiry: "지금 소용돌이치는 감정을 극장 의자에 앉아 바라보고 있는 '관객(진짜 나)'은 누구인가?",
+        action: "눈을 감고 가슴으로 호흡하며 '나는 상영되는 영화가 아니라 스크린이다'라고 1초간 속삭여보세요.",
+        element: "Void (공/空)",
+        color: "indigo"
+    },
+    {
+        day: 2,
+        title: "숨과 숨 사이, 그 거룩한 틈새",
+        subtitle: "과거도 미래도 멈춘 0(Zero)의 찰나",
+        metaphor: "숨을 다 들이쉬고 내쉬기 직전, 그리고 숨을 다 내쉬고 들이쉬기 직전의 0.1초. 그 완벽한 진공의 틈새에서 번뇌는 멈춥니다. 그 틈새에는 증명해야 할 것도, 두려워할 것도 없습니다.",
+        inquiry: "숨이 오가지 않는 그 짧은 정적 속에서 나를 지탱하고 있는 순수한 존재는 무엇인가?",
+        action: "숨을 끝까지 내쉰 후, 다음 숨이 들어오기 전 딱 1초간 고요의 진공 틈새에 머물러보세요.",
+        element: "Air (풍/風)",
+        color: "cyan"
+    },
+    {
+        day: 3,
+        title: "도화지와 물감",
+        subtitle: "어떤 색을 칠해도 도화지는 물감이 아니다",
+        metaphor: "어떤 날은 검은 슬픔 물감을, 어떤 날은 붉은 분노 물감을 칠합니다. 하지만 당신은 칠해진 물감이 아니라 그 모든 색을 너그럽게 품어주는 새하얀 도화지 그 자체입니다.",
+        inquiry: "상처의 물감을 억지로 지우려 애쓰지 않고, 도화지 자체의 순수한 자리로 돌아갈 수 있는가?",
+        action: "가슴에 손을 얹고 '나는 지나가는 감정 물감이 아니라 온전한 도화지다'라고 나직이 읊조려보세요.",
+        element: "Light (명/明)",
+        color: "amber"
+    },
+    {
+        day: 4,
+        title: "100미터 바다 아래의 압도적 고요",
+        subtitle: "표면의 파도에 속지 않는 심해의 평화",
+        metaphor: "바다 표면에는 거센 태풍과 집채만 한 파도가 몰아쳐도, 100미터 아래 심해는 단 1밀리미터도 흔들리지 않고 얼음처럼 고요합니다. 당신의 본질은 표면 파도가 아니라 거대한 심해 바다 전체입니다.",
+        inquiry: "머릿속 걱정의 파도 밑바닥에 언제나 흐르고 있는 깊고 투명한 평화를 느끼는가?",
+        action: "생각의 무게중심을 복잡한 머리에서 아랫배 단전 심해 바닥으로 스르륵 내려놓으세요.",
+        element: "Water (수/水)",
+        color: "blue"
+    },
+    {
+        day: 5,
+        title: "0으로 돌아오는 영점 저울",
+        subtitle: "무거운 짐이 지나가도 바늘은 즉시 0을 가리킨다",
+        metaphor: "저울 위에 100kg의 무거운 바위가 올라왔다 내려가도, 저울은 바늘 하나 떨림 없이 정확히 0으로 복귀합니다. 과거의 어떤 실수나 상처가 지나갔더라도, 당신의 영점(0)은 결코 고장 난 적이 없습니다.",
+        inquiry: "지나간 일의 무게를 아직도 붙잡고 있는가, 아니면 저울처럼 지금 0으로 놓아줄 것인가?",
+        action: "어깨를 툭 떨어뜨리며 한숨을 길게 내쉬고 '모든 것을 지금 0(Zero)으로 리셋한다'고 선언하세요.",
+        element: "Ether (영점/零)",
+        color: "emerald"
+    },
+    {
+        day: 6,
+        title: "하늘을 지나가는 먹구름",
+        subtitle: "먹구름이 아무리 짙어도 하늘은 푸르다",
+        metaphor: "아무리 짙은 먹구름과 번개가 하늘을 뒤덮어도, 비행기를 타고 구름 위로 올라가면 언제나 눈부신 파란 하늘과 태양이 빛납니다. 당신의 우울과 불안은 먹구름일 뿐, 파란 하늘인 당신을 해치지 못합니다.",
+        inquiry: "먹구름을 없애려고 싸우는 대신, 구름 뒤에 언제나 존재하는 푸른 하늘을 바라볼 수 있는가?",
+        action: "창밖 하늘을 3초간 올려다보며 '구름은 지나가고 하늘은 영원하다'고 느껴보세요.",
+        element: "Sky (천/天)",
+        color: "sky"
+    },
+    {
+        day: 7,
+        title: "방 안의 거울",
+        subtitle: "추한 것이 비쳐도 거울은 더러워지지 않는다",
+        metaphor: "거울 앞에 진흙탕이 비쳐도 거울 유리 자체는 조금도 더러워지지 않고, 아름다운 꽃이 비쳐도 교만해지지 않습니다. 당신의 참된 마음은 세상을 그저 투명하게 비추는 거울입니다.",
+        inquiry: "내 마음에 비친 세상의 비난과 판단에 집착하지 않고, 투명한 거울 자체로 머물 수 있는가?",
+        action: "거울 속 내 눈동자를 3초간 지그시 바라보며 '너는 비친 그림자가 아니라 순수한 거울이다'라고 말해주세요.",
+        element: "Mirror (경/鏡)",
+        color: "purple"
+    },
+    {
+        day: 8,
+        title: "라디오 다이얼과 주파수",
+        subtitle: "잡음 채널에서 528Hz 사랑의 채널로",
+        metaphor: "라디오에서 지지직거리는 잡음이 나온다고 라디오를 부술 필요는 없습니다. 그저 다이얼을 돌려 맑은 음악 채널로 주파수를 맞추면 됩니다. 다크코드는 잡음 방송일 뿐, 영점(0)으로 다이얼을 돌리면 됩니다.",
+        inquiry: "지금 내 뇌에서 흘러나오는 불안의 방송을 그저 '주파수가 잠시 빗나간 소리'로 알아차릴 수 있는가?",
+        action: "가슴을 활짝 펴고 528Hz의 맑은 울림을 상상하며 길게 숨을 내쉬어 보세요.",
+        element: "Frequency (파/波)",
+        color: "rose"
+    },
+    {
+        day: 9,
+        title: "그릇과 빈 공간",
+        subtitle: "그릇의 진짜 쓸모는 비어있는 공간에 있다",
+        metaphor: "찻잔에 흙탕물이 가득 차 있으면 따뜻하고 향기로운 차를 따를 수 없습니다. 그릇의 가치는 진흙 벽이 아니라 '비어있는 공간'에 있습니다. 생각을 비워낼 때 우주의 무한한 지혜가 채워집니다.",
+        inquiry: "머릿속에 꽉 찬 생각과 걱정을 비워내어, 우주의 새로운 기회가 들어올 공간을 내어줄 수 있는가?",
+        action: "양손바닥을 하늘로 향하게 무릎 위에 올려놓고 '나를 비워 우주를 담는다'고 느껴보세요.",
+        element: "Vessel (기/器)",
+        color: "teal"
+    },
+    {
+        day: 10,
+        title: "어린아이의 잠꼬대",
+        subtitle: "무서운 꿈을 꾸는 자아를 깨우는 자비",
+        metaphor: "아이가 악몽을 꾸며 괴로워할 때 부모는 아이를 혼내지 않고 등을 토닥이며 '아가야 꿈이란다, 이제 깨어나렴' 합니다. 내 안의 두려움도 상처받은 내면 아이의 잠꼬대입니다. 따뜻하게 안아주세요.",
+        inquiry: "불안해하는 나 자신을 채찍질하는 대신, 따뜻한 어머니의 눈빛으로 안아줄 수 있는가?",
+        action: "두 팔로 내 어깨를 따뜻하게 감싸 안으며 '괜찮아, 다 잘될 거야'라고 토닥여주세요.",
+        element: "Embrace (포/抱)",
+        color: "pink"
+    },
+    {
+        day: 11,
+        title: "강물에 떠내려가는 나뭇잎",
+        subtitle: "생각을 붙잡지 않고 흘려보내는 강물",
+        metaphor: "강가에 앉아 흐르는 물을 봅니다. 단풍잎, 마른 나뭇가지가 흘러갑니다. 굳이 강물에 뛰어들어 나뭇잎을 건져 올릴 필요가 없습니다. 생각도 그저 강물 위의 나뭇잎처럼 바라보면 저절로 흘러갑니다.",
+        inquiry: "떠오르는 불쾌한 생각을 억지로 분석하지 않고, 그저 강물에 떠내려가는 잎처럼 둘 수 있는가?",
+        action: "떠오르는 생각을 마음속 강물에 나뭇잎으로 띄워 멀리 흘려보내는 상상을 해보세요.",
+        element: "Flow (류/流)",
+        color: "blue"
+    },
+    {
+        day: 12,
+        title: "태풍의 눈",
+        subtitle: "반경 수백 킬로 폭풍 속 가장 안전한 중심점",
+        metaphor: "태풍의 바깥쪽은 시속 150km의 강풍과 폭우가 몰아치지만, 정중앙 '태풍의 눈'은 바람 하나 없이 푸른 하늘이 보이고 새가 날아다닙니다. 당신의 영점(Zero Point)이 바로 삶의 태풍의 눈입니다.",
+        inquiry: "주변 상황이 아무리 혼란스러워도, 내 가슴 한가운데 태풍의 눈으로 들어가 고요할 수 있는가?",
+        action: "가슴 중앙에 주의를 모으고 '이곳은 세상에서 가장 안전한 영점의 성소다'라고 선언하세요.",
+        element: "Center (중/中)",
+        color: "amber"
+    },
+    {
+        day: 13,
+        title: "불타는 난로와 온기",
+        subtitle: "분노의 불꽃을 혁신의 온기로 전환하기",
+        metaphor: "산불은 모든 것을 태워 없애지만, 벽난로 속의 불은 방 전체를 따뜻하게 덥히고 맛있는 음식을 익힙니다. 내 안의 분노와 억울함도 억누르면 폭발하지만, 영점으로 조율하면 강력한 돌파력이 됩니다.",
+        inquiry: "억울함의 뜨거운 에너지를 상대를 향한 비난 대신, 내 사업과 비전의 추진력으로 바꿀 수 있는가?",
+        action: "주먹을 꽉 쥐었다가 천천히 펴며 분노의 화력을 내 비전의 엔진으로 이동시켜 보세요.",
+        element: "Fire (화/火)",
+        color: "orange"
+    },
+    {
+        day: 14,
+        title: "뿌리 깊은 고목나무",
+        subtitle: "바람이 불수록 땅속 깊이 뿌리를 내린다",
+        metaphor: "언덕 위의 고목나무는 세찬 바람이 불 때마다 불평하는 대신, 땅속 깊은 암반으로 뿌리를 1미터 더 뻗습니다. 바람이 불어온 덕분에 고목나무는 백 년을 버티는 거목이 됩니다. 시련은 영점의 뿌리를 내리는 기회입니다.",
+        inquiry: "오늘 겪는 스트레스를 나를 무너뜨리는 적이 아니라, 내 영점의 뿌리를 깊게 만드는 선물로 볼 수 있는가?",
+        action: "발바닥이 땅에 닿는 느낌에 집중하며 대지의 깊은 안정감을 온몸으로 들이마셔 보세요.",
+        element: "Root (근/根)",
+        color: "emerald"
+    },
+    {
+        day: 15,
+        title: "순금 제련소의 도가니",
+        subtitle: "뜨거운 열기가 불순물을 녹여 99.9% 순금을 만든다",
+        metaphor: "광석에서 순금을 뽑아내려면 섭씨 1,000도의 뜨거운 용광로를 거쳐야 합니다. 삶의 시련은 당신을 태워 없애려는 것이 아니라, 에고의 불순물을 녹여내어 가장 찬란한 순금(다이아몬드 코어)을 빚어내는 과정입니다.",
+        inquiry: "지금 겪는 고통이 내 영혼을 가장 고귀한 순금으로 벼려내는 거룩한 제련소임을 신뢰하는가?",
+        action: "가슴에 금빛 태양이 환하게 타오르는 상상을 하며 당당하게 허리를 펴보세요.",
+        element: "Gold (금/金)",
+        color: "yellow"
+    },
+    {
+        day: 16,
+        title: "오케스트라 지휘자의 쉼표",
+        subtitle: "가장 웅장한 교향곡은 한 박자의 쉼표 뒤에 울린다",
+        metaphor: "베토벤 교향곡에서 가장 심장을 때리는 순간은 모든 악기가 멈추는 '단 한 박자의 쉼표(Silence)' 직후입니다. 쉼표가 없으면 음악은 소음이 됩니다. 영점의 멈춤은 위대한 인생의 쉼표입니다.",
+        inquiry: "불안해서 멈추지 못하고 달리기만 하던 발걸음을, 한 박자의 거룩한 쉼표로 멈출 용기가 있는가?",
+        action: "하던 일을 멈추고 3초간 아무것도 하지 않은 채 완벽한 정적을 즐겨보세요.",
+        element: "Pause (지/止)",
+        color: "indigo"
+    },
+    {
+        day: 17,
+        title: "어두운 밤하늘의 북극성",
+        subtitle: "밤이 깊을수록 길을 밝히는 별은 더 또렷해진다",
+        metaphor: "대낮에는 북극성이 보이지 않습니다. 칠흑같이 어두운 밤이 되어야만 비로소 북극성이 선명하게 빛나 길 잃은 나그네의 방향을 가리킵니다. 인생의 가장 캄캄한 밤에 당신의 진짜 사명(북극성)이 뜹니다.",
+        inquiry: "어둠을 무서워하는 대신, 내 영혼이 가리키는 궁극의 북극성을 똑바로 바라볼 수 있는가?",
+        action: "가슴 한가운데 흔들리지 않는 빛나는 북극성을 품고 '나는 길을 알고 있다' 선언하세요.",
+        element: "Star (성/星)",
+        color: "cyan"
+    },
+    {
+        day: 18,
+        title: "진주조개의 상처",
+        subtitle: "살을 에는 모래알을 가장 영롱한 보석으로 감싸다",
+        metaphor: "조개 살 속에 날카로운 모래알이 파고들면 극심한 고통이 찾아옵니다. 조개는 모래를 탓하지 않고 자신의 진주액으로 수만 번 감싸 안아 세상에서 가장 귀한 진주를 탄생시킵니다. 당신의 상처가 세상의 진주입니다.",
+        inquiry: "내 아픈 상처를 원망하는 대신, 타인을 살리는 영롱한 진주로 빚어낼 준비가 되었는가?",
+        action: "아픈 기억을 떠올리고 '이 상처는 나를 빛낼 위대한 진주가 된다'고 축복해 주세요.",
+        element: "Pearl (주/珠)",
+        color: "purple"
+    },
+    {
+        day: 19,
+        title: "우주 정거장의 무중력",
+        subtitle: "모든 지구의 중력을 벗어던진 절대 자유",
+        metaphor: "지구에서는 작은 물건 하나도 바닥으로 곤두박질치지만, 지구 대기권을 벗어난 우주 공간에서는 모든 것이 가볍게 둥둥 뜹니다. 세상의 기대와 비교라는 중력을 벗어날 때, 당신의 영혼은 절대 자유를 얻습니다.",
+        inquiry: "세상이 씌워준 '이래야 한다'는 무거운 중력의 갑옷을 벗고, 무중력의 영점으로 날아오를 수 있는가?",
+        action: "어깨를 가볍게 털며 '나는 세상의 시선에서 완전히 자유롭다'고 미소 지어보세요.",
+        element: "Space (우/宇)",
+        color: "blue"
+    },
+    {
+        day: 20,
+        title: "태양의 무조건적 나눔 (메타코드 완성)",
+        subtitle: "대가 없이 온 세상을 비추는 주권자의 광명",
+        metaphor: "태양은 '나를 인정해 주면 빛을 주겠다'고 거래하지 않습니다. 그저 존재 자체로 온 누리를 따뜻하게 비출 뿐입니다. 0(Zero Point)의 중심을 잡은 자는 결핍에서 벗어나 세상에 축복을 쏟아붓는 주권자가 됩니다.",
+        inquiry: "인정받으려 애쓰던 결핍의 방어자를 넘어, 세상에 빛과 가치를 아낌없이 선물하는 주권자가 되겠는가?",
+        action: "오늘 마주치는 한 사람에게 진심 어린 축복과 격려의 미소를 말없이 선물해 보세요.",
+        element: "Sun (양/陽)",
+        color: "amber"
+    }
 ];
 
 // 3문항 실시간 의식 스캐너 질문 정의
@@ -128,14 +333,14 @@ function NeuralDiagnosisContent() {
     const [yVal, setYVal] = useState(285);
     const [zVal, setZVal] = useState(-18);
 
-    // 🌟 [핵심 신규] 실시간 3문항 의식 스캐너 & AI 엉터리 답변 감지 상태
+    // 🌟 실시간 3문항 의식 스캐너 & AI 엉터리 답변 감지 상태
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
     const [currentQIndex, setCurrentQIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<number[]>([]);
     const [questionStartTime, setQuestionStartTime] = useState<number>(0);
     const [aiWarning, setAiWarning] = useState<string | null>(null);
 
-    // 🌟 [신규] 분석 연산 로딩 & 결과 리포트 모달 상태
+    // 🌟 분석 연산 로딩 & 결과 리포트 모달 상태
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<{
         prevLevel: number;
@@ -147,8 +352,64 @@ function NeuralDiagnosisContent() {
         summary: string;
     } | null>(null);
 
+    // 🌟 [핵심 신규] 20일 제로포인트 자각 퀘스트 & 30초 인터랙티브 호흡기 상태
+    const [selectedZeroDay, setSelectedZeroDay] = useState<number>(1);
+    const [isBreathingActive, setIsBreathingActive] = useState<boolean>(false);
+    const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale' | 'rest'>('inhale');
+    const [breathSeconds, setBreathSeconds] = useState<number>(30);
+    const [isBreathingDone, setIsBreathingDone] = useState<boolean>(false);
+    const breathTimerRef = useRef<NodeJS.Timeout | null>(null);
+
     // 3S 퀘스트 완료 상태
     const [is3SCompleted, setIs3SCompleted] = useState(false);
+
+    // 오늘 날짜 기준 기본 Day 계산 (1~20 순환)
+    useEffect(() => {
+        const todayDate = new Date().getDate(); // 1~31
+        const calculatedDay = ((todayDate - 1) % 20) + 1;
+        setSelectedZeroDay(calculatedDay);
+    }, []);
+
+    // 30초 인터랙티브 영점 호흡기 타이머 엔진
+    useEffect(() => {
+        if (isBreathingActive && breathSeconds > 0) {
+            breathTimerRef.current = setTimeout(() => {
+                setBreathSeconds(prev => prev - 1);
+                
+                // 4-4-4-4 박스 브리딩 위상 전환 (16초 주기)
+                const cyclePos = (30 - breathSeconds) % 16;
+                if (cyclePos < 4) setBreathPhase('inhale');
+                else if (cyclePos < 8) setBreathPhase('hold');
+                else if (cyclePos < 12) setBreathPhase('exhale');
+                else setBreathPhase('rest');
+
+            }, 1000);
+        } else if (isBreathingActive && breathSeconds === 0) {
+            setIsBreathingActive(false);
+            setIsBreathingDone(true);
+            confetti({
+                particleCount: 90,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#10b981', '#06b6d4', '#f59e0b', '#a855f7']
+            });
+        }
+        return () => {
+            if (breathTimerRef.current) clearTimeout(breathTimerRef.current);
+        };
+    }, [isBreathingActive, breathSeconds]);
+
+    const handleStartBreathing = () => {
+        setIsBreathingDone(false);
+        setBreathSeconds(30);
+        setBreathPhase('inhale');
+        setIsBreathingActive(true);
+    };
+
+    const handleStopBreathing = () => {
+        setIsBreathingActive(false);
+        if (breathTimerRef.current) clearTimeout(breathTimerRef.current);
+    };
 
     // 사주 분석 엔진
     const analyzeSajuDetail = (bDateStr: string, nameStr: string) => {
@@ -360,10 +621,9 @@ function NeuralDiagnosisContent() {
         if (currentQIndex < CONSCIOUSNESS_QUESTIONS.length - 1) {
             setCurrentQIndex(currentQIndex + 1);
         } else {
-            // 3문항 모두 완료 ➔ AI 무결성 및 모순 검증 실행
             const totalElapsedSec = (Date.now() - questionStartTime) / 1000;
             
-            // 검증 1: 스피드 트랩 (3.2초 미만 광속 클릭)
+            // 검증 1: 스피드 트랩 (3.2초 미만)
             if (totalElapsedSec < 3.2) {
                 setAiWarning('⚠️ [AI 실시간 무결성 경고: 광속 어뷰징 감지]\n문항을 읽지 않고 3.2초 만에 연속 클릭하셨습니다. 장난스러운 응답으로는 대한민국 특허 기반 3D 정밀 진단 결과를 산출할 수 없습니다. 진지하게 질문을 읽고 솔직하게 다시 응답해주세요.');
                 return;
@@ -381,9 +641,9 @@ function NeuralDiagnosisContent() {
                 return;
             }
 
-            // ✅ 정상 통과: 1.5초간 AI 신경망 분석 연출 후 결과 리포트 팝업 오픈!
+            // ✅ 정상 통과: 1.4초간 AI 신경망 분석 연출 후 결과 리포트 팝업 오픈!
             setIsAnalyzing(true);
-            const sum = nextAnswers.reduce((a, b) => a + b, 0); // 3 ~ 9
+            const sum = nextAnswers.reduce((a, b) => a + b, 0);
             const calculatedRealized = Math.round(20 + ((sum - 3) / 6) * 65);
 
             setTimeout(() => {
@@ -391,7 +651,6 @@ function NeuralDiagnosisContent() {
                 const prev = xRealized;
                 setXRealized(calculatedRealized);
 
-                // 세부 비율 및 멘트 계산
                 let codeName = 'Dark Code (결핍/방어)';
                 let darkRatio = 65;
                 let neuralRatio = 25;
@@ -506,6 +765,9 @@ function NeuralDiagnosisContent() {
     const handleConsultAI = (prompt: string) => {
         router.push(`/myeongsim-chat?intent=${encodeURIComponent(prompt)}`);
     };
+
+    // 현재 선택된 일차 퀘스트 객체
+    const activeQuest = ZERO_POINT_20_DAYS.find(q => q.day === selectedZeroDay) || ZERO_POINT_20_DAYS[0];
 
     return (
         <div className="relative flex h-full min-h-screen w-full flex-col bg-[#05030b] max-w-md mx-auto shadow-2xl overflow-hidden font-sans pb-28 text-white">
@@ -691,7 +953,7 @@ function NeuralDiagnosisContent() {
             <main className="relative z-20 px-4 pt-3.5 space-y-4">
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 1: 3D 종합 좌표 스캔 + [3문항 정밀 의식 스캐너]
+                    MODULE 1: 3D 종합 좌표 스캔
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'full_scan' && (
                     <div className="space-y-4 animate-fade-in text-left">
@@ -798,7 +1060,6 @@ function NeuralDiagnosisContent() {
 
                             {/* 3차원 축 인포그래픽 수치 카드 */}
                             <div className="grid grid-cols-3 gap-2 text-center">
-                                
                                 <div className="p-3 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-1.5">
                                     <div className="flex items-center justify-between text-[10px] font-mono text-cyan-300 font-bold">
                                         <span>X축(의식)</span>
@@ -899,11 +1160,11 @@ function NeuralDiagnosisContent() {
                                 </button>
 
                                 <button
-                                    onClick={() => handleConsultAI(`${userName}님의 [우주 기회 잠재력: 88% 메타코드]와 [실제 심리 측정치: Dark ${xRealized}% 락] 상태를 정밀 분석하여, 무의식의 저항을 풀고 오늘 즉각 메타코드의 성과를 실현할 수 있는 1:1 영점 조율 코칭을 해주세요.`)}
+                                    onClick={() => setActiveTab('x_axis')}
                                     className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
-                                    <MessageSquare size={14} className="text-cyan-400" />
-                                    <span>AI 코치와 영점 락(Lock) 해금 1:1 심층 상담 ➔</span>
+                                    <Wind size={14} className="text-cyan-400" />
+                                    <span>🧘 Day {selectedZeroDay} 오늘의 영점(Zero Point) 자각 훈련 하러 가기 ➔</span>
                                 </button>
                             </div>
                         </div>
@@ -911,96 +1172,199 @@ function NeuralDiagnosisContent() {
                 )}
 
                 {/* ══════════════════════════════════════════════════════
-                    MODULE 2: X축 의식 코드 (영점 락 해금 탭)
+                    MODULE 2: X축 의식 코드 & [매일 달라지는 20일 제로포인트 자각 퀘스트]
                    ══════════════════════════════════════════════════════ */}
                 {activeTab === 'x_axis' && (
                     <div className="space-y-4 animate-fade-in text-left">
                         <div className="p-5 rounded-3xl bg-gradient-to-b from-[#181135] via-[#100a24] to-[#070412] border border-cyan-400/40 shadow-2xl space-y-4">
+                            
+                            {/* 헤더 */}
                             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                                 <div>
                                     <h3 className="text-sm font-black text-white flex items-center gap-1.5">
                                         <Zap size={16} className="text-cyan-400" />
-                                        <span>X축: 의식 코드 & 영점 락(Lock)</span>
+                                        <span>X축: 의식 코드 & 영점(0) 자각 코스</span>
                                     </h3>
-                                    <p className="text-[10px] text-gray-400">우주 기회 잠재력 vs 실제 제로포인트 레벨</p>
+                                    <p className="text-[10px] text-gray-400">도서 《제로 포인트》 20일 마스터 수련</p>
                                 </div>
-                                <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30 flex items-center gap-1">
-                                    <Lock size={10} />
-                                    <span>실제 도달: {xRealized}%</span>
+                                <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center gap-1">
+                                    <BookmarkCheck size={11} />
+                                    <span>Day {selectedZeroDay} / 20</span>
                                 </span>
                             </div>
 
-                            <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-3">
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold mb-1">
-                                        <span className="text-cyan-300">🌌 오늘 우주의 기회 잠재력 (Opportunity)</span>
-                                        <span className="text-cyan-400 font-mono">{xPotential}% (Meta 3.0 찬스)</span>
-                                    </div>
-                                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-cyan-400/40">
-                                        <div className="h-full bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.8)]" style={{ width: `${xPotential}%` }} />
-                                    </div>
+                            {/* 🌟 20일 일차 가로 스크롤 셀렉터 🌟 */}
+                            <div className="space-y-1.5">
+                                <div className="flex justify-between items-center text-[10px] text-gray-400 font-mono">
+                                    <span>📅 1일차~20일차 매일 다른 자각 훈련</span>
+                                    <span className="text-cyan-300">터치하여 다른 날짜 보기 ➔</span>
                                 </div>
+                                <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+                                    {ZERO_POINT_20_DAYS.map((q) => {
+                                        const isSel = q.day === selectedZeroDay;
+                                        return (
+                                            <button
+                                                key={q.day}
+                                                onClick={() => {
+                                                    setSelectedZeroDay(q.day);
+                                                    setIsBreathingDone(false);
+                                                    setIsBreathingActive(false);
+                                                }}
+                                                className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-all cursor-pointer ${
+                                                    isSel
+                                                        ? 'bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 shadow-md font-black scale-105'
+                                                        : 'bg-white/[0.05] text-gray-400 border border-white/[0.08] hover:bg-white/[0.1] hover:text-gray-200'
+                                                }`}
+                                            >
+                                                Day {q.day}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
 
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold mb-1">
-                                        <span className="text-rose-300 flex items-center gap-1">
-                                            <Lock size={12} />
-                                            <span>내면의 실제 제로포인트 도달률 (Realized)</span>
+                            {/* 🌟 Day N 오늘의 영점 자각 카드 (초보자 맞춤 설명) 🌟 */}
+                            <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/60 via-[#130b2e] to-slate-950 border border-cyan-400/40 space-y-3 shadow-xl">
+                                
+                                <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                                    <div>
+                                        <span className="text-[10px] font-mono text-cyan-300 font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-400/30">
+                                            Day {activeQuest.day} : {activeQuest.element}
                                         </span>
-                                        <span className="text-rose-400 font-mono">{xRealized}% (실제 측정치)</span>
+                                        <h4 className="text-sm font-black text-white mt-1">
+                                            {activeQuest.title}
+                                        </h4>
+                                        <p className="text-[11px] text-amber-300 font-medium">
+                                            "{activeQuest.subtitle}"
+                                        </p>
                                     </div>
-                                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-rose-500/40">
-                                        <div className="h-full bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.8)]" style={{ width: `${xRealized}%` }} />
-                                    </div>
+                                    <span className="size-10 rounded-2xl bg-gradient-to-br from-cyan-400/20 to-indigo-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 text-lg">
+                                        🧘
+                                    </span>
                                 </div>
+
+                                {/* 1. 초보자 비유 풀이 */}
+                                <div className="p-3 rounded-xl bg-black/50 border border-white/[0.08] space-y-1">
+                                    <p className="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
+                                        <Smile size={12} />
+                                        <span>[1단계. 초보자도 1초 만에 이해하는 비유]</span>
+                                    </p>
+                                    <p className="text-xs text-gray-200 leading-relaxed font-medium">
+                                        {activeQuest.metaphor}
+                                    </p>
+                                </div>
+
+                                {/* 2. 오늘의 1분 영점 질문 */}
+                                <div className="p-3 rounded-xl bg-purple-950/40 border border-purple-400/30 space-y-1">
+                                    <p className="text-[11px] font-bold text-purple-300 flex items-center gap-1">
+                                        <Eye size={12} />
+                                        <span>[2단계. 내면을 0으로 만드는 영점 질문]</span>
+                                    </p>
+                                    <p className="text-xs text-purple-100 font-bold leading-relaxed">
+                                        "{activeQuest.inquiry}"
+                                    </p>
+                                </div>
+
+                                {/* 3. 오늘의 1분 실천 액션 */}
+                                <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-400/30 space-y-1">
+                                    <p className="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
+                                        <Target size={12} />
+                                        <span>[3단계. 오늘 하루 즉각 실천 미션]</span>
+                                    </p>
+                                    <p className="text-xs text-emerald-100 font-medium leading-relaxed">
+                                        👉 {activeQuest.action}
+                                    </p>
+                                </div>
+
+                                {/* 🌟 4. 30초 인터랙티브 영점 호흡기 위젯 🌟 */}
+                                <div className="p-4 rounded-2xl bg-black/60 border border-cyan-500/30 text-center space-y-3">
+                                    <p className="text-xs font-bold text-cyan-300">
+                                        🫁 30초 인터랙티브 영점 호흡 실습 (Box Breathing)
+                                    </p>
+
+                                    {isBreathingActive ? (
+                                        <div className="space-y-3 py-2">
+                                            {/* 맥동하는 네온 링 */}
+                                            <div className="relative size-32 mx-auto flex items-center justify-center">
+                                                <motion.div
+                                                    className="absolute inset-0 rounded-full bg-cyan-500/20 border-2 border-cyan-400"
+                                                    animate={{
+                                                        scale: breathPhase === 'inhale' ? [1, 1.3] : breathPhase === 'hold' ? 1.3 : breathPhase === 'exhale' ? [1.3, 1] : 1,
+                                                        opacity: breathPhase === 'hold' ? [0.6, 1, 0.6] : 0.8
+                                                    }}
+                                                    transition={{ duration: 4, ease: "easeInOut" }}
+                                                />
+                                                <div className="relative z-10">
+                                                    <p className="text-2xl font-black text-white font-mono">{breathSeconds}s</p>
+                                                    <p className="text-[11px] font-bold text-cyan-300 mt-0.5">
+                                                        {breathPhase === 'inhale' && '들이마시기 (Inhale)'}
+                                                        {breathPhase === 'hold' && '✨ 영점 멈춤 (Zero Point)'}
+                                                        {breathPhase === 'exhale' && '비워내기 (Exhale)'}
+                                                        {breathPhase === 'rest' && '순수 현존 (Presence)'}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={handleStopBreathing}
+                                                className="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-xs font-bold transition-all cursor-pointer"
+                                            >
+                                                호흡 멈추기
+                                            </button>
+                                        </div>
+                                    ) : isBreathingDone ? (
+                                        <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-400/40 space-y-2 animate-fade-in">
+                                            <p className="text-xs font-black text-emerald-300 flex items-center justify-center gap-1">
+                                                <CheckCircle2 size={15} />
+                                                <span>🎉 Day {activeQuest.day} 영점 자각 호흡 완료!</span>
+                                            </p>
+                                            <p className="text-[11px] text-emerald-100">
+                                                내면의 영점(0)이 활성화되었습니다. 이제 88% 메타코드의 기운이 온전히 흡수됩니다!
+                                            </p>
+                                            <button
+                                                onClick={handleStartBreathing}
+                                                className="px-3 py-1 rounded-lg bg-emerald-500 text-slate-950 text-[10px] font-bold"
+                                            >
+                                                다시 호흡하기
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={handleStartBreathing}
+                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                                        >
+                                            <Wind size={15} />
+                                            <span>지금 화면을 보며 30초 영점 호흡 실습하기 (Start)</span>
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* 도서 연결 문구 */}
+                                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[10px] text-amber-200 leading-relaxed text-center">
+                                    📖 <strong>도서 《제로 포인트》 수련 안내:</strong> 매일 접속하시면 Day 1부터 Day 20까지의 구체적인 자각 미션이 순차적으로 해금됩니다. 도서 제3장과 함께 수련하시면 100배의 시너지가 일어납니다!
+                                </div>
+
                             </div>
 
-                            <div className="space-y-2.5">
-                                <div className="p-3 rounded-2xl bg-rose-950/30 border border-rose-500/40 space-y-1">
-                                    <span className="text-xs font-black text-rose-300 flex items-center gap-1">
-                                        <Lock size={12} />
-                                        <span>Level 1. Dark Code (실제 측정치: {xRealized}%)</span>
-                                    </span>
-                                    <p className="text-[11px] text-gray-300 leading-relaxed">
-                                        제로포인트를 모르면 좋은 운이 와도 두려움과 과도한 책임감 때문에 속으로 삭히고 방어기제를 세웁니다.
-                                    </p>
-                                </div>
-
-                                <div className="p-3 rounded-2xl bg-black/40 border border-indigo-500/30 space-y-1">
-                                    <span className="text-xs font-black text-indigo-300">Level 2. Neural Code (자각 훈련: 36~70%)</span>
-                                    <p className="text-[11px] text-gray-300 leading-relaxed">
-                                        도서 《제로 포인트》 20일 자각 수련을 통해 감정을 관찰하고 0점(Zero Point)의 중심축을 잡는 단계.
-                                    </p>
-                                </div>
-
-                                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-400/50 space-y-1 shadow-inner">
-                                    <span className="text-xs font-black text-cyan-200 flex items-center gap-1">
-                                        <Sparkles size={13} className="text-amber-300" />
-                                        <span>Level 3. Meta Code (오늘의 잠재 목표: {xPotential}%)</span>
-                                    </span>
-                                    <p className="text-[11px] text-cyan-100 font-bold leading-relaxed">
-                                        영점이 완전히 열렸을 때 우주의 모든 기운을 100% 흡수하여 압도적 창조성과 성과를 실현하는 주권자 상태.
-                                    </p>
-                                </div>
-                            </div>
-
+                            {/* 하단 액션 버튼 */}
                             <div className="pt-1 flex flex-col gap-2">
                                 <button
                                     onClick={handleStartQuestionnaire}
-                                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-600 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                    className="w-full py-3 rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] text-cyan-200 hover:text-white border border-white/10 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
                                     <Sparkles size={14} />
-                                    <span>🔬 3문항 실시간 문진으로 내 의식 레벨 다시 측정하기</span>
+                                    <span>🔬 3문항 실시간 의식 레벨 다시 측정하기</span>
                                 </button>
 
                                 <button
                                     onClick={() => router.push('/quantum-awakening?tab=quest')}
-                                    className="w-full py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-200 hover:text-white border border-white/[0.08] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                    className="w-full py-2.5 rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                                 >
                                     <Unlock size={14} />
-                                    <span>양자 각성 퀘스트로 영점 락(Lock) 해금하기 ➔</span>
+                                    <span>양자 각성 퀘스트 룸 전체 보러 가기 ➔</span>
                                 </button>
                             </div>
+
                         </div>
                     </div>
                 )}
@@ -1036,7 +1400,7 @@ function NeuralDiagnosisContent() {
                                         className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                                             yVal === p.hz
                                                 ? 'bg-amber-400 text-slate-950 font-black border-amber-300 shadow-md'
-                                                : 'bg-white/[0.04] text-gray-300 border-white/[0.08]'
+                                                : 'bg-white/[0.04] text-gray-300 border-white/[0.08] hover:bg-white/[0.08]'
                                         }`}
                                     >
                                         <p className="text-xs font-mono font-bold">{p.hz}Hz</p>
@@ -1232,7 +1596,7 @@ function NeuralDiagnosisContent() {
             </main>
 
             {/* ══════════════════════════════════════════════════════
-                🌟 [핵심 신규] 3문항 실시간 의식 스캐너 & 결과 리포트 모달 🌟
+                🌟 3문항 실시간 의식 스캐너 & 결과 리포트 모달 🌟
                ══════════════════════════════════════════════════════ */}
             <AnimatePresence>
                 {isQuestionModalOpen && (
@@ -1284,7 +1648,7 @@ function NeuralDiagnosisContent() {
                                     </div>
                                 </div>
                             ) : analysisResult ? (
-                                /* 3. 🌟 문진 완료 종합 결과 리포트 카드 (Actionable Result Card) 🌟 */
+                                /* 3. 🌟 문진 완료 종합 결과 리포트 카드 🌟 */
                                 <div className="space-y-4 animate-fade-in">
                                     <div className="flex items-center justify-between border-b border-white/10 pb-3">
                                         <div className="flex items-center gap-2">
@@ -1317,7 +1681,6 @@ function NeuralDiagnosisContent() {
                                             </span>
                                         </div>
 
-                                        {/* 3대 의식 스펙트럼 비율 바 */}
                                         <div className="h-2.5 w-full bg-slate-900 rounded-full overflow-hidden flex border border-white/10">
                                             <div style={{ width: `${analysisResult.darkRatio}%` }} className="bg-rose-500" title="Dark" />
                                             <div style={{ width: `${analysisResult.neuralRatio}%` }} className="bg-indigo-500" title="Neural" />
@@ -1341,12 +1704,12 @@ function NeuralDiagnosisContent() {
                                         <button
                                             onClick={() => {
                                                 setIsQuestionModalOpen(false);
-                                                router.push('/quantum-awakening?tab=quest');
+                                                setActiveTab('x_axis');
                                             }}
-                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                                         >
-                                            <Unlock size={14} />
-                                            <span>🔓 지금 즉시 영점(0)으로 정화하기 ➔ 감정 연금술 이동</span>
+                                            <Wind size={14} />
+                                            <span>🧘 Day {selectedZeroDay} 오늘의 영점(0) 자각법 배우기 & 30초 실습 ➔</span>
                                         </button>
 
                                         <button
