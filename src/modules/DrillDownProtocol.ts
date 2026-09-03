@@ -46,15 +46,15 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
     // [NEW] 5-Section Hierarchy (Expanded Logic)
     // ============================================
 
-    // 0. [퀀텀 자각] (Quantum Awakening) - NEW Hidden Room
+    // 0. [양자 각성] (Quantum Awakening) - NEW Hidden Room
     QUANTUM_AWAKENING: {
         id: 'QUANTUM_AWAKENING',
-        label: "0. 퀀텀 자각",
+        label: "0. 양자 각성",
         icon: "🌌",
         neuro_trigger: "무의식의 별을 연결하는 히든 룸",
         style: 'premium_purple', // [FIX] Type compatibility
         sub_menus: [
-            { id: "qa_108", label: "0-1. 108 자각 프로토콜", desc: "무의식을 깨우는 108가지 질문", intent: "ms_quantum_108", icon: "🧘" },
+            { id: "qa_108", label: "0-1. 핵심 자각 퀘스트", desc: "무의식을 깨우는 108가지 질문", intent: "ms_quantum_108", icon: "🧘" },
             { id: "qa_alchemy", label: "0-2. 감정 연금술", desc: "감정을 에너지로 변환하는 기술", intent: "ms_quantum_alchemy", icon: "⚗️" },
             { id: "qa_shadow", label: "0-3. 그림자 작업", desc: "내면의 어둠과 대화하기", intent: "ms_quantum_shadow", icon: "🌑" }
         ]

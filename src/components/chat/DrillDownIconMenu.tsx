@@ -681,6 +681,12 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] QUANTUM_AWAKENING 아이콘 클릭 시 전용 양자 각성 대시보드로 이동
+        if (icon.id === 'QUANTUM_AWAKENING') {
+            window.location.href = '/quantum-awakening';
+            return;
+        }
+
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         setSelectedIcon(icon);
 
@@ -827,10 +833,24 @@ export default function DrillDownIconMenu({
         }
 
 
-        // [NEW] 108 자각 프로토콜 (Awakening Chat)
+        // [NEW] 0-1. 108 핵심 자각 퀘스트 보드
         if (subItem.intent === 'ms_quantum_108' || subItem.intent === 'saju_108_awakening') {
             setSelectedIcon(null);
-            setShowAwakeningChat(true);
+            window.location.href = '/quantum-awakening?tab=quest';
+            return;
+        }
+
+        // [NEW] 0-2. 감정 연금술 챔버
+        if (subItem.intent === 'ms_quantum_alchemy' || subItem.intent === 'emotion_alchemy_view') {
+            setSelectedIcon(null);
+            window.location.href = '/quantum-awakening?tab=alchemy';
+            return;
+        }
+
+        // [NEW] 0-3. 그림자 작업 생추어리
+        if (subItem.intent === 'ms_quantum_shadow' || subItem.intent === 'shadow_work_view') {
+            setSelectedIcon(null);
+            window.location.href = '/quantum-awakening?tab=shadow';
             return;
         }
 
