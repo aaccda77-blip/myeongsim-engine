@@ -8,6 +8,7 @@ import UnifiedSubscriptionModal from '@/components/modals/UnifiedSubscriptionMod
 import { Lock, Sparkles, ShieldCheck, ChevronRight } from 'lucide-react';
 import { WearableAppShell } from './WearableAppShell';
 import { WearableQuantumRadar } from './WearableQuantumRadar';
+import { WearableIljinEnergy } from './WearableIljinEnergy';
 import { WearableDailyAffirmation } from './WearableDailyAffirmation';
 import { WearableBioPulse } from './WearableBioPulse';
 import { WearableBreathingPacer } from './WearableBreathingPacer';
@@ -24,9 +25,10 @@ export function WearableDashboard() {
     const [page, setPage] = useState(0);
     const [isSubModalOpen, setIsSubModalOpen] = useState(false);
 
-    const totalPages = 9;
+    const totalPages = 10;
     const pageTitles = [
         '👑 퀀텀 킬러 레이더',
+        '🔮 사주 일진 에너지',
         '⭐ 1:1 일진 선언문',
         '1. 바이오 펄스',
         '2. 박스 호흡',
@@ -38,9 +40,14 @@ export function WearableDashboard() {
     ];
 
     const renderPage = () => {
-        // 책 구매 고객은 기본 제로포인트(리포트/일진)까지만 승인되며,
-        // 워치 심화 다이얼(1~8: 1:1 선언문, 엠씨스퀘어 뇌파 사운드, 박스 호흡, 바이오 펄스 등)은 월정액 전용 잠금 처리
-        if (!isMonthlyVip && page > 0) {
+        // [3-Tier 권한 체크]
+        // 1. 월정액(isMonthlyVip): 전 페이지 완전 무제한 프리패스
+        // 2. 도서 구매자(isBookZeroPoint): 기본 제로포인트 코칭(0: 퀀텀 레이더, 1: 사주 일진 에너지, 2: 1:1 일진 선언문) 영구 해금,
+        //    그 외 심화 기능(3~9: 바이오 펄스, 박스 호흡, 손목 사운드, 긴급 SOS 등)은 월정액 전용 잠금장치 작동
+        // 3. 비구매 일반 고객: 0~1페이지 미리보기 제공, 2페이지부터 잠금
+        const isLocked = !isMonthlyVip && (isBookZeroPoint ? page >= 3 : page >= 2);
+
+        if (isLocked) {
             return (
                 <div className="flex flex-col items-center justify-center h-full px-4 text-center space-y-3 py-6 animate-fade-in select-none">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-500/10 border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
@@ -55,8 +62,8 @@ export function WearableDashboard() {
                         </h3>
                         <p className="text-[11px] text-gray-300 leading-snug px-2">
                             {isBookZeroPoint 
-                                ? '도서 구매 회원은 기본 제로포인트 코칭이 영구 제공되며, 워치 9대 킬러 다이얼은 월정액 전용입니다.'
-                                : '123개 전 서비스 무제한 올패스 정액권으로 즉시 해금할 수 있습니다.'
+                                ? '도서 구매 회원은 기본 제로포인트(사주 일진 & 선언문)가 영구 제공되며, 바이오 펄스 및 사운드랩 등 심화 다이얼은 월정액 전용입니다.'
+                                : '124개 전 서비스 무제한 올패스 정액권으로 즉시 해금할 수 있습니다.'
                             }
                         </p>
                     </div>
@@ -79,10 +86,10 @@ export function WearableDashboard() {
                             <span>월 98,000원 올패스 해금</span>
                         </button>
                         <button
-                            onClick={() => setPage(0)}
+                            onClick={() => setPage(1)}
                             className="w-full py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 text-[10px] font-bold transition-all"
                         >
-                            ← 퀀텀 레이더 무료 미리보기
+                            ← 사주 일진 에너지 보기
                         </button>
                     </div>
                 </div>
@@ -93,57 +100,64 @@ export function WearableDashboard() {
             case 0:
                 return (
                     <WearableQuantumRadar
-                        onGoToBreath={() => setPage(3)}
-                        onGoToSoundLab={() => setPage(4)}
+                        onGoToBreath={() => setPage(4)}
+                        onGoToSoundLab={() => setPage(5)}
                     />
                 );
             case 1:
                 return (
-                    <WearableDailyAffirmation
-                        onGoToSoundLab={() => setPage(4)}
+                    <WearableIljinEnergy
+                        onGoToAffirmation={() => setPage(2)}
+                        onGoToSoundLab={() => setPage(5)}
                     />
                 );
             case 2:
                 return (
-                    <WearableBioPulse
-                        onGoToBreath={() => setPage(3)}
-                        onGoToEmergency={() => setPage(6)}
+                    <WearableDailyAffirmation
+                        onGoToSoundLab={() => setPage(5)}
                     />
                 );
             case 3:
                 return (
-                    <WearableBreathingPacer
-                        onNext={() => setPage(4)}
+                    <WearableBioPulse
+                        onGoToBreath={() => setPage(4)}
+                        onGoToEmergency={() => setPage(7)}
                     />
                 );
             case 4:
                 return (
-                    <WearableBrainwaveAudio
+                    <WearableBreathingPacer
                         onNext={() => setPage(5)}
                     />
                 );
             case 5:
                 return (
-                    <WearableZeroPointCapsule
+                    <WearableBrainwaveAudio
                         onNext={() => setPage(6)}
                     />
                 );
             case 6:
                 return (
+                    <WearableZeroPointCapsule
+                        onNext={() => setPage(7)}
+                    />
+                );
+            case 7:
+                return (
                     <WearableDarkCodeEmergency
                         onComplete={() => setPage(0)}
                     />
                 );
-            case 7:
+            case 8:
                 return (
                     <WearableFlowRing
                         score={vm.flow.score}
                         stateTitle={vm.flow.stateTitle}
                         levelLabel={vm.flow.levelLabel}
-                        onNext={() => setPage(8)}
+                        onNext={() => setPage(9)}
                     />
                 );
-            case 8:
+            case 9:
                 return (
                     <WearableCheckIn
                         onNext={() => setPage(0)}

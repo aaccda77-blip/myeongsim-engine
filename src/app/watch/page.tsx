@@ -79,20 +79,20 @@ export default function WatchShowcasePage() {
                             <span className="text-xs font-bold text-white">5대 오행 퀀텀 레이더</span>
                             <span className="text-[10px] text-gray-400">간·심·비·폐·신 실시간 생체 밸런스</span>
                         </div>
+                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-amber-500/20 flex flex-col items-center gap-1">
+                            <Zap size={16} className="text-amber-400" />
+                            <span className="text-xs font-bold text-white">사주 ✕ 일진 십성 에너지</span>
+                            <span className="text-[10px] text-gray-400">내 사주 일간과 오늘 일진의 파동 케미</span>
+                        </div>
                         <div className="p-3 rounded-2xl bg-white/[0.03] border border-indigo-500/20 flex flex-col items-center gap-1">
                             <Box size={16} className="text-indigo-400" />
-                            <span className="text-xs font-bold text-white">3S 의식공간 3D 체적</span>
-                            <span className="text-[10px] text-gray-400">자각·방하착·주체성 텐서 볼륨</span>
-                        </div>
-                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-amber-500/20 flex flex-col items-center gap-1">
-                            <Waves size={16} className="text-amber-400" />
-                            <span className="text-xs font-bold text-white">메타코드 주파수 파동</span>
-                            <span className="text-[10px] text-gray-400">다크 ➔ 뉴럴 ➔ 메타코드 골든타임</span>
+                            <span className="text-xs font-bold text-white">1:1 맞춤 일진 선언문</span>
+                            <span className="text-[10px] text-gray-400">오늘의 에너지 가슴 각인 햅틱</span>
                         </div>
                         <div className="p-3 rounded-2xl bg-white/[0.03] border border-emerald-500/20 flex flex-col items-center gap-1">
                             <Headphones size={16} className="text-emerald-400" />
                             <span className="text-xs font-bold text-white">손목 뇌파 사운드 랩</span>
-                            <span className="text-[10px] text-gray-400">딥 브라운 & 528Hz 즉시 재생</span>
+                            <span className="text-[10px] text-gray-400">엠씨스퀘어 입체음 & 528Hz 즉시 재생</span>
                         </div>
                     </div>
                 </div>
