@@ -1524,7 +1524,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     stateLabel={getSyncStateLabel(syncLevel)}
                     isLevelUp={isLevelUp}
                     isBioSynced={typeof window !== 'undefined' && Boolean(localStorage.getItem('myeongsim_user_profile') || localStorage.getItem('saju_input_data'))}
-                    bioSyncStatusText={typeof window !== 'undefined' && Boolean(localStorage.getItem('myeongsim_user_profile') || localStorage.getItem('saju_input_data')) ? '1:1 사주·생체 동기화 (432Hz)' : '생체데이터 미연동'}
+                    bioSyncStatusText={typeof window !== 'undefined' && Boolean(localStorage.getItem('myeongsim_user_profile') || localStorage.getItem('saju_input_data')) ? '기질·생체 동기화 (432Hz)' : '생체데이터 미연동'}
                     onOpenBioModal={() => setShowFusionView(true)}
                     actionButtons={(
                         <div className="flex items-center gap-1.5 sm:gap-2">
