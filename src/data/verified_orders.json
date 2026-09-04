@@ -1,0 +1,17 @@
+[
+  {
+    "orderNumber": "20260904-88439999",
+    "userId": "u-1",
+    "depositorName": "이경윤",
+    "channel": "smartstore",
+    "isSmartStore": true,
+    "unlockedModules": [
+      "zero_music",
+      "coaching_20",
+      "startup_vip",
+      "dark_code_debugger",
+      "bio_care"
+    ],
+    "verifiedAt": "2026-09-04T01:30:51.618Z"
+  }
+]

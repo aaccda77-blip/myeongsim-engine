@@ -64,6 +64,76 @@ const usedOrderNumbersStore: Map<string, VerifiedOrderRecord> = getPersistentOrd
  * - 스마트스토어 주문번호는 일반적으로 16자리 숫자 (예: 20260904-12345678 또는 2026090412345678)
  * - 교보문고, YES24 등 영수증 번호는 8자리 이상
  */
+export interface BlockedOrderRecord {
+    orderNumber: string;
+    reason?: string;
+    blockedAt: string;
+}
+
+// 🚫 차단된 주문번호 영구 저장소
+export function getBlockedOrders(): BlockedOrderRecord[] {
+    try {
+        const filePath = path.join(process.cwd(), 'src', 'data', 'blocked_orders.json');
+        if (fs.existsSync(filePath)) {
+            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+            if (Array.isArray(data)) return data;
+        }
+    } catch (e) {
+        console.warn('[OrderVerification] Blocked read warning:', e);
+    }
+    return [];
+}
+
+export function isOrderBlocked(orderNumberRaw: string): boolean {
+    if (!orderNumberRaw) return false;
+    const clean = orderNumberRaw.trim().toUpperCase();
+    const list = getBlockedOrders();
+    return list.some(item => item.orderNumber.toUpperCase() === clean);
+}
+
+export function blockOrder(orderNumberRaw: string, reason: string = '관리자 회수 조치'): { success: boolean; message: string } {
+    if (!orderNumberRaw) return { success: false, message: '주문번호가 없습니다.' };
+    const clean = orderNumberRaw.trim().toUpperCase();
+    
+    try {
+        const dirPath = path.join(process.cwd(), 'src', 'data');
+        if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
+        const filePath = path.join(dirPath, 'blocked_orders.json');
+        
+        let list = getBlockedOrders();
+        if (list.some(item => item.orderNumber.toUpperCase() === clean)) {
+            return { success: true, message: '이미 차단된 주문번호입니다.' };
+        }
+        
+        list.unshift({
+            orderNumber: clean,
+            reason,
+            blockedAt: new Date().toISOString()
+        });
+        
+        fs.writeFileSync(filePath, JSON.stringify(list, null, 2), 'utf-8');
+        return { success: true, message: `주문번호 [${clean}] 이용 권한이 성공적으로 차단 회수되었습니다.` };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+}
+
+export function unblockOrder(orderNumberRaw: string): { success: boolean; message: string } {
+    if (!orderNumberRaw) return { success: false, message: '주문번호가 없습니다.' };
+    const clean = orderNumberRaw.trim().toUpperCase();
+    
+    try {
+        const filePath = path.join(process.cwd(), 'src', 'data', 'blocked_orders.json');
+        let list = getBlockedOrders();
+        const filtered = list.filter(item => item.orderNumber.toUpperCase() !== clean);
+        
+        fs.writeFileSync(filePath, JSON.stringify(filtered, null, 2), 'utf-8');
+        return { success: true, message: `주문번호 [${clean}] 차단이 해제되었습니다.` };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+}
+
 function isValidOrderFormat(order: string): { valid: boolean; reason?: string } {
     const clean = order.replace(/[^a-zA-Z0-9]/g, '');
     
@@ -102,6 +172,14 @@ export async function verifySmartStoreOrder(
     channel?: 'smartstore' | 'general'
 ): Promise<{ success: boolean; message: string; record?: VerifiedOrderRecord }> {
     const cleanOrder = orderNumberRaw.trim().replace(/[^a-zA-Z0-9-]/g, '').toUpperCase();
+
+    // 0. 관리자 차단 여부 우선 확인 (선 열람 후 허위/환불 차단 대응)
+    if (isOrderBlocked(cleanOrder)) {
+        return {
+            success: false,
+            message: '🚫 본 주문번호는 관리자(출판사)에 의해 이용 권한이 차단/회수되었습니다. (환불 처리 또는 허위 주문번호 의심)'
+        };
+    }
 
     // 1. 주문번호 형식 및 무결성 검증
     const formatCheck = isValidOrderFormat(cleanOrder);

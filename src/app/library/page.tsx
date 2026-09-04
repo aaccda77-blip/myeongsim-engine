@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
+    Ban,
     BookOpen, ArrowLeft, CheckCircle2, Shield, Sparkles, Lock, Unlock, 
     Download, ExternalLink, Volume2, VolumeX, Eye, Bookmark, Share2, 
     ShoppingBag, Star, RefreshCw, Layers, ZoomIn, ZoomOut, Check, ChevronRight,
@@ -314,6 +315,8 @@ export default function LibraryPage() {
     const [purchasePlatform, setPurchasePlatform] = useState('smartstore');
     const [verificationError, setVerificationError] = useState('');
     const [isVerifying, setIsVerifying] = useState(false);
+    const [isBlockedByAdmin, setIsBlockedByAdmin] = useState(false);
+    const [blockedReason, setBlockedReason] = useState('');
     // 🏪 서점 플랫폼별 맞춤 라벨 & 안내 (스마트스토어, YES24, 교보문고 등)
     const platformConfig = useMemo(() => {
         switch (purchasePlatform) {
@@ -362,6 +365,7 @@ export default function LibraryPage() {
     const [isPdfFullscreen, setIsPdfFullscreen] = useState(false);
     const [isReaderFullscreen, setIsReaderFullscreen] = useState(false);
     const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+    const [allowDownload, setAllowDownload] = useState(false);
 
     const handleDownloadSecurePdf = () => {
         setIsDownloadingPdf(true);
@@ -459,6 +463,8 @@ export default function LibraryPage() {
             const urlOrder = searchParams.get('order') || searchParams.get('order_id');
             const urlName = searchParams.get('name') || searchParams.get('buyer');
             const urlAutoVerify = searchParams.get('verify') === 'true' || searchParams.get('auto') === 'true';
+            const urlAllowDownload = searchParams.get('download') === 'true' || searchParams.get('admin') === 'true';
+            if (urlAllowDownload) setAllowDownload(true);
 
             let savedName = localStorage.getItem('myeongsim_book_buyer') || localStorage.getItem('user_name') || '';
             let savedOrder = localStorage.getItem('myeongsim_book_order') || '';
@@ -488,6 +494,27 @@ export default function LibraryPage() {
                 }
                 setBuyerName(savedName);
                 setOrderNumber(savedOrder);
+            }
+
+            // 🚫 [방식 1: 실시간 차단 상태 조회] 관리자에 의해 권한이 회수되었는지 백그라운드 검증
+            const orderToCheck = urlOrder || savedOrder;
+            if (orderToCheck) {
+                fetch(`/api/auth/check-blocked?order=${encodeURIComponent(orderToCheck)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.blocked) {
+                            setIsVerified(false);
+                            setIsBlockedByAdmin(true);
+                            setBlockedReason(data.reason || '관리자 권한 회수 (환불 취소 또는 허위 번호)');
+                            localStorage.removeItem('myeongsim_book_verified');
+                            localStorage.removeItem('myeongsim_site_access');
+                            localStorage.removeItem('myeongsim_smartstore_vip');
+                            localStorage.removeItem('myeongsim_paid_user');
+                            localStorage.removeItem('myeongsim_bio_care_unlocked');
+                            document.cookie = "myeongsim_site_access=; path=/; max-age=0;";
+                        }
+                    })
+                    .catch(e => console.warn('[BlockCheck] Offline or check bypassed:', e));
             }
 
             // 포렌식 고유 시리얼 생성
@@ -1004,16 +1031,23 @@ export default function LibraryPage() {
                                     </div>
 
                                     <div className="flex items-center gap-1.5">
-                                        {/* 📥 VIP 소장용 정품 다운로드 버튼 */}
-                                        <button
-                                            onClick={handleDownloadSecurePdf}
-                                            disabled={isDownloadingPdf}
-                                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-                                            title="태블릿 필기 및 오프라인 소장용 (포렌식 각인본)"
-                                        >
-                                            <Download size={13} className={isDownloadingPdf ? "animate-bounce" : ""} />
-                                            <span>{isDownloadingPdf ? '포렌식 각인 중...' : '📥 정품 소장용 다운로드'}</span>
-                                        </button>
+                                        {/* 🛡️ YES24·교보문고 표준: 원본 파일 다운로드 대신 전용 뷰어 스트림 배지 */}
+                                        {allowDownload ? (
+                                            <button
+                                                onClick={handleDownloadSecurePdf}
+                                                disabled={isDownloadingPdf}
+                                                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                                                title="관리자 전용 포렌식 각인 다운로드"
+                                            >
+                                                <Download size={13} className={isDownloadingPdf ? "animate-bounce" : ""} />
+                                                <span>{isDownloadingPdf ? '각인 중...' : '📥 관리자 다운로드'}</span>
+                                            </button>
+                                        ) : (
+                                            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-[10px] text-gray-300">
+                                                <Shield size={11} className="text-cyan-400" />
+                                                <span>YES24·교보 보안스트림 적용</span>
+                                            </span>
+                                        )}
 
                                         {/* 🖥️ 전체화면 버튼 */}
                                         <button
