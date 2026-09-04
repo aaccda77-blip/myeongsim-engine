@@ -126,6 +126,60 @@ export default function SafetyDisclaimerModal() {
                                         </div>
                                     )}
 
+                                    {/* 3S Protocol (SCAN · SYNC · SHIFT) 카드 블록 */}
+                                    {section.protocol3S && (
+                                        <div className="space-y-3 my-3">
+                                            <div className="flex items-center justify-between px-1">
+                                                <h4 className="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+                                                    <span>⚡</span> {section.protocol3S.title}
+                                                </h4>
+                                                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                                                    {section.protocol3S.subtitle}
+                                                </span>
+                                            </div>
+
+                                            <div className="space-y-2.5">
+                                                {section.protocol3S.steps.map((st: any, sIdx: number) => (
+                                                    <div key={sIdx} className="p-3.5 rounded-2xl bg-slate-950/85 border border-amber-500/25 space-y-1.5 shadow-md">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs font-black px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                                                                {st.step}
+                                                            </span>
+                                                            <span className="text-xs font-bold text-white">
+                                                                {st.title}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-gray-300 leading-relaxed font-medium whitespace-pre-line pl-1">
+                                                            {st.desc}
+                                                        </p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* 사주 ➔ 패턴 ➔ 알아차림 ➔ 수용 ➔ 최적화 요약 블록 */}
+                                    {section.flowSummary && (
+                                        <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 via-purple-500/10 to-slate-950 border border-amber-400/30 my-3 text-left space-y-2.5 shadow-inner">
+                                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold">
+                                                <span>🔄</span> {section.flowSummary.title}
+                                            </div>
+                                            <p className="text-xs text-gray-300 leading-relaxed font-medium whitespace-pre-line">
+                                                {section.flowSummary.description}
+                                            </p>
+                                            {section.flowSummary.keyQuestion && (
+                                                <div className="p-3 rounded-xl bg-black/60 border border-amber-500/40 space-y-1 mt-2">
+                                                    <p className="text-[11.5px] text-gray-400 line-through">
+                                                        {section.flowSummary.keyQuestion.notThis}
+                                                    </p>
+                                                    <p className="text-xs sm:text-[13px] font-black text-amber-300 leading-relaxed">
+                                                        👉 {section.flowSummary.keyQuestion.butThis}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
                                     {/* 특허 출원 상태 뱃지 */}
                                     {section.patentBadge && (
                                         <div className="py-1">
