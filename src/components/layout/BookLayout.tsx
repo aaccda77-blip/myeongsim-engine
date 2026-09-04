@@ -107,31 +107,80 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
     const [demoStage, setDemoStage] = useState(7); // [Demo] 7단계 모두 오픈
     const progressPercentage = (currentStep / totalSteps) * 100;
 
-    // [Strict Payment Lock]
-    const [isLocked, setIsLocked] = useState(false);
+    // [Commercial Strict Payment Lock] - 결제 또는 관리자 승인 없이는 모든 컨텐츠 전면 잠금
+    const [isLocked, setIsLocked] = useState(true);
     const [isLoadingLock, setIsLoadingLock] = useState(true);
 
     const checkUserStatus = async (): Promise<boolean> => {
         setIsLoadingLock(true);
-        let shouldLock = false;
+        let shouldLock = true; // 기본값: 완전 잠금
 
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
+            // 1. 관리자 세션이거나 로컬 권한 보유 확인
+            if (typeof window !== 'undefined') {
+                const isAdmin = document.cookie.includes('admin_session=');
+                const isMonthly = localStorage.getItem('myeongsim_monthly_vip') === 'true';
+                const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
+                                   localStorage.getItem('myeongsim_book_verified') === 'true';
+                const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true';
 
-            if (user) {
-                try {
-                    const { data: profile } = await supabase.from('profiles').select('points').eq('id', user.id).single();
-                    if (profile) setPoints(profile.points);
-                } catch (e) {
-                    console.warn('Profile points fetch warning:', e);
+                // 만료일 검사
+                const expiresAtStr = localStorage.getItem('myeongsim_expires_at');
+                let isExpired = false;
+                if (expiresAtStr) {
+                    const exp = new Date(expiresAtStr).getTime();
+                    if (!isNaN(exp) && Date.now() > exp) isExpired = true;
                 }
+
+                if (isAdmin || ((isMonthly || isSmartVip || isPaid) && !isExpired)) {
+                    shouldLock = false;
+                }
+            }
+
+            // 2. Supabase 유저 및 서버 승인 상태 실시간 검증
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            setUser(authUser);
+
+            if (typeof window !== 'undefined') {
+                const userName = localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '';
+                const queryId = authUser?.id || localStorage.getItem('user_id') || '';
+
+                if (userName || queryId) {
+                    try {
+                        const res = await fetch(`/api/payment/check-approval?name=${encodeURIComponent(userName)}&userId=${encodeURIComponent(queryId)}&t=${Date.now()}`);
+                        if (res.ok) {
+                            const checkData = await res.json();
+                            if (checkData.approved) {
+                                shouldLock = false;
+                                if (checkData.tier === 'MONTHLY_98K' || checkData.tier?.includes('98000') || checkData.tier?.includes('MONTHLY')) {
+                                    localStorage.setItem('myeongsim_monthly_vip', 'true');
+                                    localStorage.setItem('myeongsim_paid_user', 'true');
+                                } else if (checkData.tier === 'BOOK_ZERO_POINT' || checkData.tier?.includes('BOOK')) {
+                                    localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                                    localStorage.setItem('myeongsim_book_verified', 'true');
+                                    localStorage.setItem('myeongsim_paid_user', 'true');
+                                } else {
+                                    localStorage.setItem('myeongsim_paid_user', 'true');
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Check approval fetch warning:', e);
+                    }
+                }
+            }
+
+            if (authUser) {
+                try {
+                    const { data: profile } = await supabase.from('profiles').select('points').eq('id', authUser.id).single();
+                    if (profile) setPoints(profile.points);
+                } catch (e) {}
 
                 try {
                     const { data: subscription } = await supabase
                         .from('users')
-                        .select('expires_at, membership_tier')
-                        .eq('id', user.id)
+                        .select('expires_at, membership_tier, is_active')
+                        .eq('id', authUser.id)
                         .single();
 
                     if (subscription) {
@@ -140,15 +189,11 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         const isExpired = !expiresAt || expiresAt < now;
                         const isAdmin = subscription.membership_tier === 'ADMIN';
 
-                        if (isExpired && !isAdmin) {
-                            shouldLock = true;
-                        } else {
+                        if ((subscription.is_active && !isExpired) || isAdmin) {
                             shouldLock = false;
                         }
                     }
-                } catch (e) {
-                    console.warn('Subscription fetch warning:', e);
-                }
+                } catch (e) {}
             }
         } catch (globalErr) {
             console.error('checkUserStatus error:', globalErr);
@@ -162,6 +207,15 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
     useEffect(() => {
         checkUserStatus();
+
+        const handleAuthChange = () => checkUserStatus();
+        window.addEventListener('storage', handleAuthChange);
+        window.addEventListener('myeongsim_auth_change', handleAuthChange);
+
+        return () => {
+            window.removeEventListener('storage', handleAuthChange);
+            window.removeEventListener('myeongsim_auth_change', handleAuthChange);
+        };
     }, []);
 
 
