@@ -1232,6 +1232,28 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* 🌟 [세계 최고 수준] ⌚ 스마트워치 웰니스 코칭 (Ultra & Galaxy Watch 생체 코칭) 🌟 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => router.push('/watch')}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 182, 212, 0.25))',
+                        border: '1px solid rgba(16, 185, 129, 0.5)',
+                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.35)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>⌚</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#34d399', fontWeight: 'bold' }}>{t('menu.watch_wellness') || '워치 웰니스'}</div>
+                        <div style={styles.neuroTrigger}>{t('menu.watch_wellness_desc') || '실시간 생체 코칭'}</div>
+                    </div>
+                </button>
+
+
                 {/* [NEW] 🎧 기질 1:1 맞춤 코칭 에세이노래 (432Hz 주파수 리셋) - 나의 리포트 바로 옆 */}
                 <button
                     style={styles.iconButton}
