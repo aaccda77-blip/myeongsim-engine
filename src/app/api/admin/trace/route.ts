@@ -19,37 +19,48 @@ export async function GET(request: NextRequest) {
             }
         }
 
+        const downloadCount = records.filter(r => r.action === 'download').length;
+        const streamCount = records.filter(r => r.action === 'stream').length;
+
         if (searchCode) {
-            // 특정 포렌식 코드 검색
+            // 특정 포렌식 코드 / 주문번호 / 구매자명 검색
             const matched = records.filter(r => 
                 (r.trackingCode && r.trackingCode.toUpperCase().includes(searchCode)) ||
-                (r.order && r.order.includes(searchCode)) ||
+                (r.order && r.order.toUpperCase().includes(searchCode)) ||
                 (r.buyer && r.buyer.includes(searchCode))
             );
 
             if (matched.length > 0) {
+                const target = matched[0];
+                const hasDownloaded = matched.some(r => r.action === 'download');
+                const downloadRecords = matched.filter(r => r.action === 'download');
+
                 return NextResponse.json({
                     success: true,
                     query: searchCode,
                     totalMatches: matched.length,
-                    result: matched[0],
+                    result: target,
+                    hasDownloaded,
+                    downloadRecords,
                     history: matched,
-                    legalEvidenceNotice: '본 기록은 저작권법 제136조 위반 형사고발을 위한 공식 디지털 포렌식 감사 로그입니다.',
+                    legalEvidenceNotice: '「전자상거래 등에서의 소비자보호에 관한 법률」 제17조 제2항 제5호에 따라 파일 다운로드 및 디지털 콘텐츠 열람이 개시된 이후에는 청약철회(환불)가 불가능함을 증명하는 공식 포렌식 감사 기록입니다.',
                 });
             } else {
                 return NextResponse.json({
                     success: false,
                     query: searchCode,
-                    message: '해당 포렌식 코드와 일치하는 다운로드/열람 기록을 찾을 수 없습니다.',
+                    message: '해당 검색어(주문번호/성함/포렌식코드)와 일치하는 열람/다운로드 감사 기록을 찾을 수 없습니다.',
                 }, { status: 404 });
             }
         }
 
-        // 쿼리가 없으면 최근 50건의 포렌식 발급 기록 반환
+        // 전체 통계 및 최근 기록
         return NextResponse.json({
             success: true,
             totalRecords: records.length,
-            recentLogs: records.slice(0, 50),
+            downloadCount,
+            streamCount,
+            recentLogs: records.slice(0, 100),
         });
     } catch (error: any) {
         return NextResponse.json({
