@@ -402,10 +402,10 @@ export default function LibraryPage() {
     // 보안 경고 토스트 상태
     const [securityAlert, setSecurityAlert] = useState<string | null>(null);
 
-    // 528Hz 사운드
+    // 🧠 뇌파 사운드 랩 상태
     const [isPlayingSound, setIsPlayingSound] = useState(false);
     const [isSoundLabOpen, setIsSoundLabOpen] = useState(false);
-    const [activeSoundName, setActiveSoundName] = useState('528Hz');
+    const [activeSoundName, setActiveSoundName] = useState('브라운 노이즈');
     const audioCtxRef = useRef<AudioContext | null>(null);
     const oscRef = useRef<OscillatorNode | null>(null);
 
