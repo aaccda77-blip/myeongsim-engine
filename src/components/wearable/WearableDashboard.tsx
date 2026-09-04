@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useDashboardViewModel } from '@/hooks/useDashboardViewModel';
 import { useViewMode } from '@/hooks/useViewMode';
 import { WearableAppShell } from './WearableAppShell';
+import { WearableQuantumRadar } from './WearableQuantumRadar';
 import { WearableBioPulse } from './WearableBioPulse';
 import { WearableBreathingPacer } from './WearableBreathingPacer';
 import { WearableBrainwaveAudio } from './WearableBrainwaveAudio';
@@ -17,8 +18,9 @@ export function WearableDashboard() {
     const { setViewMode } = useViewMode();
     const [page, setPage] = useState(0);
 
-    const totalPages = 7;
+    const totalPages = 8;
     const pageTitles = [
+        '👑 퀀텀 킬러 레이더',
         '1. 바이오 펄스',
         '2. 박스 호흡',
         '3. 손목 사운드',
@@ -32,45 +34,52 @@ export function WearableDashboard() {
         switch (page) {
             case 0:
                 return (
-                    <WearableBioPulse
-                        onGoToBreath={() => setPage(1)}
-                        onGoToEmergency={() => setPage(4)}
+                    <WearableQuantumRadar
+                        onGoToBreath={() => setPage(2)}
+                        onGoToSoundLab={() => setPage(3)}
                     />
                 );
             case 1:
                 return (
-                    <WearableBreathingPacer
-                        onNext={() => setPage(2)}
+                    <WearableBioPulse
+                        onGoToBreath={() => setPage(2)}
+                        onGoToEmergency={() => setPage(5)}
                     />
                 );
             case 2:
                 return (
-                    <WearableBrainwaveAudio
+                    <WearableBreathingPacer
                         onNext={() => setPage(3)}
                     />
                 );
             case 3:
                 return (
-                    <WearableZeroPointCapsule
+                    <WearableBrainwaveAudio
                         onNext={() => setPage(4)}
                     />
                 );
             case 4:
                 return (
+                    <WearableZeroPointCapsule
+                        onNext={() => setPage(5)}
+                    />
+                );
+            case 5:
+                return (
                     <WearableDarkCodeEmergency
                         onComplete={() => setPage(0)}
                     />
                 );
-            case 5:
+            case 6:
                 return (
                     <WearableFlowRing
                         score={vm.flow.score}
                         stateTitle={vm.flow.stateTitle}
                         levelLabel={vm.flow.levelLabel}
-                        onNext={() => setPage(6)}
+                        onNext={() => setPage(7)}
                     />
                 );
-            case 6:
+            case 7:
                 return (
                     <WearableCheckIn
                         onNext={() => setPage(0)}
@@ -92,4 +101,5 @@ export function WearableDashboard() {
         </WearableAppShell>
     );
 }
+
 

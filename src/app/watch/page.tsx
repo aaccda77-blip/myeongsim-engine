@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { WearableDashboard } from '@/components/wearable/WearableDashboard';
-import { Sparkles, ArrowLeft, ShieldCheck, Heart, Headphones, Wind, Zap } from 'lucide-react';
+import { Sparkles, ArrowLeft, ShieldCheck, Heart, Headphones, Wind, Zap, Box, Waves } from 'lucide-react';
 import Link from 'next/link';
+
 
 export default function WatchShowcasePage() {
     return (
@@ -43,33 +44,34 @@ export default function WatchShowcasePage() {
             {/* 하단 기능 소개 하이라이트 배너 */}
             <footer className="w-full border-t border-white/10 bg-[#060b18] py-6 px-4">
                 <div className="max-w-4xl mx-auto">
-                    <h3 className="text-xs font-mono font-bold text-gray-400 uppercase tracking-widest text-center mb-4">
-                        세계 최고 수준의 손목 웰니스 코칭 아키텍처
+                    <h3 className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest text-center mb-4">
+                        삼성·애플워치에 없는 명심코칭만의 독보적 킬러 워치 웰니스 아키텍처
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex flex-col items-center gap-1">
-                            <Heart size={16} className="text-rose-400" />
-                            <span className="text-xs font-bold text-white">Live Bio-Pulse</span>
-                            <span className="text-[10px] text-gray-400">실시간 심박수 & HRV</span>
+                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-cyan-500/20 flex flex-col items-center gap-1">
+                            <Sparkles size={16} className="text-cyan-400" />
+                            <span className="text-xs font-bold text-white">5대 오행 퀀텀 레이더</span>
+                            <span className="text-[10px] text-gray-400">간·심·비·폐·신 실시간 생체 밸런스</span>
                         </div>
-                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex flex-col items-center gap-1">
-                            <Wind size={16} className="text-cyan-400" />
-                            <span className="text-xs font-bold text-white">4-4-4-4 Box Breath</span>
-                            <span className="text-[10px] text-gray-400">네이비씰 자율신경계 안정</span>
+                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-indigo-500/20 flex flex-col items-center gap-1">
+                            <Box size={16} className="text-indigo-400" />
+                            <span className="text-xs font-bold text-white">3S 의식공간 3D 체적</span>
+                            <span className="text-[10px] text-gray-400">자각·방하착·주체성 텐서 볼륨</span>
                         </div>
-                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex flex-col items-center gap-1">
-                            <Headphones size={16} className="text-amber-400" />
-                            <span className="text-xs font-bold text-white">Wrist Sound Lab</span>
-                            <span className="text-[10px] text-gray-400">브라운노이즈 & 528Hz</span>
+                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-amber-500/20 flex flex-col items-center gap-1">
+                            <Waves size={16} className="text-amber-400" />
+                            <span className="text-xs font-bold text-white">메타코드 주파수 파동</span>
+                            <span className="text-[10px] text-gray-400">다크 ➔ 뉴럴 ➔ 메타코드 골든타임</span>
                         </div>
-                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex flex-col items-center gap-1">
-                            <Zap size={16} className="text-indigo-400" />
-                            <span className="text-xs font-bold text-white">1초 Zero Reset</span>
-                            <span className="text-[10px] text-gray-400">양자 붕괴 영점 회귀</span>
+                        <div className="p-3 rounded-2xl bg-white/[0.03] border border-emerald-500/20 flex flex-col items-center gap-1">
+                            <Headphones size={16} className="text-emerald-400" />
+                            <span className="text-xs font-bold text-white">손목 뇌파 사운드 랩</span>
+                            <span className="text-[10px] text-gray-400">딥 브라운 & 528Hz 즉시 재생</span>
                         </div>
                     </div>
                 </div>
             </footer>
+
         </div>
     );
 }
