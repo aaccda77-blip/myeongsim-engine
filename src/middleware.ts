@@ -80,6 +80,23 @@ import { createServerClient } from '@supabase/ssr';
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
+    // [SECURITY DRM] 원본 PDF 직접 접근 및 다운로드 차단
+    if (pathname.includes('zero-point.pdf') || pathname.startsWith('/books/')) {
+        return new NextResponse(
+            JSON.stringify({
+                error: 'Forbidden',
+                message: '보안 정책에 따라 원본 PDF 파일의 직접 다운로드가 차단되었습니다. 명심코칭 도서관(myeongsimcoaching.com/library)에서 정품 인증 후 안전하게 열람해주세요.',
+            }),
+            {
+                status: 403,
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Cache-Control': 'no-store',
+                },
+            }
+        );
+    }
+
     // [GATEWAY BYPASS LIST]
     const isGateBypass = 
         pathname === '/' ||

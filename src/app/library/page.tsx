@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
@@ -338,6 +338,52 @@ export default function LibraryPage() {
     const [isPlayingSound, setIsPlayingSound] = useState(false);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const oscRef = useRef<OscillatorNode | null>(null);
+
+    // 🛡️ 안심 개인정보 마스킹 (Social DRM - 개인정보 유출 0% 방지)
+    const maskedBuyerName = useMemo(() => {
+        if (!buyerName || buyerName.trim() === '' || buyerName === '명심코칭 VIP 독자') return 'VIP 정품 독자';
+        const clean = buyerName.trim();
+        if (clean.length === 2) return `${clean[0]}*`;
+        if (clean.length >= 3) return `${clean[0]}*${clean[clean.length - 1]}`;
+        return clean;
+    }, [buyerName]);
+
+    const maskedOrderNumber = useMemo(() => {
+        if (!orderNumber) return '20260904-****';
+        const clean = orderNumber.trim();
+        if (clean.length <= 6) return clean;
+        return `${clean.slice(0, 4)}-****-${clean.slice(-3)}`;
+    }, [orderNumber]);
+
+    // 🛡️ 309p 전권 영구 각인 포렌식 보안 스트림 URL
+    const securePdfStreamUrl = useMemo(() => {
+        return `/api/library/secure-pdf?buyer=${encodeURIComponent(buyerName)}&order=${encodeURIComponent(orderNumber)}&serial=${encodeURIComponent(serialKey)}#toolbar=0&navpanes=0&scrollbar=1`;
+    }, [buyerName, orderNumber, serialKey]);
+
+    // 🛡️ 우클릭/인쇄/단축키(Ctrl+S, Ctrl+P) 보안 방지
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'p' || e.key === 'u')) {
+                e.preventDefault();
+                setSecurityAlert('⚠️ 저작권 보호 정책에 따라 인쇄 및 원본 저장이 제한됩니다. 포렌식 워터마크가 각인된 보안 스트림으로 열람 중입니다.');
+                setTimeout(() => setSecurityAlert(null), 4000);
+            }
+        };
+        const handleContextMenu = (e: MouseEvent) => {
+            if (activeTab === 'pdf') {
+                e.preventDefault();
+                setSecurityAlert('🔒 저작권 보호를 위해 우클릭 메뉴가 비활성화되어 있습니다.');
+                setTimeout(() => setSecurityAlert(null), 3000);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('contextmenu', handleContextMenu);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('contextmenu', handleContextMenu);
+        };
+    }, [activeTab]);
+
 
     // 초기화 및 DRM 워터마크 정보 생성
     useEffect(() => {
@@ -877,14 +923,18 @@ export default function LibraryPage() {
                                 </div>
 
                                 {/* 인라인 PDF 컨테이너 */}
-                                <div className="relative w-full h-[580px] rounded-3xl bg-[#080512] border-2 border-cyan-400/40 overflow-hidden shadow-2xl">
-                                    {/* 상단 워터마크 바 */}
-                                    <div className="absolute top-0 left-0 right-0 z-20 bg-slate-950/90 backdrop-blur-md px-3.5 py-1.5 border-b border-white/10 flex items-center justify-between text-[10px] font-mono text-cyan-300">
-                                        <span className="flex items-center gap-1">
+                                <div className="relative w-full h-[580px] rounded-3xl bg-[#080512] border-2 border-cyan-400/40 overflow-hidden shadow-2xl select-none">
+                                    {/* 상단 안심 워터마크 바 */}
+                                    <div className="absolute top-0 left-0 right-0 z-20 bg-slate-950/95 backdrop-blur-md px-3.5 py-1.5 border-b border-white/10 flex items-center justify-between text-[10px] font-mono text-cyan-300">
+                                        <span className="flex items-center gap-1.5">
                                             <Shield size={11} className="text-cyan-400" />
-                                            <span>👤 {buyerName}님 전용 정품 열람</span>
+                                            <span>👤 {maskedBuyerName} 님 안심 정품 열람</span>
+                                            <span className="text-gray-400 hidden sm:inline">({maskedOrderNumber})</span>
                                         </span>
-                                        <span className="text-amber-300 font-bold">{serialKey}</span>
+                                        <span className="text-amber-300 font-bold flex items-center gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            <span>DRM 2.0 포렌식 각인 스트림</span>
+                                        </span>
                                     </div>
 
                                     {/* 모바일 최적화 PDF 뷰어 프레임 (확대 배율 스타일 적용) */}
@@ -894,28 +944,36 @@ export default function LibraryPage() {
                                             style={{ transform: `scale(${pdfZoom / 100})`, transformOrigin: 'top center' }}
                                         >
                                             <object
-                                                data="/books/zero-point.pdf#toolbar=1&navpanes=0&scrollbar=1"
+                                                data={securePdfStreamUrl}
                                                 type="application/pdf"
                                                 className="w-full h-full border-none"
                                             >
-                                                {/* 모바일 폴백 iframe */}
-                                                <iframe
-                                                    src="/books/zero-point.pdf#toolbar=1"
-                                                    className="w-full h-full border-none"
-                                                    title="ZERO POINT PDF Reader"
-                                                >
-                                                    <div className="p-6 text-center text-xs text-gray-300 space-y-3">
-                                                        <p>모바일 브라우저에서는 아래의 [전체화면 크게보기] 또는 [새 탭에서 열기]를 눌러주세요.</p>
-                                                        <a
-                                                            href="/books/zero-point.pdf"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="inline-block px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold"
-                                                        >
-                                                            📖 새 탭에서 전체화면으로 읽기
-                                                        </a>
+                                                {/* 모바일 최적화 안내 폴백 */}
+                                                <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-xs text-gray-300 space-y-4 bg-[#120f24]">
+                                                    <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300 text-2xl">
+                                                        📖
                                                     </div>
-                                                </iframe>
+                                                    <div>
+                                                        <h4 className="text-sm font-bold text-white mb-1">《ZERO POINT》 보안 PDF 스트림</h4>
+                                                        <p className="text-gray-400 text-[11px] leading-relaxed">
+                                                            모바일 브라우저의 보안 정책상 전체화면 또는 초고화질 뷰어로 가장 쾌적하게 열람하실 수 있습니다.
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-2 w-full max-w-xs">
+                                                        <button
+                                                            onClick={() => setIsPdfFullscreen(true)}
+                                                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-bold shadow-lg shadow-cyan-500/20 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                                                        >
+                                                            <span>🖥️ 보안 전체화면으로 크게 읽기</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setActiveTab('reader')}
+                                                            className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-cyan-300 font-bold active:scale-95 transition-all text-xs"
+                                                        >
+                                                            <span>✨ 초고화질 e-Reader 모드로 읽기</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </object>
                                         </div>
                                     </div>
@@ -1062,7 +1120,7 @@ export default function LibraryPage() {
                             >
                                 {[1, 2, 3, 4, 5, 6, 7, 8].map((row) => (
                                     <div key={row} className="whitespace-nowrap flex justify-around">
-                                        <span>🔒 {buyerName} | {orderNumber} | {serialKey} | 무단배포금지</span>
+                                        <span>🔒 {maskedBuyerName} 님 정품 | {maskedOrderNumber} | 무단배포금지</span>
                                         <span>⚠️ 저작권법 제136조 형사책임 추적 | {purchaseDate}</span>
                                     </div>
                                 ))}
@@ -1070,16 +1128,16 @@ export default function LibraryPage() {
 
                             {/* 줌 배율이 적용된 PDF 프레임 */}
                             <div 
-                                className="w-full h-full transition-transform duration-150 origin-top flex items-center justify-center"
+                                className="w-full h-full transition-transform duration-150 origin-top flex items-center justify-center select-none"
                                 style={{ transform: `scale(${pdfZoom / 100})`, transformOrigin: 'top center' }}
                             >
                                 <object
-                                    data="/books/zero-point.pdf#toolbar=1&navpanes=1"
+                                    data={securePdfStreamUrl}
                                     type="application/pdf"
                                     className="w-full h-full border-none"
                                 >
                                     <iframe
-                                        src="/books/zero-point.pdf#toolbar=1"
+                                        src={securePdfStreamUrl}
                                         className="w-full h-full border-none"
                                         title="ZERO POINT Fullscreen PDF"
                                     />
@@ -1311,6 +1369,21 @@ export default function LibraryPage() {
                             </div>
                         </motion.div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            {/* 🛡️ 보안 경고 토스트 */}
+            <AnimatePresence>
+                {securityAlert && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-md w-[92%] px-4 py-3 rounded-2xl bg-slate-900/95 border border-cyan-400/40 text-cyan-200 text-xs shadow-2xl backdrop-blur-md flex items-center gap-2.5 font-sans"
+                    >
+                        <Shield size={16} className="text-cyan-400 shrink-0" />
+                        <span>{securityAlert}</span>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>
