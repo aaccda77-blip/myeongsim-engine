@@ -102,6 +102,30 @@ export default function SafetyDisclaimerModal() {
                                         </div>
                                     )}
 
+                                    {/* 명심코칭의 방향 쿼트 박스 (사주명리학 자기성찰 브릿지) */}
+                                    {section.quoteBox && (
+                                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-950/70 via-purple-950/50 to-slate-950 border border-indigo-500/40 my-3 text-left space-y-3 shadow-lg">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-amber-400 text-sm">✨</span>
+                                                <h4 className="text-xs sm:text-sm font-black text-indigo-200">
+                                                    {section.quoteBox.title}
+                                                </h4>
+                                            </div>
+                                            <div className="space-y-2.5 pl-3.5 border-l-2 border-indigo-400/80 my-2">
+                                                {section.quoteBox.quotes.map((quote: string, qIdx: number) => (
+                                                    <p key={qIdx} className="text-xs sm:text-[13px] font-bold text-amber-100 leading-relaxed whitespace-pre-line">
+                                                        “{quote}”
+                                                    </p>
+                                                ))}
+                                            </div>
+                                            {section.quoteBox.conclusion && (
+                                                <p className="text-xs text-indigo-200/90 leading-relaxed font-medium pt-1 whitespace-pre-line">
+                                                    {section.quoteBox.conclusion}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+
                                     {/* 특허 출원 상태 뱃지 */}
                                     {section.patentBadge && (
                                         <div className="py-1">
