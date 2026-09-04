@@ -1103,9 +1103,8 @@ export default function MyeongsimOracleCardModal({
                             <Sparkles className="w-3.5 h-3.5 text-amber-300" /> AI 심층 조언
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="text-[10px] text-amber-100/60 line-through">5,000원</span>
                             <span className="bg-black/30 px-2 py-0.5 rounded-full text-[10px] font-mono text-amber-300">
-                              특허출원중 890원 ➔
+                              👑 VIP 멤버십 전용 ➔
                             </span>
                           </span>
                         </button>
@@ -1175,7 +1174,7 @@ export default function MyeongsimOracleCardModal({
             <div className="flex justify-between items-center pb-2 border-b border-white/10">
               <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>📜 [특허출원중 한시적 82% OFF] 시중가 <span className="line-through text-gray-400">5,000원</span> ➔ 890원</span>
+                <span>👑 [특허출원 기념 66% OFF] <span className="line-through text-gray-400">월 289,000원</span> ➔ 월 98,000원 VIP 올패스</span>
               </div>
               <button 
                 onClick={() => setShowPaymentModal(false)}

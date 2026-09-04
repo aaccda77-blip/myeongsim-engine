@@ -71,6 +71,7 @@ const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/co
 const NtsBusinessCareerModal = dynamic(() => import('@/components/coaching/NtsBusinessCareerModal'), { ssr: false });
 const ZeroPointMusicModal = dynamic(() => import('@/components/coaching/ZeroPointMusicModal'), { ssr: false });
 const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/AwarenessQuestDashboard'), { ssr: false });
+const UnifiedSubscriptionModal = dynamic(() => import('@/components/modals/UnifiedSubscriptionModal'), { ssr: false });
 
 
 
@@ -463,6 +464,39 @@ export default function DrillDownIconMenu({
 }: DrillDownIconMenuProps) {
     const { language, setLanguage, t } = useLanguage();
     const router = useRouter();
+    const { 
+        isMonthlyVip, 
+        isBookZeroPoint, 
+        canAccessDeepFeatures, 
+        canAccessZeroPoint, 
+        openModal, 
+        isModalOpen, 
+        closeModal, 
+        modalFeatureName 
+    } = useSubscription();
+
+    const renderLockBadge = (isDeep: boolean = true) => {
+        const isLocked = isDeep ? !canAccessDeepFeatures : !canAccessZeroPoint;
+        if (!isLocked) return null;
+        return (
+            <span style={{
+                position: 'absolute',
+                top: '-3px',
+                right: '-3px',
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(251, 191, 36, 0.7)',
+                borderRadius: '9999px',
+                padding: '1px 3.5px',
+                fontSize: '9px',
+                lineHeight: 1,
+                zIndex: 20,
+                boxShadow: '0 2px 5px rgba(0,0,0,0.6)'
+            }}>
+                🔒
+            </span>
+        );
+    };
+
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
     const [selectedIcon, setSelectedIcon] = useState<MainIcon | null>(null);
     const [hoveredSubItem, setHoveredSubItem] = useState<string | null>(null);
@@ -1212,7 +1246,13 @@ export default function DrillDownIconMenu({
                 {/* [NEW] My Report Icon (Fixed First Position) */}
                 <button
                     style={styles.iconButton}
-                    onClick={() => setShowReportModal(true)}
+                    onClick={() => {
+                        if (!canAccessZeroPoint) {
+                            openModal('나의 리포트');
+                            return;
+                        }
+                        setShowReportModal(true);
+                    }}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1222,6 +1262,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderLockBadge(false)}
                         <span style={{ fontSize: '20px' }}>📋</span>
                     </div>
                     <div>
@@ -1233,7 +1274,13 @@ export default function DrillDownIconMenu({
                 {/* 🌟 [대표님 요청 신규] 📖 명심코칭도서관 (도서 《제로 포인트》 독자 전용 서재) 🌟 */}
                 <button
                     style={styles.iconButton}
-                    onClick={() => router.push('/library')}
+                    onClick={() => {
+                        if (!canAccessZeroPoint) {
+                            openModal('명심코칭도서관 (제로포인트 e-Book)');
+                            return;
+                        }
+                        router.push('/library');
+                    }}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1243,6 +1290,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderLockBadge(false)}
                         <span style={{ fontSize: '20px' }}>📖</span>
                     </div>
                     <div>
@@ -1254,7 +1302,13 @@ export default function DrillDownIconMenu({
                 {/* 🌟 [세계 최고 수준] ⌚ 스마트워치 웰니스 코칭 (Ultra & Galaxy Watch 생체 코칭) 🌟 */}
                 <button
                     style={styles.iconButton}
-                    onClick={() => router.push('/watch')}
+                    onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('스마트워치 웰니스 (9대 킬러 다이얼)');
+                            return;
+                        }
+                        router.push('/watch');
+                    }}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1264,6 +1318,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderLockBadge(true)}
                         <span style={{ fontSize: '20px' }}>⌚</span>
                     </div>
                     <div>
@@ -1277,6 +1332,10 @@ export default function DrillDownIconMenu({
                 <button
                     style={styles.iconButton}
                     onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('기질 1:1 맞춤 코칭 에세이노래');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) {
                             alert('기질 1:1 맞춤 코칭 에세이노래 생성을 위해 생년월일을 먼저 등록해주세요.');
@@ -1294,6 +1353,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderLockBadge(true)}
                         <span style={{ fontSize: '20px' }}>🎧</span>
                     </div>
                     <div>
@@ -1306,6 +1366,10 @@ export default function DrillDownIconMenu({
                 <button
                     style={styles.iconButton}
                     onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('국세청 공식 업태·종목 창업 리포트');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) {
                             alert('1:1 맞춤형 국세청 업태·종목 추천을 위해 생년월일을 먼저 등록해주세요.');
@@ -1323,6 +1387,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderLockBadge(true)}
                         <span style={{ fontSize: '20px' }}>💼</span>
                     </div>
                     <div>
@@ -1334,7 +1399,13 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 제로포인트 3S 융합 진단 메뉴 (나의 리포트 바로 옆) */}
                 <button
                     style={styles.iconButton}
-                    onClick={() => setShowZeroPointMatrix(true)}
+                    onClick={() => {
+                        if (!canAccessZeroPoint) {
+                            openModal('제로포인트 3S 융합 진단');
+                            return;
+                        }
+                        setShowZeroPointMatrix(true);
+                    }}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1344,6 +1415,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderLockBadge(false)}
                         <span style={{ fontSize: '20px' }}>🌌</span>
                     </div>
                     <div>
@@ -1354,8 +1426,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 명심 마스터 코어 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => { window.location.href = '/master-core'; }}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('내면치유 코어 5대 솔루션');
+                            return;
+                        }
+                        window.location.href = '/master-core';
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.2))', border: '1px solid rgba(168, 85, 247, 0.4)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.25)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>💎</span>
                         </div>
                         <div>
@@ -1368,11 +1447,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 오늘의 명심 카드 (Myeongsim Oracle) 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('오늘의 명심 카드 (3D 드로우)');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('오늘의 명심 카드를 뽑기 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShowMyeongsimOracle(true);
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(244, 114, 182, 0.2))', border: '1px solid rgba(167, 139, 250, 0.4)', boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🃏</span>
                         </div>
                         <div>
@@ -1385,11 +1469,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 나의 본재 자각 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('본재(本財) 기질 해독');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('본재 기질 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShowMyeongsimGenius(true);
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.2))', border: '1px solid rgba(236, 72, 153, 0.4)', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>💡</span>
                         </div>
                         <div>
@@ -1402,11 +1491,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 천명 지도 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('천명 지도 운명 분석');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('천명 지도 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShow64KeysModal(true);
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(147, 51, 234, 0.2))', border: '1px solid rgba(245, 158, 11, 0.4)', boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🗺️</span>
                         </div>
                         <div>
@@ -1416,14 +1510,20 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
+
                 {/* [NEW] 천부 성정 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('천부 성정 8페이지 전면 해독');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('천부 성정 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShowGeniusReport(true);
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.2))', border: '1px solid rgba(99, 102, 241, 0.4)', boxShadow: '0 4px 15px rgba(99, 102, 241, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🧬</span>
                         </div>
                         <div>
@@ -1436,11 +1536,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 격국 연금술 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'business') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('격국 연금술 에너지 균형');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('격국 분석 및 균형 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/alignment');
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(59, 130, 246, 0.2))', border: '1px solid rgba(167, 139, 250, 0.4)', boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>☯️</span>
                         </div>
                         <div>
@@ -1453,11 +1558,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 다크디코딩 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('다크 디코딩 에너지 전환');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('다크 감정 분석 및 디코딩을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/dark-decoding');
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(99, 102, 241, 0.2))', border: '1px solid rgba(239, 68, 68, 0.4)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>⚡</span>
                         </div>
                         <div>
@@ -1470,11 +1580,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 마인드 디버거 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('마인드 디버거 의식 시간 재배선');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('의식 오류 분석 및 디버깅을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/dark-code-debugger');
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(99, 102, 241, 0.2))', border: '1px solid rgba(16, 185, 129, 0.4)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>💻</span>
                         </div>
                         <div>
@@ -1486,8 +1601,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 마스터 리포트 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => setShowSovereignReport(true)}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('통합 심층 마스터 리포트');
+                            return;
+                        }
+                        setShowSovereignReport(true);
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2))', border: '1px solid rgba(139,92,246,0.4)', boxShadow: '0 4px 15px rgba(139,92,246,0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🔬</span>
                         </div>
                         <div>
@@ -1500,11 +1622,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 거울의방 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('거울의 방 참나 자각 코칭');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('자각 코칭을 시작하기 위해 생년월일을 먼저 입력해주세요.'); useReportStore.getState().setStep(1); return; }
                         setShowMirrorRoom(true);
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))', border: '1px solid rgba(168, 85, 247, 0.4)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🪞</span>
                         </div>
                         <div>
@@ -1517,11 +1644,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 경계 너머 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('경계 너머 안팎 조망');
+                            return;
+                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) { alert('의식 자각 코칭을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
                         router.push('/master-core/step-back');
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.2))', border: '1px solid rgba(236, 72, 153, 0.4)', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>👁️</span>
                         </div>
                         <div>
@@ -1533,8 +1665,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 4대 기질 코어 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => router.push('/master-core')}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('4대 기질 코어');
+                            return;
+                        }
+                        router.push('/master-core');
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.2))', border: '1px solid rgba(6,182,212,0.4)', boxShadow: '0 4px 15px rgba(6,182,212,0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🔮</span>
                         </div>
                         <div>
@@ -1547,11 +1686,16 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 오행 상생공헌 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'business') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('오행 상생공헌 주파수');
+                            return;
+                        }
                         const hasSaju = !!(reportData && reportData.saju);
                         if (!hasSaju) { alert("먼저 상단의 '만세력(My Report)' 또는 사주 정보를 입력해 주시면, 당신의 고유한 오행 에너지를 바탕으로 한 맞춤형 상생 공헌 리포트가 활성화됩니다! ✨"); return; }
                         setShowOhaengContribution(true);
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(20,184,166,0.25), rgba(13,148,136,0.2))', border: '1px solid rgba(20,184,166,0.4)', boxShadow: '0 4px 15px rgba(20,184,166,0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🌌</span>
                         </div>
                         <div>
@@ -1563,8 +1707,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] FPTI 성향해독 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => setShowMptiTest(true)}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('FPTI 운명 성향 코드 해독');
+                            return;
+                        }
+                        setShowMptiTest(true);
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(16,185,129,0.25), rgba(5,150,105,0.2))', border: '1px solid rgba(16,185,129,0.4)', boxShadow: '0 4px 15px rgba(16,185,129,0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🧭</span>
                         </div>
                         <div>
@@ -1577,10 +1728,15 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 에고싱크 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'bio') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('에고싱크 맞춤 코칭 플래너');
+                            return;
+                        }
                         const isApplied = useReportStore.getState().isPlannerApplied;
                         if (!isApplied) { alert("먼저 'FPTI 성향해독🧭'을 진행하여 타고난 성향 코드를 해독하십시오. 검사가 완료되면 에고싱크 플래너가 활성화됩니다!"); setShowMptiTest(true); } else { useReportStore.getState().setPlannerOpen(true); }
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(99,102,241,0.2))', border: '1px solid rgba(139,92,246,0.4)', boxShadow: '0 4px 15px rgba(139,92,246,0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🌀</span>
                         </div>
                         <div>
@@ -1592,8 +1748,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 소버린 3S 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'bio') && (
-                    <button style={styles.iconButton} onClick={() => setShowSovereign3S(true)}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('소버린 3S 마인드 웰니스 복원 스캔');
+                            return;
+                        }
+                        setShowSovereign3S(true);
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.2))', border: '1px solid rgba(6,182,212,0.4)', boxShadow: '0 4px 15px rgba(6,182,212,0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🧬</span>
                         </div>
                         <div>
@@ -1605,8 +1768,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 마음 리셋 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => setShowMindReset(true)}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('마음 리셋 5D 매트릭스');
+                            return;
+                        }
+                        setShowMindReset(true);
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(251,191,36,0.25), rgba(245,158,11,0.2))', border: '1px solid rgba(251,191,36,0.4)', boxShadow: '0 4px 15px rgba(251,191,36,0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>✨</span>
                         </div>
                         <div>
@@ -1618,8 +1788,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 프리미엄 심층 리포트 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'business') && (
-                    <button style={styles.iconButton} onClick={handlePremiumReportClick}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('심층 리포트 5파트 통합 가이드');
+                            return;
+                        }
+                        handlePremiumReportClick();
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.2))', border: '1px solid rgba(245, 158, 11, 0.4)', boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>💎</span>
                         </div>
                         <div>
@@ -1631,8 +1808,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 마음 공간 넓히기 훈련 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={handleMindSpaceTrainingClick}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('마음 공간 넓히기 훈련');
+                            return;
+                        }
+                        handleMindSpaceTrainingClick();
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))', border: '1px solid rgba(168, 85, 247, 0.4)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🌌</span>
                         </div>
                         <div>
@@ -1645,10 +1829,15 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 핵심 자각 퀘스트 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('핵심 자각 퀘스트 108');
+                            return;
+                        }
                         setAwarenessQuestInitialPhase('all');
                         setShowAwarenessQuestDashboard(true);
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236,72,153,0.3), rgba(219,39,119,0.25))', border: '1px solid rgba(236,72,153,0.5)', boxShadow: '0 4px 18px rgba(236,72,153,0.3)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🧠</span>
                         </div>
                         <div>
@@ -1661,10 +1850,15 @@ export default function DrillDownIconMenu({
                 {/* [NEW] 핵심 자각 대시보드 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('핵심 자각 대시보드 5대 페이즈');
+                            return;
+                        }
                         setAwarenessQuestInitialPhase('all');
                         setShowAwarenessQuestDashboard(true);
                     }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245,158,11,0.3), rgba(217,119,6,0.25))', border: '1px solid rgba(245,158,11,0.5)', boxShadow: '0 4px 18px rgba(245,158,11,0.3)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>📊</span>
                         </div>
                         <div>
@@ -1676,8 +1870,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 디코드 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
-                    <button style={styles.iconButton} onClick={handleDecodeClick}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('디코드 심층 무의식 보고서');
+                            return;
+                        }
+                        handleDecodeClick();
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.25), rgba(79, 70, 229, 0.2))', border: '1px solid rgba(147, 51, 234, 0.4)', boxShadow: '0 4px 15px rgba(147, 51, 234, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🌌</span>
                         </div>
                         <div>
@@ -1689,8 +1890,15 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 제로 캡슐 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'bio') && (
-                    <button style={styles.iconButton} onClick={() => router.push('/zero-capsule')}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessZeroPoint) {
+                            openModal('제로 캡슐 디지털 알사탕');
+                            return;
+                        }
+                        router.push('/zero-capsule');
+                    }}>
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(79, 70, 229, 0.2))', border: '1px solid rgba(59, 130, 246, 0.4)', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderLockBadge(false)}
                             <span style={{ fontSize: '20px' }}>🍬</span>
                         </div>
                         <div>
@@ -1702,7 +1910,14 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 명심 OS 코칭 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
-                    <button style={styles.iconButton} onClick={() => setShowMyeongsimOS(true)}>
+                    <button style={styles.iconButton} onClick={() => {
+                        if (!canAccessDeepFeatures) {
+                            openModal('명심 OS 코칭 대시보드');
+                            return;
+                        }
+                        setShowMyeongsimOS(true);
+                    }}>
+
                         <div style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #4ade80 0%, #3b82f6 100%)', boxShadow: '0 0 15px rgba(74, 222, 128, 0.4)', marginBottom: '8px', position: 'relative', zIndex: 10 }}>
                             <Cpu className="w-5 h-5 text-white" />
                         </div>
@@ -2306,6 +2521,13 @@ export default function DrillDownIconMenu({
                 onStartChatCoaching={(prompt, intent) => {
                     onSelectIntent(intent || 'awareness_108_coaching', prompt);
                 }}
+            />
+
+            {/* 👑 [대표님 요청] 공식 통합 월 98,000원 VIP 정액권 & 스마트스토어 도서구매 잠금 모달 */}
+            <UnifiedSubscriptionModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                featureName={modalFeatureName}
             />
         </>
     );

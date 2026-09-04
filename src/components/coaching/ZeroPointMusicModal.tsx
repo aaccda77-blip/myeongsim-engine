@@ -388,28 +388,85 @@ export default function ZeroPointMusicModal({
     const [copiedOrderText, setCopiedOrderText] = useState<boolean>(false);
     const [isShareSuccess, setIsShareSuccess] = useState<boolean>(false);
 
-    // [NEW] 🏦 무통장 입금 및 관리자 승인 시스템 (토스뱅크 1002-6847-4899 마인드플로우랩)
+    // [NEW] 🏦 무통장 입금 및 관리자 승인 시스템 (카카오뱅크 3333-01-2345678 청류 이경윤)
     const [depositorName, setDepositorName] = useState<string>(effectiveProfile.userName || '');
     const [isAccountCopied, setIsAccountCopied] = useState<boolean>(false);
     const [isDepositSubmitted, setIsDepositSubmitted] = useState<boolean>(false);
     const [copiedDepositText, setCopiedDepositText] = useState<boolean>(false);
+    const [isCheckingApproval, setIsCheckingApproval] = useState<boolean>(false);
 
     const handleCopyAccount = () => {
-        navigator.clipboard.writeText('토스뱅크 1002-6847-4899');
+        navigator.clipboard.writeText('카카오뱅크 3333-01-2345678');
         setIsAccountCopied(true);
         setTimeout(() => setIsAccountCopied(false), 2500);
     };
 
-    const handleDepositSubmit = () => {
+    const handleDepositSubmit = async () => {
         if (!depositorName.trim()) {
             alert('입금자 성함을 입력해 주세요.');
             return;
         }
+        try {
+            await fetch('/api/payment/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: 98000,
+                    depositorName: depositorName.trim(),
+                    orderName: '월 98,000원 VIP 정액권 (432Hz 맞춤 노래 & 124개 서비스)',
+                    itemType: 'MONTHLY_98K',
+                    userId: effectiveProfile.userName || depositorName.trim()
+                })
+            });
+        } catch (e) {
+            console.error('Deposit submit error:', e);
+        }
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('myeongsim_pending_approval', 'true');
+            localStorage.setItem('myeongsim_depositor_name', depositorName.trim());
+            localStorage.setItem('myeongsim_user_id', effectiveProfile.userName || depositorName.trim());
+        }
         setIsDepositSubmitted(true);
     };
 
+    const handleCheckApprovalStatus = async () => {
+        setIsCheckingApproval(true);
+        try {
+            const storedName = localStorage.getItem('myeongsim_depositor_name') || depositorName.trim();
+            const storedUserId = localStorage.getItem('myeongsim_user_id') || effectiveProfile.userName || '';
+            const params = new URLSearchParams();
+            if (storedUserId) params.set('userId', storedUserId);
+            if (storedName) params.set('name', storedName);
+
+            const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.approved) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_server_approved', 'true');
+                        localStorage.setItem('myeongsim_monthly_vip', 'true');
+                        localStorage.setItem('myeongsim_paid_user', 'true');
+                        window.dispatchEvent(new Event('myeongsim_auth_change'));
+                    }
+                    alert('🎉 [승인 완료] 관리자 승인이 완료되었습니다! 124개 전 VIP 서비스가 해금되었습니다.');
+                    setShowPaymentModal(false);
+                    setIsDepositSubmitted(false);
+                } else {
+                    alert('⏳ 아직 관리자 확인 중입니다. 잠시 후 다시 [승인 확인]을 눌러주세요.\n(관리자가 입금 확인 후 수분 내에 승인합니다)');
+                }
+            } else {
+                alert('⏳ 관리자 확인 중입니다. 잠시 후 다시 시도해 주세요.');
+            }
+        } catch (e) {
+            alert('승인 확인 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+        } finally {
+            setIsCheckingApproval(false);
+        }
+    };
+
     const getDepositSummaryText = () => {
-        return `[명심코칭 유료 컨텐츠 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 신청 컨텐츠: 432Hz 1:1 맞춤 힐링노래 평생소장권\n- 입금액: 4,900원 (토스뱅크 1002-6847-4899 마인드플로우랩)\n- 사용자 사주 정보: ${effectiveProfile.userName} (${effectiveProfile.birthDate || '미입력'})`;
+        return `[명심코칭 VIP 멤버십 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 신청 플랜: 월 98,000원 VIP 정액권 (432Hz 맞춤 노래 & 124개 전 서비스 무제한)\n- 입금액: 98,000원 (카카오뱅크 3333-01-2345678 청류 이경윤)\n- 사용자 사주 정보: ${effectiveProfile.userName} (${effectiveProfile.birthDate || '미입력'})`;
     };
 
     const handleCopyDepositSummary = () => {
@@ -438,24 +495,30 @@ export default function ZeroPointMusicModal({
 
             const data = await res.json();
 
-            if (res.ok && data.success) {
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('myeongsim_paid_user', 'true');
-                    localStorage.setItem('myeongsim_total_user_messages', '0');
-                    localStorage.setItem('myeongsim_verified_order', cleaned);
+            if (res.ok && (data.success || data.pendingApproval)) {
+                if (data.pendingApproval) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_pending_approval', 'true');
+                        localStorage.setItem('myeongsim_verified_order', cleaned);
+                        localStorage.setItem('myeongsim_depositor_name', effectiveProfile.userName || '도서 구매 독자');
+                    }
+                    alert(data.message || '도서 구매 주문번호가 정상 접수되었습니다! 관리자가 확인 후 수분 내에 [열어주기 (승인)]를 완료합니다.');
+                } else if (data.success) {
+                    // 마스터 키 또는 즉시 승인 키
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_server_approved', 'true');
+                        localStorage.setItem('myeongsim_paid_user', 'true');
+                        localStorage.setItem('myeongsim_total_user_messages', '0');
+                        localStorage.setItem('myeongsim_verified_order', cleaned);
+                    }
+                    setCouponStep('apply_form');
                 }
-                setCouponStep('apply_form');
             } else {
                 alert(data.message || '유효하지 않은 주문/영수증 번호이거나 이미 등록된 번호입니다. 구매내역을 다시 확인해 주세요.');
             }
         } catch (e) {
             console.error('Order verify error:', e);
-            // Fallback for offline/test
-            if (cleaned.length >= 8) {
-                setCouponStep('apply_form');
-            } else {
-                alert('주문번호/영수증 인증 처리 중 오류가 발생했습니다. 번호를 확인해 주세요.');
-            }
+            alert('주문번호/영수증 인증 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
         }
     };
 
@@ -1040,7 +1103,7 @@ export default function ZeroPointMusicModal({
                                 </div>
 
                                 {/* ========================================================
-                                    [PREMIUM UPSELL] 🌟 1:1 맞춤제작 풀보컬 완성곡 실사례 & 4,900원 소장 안내
+                                    [PREMIUM UPSELL] 🌟 1:1 맞춤제작 풀보컬 완성곡 실사례 & 월 98,000원 VIP 소장 안내
                                     ======================================================== */}
                                 <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-indigo-950/60 border border-amber-500/40 shadow-2xl space-y-4 relative overflow-hidden mt-6">
                                     <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -1072,8 +1135,8 @@ export default function ZeroPointMusicModal({
                                             💡 <strong>[안내]</strong> 기본 432Hz 명상 BGM은 <strong>평생 100% 무료</strong>입니다. 아래 실제 사례처럼 <strong>전문 AI 보컬이 부른 고음질 1:1 맞춤 노래(.MP3 파일)</strong>를 영구 소장해 보세요!
                                         </div>
                                         <div className="shrink-0 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 px-3 py-1 rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md self-end sm:self-center">
-                                            <span className="text-slate-700 line-through text-[10px] font-bold">30,000원</span>
-                                            <span className="text-rose-950 font-black">🔥 이벤트 특가 4,900원</span>
+                                            <span className="text-slate-700 line-through text-[10px] font-bold">월 289,000원</span>
+                                            <span className="text-rose-950 font-black">👑 VIP 올패스 무제한 제공</span>
                                         </div>
                                     </div>
 
@@ -1514,7 +1577,7 @@ export default function ZeroPointMusicModal({
                                     <div className="space-y-2 pt-1">
                                         <div className="text-[11px] font-bold text-amber-300 text-center flex items-center justify-center gap-1">
                                             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                            <span>원하는 버전을 선택하여 4,900원에 평생 소장하세요</span>
+                                            <span>원하는 버전을 선택하여 월 98,000원 VIP 올패스로 무제한 감상하세요</span>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             <button
@@ -1525,7 +1588,7 @@ export default function ZeroPointMusicModal({
                                                 }}
                                                 className="py-3 px-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-[11.5px] shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer transform hover:-translate-y-0.5 text-center"
                                             >
-                                                <span>💖 1. 내 이름 포함 헌정곡 (4,900원)</span>
+                                                <span>💖 1. 내 이름 포함 헌정곡 (VIP 전용)</span>
                                             </button>
                                             <button
                                                 onClick={() => {
@@ -1535,7 +1598,7 @@ export default function ZeroPointMusicModal({
                                                 }}
                                                 className="py-3 px-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-black text-[11.5px] shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer transform hover:-translate-y-0.5 text-center"
                                             >
-                                                <span>🌿 2. 순수 에세이 힐링곡 (4,900원)</span>
+                                                <span>🌿 2. 순수 에세이 힐링곡 (VIP 전용)</span>
                                             </button>
                                         </div>
                                     </div>
@@ -1558,7 +1621,7 @@ export default function ZeroPointMusicModal({
 
                     </div>
 
-                    {/* [NEW] 💳 4,900원 맞춤 노래 평생 소장 결제 팝업 모달 */}
+                    {/* [NEW] 💳 월 98,000원 맞춤 노래 평생 소장 결제 팝업 모달 */}
                     {showPaymentModal && (
                         <div className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
                             <div className="w-full max-w-sm bg-slate-900 border border-amber-500/50 rounded-3xl p-5 shadow-2xl space-y-4 text-xs relative max-h-[90vh] overflow-y-auto hide-scrollbar">
@@ -1605,12 +1668,12 @@ export default function ZeroPointMusicModal({
                                         <div className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
                                             <div className="flex items-baseline justify-between border-b border-slate-800 pb-2">
                                                 <div className="flex items-center gap-1.5">
-                                                    <span className="text-gray-300 text-[11px] font-bold">런칭 기념 이벤트 특가</span>
-                                                    <span className="text-[9px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1.5 py-0.2 rounded font-extrabold">84% 할인</span>
+                                                    <span className="text-gray-300 text-[11px] font-bold">특허출원 기념 VIP 올패스</span>
+                                                    <span className="text-[9px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1.5 py-0.2 rounded font-extrabold">66% 할인</span>
                                                 </div>
                                                 <div className="text-right">
-                                                    <span className="text-gray-500 line-through text-[10px] mr-1.5">30,000원</span>
-                                                    <span className="text-amber-400 font-black text-base">4,900원</span>
+                                                    <span className="text-gray-500 line-through text-[10px] mr-1.5">289,000원</span>
+                                                    <span className="text-amber-400 font-black text-base">월 98,000원</span>
                                                 </div>
                                             </div>
 
@@ -1629,7 +1692,7 @@ export default function ZeroPointMusicModal({
                                                 </div>
                                                 <div className="flex items-center gap-1.5">
                                                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                                    <span className="font-bold text-amber-200">📖 《제로포인트》 도서 포함</span>
+                                                    <span className="font-bold text-amber-200">👑 124개 전 VIP 코칭·워치 웰니스·창업 전면 무제한</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1637,17 +1700,17 @@ export default function ZeroPointMusicModal({
                                         {/* 🏦 무통장 입금 계좌 안내 박스 */}
                                         <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 space-y-2 text-[11px]">
                                             <div className="flex items-center justify-between text-amber-300 font-bold">
-                                                <span className="flex items-center gap-1">🏦 무통장 입금 안내</span>
-                                                <span className="text-xs font-black text-amber-400">4,900원</span>
+                                                <span className="flex items-center gap-1">🏦 무통장 입금 신청</span>
+                                                <span className="text-xs font-black text-amber-400">월 98,000원</span>
                                             </div>
-                                            <div className="p-2 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-between">
-                                                <div className="font-mono text-white text-xs font-bold tracking-wider">
-                                                    토스뱅크 1002-6847-4899
-                                                    <span className="text-[10px] text-gray-400 font-normal ml-1.5">(마인드플로우랩)</span>
+                                            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-between">
+                                                <div>
+                                                    <span className="text-[10px] text-gray-400 block font-mono">카카오뱅크 (예금주: 청류 이경윤)</span>
+                                                    <span className="text-xs font-black font-mono text-white tracking-wider">3333-01-2345678</span>
                                                 </div>
                                                 <button
                                                     onClick={handleCopyAccount}
-                                                    className="px-2 py-1 rounded bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-[10px] cursor-pointer transition-colors"
+                                                    className="px-2.5 py-1 rounded bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-[10.5px] cursor-pointer transition-colors"
                                                 >
                                                     {isAccountCopied ? '✅ 복사됨' : '복사'}
                                                 </button>
@@ -1658,7 +1721,7 @@ export default function ZeroPointMusicModal({
                                                     type="text"
                                                     value={depositorName}
                                                     onChange={(e) => setDepositorName(e.target.value)}
-                                                    placeholder="예: 홍길동 (실제 입금하신 이름)"
+                                                    placeholder="예: 홍길동 (실제 입금하신 성함)"
                                                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400"
                                                 />
                                             </div>
@@ -1670,7 +1733,7 @@ export default function ZeroPointMusicModal({
                                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                             >
                                                 <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
-                                                <span>입금 완료 및 1:1 오픈채팅으로 승인 요청하기 ➔</span>
+                                                <span>⚡ 98,000원 입금 완료 신청 및 관리자 승인 요청</span>
                                             </button>
                                             
                                             {/* 도서 독자 시크릿 쿠폰 등록 링크 */}
@@ -1682,61 +1745,49 @@ export default function ZeroPointMusicModal({
                                                     }}
                                                     className="text-[10.5px] text-amber-300 hover:text-amber-200 underline font-medium cursor-pointer"
                                                 >
-                                                    🎫 《제로포인트》 도서 시크릿 코드가 있으신가요? (무료 이용)
+                                                    🎫 《제로포인트》 도서 시크릿 코드가 있으신가요?
                                                 </button>
                                             </div>
 
                                             <p className="text-[9.5px] text-gray-400 text-center">
-                                                * 입금 확인 후 관리자 승인을 통해 1:1 맞춤 MP3 음원이 전달됩니다.
+                                                * 입금 신청 후 관리자가 입금 내역을 확인하여 실제 [승인(열어주기)] 시 해금됩니다.
                                             </p>
                                         </div>
                                     </>
                                 ) : (
-                                    /* 입금 확인 접수 완료 및 오픈카톡 안내 화면 */
+                                    /* 입금 확인 접수 완료 및 실시간 승인 확인 화면 */
                                     <div className="p-4 rounded-2xl bg-slate-950/90 border border-amber-400/40 text-center space-y-3.5 animate-fade-in">
                                         <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center border border-amber-500/40 text-2xl">
-                                            🎉
+                                            ⏳
                                         </div>
 
                                         <div className="space-y-1">
-                                            <h5 className="font-bold text-white text-sm">입금 확인 요청이 접수되었습니다!</h5>
+                                            <h5 className="font-bold text-white text-sm">입금 승인 대기 중입니다</h5>
                                             <p className="text-[11px] text-amber-200 leading-relaxed">
-                                                <strong>'{depositorName} 님'</strong>의 입금(4,900원) 내역 확인 후, 관리자 승인 및 1:1 맞춤 432Hz MP3 음원을 직접 발송해 드립니다.
+                                                <strong>'{depositorName} 님'</strong>의 입금(98,000원) 신청이 관리자 대기열에 접수되었습니다.<br />
+                                                관리자가 입금 확인 후 즉시 <strong>[열어주기 (승인)]</strong>를 완료합니다.
                                             </p>
                                         </div>
 
-                                        {/* QR코드 및 오픈채팅 바로가기 */}
-                                        <div className="p-3 rounded-2xl bg-white/5 border border-slate-800 flex flex-col items-center space-y-2">
-                                            <div className="text-[10.5px] font-bold text-amber-300">
-                                                📱 1:1 오픈채팅으로 입금자명을 알려주세요
+                                        <div className="p-3 rounded-2xl bg-white/5 border border-slate-800 space-y-2">
+                                            <div className="text-[10.5px] text-gray-400">
+                                                입금 계좌: <span className="text-amber-300 font-mono font-bold">카카오뱅크 3333-01-2345678 (청류 이경윤)</span>
                                             </div>
-                                            <div className="w-24 h-24 bg-white p-1 rounded-xl shadow-md border border-amber-400/40 flex items-center justify-center">
-                                                <img
-                                                    src="/images/kakao_openchat_qr.jpg"
-                                                    alt="1:1 오픈채팅 QR코드"
-                                                    className="w-full h-full object-contain rounded-lg"
-                                                />
-                                            </div>
-                                            <div className="w-full flex items-center justify-between text-[10px] text-gray-300 bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700">
-                                                <span>입금자명: <strong>{depositorName}</strong> (4,900원)</span>
-                                                <button
-                                                    onClick={handleCopyDepositSummary}
-                                                    className="text-[9.5px] bg-amber-400 text-slate-950 font-bold px-2 py-0.5 rounded cursor-pointer"
-                                                >
-                                                    {copiedDepositText ? '✅ 복사됨' : '내용 복사'}
-                                                </button>
+                                            <div className="text-[11px] text-slate-300 bg-slate-900 px-3 py-2 rounded-xl border border-slate-700 flex items-center justify-between">
+                                                <span>입금자명: <strong className="text-white">{depositorName}</strong> (98,000원)</span>
+                                                <span className="text-[10px] text-amber-400 font-bold">대기 중</span>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2 pt-1">
-                                            <a
-                                                href="https://open.kakao.com/o/sfNxzYKi"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer block"
+                                            <button
+                                                onClick={handleCheckApprovalStatus}
+                                                disabled={isCheckingApproval}
+                                                className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                                             >
-                                                <span>💬 1:1 오픈채팅 입장하여 입금 확인 요청하기</span>
-                                            </a>
+                                                {isCheckingApproval ? <Loader2 className="w-4 h-4 animate-spin text-slate-950" /> : <Sparkles className="w-4 h-4 text-slate-950 fill-current" />}
+                                                <span>{isCheckingApproval ? '승인 상태 확인 중...' : '⚡ 관리자 승인 완료 확인 (새로고침)'}</span>
+                                            </button>
 
                                             <button
                                                 onClick={() => {

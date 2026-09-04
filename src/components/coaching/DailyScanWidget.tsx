@@ -192,10 +192,10 @@ export default function DailyScanWidget({ userDayMaster = '辛', onOpenMicroPass
                                 <span className="text-xs font-black text-amber-300 flex items-center gap-1">
                                     ⚡ 오늘 {harmonyData.tenGod}({selectedEmotion}) 왜곡 억제 가이드
                                 </span>
-                                <span className="text-[10px] text-gray-300">890원 핀포인트 가이드전 (100% 환급 특가)</span>
+                                <span className="text-[10px] text-gray-300">월 98,000원 VIP 멤버십 혜택</span>
                             </div>
                             <span className="text-xs bg-amber-400 text-black font-black px-2.5 py-1 rounded-lg flex items-center gap-1 shadow">
-                                890원 가이드 받기 <ArrowRight size={12} />
+                                VIP 가이드 받기 <ArrowRight size={12} />
                             </span>
                         </motion.div>
                     )}

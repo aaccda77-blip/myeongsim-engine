@@ -38,6 +38,27 @@ export async function POST(req: NextRequest) {
             }, { status: 400 });
         }
 
+        const isMaster = orderNumber.toUpperCase().includes('CHEONGRYU-MASTER') || orderNumber.toUpperCase().includes('VIP-FREEPASS');
+
+        // 관리자 대기열 등록 (입력만으로 자동 해제 방지, 관리자 승인 필요)
+        const { addPendingWireTransfer } = await import('@/lib/pendingWireTransfers');
+        await addPendingWireTransfer({
+            depositorName: depositorName || `도서구매(${orderNumber.slice(-6)})`,
+            userId: userId || orderNumber,
+            amount: 0,
+            itemType: 'BOOK_ZERO_POINT',
+            orderName: `도서구매인증: ${orderNumber}`
+        });
+
+        if (!isMaster) {
+            // 일반 독자의 경우 관리자 승인 대기
+            return NextResponse.json({
+                success: false,
+                pendingApproval: true,
+                message: '도서 구매 주문번호가 접수되었습니다! 관리자가 구매 내역 확인 후 수분 내에 [열어주기 (승인)]를 완료합니다.'
+            }, { status: 202 });
+        }
+
         const result = await verifySmartStoreOrder(orderNumber, userId, depositorName, channel);
 
         if (!result.success) {

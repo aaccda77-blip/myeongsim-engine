@@ -6,6 +6,7 @@ import { X, Loader2, ChevronLeft, ChevronRight, HelpCircle, Sparkles, BookOpen, 
 import { playTechBeep, playSuccessChime, playScanPulse } from '@/utils/sfx';
 import { useLanguage } from '@/contexts/LanguageContext';
 import GeniusExplainModal from './GeniusExplainModal';
+import UnifiedSubscriptionModal from '../modals/UnifiedSubscriptionModal';
 
 interface GeniusFullReportModalProps {
   isOpen: boolean;
@@ -88,9 +89,24 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
   // AI 설명 팝업용 State
   const [selectedIndicator, setSelectedIndicator] = useState<{ name: string; score: number | string } | null>(null);
 
-  // 블러 마케팅 페이월 (Page 1은 무료 공개, Page 2~8은 890원 잠금)
+  // 블러 마케팅 페이월 (Page 1은 무료 공개, Page 2~8은 VIP 잠금)
   const [isPaid, setIsPaid] = useState<boolean>(false);
+  const [showUnifiedModal, setShowUnifiedModal] = useState<boolean>(false);
   const isPageLocked = currentPage >= 2 && !isPaid;
+
+  useEffect(() => {
+    const checkApproval = () => {
+      if (typeof window !== 'undefined') {
+        const isApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
+        if (isApproved) {
+          setIsPaid(true);
+        }
+      }
+    };
+    checkApproval();
+    window.addEventListener('myeongsim_auth_change', checkApproval);
+    return () => window.removeEventListener('myeongsim_auth_change', checkApproval);
+  }, []);
 
   // 블러 잠금 마케팅 오버레이 렌더러
   const renderBlurPaywall = (children: React.ReactNode) => {
@@ -113,24 +129,24 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
           <h4 className="text-base sm:text-lg font-black text-white mb-1.5">
             🔒 나의 정밀 분석 리포트 전체 해독
           </h4>
-          <p className="text-[11px] sm:text-xs text-gray-300 max-w-sm mb-1 leading-relaxed">
+          <p className="text-[11px] sm:text-xs text-gray-300 max-w-sm mb-3 leading-relaxed">
             생년월일 기반 8차원 주파수 정밀 분석 결과를<br />
-            <span className="text-amber-300 font-bold">단 890원</span>에 전 페이지 즉시 열람하실 수 있습니다.
+            <span className="text-amber-300 font-bold">월 98,000원 VIP 멤버십(또는 도서 구매 인증 독자)</span>으로 전 페이지 즉시 열람하실 수 있습니다.
           </p>
-          <p className="text-[10px] text-gray-500 mb-4">Page {currentPage} ~ {8} / 총 40페이지 분량 잠금 해제</p>
-
-          <div className="flex items-baseline justify-center gap-2 mb-4">
-            <span className="text-xs text-gray-400 line-through font-mono">정가 890원 (3회 이용권)</span>
-            <span className="text-amber-400 font-extrabold text-xs">[91% OFF]</span>
-            <span className="text-3xl font-black font-mono text-white">890</span>
-            <span className="text-sm font-bold text-gray-300">원</span>
-          </div>
+          <p className="text-[10px] text-gray-500 mb-4">Page {currentPage} ~ 8 / 총 40페이지 분량 잠금 해제</p>
 
           <button
-            onClick={() => { setIsPaid(true); playSuccessChime(); }}
+            onClick={() => {
+              if (typeof window !== 'undefined' && localStorage.getItem('myeongsim_server_approved') === 'true') {
+                setIsPaid(true);
+                playSuccessChime();
+              } else {
+                setShowUnifiedModal(true);
+              }
+            }}
             className="w-full max-w-xs py-3.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-sm rounded-xl shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all active:scale-[0.97] flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>890원에 전체 해독 열람하기</span>
+            <span>👑 월 98,000원 VIP 멤버십으로 전체 해제</span>
             <ArrowRight size={16} />
           </button>
 
@@ -1204,6 +1220,13 @@ export default function GeniusFullReportModal({ isOpen, onClose, userProfile }: 
           />
         )}
       </AnimatePresence>
+
+      {/* 👑 월 98,000원 VIP 멤버십 결제 및 관리자 승인 모달 */}
+      <UnifiedSubscriptionModal
+        isOpen={showUnifiedModal}
+        onClose={() => setShowUnifiedModal(false)}
+        featureName="천부재능 정밀 분석 리포트"
+      />
     </div>
   );
 }

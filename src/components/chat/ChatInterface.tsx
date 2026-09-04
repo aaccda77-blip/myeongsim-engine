@@ -3087,11 +3087,11 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             </div>
                         )}
 
-                        {/* [NEW] 890원 수다 소액 충전 & 남은 횟수 뱃지 */}
+                        {/* [NEW] AI 코칭 & 남은 횟수 뱃지 */}
                         <div className="flex items-center justify-between mb-2 px-1 relative z-20 gap-1.5">
                             <div className="flex items-center gap-1.5 min-w-0">
                                 <span className="text-[11px] font-medium text-gray-300 flex items-center gap-1 shrink-0">
-                                    💬 핀포인트 수다
+                                    💬 1:1 명심 AI 코칭
                                 </span>
                                 {remainingChats > 0 ? (
                                     <span className="px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shrink-0">
@@ -3222,7 +3222,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 )}
             </AnimatePresence>
 
-            {/* [NEW] 890원 수다 3회 소액 충전 모달 */}
+            {/* [NEW] 월 98,000원 VIP 멤버십 & 도서 인증 코칭 모달 */}
             <MicroChatPassModal
                 isOpen={showMicroPassModal}
                 onClose={() => setShowMicroPassModal(false)}

@@ -23,6 +23,8 @@ export default function UnifiedSubscriptionModal({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
 
+    const [isCheckingApproval, setIsCheckingApproval] = useState(false);
+
     if (!isOpen) return null;
 
     const handleWireSubmit = async (e: React.FormEvent) => {
@@ -34,11 +36,11 @@ export default function UnifiedSubscriptionModal({
 
         setIsSubmitting(true);
         try {
-            const res = await fetch('/api/payment/request', {
+            await fetch('/api/payment/request', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    userId: phone || depositorName,
+                    userId: phone.trim() || depositorName.trim(),
                     amount: 98000,
                     depositorName: depositorName.trim(),
                     phone: phone.trim(),
@@ -46,17 +48,56 @@ export default function UnifiedSubscriptionModal({
                 })
             });
 
-            const data = await res.json();
-            if (data.success || res.ok) {
-                setSubmitted(true);
-            } else {
-                // 대체 로컬 성공 처리 (API가 없을 때도 대비)
-                setSubmitted(true);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('myeongsim_pending_approval', 'true');
+                localStorage.setItem('myeongsim_depositor_name', depositorName.trim());
+                if (phone.trim()) localStorage.setItem('myeongsim_phone', phone.trim());
+                localStorage.setItem('myeongsim_user_id', phone.trim() || depositorName.trim());
             }
+            setSubmitted(true);
         } catch (e) {
+            console.error('Wire submit error:', e);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('myeongsim_pending_approval', 'true');
+                localStorage.setItem('myeongsim_depositor_name', depositorName.trim());
+            }
             setSubmitted(true);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleCheckApprovalStatus = async () => {
+        setIsCheckingApproval(true);
+        try {
+            const storedName = localStorage.getItem('myeongsim_depositor_name') || depositorName.trim();
+            const storedUserId = localStorage.getItem('myeongsim_user_id') || phone.trim() || '';
+            const params = new URLSearchParams();
+            if (storedUserId) params.set('userId', storedUserId);
+            if (storedName) params.set('name', storedName);
+
+            const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.approved) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_server_approved', 'true');
+                        localStorage.setItem('myeongsim_monthly_vip', 'true');
+                        localStorage.setItem('myeongsim_paid_user', 'true');
+                        window.dispatchEvent(new Event('myeongsim_auth_change'));
+                    }
+                    alert('🎉 [승인 완료] 관리자 승인이 완료되었습니다! 124개 전 VIP 서비스가 해금되었습니다.');
+                    onClose();
+                } else {
+                    alert('⏳ 아직 관리자 확인 중입니다. 잠시 후 다시 [승인 확인]을 눌러주세요.\n(관리자가 입금 확인 후 수분 내에 승인합니다)');
+                }
+            } else {
+                alert('⏳ 관리자 확인 중입니다. 잠시 후 다시 시도해 주세요.');
+            }
+        } catch (e) {
+            alert('승인 확인 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+        } finally {
+            setIsCheckingApproval(false);
         }
     };
 
@@ -125,12 +166,22 @@ export default function UnifiedSubscriptionModal({
                             <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-[11px] text-gray-400 font-mono">
                                 입금 계좌: 카카오뱅크 3333-01-2345678 (예금주: 청류 이경윤)
                             </div>
-                            <button
-                                onClick={onClose}
-                                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-teal-400 text-slate-950 font-black text-xs cursor-pointer shadow-lg mt-2"
-                            >
-                                확인 완료
-                            </button>
+                            <div className="space-y-2 pt-2">
+                                <button
+                                    onClick={handleCheckApprovalStatus}
+                                    disabled={isCheckingApproval}
+                                    className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs cursor-pointer shadow-xl shadow-amber-500/20 flex items-center justify-center gap-1.5 transition-all disabled:opacity-50"
+                                >
+                                    <Sparkles size={14} className="fill-current text-slate-950" />
+                                    <span>{isCheckingApproval ? '승인 상태 확인 중...' : '⚡ 관리자 승인 완료 확인 (새로고침)'}</span>
+                                </button>
+                                <button
+                                    onClick={onClose}
+                                    className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-300 hover:text-white font-bold text-xs cursor-pointer transition-colors"
+                                >
+                                    확인 및 닫기
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <>

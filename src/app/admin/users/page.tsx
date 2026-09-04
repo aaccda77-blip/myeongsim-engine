@@ -110,8 +110,6 @@ export default function AdminUsersPage() {
                     alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 엠씨스퀘어 3D 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.`);
                 } else if (mappedTier === 'BOOK_ZERO_POINT') {
                     alert(`📖 [도서 구매자 기본 제로포인트] 승인 완료!\n\n책 연계 기본 명심 리포트 및 기초 제로포인트 코칭이 평생 무료로 열렸습니다. (심화 기능은 월정액 잠금 유지)`);
-                } else if (mappedTier === 'STARTUP_VIP') {
-                    alert(`✨ 스타트업 VIP 승인 완료! (19,800원)\n\n20회 AI 코칭 + 스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 힐링송이 모두 해금되었습니다.`);
                 } else {
                     alert(`성공: 승인이 완료되었습니다! ✨`);
                 }
@@ -175,7 +173,7 @@ export default function AdminUsersPage() {
             if (filterTier === 'ALL') return matchSearch;
             if (filterTier === 'ACTIVE') return matchSearch && u.is_active;
             if (filterTier === 'PENDING') return matchSearch && !u.is_active;
-            if (filterTier === 'MICRO') return matchSearch && (u.membership_tier?.includes('890') || u.payment_amount === 890 || u.membership_tier === 'CHAT_3');
+            if (filterTier === 'VIP') return matchSearch && (u.membership_tier?.includes('98') || u.membership_tier?.includes('VIP') || (u.payment_amount && u.payment_amount >= 98000));
             return matchSearch && u.membership_tier === filterTier;
         });
 
@@ -270,7 +268,7 @@ export default function AdminUsersPage() {
         const total = users.length;
         const active = users.filter(u => u.is_active).length;
         const pending = users.filter(u => !u.is_active).length;
-        const microCount = users.filter(u => u.membership_tier?.includes('890') || u.payment_amount === 890).length;
+        const microCount = users.filter(u => u.membership_tier?.includes('98') || (u.payment_amount && u.payment_amount >= 98000) || u.membership_tier?.includes('VIP')).length;
         
         const todayStr = new Date().toISOString().split('T')[0];
         const currentMonth = new Date().getMonth();
@@ -325,10 +323,11 @@ export default function AdminUsersPage() {
                 <div className="flex items-center gap-3">
                     <MyeongsimSunLogo size={44} />
                     <div>
-                        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                            <Users className="w-6 h-6 text-amber-400" /> 가입자 통합 관리 시스템
+                        <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                            <span>🛡️ 통합 명심 회원 승인 & 접근 제어 센터</span>
+                            <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">Admin Console</span>
                         </h1>
-                        <p className="text-xs text-gray-400">전체 회원 등급, 890원 수다권 충전, 프리미엄 승인 및 실시간 가입 현황</p>
+                        <p className="text-xs text-gray-400">전체 회원 등급, 월 98,000원 VIP ALL-PASS 승인 및 실시간 가입 현황</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -410,14 +409,14 @@ export default function AdminUsersPage() {
                     <span className="text-[10px] text-amber-300 font-mono mt-1 block">대기 중: {stats.pending}명</span>
                 </div>
 
-                {/* 4,900원 코칭 결제자 */}
+                {/* VIP 결제자 */}
                 <div className="bg-slate-900/90 border border-yellow-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
                     <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] text-yellow-300 font-bold">4,900원 코칭권</span>
+                        <span className="text-[11px] text-yellow-300 font-bold">VIP 유료 회원</span>
                         <Zap className="w-4 h-4 text-yellow-400" />
                     </div>
                     <p className="text-xl font-black text-yellow-300">{stats.microCount} 명</p>
-                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">유료 충전 회원</span>
+                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">월 98,000원 회원</span>
                 </div>
 
                 {/* 총 결제 매출 */}
@@ -632,7 +631,7 @@ export default function AdminUsersPage() {
                         { key: 'ALL', label: '전체 보기' },
                         { key: 'ACTIVE', label: '🟢 활성 회원' },
                         { key: 'PENDING', label: '⏳ 승인 대기' },
-                        { key: 'MICRO', label: '⚡ 890원 수다회원' },
+                        { key: 'VIP', label: '👑 월 98,000원 VIP' },
                     ].map(f => (
                         <button
                             key={f.key}
@@ -782,10 +781,8 @@ export default function AdminUsersPage() {
                                                     onChange={(e) => setSelectedTiers({ ...selectedTiers, [u.id]: e.target.value })}
                                                     className="bg-slate-800 border border-white/15 rounded-lg px-2 py-1 text-xs text-white focus:outline-none"
                                                 >
-                                                    <option value="월 98,000원 ALL-PASS VIP">🔥 월 98,000원 ALL-PASS VIP (워치+바이오+108 전체)</option>
+                                                    <option value="월 98,000원 ALL-PASS VIP">👑 월 98,000원 ALL-PASS VIP (워치+바이오+108 전체 해금)</option>
                                                     <option value="도서 구매자 기본 제로포인트">📖 도서 구매자 (기본 제로포인트 코칭 승인)</option>
-                                                    <option value="19,800원 스타트업 VIP">👑 19,800원 스타트업 VIP</option>
-                                                    <option value="890원 코칭 충전">💬 890원 챗봇 코칭 충전권 (3회)</option>
                                                 </select>
                                                 <button
                                                     onClick={() => approveUser(u.id, selectedTiers[u.id] || '월 98,000원 ALL-PASS VIP')}

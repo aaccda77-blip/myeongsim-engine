@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Lock, Sparkles, Gift, ChevronRight, Crown, Unlock, CheckCircle2, RefreshCw } from 'lucide-react';
 
@@ -103,13 +103,35 @@ export default function MultiDimensionalBlueprint({
         setExplainModalOpen(true);
     };
 
+    useEffect(() => {
+        const checkApproval = () => {
+            if (typeof window !== 'undefined') {
+                const isApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
+                if (isApproved) {
+                    setUnlockedLevels({
+                        dark: true,
+                        neural: true,
+                        meta: true,
+                    });
+                }
+            }
+        };
+        checkApproval();
+        window.addEventListener('myeongsim_auth_change', checkApproval);
+        return () => window.removeEventListener('myeongsim_auth_change', checkApproval);
+    }, []);
+
     // 다른 메뉴나 모달로 이동하지 않고 바로 그 자리에서 기존 컨텐츠 70% 블러를 해제 및 100% 해독 출력!
     const handleInPlaceUnlock = () => {
         triggerHaptic();
-        setUnlockedLevels(prev => ({
-            ...prev,
-            [globalLevel]: true
-        }));
+        if (typeof window !== 'undefined' && localStorage.getItem('myeongsim_server_approved') === 'true') {
+            setUnlockedLevels(prev => ({
+                ...prev,
+                [globalLevel]: true
+            }));
+        } else {
+            setMicroPassOpen(true);
+        }
     };
 
     const handleFullPassClick = () => {
@@ -333,10 +355,9 @@ export default function MultiDimensionalBlueprint({
                                 className="w-full max-w-md py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-sm sm:text-base hover:brightness-110 active:scale-95 transition-all shadow-[0_0_25px_rgba(252,211,77,0.6)] flex items-center justify-center gap-2 animate-pulse"
                             >
                                 <span>
-                                    {globalLevel === 'dark' && '👉 [ 🔓 890원에 이 자리에서 즉시 해독 출력하기 ]'}
-                                    {globalLevel === 'dark' && '👉 [ 🔓 890원에 70% 정밀 해독 이 자리에서 출력하기 ]'}
-                                    {globalLevel === 'neural' && '👉 [ 🔓 890원에 70% 정밀 해독 이 자리에서 출력하기 ]'}
-                                    {globalLevel === 'meta' && '👉 [ 🔓 3,900원에 명심 마스터코어 정밀 해독 이 자리에서 출력하기 ]'}
+                                    {globalLevel === 'dark' && '👉 [ 🔓 월 98,000원 VIP 멤버십으로 즉시 해독 출력 ]'}
+                                    {globalLevel === 'neural' && '👉 [ 🔓 월 98,000원 VIP 멤버십으로 70% 정밀 해독 출력 ]'}
+                                    {globalLevel === 'meta' && '👉 [ 🔓 월 98,000원 VIP 멤버십으로 마스터코어 정밀 해독 ]'}
                                 </span>
                             </button>
                         </div>
@@ -344,7 +365,7 @@ export default function MultiDimensionalBlueprint({
                 </div>
 
                 {/* ==========================================
-                    3. [특허 출원 한정 이벤트] 3,900원 명심 마스터코어 정밀 해독 배너 (무제한 ALL-PASS 무효화)
+                    3. [특허 출원 한정 이벤트] 월 98,000원 명심 마스터코어 VIP 패스 배너
                     ========================================== */}
                 <div 
                     onClick={handleFullPassClick}
@@ -357,20 +378,20 @@ export default function MultiDimensionalBlueprint({
                             </div>
                             <div className="text-left">
                                 <div className="flex items-center gap-1.5">
-                                    <span className="text-xs font-black text-amber-300">📜 특허출원중 한정특가 명심 마스터코어</span>
-                                    <span className="bg-amber-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded">86% OFF</span>
+                                    <span className="text-xs font-black text-amber-300">📜 특허출원 기념 특별혜택 명심 마스터코어</span>
+                                    <span className="bg-amber-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded">VIP</span>
                                 </div>
                                 <p className="text-[10px] text-amber-100/90 mt-0.5">
-                                    특허출원중 번호: 제 10-2025-0166877 호 (출원인: 이경윤) | 심리 및 생체데이터 기반 스트레스 관리 솔루션
+                                    특허출원 번호: 제 10-2025-0166877 호 (출원인: 이경윤) | 심리 및 생체데이터 기반 스트레스 관리 솔루션
                                 </p>
                             </div>
                         </div>
 
                         <div className="text-right shrink-0">
                             <span className="text-xs sm:text-sm font-black text-white flex items-center gap-0.5 font-mono">
-                                3,900원 <ChevronRight className="w-4 h-4 text-amber-300 group-hover:translate-x-1 transition-transform" />
+                                👑 월 98,000원 <ChevronRight className="w-4 h-4 text-amber-300 group-hover:translate-x-1 transition-transform" />
                             </span>
-                            <span className="text-[9px] text-gray-400 line-through block">29,000원</span>
+                            <span className="text-[9px] text-gray-400 line-through block">정가 289,000원</span>
                         </div>
                     </div>
                 </div>

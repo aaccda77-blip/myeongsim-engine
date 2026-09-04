@@ -346,9 +346,11 @@ export default function StartupDashboard() {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true';
-            const isStartupFree = localStorage.getItem('myeongsim_startup_unlocked') === 'true';
-            if (isPaid || isStartupFree) {
+            const isServerApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
+            const isPaid = isServerApproved && localStorage.getItem('myeongsim_paid_user') === 'true';
+            const isStartupFree = isServerApproved && localStorage.getItem('myeongsim_startup_unlocked') === 'true';
+            const isMonthlyVip = isServerApproved && localStorage.getItem('myeongsim_monthly_vip') === 'true';
+            if (isPaid || isStartupFree || isMonthlyVip) {
                 setIsUnlocked(true);
             }
         }
@@ -364,10 +366,12 @@ export default function StartupDashboard() {
     };
 
     const handleCopyAccount = () => {
-        navigator.clipboard.writeText('100268474899');
+        navigator.clipboard.writeText('3333-01-2345678');
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
     };
+
+    const [isCheckingApproval, setIsCheckingApproval] = useState(false);
 
     const handleRequestApproval = async () => {
         if (!depositorName.trim()) {
@@ -382,15 +386,56 @@ export default function StartupDashboard() {
                 body: JSON.stringify({
                     userId: depositorName.trim(),
                     userName: depositorName.trim(),
-                    amount: 19800,
-                    tier: 'STARTUP_VIP',
+                    amount: 98000,
+                    tier: 'MONTHLY_98K',
                     depositorName: depositorName.trim()
                 })
             });
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('myeongsim_pending_approval', 'true');
+                localStorage.setItem('myeongsim_depositor_name', depositorName.trim());
+                localStorage.setItem('myeongsim_user_id', depositorName.trim());
+            }
             setIsRequested(true);
         } catch (e) {
             console.error('Payment request error:', e);
             setIsRequested(true);
+        }
+    };
+
+    const handleCheckApprovalStatus = async () => {
+        setIsCheckingApproval(true);
+        try {
+            const storedName = localStorage.getItem('myeongsim_depositor_name') || depositorName.trim();
+            const storedUserId = localStorage.getItem('myeongsim_user_id') || depositorName.trim() || '';
+            const params = new URLSearchParams();
+            if (storedUserId) params.set('userId', storedUserId);
+            if (storedName) params.set('name', storedName);
+
+            const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.approved) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_server_approved', 'true');
+                        localStorage.setItem('myeongsim_monthly_vip', 'true');
+                        localStorage.setItem('myeongsim_paid_user', 'true');
+                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                        window.dispatchEvent(new Event('myeongsim_auth_change'));
+                    }
+                    setIsUnlocked(true);
+                    setIsStartupPassOpen(false);
+                    alert('🎉 [승인 완료] 관리자 승인이 완료되었습니다! 스타트업 코칭 및 124개 전 VIP 서비스가 해금되었습니다.');
+                } else {
+                    alert('⏳ 아직 관리자 확인 중입니다. 잠시 후 다시 [승인 확인]을 눌러주세요.\n(관리자가 입금 확인 후 수분 내에 승인합니다)');
+                }
+            } else {
+                alert('⏳ 관리자 확인 중입니다. 잠시 후 다시 시도해 주세요.');
+            }
+        } catch (e) {
+            alert('승인 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+        } finally {
+            setIsCheckingApproval(false);
         }
     };
 
@@ -415,63 +460,35 @@ export default function StartupDashboard() {
 
             const data = await res.json();
 
-            if (res.ok && data.success) {
-                const isSmart = data.record?.isSmartStore || /^\d{16}$/.test(cleaned.replace(/-/g, ''));
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('myeongsim_paid_user', 'true');
-                    localStorage.setItem('myeongsim_total_user_messages', '0');
-                    localStorage.setItem('myeongsim_verified_order', cleaned);
-
-                    if (isSmart) {
-                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
-                        localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
-                        localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
-                        localStorage.setItem('myeongsim_smartstore_vip', 'true');
+            if (res.ok && (data.success || data.pendingApproval)) {
+                if (data.pendingApproval) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_pending_approval', 'true');
+                        localStorage.setItem('myeongsim_verified_order', cleaned);
+                        localStorage.setItem('myeongsim_depositor_name', depositorName || '도서 구매 독자');
                     }
-                }
-
-                if (isSmart) {
+                    alert(data.message || '🎉 도서 구매 주문번호가 정상 접수되었습니다! 관리자가 확인 후 수분 내에 [열어주기 (승인)]를 완료합니다.');
+                } else if (data.success) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_server_approved', 'true');
+                        localStorage.setItem('myeongsim_paid_user', 'true');
+                        localStorage.setItem('myeongsim_total_user_messages', '0');
+                        localStorage.setItem('myeongsim_verified_order', cleaned);
+                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
+                    }
                     setIsUnlocked(true);
                     setIsStartupPassOpen(false);
-                    alert('🎉 청류스마트스토어 VIP 인증 완료!\n\nAI 챗봇 20회 코칭 + 1:1 맞춤 힐링송 + 19,800원 스타트업 심층 리포트 + 무의식 다크코드 디버거 + 바이오케어 올인원 슈퍼패키지가 모두 무료 해금되었습니다.');
+                    alert('🎉 도서 구매 인증이 완료되었습니다! 스타트업 코칭이 활성화되었습니다.');
                     if (pendingHighlight) {
                         setSelectedHighlight(pendingHighlight);
                     }
-                } else {
-                    alert('🎉 도서 구매 인증이 완료되었습니다!\n\n1:1 맞춤 헌정 힐링송 신청 및 20회 AI 코칭 대화가 활성화되었습니다.\n\n(※ 스타트업 심층 리포트·다크코드·바이오케어는 청류스마트스토어 단독 혜택으로, 19,800원 패스 결제 또는 스마트스토어 주문번호로 추가 해금하실 수 있습니다.)');
-                    setIsStartupPassOpen(false);
                 }
             } else {
                 setOrderError(data.message || '유효하지 않은 주문/영수증 번호이거나 이미 등록된 번호입니다.');
             }
         } catch (e) {
             console.error('Order verify error:', e);
-            if (cleaned.length >= 8) {
-                const isSmart = /^\d{16}$/.test(cleaned.replace(/-/g, ''));
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('myeongsim_paid_user', 'true');
-                    localStorage.setItem('myeongsim_total_user_messages', '0');
-                    if (isSmart) {
-                        localStorage.setItem('myeongsim_startup_unlocked', 'true');
-                        localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
-                        localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
-                        localStorage.setItem('myeongsim_smartstore_vip', 'true');
-                    }
-                }
-                if (isSmart) {
-                    setIsUnlocked(true);
-                    setIsStartupPassOpen(false);
-                    alert('🎉 청류스마트스토어 VIP 인증 완료! 20회 코칭 + 힐링송 + 스타트업 리포트 올인원 패키지가 해금되었습니다.');
-                    if (pendingHighlight) {
-                        setSelectedHighlight(pendingHighlight);
-                    }
-                } else {
-                    alert('🎉 도서 구매 인증이 완료되었습니다! 1:1 맞춤 힐링송 및 20회 AI 코칭이 활성화되었습니다.');
-                    setIsStartupPassOpen(false);
-                }
-            } else {
-                setOrderError('주문번호/영수증 인증 중 오류가 발생했습니다.');
-            }
+            setOrderError('인증 처리 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
         }
     };
 
@@ -898,7 +915,7 @@ export default function StartupDashboard() {
     ];
 
 
-    // 🔒 [철통 보안 잠금장치] 무통장 입금(19,800원) 승인 또는 스마트스토어 도서 주문번호 인증 시에만 입장 가능!
+    // 🔒 [철통 보안 잠금장치] 관리자 실제 승인(월 98,000원 VIP 패스 또는 스마트스토어 도서 구매 승인) 시에만 입장 가능!
     if (!isUnlocked) {
         return (
             <div className="relative min-h-screen w-full bg-[#0d0a1a] flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden font-sans text-white">
@@ -919,13 +936,13 @@ export default function StartupDashboard() {
                     <div>
                         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-black tracking-wider uppercase mb-2">
                             <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-current" />
-                            <span>스타트업 코칭 19,800원 VIP 전용</span>
+                            <span>특허출원 기념 VIP 올패스 (월 98,000원)</span>
                         </div>
                         <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
                             스타트업 6대 역량 심층 진단실
                         </h2>
                         <p className="text-xs sm:text-sm text-gray-300 mt-1 font-medium">
-                            본 프로그램은 <strong className="text-amber-300">무통장 입금(19,800원)</strong> 또는 <strong className="text-amber-300">청류스마트스토어 도서 구매자</strong> 전용 잠금 콘텐츠입니다.
+                            본 프로그램은 <strong className="text-amber-300">월 98,000원 VIP 멤버십</strong> 또는 <strong className="text-amber-300">청류스마트스토어 도서 구매자</strong> 전용 잠금 콘텐츠입니다.
                         </p>
                     </div>
 
@@ -936,7 +953,7 @@ export default function StartupDashboard() {
                             <span>👑 청류스마트스토어 구매자 단독 슈퍼 혜택</span>
                         </div>
                         <p className="text-[11px] text-gray-200 leading-relaxed">
-                            청류스마트스토어에서 9,900원에 도서를 구매하시면, 본 <strong className="text-amber-300 font-bold">19,800원 스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 1:1 맞춤 힐링송 + AI 챗봇 20회권(총 10만 원 상당)</strong>이 모두 무료로 자동 해금됩니다!
+                            청류스마트스토어에서 도서를 구매하시면, 본 <strong className="text-amber-300 font-bold">스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 1:1 맞춤 힐링송 + AI 챗봇 20회권</strong> 올인원 슈퍼패키지가 전면 해금됩니다!
                         </p>
                         <a
                             href="https://smartstore.naver.com/cheongryubooks"
@@ -944,7 +961,7 @@ export default function StartupDashboard() {
                             rel="noopener noreferrer"
                             className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/30 flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
-                            <span>📖 청류스토어에서 9,900원에 구매하고 슈퍼패키지 받기</span>
+                            <span>📖 청류스토어에서 구매하고 슈퍼패키지 받기</span>
                             <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                     </div>
@@ -960,7 +977,7 @@ export default function StartupDashboard() {
                             }`}
                         >
                             <Building2 className="w-3.5 h-3.5" />
-                            <span>1. 무통장 입금 (19,800원)</span>
+                            <span>1. 무통장 입금 (월 98,000원)</span>
                         </button>
                         <button
                             onClick={() => setPassTab('code')}
@@ -975,20 +992,20 @@ export default function StartupDashboard() {
                         </button>
                     </div>
 
-                    {/* TAB 1: 무통장 입금 (19,800원) */}
+                    {/* TAB 1: 무통장 입금 (98,000원) */}
                     {passTab === 'bank' && (
                         <>
                             {!isRequested ? (
                                 <div className="space-y-3 text-left animate-fade-in">
                                     <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-400/40 space-y-2">
                                         <div className="flex items-center justify-between text-xs font-black text-amber-300">
-                                            <span>🏦 토스뱅크 무통장 입금 계좌</span>
-                                            <span className="text-amber-400 font-mono text-sm">19,800원</span>
+                                            <span>🏦 무통장 입금 계좌</span>
+                                            <span className="text-amber-400 font-mono text-sm">월 98,000원</span>
                                         </div>
                                         <div className="bg-black/50 border border-amber-400/20 rounded-xl p-2.5 flex items-center justify-between">
                                             <div>
-                                                <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (마인드플로우랩)</span>
-                                                <span className="text-sm font-black font-mono text-white tracking-wider">1002-6847-4899</span>
+                                                <span className="text-[10px] text-gray-400 block font-mono">카카오뱅크 (청류 이경윤)</span>
+                                                <span className="text-sm font-black font-mono text-white tracking-wider">3333-01-2345678</span>
                                             </div>
                                             <button
                                                 onClick={handleCopyAccount}
@@ -1017,11 +1034,11 @@ export default function StartupDashboard() {
                                         onClick={handleRequestApproval}
                                         className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                     >
-                                        <span>⚡ 입금 완료 및 관리자 승인 요청</span>
+                                        <span>⚡ 98,000원 입금 신청 및 관리자 승인 요청</span>
                                     </button>
                                 </div>
                             ) : (
-                                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/40 text-center space-y-2 animate-fade-in">
+                                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/40 text-center space-y-3 animate-fade-in">
                                     <div className="size-10 rounded-full bg-amber-400/20 flex items-center justify-center mx-auto text-amber-400">
                                         <ShieldCheck className="w-5 h-5" />
                                     </div>
@@ -1029,6 +1046,14 @@ export default function StartupDashboard() {
                                     <p className="text-xs text-gray-300 leading-relaxed">
                                         입금 확인 후 관리자가 승인하면 <strong>스타트업 코칭</strong>이 자동으로 전면 해금됩니다.
                                     </p>
+                                    <button
+                                        onClick={handleCheckApprovalStatus}
+                                        disabled={isCheckingApproval}
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                    >
+                                        <Sparkles className="w-3.5 h-3.5 text-slate-950 fill-current" />
+                                        <span>{isCheckingApproval ? '승인 상태 확인 중...' : '⚡ 관리자 승인 완료 확인 (새로고침)'}</span>
+                                    </button>
                                 </div>
                             )}
                         </>
@@ -1847,7 +1872,7 @@ export default function StartupDashboard() {
                                         </span>
                                         <button
                                             onClick={() => {
-                                                const text = "[🎁 도서 구매자 단독 20만 원 상당 올인원 슈퍼패키지 100% 무료 증정!]\n\n📖 본 도서를 구매하신 모든 독자님께는 네이버 주문번호 인증 시 아래 5대 VIP 혜택이 즉시 전면 해금됩니다!\n\n1. 📊 19,800원 상당의 AI 스타트업 6대 역량 심층 정밀 진단서\n2. 🧬 무의식 다크코드 디버거 + 5대 바이오케어 처방전\n3. 🎵 1:1 맞춤형 헌정 힐링송 음원 제작권\n4. 🤖 AI 전담 코치 20회 심층 상담권\n\n지금 바로 도서를 구매하시고, 책 한 권 값으로 나만의 AI 전략 코치를 평생 소장하세요!";
+                                                const text = "[🎁 도서 구매자 단독 20만 원 상당 올인원 슈퍼패키지 100% 무료 증정!]\n\n📖 본 도서를 구매하신 모든 독자님께는 네이버 주문번호 인증 시 관리자 승인을 통해 아래 5대 VIP 혜택이 즉시 전면 해금됩니다!\n\n1. 📊 월 98,000원 상당의 AI 스타트업 6대 역량 심층 정밀 진단서\n2. 🧬 무의식 다크코드 디버거 + 5대 바이오케어 처방전\n3. 🎵 1:1 맞춤형 헌정 힐링송 음원 제작권\n4. 🤖 AI 전담 코치 20회 심층 상담권\n\n지금 바로 도서를 구매하시고, 책 한 권 값으로 나만의 AI 전략 코치를 평생 소장하세요!";
                                                 navigator.clipboard.writeText(text);
                                                 setCopiedToolIdx(1);
                                                 setTimeout(() => setCopiedToolIdx(null), 2000);
@@ -3265,7 +3290,7 @@ export default function StartupDashboard() {
                 )}
 
 
-                {/* [NEW] 19,800원 무통장 입금 & 9,900원 도서 인증 VIP 열람 패스 모달 */}
+                {/* [NEW] 월 98,000원 무통장 입금 & 도서 인증 VIP 열람 패스 모달 */}
                 {isStartupPassOpen && (
                     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-fade-in">
                         <motion.div
@@ -3299,7 +3324,7 @@ export default function StartupDashboard() {
                                     <span>👑 청류스마트스토어 구매자 단독 슈퍼 혜택</span>
                                 </div>
                                 <p className="text-[11px] text-gray-200 leading-relaxed">
-                                    청류스마트스토어에서 9,900원에 도서를 구매하시면, 본 <strong className="text-amber-300 font-bold">19,800원 스타트업 리포트 + 무의식 다크코드 디버거 + 바이오케어 + 1:1 맞춤 힐링송 + AI 챗봇 20회권(총 10만 원 상당)</strong>이 모두 무료로 자동 해금됩니다!
+                                    청류스마트스토어에서 도서를 구매하시면, 본 <strong className="text-amber-300 font-bold">스타트업 프리미엄 진단 리포트 + 무의식 다크코드 디버거 + 바이오케어 + 1:1 맞춤 힐링송 + AI 챗봇(총 20만 원 상당)</strong>이 모두 관리자 승인을 통해 전면 무료로 해금됩니다!
                                 </p>
                                 <a
                                     href="https://smartstore.naver.com/cheongryubooks"
@@ -3323,7 +3348,7 @@ export default function StartupDashboard() {
                                     }`}
                                 >
                                     <Building2 className="w-3.5 h-3.5" />
-                                    <span>1. 무통장 입금 (19,800원)</span>
+                                    <span>1. 무통장 입금 (월 98,000원)</span>
                                 </button>
                                 <button
                                     onClick={() => setPassTab('code')}
@@ -3338,20 +3363,20 @@ export default function StartupDashboard() {
                                 </button>
                             </div>
 
-                            {/* TAB 1: 무통장 입금 (19,800원) */}
+                            {/* TAB 1: 무통장 입금 (월 98,000원) */}
                             {passTab === 'bank' && (
                                 <>
                                     {!isRequested ? (
                                         <div className="space-y-3.5 text-left animate-fade-in">
                                             <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-400/40 space-y-2">
                                                 <div className="flex items-center justify-between text-xs font-black text-amber-300">
-                                                    <span>🏦 토스뱅크 무통장 입금 계좌</span>
-                                                    <span className="text-amber-400 font-mono text-sm">19,800원</span>
+                                                    <span>🏦 무통장 입금 계좌</span>
+                                                    <span className="text-amber-400 font-mono text-sm">월 98,000원</span>
                                                 </div>
                                                 <div className="bg-black/50 border border-amber-400/20 rounded-xl p-2.5 flex items-center justify-between">
                                                     <div>
-                                                        <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (마인드플로우랩)</span>
-                                                        <span className="text-sm font-black font-mono text-white tracking-wider">1002-6847-4899</span>
+                                                        <span className="text-[10px] text-gray-400 block font-mono">카카오뱅크 (청류 이경윤)</span>
+                                                        <span className="text-sm font-black font-mono text-white tracking-wider">3333-01-2345678</span>
                                                     </div>
                                                     <button
                                                         onClick={handleCopyAccount}
@@ -3381,24 +3406,26 @@ export default function StartupDashboard() {
                                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                             >
                                                 <Sparkles className="w-4 h-4 text-slate-950" />
-                                                <span>입금 완료 및 1:1 오픈채팅 승인 요청 ➔</span>
+                                                <span>⚡ 98,000원 입금 신청 및 관리자 승인 요청</span>
                                             </button>
                                         </div>
                                     ) : (
-                                        <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-amber-400/40 text-center space-y-2.5 animate-fade-in">
-                                            <div className="text-2xl">🎉</div>
+                                        <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-amber-400/40 text-center space-y-3 animate-fade-in">
+                                            <div className="text-2xl">⏳</div>
                                             <h4 className="text-xs font-bold text-white">입금 확인 요청이 접수되었습니다!</h4>
                                             <p className="text-[10.5px] text-amber-200 leading-relaxed">
-                                                <strong>'{depositorName}'</strong> 님의 입금 확인 후 1:1 오픈카톡을 통해 즉시 VIP 패스를 승인해 드립니다.
+                                                <strong>'{depositorName}'</strong> 님의 입금 확인 후 관리자가 승인하면 즉시 VIP 패스가 해금됩니다.
                                             </p>
-                                            <a
-                                                href="https://open.kakao.com/o/sfNxzYKi"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer block"
-                                            >
-                                                <span>💬 1:1 오픈채팅 바로 입장하기</span>
-                                            </a>
+                                            <div className="space-y-2 pt-1">
+                                                <button
+                                                    onClick={handleCheckApprovalStatus}
+                                                    disabled={isCheckingApproval}
+                                                    className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                                >
+                                                    <Sparkles className="w-3.5 h-3.5 text-slate-950 fill-current" />
+                                                    <span>{isCheckingApproval ? '승인 상태 확인 중...' : '⚡ 관리자 승인 완료 확인 (새로고침)'}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </>

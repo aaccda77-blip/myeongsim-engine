@@ -22,17 +22,56 @@ export default function NutriSchedulerPage() {
     const [userSupplements, setUserSupplements] = useState<UserSupplement[]>([]);
     const [efficiency, setEfficiency] = useState(0);
     const [isLocked, setIsLocked] = useState(true);
+    const [isCheckingApproval, setIsCheckingApproval] = useState(false);
 
-    useEffect(() => {
+    const checkLockStatus = () => {
         if (typeof window !== 'undefined') {
-            const isBioUnlocked = localStorage.getItem('myeongsim_bio_care_unlocked') === 'true';
-            const isPaidUser = localStorage.getItem('myeongsim_paid_user') === 'true';
+            const isApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
             const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true';
-            if (isBioUnlocked || isSmartVip || isPaidUser) {
+            const isPaidUser = localStorage.getItem('myeongsim_paid_user') === 'true';
+            const isMonthlyVip = localStorage.getItem('myeongsim_monthly_vip') === 'true';
+            if (isApproved && (isSmartVip || isPaidUser || isMonthlyVip)) {
                 setIsLocked(false);
             }
         }
+    };
+
+    useEffect(() => {
+        checkLockStatus();
+        window.addEventListener('myeongsim_auth_change', checkLockStatus);
+        return () => window.removeEventListener('myeongsim_auth_change', checkLockStatus);
     }, []);
+
+    const handleCheckApprovalStatus = async () => {
+        setIsCheckingApproval(true);
+        try {
+            const storedName = localStorage.getItem('myeongsim_depositor_name') || '';
+            const storedUserId = localStorage.getItem('myeongsim_user_id') || localStorage.getItem('myeongsim_phone') || '';
+            const params = new URLSearchParams();
+            if (storedUserId) params.set('userId', storedUserId);
+            if (storedName) params.set('name', storedName);
+
+            const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.approved) {
+                    localStorage.setItem('myeongsim_server_approved', 'true');
+                    localStorage.setItem('myeongsim_monthly_vip', 'true');
+                    localStorage.setItem('myeongsim_paid_user', 'true');
+                    setIsLocked(false);
+                    alert('🎉 [승인 완료] 관리자 승인이 확인되었습니다! 바이오케어가 해금되었습니다.');
+                } else {
+                    alert('⏳ 아직 관리자 승인 대기 중입니다. 잠시 후 다시 [승인 확인]을 눌러주세요.\n(관리자가 입금/주문 확인 후 승인합니다)');
+                }
+            } else {
+                alert('⏳ 승인 상태 확인 중입니다. 잠시 후 다시 시도해 주세요.');
+            }
+        } catch {
+            alert('승인 확인 중 오류가 발생했습니다.');
+        } finally {
+            setIsCheckingApproval(false);
+        }
+    };
 
     // 로컬 스토리지에서 불러오기
     useEffect(() => {
@@ -107,8 +146,16 @@ export default function NutriSchedulerPage() {
                         </p>
                     </div>
                     <div className="flex flex-col gap-2.5">
+                        <button
+                            onClick={handleCheckApprovalStatus}
+                            disabled={isCheckingApproval}
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-xs shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined text-sm">verified</span>
+                            <span>{isCheckingApproval ? '승인 상태 확인 중...' : '⚡ 관리자 승인 완료 확인 (새로고침)'}</span>
+                        </button>
                         <a
-                            href="https://smartstore.naver.com/cheongryubooks"
+                            href="https://smartstore.naver.com"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
@@ -117,7 +164,7 @@ export default function NutriSchedulerPage() {
                         </a>
                         <button
                             onClick={() => router.push('/bio-care')}
-                            className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 text-xs font-bold transition-all"
+                            className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 text-xs font-bold transition-all cursor-pointer"
                         >
                             ← 뒤로 가기
                         </button>

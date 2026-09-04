@@ -51,7 +51,7 @@ const CustomTooltip = ({ active, payload, topNames }: any) => {
             <span className="text-amber-300 font-mono text-xs font-black">비율:</span>
             <span className="filter blur-[4px] text-amber-300 text-xs font-mono font-bold select-none">{data.value}%</span>
             <span className="text-[9px] bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black px-1.5 py-0.5 rounded">
-              🔒 890원 해독 ➔
+              🔒 VIP 전용 ➔
             </span>
           </div>
         ) : (
@@ -478,7 +478,7 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                 className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-[10px] sm:text-xs shadow-[0_0_15px_rgba(245,158,11,0.35)] transition-all active:scale-95 flex items-center gap-1 cursor-pointer border border-amber-400/40"
               >
                 <Zap size={11} className="text-amber-300 animate-pulse fill-amber-300" />
-                <span>⚡ 890원 솔루션 ➔</span>
+                <span>👑 월 98,000원 VIP 멤버십 ➔</span>
               </button>
               <button
                 onClick={() => {
@@ -632,9 +632,9 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                           🔒 AI 마스터 성찰 가이드 해독
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className="text-[10px] text-gray-500 line-through">19,000원</span>
+                          <span className="text-[10px] text-gray-500 line-through">289,000원</span>
                           <span className="bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black text-[10px] px-2 py-0.5 rounded-full shadow">
-                            특허출원중 한시적 1,900원 ➔
+                            월 98,000원 VIP 멤버십 ➔
                           </span>
                         </span>
                       </div>
@@ -667,7 +667,7 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                     className="cursor-pointer bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black text-xs px-3 py-1.5 rounded-xl shadow-lg hover:scale-105 transition-all shrink-0 flex items-center gap-1"
                   >
                     <span>🔒 1위 수치 해독</span>
-                    <span className="text-[10px] bg-black/20 text-black px-1.5 rounded">890원</span>
+                    <span className="text-[10px] bg-black/20 text-black px-1.5 rounded">👑 VIP</span>
                   </div>
                 </div>
 
@@ -735,7 +735,7 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                               <span className="font-mono text-xs font-black px-2.5 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/50 flex items-center gap-1.5 shadow">
                                 <span className="filter blur-[4px] select-none">{item.value}%</span>
                                 <span className="text-[9px] bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black px-1.5 py-0.5 rounded">
-                                  🔒 890원 해독 ➔
+                                  🔒 VIP 전용 ➔
                                 </span>
                               </span>
                             ) : (
@@ -902,9 +902,9 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                           🔒 AI 마스터 리더십/열정 해독
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className="text-[10px] text-gray-500 line-through">19,000원</span>
+                          <span className="text-[10px] text-gray-500 line-through">289,000원</span>
                           <span className="bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black text-[10px] px-2 py-0.5 rounded-full shadow">
-                            890원 해독 ➔
+                            월 98,000원 ➔
                           </span>
                         </span>
                       </div>
@@ -989,7 +989,7 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                                 <span>🔮 다음 차원 다각도 심층 코칭 예고편</span>
                               </div>
                               <span className="text-[9.5px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full">
-                                🔒 890원 해독 대기
+                                🔒 VIP 승인 대기
                               </span>
                             </div>
 
@@ -1010,7 +1010,7 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
                             </div>
 
                             <button className="w-full mt-2.5 py-2.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-black font-black text-xs rounded-xl shadow-lg flex items-center justify-center gap-1.5 group-hover:scale-[1.01] transition-transform">
-                              <span>🔒 890원으로 다음 차원 심층 코칭 열기 ➔</span>
+                              <span>👑 월 98,000원 VIP 멤버십으로 심층 코칭 열기 ➔</span>
                             </button>
                           </div>
                         </div>
@@ -1044,7 +1044,7 @@ export default function MyeongsimGeniusReportModal({ isOpen, onClose, userProfil
             <div className="flex justify-between items-center pb-2 border-b border-white/10">
               <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>📜 [특허출원중 한시적 90% OFF] <span className="line-through text-gray-400">19,000원</span> ➔ 1,900원</span>
+                <span>👑 [특허출원 기념 66% OFF] <span className="line-through text-gray-400">월 289,000원</span> ➔ 월 98,000원 VIP 올패스</span>
               </div>
               <button 
                 onClick={() => setShowPaymentModal(false)}

@@ -124,42 +124,20 @@ export default function LoginModal({ onClose }: LoginModalProps) {
                                 >
                                     {/* Pricing Table */}
                                     <div className="grid gap-2">
-                                        {/* 1. 890원 대화 3회 충전 */}
-                                        <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900 border border-amber-500/30">
-                                            <div>
-                                                <div className="text-gray-400 text-xs line-through">8,900원</div>
-                                                <div className="text-amber-300 font-bold">대화 3회 즉시 충전</div>
-                                                <div className="text-[10px] text-gray-400">890원 초마이크로 충전</div>
+                                        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-amber-500/20 border border-amber-400/40 relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 bg-amber-400 text-slate-950 text-[9px] font-black px-2 py-0.5 rounded-bl-lg">
+                                                특허출원기념 66% OFF
                                             </div>
-                                            <div className="text-right">
-                                                <div className="text-amber-400 font-black text-lg">890원</div>
-                                            </div>
-                                        </div>
-
-                                        {/* 2. 1,900원 대화 10회 충전 */}
-                                        <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900 border border-amber-500/30">
-                                            <div>
-                                                <div className="text-gray-400 text-xs line-through">19,000원</div>
-                                                <div className="text-amber-300 font-bold">대화 10회 충전</div>
-                                                <div className="text-[10px] text-gray-400">가성비 마이크로 충전</div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="text-amber-400 font-black text-lg">1,900원</div>
-                                            </div>
-                                        </div>
-
-                                        {/* 3. 890원 (3회 이용) 마스터코어 */}
-                                        <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950 border border-amber-500/50 relative overflow-hidden">
-                                            <div className="absolute top-0 right-0 bg-amber-500 text-black text-[9px] font-black px-2 py-0.5 rounded-bl-lg">
-                                                특허출원중 86% OFF
-                                            </div>
-                                            <div>
-                                                <div className="text-gray-400 text-xs line-through">29,000원</div>
-                                                <div className="text-amber-300 font-bold text-sm">특허출원중 명심 마스터코어</div>
-                                                <div className="text-[10px] text-amber-200/80">단발성 1회 정밀 해독</div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="text-amber-400 font-black text-lg">890원 (3회 이용)</div>
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <div className="text-gray-400 text-xs line-through font-mono">289,000원</div>
+                                                    <div className="text-amber-300 font-black text-sm">명심코칭 VIP 올패스 (월정액)</div>
+                                                    <div className="text-[10.5px] text-amber-200/80">124개 전 서비스 무제한 이용</div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-amber-400 font-black text-xl font-mono">월 98,000원</div>
+                                                    <div className="text-[9.5px] text-gray-400 font-mono">하루 약 3,200원대</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

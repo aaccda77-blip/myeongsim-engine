@@ -42,7 +42,7 @@ export default function PrivacyPage() {
             <div className="text-[11px] text-gray-400 pt-1 space-y-1">
               <p>• <strong>회원가입 및 관리:</strong> 본인 식별·인증, 부정 가입 방지, 회원 자격 유지, 서비스 관련 통지</p>
               <p>• <strong>서비스 제공:</strong> 본인확인, 주역의식지도 및 AI 멘탈 코칭 리포트 생성, 대금 결제, 취소·환불 처리</p>
-              <p>• <strong>이벤트 및 혜택 관리:</strong> 100% 환급 쿠폰 및 890원 페이백 혜택 제공, 이벤트 응모 및 안내</p>
+              <p>• <strong>이벤트 및 혜택 관리:</strong> 100% 환급 쿠폰 및 VIP 페이백 혜택 제공, 이벤트 응모 및 안내</p>
               <p>• <strong>마케팅 및 고객지원:</strong> AI 맞춤형 멘탈 가이드 제공, 민원 처리, 고지사항 전달, 서비스 품질 향상</p>
             </div>
           </section>

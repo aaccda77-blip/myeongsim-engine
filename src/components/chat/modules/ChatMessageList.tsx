@@ -199,7 +199,7 @@ export default function ChatMessageList({
                 );
             })}
 
-            {/* 3회 무료 완료 후 890원 서비스 잠금 마케팅 카드 */}
+            {/* 3회 무료 완료 후 월 98,000원 VIP 서비스 잠금 마케팅 카드 */}
             {userMessageCount >= 3 && !isPaidUser && (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

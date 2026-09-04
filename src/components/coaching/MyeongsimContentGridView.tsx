@@ -127,7 +127,7 @@ export default function MyeongsimContentGridView({
               <Layers className="w-3.5 h-3.5 text-amber-400" /> 다차원 기질 설계도
             </span>
             <span className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black text-[11px] px-3.5 py-1 rounded-full shadow-lg flex items-center gap-1 animate-pulse">
-              ⚡ 890원 ~ 1,900원 (30% 무료)
+              👑 월 98,000원 VIP 멤버십
             </span>
           </div>
 
@@ -144,9 +144,9 @@ export default function MyeongsimContentGridView({
                 상단 30% 무료 맛보기 + 핵심 70% 가우시안 블러 & 핀포인트 락 해제
               </p>
               <div className="flex items-center gap-2 pt-1 text-[10px] text-amber-300/90 font-mono">
-                <span className="bg-rose-950/60 border border-rose-500/40 px-2 py-0.5 rounded text-rose-300">⚠️ Dark 890원</span>
-                <span className="bg-blue-950/60 border border-blue-500/40 px-2 py-0.5 rounded text-blue-300">✨ Neural 990원</span>
-                <span className="bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 rounded text-amber-300">👑 Meta 1,900원</span>
+                <span className="bg-rose-950/60 border border-rose-500/40 px-2 py-0.5 rounded text-rose-300">⚠️ Dark (그림자)</span>
+                <span className="bg-blue-950/60 border border-blue-500/40 px-2 py-0.5 rounded text-blue-300">✨ Neural (본질재능)</span>
+                <span className="bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 rounded text-amber-300">👑 Meta (초월)</span>
               </div>
             </div>
           </div>
@@ -154,7 +154,7 @@ export default function MyeongsimContentGridView({
           {/* Bottom Payback Coupon Badge */}
           <div className="z-10 flex items-center justify-between border-t border-white/10 pt-3 text-[11px]">
             <span className="text-amber-400 font-bold flex items-center gap-1">
-              <Gift className="w-3.5 h-3.5" /> 890원 100% 페이백 쿠폰 지급
+              <Gift className="w-3.5 h-3.5" /> 👑 월 98,000원 VIP 올인원 포함
             </span>
             <span className="text-amber-300 font-extrabold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
               열람하기 <ChevronRight className="w-4 h-4" />
@@ -168,7 +168,7 @@ export default function MyeongsimContentGridView({
         {/* 2x2 서브 큐레이션 카드 그리드 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           
-          {/* Card 1: 890원 오행 상생 밸런스 솔루션 */}
+          {/* Card 1: 오행 상생 밸런스 솔루션 */}
           <motion.div
             whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
@@ -180,7 +180,7 @@ export default function MyeongsimContentGridView({
                 <Flame className="w-3 h-3 text-purple-400" /> 오행 밸런스
               </span>
               <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-black font-black text-[11px] px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
-                ⚡ 890원
+                👑 VIP 전용
               </span>
             </div>
 
@@ -198,7 +198,7 @@ export default function MyeongsimContentGridView({
 
             <div className="z-10 flex items-center justify-between border-t border-white/10 pt-2.5 text-[10px]">
               <span className="text-amber-400 font-bold flex items-center gap-1">
-                <Gift className="w-3.5 h-3.5" /> 890원 환급 쿠폰 지급
+                <Gift className="w-3.5 h-3.5" /> 👑 월 98,000원 올인원 포함
               </span>
               <span className="text-purple-300 font-extrabold flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
                 열람 <ChevronRight className="w-3.5 h-3.5" />
@@ -208,7 +208,7 @@ export default function MyeongsimContentGridView({
             <div className="absolute -bottom-10 -right-10 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-purple-500/20 transition-all" />
           </motion.div>
 
-          {/* Card 2: 990원 사회적 기여 파워베이스 */}
+          {/* Card 2: 사회적 기여 파워베이스 */}
           <motion.div
             whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
@@ -220,7 +220,7 @@ export default function MyeongsimContentGridView({
                 <Award className="w-3 h-3 text-blue-400" /> 조직 영향력
               </span>
               <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-black font-black text-[11px] px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
-                ⚡ 990원
+                👑 VIP 전용
               </span>
             </div>
 
@@ -238,7 +238,7 @@ export default function MyeongsimContentGridView({
 
             <div className="z-10 flex items-center justify-between border-t border-white/10 pt-2.5 text-[10px]">
               <span className="text-amber-400 font-bold flex items-center gap-1">
-                <Gift className="w-3.5 h-3.5" /> 990원 환급 쿠폰 지급
+                <Gift className="w-3.5 h-3.5" /> 👑 월 98,000원 올인원 포함
               </span>
               <span className="text-blue-300 font-extrabold flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
                 열람 <ChevronRight className="w-3.5 h-3.5" />
@@ -248,7 +248,7 @@ export default function MyeongsimContentGridView({
             <div className="absolute -bottom-10 -right-10 w-36 h-36 bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-all" />
           </motion.div>
 
-          {/* Card 3: 1,900원 명심 마스터코어 (4대 기질 & 9대 영역) */}
+          {/* Card 3: 명심 마스터코어 (4대 기질 & 9대 영역) */}
           <motion.div
             whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
@@ -260,7 +260,7 @@ export default function MyeongsimContentGridView({
                 <Compass className="w-3 h-3 text-amber-400" /> 4대 기질 & 9대 영역
               </span>
               <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-black font-black text-[11px] px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
-                💎 1,900원
+                👑 VIP 전용
               </span>
             </div>
 
@@ -278,7 +278,7 @@ export default function MyeongsimContentGridView({
 
             <div className="z-10 flex items-center justify-between border-t border-white/10 pt-2.5 text-[10px]">
               <span className="text-amber-400 font-bold flex items-center gap-1">
-                <Gift className="w-3.5 h-3.5" /> 1,900원 환급 쿠폰 지급
+                <Gift className="w-3.5 h-3.5" /> 👑 월 98,000원 올인원 포함
               </span>
               <span className="text-amber-300 font-extrabold flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
                 열람 <ChevronRight className="w-3.5 h-3.5" />
@@ -288,7 +288,7 @@ export default function MyeongsimContentGridView({
             <div className="absolute -bottom-10 -right-10 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all" />
           </motion.div>
 
-          {/* Card 4: 특허출원 3,900원 마스터코어 (최종 업셀) */}
+          {/* Card 4: 특허출원 마스터코어 (최종 업셀) */}
           <motion.div
             whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
@@ -297,10 +297,10 @@ export default function MyeongsimContentGridView({
           >
             <div className="flex justify-between items-start z-10">
               <span className="bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-black px-2.5 py-1 rounded-full flex items-center gap-1">
-                <CrownIcon className="w-3 h-3 text-amber-400" /> 특허출원중 86% 한정특가
+                <CrownIcon className="w-3 h-3 text-amber-400" /> 특허출원 기념 특별혜택
               </span>
               <span className="bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black text-[11px] px-3 py-1 rounded-full shadow-lg flex items-center gap-1 font-mono">
-                👑 3,900원
+                👑 월 98,000원 VIP
               </span>
             </div>
 

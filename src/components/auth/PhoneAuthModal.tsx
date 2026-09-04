@@ -89,12 +89,14 @@ export default function PhoneAuthModal({ isOpen, onClose, onLoginSuccess, select
             if (user) {
                 // [FIX] Tier별 한글 설명 매핑 (VIP 제거 -> 단발성 충전권 이름으로 개정)
                 const tierNames: Record<string, string> = {
-                    'TRIAL_30M': '💬 890원 대화 3회 충전',
-                    'TRIAL': '💬 890원 대화 3회 충전',
-                    'PASS_24H': '🔬 1,900원 오행 리포트',
-                    'PASS': '🔬 1,900원 오행 리포트',
-                    'VIP_7D': '🔮 890원 (3회 이용) 마스터코어',
-                    'VIP': '🔮 890원 (3회 이용) 마스터코어',
+                    'MONTHLY_98K': '👑 월 98,000원 VIP ALL-PASS',
+                    'BOOK_ZERO_POINT': '📖 도서 구매자 패스',
+                    'TRIAL_30M': '👑 월 98,000원 VIP ALL-PASS',
+                    'TRIAL': '👑 월 98,000원 VIP ALL-PASS',
+                    'PASS_24H': '👑 월 98,000원 VIP ALL-PASS',
+                    'PASS': '👑 월 98,000원 VIP ALL-PASS',
+                    'VIP_7D': '👑 월 98,000원 VIP ALL-PASS',
+                    'VIP': '👑 월 98,000원 VIP ALL-PASS',
                     'FREE': '기본 무료 대화'
                 };
 

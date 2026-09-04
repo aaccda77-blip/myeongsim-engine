@@ -59,14 +59,14 @@ export default function PaybackBanner({ expiresAt, onUpgradeClick }: PaybackBann
           {/* 배지 */}
           <div className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-500/40 mb-1.5">
             <Gift size={12} className="text-amber-400" />
-            <span>890원 100% 페이백 쿠폰 적용 중</span>
+            <span>👑 월 98,000원 VIP 올패스 특별 혜택</span>
           </div>
 
           <h3 className="text-sm sm:text-base font-black text-slate-100">
-            특허출원중 기념 <span className="text-amber-400">890원 핀포인트 솔루션</span> 혜택 적용 중!
+            특허출원 기념 <span className="text-amber-400">월 98,000원 VIP ALL-PASS</span> 멤버십!
           </h3>
           <p className="text-xs text-slate-300 mt-0.5">
-            생년월일 사주 오행 연동 1:1 심층 AI 코칭 (<span className="line-through text-gray-500">19,000원</span> → <strong className="text-amber-300 font-black">890원</strong>)
+            워치 다이얼 + 124개 전 리포트 + 바이오케어 + 1:1 심층 AI 코칭 무제한 (<span className="line-through text-gray-500">289,000원</span> → <strong className="text-amber-300 font-black">월 98,000원</strong>)
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function PaybackBanner({ expiresAt, onUpgradeClick }: PaybackBann
             onClick={() => onUpgradeClick && onUpgradeClick()}
             className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs px-3.5 py-2 rounded-xl transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95 whitespace-nowrap cursor-pointer flex items-center gap-1"
           >
-            <span>890원 솔루션받기 ➔</span>
+            <span>👑 VIP 올패스 신청하기 ➔</span>
           </button>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Copy, CheckCircle2, ChevronDown, ChevronRight, ChevronLeft, Dices, Lock } from 'lucide-react';
+import UnifiedSubscriptionModal from '../modals/UnifiedSubscriptionModal';
 
 interface Props {
   dayStem?: string;
@@ -245,6 +246,31 @@ export default function SelfCoaching100({ dayStem = '甲', userName, sajuInfo }:
   const [isQuestionUnlocked, setIsQuestionUnlocked] = useState(false);
   const [isAllPassUnlocked, setIsAllPassUnlocked] = useState(false);
   const [isUnlocking, setIsUnlocking] = useState(false);
+  const [showUnifiedModal, setShowUnifiedModal] = useState(false);
+
+  useEffect(() => {
+    const checkApproval = () => {
+      if (typeof window !== 'undefined') {
+        const isApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
+        if (isApproved) {
+          setIsAllPassUnlocked(true);
+          setIsQuestionUnlocked(true);
+        }
+      }
+    };
+    checkApproval();
+    window.addEventListener('myeongsim_auth_change', checkApproval);
+    return () => window.removeEventListener('myeongsim_auth_change', checkApproval);
+  }, []);
+
+  const handleUnlockClick = () => {
+    if (typeof window !== 'undefined' && localStorage.getItem('myeongsim_server_approved') === 'true') {
+      setIsAllPassUnlocked(true);
+      setIsQuestionUnlocked(true);
+    } else {
+      setShowUnifiedModal(true);
+    }
+  };
 
   const tabScrollRef = useRef<HTMLDivElement>(null);
 
@@ -506,7 +532,7 @@ export default function SelfCoaching100({ dayStem = '甲', userName, sajuInfo }:
                     {q.text}
                   </p>
                   <span className="inline-flex items-center gap-1 text-[10px] text-amber-400/70 mt-1.5 font-mono">
-                    <span>🔒 890원 AI 코치 감동 해설 열람하기 ➜</span>
+                    <span>🔒 👑 월 98,000원 VIP 해설 열람하기 ➜</span>
                   </span>
                 </div>
                 
@@ -575,40 +601,19 @@ export default function SelfCoaching100({ dayStem = '甲', userName, sajuInfo }:
                     </div>
                     <div>
                       <h4 className="text-base font-extrabold text-white">AI 코치의 1:1 오라클 감동 해설서</h4>
-                      <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 해설서 전체를 열람하세요.</p>
+                      <p className="text-xs text-slate-400 mt-1">월 98,000원 VIP 멤버십(또는 도서 구매 승인 독자) 전용 콘텐츠입니다.</p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
                       <button
-                        disabled={isUnlocking}
-                        onClick={() => {
-                          setIsUnlocking(true);
-                          setTimeout(() => {
-                            setIsQuestionUnlocked(true);
-                            setIsUnlocking(false);
-                          }, 700);
-                        }}
-                        className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                        onClick={handleUnlockClick}
+                        className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
-                        <span>🔓 890원 단품 해제 (890원)</span>
-                      </button>
-
-                      <button
-                        disabled={isUnlocking}
-                        onClick={() => {
-                          setIsUnlocking(true);
-                          setTimeout(() => {
-                            setIsAllPassUnlocked(true);
-                            setIsQuestionUnlocked(true);
-                            setIsUnlocking(false);
-                          }, 700);
-                        }}
-                        className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                      >
-                        <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                        <span className="material-symbols-outlined text-sm">lock_open</span>
+                        <span>👑 월 98,000원 VIP 멤버십으로 전체 해제</span>
                       </button>
                     </div>
-                    <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                    <p className="text-[10px] text-amber-300/80 font-medium">* 관리자 입금/주문 승인 완료 시 전 모듈이 즉시 자동 해금됩니다.</p>
                   </div>
                 </div>
               ) : (
@@ -619,7 +624,7 @@ export default function SelfCoaching100({ dayStem = '甲', userName, sajuInfo }:
                   className="space-y-4 pt-2"
                 >
                   <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
-                    <span>✓</span> {isAllPassUnlocked ? '1,900원 ALL-PASS 결제 완료' : '890원 단품 결제 완료'} • AI 오라클 1:1 감동 해설서
+                    <span>✓</span> 👑 VIP 멤버십 승인 완료 • AI 오라클 1:1 감동 해설서
                   </div>
 
                   <div className="p-5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-3">
@@ -653,6 +658,12 @@ export default function SelfCoaching100({ dayStem = '甲', userName, sajuInfo }:
         )}
       </AnimatePresence>
 
+      {/* 👑 월 98,000원 VIP 멤버십 결제 및 관리자 승인 모달 */}
+      <UnifiedSubscriptionModal
+        isOpen={showUnifiedModal}
+        onClose={() => setShowUnifiedModal(false)}
+        featureName="100대 자각 오라클 감동 해설서"
+      />
     </div>
   );
 }

@@ -22,6 +22,7 @@ import SajuEnergyNodeMap from './SajuEnergyNodeMap';
 import TripleCoreAnalysis, { calculateTenGodsFromOhaeng } from './TripleCoreAnalysis';
 import SelfCoaching100 from './SelfCoaching100';
 import ShiftStepDetailModal from '../modals/ShiftStepDetailModal';
+import UnifiedSubscriptionModal from '../modals/UnifiedSubscriptionModal';
 
 // ─────────────────────────────────────────────
 // 타입 정의
@@ -1642,6 +1643,42 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
     const [isRuntimeEssayUnlocked, setIsRuntimeEssayUnlocked] = useState(false);
     const [isMicroEssayModalOpen, setIsMicroEssayModalOpen] = useState(false);
     const [isMicroEssayUnlocked, setIsMicroEssayUnlocked] = useState(false);
+    const [showUnifiedModal, setShowUnifiedModal] = useState(false);
+
+    // 관리자 실제 승인 상태 동기화
+    useEffect(() => {
+        const checkApproval = () => {
+            if (typeof window !== 'undefined') {
+                const isApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
+                if (isApproved) {
+                    setIsAllPassUnlocked(true);
+                    setIsPhase7Unlocked(true);
+                    setIsDailyEssayUnlocked(true);
+                    setIsShiftEssayUnlocked(true);
+                    setIsRuntimeEssayUnlocked(true);
+                    setIsMicroEssayUnlocked(true);
+                    setUnlockedPrompts({ '01': true, '02': true, '03': true });
+                }
+            }
+        };
+        checkApproval();
+        window.addEventListener('myeongsim_auth_change', checkApproval);
+        return () => window.removeEventListener('myeongsim_auth_change', checkApproval);
+    }, []);
+
+    const handleUnlockClick = () => {
+        if (typeof window !== 'undefined' && localStorage.getItem('myeongsim_server_approved') === 'true') {
+            setIsAllPassUnlocked(true);
+            setIsPhase7Unlocked(true);
+            setIsDailyEssayUnlocked(true);
+            setIsShiftEssayUnlocked(true);
+            setIsRuntimeEssayUnlocked(true);
+            setIsMicroEssayUnlocked(true);
+            setUnlockedPrompts({ '01': true, '02': true, '03': true });
+        } else {
+            setShowUnifiedModal(true);
+        }
+    };
 
     // ── AI 코칭 리포트 관련 상태 ──
     type AiReport = {
@@ -2091,7 +2128,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                     className="w-full sm:w-auto shrink-0 bg-red-600 hover:bg-red-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
                                                 >
                                                     <span className="material-symbols-outlined text-sm">bolt</span>
-                                                    <span>{(isRuntimeEssayUnlocked || isAllPassUnlocked) ? '디버깅 해설서 읽기' : '🔓 890원에 뇌 과부하 해제 해설서 보기'}</span>
+                                                    <span>{(isRuntimeEssayUnlocked || isAllPassUnlocked) ? '디버깅 해설서 읽기' : '👑 월 98,000원 VIP 멤버십으로 해설서 보기'}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -2155,7 +2192,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                                 ) : (
                                                                     <>
                                                                         <span className="material-symbols-outlined text-xs">lock</span>
-                                                                        🔒 890원 AI 코치 에세이 솔루션
+                                                                        🔒 👑 VIP AI 코치 에세이 솔루션
                                                                     </>
                                                                 )}
                                                             </span>
@@ -2300,7 +2337,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                             className="w-full md:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
                                                         >
                                                             <span className="material-symbols-outlined text-base">lock</span>
-                                                            <span>{(isPhase7Unlocked || isAllPassUnlocked) ? '마스터 클래스 에세이 읽기' : '🔒 890원에 4대 코어 인생 실행서 해제하기'}</span>
+                                                            <span>{(isPhase7Unlocked || isAllPassUnlocked) ? '마스터 클래스 에세이 읽기' : '🔒 월 98,000원 VIP 멤버십으로 해제하기'}</span>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -2359,7 +2396,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                             className="w-full sm:w-auto shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
                                                         >
                                                             <span className="material-symbols-outlined text-sm">bolt</span>
-                                                            <span>{(isDailyEssayUnlocked || isAllPassUnlocked) ? '데일리 해설서 읽기' : '🔓 890원에 데일리 실행서 보기'}</span>
+                                                            <span>{(isDailyEssayUnlocked || isAllPassUnlocked) ? '데일리 해설서 읽기' : '👑 월 98,000원 VIP 멤버십으로 데일리 실행서 보기'}</span>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -2412,7 +2449,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                          className="w-full sm:w-auto shrink-0 bg-green-600 hover:bg-green-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
                                                      >
                                                          <span className="material-symbols-outlined text-sm">bolt</span>
-                                                         <span>{(isShiftEssayUnlocked || isAllPassUnlocked) ? '실행 해설서 읽기' : '🔓 890원에 SHIFT 실행 해설서 보기'}</span>
+                                                         <span>{(isShiftEssayUnlocked || isAllPassUnlocked) ? '실행 해설서 읽기' : '👑 월 98,000원 VIP 멤버십으로 SHIFT 실행 해설서 보기'}</span>
                                                      </button>
                                                  </div>
                                                 </div>
@@ -2538,7 +2575,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                                     className="w-full sm:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
                                                 >
                                                     <span className="material-symbols-outlined text-sm">bolt</span>
-                                                    <span>{(isMicroEssayUnlocked || isAllPassUnlocked) ? '마이크로 해설서 읽기' : '🔓 890원에 마이크로 실행 해설서 보기'}</span>
+                                                    <span>{(isMicroEssayUnlocked || isAllPassUnlocked) ? '마이크로 해설서 읽기' : '👑 월 98,000원 VIP 멤버십으로 마이크로 실행 해설서 보기'}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -2933,50 +2970,19 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             </div>
                                             <div>
                                                 <h4 className="text-base font-extrabold text-white">AI 코치의 정밀 솔루션 전체 보기</h4>
-                                                <p className="text-xs text-slate-400 mt-1">1,000원 미만의 마이크로 포인트로 완벽주의 강박을 해제하세요.</p>
+                                                <p className="text-xs text-slate-400 mt-1">월 98,000원 VIP 멤버십(또는 도서 구매 승인 독자) 전용 콘텐츠입니다.</p>
                                             </div>
 
                                              <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
                                                  <button
-                                                     disabled={isUnlocking}
-                                                     onClick={() => {
-                                                         setIsUnlocking(true);
-                                                         setTimeout(() => {
-                                                             setUnlockedPrompts(prev => ({ ...prev, [selectedPromptForEssay.id]: true }));
-                                                             setIsUnlocking(false);
-                                                         }, 700);
-                                                     }}
-                                                     className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                     onClick={handleUnlockClick}
+                                                     className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                                  >
-                                                     {isUnlocking ? (
-                                                         <span>890원 차감 중...</span>
-                                                     ) : (
-                                                         <span>🔒 890원 단품 해제 (890원)</span>
-                                                     )}
-                                                 </button>
-
-                                                 <button
-                                                     disabled={isUnlocking}
-                                                     onClick={() => {
-                                                         setIsUnlocking(true);
-                                                         setTimeout(() => {
-                                                             setUnlockedPrompts({ '01': true, '02': true, '03': true });
-                                                             setIsPhase7Unlocked(true);
-                                                             setIsAllPassUnlocked(true);
-                                                             setIsDailyEssayUnlocked(true);
-                                                             setIsShiftEssayUnlocked(true);
-                                                             setIsRuntimeEssayUnlocked(true);
-                                                             setIsMicroEssayUnlocked(true);
-                                                             setIsUnlocking(false);
-                                                         }, 700);
-                                                     }}
-                                                     className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                                                 >
-                                                     <span className="material-symbols-outlined text-sm">bolt</span>
-                                                     <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                     <span className="material-symbols-outlined text-sm">lock_open</span>
+                                                     <span>👑 월 98,000원 VIP 멤버십으로 전체 해제</span>
                                                  </button>
                                              </div>
-                                             <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 Phase 3 & Phase 7 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                             <p className="text-[10px] text-amber-300/80 font-medium">* 관리자 입금/주문 승인 완료 시 전 모듈이 즉시 자동 해금됩니다.</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -2988,7 +2994,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     >
                                         <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
                                             <span className="material-symbols-outlined text-sm">verified</span>
-                                            890원 결제 완료 • AI 코치의 심층 전언
+                                            👑 VIP 승인 완료 • AI 코치의 심층 전언
                                         </div>
 
                                         {selectedPromptForEssay.id === '03' || selectedPromptForEssay.label?.includes('META-COGNITION') ? (
@@ -3118,42 +3124,19 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             </div>
                                             <div>
                                                 <h4 className="text-base font-extrabold text-white">4대 코어 마스터 클래스 해설서 해제</h4>
-                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 리포트 전체 에세이를 해제하세요.</p>
+                                                <p className="text-xs text-slate-400 mt-1">월 98,000원 VIP 멤버십(또는 도서 구매 승인 독자) 전용 콘텐츠입니다.</p>
                                             </div>
 
                                             <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
                                                 <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsPhase7Unlocked(true);
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                    onClick={handleUnlockClick}
+                                                    className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                                 >
-                                                    <span>🔓 890원 단품 해제 (890원)</span>
-                                                </button>
-
-                                                <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsPhase7Unlocked(true);
-                                                            setIsAllPassUnlocked(true);
-                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                                                >
-                                                    <span className="material-symbols-outlined text-sm">bolt</span>
-                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                    <span className="material-symbols-outlined text-sm">lock_open</span>
+                                                    <span>👑 월 98,000원 VIP 멤버십으로 전체 해제</span>
                                                 </button>
                                             </div>
-                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 Phase 3 & Phase 7 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* 관리자 입금/주문 승인 완료 시 전 모듈이 즉시 자동 해금됩니다.</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -3165,7 +3148,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     >
                                         <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                                             <span className="material-symbols-outlined text-sm">verified</span>
-                                            {isAllPassUnlocked ? '1,900원 ALL-PASS 결제 완료' : '890원 단품 결제 완료'} • AI 코치 마스터 클래스
+                                            👑 VIP 멤버십 승인 완료 • AI 코치 마스터 클래스
                                         </div>
 
                                         {coaching.masterRoadmap?.engines?.map((eng, idx) => (
@@ -3248,43 +3231,19 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             </div>
                                             <div>
                                                 <h4 className="text-base font-extrabold text-white">데일리 실행서 풀어서 보기</h4>
-                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 전체 에세이를 해제하세요.</p>
+                                                <p className="text-xs text-slate-400 mt-1">월 98,000원 VIP 멤버십(또는 도서 구매 승인 독자) 전용 콘텐츠입니다.</p>
                                             </div>
 
                                             <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
                                                 <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsDailyEssayUnlocked(true);
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                    onClick={handleUnlockClick}
+                                                    className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                                 >
-                                                    <span>🔓 890원 단품 해제 (890원)</span>
-                                                </button>
-
-                                                <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsPhase7Unlocked(true);
-                                                            setIsAllPassUnlocked(true);
-                                                            setIsDailyEssayUnlocked(true);
-                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                                                >
-                                                    <span className="material-symbols-outlined text-sm">bolt</span>
-                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                    <span className="material-symbols-outlined text-sm">lock_open</span>
+                                                    <span>👑 월 98,000원 VIP 멤버십으로 전체 해제</span>
                                                 </button>
                                             </div>
-                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* 관리자 입금/주문 승인 완료 시 전 모듈이 즉시 자동 해금됩니다.</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -3296,7 +3255,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     >
                                         <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                                             <span className="material-symbols-outlined text-sm">verified</span>
-                                            {(isAllPassUnlocked) ? '1,900원 ALL-PASS 결제 완료' : '890원 단품 결제 완료'} • AI 코치 생체시계 가이드
+                                            👑 VIP 멤버십 승인 완료 • AI 코치 생체시계 가이드
                                         </div>
 
                                         {coaching.masterRoadmap?.dailyMissions?.map((m, idx) => (
@@ -3383,44 +3342,19 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             </div>
                                             <div>
                                                 <h4 className="text-base font-extrabold text-white">생각을 현실로 만드는 실행 해설서 해제</h4>
-                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 전체 에세이를 해제하세요.</p>
+                                                <p className="text-xs text-slate-400 mt-1">월 98,000원 VIP 멤버십(또는 도서 구매 승인 독자) 전용 콘텐츠입니다.</p>
                                             </div>
 
                                             <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
                                                 <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsShiftEssayUnlocked(true);
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                    onClick={handleUnlockClick}
+                                                    className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                                 >
-                                                    <span>🔓 890원 단품 해제 (890원)</span>
-                                                </button>
-
-                                                <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsPhase7Unlocked(true);
-                                                            setIsAllPassUnlocked(true);
-                                                            setIsDailyEssayUnlocked(true);
-                                                            setIsShiftEssayUnlocked(true);
-                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                                                >
-                                                    <span className="material-symbols-outlined text-sm">bolt</span>
-                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                    <span className="material-symbols-outlined text-sm">lock_open</span>
+                                                    <span>👑 월 98,000원 VIP 멤버십으로 전체 해제</span>
                                                 </button>
                                             </div>
-                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* 관리자 입금/주문 승인 완료 시 전 모듈이 즉시 자동 해금됩니다.</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -3432,7 +3366,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     >
                                         <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                                             <span className="material-symbols-outlined text-sm">verified</span>
-                                            {(isAllPassUnlocked) ? '1,900원 ALL-PASS 결제 완료' : '890원 단품 결제 완료'} • AI 코치 SHIFT 가이드
+                                            👑 VIP 멤버십 승인 완료 • AI 코치 SHIFT 가이드
                                         </div>
 
                                         {coaching.masterRoadmap?.shifts?.map((s, idx) => (
@@ -3525,45 +3459,19 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             </div>
                                             <div>
                                                 <h4 className="text-base font-extrabold text-white">뇌 과부하 해제 & 지렛대 세팅 해설서</h4>
-                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 전체 에세이를 해제하세요.</p>
+                                                <p className="text-xs text-slate-400 mt-1">월 98,000원 VIP 멤버십(또는 도서 구매 승인 독자) 전용 콘텐츠입니다.</p>
                                             </div>
 
                                             <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
                                                 <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsRuntimeEssayUnlocked(true);
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                    onClick={handleUnlockClick}
+                                                    className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                                 >
-                                                    <span>🔓 890원 단품 해제 (890원)</span>
-                                                </button>
-
-                                                <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsPhase7Unlocked(true);
-                                                            setIsAllPassUnlocked(true);
-                                                            setIsDailyEssayUnlocked(true);
-                                                            setIsShiftEssayUnlocked(true);
-                                                            setIsRuntimeEssayUnlocked(true);
-                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                                                >
-                                                    <span className="material-symbols-outlined text-sm">bolt</span>
-                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                    <span className="material-symbols-outlined text-sm">lock_open</span>
+                                                    <span>👑 월 98,000원 VIP 멤버십으로 전체 해제</span>
                                                 </button>
                                             </div>
-                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* 관리자 입금/주문 승인 완료 시 전 모듈이 즉시 자동 해금됩니다.</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -3575,7 +3483,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     >
                                         <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                                             <span className="material-symbols-outlined text-sm">verified</span>
-                                            {(isAllPassUnlocked) ? '1,900원 ALL-PASS 결제 완료' : '890원 단품 결제 완료'} • AI 코치 디버깅 가이드
+                                            👑 VIP 멤버십 승인 완료 • AI 코치 디버깅 가이드
                                         </div>
 
                                         {coaching.masterRoadmap?.bugs?.map((bug, idx) => (
@@ -3675,46 +3583,19 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                             </div>
                                             <div>
                                                 <h4 className="text-base font-extrabold text-white">마이크로 실행 & 파이프라인 해설서</h4>
-                                                <p className="text-xs text-slate-400 mt-1">단품 890원 또는 1,900원 ALL-PASS로 전체 에세이를 해제하세요.</p>
+                                                <p className="text-xs text-slate-400 mt-1">월 98,000원 VIP 멤버십(또는 도서 구매 승인 독자) 전용 콘텐츠입니다.</p>
                                             </div>
 
                                             <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
                                                 <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsMicroEssayUnlocked(true);
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-bold text-xs border border-white/20 transition-all flex items-center justify-center gap-2"
+                                                    onClick={handleUnlockClick}
+                                                    className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black px-6 py-3.5 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                                 >
-                                                    <span>🔓 890원 단품 해제 (890원)</span>
-                                                </button>
-
-                                                <button
-                                                    disabled={isUnlocking}
-                                                    onClick={() => {
-                                                        setIsUnlocking(true);
-                                                        setTimeout(() => {
-                                                            setIsPhase7Unlocked(true);
-                                                            setIsAllPassUnlocked(true);
-                                                            setIsDailyEssayUnlocked(true);
-                                                            setIsShiftEssayUnlocked(true);
-                                                            setIsRuntimeEssayUnlocked(true);
-                                                            setIsMicroEssayUnlocked(true);
-                                                            setUnlockedPrompts({ '01': true, '02': true, '03': true });
-                                                            setIsUnlocking(false);
-                                                        }, 700);
-                                                    }}
-                                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-500/90 hover:to-amber-600/90 text-black px-6 py-3 rounded-xl font-black text-xs shadow-xl shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                                                >
-                                                    <span className="material-symbols-outlined text-sm">bolt</span>
-                                                    <span>⚡ ALL-PASS 전체 통합 해제 (1,900원)</span>
+                                                    <span className="material-symbols-outlined text-sm">lock_open</span>
+                                                    <span>👑 월 98,000원 VIP 멤버십으로 전체 해제</span>
                                                 </button>
                                             </div>
-                                            <p className="text-[10px] text-amber-300/80 font-medium">* ALL-PASS 선택 시 리포트 내 전체 감동 에세이가 즉시 해제됩니다.</p>
+                                            <p className="text-[10px] text-amber-300/80 font-medium">* 관리자 입금/주문 승인 완료 시 전 모듈이 즉시 자동 해금됩니다.</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -3726,7 +3607,7 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                                     >
                                         <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                                             <span className="material-symbols-outlined text-sm">verified</span>
-                                            {(isAllPassUnlocked) ? '1,900원 ALL-PASS 결제 완료' : '890원 단품 결제 완료'} • AI 코치 마이크로 가이드
+                                            👑 VIP 멤버십 승인 완료 • AI 코치 마이크로 가이드
                                         </div>
 
                                         {coaching.masterRoadmap?.microManual?.sections?.map((sec, idx) => (
@@ -3768,6 +3649,12 @@ export default function SovereignCoachingReport({ isOpen, onClose, userProfile }
                 )}
             </AnimatePresence>
 
-</AnimatePresence>
+            {/* 👑 월 98,000원 VIP 멤버십 결제 및 관리자 승인 모달 */}
+            <UnifiedSubscriptionModal
+                isOpen={showUnifiedModal}
+                onClose={() => setShowUnifiedModal(false)}
+                featureName="소버린 코칭 리포트 심층 에세이"
+            />
+        </AnimatePresence>
     );
 }

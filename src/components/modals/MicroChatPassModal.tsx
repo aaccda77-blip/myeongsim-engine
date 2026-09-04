@@ -34,11 +34,13 @@ export default function MicroChatPassModal({
     if (!isOpen) return null;
 
     const BANK_INFO = {
-        bank: '토스뱅크',
-        account: '1002-6847-4899',
-        holder: '마인드플로우랩',
+        bank: '카카오뱅크',
+        account: '3333-01-2345678',
+        holder: '청류 (이경윤)',
         price: 98000,
     };
+
+    const [isCheckingApproval, setIsCheckingApproval] = useState(false);
 
     const handleCopyAccount = () => {
         navigator.clipboard.writeText(`${BANK_INFO.bank} ${BANK_INFO.account} ${BANK_INFO.holder}`);
@@ -54,27 +56,22 @@ export default function MicroChatPassModal({
 
         setIsProcessing(true);
         try {
-            const res = await fetch('/api/payment/request', {
+            await fetch('/api/payment/request', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     amount: BANK_INFO.price,
                     depositorName: depositorName.trim(),
-                    orderName: '명심코칭 1달 무제한 프리패스 (98,000원)',
-                    itemType: 'CHAT_PASS',
+                    orderName: '월 98,000원 VIP 정액권',
+                    itemType: 'MONTHLY_98K',
                     userId,
                 })
             });
 
-            const data = await res.json();
-            const recordId = data.pendingItem?.id || userId;
-
             if (typeof window !== 'undefined') {
                 localStorage.setItem('myeongsim_pending_approval', 'true');
                 localStorage.setItem('myeongsim_depositor_name', depositorName.trim());
-                if (recordId) {
-                    localStorage.setItem('myeongsim_pending_user_id', recordId);
-                }
+                localStorage.setItem('myeongsim_user_id', userId);
             }
 
             setIsProcessing(false);
@@ -86,8 +83,43 @@ export default function MicroChatPassModal({
         }
     };
 
+    const handleCheckApprovalStatus = async () => {
+        setIsCheckingApproval(true);
+        try {
+            const storedName = localStorage.getItem('myeongsim_depositor_name') || depositorName.trim();
+            const storedUserId = localStorage.getItem('myeongsim_user_id') || userId || '';
+            const params = new URLSearchParams();
+            if (storedUserId) params.set('userId', storedUserId);
+            if (storedName) params.set('name', storedName);
+
+            const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.approved) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_server_approved', 'true');
+                        localStorage.setItem('myeongsim_monthly_vip', 'true');
+                        localStorage.setItem('myeongsim_paid_user', 'true');
+                        window.dispatchEvent(new Event('myeongsim_auth_change'));
+                    }
+                    alert('🎉 [승인 완료] 관리자 승인이 완료되었습니다! 124개 전 VIP 서비스가 해금되었습니다.');
+                    if (onSuccessPay) onSuccessPay();
+                    onClose();
+                } else {
+                    alert('⏳ 아직 관리자 확인 중입니다. 잠시 후 다시 [승인 확인]을 눌러주세요.\n(관리자가 입금 확인 후 수분 내에 승인합니다)');
+                }
+            } else {
+                alert('⏳ 관리자 확인 중입니다. 잠시 후 다시 시도해 주세요.');
+            }
+        } catch (e) {
+            alert('승인 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+        } finally {
+            setIsCheckingApproval(false);
+        }
+    };
+
     const getDepositSummaryText = () => {
-        return `[명심코칭 챗봇 이용 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 입금액: ${BANK_INFO.price.toLocaleString()}원 (토스뱅크 1002-6847-4899 마인드플로우랩)\n- 사용자 ID: ${userId}`;
+        return `[명심코칭 VIP 멤버십 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 입금액: ${BANK_INFO.price.toLocaleString()}원 (카카오뱅크 3333-01-2345678 청류 이경윤)\n- 사용자 ID: ${userId}`;
     };
 
     const handleCopyDepositSummary = () => {
@@ -96,7 +128,6 @@ export default function MicroChatPassModal({
         setTimeout(() => setCopiedDepositText(false), 2500);
     };
 
-    // 🎫 네이버 스마트스토어 주문번호 인증 핸들러 (1건당 1회 30회 충전)
     // 🎫 도서 구매 주문번호 / 영수증 인증 핸들러 (1건당 1회 20회 충전 & 스마트스토어 올인원 패키지)
     const handleVerifySecretCode = async () => {
         const cleaned = secretCode.trim();
@@ -120,21 +151,27 @@ export default function MicroChatPassModal({
 
             const data = await res.json();
 
-            if (res.ok && data.success) {
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('myeongsim_paid_user', 'true');
-                    localStorage.setItem('myeongsim_total_user_messages', '0');
-                    localStorage.setItem('myeongsim_verified_order', cleaned);
-                    localStorage.setItem('myeongsim_startup_unlocked', 'true');
-                    localStorage.setItem('myeongsim_dark_code_unlocked', 'true');
-                    localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
-                    if (isSmart) {
-                        localStorage.setItem('myeongsim_smartstore_vip', 'true');
+            if (res.ok && (data.success || data.pendingApproval)) {
+                if (data.pendingApproval) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_pending_approval', 'true');
+                        localStorage.setItem('myeongsim_verified_order', cleaned);
+                        localStorage.setItem('myeongsim_depositor_name', depositorName || '도서 구매 독자');
                     }
+                    alert(data.message || '🎉 도서 구매 주문번호가 정상 접수되었습니다! 관리자가 확인 후 수분 내에 [열어주기 (승인)]를 완료합니다.');
+                    onClose();
+                } else if (data.success) {
+                    // 마스터 키의 경우 즉시 승인
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('myeongsim_server_approved', 'true');
+                        localStorage.setItem('myeongsim_paid_user', 'true');
+                        localStorage.setItem('myeongsim_total_user_messages', '0');
+                        localStorage.setItem('myeongsim_verified_order', cleaned);
+                    }
+                    alert(data.message || '🎉 도서 구매 인증이 완료되었습니다!');
+                    if (onSuccessPay) onSuccessPay();
+                    onClose();
                 }
-                alert(data.message || '🎉 도서 구매 인증이 완료되었습니다! 20회 VIP 코칭 대화가 활성화되었습니다.');
-                if (onSuccessPay) onSuccessPay();
-                onClose();
             } else {
                 setCodeError(data.message || '유효하지 않은 주문/영수증 번호이거나 이미 등록된 번호입니다.');
             }
@@ -226,8 +263,8 @@ export default function MicroChatPassModal({
 
                                         <div className="bg-black/50 border border-amber-400/20 rounded-xl p-2.5 flex items-center justify-between">
                                             <div>
-                                                <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (마인드플로우랩)</span>
-                                                <span className="text-sm font-black font-mono text-white tracking-wider">1002-6847-4899</span>
+                                                <span className="text-[10px] text-gray-400 block font-mono">카카오뱅크 (청류 이경윤)</span>
+                                                <span className="text-sm font-black font-mono text-white tracking-wider">3333-01-2345678</span>
                                             </div>
                                             <button
                                                 onClick={handleCopyAccount}
@@ -259,36 +296,28 @@ export default function MicroChatPassModal({
                                         className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                                     >
                                         <CreditCard className="w-4 h-4 text-slate-950" />
-                                        <span>{isProcessing ? '처리 중...' : '입금 완료 및 1:1 오픈채팅 승인 요청 ➔'}</span>
+                                        <span>{isProcessing ? '처리 중...' : '⚡ 98,000원 입금 완료 신청 및 승인 요청 ➔'}</span>
                                     </button>
                                 </div>
                             ) : (
-                                /* 입금 확인 요청 완료 & 오픈채팅 안내 화면 */
+                                /* 입금 확인 요청 완료 & 승인 확인 안내 화면 */
                                 <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-amber-400/40 text-center space-y-3 animate-fade-in">
                                     <div className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 mx-auto text-xl">
-                                        🎉
+                                        ⏳
                                     </div>
                                     <div className="space-y-0.5">
                                         <h4 className="text-xs font-bold text-white">입금 확인 요청이 접수되었습니다!</h4>
                                         <p className="text-[10.5px] text-amber-200 leading-relaxed">
-                                            <strong>'{depositorName}'</strong> 님의 입금 내역 확인 후 1:1 오픈카톡을 통해 즉시 챗봇 코칭을 승인해 드립니다.
+                                            <strong>'{depositorName}'</strong> 님의 입금 내역 확인 후 관리자가 승인하면 즉시 124개 전 서비스가 해금됩니다.
                                         </p>
                                     </div>
 
-                                    {/* QR 코드 & 정보 복사 */}
                                     <div className="p-2.5 rounded-xl bg-white/5 border border-slate-800 flex flex-col items-center space-y-2">
-                                        <div className="text-[10px] font-bold text-amber-300">
-                                            📱 1:1 오픈채팅으로 입금자명을 알려주세요
+                                        <div className="text-[10.5px] text-amber-300 font-mono">
+                                            카카오뱅크 3333-01-2345678 (청류 이경윤)
                                         </div>
-                                        <div className="w-20 h-20 bg-white p-1 rounded-xl shadow-md border border-amber-400/40 flex items-center justify-center">
-                                            <img
-                                                src="/images/kakao_openchat_qr.jpg"
-                                                alt="1:1 오픈채팅 QR코드"
-                                                className="w-full h-full object-contain rounded-lg"
-                                            />
-                                        </div>
-                                        <div className="w-full flex items-center justify-between text-[10px] text-gray-300 bg-slate-900 px-2 py-1 rounded border border-slate-700">
-                                            <span>입금자명: <strong>{depositorName}</strong></span>
+                                        <div className="w-full flex items-center justify-between text-[10px] text-gray-300 bg-slate-900 px-2.5 py-1.5 rounded border border-slate-700">
+                                            <span>입금자명: <strong>{depositorName}</strong> (98,000원)</span>
                                             <button
                                                 onClick={handleCopyDepositSummary}
                                                 className="text-[9px] bg-amber-400 text-slate-950 font-bold px-1.5 py-0.5 rounded cursor-pointer"
@@ -298,15 +327,15 @@ export default function MicroChatPassModal({
                                         </div>
                                     </div>
 
-                                    <div className="space-y-1.5 pt-1">
-                                        <a
-                                            href="https://open.kakao.com/o/sfNxzYKi"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer block"
+                                    <div className="space-y-2 pt-1">
+                                        <button
+                                            onClick={handleCheckApprovalStatus}
+                                            disabled={isCheckingApproval}
+                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                                         >
-                                            <span>💬 1:1 오픈채팅 바로 입장하기</span>
-                                        </a>
+                                            <Sparkles className="w-3.5 h-3.5 text-slate-950 fill-current" />
+                                            <span>{isCheckingApproval ? '승인 상태 확인 중...' : '⚡ 관리자 승인 완료 확인 (새로고침)'}</span>
+                                        </button>
 
                                         <button
                                             onClick={() => {

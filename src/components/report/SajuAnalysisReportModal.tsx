@@ -720,7 +720,7 @@ export default function SajuAnalysisReportModal({ isOpen, onClose, userProfile, 
                                                     className="w-full py-3 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                                                 >
                                                     <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                                                    <span>🔮 내 5대 에너지 파동으로 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                                                    <span>🔮 내 5대 에너지 파동으로 1:1 심층 AI 코칭 받기 (👑 VIP 멤버십) ➔</span>
                                                 </button>
                                             </motion.div>
                                         )}

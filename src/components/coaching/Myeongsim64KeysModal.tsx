@@ -1010,9 +1010,14 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
   const handleDocentRequest = async (item: any) => {
     if (!item || !data) return;
 
-    // 🔒 [890원 무통장 입금 승인 또는 도서 구매 VIP 잠금 가드]
+    // 🔒 [월 98,000원 VIP 멤버십 또는 도서 구매자 관리자 실제 승인 잠금 가드]
     if (typeof window !== 'undefined') {
-      const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true' || localStorage.getItem('myeongsim_smartstore_vip') === 'true';
+      const isApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
+      const isPaid = isApproved && (
+        localStorage.getItem('myeongsim_paid_user') === 'true' || 
+        localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
+        localStorage.getItem('myeongsim_monthly_vip') === 'true'
+      );
       if (!isPaid) {
         setShowMicroPassModal(true);
         return;
@@ -1154,7 +1159,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                 className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-[9.5px] sm:text-[10px] shadow-[0_0_15px_rgba(245,158,11,0.35)] transition-all active:scale-95 flex items-center gap-1 cursor-pointer whitespace-nowrap border border-amber-400/40"
               >
                 <Zap size={10} className="text-amber-300 animate-pulse fill-amber-300" />
-                <span>⚡ 890원 솔루션 ➔</span>
+                <span>👑 VIP 멤버십 ➔</span>
               </button>
               <button
                 onClick={onClose}
@@ -1301,7 +1306,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                           className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] border border-amber-300/40"
                         >
                           <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                          <span>🔮 내 유형 파동으로 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                          <span>🔮 내 유형 파동으로 1:1 심층 AI 코칭 받기 (👑 VIP) ➔</span>
                         </button>
 
                         <div className="bg-slate-900/80 border border-white/10 rounded-2xl p-3 text-[10px] text-gray-400 leading-relaxed">
@@ -1371,7 +1376,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                   onClick={() => setShowMicroPassModal(true)}
                                   className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 text-white font-black text-[9px] shadow transition-all active:scale-95 flex items-center gap-1 cursor-pointer border border-amber-300/40"
                                 >
-                                  <span>🔒 890원 솔루션 락 해제 ➔</span>
+                                  <span>👑 VIP 솔루션 락 해제 ➔</span>
                                 </button>
                               </div>
                             </div>
@@ -1445,9 +1450,9 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                                 <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" /> 🔮 주파수 재배선 명심 AI 코치 해설
                               </span>
                               <span className="shrink-0 flex items-center gap-1">
-                                <span className="line-through text-gray-500 text-[9px]">29,000원</span>
+                                <span className="line-through text-gray-500 text-[9px]">289,000원</span>
                                 <span className="bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-black text-[9.5px] px-2 py-0.5 rounded-full shadow">
-                                  특허출원중 한시적 890원 ➔
+                                  특허출원 기념 월 98,000원 VIP ➔
                                 </span>
                               </span>
                             </div>
@@ -1552,7 +1557,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                             className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] border border-amber-300/40"
                           >
                             <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                            <span>🔮 3대 천부 재능으로 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                            <span>🔮 3대 천부 재능으로 1:1 심층 AI 코칭 받기 (👑 VIP) ➔</span>
                           </button>
                         </div>
                       </div>
@@ -1828,7 +1833,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                             className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] border border-amber-300/40"
                           >
                             <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                            <span>🔮 인생 라이프 주기 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                            <span>🔮 인생 라이프 주기 1:1 심층 AI 코칭 받기 (👑 VIP) ➔</span>
                           </button>
                         </div>
                       </div>
@@ -2332,7 +2337,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                       className="w-full py-2.5 px-3 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] border border-amber-300/40"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                      <span>🔮 내 라이프 주기로 1:1 심층 AI 코칭 받기 (🔒 890원) ➔</span>
+                      <span>🔮 내 라이프 주기로 1:1 심층 AI 코칭 받기 (👑 VIP) ➔</span>
                     </button>
                     <button
                       onClick={() => setShowConceptHelp(null)}
@@ -2802,7 +2807,7 @@ export default function Myeongsim64KeysModal({ isOpen, onClose, userProfile }: M
                   className="w-full py-2.5 px-3 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] border border-amber-300/40"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                  <span>🔮 {selectedYear}년 사주 맞춤 1:1 심층 AI 코칭 (🔒 890원) ➔</span>
+                  <span>🔮 {selectedYear}년 사주 맞춤 1:1 심층 AI 코칭 (👑 VIP) ➔</span>
                 </button>
                 <button
                   onClick={() => setShowYearDetailModal(false)}

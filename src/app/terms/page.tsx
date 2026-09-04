@@ -74,7 +74,7 @@ export default function TermsPage() {
           <section className="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-2">
             <h2 className="font-bold text-sm text-amber-300">제 4 조 (서비스의 제공 및 변경)</h2>
             <p className="text-[11px] leading-normal">
-              1. 회사는 AI 기반 명심 주역코드 해독, Daily Scan 멘탈 자각 체크인, 890원 핀포인트 가이드전 및 30일 무제한 코칭 패스 등 유/무상 콘텐츠를 제공합니다.<br />
+              1. 회사는 AI 기반 명심 주역코드 해독, Daily Scan 멘탈 자각 체크인, 월 98,000원 VIP 멤버십 및 도서 인증 연계 코칭 패스 등 유/무상 콘텐츠를 제공합니다.<br />
               2. 회사는 기술적 사양 변경, AI 엔진 업데이트 또는 사업 정책 전환에 따라 제공할 서비스의 내용을 변경할 수 있으며, 이 경우 즉시 변경 내용을 게시합니다.
             </p>
           </section>
@@ -112,7 +112,7 @@ export default function TermsPage() {
           <section className="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-2">
             <h2 className="font-bold text-sm text-amber-300">제 8 조 (유료 쿠폰 및 패스 유효기간)</h2>
             <p className="text-[11px] leading-normal">
-              1. 결제 시 지급된 페이백 쿠폰 및 890원 환급 할인권은 발급 시점 기준으로 24시간 동안 유효합니다.<br />
+              1. 결제 시 지급된 페이백 쿠폰 및 할인권은 발급 시점 기준으로 24시간 동안 유효합니다.<br />
               2. 유효기간이 경과한 미사용 쿠폰은 자동 소멸하며 이월되지 않습니다.<br />
               3. 본 조항은 2026년 7월 22일 이후 결제한 건부터 적용됩니다.
             </p>

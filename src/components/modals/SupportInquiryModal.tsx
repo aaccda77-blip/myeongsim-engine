@@ -60,7 +60,7 @@ export default function SupportInquiryModal({ isOpen, onClose, initialView = 'ma
     const [agreeMarketing, setAgreeMarketing] = useState(true);
 
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'overseas' | 'transfer'>('card');
-    const [paymentAmount, setPaymentAmount] = useState('890원 핀포인트 (890원)');
+    const [paymentAmount, setPaymentAmount] = useState('월 98,000원 VIP ALL-PASS 멤버십');
     const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
     const [refundReason, setRefundReason] = useState('');
 
@@ -727,10 +727,8 @@ export default function SupportInquiryModal({ isOpen, onClose, initialView = 'ma
                                             onChange={(e) => setPaymentAmount(e.target.value)}
                                             className="w-full bg-black/50 border border-white/15 focus:border-amber-400 rounded-xl p-3 text-xs text-white focus:outline-none transition-colors"
                                         >
-                                            <option value="890원 핀포인트 (890원)">890원 핀포인트 (890원)</option>
-                                            <option value="990원 핀포인트 (990원)">990원 핀포인트 (990원)</option>
-                                            <option value="1,900원 핀포인트 (1,900원)">1,900원 핀포인트 (1,900원)</option>
-                                            <option value="9,010원 ALL-PASS (9,010원)">9,010원 ALL-PASS (9,010원)</option>
+                                            <option value="월 98,000원 VIP ALL-PASS 멤버십">월 98,000원 VIP ALL-PASS 멤버십</option>
+                                            <option value="스마트스토어 도서 구매 인증">스마트스토어 도서 구매 인증</option>
                                         </select>
                                     </div>
 
