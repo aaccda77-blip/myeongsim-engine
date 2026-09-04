@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { ShieldAlert, CheckCircle2, RotateCcw, AlertTriangle, HeartPulse } from 'lucide-react';
+import { useWearableContext } from './WearableAppShell';
 
 interface WearableDarkCodeEmergencyProps {
     onComplete?: () => void;
 }
 
 export function WearableDarkCodeEmergency({ onComplete }: WearableDarkCodeEmergencyProps) {
+    const { isLargeText } = useWearableContext();
     const [secondsLeft, setSecondsLeft] = useState(30);
     const [isRunning, setIsRunning] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
@@ -77,53 +79,54 @@ export function WearableDarkCodeEmergency({ onComplete }: WearableDarkCodeEmerge
     return (
         <div className="flex flex-col items-center justify-between h-full py-2 px-2 text-center select-none font-sans w-full">
             {/* 상단 라벨 */}
-            <div className="flex items-center justify-between w-full px-2 pt-1">
-                <span className="text-[10px] font-mono font-bold tracking-widest text-red-400 flex items-center gap-1">
-                    <ShieldAlert size={12} className={isRunning ? 'animate-pulse' : ''} />
-                    <span>SOS DARK CODE CLEAR</span>
+            {/* 상단 헤더 라벨 */}
+            <div className="flex items-center justify-between w-full px-1.5 pt-1">
+                <span className={`${isLargeText ? 'text-xs font-black text-red-300' : 'text-[10px] font-bold text-red-400'} font-mono tracking-wider flex items-center gap-1`}>
+                    <ShieldAlert size={isLargeText ? 14 : 12} className={isRunning ? 'animate-pulse' : ''} />
+                    <span>SOS CLEAR</span>
                 </span>
-                <span className="text-[9px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-mono font-bold">
+                <span className={`${isLargeText ? 'text-[10px] px-2.5 py-0.5' : 'text-[9px] px-2 py-0.5'} rounded-full bg-red-500/20 text-red-300 font-mono font-black`}>
                     30초
                 </span>
             </div>
 
             {/* 중앙 타이머 & 액션 가이드 */}
-            <div className="relative my-auto flex flex-col items-center justify-center max-w-[230px]">
+            <div className={`relative my-auto flex flex-col items-center justify-center ${isLargeText ? 'max-w-[260px]' : 'max-w-[230px]'}`}>
                 {isFinished ? (
                     <div className="space-y-1.5 animate-fade-in">
-                        <div className="size-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mx-auto">
-                            <CheckCircle2 size={32} className="text-emerald-300 animate-bounce" />
+                        <div className={`${isLargeText ? 'size-18' : 'size-16'} rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mx-auto`}>
+                            <CheckCircle2 size={isLargeText ? 36 : 32} className="text-emerald-300 animate-bounce" />
                         </div>
-                        <h4 className="text-sm font-black text-white">신경계 리셋 완료!</h4>
-                        <p className="text-[10px] text-emerald-300 font-medium">
+                        <h4 className={`${isLargeText ? 'text-base' : 'text-sm'} font-black text-white`}>신경계 리셋 완료!</h4>
+                        <p className={`${isLargeText ? 'text-[11px] font-bold' : 'text-[10px] font-medium'} text-emerald-300`}>
                             교감신경 과각성이 정상 수치로 회복되었습니다.
                         </p>
                     </div>
                 ) : !isRunning ? (
                     <div className="space-y-2">
-                        <div className="size-14 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center mx-auto">
-                            <HeartPulse size={28} className="text-red-400 animate-pulse" />
+                        <div className={`${isLargeText ? 'size-16' : 'size-14'} rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center mx-auto`}>
+                            <HeartPulse size={isLargeText ? 32 : 28} className="text-red-400 animate-pulse" />
                         </div>
-                        <p className="text-xs font-black text-gray-100 leading-snug">
+                        <p className={`${isLargeText ? 'text-sm font-black' : 'text-xs font-black'} text-gray-100 leading-snug`}>
                             가슴이 답답하거나 분노·불안이 엄습했나요?
                         </p>
-                        <p className="text-[10px] text-gray-400">
+                        <p className={`${isLargeText ? 'text-[11px] font-bold text-gray-300' : 'text-[10px] text-gray-400'}`}>
                             30초 신경계 리셋으로 심박수를 즉각 안정시킵니다.
                         </p>
                     </div>
                 ) : (
                     <div className="space-y-1">
                         <div className="flex items-baseline justify-center gap-1">
-                            <span className="text-3xl font-black text-white font-mono tracking-tighter">
+                            <span className={`${isLargeText ? 'text-4xl sm:text-5xl' : 'text-3xl'} font-black text-white font-mono tracking-tighter`}>
                                 {secondsLeft}
                             </span>
-                            <span className="text-[10px] font-bold text-gray-400">초 남음</span>
+                            <span className={`${isLargeText ? 'text-xs font-black text-amber-300' : 'text-[10px] font-bold text-gray-400'}`}>초 남음</span>
                         </div>
-                        <span className={`text-[10px] font-mono font-bold ${currentStep.color} uppercase block`}>
+                        <span className={`${isLargeText ? 'text-xs' : 'text-[10px]'} font-mono font-black ${currentStep.color} uppercase block`}>
                             {currentStep.step}
                         </span>
-                        <div className="p-2 rounded-xl bg-white/[0.05] border border-white/10">
-                            <p className="text-xs font-bold text-white leading-tight">
+                        <div className={`p-2 rounded-xl ${isLargeText ? 'bg-black/70 border-red-500/30' : 'bg-white/[0.05] border-white/10'} border`}>
+                            <p className={`${isLargeText ? 'text-[13px] font-black' : 'text-xs font-bold'} text-white leading-snug break-keep`}>
                                 {currentStep.action}
                             </p>
                         </div>
@@ -132,27 +135,27 @@ export function WearableDarkCodeEmergency({ onComplete }: WearableDarkCodeEmerge
             </div>
 
             {/* 하단 제어 버튼 */}
-            <div className="w-full max-w-[210px] pb-1 flex items-center justify-center gap-1.5">
+            <div className={`w-full ${isLargeText ? 'max-w-[230px]' : 'max-w-[210px]'} pb-1 flex items-center justify-center gap-1.5`}>
                 {isFinished ? (
                     <button
                         onClick={handleReset}
-                        className="w-full py-2 px-3 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                        className={`w-full ${isLargeText ? 'py-2.5 text-xs sm:text-sm' : 'py-2 text-xs'} px-3 rounded-full bg-white/20 hover:bg-white/30 text-white font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer`}
                     >
-                        <RotateCcw size={13} />
+                        <RotateCcw size={isLargeText ? 15 : 13} />
                         <span>다시 하기</span>
                     </button>
                 ) : !isRunning ? (
                     <button
                         onClick={handleStart}
-                        className="w-full py-2 px-3 rounded-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(239,68,68,0.5)] active:scale-95 transition-all cursor-pointer"
+                        className={`w-full ${isLargeText ? 'py-2.5 text-xs sm:text-sm' : 'py-2 text-xs'} px-3 rounded-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-black flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(239,68,68,0.5)] active:scale-95 transition-all cursor-pointer`}
                     >
-                        <ShieldAlert size={13} />
+                        <ShieldAlert size={isLargeText ? 15 : 13} />
                         <span>30초 긴급 리셋 시작</span>
                     </button>
                 ) : (
                     <button
                         onClick={handleReset}
-                        className="w-full py-1.5 px-3 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 text-[11px] font-bold transition-all cursor-pointer"
+                        className={`w-full ${isLargeText ? 'py-2 text-xs' : 'py-1.5 text-[11px]'} px-3 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 font-black transition-all cursor-pointer`}
                     >
                         중단하기
                     </button>

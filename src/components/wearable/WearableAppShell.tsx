@@ -12,6 +12,19 @@ interface WearableAppShellProps {
     pageTitles?: string[];
 }
 
+// 👓 50+ 노안전용 큰글씨 모드 Context
+interface WearableContextType {
+    isLargeText: boolean;
+    setIsLargeText: (val: boolean) => void;
+}
+
+export const WearableContext = React.createContext<WearableContextType>({
+    isLargeText: false,
+    setIsLargeText: () => {}
+});
+
+export const useWearableContext = () => React.useContext(WearableContext);
+
 export function WearableAppShell({
     children,
     currentPage,
@@ -22,6 +35,7 @@ export function WearableAppShell({
     // 폼팩터: 'galaxy' (원형) | 'apple' (라운드 스퀘어 Ultra)
     const [formFactor, setFormFactor] = useState<'apple' | 'galaxy'>('apple');
     const [currentTime, setCurrentTime] = useState('10:08');
+    const [isLargeText, setIsLargeText] = useState(false); // 50+ 노안전용 큰글씨 모드
 
     // 실시간 시계 흐름
     useEffect(() => {
@@ -39,39 +53,55 @@ export function WearableAppShell({
     const isApple = formFactor === 'apple';
 
     return (
-        <div className="min-h-screen w-full bg-[#05080f] flex flex-col items-center justify-center p-3 sm:p-6 select-none font-sans text-slate-100">
-            
-            {/* 상단 컨트롤 바 (모드 전환 + 워치 기종 선택) */}
-            <div className="w-full max-w-md flex flex-wrap items-center justify-between gap-2 pb-3 px-2">
-                <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-mono text-cyan-400 font-bold flex items-center gap-1">
-                        <Watch size={13} className="text-cyan-400 animate-pulse" />
-                        <span>ZERO-PULSE WATCH</span>
-                    </span>
+        <WearableContext.Provider value={{ isLargeText, setIsLargeText }}>
+            <div className="min-h-screen w-full bg-[#05080f] flex flex-col items-center justify-center p-3 sm:p-6 select-none font-sans text-slate-100">
+                
+                {/* 상단 컨트롤 바 (모드 전환 + 워치 기종 선택 + 50+ 큰글씨 모드) */}
+                <div className="w-full max-w-md flex flex-wrap items-center justify-between gap-2 pb-3 px-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[11px] font-mono text-cyan-400 font-bold flex items-center gap-1">
+                            <Watch size={13} className="text-cyan-400 animate-pulse" />
+                            <span>ZERO-PULSE</span>
+                        </span>
 
-                    {/* 기종 선택 토글 (Apple Watch Ultra vs Galaxy Watch) */}
-                    <div className="flex items-center p-0.5 rounded-lg bg-white/5 border border-white/10 text-[10px] font-mono">
+                        {/* 기종 선택 토글 (Apple Watch Ultra vs Galaxy Watch) */}
+                        <div className="flex items-center p-0.5 rounded-lg bg-white/5 border border-white/10 text-[10px] font-mono">
+                            <button
+                                onClick={() => setFormFactor('apple')}
+                                className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                                    isApple ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-gray-400 hover:text-white'
+                                }`}
+                            >
+                                Ultra
+                            </button>
+                            <button
+                                onClick={() => setFormFactor('galaxy')}
+                                className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                                    !isApple ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30' : 'text-gray-400 hover:text-white'
+                                }`}
+                            >
+                                Galaxy
+                            </button>
+                        </div>
+
+                        {/* 👓 50+ 노안전용 큰글씨 모드 토글 버튼 */}
                         <button
-                            onClick={() => setFormFactor('apple')}
-                            className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
-                                isApple ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-gray-400 hover:text-white'
+                            onClick={() => setIsLargeText(!isLargeText)}
+                            className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer border ${
+                                isLargeText
+                                    ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.6)] font-black'
+                                    : 'bg-white/5 text-gray-300 hover:text-white border-white/10'
                             }`}
+                            title="50대 이상 시니어 및 노안 전용 큰글씨 초고대비 모드"
                         >
-                            Ultra
-                        </button>
-                        <button
-                            onClick={() => setFormFactor('galaxy')}
-                            className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
-                                !isApple ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30' : 'text-gray-400 hover:text-white'
-                            }`}
-                        >
-                            Galaxy
+                            <span>👓</span>
+                            <span>{isLargeText ? '큰글씨 ON' : '50+ 큰글씨'}</span>
                         </button>
                     </div>
+
+                    <ViewModeSwitcher />
                 </div>
 
-                <ViewModeSwitcher />
-            </div>
 
             {/* 스마트워치 하드웨어 시뮬레이터 섀시 */}
             <div className="relative flex items-center justify-center py-2">
@@ -169,6 +199,7 @@ export function WearableAppShell({
                 </p>
             </div>
         </div>
+    </WearableContext.Provider>
     );
 }
 

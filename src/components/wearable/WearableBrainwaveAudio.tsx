@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Headphones, Disc3, Radio, Sparkles } from 'lucide-react';
 import { getBrainwaveEngine, FrequencyPresetId } from '@/utils/brainwaveEngine';
+import { useWearableContext } from './WearableAppShell';
 
 interface WearableBrainwaveAudioProps {
     onNext?: () => void;
@@ -51,6 +52,7 @@ const WATCH_PRESETS: {
 ];
 
 export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) {
+    const { isLargeText } = useWearableContext();
     const [selectedId, setSelectedId] = useState<FrequencyPresetId>('brown_noise');
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(0.45);
@@ -129,19 +131,19 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
             <div className="w-full px-1">
                 <button
                     onClick={handleToggleMcSquare}
-                    className={`w-full py-1 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-between border ${
+                    className={`w-full ${isLargeText ? 'py-1.5 px-2.5' : 'py-1 px-2'} rounded-xl transition-all cursor-pointer flex items-center justify-between border ${
                         isMcSquare
                             ? 'bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/20 border-amber-400/50 shadow-[0_0_10px_rgba(251,191,36,0.3)]'
                             : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
                     }`}
                 >
                     <div className="flex items-center gap-1">
-                        <Radio size={11} className={isMcSquare ? 'text-amber-400 animate-pulse' : 'text-gray-500'} />
-                        <span className={`text-[9.5px] font-mono font-black ${isMcSquare ? 'text-amber-300' : 'text-gray-400'}`}>
+                        <Radio size={isLargeText ? 13 : 11} className={isMcSquare ? 'text-amber-400 animate-pulse' : 'text-gray-500'} />
+                        <span className={`${isLargeText ? 'text-[11px]' : 'text-[9.5px]'} font-mono font-black ${isMcSquare ? 'text-amber-300' : 'text-gray-400'}`}>
                             3D 엠씨스퀘어 서라운드
                         </span>
                     </div>
-                    <span className={`text-[8.5px] font-mono font-black px-1.5 py-0.2 rounded ${
+                    <span className={`${isLargeText ? 'text-[9.5px] px-2 py-0.5' : 'text-[8.5px] px-1.5 py-0.2'} font-mono font-black rounded ${
                         isMcSquare ? 'bg-amber-400 text-slate-950' : 'bg-white/10 text-gray-400'
                     }`}>
                         {isMcSquare ? 'L-R 분리 ON' : 'OFF'}
@@ -151,7 +153,7 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
 
             {/* 중앙 인터랙티브 턴테이블 / 사운드 비주얼라이저 */}
             <div className="relative my-auto flex flex-col items-center justify-center">
-                <div className="relative size-20 sm:size-24 flex items-center justify-center">
+                <div className={`relative ${isLargeText ? 'size-18 sm:size-22' : 'size-20 sm:size-24'} flex items-center justify-center`}>
                     {/* 외곽 회전 네온 링 */}
                     <div
                         className={`absolute inset-0 rounded-full border-2 border-dashed transition-all duration-1000 ${
@@ -180,32 +182,32 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
 
                 {/* 현재 프리셋 이름 & L-R 분리 정보 */}
                 <div className="mt-0.5">
-                    <span className="text-[9px] font-mono text-gray-400 font-semibold">
+                    <span className={`${isLargeText ? 'text-[10px]' : 'text-[9px]'} font-mono text-gray-300 font-bold`}>
                         {currentPreset.hz}
                     </span>
-                    <h3 className={`text-xs sm:text-sm font-black ${currentPreset.color} tracking-tight -mt-0.5`}>
+                    <h3 className={`${isLargeText ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'} font-black ${currentPreset.color} tracking-tight -mt-0.5`}>
                         {currentPreset.name}
                     </h3>
 
                     {/* 엠씨스퀘어 L/R 실시간 펄스 인디케이터 */}
                     {isMcSquare ? (
                         <div className="flex items-center justify-center gap-1.5 mt-0.5">
-                            <span className={`text-[8.5px] font-mono font-bold transition-opacity ${
+                            <span className={`${isLargeText ? 'text-[9.5px]' : 'text-[8.5px]'} font-mono font-black transition-opacity ${
                                 pulseToggle ? 'text-amber-400 opacity-100' : 'text-gray-500 opacity-50'
                             }`}>
                                 L [◀]
                             </span>
-                            <span className="text-[8px] font-mono text-amber-200 bg-black/40 px-1 rounded border border-amber-500/30">
+                            <span className={`${isLargeText ? 'text-[9px] px-1.5' : 'text-[8px] px-1'} font-mono font-bold text-amber-200 bg-black/60 rounded border border-amber-500/30`}>
                                 {currentPreset.binauralText}
                             </span>
-                            <span className={`text-[8.5px] font-mono font-bold transition-opacity ${
+                            <span className={`${isLargeText ? 'text-[9.5px]' : 'text-[8.5px]'} font-mono font-black transition-opacity ${
                                 !pulseToggle ? 'text-amber-400 opacity-100' : 'text-gray-500 opacity-50'
                             }`}>
                                 [▶] R
                             </span>
                         </div>
                     ) : (
-                        <p className="text-[8.5px] text-gray-500 font-mono mt-0.5">
+                        <p className={`${isLargeText ? 'text-[9.5px]' : 'text-[8.5px]'} text-gray-400 font-mono mt-0.5 font-bold`}>
                             일반 모노 출력 모드
                         </p>
                     )}
@@ -217,9 +219,9 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
                         <button
                             key={p.id}
                             onClick={() => handleSelectPreset(p.id)}
-                            className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold transition-all cursor-pointer ${
+                            className={`${isLargeText ? 'px-2 py-0.5 text-[10px]' : 'px-1.5 py-0.5 text-[9px]'} rounded-md font-mono font-black transition-all cursor-pointer ${
                                 selectedId === p.id
-                                    ? 'bg-white/25 text-white border border-white/40 shadow-sm'
+                                    ? 'bg-white/30 text-white border border-white/50 shadow-sm'
                                     : 'bg-white/5 text-gray-400 hover:text-white border border-transparent'
                             }`}
                         >
@@ -230,16 +232,16 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
             </div>
 
             {/* 하단 재생/정지 버튼 */}
-            <div className="w-full max-w-[210px] pb-1">
+            <div className={`w-full ${isLargeText ? 'max-w-[225px]' : 'max-w-[210px]'} pb-1`}>
                 <button
                     onClick={handleTogglePlay}
-                    className={`w-full py-2 px-3 rounded-full text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md active:scale-95 ${
+                    className={`w-full ${isLargeText ? 'py-2.5 text-xs sm:text-sm' : 'py-2 text-xs'} px-3 rounded-full font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md active:scale-95 ${
                         isPlaying
                             ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-[0_0_12px_rgba(251,191,36,0.5)]'
                             : 'bg-white/15 hover:bg-white/25 text-white border border-white/20'
                     }`}
                 >
-                    {isPlaying ? <Pause size={13} fill="currentColor" /> : <Play size={13} fill="currentColor" />}
+                    {isPlaying ? <Pause size={isLargeText ? 15 : 13} fill="currentColor" /> : <Play size={isLargeText ? 15 : 13} fill="currentColor" />}
                     <span>{isPlaying ? '사운드 정지' : isMcSquare ? '🎧 엠씨스퀘어 입체 재생' : '손목 치유음 재생'}</span>
                 </button>
             </div>

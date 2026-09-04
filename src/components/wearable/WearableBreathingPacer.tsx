@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, RotateCcw, Wind, CheckCircle2 } from 'lucide-react';
+import { useWearableContext } from './WearableAppShell';
 
 interface WearableBreathingPacerProps {
     onNext?: () => void;
@@ -10,6 +11,7 @@ interface WearableBreathingPacerProps {
 type BreathPhase = 'INHALE' | 'HOLD_IN' | 'EXHALE' | 'HOLD_OUT';
 
 export function WearableBreathingPacer({ onNext }: WearableBreathingPacerProps) {
+    const { isLargeText } = useWearableContext();
     const [isActive, setIsActive] = useState(false);
     const [phase, setPhase] = useState<BreathPhase>('INHALE');
     const [secondsLeft, setSecondsLeft] = useState(4);
@@ -138,42 +140,42 @@ export function WearableBreathingPacer({ onNext }: WearableBreathingPacerProps) 
 
                     {/* 중앙 초 카운트다운 & 단계 */}
                     <div className="flex flex-col items-center justify-center z-10">
-                        <span className="text-4xl font-black text-white font-mono tracking-tighter">
+                        <span className={`${isLargeText ? 'text-5xl sm:text-6xl' : 'text-4xl'} font-black text-white font-mono tracking-tighter`}>
                             {isActive ? secondsLeft : '4:4'}
                         </span>
-                        <span className={`text-[11px] font-black ${currentConfig.color} mt-0.5`}>
+                        <span className={`${isLargeText ? 'text-sm' : 'text-[11px]'} font-black ${currentConfig.color} mt-0.5`}>
                             {isActive ? currentConfig.label.split(' ')[0] : '준비'}
                         </span>
                     </div>
                 </div>
 
                 {/* 하단 단계 가이드 문구 */}
-                <p className="text-[10px] text-gray-300 font-medium mt-1">
+                <p className={`${isLargeText ? 'text-[11px] text-amber-200 font-bold' : 'text-[10px] text-gray-300 font-medium'} mt-1`}>
                     {isActive ? currentConfig.subtext : '터치하여 4초 박스 호흡 시작'}
                 </p>
             </div>
 
             {/* 하단 제어 버튼 */}
-            <div className="w-full max-w-[210px] pb-1 flex items-center justify-center gap-2">
+            <div className={`w-full ${isLargeText ? 'max-w-[225px]' : 'max-w-[210px]'} pb-1 flex items-center justify-center gap-2`}>
                 <button
                     onClick={handleTogglePlay}
-                    className={`flex-1 py-2 px-3 rounded-full text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-lg active:scale-95 ${
+                    className={`flex-1 ${isLargeText ? 'py-2.5 text-xs sm:text-sm' : 'py-2 text-xs'} px-3 rounded-full font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-lg active:scale-95 ${
                         isActive
-                            ? 'bg-amber-400 hover:bg-amber-300 text-slate-950'
+                            ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-[0_0_12px_rgba(251,191,36,0.5)]'
                             : 'bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950'
                     }`}
                 >
-                    {isActive ? <Pause size={13} fill="currentColor" /> : <Play size={13} fill="currentColor" />}
+                    {isActive ? <Pause size={isLargeText ? 15 : 13} fill="currentColor" /> : <Play size={isLargeText ? 15 : 13} fill="currentColor" />}
                     <span>{isActive ? '일시 정지' : '호흡 시작'}</span>
                 </button>
 
                 {isActive && (
                     <button
                         onClick={handleReset}
-                        className="size-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-gray-300 hover:text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
+                        className={`${isLargeText ? 'size-9' : 'size-8'} rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-gray-300 hover:text-white flex items-center justify-center transition-all cursor-pointer border border-white/10`}
                         title="처음부터"
                     >
-                        <RotateCcw size={12} />
+                        <RotateCcw size={isLargeText ? 14 : 12} />
                     </button>
                 )}
             </div>

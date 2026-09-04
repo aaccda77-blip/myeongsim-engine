@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Layers, Waves, Box, Zap, Compass, Clock, Activity, ArrowRight, ShieldAlert } from 'lucide-react';
 import { useWatchData } from '@/services/health/WatchDataService';
+import { useWearableContext } from './WearableAppShell';
 
 // 3대 킬러 모드
 type KillerGraphMode = 'OHAENG_RADAR' | 'MIND_SPACE_3S' | 'META_CODE_WAVE';
@@ -13,6 +14,7 @@ interface WearableQuantumRadarProps {
 }
 
 export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQuantumRadarProps) {
+    const { isLargeText } = useWearableContext();
     const [mode, setMode] = useState<KillerGraphMode>('OHAENG_RADAR');
     const [scanAngle, setScanAngle] = useState(0);
     const [waveOffset, setWaveOffset] = useState(0);
@@ -87,12 +89,12 @@ export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQ
         <div className="relative flex flex-col items-center justify-between h-full py-1.5 px-2 text-center select-none font-sans w-full overflow-hidden">
             {/* 상단 3대 킬러 모드 스위처 */}
             <div className="w-full flex items-center justify-between px-1 pt-0.5 z-20">
-                <div className="flex items-center gap-1 bg-white/[0.06] p-0.5 rounded-lg border border-white/10 mx-auto">
+                <div className={`flex items-center ${isLargeText ? 'gap-1.5 p-1' : 'gap-1 p-0.5'} bg-white/[0.08] rounded-xl border border-white/15 mx-auto`}>
                     <button
                         onClick={() => setMode('OHAENG_RADAR')}
-                        className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer ${
+                        className={`${isLargeText ? 'px-2.5 py-1 text-[10.5px]' : 'px-2 py-0.5 text-[9px]'} rounded-lg font-mono font-black transition-all cursor-pointer ${
                             mode === 'OHAENG_RADAR'
-                                ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-400/40 shadow-[0_0_8px_rgba(0,240,255,0.4)]'
+                                ? 'bg-cyan-500/30 text-cyan-200 border border-cyan-400/50 shadow-[0_0_10px_rgba(0,240,255,0.5)]'
                                 : 'text-gray-400 hover:text-white'
                         }`}
                     >
@@ -100,9 +102,9 @@ export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQ
                     </button>
                     <button
                         onClick={() => setMode('MIND_SPACE_3S')}
-                        className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer ${
+                        className={`${isLargeText ? 'px-2.5 py-1 text-[10.5px]' : 'px-2 py-0.5 text-[9px]'} rounded-lg font-mono font-black transition-all cursor-pointer ${
                             mode === 'MIND_SPACE_3S'
-                                ? 'bg-indigo-500/25 text-indigo-300 border border-indigo-400/40 shadow-[0_0_8px_rgba(99,102,241,0.4)]'
+                                ? 'bg-indigo-500/30 text-indigo-200 border border-indigo-400/50 shadow-[0_0_10px_rgba(99,102,241,0.5)]'
                                 : 'text-gray-400 hover:text-white'
                         }`}
                     >
@@ -110,9 +112,9 @@ export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQ
                     </button>
                     <button
                         onClick={() => setMode('META_CODE_WAVE')}
-                        className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer ${
+                        className={`${isLargeText ? 'px-2.5 py-1 text-[10.5px]' : 'px-2 py-0.5 text-[9px]'} rounded-lg font-mono font-black transition-all cursor-pointer ${
                             mode === 'META_CODE_WAVE'
-                                ? 'bg-amber-500/25 text-amber-300 border border-amber-400/40 shadow-[0_0_8px_rgba(251,191,36,0.4)]'
+                                ? 'bg-amber-500/30 text-amber-200 border border-amber-400/50 shadow-[0_0_10px_rgba(251,191,36,0.5)]'
                                 : 'text-gray-400 hover:text-white'
                         }`}
                     >
@@ -185,19 +187,19 @@ export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQ
                     </div>
 
                     {/* 실시간 장부 밸런싱 처방 바 */}
-                    <div className="mt-1 w-full max-w-[210px] bg-black/50 border border-white/10 rounded-xl p-1 px-2 text-left flex items-center justify-between">
+                    <div className={`mt-1 w-full ${isLargeText ? 'max-w-[225px] p-1.5' : 'max-w-[210px] p-1'} bg-black/60 border border-white/10 rounded-xl px-2 text-left flex items-center justify-between`}>
                         <div>
-                            <span className="text-[9px] font-mono text-cyan-300 font-bold block">
+                            <span className={`${isLargeText ? 'text-[10px]' : 'text-[9px]'} font-mono text-cyan-300 font-black block`}>
                                 {ohaengValues.metal < 50 ? '⚠️ 금(폐) 호흡 에너지 저하' : '✨ 5대 장부 밸런스 최적'}
                             </span>
-                            <span className="text-[8.5px] text-gray-400">
+                            <span className={`${isLargeText ? 'text-[9.5px] text-gray-200 font-bold' : 'text-[8.5px] text-gray-400'}`}>
                                 {ohaengValues.metal < 50 ? '4-4-4-4 박스호흡으로 폐기운 강화' : '순환과 자율신경계가 안정 상태입니다'}
                             </span>
                         </div>
                         {ohaengValues.metal < 50 && (
                             <button
                                 onClick={onGoToBreath}
-                                className="px-2 py-1 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 text-[9px] font-bold shrink-0 cursor-pointer"
+                                className={`${isLargeText ? 'px-2.5 py-1 text-[10px]' : 'px-2 py-1 text-[9px]'} rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 font-black shrink-0 cursor-pointer`}
                             >
                                 호흡 처방
                             </button>
@@ -243,25 +245,25 @@ export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQ
                                 );
                             })()}
 
-                            {/* 3대 축 레이더 좌표 */}
-                            <text x="50" y="12" fill="#818CF8" fontSize="6.5" fontWeight="bold" textAnchor="middle">Z: 주체성 {sovereignScore}%</text>
-                            <text x="12" y="85" fill="#38BDF8" fontSize="6" fontWeight="bold" textAnchor="middle">X: 자각 {sensingScore}%</text>
-                            <text x="88" y="85" fill="#34D399" fontSize="6" fontWeight="bold" textAnchor="middle">Y: 방하착 {surrenderScore}%</text>
+                            {/* 3대 의식 축 라벨 */}
+                            <text x="50" y="14" fill="#FBBF24" fontSize={isLargeText ? "7.5" : "6"} fontWeight="bold" textAnchor="middle">Z: 주체성 {sovereignScore}%</text>
+                            <text x="14" y="86" fill="#38BDF8" fontSize={isLargeText ? "7.5" : "6"} fontWeight="bold" textAnchor="middle">X: 자각 {sensingScore}%</text>
+                            <text x="86" y="86" fill="#34D399" fontSize={isLargeText ? "7.5" : "6"} fontWeight="bold" textAnchor="middle">Y: 방하착 {surrenderScore}%</text>
                         </svg>
 
                         {/* 중앙 체적 점수 */}
                         <div className="flex flex-col items-center justify-center z-10">
-                            <span className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight drop-shadow-md">
+                            <span className={`${isLargeText ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'} font-black text-white font-mono tracking-tight drop-shadow-md`}>
                                 {mindVolumePercent}%
                             </span>
-                            <span className="text-[9px] font-bold text-indigo-300">
+                            <span className={`${isLargeText ? 'text-[11px]' : 'text-[9px]'} font-black text-indigo-300`}>
                                 의식 그릇 체적
                             </span>
                         </div>
                     </div>
 
-                    <div className="mt-1 w-full max-w-[210px] bg-black/50 border border-white/10 rounded-xl p-1 px-2.5 text-center">
-                        <span className="text-[9px] text-gray-300 font-medium">
+                    <div className={`mt-1 w-full ${isLargeText ? 'max-w-[225px] p-1.5' : 'max-w-[210px] p-1'} bg-black/60 border border-white/10 rounded-xl px-2.5 text-center`}>
+                        <span className={`${isLargeText ? 'text-[10px] text-gray-200 font-bold' : 'text-[9px] text-gray-300 font-medium'}`}>
                             {mindVolumePercent > 70 ? '내면의 그릇이 넓어져 어떤 스트레스도 흡수합니다' : '마음 공간이 수축되어 있습니다. 1초 영점 리셋 추천'}
                         </span>
                     </div>
@@ -321,7 +323,7 @@ export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQ
                         </svg>
 
                         {/* 우상단 Hz 표시 */}
-                        <div className="absolute top-1.5 right-2 flex items-center gap-1.5 text-[8.5px] font-mono">
+                        <div className={`absolute top-1.5 right-2 flex items-center gap-1.5 ${isLargeText ? 'text-[9.5px]' : 'text-[8.5px]'} font-mono`}>
                             <span className="text-red-400 font-bold">Dark 396</span>
                             <span className="text-cyan-300 font-bold">Neural 432</span>
                             <span className="text-amber-300 font-bold">Meta 528</span>
@@ -329,19 +331,19 @@ export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQ
                     </div>
 
                     {/* 오늘 몰입 골든 타임 안내 */}
-                    <div className="mt-1 w-full max-w-[220px] bg-gradient-to-r from-amber-500/15 via-cyan-500/15 to-amber-500/15 border border-amber-400/30 rounded-xl p-1 px-2 flex items-center justify-between">
+                    <div className={`mt-1 w-full ${isLargeText ? 'max-w-[235px] p-1.5' : 'max-w-[220px] p-1'} bg-gradient-to-r from-amber-500/20 via-cyan-500/20 to-amber-500/20 border border-amber-400/40 rounded-xl px-2 flex items-center justify-between`}>
                         <div className="flex items-center gap-1">
-                            <Clock size={11} className="text-amber-400 animate-spin-slow" />
-                            <span className="text-[9px] font-mono font-bold text-amber-200">
+                            <Clock size={isLargeText ? 13 : 11} className="text-amber-400 animate-spin-slow" />
+                            <span className={`${isLargeText ? 'text-[10.5px]' : 'text-[9px]'} font-mono font-black text-amber-200`}>
                                 골든 몰입: <strong className="text-white">{goldenTimeHour}</strong>
                             </span>
                         </div>
                         <button
                             onClick={onGoToSoundLab}
-                            className="text-[8.5px] font-bold text-cyan-300 hover:underline cursor-pointer flex items-center gap-0.5"
+                            className={`${isLargeText ? 'text-[10px] font-black' : 'text-[8.5px] font-bold'} text-cyan-300 hover:underline cursor-pointer flex items-center gap-0.5`}
                         >
                             <span>치유음</span>
-                            <ArrowRight size={8} />
+                            <ArrowRight size={isLargeText ? 10 : 8} />
                         </button>
                     </div>
                 </div>
@@ -349,7 +351,7 @@ export function WearableQuantumRadar({ onGoToBreath, onGoToSoundLab }: WearableQ
 
             {/* 하단 공통 모드 전환 안내 */}
             <div className="w-full pb-0.5 text-center">
-                <span className="text-[8.5px] text-gray-500 font-mono">
+                <span className={`${isLargeText ? 'text-[9.5px] text-gray-300 font-bold' : 'text-[8.5px] text-gray-500'} font-mono`}>
                     상단 탭을 눌러 오행 레이더 · 3S 의식공간 · 메타파동을 전환하세요
                 </span>
             </div>

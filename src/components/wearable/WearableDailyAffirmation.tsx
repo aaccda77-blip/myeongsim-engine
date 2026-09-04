@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Star, Sparkles, RefreshCw, BookmarkCheck, Headphones, Heart, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
 import { DailyLuckEngine } from '@/lib/saju/DailyLuckEngine';
+import { useWearableContext } from './WearableAppShell';
 
 interface WearableDailyAffirmationProps {
     onGoToSoundLab?: () => void;
@@ -75,6 +76,7 @@ const DEFAULT_AFFIRMATIONS: Record<string, { title: string; element: string; quo
 
 export function WearableDailyAffirmation({ onGoToSoundLab }: WearableDailyAffirmationProps) {
     const { reportData } = useReportStore();
+    const { isLargeText } = useWearableContext();
     const [dayMasterKey, setDayMasterKey] = useState('신'); // 기본: 신금(辛金)
     const [affirmation, setAffirmation] = useState(DEFAULT_AFFIRMATIONS['신'].quote);
     const [isImprinted, setIsImprinted] = useState(false);
@@ -161,29 +163,29 @@ export function WearableDailyAffirmation({ onGoToSoundLab }: WearableDailyAffirm
             )}
 
             {/* 상단 라벨 & 오늘 일진 뱃지 */}
-            <div className="flex items-center justify-between w-full px-2 pt-0.5 z-10">
-                <span className="text-[10px] font-mono font-bold tracking-widest text-amber-400 flex items-center gap-1">
-                    <Star size={12} className="text-amber-400 fill-amber-400 animate-pulse" />
-                    <span>오늘의 핵심 선언문</span>
+            <div className="flex items-center justify-between w-full px-1.5 pt-0.5 z-10">
+                <span className={`${isLargeText ? 'text-[11px] text-amber-300 font-black' : 'text-[10px] text-amber-400 font-bold'} font-mono tracking-wider flex items-center gap-1`}>
+                    <Star size={isLargeText ? 13 : 11} className="text-amber-400 fill-amber-400 animate-pulse" />
+                    <span>오늘의 선언문</span>
                 </span>
-                <span className="text-[8.5px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30">
-                    {currentConfig.element} · {todayGanji}일
+                <span className={`${isLargeText ? 'text-[9.5px] px-2 py-0.5' : 'text-[8.5px] px-1.5 py-0.5'} rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30`}>
+                    {currentConfig.element} · {todayGanji}
                 </span>
             </div>
 
             {/* 중앙 1:1 일진 맞춤 선언문 본문 (최고급 글래스모피즘 카드) */}
-            <div className="relative my-auto flex flex-col items-center justify-center w-full max-w-[245px] z-10">
-                <div className="p-3 rounded-2xl bg-gradient-to-b from-amber-500/10 via-black/60 to-black/80 border border-amber-400/30 shadow-[0_0_15px_rgba(251,191,36,0.15)] relative overflow-hidden">
+            <div className={`relative my-auto flex flex-col items-center justify-center w-full ${isLargeText ? 'max-w-[275px]' : 'max-w-[245px]'} z-10`}>
+                <div className={`p-3 rounded-2xl bg-gradient-to-b from-amber-500/15 via-black/70 to-black/90 border ${isLargeText ? 'border-amber-400/50 shadow-[0_0_20px_rgba(251,191,36,0.25)]' : 'border-amber-400/30 shadow-[0_0_15px_rgba(251,191,36,0.15)]'} relative overflow-hidden`}>
                     {/* 상단 큰따옴표 데코 */}
-                    <div className="text-amber-400/30 text-2xl font-serif font-black absolute top-1 left-2 select-none leading-none">
+                    <div className="text-amber-400/25 text-2xl font-serif font-black absolute top-1 left-2 select-none leading-none">
                         “
                     </div>
 
-                    <p className="text-[11.5px] sm:text-[12px] font-bold text-amber-50 italic leading-[1.65] break-keep relative z-10 px-1 pt-1">
+                    <p className={`${isLargeText ? 'text-[14px] sm:text-[15px] leading-[1.75] font-black text-amber-100 tracking-tight' : 'text-[11.5px] sm:text-[12px] font-bold text-amber-50 italic leading-[1.65]'} break-keep relative z-10 px-1 pt-1`}>
                         &ldquo;{affirmation}&rdquo;
                     </p>
 
-                    <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-amber-500/20 text-[8.5px] text-amber-300/80 font-mono">
+                    <div className={`flex items-center justify-between mt-2 pt-1.5 border-t border-amber-500/20 ${isLargeText ? 'text-[9.5px] text-amber-200 font-bold' : 'text-[8.5px] text-amber-300/80 font-mono'}`}>
                         <span>{currentConfig.title}</span>
                         <span>{currentConfig.theme}</span>
                     </div>
@@ -191,14 +193,14 @@ export function WearableDailyAffirmation({ onGoToSoundLab }: WearableDailyAffirm
             </div>
 
             {/* 하단 3대 인터랙티브 버튼 바 */}
-            <div className="w-full max-w-[225px] pb-1 space-y-1 z-10">
+            <div className={`w-full ${isLargeText ? 'max-w-[245px]' : 'max-w-[225px]'} pb-1 space-y-1 z-10`}>
                 <div className="flex items-center gap-1.5">
                     {/* 가슴에 각인하기 버튼 */}
                     <button
                         onClick={handleImprint}
-                        className="flex-1 py-1.5 px-2.5 rounded-full bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 text-[11px] font-black flex items-center justify-center gap-1 shadow-[0_0_10px_rgba(251,191,36,0.4)] active:scale-95 transition-all cursor-pointer"
+                        className={`flex-1 ${isLargeText ? 'py-2 px-3 text-[12px]' : 'py-1.5 px-2.5 text-[11px]'} rounded-full bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black flex items-center justify-center gap-1 shadow-[0_0_12px_rgba(251,191,36,0.5)] active:scale-95 transition-all cursor-pointer`}
                     >
-                        <BookmarkCheck size={12} strokeWidth={2.5} />
+                        <BookmarkCheck size={isLargeText ? 14 : 12} strokeWidth={2.5} />
                         <span>가슴에 각인</span>
                     </button>
 
@@ -206,20 +208,20 @@ export function WearableDailyAffirmation({ onGoToSoundLab }: WearableDailyAffirm
                     <button
                         onClick={handleGenerateAiAffirmation}
                         disabled={isGenerating}
-                        className="size-7 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-gray-300 hover:text-white flex items-center justify-center transition-all cursor-pointer border border-white/15 shrink-0 disabled:opacity-50"
+                        className={`${isLargeText ? 'size-8' : 'size-7'} rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-gray-300 hover:text-white flex items-center justify-center transition-all cursor-pointer border border-white/15 shrink-0 disabled:opacity-50`}
                         title="새로운 영감 선언문 생성"
                     >
-                        <RefreshCw size={11} className={isGenerating ? 'animate-spin text-amber-400' : ''} />
+                        <RefreshCw size={isLargeText ? 13 : 11} className={isGenerating ? 'animate-spin text-amber-400' : ''} />
                     </button>
 
                     {/* 엠씨스퀘어 연동 이동 */}
                     {onGoToSoundLab && (
                         <button
                             onClick={onGoToSoundLab}
-                            className="size-7 rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 flex items-center justify-center transition-all cursor-pointer border border-cyan-400/30 shrink-0"
+                            className={`${isLargeText ? 'size-8' : 'size-7'} rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 flex items-center justify-center transition-all cursor-pointer border border-cyan-400/30 shrink-0`}
                             title="엠씨스퀘어 몰입 사운드 재생"
                         >
-                            <Headphones size={11} />
+                            <Headphones size={isLargeText ? 13 : 11} />
                         </button>
                     )}
                 </div>
