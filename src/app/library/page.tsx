@@ -14,6 +14,9 @@ import confetti from 'canvas-confetti';
 import HealingSongApplyModal from '@/components/modals/HealingSongApplyModal';
 import BookVerificationSuccessModal from '@/components/modals/BookVerificationSuccessModal';
 import RefinedEBookReader from '@/components/library/RefinedEBookReader';
+import BrainwaveSoundLabModal from '@/components/audio/BrainwaveSoundLabModal';
+import { useLanguage, Language } from '@/contexts/LanguageContext';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 
 // 도서 서지 정보
 const BOOK_INFO = {
@@ -303,8 +306,114 @@ AWARENESS OF AWARENESS
     }
 ];
 
+// 🌐 도서관 다국어 번역 사전
+const LIBRARY_I18N: Record<Language, any> = {
+    kr: {
+        title: "명심코칭 디지털 도서관",
+        bookTitle: "《ZERO POINT (제로 포인트)》",
+        bookSubtitle: "AWARENESS OF AWARENESS",
+        catchphrase: "내 안의 소음이 멈추고, 운명의 알고리즘이 리셋되는 순간",
+        author: "지은이: 이경윤 | 출판: 청류",
+        tabPdf: "309p 출판 원본 (PDF)",
+        tabReader: "시력보호 e-리더",
+        tabBenefits: "독자 VIP 특전",
+        btnPreview: "📖 YES24 스타일 무료 미리보기 (Look Inside - 무료 15p)",
+        buyYes24: "📗 YES24에서 구매",
+        buySmartstore: "🛍️ 스마트스토어 구매",
+        authTitle: "정품 구매 인증 및 전면 VIP 해금",
+        authDesc: "네이버 스마트스토어 또는 서점에서 결제하신 구매자 성함과 주문번호를 입력하시면, 《ZERO POINT》 309페이지 전자책과 3대 VIP 슈퍼패키지가 즉시 영구 해금됩니다!",
+        namePlaceholder: "예: 홍길동 (입금자/구매자 성함)",
+        orderPlaceholder: "예: 20260904-12345678 (네이버페이 주문번호)",
+        btnVerify: "✨ 1초 즉시 인증 및 전면 해금하기",
+        soundLabBtn: "🎧 뇌파 치유 사운드 랩",
+        soundLabDesc: "7대 솔페지오 & 자연음 믹싱",
+        homeBtn: "홈으로",
+        drmTag: "DRM 2.0 포렌식 보안 적용",
+        verifiedBadge: "정품 라이선스",
+        readingTip: "종이책 원본 디자인 그대로 읽기",
+        streamBadge: "YES24·교보 보안스트림 적용"
+    },
+    en: {
+        title: "Myeongsim Digital Library",
+        bookTitle: "《ZERO POINT》",
+        bookSubtitle: "AWARENESS OF AWARENESS",
+        catchphrase: "When the inner noise stops, the algorithm of destiny resets",
+        author: "Author: Kyeong-Yoon Lee | Publisher: Cheongryu",
+        tabPdf: "309p Original (PDF)",
+        tabReader: "Eye-Care e-Reader",
+        tabBenefits: "VIP Reader Benefits",
+        btnPreview: "📖 Look Inside (Free 15p Preview)",
+        buyYes24: "📗 Buy on YES24",
+        buySmartstore: "🛍️ Buy on SmartStore",
+        authTitle: "Verify Purchase & Unlock Full VIP Access",
+        authDesc: "Enter your Buyer Name and Order Number to instantly unlock the 309-page e-Book 《ZERO POINT》 and all 3 VIP Super Packages!",
+        namePlaceholder: "e.g. John Doe (Buyer Name)",
+        orderPlaceholder: "e.g. 20260904-12345678 (Order Number)",
+        btnVerify: "✨ Verify & Unlock in 1 Sec",
+        soundLabBtn: "🎧 Brainwave Sound Lab",
+        soundLabDesc: "7 Solfeggio & Nature Ambients",
+        homeBtn: "Home",
+        drmTag: "DRM 2.0 Forensic Security Applied",
+        verifiedBadge: "Official License",
+        readingTip: "Read Book in Original Print Layout",
+        streamBadge: "Secure DRM Streaming"
+    },
+    jp: {
+        title: "明心コーチング電子図書館",
+        bookTitle: "《ZERO POINT (ゼロポイント)》",
+        bookSubtitle: "AWARENESS OF AWARENESS",
+        catchphrase: "心の中のノイズが静まり、運命のアルゴリズムがリセットされる瞬間",
+        author: "著者: イ・ギョンユン | 出版: 晴流",
+        tabPdf: "309p 出版原本 (PDF)",
+        tabReader: "視力保護 e-リーダー",
+        tabBenefits: "読者VIP特典",
+        btnPreview: "📖 試し読み (Look Inside - 無料15p)",
+        buyYes24: "📗 YES24で購入",
+        buySmartstore: "🛍️ ストアで購入",
+        authTitle: "正規購入認証＆全VIPアクセス解放",
+        authDesc: "ご購入時のお名前と注文番号を入力すると、309ページの電子書籍《ZERO POINT》と全VIP特典が即座に解放されます！",
+        namePlaceholder: "例: 山田太郎 (購入者氏名)",
+        orderPlaceholder: "例: 20260904-12345678 (注文番号)",
+        btnVerify: "✨ 1秒即時認証＆全編解放",
+        soundLabBtn: "🎧 脳波ヒーリングサウンドラボ",
+        soundLabDesc: "7大ソルフェジオ周波数＆自然音ミキシング",
+        homeBtn: "ホーム",
+        drmTag: "DRM 2.0 真正性保護適用",
+        verifiedBadge: "正規ライセンス",
+        readingTip: "印刷版のデザインそのまま読む",
+        streamBadge: "安全ストリーミング適用"
+    },
+    cn: {
+        title: "明心教练电子图书馆",
+        bookTitle: "《ZERO POINT (零点)》",
+        bookSubtitle: "AWARENESS OF AWARENESS",
+        catchphrase: "当内在噪音止息，命运算法重置的瞬间",
+        author: "作者: 李庆润 | 出版: 清流",
+        tabPdf: "309页 原版 (PDF)",
+        tabReader: "护眼电子阅读器",
+        tabBenefits: "读者VIP特权",
+        btnPreview: "📖 免费试读 (Look Inside - 15页)",
+        buyYes24: "📗 YES24 购买",
+        buySmartstore: "🛍️ 官方商城购买",
+        authTitle: "正版购买验证与全VIP解锁",
+        authDesc: "输入购买者姓名和订单号，即可瞬间解锁309页全本电子书《ZERO POINT》及所有VIP超值特权！",
+        namePlaceholder: "例: 张三 (购买者姓名)",
+        orderPlaceholder: "例: 20260904-12345678 (订单号)",
+        btnVerify: "✨ 1秒即刻验证与解锁",
+        soundLabBtn: "🎧 脑波疗愈声音实验室",
+        soundLabDesc: "七大索尔菲吉奥频率与自然白噪音混音",
+        homeBtn: "主页",
+        drmTag: "DRM 2.0 版权保护应用",
+        verifiedBadge: "正版授权",
+        readingTip: "纸质书排版原汁原味阅读",
+        streamBadge: "安全加密流式阅读"
+    }
+};
+
 export default function LibraryPage() {
     const router = useRouter();
+    const { language } = useLanguage();
+    const tLib = LIBRARY_I18N[language] || LIBRARY_I18N.kr;
 
     // 구매 인증 상태 (로컬스토리지 연동)
     const [isVerified, setIsVerified] = useState(false);
@@ -686,17 +795,20 @@ export default function LibraryPage() {
                     className="flex items-center gap-1.5 text-gray-300 hover:text-white text-xs font-bold transition-all px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] active:scale-95 cursor-pointer"
                 >
                     <ArrowLeft size={15} />
-                    <span>홈으로</span>
+                    <span>{tLib.homeBtn}</span>
                 </button>
 
                 <div className="flex items-center gap-1.5">
                     <span className="text-sm font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-indigo-100 to-purple-200">
-                        명심코칭 디지털 도서관
+                        {tLib.title}
                     </span>
                     <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
                         DRM 2.0
                     </span>
                 </div>
+
+                <div className="flex items-center gap-1">
+                    <LanguageSwitcher />
 
                 <button
                     onClick={() => setIsSoundLabOpen(true)}
@@ -722,6 +834,7 @@ export default function LibraryPage() {
                         </div>
                     )}
                 </button>
+                </div>
             </header>
 
             {/* ── 2. 메인 바디 ── */}
@@ -784,7 +897,7 @@ export default function LibraryPage() {
                         className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                     >
                         <BookOpen size={16} />
-                        <span>📖 YES24 스타일 무료 미리보기 (Look Inside - 무료 15p)</span>
+                        <span>{tLib.btnPreview}</span>
                     </button>
 
                     {/* 🛒 외부 구매 링크 버튼 2종 */}
@@ -795,7 +908,7 @@ export default function LibraryPage() {
                             rel="noopener noreferrer"
                             className="py-2.5 px-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-[11px] shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer text-center"
                         >
-                            <span>📗 YES24에서 구매</span>
+                            <span>{tLib.buyYes24}</span>
                             <ExternalLink size={12} />
                         </a>
 
@@ -805,7 +918,7 @@ export default function LibraryPage() {
                             rel="noopener noreferrer"
                             className="py-2.5 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-[11px] shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer text-center"
                         >
-                            <span>🛍️ 스마트스토어 구매</span>
+                            <span>{tLib.buySmartstore}</span>
                             <ExternalLink size={12} />
                         </a>
                     </div>
@@ -824,10 +937,10 @@ export default function LibraryPage() {
                                 <span>네이버 스마트스토어 & 서점 독자 전용</span>
                             </div>
                             <h3 className="text-base font-black text-white">
-                                정품 구매 인증 및 전면 VIP 해금
+                                {tLib.authTitle}
                             </h3>
                             <p className="text-xs text-gray-300 leading-relaxed">
-                                네이버 스마트스토어에서 결제하신 <strong className="text-amber-300">구매자 성함</strong>과 <strong className="text-amber-300">주문번호</strong>를 입력하시면, 《ZERO POINT》 309페이지 전자책과 3대 VIP 슈퍼패키지가 즉시 영구 해금됩니다!
+                                {tLib.authDesc}
                             </p>
                         </div>
 
@@ -914,9 +1027,9 @@ export default function LibraryPage() {
                         {/* 뷰어 탭 네비게이션 (309p 출판 원본 완권 강조) */}
                         <div className="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-[#0d091e] border border-white/10">
                             {[
-                                { id: 'pdf', label: '309p 출판 원본 (PDF)', icon: '📑' },
-                                { id: 'reader', label: '시력보호 e-리더', icon: '📖' },
-                                { id: 'benefits', label: '독자 VIP 특전', icon: '🎁' }
+                                { id: 'pdf', label: tLib.tabPdf, icon: '📑' },
+                                { id: 'reader', label: tLib.tabReader, icon: '📖' },
+                                { id: 'benefits', label: tLib.tabBenefits, icon: '🎁' }
                             ].map((tab) => (
                                 <button
                                     key={tab.id}

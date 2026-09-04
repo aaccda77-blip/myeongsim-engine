@@ -1227,8 +1227,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>📖</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#38bdf8', fontWeight: 'bold' }}>명심코칭도서관</div>
-                        <div style={styles.neuroTrigger}>제로포인트 e-Book</div>
+                        <div style={{ ...styles.iconLabel, color: '#38bdf8', fontWeight: 'bold' }}>{t('menu.library') || '명심코칭도서관'}</div>
+                        <div style={styles.neuroTrigger}>{t('menu.library_desc') || '제로포인트 e-Book'}</div>
                     </div>
                 </button>
 
@@ -1256,8 +1256,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>🎧</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>코칭 에세이노래</div>
-                        <div style={styles.neuroTrigger}>기질 1:1 맞춤 432Hz</div>
+                        <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>{t('menu.coaching_song') || '코칭 에세이노래'}</div>
+                        <div style={styles.neuroTrigger}>{t('menu.coaching_song_desc') || '기질 1:1 맞춤 432Hz'}</div>
                     </div>
                 </button>
 
@@ -1285,8 +1285,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>💼</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>국세청 창업·N잡</div>
-                        <div style={styles.neuroTrigger}>1:1 실전 업태·종목</div>
+                        <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>{t('menu.nts_career') || '국세청 창업·N잡'}</div>
+                        <div style={styles.neuroTrigger}>{t('menu.nts_career_desc') || '1:1 실전 업태·종목'}</div>
                     </div>
                 </button>
 
@@ -1306,8 +1306,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>🌌</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#34d399', fontWeight: 'bold' }}>제로포인트 3S</div>
-                        <div style={styles.neuroTrigger}>3대 코드 융합 진단</div>
+                        <div style={{ ...styles.iconLabel, color: '#34d399', fontWeight: 'bold' }}>{t('menu.zero_point_3s') || '제로포인트 3S'}</div>
+                        <div style={styles.neuroTrigger}>{t('menu.zero_point_3s_desc') || '3대 코드 융합 진단'}</div>
                     </div>
                 </button>
 
@@ -1318,8 +1318,8 @@ export default function DrillDownIconMenu({
                             <span style={{ fontSize: '20px' }}>💎</span>
                         </div>
                         <div>
-                            <div style={{ ...styles.iconLabel, color: '#c084fc', fontWeight: 'bold' }}>내면치유 코어</div>
-                            <div style={styles.neuroTrigger}>5대 내면치유 솔루션</div>
+                            <div style={{ ...styles.iconLabel, color: '#c084fc', fontWeight: 'bold' }}>{t('menu.inner_healing') || '내면치유 코어'}</div>
+                            <div style={styles.neuroTrigger}>{t('menu.inner_healing_desc') || '5대 내면치유 솔루션'}</div>
                         </div>
                     </button>
                 )}
@@ -1335,8 +1335,8 @@ export default function DrillDownIconMenu({
                             <span style={{ fontSize: '20px' }}>🃏</span>
                         </div>
                         <div>
-                            <div style={{ ...styles.iconLabel, color: '#a78bfa', fontWeight: 'bold' }}>오늘의 카드</div>
-                            <div style={styles.neuroTrigger}>3D 데일리 드로우</div>
+                            <div style={{ ...styles.iconLabel, color: '#a78bfa', fontWeight: 'bold' }}>{t('menu.myeongsim_oracle') || '오늘의 카드'}</div>
+                            <div style={styles.neuroTrigger}>{t('menu.myeongsim_oracle_desc') || '3D 데일리 드로우'}</div>
                         </div>
                     </button>
                 )}
@@ -1352,8 +1352,8 @@ export default function DrillDownIconMenu({
                             <span style={{ fontSize: '20px' }}>💡</span>
                         </div>
                         <div>
-                            <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>본재(本財) 해독</div>
-                            <div style={styles.neuroTrigger}>나의 본빛 기질 자각</div>
+                            <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>{t('menu.genius_decode') || '본재(本財) 해독'}</div>
+                            <div style={styles.neuroTrigger}>{t('menu.genius_decode_desc') || '나의 본빛 기질 자각'}</div>
                         </div>
                     </button>
                 )}
@@ -1369,8 +1369,8 @@ export default function DrillDownIconMenu({
                             <span style={{ fontSize: '20px' }}>🗺️</span>
                         </div>
                         <div>
-                            <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>천명 지도</div>
-                            <div style={styles.neuroTrigger}>삶의 궤적과 운명 분석</div>
+                            <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>{t('menu.destiny_map') || '천명 지도'}</div>
+                            <div style={styles.neuroTrigger}>{t('menu.destiny_map_desc') || '삶의 궤적과 운명 분석'}</div>
                         </div>
                     </button>
                 )}
@@ -1420,8 +1420,8 @@ export default function DrillDownIconMenu({
                             <span style={{ fontSize: '20px' }}>⚡</span>
                         </div>
                         <div>
-                            <div style={{ ...styles.iconLabel, color: '#ef4444' }}>다크 디코딩</div>
-                            <div style={styles.neuroTrigger}>부정 감정의 에너지 전환</div>
+                            <div style={{ ...styles.iconLabel, color: '#ef4444' }}>{t('menu.dark_decoding') || '다크 디코딩'}</div>
+                            <div style={styles.neuroTrigger}>{t('menu.dark_decoding_desc') || '부정 감정의 에너지 전환'}</div>
                         </div>
                     </button>
                 )}
@@ -1437,8 +1437,8 @@ export default function DrillDownIconMenu({
                             <span style={{ fontSize: '20px' }}>💻</span>
                         </div>
                         <div>
-                            <div style={{ ...styles.iconLabel, color: '#34d399' }}>마인드 디버거</div>
-                            <div style={styles.neuroTrigger}>의식 오류 및 시간 재배선</div>
+                            <div style={{ ...styles.iconLabel, color: '#34d399' }}>{t('menu.mind_debugger') || '마인드 디버거'}</div>
+                            <div style={styles.neuroTrigger}>{t('menu.mind_debugger_desc') || '의식 오류 및 시간 재배선'}</div>
                         </div>
                     </button>
                 )}

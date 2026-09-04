@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Sparkles, CheckCircle2, X, Send, ShieldCheck, Heart, Radio } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HealingSongApplyModalProps {
     isOpen: boolean;
@@ -38,6 +39,8 @@ export default function HealingSongApplyModal({
         }
     }, [defaultName]);
 
+    const { language } = useLanguage();
+    const isEn = language === 'en';
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
 

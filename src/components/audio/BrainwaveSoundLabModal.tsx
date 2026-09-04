@@ -6,6 +6,7 @@ import {
     Wind, CloudRain, Waves, BellOff, Info, Check, ShieldCheck, Heart,
     Brain, Zap, Moon, Compass, BookOpen, Flame, Smile
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
     getBrainwaveEngine, 
     FREQUENCY_PRESETS, 
@@ -43,7 +44,12 @@ export default function BrainwaveSoundLabModal({
     const [showDeepGuide, setShowDeepGuide] = useState(true);
 
     // 호흡 가이드 단계 (들숨 4초, 멈춤 4초, 날숨 4초, 비움 4초)
-    const [breathPhase, setBreathPhase] = useState<'들숨' | '잠시 멈춤' | '날숨' | '비움'>('들숨');
+    const { language } = useLanguage();
+    const isEn = language === 'en';
+    const isJp = language === 'jp';
+    const isCn = language === 'cn';
+
+    const [breathPhase, setBreathPhase] = useState<string>('들숨');
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -62,7 +68,13 @@ export default function BrainwaveSoundLabModal({
     // 호흡 페이서 인터벌
     useEffect(() => {
         if (!isPlaying) return;
-        const phases: ('들숨' | '잠시 멈춤' | '날숨' | '비움')[] = ['들숨', '잠시 멈춤', '날숨', '비움'];
+        const phases = isEn 
+            ? ['Inhale', 'Hold', 'Exhale', 'Rest']
+            : isJp
+            ? ['吸う', '止める', '吐く', '空にする']
+            : isCn
+            ? ['吸气', '屏息', '呼气', '放空']
+            : ['들숨', '잠시 멈춤', '날숨', '비움'];
         let idx = 0;
         const interval = setInterval(() => {
             idx = (idx + 1) % phases.length;
@@ -172,12 +184,16 @@ export default function BrainwaveSoundLabModal({
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h2 className="text-sm font-black text-white">ZERO POINT 뇌파 안정 & 사운드 테라피 랩</h2>
+                                <h2 className="text-sm font-black text-white">
+                                    {isEn ? 'ZERO POINT Brainwave Sound Lab' : isJp ? 'ZERO POINT 脳波サウンドラボ' : isCn ? 'ZERO POINT 脑波疗愈实验室' : 'ZERO POINT 뇌파 안정 & 사운드 테라피 랩'}
+                                </h2>
                                 <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-mono font-bold border border-amber-400/30">
-                                    7대 주파수
+                                    {isEn ? '7 Frequencies' : '7대 주파수'}
                                 </span>
                             </div>
-                            <p className="text-[11px] text-gray-400">내 기분에 딱 맞는 파동으로 독서 몰입과 마음 치유를 동시에</p>
+                            <p className="text-[11px] text-gray-400">
+                                {isEn ? 'Personalized sound frequencies for deep reading focus and emotional healing' : '내 기분에 딱 맞는 파동으로 독서 몰입과 마음 치유를 동시에'}
+                            </p>
                         </div>
                     </div>
 
@@ -197,7 +213,7 @@ export default function BrainwaveSoundLabModal({
                         <div className="flex items-start justify-between gap-3">
                             <div className="space-y-1">
                                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-bold">
-                                    <span>현재 기분 맞춤 처방</span>
+                                    <span>{isEn ? 'Mood Prescription' : isJp ? '気分別処方' : isCn ? '心情定制处方' : '현재 기분 맞춤 처방'}</span>
                                 </div>
                                 <h3 className="text-sm font-black text-white flex items-center gap-2">
                                     <span>{currentPresetInfo.name}</span>
@@ -232,7 +248,7 @@ export default function BrainwaveSoundLabModal({
                                 <div className="p-3 rounded-xl bg-white/[0.04] border border-white/5 space-y-1">
                                     <p className="text-[10px] font-bold text-cyan-300 flex items-center gap-1">
                                         <Heart size={11} />
-                                        <span>이럴 때 들으시면 가장 좋아요:</span>
+                                        <span>{isEn ? 'Recommended When:' : '이럴 때 들으시면 가장 좋아요:'}</span>
                                     </p>
                                     <ul className="text-[11px] text-gray-300 space-y-0.5 pl-1 leading-relaxed">
                                         {currentPresetInfo.recommendWhen.map((item, i) => (
@@ -249,7 +265,7 @@ export default function BrainwaveSoundLabModal({
                                     <div className="flex items-center justify-between">
                                         <p className="text-[10px] font-bold text-purple-300 flex items-center gap-1">
                                             <Brain size={11} />
-                                            <span>뇌과학적 원리 & 작용:</span>
+                                            <span>{isEn ? 'Neuroscience Mechanism:' : '뇌과학적 원리 & 작용:'}</span>
                                         </p>
                                         <span className="text-[9px] text-emerald-300 font-mono">신경계 동조</span>
                                     </div>
@@ -481,14 +497,14 @@ export default function BrainwaveSoundLabModal({
                         }`}
                     >
                         {isPlaying ? <Square size={16} /> : <Play size={16} />}
-                        <span>{isPlaying ? '치유 사운드 정지하기' : `🔊 [${currentPresetInfo.name.split(' ')[0]}] 사운드 재생하기`}</span>
+                        <span>{isPlaying ? (isEn ? 'Stop Healing Sound' : '치유 사운드 정지하기') : `🔊 [${currentPresetInfo.name.split(' ')[0]}] ${isEn ? 'Play Sound' : '사운드 재생하기'}`}</span>
                     </button>
                     
                     <button
                         onClick={onClose}
                         className="px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-gray-200 text-xs font-bold cursor-pointer"
                     >
-                        창 닫기
+                        {isEn ? 'Close' : '창 닫기'}
                     </button>
                 </div>
             </div>
