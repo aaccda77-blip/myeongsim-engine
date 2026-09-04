@@ -404,6 +404,8 @@ export default function LibraryPage() {
 
     // 528Hz 사운드
     const [isPlayingSound, setIsPlayingSound] = useState(false);
+    const [isSoundLabOpen, setIsSoundLabOpen] = useState(false);
+    const [activeSoundName, setActiveSoundName] = useState('528Hz');
     const audioCtxRef = useRef<AudioContext | null>(null);
     const oscRef = useRef<OscillatorNode | null>(null);
 
@@ -647,37 +649,9 @@ export default function LibraryPage() {
         }
     };
 
-    // 528Hz 사운드 토글
+    // 🧠 전문 뇌파 사운드 랩 토글 및 제어판 열기
     const toggleFrequency = () => {
-        if (isPlayingSound) {
-            if (oscRef.current) {
-                try { oscRef.current.stop(); } catch (e) {}
-            }
-            setIsPlayingSound(false);
-        } else {
-            try {
-                const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-                const ctx = new AudioCtx();
-                audioCtxRef.current = ctx;
-
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(528, ctx.currentTime);
-
-                gain.gain.setValueAtTime(0.001, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + 1.5);
-
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                oscRef.current = osc;
-                setIsPlayingSound(true);
-            } catch (e) {
-                console.error('Audio frequency error:', e);
-                setIsPlayingSound(false);
-            }
-        }
+        setIsSoundLabOpen(true);
     };
 
     return (
@@ -725,16 +699,28 @@ export default function LibraryPage() {
                 </div>
 
                 <button
-                    onClick={toggleFrequency}
-                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    onClick={() => setIsSoundLabOpen(true)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                         isPlayingSound 
-                            ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 border-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.6)] animate-pulse' 
+                            ? 'bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 text-slate-950 border-cyan-300 shadow-[0_0_18px_rgba(6,182,212,0.7)] animate-pulse' 
                             : 'bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 border-white/[0.08]'
                     }`}
-                    title="528Hz 독서 명상 사운드"
+                    title="ZERO POINT 뇌파 안정 & 사운드 테라피 랩"
                 >
-                    {isPlayingSound ? <VolumeX size={14} className="text-slate-950" /> : <Volume2 size={14} className="text-cyan-400" />}
-                    <span className="text-[10px] font-mono font-bold">{isPlayingSound ? '528Hz ON' : '528Hz'}</span>
+                    {isPlayingSound ? (
+                        <div className="flex items-center gap-1">
+                            <span className="flex h-2 w-2 relative">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-950 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-950"></span>
+                            </span>
+                            <span className="text-[10px] font-mono font-black">{activeSoundName} ON</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-1">
+                            <Volume2 size={13} className="text-cyan-400" />
+                            <span className="text-[10px] font-mono font-bold">치유 사운드</span>
+                        </div>
+                    )}
                 </button>
             </header>
 
@@ -951,25 +937,37 @@ export default function LibraryPage() {
                         {activeTab === 'reader' && (
                             <div className="space-y-3">
                                 {/* 309p 원본 완권 전환 퀵 배너 */}
-                                <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-amber-500/20 border border-amber-400/30 flex items-center justify-between text-xs">
+                                <div className="p-3 rounded-2xl bg-gradient-to-r from-[#181138] via-[#120c2b] to-[#181138] border border-cyan-400/30 flex flex-wrap items-center justify-between gap-2 text-xs shadow-lg">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-amber-300 font-bold">📑 종이책 원본 디자인 그대로 읽기</span>
-                                        <span className="text-[10px] text-gray-300 hidden sm:inline">(출판 309p 전문)</span>
+                                        <button
+                                            onClick={() => setIsSoundLabOpen(true)}
+                                            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                                                isPlayingSound 
+                                                    ? 'bg-gradient-to-r from-cyan-400 to-purple-400 text-slate-950 shadow-md shadow-cyan-500/30 animate-pulse' 
+                                                    : 'bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300'
+                                            }`}
+                                        >
+                                            <Sparkles size={13} className={isPlayingSound ? 'animate-spin' : ''} />
+                                            <span>{isPlayingSound ? `🎧 ${activeSoundName} 사운드 랩 ON` : '🎧 뇌파 치유 사운드 랩'}</span>
+                                        </button>
+                                        <span className="text-[11px] text-gray-400 hidden sm:inline">6대 솔페지오 & 자연음 믹싱</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <button
-                                            onClick={handleDownloadSecurePdf}
-                                            disabled={isDownloadingPdf}
-                                            className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow-sm cursor-pointer flex items-center gap-1"
-                                        >
-                                            <Download size={12} className={isDownloadingPdf ? "animate-bounce" : ""} />
-                                            <span>{isDownloadingPdf ? '각인 중...' : '소장용 다운로드'}</span>
-                                        </button>
+                                        {allowDownload && (
+                                            <button
+                                                onClick={handleDownloadSecurePdf}
+                                                disabled={isDownloadingPdf}
+                                                className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow-sm cursor-pointer flex items-center gap-1"
+                                            >
+                                                <Download size={12} className={isDownloadingPdf ? "animate-bounce" : ""} />
+                                                <span>{isDownloadingPdf ? '각인 중...' : '소장용 다운로드'}</span>
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => setActiveTab('pdf')}
                                             className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
                                         >
-                                            309p 스트림 ➔
+                                            309p 출판원문 ➔
                                         </button>
                                     </div>
                                 </div>
