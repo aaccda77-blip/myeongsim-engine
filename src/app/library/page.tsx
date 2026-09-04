@@ -314,6 +314,48 @@ export default function LibraryPage() {
     const [purchasePlatform, setPurchasePlatform] = useState('smartstore');
     const [verificationError, setVerificationError] = useState('');
     const [isVerifying, setIsVerifying] = useState(false);
+    // 🏪 서점 플랫폼별 맞춤 라벨 & 안내 (스마트스토어, YES24, 교보문고 등)
+    const platformConfig = useMemo(() => {
+        switch (purchasePlatform) {
+            case 'yes24':
+                return {
+                    namePlaceholder: '예: 홍길동 (YES24 주문자 성함)',
+                    orderLabel: 'YES24 주문번호',
+                    orderPlaceholder: '예: 26090412345 (마이페이지 주문내역)',
+                    btnText: '📗 YES24 정품 독자 인증 및 도서 해금하기',
+                    verifyingText: 'YES24 주문번호 검증 중...',
+                    guideBadge: 'YES24 독자 전용'
+                };
+            case 'kyobo':
+                return {
+                    namePlaceholder: '예: 홍길동 (교보문고 구매자 성함)',
+                    orderLabel: '교보문고 주문/영수증 번호',
+                    orderPlaceholder: '예: 202609040001 (주문내역 또는 영수증)',
+                    btnText: '📚 교보문고 정품 독자 인증 및 도서 해금하기',
+                    verifyingText: '교보문고 주문번호 검증 중...',
+                    guideBadge: '교보문고 독자 전용'
+                };
+            case 'bookk':
+                return {
+                    namePlaceholder: '예: 홍길동 (부크크 주문자 성함)',
+                    orderLabel: '부크크 주문번호',
+                    orderPlaceholder: '예: B20260904-1234',
+                    btnText: '📖 부크크 정품 독자 인증 및 도서 해금하기',
+                    verifyingText: '부크크 주문번호 검증 중...',
+                    guideBadge: '부크크 독자 전용'
+                };
+            default:
+                return {
+                    namePlaceholder: '예: 홍길동 (네이버페이 구매자 성함)',
+                    orderLabel: '네이버페이 주문번호 (16자리)',
+                    orderPlaceholder: '예: 20260904-12345678',
+                    btnText: '👑 네이버 스마트스토어 올인원 패키지 전면 해금하기',
+                    verifyingText: '네이버 스마트스토어 주문번호 검증 중...',
+                    guideBadge: '네이버 스마트스토어 VIP'
+                };
+        }
+    }, [purchasePlatform]);
+
 
     // 🔍 확대/축소 및 🖥️ 전체화면 상태
     const [pdfZoom, setPdfZoom] = useState<number>(100);
@@ -804,19 +846,19 @@ export default function LibraryPage() {
                                     type="text"
                                     value={buyerName}
                                     onChange={(e) => setBuyerName(e.target.value)}
-                                    placeholder="예: 홍길동 (네이버페이 구매자 성함)"
+                                    placeholder={platformConfig.namePlaceholder}
                                     className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
                                 />
                             </div>
 
                             <div>
-                                <label className="text-[10px] text-gray-400 block mb-1">주문번호 또는 휴대폰 뒷자리</label>
+                                <label className="text-[10px] text-gray-400 block mb-1">{platformConfig.orderLabel}</label>
                                 <input
                                     type="text"
                                     value={orderNumber}
                                     onChange={(e) => setOrderNumber(e.target.value)}
-                                    placeholder="예: 20260904-12345678 (네이버페이 주문번호 16자리)"
-                                    className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                                    placeholder={platformConfig.orderPlaceholder}
+                                    className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none font-mono"
                                 />
                             </div>
 
@@ -826,7 +868,7 @@ export default function LibraryPage() {
                                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
                             >
                                 <CheckCircle2 size={16} className={isVerifying ? "animate-spin" : ""} />
-                                <span>{isVerifying ? '네이버 스마트스토어 주문번호 검증 중...' : '👑 네이버 스마트스토어 정품 등록 및 전면 해금하기'}</span>
+                                <span>{isVerifying ? platformConfig.verifyingText : platformConfig.btnText}</span>
                             </button>
                         </form>
 
