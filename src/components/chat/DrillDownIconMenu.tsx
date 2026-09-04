@@ -70,6 +70,7 @@ const MyeongsimOracleCardModal = dynamic(() => import('@/components/coaching/Mye
 const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/coaching/DarkCodeCompassionTransformerModal'), { ssr: false });
 const NtsBusinessCareerModal = dynamic(() => import('@/components/coaching/NtsBusinessCareerModal'), { ssr: false });
 const ZeroPointMusicModal = dynamic(() => import('@/components/coaching/ZeroPointMusicModal'), { ssr: false });
+const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/AwarenessQuestDashboard'), { ssr: false });
 
 
 
@@ -528,6 +529,8 @@ export default function DrillDownIconMenu({
     const [showDarkCodeTransformer, setShowDarkCodeTransformer] = useState(false);
     const [showNtsCareerModal, setShowNtsCareerModal] = useState(false); // [NEW] 국세청 창업·N잡 모달 상태
     const [showZeroPointMusic, setShowZeroPointMusic] = useState(false); // [NEW] 사주 맞춤 제로포인트 음악 모달
+    const [showAwarenessQuestDashboard, setShowAwarenessQuestDashboard] = useState(false); // [NEW] 108 핵심 자각 퀘스트 대시보드
+    const [awarenessQuestInitialPhase, setAwarenessQuestInitialPhase] = useState('all');
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
@@ -693,6 +696,13 @@ export default function DrillDownIconMenu({
             return;
         }
 
+        // [NEW] AWARENESS_108 (핵심 자각 퀘스트) 아이콘 클릭 시 전용 대시보드로 바로 이동
+        if (icon.id === 'AWARENESS_108') {
+            setAwarenessQuestInitialPhase('all');
+            setShowAwarenessQuestDashboard(true);
+            return;
+        }
+
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         setSelectedIcon(icon);
 
@@ -838,6 +848,15 @@ export default function DrillDownIconMenu({
             return;
         }
 
+
+        // [NEW] 0-0. 108 핵심 자각 퀘스트 Phase 네비게이션
+        if (subItem.intent?.startsWith('NAV_PHASE_')) {
+            const pId = subItem.intent.toLowerCase().replace('nav_phase_', 'phase_');
+            setAwarenessQuestInitialPhase(pId);
+            setShowAwarenessQuestDashboard(true);
+            setSelectedIcon(null);
+            return;
+        }
 
         // [NEW] 0-1. 108 핵심 자각 퀘스트 보드
         if (subItem.intent === 'ms_quantum_108' || subItem.intent === 'saju_108_awakening') {
@@ -1625,26 +1644,32 @@ export default function DrillDownIconMenu({
 
                 {/* [NEW] 핵심 자각 퀘스트 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => setShowHealing108Report(true)}>
-                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236,72,153,0.25), rgba(219,39,119,0.2))', border: '1px solid rgba(236,72,153,0.4)', boxShadow: '0 4px 15px rgba(236,72,153,0.2)', position: 'relative', zIndex: 10 }}>
+                    <button style={styles.iconButton} onClick={() => {
+                        setAwarenessQuestInitialPhase('all');
+                        setShowAwarenessQuestDashboard(true);
+                    }}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236,72,153,0.3), rgba(219,39,119,0.25))', border: '1px solid rgba(236,72,153,0.5)', boxShadow: '0 4px 18px rgba(236,72,153,0.3)', position: 'relative', zIndex: 10 }}>
                             <span style={{ fontSize: '20px' }}>🧠</span>
                         </div>
                         <div>
-                            <div style={{ ...styles.iconLabel, color: '#f472b6' }}>핵심 자각 퀘스트</div>
-                            <div style={styles.neuroTrigger}>힐링 자각 백서</div>
+                            <div style={{ ...styles.iconLabel, color: '#f472b6', fontWeight: 'bold' }}>핵심 자각 퀘스트</div>
+                            <div style={styles.neuroTrigger}>108 대시보드</div>
                         </div>
                     </button>
                 )}
 
                 {/* [NEW] 핵심 자각 대시보드 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => setShowHealing108NewReport(true)}>
-                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.2))', border: '1px solid rgba(245,158,11,0.4)', boxShadow: '0 4px 15px rgba(245,158,11,0.2)', position: 'relative', zIndex: 10 }}>
+                    <button style={styles.iconButton} onClick={() => {
+                        setAwarenessQuestInitialPhase('all');
+                        setShowAwarenessQuestDashboard(true);
+                    }}>
+                        <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245,158,11,0.3), rgba(217,119,6,0.25))', border: '1px solid rgba(245,158,11,0.5)', boxShadow: '0 4px 18px rgba(245,158,11,0.3)', position: 'relative', zIndex: 10 }}>
                             <span style={{ fontSize: '20px' }}>📊</span>
                         </div>
                         <div>
-                            <div style={{ ...styles.iconLabel, color: '#fbbf24' }}>핵심 자각 대시보드</div>
-                            <div style={styles.neuroTrigger}>실시간 대시보드</div>
+                            <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>핵심 자각 대시보드</div>
+                            <div style={styles.neuroTrigger}>5대 페이즈 매트릭스</div>
                         </div>
                     </button>
                 )}
@@ -1832,6 +1857,37 @@ export default function DrillDownIconMenu({
                                 }}>
                                     ✨ 당신만의 본질 에너지 지도
                                 </p>
+                            </div>
+                        )}
+
+                        {/* 🧠 핵심 자각 퀘스트 대시보드 런처 배너 */}
+                        {selectedIcon.id === 'AWARENESS_108' && (
+                            <div 
+                                onClick={() => {
+                                    setAwarenessQuestInitialPhase('all');
+                                    setShowAwarenessQuestDashboard(true);
+                                    handleClose();
+                                }}
+                                className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-pink-950/70 via-purple-950/70 to-slate-950 border-2 border-pink-500/40 shadow-[0_0_30px_rgba(236,72,153,0.3)] cursor-pointer hover:border-pink-400 hover:scale-[1.01] transition-all flex items-center justify-between"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="size-11 rounded-xl bg-pink-500/20 border border-pink-400/40 flex items-center justify-center text-2xl animate-pulse">
+                                        🧠
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-black text-white flex items-center gap-1.5">
+                                            <span>108 핵심 자각 퀘스트 풀 대시보드</span>
+                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-500 text-white font-mono font-bold">FULL UX</span>
+                                        </div>
+                                        <p className="text-xs text-pink-200/80 mt-0.5">
+                                            5대 페이즈 매트릭스 · 뇌 회로 각성도 · 1:1 AI 코칭
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black text-xs shadow-md shadow-pink-500/30 flex items-center gap-1 shrink-0">
+                                    <span>대시보드 열기</span>
+                                    <span>→</span>
+                                </div>
                             </div>
                         )}
 
@@ -2240,6 +2296,16 @@ export default function DrillDownIconMenu({
                 isOpen={showZeroPointMusic}
                 onClose={() => setShowZeroPointMusic(false)}
                 userProfile={userProfile || reportData}
+            />
+
+            {/* [NEW] 🧠 핵심 자각 퀘스트 108 대시보드 모달 */}
+            <AwarenessQuestDashboard
+                isOpen={showAwarenessQuestDashboard}
+                onClose={() => setShowAwarenessQuestDashboard(false)}
+                initialPhaseId={awarenessQuestInitialPhase}
+                onStartChatCoaching={(prompt, intent) => {
+                    onSelectIntent(intent || 'awareness_108_coaching', prompt);
+                }}
             />
         </>
     );

@@ -27,6 +27,7 @@ export function SimpleAllFeaturesDrawer({
                 { title: '나의 리포트 (기질·성격 분석)', desc: '14단계 입체 기질 진단서', action: () => { onClose(); onSelectReport(); } },
                 { title: '바이오-싱크 (생체 동기화)', desc: '실시간 심박/스트레스 관리', action: () => { onClose(); router.push('/bio-care'); } },
                 { title: '3D 신경망 정밀 진단', desc: 'X/Y/Z 축 3-Code 의식 측정', action: () => { onClose(); router.push('/neural-diagnosis'); } },
+                { title: '🧠 핵심 자각 퀘스트 108', desc: '5대 페이즈 뉴럴 대시보드', action: () => { onClose(); router.push('/awareness-quest'); } },
                 { title: '양자 각성 히든 룸', desc: '108 핵심 자각 퀘스트 & 감정 연금술', action: () => { onClose(); router.push('/quantum-awakening'); } }
             ]
         },
