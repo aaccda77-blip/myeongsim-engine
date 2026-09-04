@@ -7,6 +7,43 @@ import crypto from 'crypto';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+// 포렌식 역추적 레코드 인터페이스 (불법 유출자 1초 특정용)
+export interface ForensicRecord {
+    trackingCode: string;
+    buyer: string;
+    order: string;
+    serial: string;
+    ip: string;
+    userAgent: string;
+    timestamp: string;
+    action: 'stream' | 'download';
+}
+
+// 포렌식 레지스트리 영구 저장
+function saveForensicLog(record: ForensicRecord) {
+    try {
+        const dirPath = path.join(process.cwd(), 'src', 'data');
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
+        }
+        const filePath = path.join(dirPath, 'forensic_registry.json');
+        let records: ForensicRecord[] = [];
+        if (fs.existsSync(filePath)) {
+            try {
+                records = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+            } catch (e) {
+                records = [];
+            }
+        }
+        // 최신 로그 우선 누적 (최대 2000건 보관)
+        records.unshift(record);
+        if (records.length > 2000) records = records.slice(0, 2000);
+        fs.writeFileSync(filePath, JSON.stringify(records, null, 2), 'utf-8');
+    } catch (err) {
+        console.error('[FORENSIC_LOG_ERROR]', err);
+    }
+}
+
 // 주요 한국 성씨 로마자 매핑 테이블
 const SURNAMES: Record<string, string> = {
     '김': 'KIM', '이': 'LEE', '박': 'PARK', '최': 'CHOI', '정': 'JUNG',
@@ -87,11 +124,31 @@ export async function GET(request: NextRequest) {
         const rawBuyer = searchParams.get('buyer') || '청류 VIP 독자';
         const rawOrder = searchParams.get('order') || '20260904-998877';
         const rawSerial = searchParams.get('serial') || 'MC-VIP-2026-CHEONGRYU';
+        const isDownload = searchParams.get('download') === 'true';
 
         const safeBuyer = toSafeMaskedAscii(rawBuyer);
         const maskedOrder = maskOrderNumber(rawOrder);
         const maskedSerial = maskSerialKey(rawSerial);
         const trackingCode = generateTrackingHash(rawBuyer, rawOrder, rawSerial);
+
+        // 🛡️ 포렌식 다운로드/열람 감사 로그 영구 기록
+        const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+        const userAgent = request.headers.get('user-agent') || 'Unknown';
+        saveForensicLog({
+            trackingCode,
+            buyer: rawBuyer,
+            order: rawOrder,
+            serial: rawSerial,
+            ip: clientIp,
+            userAgent: userAgent.slice(0, 150),
+            timestamp: new Date().toISOString(),
+            action: isDownload ? 'download' : 'stream',
+        });
+
+        // 다운로드 파일명 (한글 인코딩 호환)
+        const disposition = isDownload
+            ? `attachment; filename="ZERO-POINT_CHEONGRYU_VIP_EDITION.pdf"`
+            : 'inline; filename="ZERO-POINT-CHEONGRYU-PROTECTED.pdf"';
 
         // 캐시 키
         const cacheKey = `${safeBuyer}::${maskedOrder}::${trackingCode}`;
@@ -103,7 +160,7 @@ export async function GET(request: NextRequest) {
                 status: 200,
                 headers: {
                     'Content-Type': 'application/pdf',
-                    'Content-Disposition': 'inline; filename="ZERO-POINT-CHEONGRYU-PROTECTED.pdf"',
+                    'Content-Disposition': disposition,
                     'Cache-Control': 'private, no-transform, max-age=3600',
                     'X-DRM-Tracking-Code': trackingCode,
                     'X-Content-Type-Options': 'nosniff',
@@ -176,7 +233,7 @@ export async function GET(request: NextRequest) {
             });
 
             // 3. 하단 푸터 무단배포 처벌 경고 (저작권법 제136조 명시)
-            page.drawText(`ALL RIGHTS RESERVED (C) CHEONGRYU BOOKS. FOR LICENSED INDIVIDUAL USE ONLY. UNAUTHORIZED DISTRIBUTION IS STRICTLY PROHIBITED.`, {
+            page.drawText(`ALL RIGHTS RESERVED (C) CHEONGRYU BOOKS. FOR LICENSED INDIVIDUAL USE ONLY. UNAUTHORIZED DISTRIBUTION IS PUNISHABLE BY LAW.`, {
                 x: 24,
                 y: 11,
                 size: 6.2,
@@ -199,7 +256,7 @@ export async function GET(request: NextRequest) {
             status: 200,
             headers: {
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': 'inline; filename="ZERO-POINT-CHEONGRYU-PROTECTED.pdf"',
+                'Content-Disposition': disposition,
                 'Cache-Control': 'private, no-transform, max-age=3600',
                 'X-DRM-Tracking-Code': trackingCode,
                 'X-Content-Type-Options': 'nosniff',

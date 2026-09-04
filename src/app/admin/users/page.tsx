@@ -3,6 +3,7 @@ import VisitorDetailModal from '@/components/modals/VisitorDetailModal';
 
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Link from 'next/link';
 import { 
     Users, Search, ShieldCheck, Clock, RefreshCw, Trash2, Compass, Share2, Shield, Lock, AlertTriangle, CheckCircle2, MapPin, PieChart, UserCheck2, 
     UserCheck, CreditCard, Sparkles, Filter, ChevronRight, Key, Calendar, Zap, TrendingUp, Eye, UserPlus, DollarSign
@@ -307,6 +308,14 @@ export default function AdminUsersPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
+                    <Link
+                        href="/admin/trace"
+                        className="px-3.5 py-2 bg-gradient-to-r from-red-500/20 to-amber-500/20 hover:from-red-500/30 hover:to-amber-500/30 text-amber-300 border border-amber-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+                        title="불법 유출자 포렌식 역추적기"
+                    >
+                        <Shield className="w-3.5 h-3.5 text-amber-400" />
+                        <span>🚨 포렌식 역추적기</span>
+                    </Link>
                     <button
                         onClick={fetchUsers}
                         className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"

@@ -318,6 +318,27 @@ export default function LibraryPage() {
     const [pdfZoom, setPdfZoom] = useState<number>(100);
     const [isPdfFullscreen, setIsPdfFullscreen] = useState(false);
     const [isReaderFullscreen, setIsReaderFullscreen] = useState(false);
+    const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
+    const handleDownloadSecurePdf = () => {
+        setIsDownloadingPdf(true);
+        setSecurityAlert(`📥 [${maskedBuyerName}] 님 전용 포렌식 워터마크가 각인된 평생 소장용 PDF를 생성 중입니다... (약 1~2초 소요)`);
+        
+        const downloadUrl = `/api/library/secure-pdf?buyer=${encodeURIComponent(buyerName)}&order=${encodeURIComponent(orderNumber)}&serial=${encodeURIComponent(serialKey)}&download=true`;
+        
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.setAttribute('download', `ZERO-POINT_${buyerName || 'VIP'}_소장본.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => {
+            setIsDownloadingPdf(false);
+            setSecurityAlert(`✅ 다운로드 완료! 모든 페이지에 [${maskedBuyerName}] 님 고유 포렌식 코드가 영구 각인되어 오프라인에서도 안전하게 소장하실 수 있습니다.`);
+            setTimeout(() => setSecurityAlert(null), 5000);
+        }, 2000);
+    };
     const [showHealingSongModal, setShowHealingSongModal] = useState(false);
     const [showVerifySuccessModal, setShowVerifySuccessModal] = useState(false);
     const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
@@ -848,12 +869,22 @@ export default function LibraryPage() {
                                         <span className="text-amber-300 font-bold">📑 종이책 원본 디자인 그대로 읽기</span>
                                         <span className="text-[10px] text-gray-300 hidden sm:inline">(출판 309p 전문)</span>
                                     </div>
-                                    <button
-                                        onClick={() => setActiveTab('pdf')}
-                                        className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition-all shadow-sm cursor-pointer"
-                                    >
-                                        309p 원본 PDF 보기 ➔
-                                    </button>
+                                    <div className="flex items-center gap-1.5">
+                                        <button
+                                            onClick={handleDownloadSecurePdf}
+                                            disabled={isDownloadingPdf}
+                                            className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow-sm cursor-pointer flex items-center gap-1"
+                                        >
+                                            <Download size={12} className={isDownloadingPdf ? "animate-bounce" : ""} />
+                                            <span>{isDownloadingPdf ? '각인 중...' : '소장용 다운로드'}</span>
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab('pdf')}
+                                            className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
+                                        >
+                                            309p 스트림 ➔
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <RefinedEBookReader
@@ -912,14 +943,27 @@ export default function LibraryPage() {
                                         </button>
                                     </div>
 
-                                    {/* 🖥️ 전체화면 버튼 */}
-                                    <button
-                                        onClick={() => setIsPdfFullscreen(true)}
-                                        className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer"
-                                    >
-                                        <Layers size={13} />
-                                        <span>🖥️ 전체화면 크게보기</span>
-                                    </button>
+                                    <div className="flex items-center gap-1.5">
+                                        {/* 📥 VIP 소장용 정품 다운로드 버튼 */}
+                                        <button
+                                            onClick={handleDownloadSecurePdf}
+                                            disabled={isDownloadingPdf}
+                                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                                            title="태블릿 필기 및 오프라인 소장용 (포렌식 각인본)"
+                                        >
+                                            <Download size={13} className={isDownloadingPdf ? "animate-bounce" : ""} />
+                                            <span>{isDownloadingPdf ? '포렌식 각인 중...' : '📥 정품 소장용 다운로드'}</span>
+                                        </button>
+
+                                        {/* 🖥️ 전체화면 버튼 */}
+                                        <button
+                                            onClick={() => setIsPdfFullscreen(true)}
+                                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer"
+                                        >
+                                            <Layers size={13} />
+                                            <span>🖥️ 전체화면</span>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* 인라인 PDF 컨테이너 */}
