@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldAlert, CheckCircle2, RotateCcw, AlertTriangle, HeartPulse } from 'lucide-react';
 import { useWearableContext } from './WearableAppShell';
+import { ActivityTracker } from '@/services/activityTracker';
 
 interface WearableDarkCodeEmergencyProps {
     onComplete?: () => void;
@@ -22,6 +23,8 @@ export function WearableDarkCodeEmergency({ onComplete }: WearableDarkCodeEmerge
                 if (s <= 1) {
                     setIsRunning(false);
                     setIsFinished(true);
+                    ActivityTracker.track('🚨 30초 긴급 SOS 신경계 리셋 완료', 'WATCH', '미주신경 안정화');
+                    if (onComplete) onComplete();
                     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
                         try {
                             navigator.vibrate([100, 50, 100]);
@@ -34,7 +37,7 @@ export function WearableDarkCodeEmergency({ onComplete }: WearableDarkCodeEmerge
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [isRunning, secondsLeft]);
+    }, [isRunning, secondsLeft, onComplete]);
 
     const handleStart = () => {
         setIsRunning(true);

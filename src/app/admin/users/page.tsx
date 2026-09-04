@@ -1,6 +1,6 @@
 'use client';
 import VisitorDetailModal from '@/components/modals/VisitorDetailModal';
-
+import UserActivityModal from '@/components/admin/UserActivityModal';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
@@ -35,6 +35,7 @@ export default function AdminUsersPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterTier, setFilterTier] = useState<string>('ALL');
     const [selectedTiers, setSelectedTiers] = useState<Record<string, string>>({});
+    const [activityUser, setActivityUser] = useState<Subscriber | null>(null);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -83,13 +84,15 @@ export default function AdminUsersPage() {
     const approveUser = async (userId: string, rawTier: string) => {
         try {
             // Map display string to backend enum
-            let mappedTier = 'CHAT_PASS';
-            if (rawTier.includes('19800') || rawTier.includes('19,800') || rawTier.includes('STARTUP') || rawTier.includes('스타트업')) {
+            let mappedTier = 'MONTHLY_98K';
+            if (rawTier.includes('98000') || rawTier.includes('98,000') || rawTier.includes('MONTHLY') || rawTier.includes('월정액')) {
+                mappedTier = 'MONTHLY_98K';
+            } else if (rawTier.includes('도서') || rawTier.includes('BOOK') || rawTier.includes('ZERO_POINT')) {
+                mappedTier = 'BOOK_ZERO_POINT';
+            } else if (rawTier.includes('19800') || rawTier.includes('19,800') || rawTier.includes('STARTUP') || rawTier.includes('스타트업')) {
                 mappedTier = 'STARTUP_VIP';
             } else if (rawTier.includes('890') || rawTier.includes('4900') || rawTier.includes('4,900') || rawTier.includes('CHAT') || rawTier.includes('코칭 충전')) {
                 mappedTier = 'CHAT_PASS';
-            } else if (rawTier.includes('도서') || rawTier.includes('VIP')) {
-                mappedTier = 'STARTUP_VIP';
             } else if (rawTier.includes('무료') || rawTier.includes('TRIAL')) {
                 mappedTier = 'TRIAL_30M';
             } else if (rawTier.includes('24시간')) {
@@ -99,14 +102,18 @@ export default function AdminUsersPage() {
             const response = await fetch('/api/admin/users/approve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, tier: mappedTier })
+                body: JSON.stringify({ userId, tier: mappedTier, isActive: true })
             });
             const data = await response.json();
             if (data.success) {
-                if (mappedTier === 'STARTUP_VIP') {
+                if (mappedTier === 'MONTHLY_98K') {
+                    alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 엠씨스퀘어 3D 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.`);
+                } else if (mappedTier === 'BOOK_ZERO_POINT') {
+                    alert(`📖 [도서 구매자 기본 제로포인트] 승인 완료!\n\n책 연계 기본 명심 리포트 및 기초 제로포인트 코칭이 평생 무료로 열렸습니다. (심화 기능은 월정액 잠금 유지)`);
+                } else if (mappedTier === 'STARTUP_VIP') {
                     alert(`✨ 스타트업 VIP 승인 완료! (19,800원)\n\n20회 AI 코칭 + 스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 힐링송이 모두 해금되었습니다.`);
                 } else {
-                    alert(`성공: 무통장 입금 승인이 완료되었습니다! 챗봇 코칭 이용권이 활성화되었습니다. ✨`);
+                    alert(`성공: 승인이 완료되었습니다! ✨`);
                 }
                 fetchUsers();
             } else {
@@ -114,6 +121,23 @@ export default function AdminUsersPage() {
             }
         } catch (error) {
             alert('승인 처리 중 오류 발생');
+        }
+    };
+
+    const toggleUserLock = async (userId: string, currentActive: boolean) => {
+        try {
+            const nextActive = !currentActive;
+            const res = await fetch('/api/admin/users/approve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, isActive: nextActive, tier: nextActive ? 'MONTHLY_98K' : 'GUEST' })
+            });
+            if (res.ok) {
+                alert(nextActive ? '🟢 열어주기 (월정액 승인 완료!)' : '🔒 닫기 (잠금 처리 완료!)');
+                fetchUsers();
+            }
+        } catch (e) {
+            alert('상태 변경 중 오류 발생');
         }
     };
 
@@ -702,6 +726,14 @@ export default function AdminUsersPage() {
                                                             >
                                                                 📋 복사
                                                             </button>
+                                                            <button
+                                                                onClick={() => setActivityUser(u)}
+                                                                className="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-[10px] font-bold text-cyan-300 border border-cyan-400/40 transition-all flex items-center gap-1 cursor-pointer"
+                                                                title="사용자 실시간 이용 내역 확인"
+                                                            >
+                                                                <Eye className="w-3 h-3" />
+                                                                <span>🔍 이용 내역</span>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -709,14 +741,19 @@ export default function AdminUsersPage() {
                                             {u.created_at ? new Date(u.created_at).toLocaleString('ko-KR') : '-'}
                                         </td>
                                         <td className="p-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${u.membership_tier?.includes('890') ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40' : u.membership_tier === 'PREMIUM' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' : 'bg-gray-800 text-gray-400 border-white/10'}`}>
-                                                {u.membership_tier || '무료체험'}
+                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                                                u.membership_tier?.includes('98000') || u.membership_tier === 'MONTHLY_98K' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-black' :
+                                                u.membership_tier?.includes('BOOK') || u.membership_tier?.includes('도서') ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' :
+                                                u.membership_tier?.includes('890') ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40' :
+                                                'bg-gray-800 text-gray-400 border-white/10'
+                                            }`}>
+                                                {u.membership_tier === 'MONTHLY_98K' ? '월정액 98K' : u.membership_tier === 'BOOK_ZERO_POINT' ? '도서(제로포인트)' : (u.membership_tier || '무료체험')}
                                             </span>
                                         </td>
                                         <td className="p-4">
                                             {u.is_active ? (
                                                 <span className="text-green-400 font-bold flex items-center gap-1">
-                                                    🟢 활성
+                                                    🟢 활성(열림)
                                                 </span>
                                             ) : (
                                                 <span className="text-amber-400 font-bold flex items-center gap-1">
@@ -728,20 +765,31 @@ export default function AdminUsersPage() {
                                             {u.expires_at ? new Date(u.expires_at).toLocaleDateString('ko-KR') : '제한없음'}
                                         </td>
                                         <td className="p-4 text-center">
-                                            <div className="flex items-center justify-center gap-2">
+                                            <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5">
+                                                <button
+                                                    onClick={() => toggleUserLock(u.id, u.is_active)}
+                                                    className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shadow-sm ${
+                                                        u.is_active
+                                                            ? 'bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40'
+                                                            : 'bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 font-black shadow-md'
+                                                    }`}
+                                                    title={u.is_active ? '클릭 시 즉시 닫기(잠금)' : '클릭 시 즉시 열어주기(승인)'}
+                                                >
+                                                    {u.is_active ? '🔴 닫기(잠금)' : '🟢 열어주기'}
+                                                </button>
                                                 <select
-                                                    value={selectedTiers[u.id] || u.membership_tier || '19,800원 스타트업 VIP'}
+                                                    value={selectedTiers[u.id] || u.membership_tier || '월 98,000원 ALL-PASS VIP'}
                                                     onChange={(e) => setSelectedTiers({ ...selectedTiers, [u.id]: e.target.value })}
                                                     className="bg-slate-800 border border-white/15 rounded-lg px-2 py-1 text-xs text-white focus:outline-none"
                                                 >
-                                                    <option value="19,800원 스타트업 VIP">👑 19,800원 스타트업 VIP (리포트+다크코드+바이오케어+20회)</option>
+                                                    <option value="월 98,000원 ALL-PASS VIP">🔥 월 98,000원 ALL-PASS VIP (워치+바이오+108 전체)</option>
+                                                    <option value="도서 구매자 기본 제로포인트">📖 도서 구매자 (기본 제로포인트 코칭 승인)</option>
+                                                    <option value="19,800원 스타트업 VIP">👑 19,800원 스타트업 VIP</option>
                                                     <option value="890원 코칭 충전">💬 890원 챗봇 코칭 충전권 (3회)</option>
-                                                    <option value="도서 VIP 20회권">📖 도서 구매 인증 VIP (20회)</option>
-                                                    <option value="무료 체험 회원">🎁 무료 체험 회원 (TRIAL)</option>
                                                 </select>
                                                 <button
-                                                    onClick={() => approveUser(u.id, selectedTiers[u.id] || '19,800원 스타트업 VIP')}
-                                                    className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs transition-all shadow-sm cursor-pointer"
+                                                    onClick={() => approveUser(u.id, selectedTiers[u.id] || '월 98,000원 ALL-PASS VIP')}
+                                                    className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-black font-black rounded-lg text-xs transition-all shadow-sm cursor-pointer whitespace-nowrap"
                                                 >
                                                     승인
                                                 </button>
@@ -772,6 +820,17 @@ export default function AdminUsersPage() {
                 todayPageviewsCount={visitorStats.todayPageviews || 1}
                 onRefresh={fetchVisitors}
             />
+            {activityUser && (
+                <UserActivityModal
+                    isOpen={!!activityUser}
+                    onClose={() => setActivityUser(null)}
+                    userId={activityUser.id}
+                    userName={activityUser.depositorName?.replace('[입금신청]', '').trim() || activityUser.name?.replace('[입금신청]', '').trim() || '회원'}
+                    currentTier={activityUser.membership_tier}
+                    isActive={activityUser.is_active}
+                    onStatusChange={fetchUsers}
+                />
+            )}
         </div>
     );
 }

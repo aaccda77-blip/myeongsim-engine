@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Headphones, Disc3, Radio, Sparkles } from 'lucide-react';
 import { getBrainwaveEngine, FrequencyPresetId } from '@/utils/brainwaveEngine';
 import { useWearableContext } from './WearableAppShell';
+import { ActivityTracker } from '@/services/activityTracker';
 
 interface WearableBrainwaveAudioProps {
     onNext?: () => void;
@@ -78,6 +79,11 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
             engine.start(selectedId, 'none');
             engine.setMasterVolume(volume);
             setIsPlaying(true);
+            ActivityTracker.track(
+                `🎧 손목 사운드 랩 재생 (${currentPreset.name})`,
+                'SOUND',
+                isMcSquare ? `3D 엠씨스퀘어 입체 서라운드 (${currentPreset.hz})` : `일반 모노 (${currentPreset.hz})`
+            );
         }
     };
 

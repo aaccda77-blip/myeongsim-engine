@@ -6,7 +6,12 @@ import { Sparkles, ArrowLeft, ShieldCheck, Heart, Headphones, Wind, Zap, Box, Wa
 import Link from 'next/link';
 
 
+import { useSubscription } from '@/hooks/useSubscription';
+import UnifiedSubscriptionModal from '@/components/modals/UnifiedSubscriptionModal';
+
 export default function WatchShowcasePage() {
+    const { isMonthlyVip, isModalOpen, openModal, closeModal } = useSubscription();
+
     return (
         <div className="min-h-screen bg-[#030712] text-slate-100 flex flex-col items-center justify-between font-sans selection:bg-cyan-500/30">
             {/* 상단 글로벌 헤더 */}
@@ -25,6 +30,21 @@ export default function WatchShowcasePage() {
                             <span className="size-1.5 rounded-full bg-cyan-400 animate-ping" />
                             <span>ZERO-PULSE WEARABLE 2.0</span>
                         </span>
+
+                        {isMonthlyVip ? (
+                            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-mono font-black">
+                                <Sparkles size={11} className="text-amber-400" />
+                                <span>VIP ALL-PASS 활성</span>
+                            </span>
+                        ) : (
+                            <button
+                                onClick={() => openModal('스마트워치 9대 킬러 다이얼')}
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-[10px] font-black shadow-sm transition-all cursor-pointer"
+                            >
+                                <Sparkles size={11} />
+                                <span>월 98,000원 특가 해금</span>
+                            </button>
+                        )}
                     </div>
 
                     <Link
@@ -35,6 +55,12 @@ export default function WatchShowcasePage() {
                     </Link>
                 </div>
             </header>
+
+            <UnifiedSubscriptionModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                featureName="스마트워치 9대 킬러 다이얼"
+            />
 
             {/* 메인 스마트워치 인터랙티브 영역 */}
             <main className="w-full flex-1 flex flex-col items-center justify-center p-4">

@@ -24,55 +24,53 @@ export async function POST(request: NextRequest) {
         }
 
         const { userId, tier: rawTier = '' } = result.data;
+        const isActiveExplicit = (body as any).isActive !== undefined ? Boolean((body as any).isActive) : true;
         const now = new Date();
         let expiresAt: Date | null = null;
-        let paymentAmount = 4900;
-        let chatTurnsLeft = 3;
-        let tier: 'TRIAL_30M' | 'PASS_24H' | 'VIP_7D' | 'CHAT_PASS' | 'STARTUP_VIP' = 'CHAT_PASS';
+        let paymentAmount = 98000;
+        let chatTurnsLeft = 30;
+        let tier: string = 'MONTHLY_98K';
 
         // Flexible Tier Normalization
         const rawTierStr = String(rawTier).toUpperCase();
-        if (rawTierStr.includes('STARTUP') || rawTierStr.includes('19800') || rawTierStr.includes('19,800') || rawTierStr.includes('스타트업')) {
+        if (rawTierStr.includes('LOCK') || isActiveExplicit === false) {
+            tier = 'GUEST';
+            paymentAmount = 0;
+            chatTurnsLeft = 0;
+            expiresAt = now;
+        } else if (rawTierStr.includes('98000') || rawTierStr.includes('98,000') || rawTierStr.includes('MONTHLY') || rawTierStr.includes('월정액')) {
+            tier = 'MONTHLY_98K';
+            expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30일 올패스
+            paymentAmount = 98000;
+            chatTurnsLeft = 50;
+        } else if (rawTierStr.includes('BOOK') || rawTierStr.includes('도서') || rawTierStr.includes('ZERO_POINT')) {
+            tier = 'BOOK_ZERO_POINT';
+            expiresAt = new Date(now.getTime() + 365 * 10 * 24 * 60 * 60 * 1000); // 10년 (평생)
+            paymentAmount = 19800;
+            chatTurnsLeft = 20;
+        } else if (rawTierStr.includes('STARTUP') || rawTierStr.includes('19800') || rawTierStr.includes('19,800') || rawTierStr.includes('스타트업')) {
             tier = 'STARTUP_VIP';
+            expiresAt = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1년
+            paymentAmount = 19800;
+            chatTurnsLeft = 20;
         } else if (rawTierStr.includes('TRIAL') || rawTierStr.includes('30분')) {
             tier = 'TRIAL_30M';
+            expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
+            paymentAmount = 4900;
+            chatTurnsLeft = 3;
         } else if (rawTierStr.includes('PASS') || rawTierStr.includes('24시간')) {
             tier = 'PASS_24H';
-        } else if (rawTierStr.includes('VIP') || rawTierStr.includes('7일') || rawTierStr.includes('BOOK')) {
-            tier = 'VIP_7D';
+            expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            paymentAmount = 4900;
+            chatTurnsLeft = 3;
         } else {
-            tier = 'CHAT_PASS'; // Default 4,900 KRW Chat Pass
+            tier = 'MONTHLY_98K';
+            expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+            paymentAmount = 98000;
+            chatTurnsLeft = 50;
         }
 
-        switch (tier) {
-            case 'STARTUP_VIP':
-                expiresAt = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1년
-                paymentAmount = 19800;
-                chatTurnsLeft = 20;
-                break;
-            case 'TRIAL_30M':
-                expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
-                paymentAmount = 4900;
-                chatTurnsLeft = 3;
-                break;
-            case 'PASS_24H':
-                expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-                paymentAmount = 4900;
-                chatTurnsLeft = 3;
-                break;
-            case 'VIP_7D':
-                expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-                paymentAmount = 19800;
-                chatTurnsLeft = 20;
-                break;
-            case 'CHAT_PASS':
-                expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-                paymentAmount = 4900;
-                chatTurnsLeft = 3;
-                break;
-        }
-
-        console.log(`[Admin] Approving User: ${userId}, Tier: ${tier} (raw: ${rawTier}), ChatTurns: ${chatTurnsLeft}`);
+        console.log(`[Admin] Approving User: ${userId}, Tier: ${tier} (raw: ${rawTier}), Active: ${isActiveExplicit}`);
 
         // Try updating Supabase users
         const { data, error } = await supabaseAdmin
@@ -80,7 +78,7 @@ export async function POST(request: NextRequest) {
             .upsert({
                 id: userId,
                 membership_tier: tier,
-                is_active: true, // Force active
+                is_active: isActiveExplicit,
                 expires_at: expiresAt!.toISOString(),
                 payment_amount: paymentAmount,
                 chat_turns_left: chatTurnsLeft,
@@ -90,15 +88,20 @@ export async function POST(request: NextRequest) {
             .select();
 
         // Mark as approved in pending memory store as well
-        removePendingWireTransfer(userId);
+        if (isActiveExplicit) {
+            removePendingWireTransfer(userId);
+        }
 
         return NextResponse.json({
             success: true,
             tier,
+            isActive: isActiveExplicit,
             chatTurnsLeft,
-            unlockedModules: tier === 'STARTUP_VIP'
-                ? ['startup_vip', 'dark_code_debugger', 'bio_care', 'zero_music', 'coaching_20']
-                : ['coaching_3'],
+            unlockedModules: (tier === 'MONTHLY_98K' || tier === 'STARTUP_VIP')
+                ? ['all_pass', 'watch_9_dials', 'bio_care', 'zero_music', 'coaching_50', 'report_108']
+                : tier === 'BOOK_ZERO_POINT'
+                ? ['book_zero_point', 'today_fortune', 'basic_report']
+                : [],
             expiresAt: expiresAt!.toISOString()
         });
 

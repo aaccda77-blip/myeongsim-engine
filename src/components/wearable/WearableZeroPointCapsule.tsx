@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Sparkles, RefreshCw, Zap, BookOpen } from 'lucide-react';
 import { useWearableContext } from './WearableAppShell';
+import { ActivityTracker } from '@/services/activityTracker';
 
 interface WearableZeroPointCapsuleProps {
     onNext?: () => void;
@@ -51,6 +52,7 @@ export function WearableZeroPointCapsule({ onNext }: WearableZeroPointCapsulePro
     const handleInstantReset = () => {
         setIsResetting(true);
         setResetCount((c) => c + 1);
+        ActivityTracker.track('⚡ 1초 영점(Zero Point) 리셋 실행', 'WATCH', currentQuote.title);
 
         // 스마트폰/워치 웹 진동 햅틱 지원 시 동작
         if (typeof window !== 'undefined' && 'vibrate' in navigator) {

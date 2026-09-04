@@ -8,6 +8,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import UnifiedSubscriptionModal from '@/components/modals/UnifiedSubscriptionModal';
+import { Sparkles, ShoppingBag } from 'lucide-react';
 
 interface MenuCard {
     id: string;
@@ -66,15 +68,17 @@ const MENU_CARDS: MenuCard[] = [
 export default function BioCarePage() {
     const router = useRouter();
 
-    // 🔒 잠금 상태 (스마트스토어 VIP 또는 유료 결제 시만 해금)
+    // 🔒 잠금 상태 (월정액 98K 또는 관리자 승인 시 해금)
     const [isLocked, setIsLocked] = useState(true);
+    const [isSubModalOpen, setIsSubModalOpen] = useState(false);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
+            const isMonthlyVip = localStorage.getItem('myeongsim_monthly_vip') === 'true';
             const isBioUnlocked = localStorage.getItem('myeongsim_bio_care_unlocked') === 'true';
-            const isPaidUser = localStorage.getItem('myeongsim_paid_user') === 'true';
             const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true';
-            if (isBioUnlocked || isSmartVip || isPaidUser) {
+            const isPaidUser = localStorage.getItem('myeongsim_paid_user') === 'true';
+            if (isMonthlyVip || isBioUnlocked || isSmartVip || isPaidUser) {
                 setIsLocked(false);
             }
         }
@@ -87,37 +91,65 @@ export default function BioCarePage() {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="max-w-sm w-full bg-[#181526] border border-amber-400/30 rounded-3xl p-8 text-center space-y-5 shadow-2xl"
+                    className="max-w-sm w-full bg-[#181526] border border-amber-400/30 rounded-3xl p-7 text-center space-y-4 shadow-2xl"
                 >
                     <div className="w-16 h-16 bg-gradient-to-br from-amber-400/10 to-amber-500/10 rounded-2xl flex items-center justify-center mx-auto border border-amber-400/20">
                         <span className="material-symbols-outlined text-amber-400 text-4xl">lock</span>
                     </div>
-                    <h2 className="text-xl font-black text-white">바이오케어 밸런서</h2>
-                    <p className="text-sm text-gray-300 leading-relaxed">
-                        이 콘텐츠는 <strong className="text-amber-300">청류스마트스토어 구매자 단독 VIP 혜택</strong>으로 제공됩니다.
-                    </p>
-                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-left">
-                        <p className="text-[11px] text-amber-200 leading-relaxed">
-                            👑 <strong>청류스마트스토어</strong>에서 도서를 구매하시면 <span className="text-white font-bold">스타트업 리포트 + 다크코드 디버거 + 바이오케어 + 힐링송 + 20회 코칭</span> 올인원 슈퍼패키지가 전면 무료 해금됩니다!
-                        </p>
+                    <div className="space-y-1">
+                        <span className="text-[11px] font-mono font-black text-amber-400 bg-amber-400/15 px-2.5 py-0.5 rounded-full border border-amber-400/30">
+                            특허출원 기념 얼리액세스 한정
+                        </span>
+                        <h2 className="text-xl font-black text-white">바이오케어 밸런서</h2>
                     </div>
-                    <div className="flex flex-col gap-2.5">
+                    
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                        간·심·비·폐·신 5대 장기 맞춤형 영양 시너지와 생체 리듬을 실시간 조율하는 VIP 전용 모듈입니다.
+                    </p>
+
+                    <div className="p-3 rounded-2xl bg-black/60 border border-amber-400/30 text-center">
+                        <span className="text-[11px] text-gray-500 line-through font-mono block">
+                            정가 월 289,000원
+                        </span>
+                        <div className="text-base font-black text-amber-300">
+                            월 98,000원 <span className="text-xs text-amber-200 font-normal">(66% 파격 특별가)</span>
+                        </div>
+                    </div>
+
+                    {/* 2대 결제 창구 (월정액 무통장입금 / 스마트스토어 도서구매) */}
+                    <div className="flex flex-col gap-2 pt-1">
+                        <button
+                            onClick={() => setIsSubModalOpen(true)}
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] cursor-pointer"
+                        >
+                            <Sparkles size={16} />
+                            <span>월 98,000원 무통장 입금 신청 / 해금</span>
+                        </button>
+
                         <a
                             href="https://smartstore.naver.com/cheongryubooks"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+                            className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-amber-300 border border-amber-400/30 font-bold text-xs flex items-center justify-center gap-2 transition-all"
                         >
-                            📖 청류스마트스토어에서 구매하기
+                            <ShoppingBag size={14} />
+                            <span>네이버 스마트스토어에서 도서 구입</span>
                         </a>
+
                         <button
                             onClick={() => router.push('/')}
-                            className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 text-xs font-bold transition-all"
+                            className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 text-xs font-bold transition-all"
                         >
                             ← 홈으로 가기
                         </button>
                     </div>
                 </motion.div>
+
+                <UnifiedSubscriptionModal
+                    isOpen={isSubModalOpen}
+                    onClose={() => setIsSubModalOpen(false)}
+                    featureName="바이오케어 5종 밸런서"
+                />
             </div>
         );
     }

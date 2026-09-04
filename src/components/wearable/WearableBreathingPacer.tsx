@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, RotateCcw, Wind, CheckCircle2 } from 'lucide-react';
 import { useWearableContext } from './WearableAppShell';
+import { ActivityTracker } from '@/services/activityTracker';
 
 interface WearableBreathingPacerProps {
     onNext?: () => void;
@@ -59,7 +60,11 @@ export function WearableBreathingPacer({ onNext }: WearableBreathingPacerProps) 
                     if (currPhase === 'HOLD_IN') return 'EXHALE';
                     if (currPhase === 'EXHALE') return 'HOLD_OUT';
                     // 1사이클 완료
-                    setCompletedCycles((c) => c + 1);
+                    setCompletedCycles((c) => {
+                        const nextCount = c + 1;
+                        ActivityTracker.track('🫁 4-4-4-4 네이비씰 박스 호흡 완주', 'BREATH', `${nextCount}사이클 완주 (안정)`);
+                        return nextCount;
+                    });
                     return 'INHALE';
                 });
                 return 4;

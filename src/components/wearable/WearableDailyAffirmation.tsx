@@ -5,6 +5,7 @@ import { Star, Sparkles, RefreshCw, BookmarkCheck, Headphones, Heart, ArrowRight
 import { useReportStore } from '@/store/useReportStore';
 import { DailyLuckEngine } from '@/lib/saju/DailyLuckEngine';
 import { useWearableContext } from './WearableAppShell';
+import { ActivityTracker } from '@/services/activityTracker';
 
 interface WearableDailyAffirmationProps {
     onGoToSoundLab?: () => void;
@@ -131,6 +132,7 @@ export function WearableDailyAffirmation({ onGoToSoundLab }: WearableDailyAffirm
                 const data = await res.json();
                 if (data.affirmation) {
                     setAffirmation(data.affirmation);
+                    ActivityTracker.track('🔮 AI 1:1 일진 선언문 재작성', 'COACHING', `${currentItem.element} (${todayGanji}일)`);
                 }
             }
         } catch (e) {
@@ -143,6 +145,7 @@ export function WearableDailyAffirmation({ onGoToSoundLab }: WearableDailyAffirm
     // 3. 가슴에 각인하기 (햅틱 + 골드 플래시 피드백)
     const handleImprint = () => {
         setIsImprinted(true);
+        ActivityTracker.track('⭐ 오늘의 1:1 일진 선언문 가슴 각인', 'WATCH', `${currentConfig.element} · ${todayGanji}일 [${currentConfig.title}]`);
         if (typeof window !== 'undefined' && 'vibrate' in navigator) {
             try {
                 navigator.vibrate([40, 80, 40]);

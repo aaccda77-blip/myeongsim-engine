@@ -140,10 +140,11 @@ export function useDashboardViewModel(): DashboardViewModel {
     const vip = useMemo(() => {
         let isVip = false;
         if (typeof window !== 'undefined') {
+            const isMonthlyVip = localStorage.getItem('myeongsim_monthly_vip') === 'true';
             const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true';
             const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true';
             const isBookVerified = localStorage.getItem('myeongsim_book_verified') === 'true';
-            isVip = Boolean((isPaid || isSmartVip || isBookVerified) && !isExpired);
+            isVip = Boolean((isMonthlyVip || isPaid || isSmartVip || isBookVerified) && !isExpired);
         }
         return { isVip };
     }, [isExpired]);
