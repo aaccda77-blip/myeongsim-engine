@@ -170,6 +170,15 @@ export class BrainwaveEngine {
     // 마스터 게인
     private masterGain: GainNode | null = null;
 
+    // 🎧 엠씨스퀘어(MC Square) 바이노럴 & 3D 서라운드 모드
+    private isMcSquare = false;
+    private leftOsc: OscillatorNode | null = null;
+    private rightOsc: OscillatorNode | null = null;
+    private leftPanner: StereoPannerNode | null = null;
+    private rightPanner: StereoPannerNode | null = null;
+    private surroundLfo: OscillatorNode | null = null;
+
+
     // 상태
     private currentPreset: FrequencyPresetId = 'brown_noise';
     private currentAmbient: AmbientSoundId = 'none';
@@ -213,6 +222,18 @@ export class BrainwaveEngine {
         };
     }
 
+    public setMcSquare(enabled: boolean) {
+        this.isMcSquare = enabled;
+        if (this.isRunning) {
+            this.start(this.currentPreset, this.currentAmbient);
+        }
+    }
+
+    public getIsMcSquare(): boolean {
+        return this.isMcSquare;
+    }
+
+
     // 주파수 음향 시작/업데이트
     public start(presetId: FrequencyPresetId = this.currentPreset, ambientId: AmbientSoundId = this.currentAmbient) {
         try {
@@ -245,7 +266,7 @@ export class BrainwaveEngine {
         }
     }
 
-    // 톤 및 브라운 노이즈 합성 로직
+    // 톤 및 브라운 노이즈 합성 로직 (엠씨스퀘어 바이노럴 & 3D 서라운드 지원)
     private startTone(preset: FrequencyPresetId) {
         if (!this.ctx || !this.masterGain) return;
         const ctx = this.ctx;
@@ -256,16 +277,21 @@ export class BrainwaveEngine {
         this.freqGain.connect(this.masterGain);
 
         if (preset === 'brown_noise') {
-            // 🌟 딥 브라운 노이즈 (Brownian Noise: 6dB/octave 저주파 감쇠)
+            // 🌟 딥 브라운 노이즈
             const bufferSize = ctx.sampleRate * 4;
-            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            let lastOut = 0.0;
-            for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                output[i] = (lastOut + (0.025 * white)) / 1.025;
-                lastOut = output[i];
-                output[i] *= 3.8; // 볼륨 정규화
+            // 엠씨스퀘어 모드일 때는 2채널(L, R) 각각 독립 랜덤 노이즈 생성 -> 3D 입체 음향
+            const numChannels = this.isMcSquare ? 2 : 1;
+            const noiseBuffer = ctx.createBuffer(numChannels, bufferSize, ctx.sampleRate);
+            
+            for (let ch = 0; ch < numChannels; ch++) {
+                const output = noiseBuffer.getChannelData(ch);
+                let lastOut = 0.0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    output[i] = (lastOut + (0.025 * white)) / 1.025;
+                    lastOut = output[i];
+                    output[i] *= 3.8;
+                }
             }
 
             this.brownSource = ctx.createBufferSource();
@@ -274,107 +300,166 @@ export class BrainwaveEngine {
 
             this.brownFilter = ctx.createBiquadFilter();
             this.brownFilter.type = 'lowpass';
-            this.brownFilter.frequency.setValueAtTime(360, ctx.currentTime); // 360Hz 이하 묵직한 저음만 통과
+            this.brownFilter.frequency.setValueAtTime(360, ctx.currentTime);
 
             this.brownSource.connect(this.brownFilter);
             this.brownFilter.connect(this.freqGain);
             this.brownSource.start();
-        } else if (preset === '528hz') {
-            this.mainOsc = ctx.createOscillator();
-            this.mainOsc.type = 'sine';
-            this.mainOsc.frequency.setValueAtTime(528, ctx.currentTime);
-            this.mainOsc.connect(this.freqGain);
-            this.mainOsc.start();
+        } else if (this.isMcSquare) {
+            // 🎧 엠씨스퀘어(MC Square) 바이노럴 비트 합성 모드 (L/R 주파수 분리)
+            let baseHz = 528;
+            let beatHz = 10; // 알파파 (10Hz 집중/몰입)
 
-            this.subOsc = ctx.createOscillator();
-            this.subOsc.type = 'sine';
-            this.subOsc.frequency.setValueAtTime(1056, ctx.currentTime);
-            const subGain = ctx.createGain();
-            subGain.gain.setValueAtTime(0.18, ctx.currentTime);
-            this.subOsc.connect(subGain);
-            subGain.connect(this.freqGain);
-            this.subOsc.start();
-        } else if (preset === '432hz') {
-            this.mainOsc = ctx.createOscillator();
-            this.mainOsc.type = 'sine';
-            this.mainOsc.frequency.setValueAtTime(432, ctx.currentTime);
-            this.mainOsc.connect(this.freqGain);
-            this.mainOsc.start();
+            if (preset === '432hz') {
+                baseHz = 432;
+                beatHz = 10; // 10Hz 알파파 평온
+            } else if (preset === '528hz') {
+                baseHz = 528;
+                beatHz = 10; // 10Hz 알파파 변혁
+            } else if (preset === 'schumann') {
+                baseHz = 136.1;
+                beatHz = 7.83; // 슈만공명 세타파
+            } else if (preset === 'gamma40') {
+                baseHz = 200;
+                beatHz = 40; // 40Hz 감마파 초각성
+            } else if (preset === 'delta3') {
+                baseHz = 108;
+                beatHz = 3; // 3Hz 델타파 숙면
+            } else if (preset === 'fear396') {
+                baseHz = 396;
+                beatHz = 8; // 8Hz 정화
+            }
 
-            this.subOsc = ctx.createOscillator();
-            this.subOsc.type = 'sine';
-            this.subOsc.frequency.setValueAtTime(438, ctx.currentTime);
-            const subGain = ctx.createGain();
-            subGain.gain.setValueAtTime(0.35, ctx.currentTime);
-            this.subOsc.connect(subGain);
-            subGain.connect(this.freqGain);
-            this.subOsc.start();
-        } else if (preset === 'schumann') {
-            this.mainOsc = ctx.createOscillator();
-            this.mainOsc.type = 'sine';
-            this.mainOsc.frequency.setValueAtTime(136.1, ctx.currentTime);
+            // 왼쪽 귀 (L 채널: baseHz)
+            this.leftOsc = ctx.createOscillator();
+            this.leftOsc.type = 'sine';
+            this.leftOsc.frequency.setValueAtTime(baseHz, ctx.currentTime);
 
-            const tremoloGain = ctx.createGain();
-            tremoloGain.gain.setValueAtTime(0.5, ctx.currentTime);
+            // 오른쪽 귀 (R 채널: baseHz + beatHz -> 뇌간에서 beatHz 뇌파 합성 유도)
+            this.rightOsc = ctx.createOscillator();
+            this.rightOsc.type = 'sine';
+            this.rightOsc.frequency.setValueAtTime(baseHz + beatHz, ctx.currentTime);
 
-            this.lfoOsc = ctx.createOscillator();
-            this.lfoOsc.type = 'sine';
-            this.lfoOsc.frequency.setValueAtTime(7.83, ctx.currentTime);
-            this.lfoOsc.connect(tremoloGain.gain);
-            this.lfoOsc.start();
+            // StereoPanner 지원 시 좌우 분리 인가
+            if (ctx.createStereoPanner) {
+                this.leftPanner = ctx.createStereoPanner();
+                this.leftPanner.pan.setValueAtTime(-0.95, ctx.currentTime); // 완전 왼쪽
 
-            this.mainOsc.connect(tremoloGain);
-            tremoloGain.connect(this.freqGain);
-            this.mainOsc.start();
-        } else if (preset === 'gamma40') {
-            this.mainOsc = ctx.createOscillator();
-            this.mainOsc.type = 'sine';
-            this.mainOsc.frequency.setValueAtTime(200, ctx.currentTime);
-            this.mainOsc.connect(this.freqGain);
-            this.mainOsc.start();
+                this.rightPanner = ctx.createStereoPanner();
+                this.rightPanner.pan.setValueAtTime(0.95, ctx.currentTime); // 완전 오른쪽
 
-            this.subOsc = ctx.createOscillator();
-            this.subOsc.type = 'sine';
-            this.subOsc.frequency.setValueAtTime(240, ctx.currentTime);
-            const subGain = ctx.createGain();
-            subGain.gain.setValueAtTime(0.65, ctx.currentTime);
-            this.subOsc.connect(subGain);
-            subGain.connect(this.freqGain);
-            this.subOsc.start();
-        } else if (preset === 'delta3') {
-            this.mainOsc = ctx.createOscillator();
-            this.mainOsc.type = 'sine';
-            this.mainOsc.frequency.setValueAtTime(108, ctx.currentTime);
+                this.leftOsc.connect(this.leftPanner);
+                this.leftPanner.connect(this.freqGain);
 
-            const deltaGain = ctx.createGain();
-            deltaGain.gain.setValueAtTime(0.4, ctx.currentTime);
+                this.rightOsc.connect(this.rightPanner);
+                this.rightPanner.connect(this.freqGain);
+            } else {
+                this.leftOsc.connect(this.freqGain);
+                this.rightOsc.connect(this.freqGain);
+            }
 
-            this.lfoOsc = ctx.createOscillator();
-            this.lfoOsc.type = 'sine';
-            this.lfoOsc.frequency.setValueAtTime(3, ctx.currentTime);
-            this.lfoOsc.connect(deltaGain.gain);
-            this.lfoOsc.start();
+            this.leftOsc.start();
+            this.rightOsc.start();
+        } else {
+            // 일반 모노/스테레오 기본 합성 로직
+            if (preset === '528hz') {
+                this.mainOsc = ctx.createOscillator();
+                this.mainOsc.type = 'sine';
+                this.mainOsc.frequency.setValueAtTime(528, ctx.currentTime);
+                this.mainOsc.connect(this.freqGain);
+                this.mainOsc.start();
 
-            this.mainOsc.connect(deltaGain);
-            deltaGain.connect(this.freqGain);
-            this.mainOsc.start();
-        } else if (preset === 'fear396') {
-            this.mainOsc = ctx.createOscillator();
-            this.mainOsc.type = 'sine';
-            this.mainOsc.frequency.setValueAtTime(396, ctx.currentTime);
-            this.mainOsc.connect(this.freqGain);
-            this.mainOsc.start();
+                this.subOsc = ctx.createOscillator();
+                this.subOsc.type = 'sine';
+                this.subOsc.frequency.setValueAtTime(1056, ctx.currentTime);
+                const subGain = ctx.createGain();
+                subGain.gain.setValueAtTime(0.18, ctx.currentTime);
+                this.subOsc.connect(subGain);
+                subGain.connect(this.freqGain);
+                this.subOsc.start();
+            } else if (preset === '432hz') {
+                this.mainOsc = ctx.createOscillator();
+                this.mainOsc.type = 'sine';
+                this.mainOsc.frequency.setValueAtTime(432, ctx.currentTime);
+                this.mainOsc.connect(this.freqGain);
+                this.mainOsc.start();
 
-            this.subOsc = ctx.createOscillator();
-            this.subOsc.type = 'sine';
-            this.subOsc.frequency.setValueAtTime(792, ctx.currentTime);
-            const subGain = ctx.createGain();
-            subGain.gain.setValueAtTime(0.2, ctx.currentTime);
-            this.subOsc.connect(subGain);
-            subGain.connect(this.freqGain);
-            this.subOsc.start();
+                this.subOsc = ctx.createOscillator();
+                this.subOsc.type = 'sine';
+                this.subOsc.frequency.setValueAtTime(438, ctx.currentTime);
+                const subGain = ctx.createGain();
+                subGain.gain.setValueAtTime(0.35, ctx.currentTime);
+                this.subOsc.connect(subGain);
+                subGain.connect(this.freqGain);
+                this.subOsc.start();
+            } else if (preset === 'schumann') {
+                this.mainOsc = ctx.createOscillator();
+                this.mainOsc.type = 'sine';
+                this.mainOsc.frequency.setValueAtTime(136.1, ctx.currentTime);
+
+                const tremoloGain = ctx.createGain();
+                tremoloGain.gain.setValueAtTime(0.5, ctx.currentTime);
+
+                this.lfoOsc = ctx.createOscillator();
+                this.lfoOsc.type = 'sine';
+                this.lfoOsc.frequency.setValueAtTime(7.83, ctx.currentTime);
+                this.lfoOsc.connect(tremoloGain.gain);
+                this.lfoOsc.start();
+
+                this.mainOsc.connect(tremoloGain);
+                tremoloGain.connect(this.freqGain);
+                this.mainOsc.start();
+            } else if (preset === 'gamma40') {
+                this.mainOsc = ctx.createOscillator();
+                this.mainOsc.type = 'sine';
+                this.mainOsc.frequency.setValueAtTime(200, ctx.currentTime);
+                this.mainOsc.connect(this.freqGain);
+                this.mainOsc.start();
+
+                this.subOsc = ctx.createOscillator();
+                this.subOsc.type = 'sine';
+                this.subOsc.frequency.setValueAtTime(240, ctx.currentTime);
+                const subGain = ctx.createGain();
+                subGain.gain.setValueAtTime(0.65, ctx.currentTime);
+                this.subOsc.connect(subGain);
+                subGain.connect(this.freqGain);
+                this.subOsc.start();
+            } else if (preset === 'delta3') {
+                this.mainOsc = ctx.createOscillator();
+                this.mainOsc.type = 'sine';
+                this.mainOsc.frequency.setValueAtTime(108, ctx.currentTime);
+
+                const deltaGain = ctx.createGain();
+                deltaGain.gain.setValueAtTime(0.4, ctx.currentTime);
+
+                this.lfoOsc = ctx.createOscillator();
+                this.lfoOsc.type = 'sine';
+                this.lfoOsc.frequency.setValueAtTime(3, ctx.currentTime);
+                this.lfoOsc.connect(deltaGain.gain);
+                this.lfoOsc.start();
+
+                this.mainOsc.connect(deltaGain);
+                deltaGain.connect(this.freqGain);
+                this.mainOsc.start();
+            } else if (preset === 'fear396') {
+                this.mainOsc = ctx.createOscillator();
+                this.mainOsc.type = 'sine';
+                this.mainOsc.frequency.setValueAtTime(396, ctx.currentTime);
+                this.mainOsc.connect(this.freqGain);
+                this.mainOsc.start();
+
+                this.subOsc = ctx.createOscillator();
+                this.subOsc.type = 'sine';
+                this.subOsc.frequency.setValueAtTime(792, ctx.currentTime);
+                const subGain = ctx.createGain();
+                subGain.gain.setValueAtTime(0.2, ctx.currentTime);
+                this.subOsc.connect(subGain);
+                subGain.connect(this.freqGain);
+                this.subOsc.start();
+            }
         }
     }
+
 
     // 자연음 합성 (Rain, Waves, Wind)
     private startAmbient(type: AmbientSoundId) {
@@ -472,7 +557,24 @@ export class BrainwaveEngine {
             try { this.freqGain.disconnect(); } catch (e) {}
             this.freqGain = null;
         }
+        if (this.leftOsc) {
+            try { this.leftOsc.stop(); this.leftOsc.disconnect(); } catch (e) {}
+            this.leftOsc = null;
+        }
+        if (this.rightOsc) {
+            try { this.rightOsc.stop(); this.rightOsc.disconnect(); } catch (e) {}
+            this.rightOsc = null;
+        }
+        if (this.leftPanner) {
+            try { this.leftPanner.disconnect(); } catch (e) {}
+            this.leftPanner = null;
+        }
+        if (this.rightPanner) {
+            try { this.rightPanner.disconnect(); } catch (e) {}
+            this.rightPanner = null;
+        }
     }
+
 
     private stopAmbient() {
         if (this.ambientSource) {
