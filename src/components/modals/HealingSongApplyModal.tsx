@@ -38,27 +38,59 @@ export default function HealingSongApplyModal({
         }
     }, [defaultName]);
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState('');
+
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const code = `CR-SONG-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-        setReceiptCode(code);
-        setIsSubmitted(true);
+        setSubmitError('');
+        setIsSubmitting(true);
 
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('myeongsim_healing_song_applied', 'true');
-            localStorage.setItem('myeongsim_healing_song_receipt', code);
-            localStorage.setItem('myeongsim_healing_song_data', JSON.stringify({
-                name,
-                email,
-                phone,
-                element,
-                frequency,
-                theme,
-                message,
-                appliedAt: new Date().toISOString()
-            }));
+        try {
+            const res = await fetch('/api/library/apply-healing-song', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    phone,
+                    element,
+                    frequency,
+                    theme,
+                    message,
+                    orderNumber: defaultOrder
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const code = data.receiptCode;
+                setReceiptCode(code);
+                setIsSubmitted(true);
+
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('myeongsim_healing_song_applied', 'true');
+                    localStorage.setItem('myeongsim_healing_song_receipt', code);
+                    localStorage.setItem('myeongsim_healing_song_data', JSON.stringify({
+                        name,
+                        email,
+                        phone,
+                        element,
+                        frequency,
+                        theme,
+                        message,
+                        receiptCode: code,
+                        appliedAt: new Date().toISOString()
+                    }));
+                }
+            } else {
+                setSubmitError(data.message || '신청서 접수 중 오류가 발생했습니다.');
+            }
+        } catch (err) {
+            setSubmitError('서버 연결 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -195,13 +227,20 @@ export default function HealingSongApplyModal({
                             />
                         </div>
 
+                        {submitError && (
+                            <p className="text-red-400 text-xs text-center font-bold bg-red-950/30 p-2 rounded-lg border border-red-500/20">
+                                ⚠️ {submitError}
+                            </p>
+                        )}
+
                         {/* 제출 버튼 */}
                         <button
                             type="submit"
-                            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600 hover:from-purple-400 hover:to-indigo-400 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/20 cursor-pointer active:scale-98 transition-all"
+                            disabled={isSubmitting}
+                            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600 hover:from-purple-400 hover:to-indigo-400 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/20 cursor-pointer active:scale-98 transition-all disabled:opacity-50"
                         >
-                            <Send size={14} />
-                            <span>1:1 헌정 힐링송 작곡 무료 신청 접수</span>
+                            <Send size={14} className={isSubmitting ? "animate-spin" : ""} />
+                            <span>{isSubmitting ? '신청서 서버 접수 중...' : '1:1 헌정 힐링송 작곡 무료 신청 접수'}</span>
                         </button>
                     </form>
                 ) : (

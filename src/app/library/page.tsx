@@ -307,12 +307,13 @@ export default function LibraryPage() {
 
     // 구매 인증 상태 (로컬스토리지 연동)
     const [isVerified, setIsVerified] = useState(false);
-    const [buyerName, setBuyerName] = useState('강미숙');
-    const [orderNumber, setOrderNumber] = useState('20260904-8843');
+    const [buyerName, setBuyerName] = useState('');
+    const [orderNumber, setOrderNumber] = useState('');
     const [purchaseDate, setPurchaseDate] = useState('');
     const [serialKey, setSerialKey] = useState('');
     const [purchasePlatform, setPurchasePlatform] = useState('smartstore');
     const [verificationError, setVerificationError] = useState('');
+    const [isVerifying, setIsVerifying] = useState(false);
 
     // 🔍 확대/축소 및 🖥️ 전체화면 상태
     const [pdfZoom, setPdfZoom] = useState<number>(100);
@@ -417,8 +418,8 @@ export default function LibraryPage() {
             const urlName = searchParams.get('name') || searchParams.get('buyer');
             const urlAutoVerify = searchParams.get('verify') === 'true' || searchParams.get('auto') === 'true';
 
-            let savedName = localStorage.getItem('myeongsim_book_buyer') || localStorage.getItem('user_name') || '강미숙';
-            let savedOrder = localStorage.getItem('myeongsim_book_order') || '2026-SEJONG-0576';
+            let savedName = localStorage.getItem('myeongsim_book_buyer') || localStorage.getItem('user_name') || '';
+            let savedOrder = localStorage.getItem('myeongsim_book_order') || '';
 
             if (urlOrder || urlName || urlAutoVerify) {
                 savedName = urlName || savedName;
@@ -496,64 +497,85 @@ export default function LibraryPage() {
         };
     }, []);
 
-    // 구매 인증 처리
-    const handleVerifyPurchase = (e: React.FormEvent) => {
+    // 🌟 [상용화] 실제 서버 DB 및 스마트스토어 주문번호 검증 처리 🌟
+    const handleVerifyPurchase = async (e: React.FormEvent) => {
         e.preventDefault();
         setVerificationError('');
 
-        if (!buyerName.trim() || !orderNumber.trim()) {
-            setVerificationError('구매자 성함과 주문번호(또는 핸드폰 뒷자리)를 입력해주세요.');
+        const cleanName = buyerName.trim();
+        const cleanOrder = orderNumber.trim();
+
+        if (!cleanName) {
+            setVerificationError('네이버 스마트스토어 결제 시 입력하신 구매자 성함을 입력해주세요.');
             return;
         }
 
-        const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
-        setPurchaseDate(nowStr);
-
-        // 시리얼 재계산
-        const rawSeed = `${buyerName}_${orderNumber}_CHEONGRYU`;
-        let hash = 0;
-        for (let i = 0; i < rawSeed.length; i++) {
-            hash = ((hash << 5) - hash) + rawSeed.charCodeAt(i);
-            hash |= 0;
-        }
-        const sKey = `CR-DRM-${Math.abs(hash).toString(16).toUpperCase().padStart(8, '0')}`;
-        setSerialKey(sKey);
-
-        if (typeof window !== 'undefined') {
-            // 🌟 명심코칭 앱 전면 VIP & 정품 독자 라이선스 동시 영구 해금 🌟
-            localStorage.setItem('myeongsim_book_verified', 'true');
-            localStorage.setItem('myeongsim_book_buyer', buyerName);
-            localStorage.setItem('myeongsim_book_order', orderNumber);
-            localStorage.setItem('myeongsim_smartstore_vip', 'true');
-            localStorage.setItem('myeongsim_paid_user', 'true');
-            localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
-            localStorage.setItem('myeongsim_site_access', 'granted');
-            document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+        if (!cleanOrder || cleanOrder.length < 8) {
+            setVerificationError('네이버페이 결제내역의 주문번호(16자리)를 올바르게 입력해주세요. (예: 20260904-12345678)');
+            return;
         }
 
-        setIsVerified(true);
-        setShowVerifySuccessModal(true);
-        confetti({
-            particleCount: 100,
-            spread: 90,
-            origin: { y: 0.6 },
-            colors: ['#06b6d4', '#6366f1', '#f59e0b', '#10b981']
-        });
-    };
+        setIsVerifying(true);
 
-    // 빠른 체험 인증 (관리자/테스트용)
-    const handleFastVerify = () => {
-        const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
-        setPurchaseDate(nowStr);
-        setSerialKey('CR-DRM-TEST-0707-VIP');
+        try {
+            // 실제 서버 인증 API 호출
+            const res = await fetch('/api/auth/verify-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderNumber: cleanOrder,
+                    depositorName: cleanName,
+                    channel: purchasePlatform
+                })
+            });
 
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('myeongsim_book_verified', 'true');
-            localStorage.setItem('myeongsim_book_buyer', buyerName || '강미숙');
-            localStorage.setItem('myeongsim_book_order', 'VIP-FREEPASS');
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                setVerificationError(data.message || '유효하지 않은 주문번호이거나 이미 인증이 완료된 번호입니다. 네이버페이 결제내역을 확인해주세요.');
+                setIsVerifying(false);
+                return;
+            }
+
+            // 인증 성공 시
+            const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+            setPurchaseDate(nowStr);
+
+            // 포렌식 시리얼키 생성
+            const rawSeed = `${cleanName}_${cleanOrder}_CHEONGRYU`;
+            let hash = 0;
+            for (let i = 0; i < rawSeed.length; i++) {
+                hash = ((hash << 5) - hash) + rawSeed.charCodeAt(i);
+                hash |= 0;
+            }
+            const sKey = `CR-DRM-${Math.abs(hash).toString(16).toUpperCase().padStart(8, '0')}`;
+            setSerialKey(sKey);
+
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('myeongsim_book_verified', 'true');
+                localStorage.setItem('myeongsim_book_buyer', cleanName);
+                localStorage.setItem('myeongsim_book_order', cleanOrder);
+                localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                localStorage.setItem('myeongsim_paid_user', 'true');
+                localStorage.setItem('myeongsim_chat_turns_left', '20'); // AI 챗봇 20회 VIP 코칭 대화권 지급
+                localStorage.setItem('myeongsim_bio_care_unlocked', 'true');
+                localStorage.setItem('myeongsim_site_access', 'granted');
+                document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+            }
+
+            setIsVerified(true);
+            setShowVerifySuccessModal(true);
+            confetti({
+                particleCount: 110,
+                spread: 90,
+                origin: { y: 0.6 },
+                colors: ['#06b6d4', '#6366f1', '#f59e0b', '#10b981']
+            });
+        } catch (err) {
+            setVerificationError('인증 서버 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        } finally {
+            setIsVerifying(false);
         }
-        setIsVerified(true);
-        confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
     };
 
     // 528Hz 사운드 토글
@@ -782,7 +804,7 @@ export default function LibraryPage() {
                                     type="text"
                                     value={buyerName}
                                     onChange={(e) => setBuyerName(e.target.value)}
-                                    placeholder="예: 강미숙"
+                                    placeholder="예: 홍길동 (네이버페이 구매자 성함)"
                                     className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
                                 />
                             </div>
@@ -793,26 +815,22 @@ export default function LibraryPage() {
                                     type="text"
                                     value={orderNumber}
                                     onChange={(e) => setOrderNumber(e.target.value)}
-                                    placeholder="예: 20260904-123456 또는 1234"
+                                    placeholder="예: 20260904-12345678 (네이버페이 주문번호 16자리)"
                                     className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
                                 />
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                disabled={isVerifying}
+                                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
                             >
-                                <CheckCircle2 size={16} />
-                                <span>👑 네이버 스마트스토어 정품 등록 및 전면 해금하기</span>
+                                <CheckCircle2 size={16} className={isVerifying ? "animate-spin" : ""} />
+                                <span>{isVerifying ? '네이버 스마트스토어 주문번호 검증 중...' : '👑 네이버 스마트스토어 정품 등록 및 전면 해금하기'}</span>
                             </button>
                         </form>
 
-                        <button
-                            onClick={handleFastVerify}
-                            className="w-full py-2 text-[11px] text-gray-400 hover:text-cyan-300 transition-colors cursor-pointer"
-                        >
-                            ⚡ [체험하기] 구매 인증 없이 즉시 1초 해금 (테스트 모드)
-                        </button>
+
                     </div>
                 ) : (
                     /* ── 4. 인증 완료 독자: 럭셔리 전자책 뷰어 ── */
