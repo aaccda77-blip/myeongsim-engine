@@ -60,6 +60,15 @@ export function RefinedReportLayout({ children, onReturnToDashboard }: RefinedRe
                 </div>
 
                 <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-3code-manifesto'))}
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 text-xs font-black transition-all border border-amber-400/30 cursor-pointer active:scale-95 shadow-sm"
+                        title="명심코칭 3-Code × 3S Protocol 선언문"
+                    >
+                        <span>⚡</span>
+                        <span className="hidden sm:inline">3-Code × 3S</span>
+                        <span className="sm:hidden">3S</span>
+                    </button>
                     <ViewModeSwitcher />
                 </div>
             </header>
