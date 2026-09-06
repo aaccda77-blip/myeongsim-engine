@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Lock, RefreshCw, LogOut, Sparkles, CheckCircle2, ShieldCheck, 
-    CreditCard, Send, ExternalLink, Award, AlertCircle, ShoppingBag
+    CreditCard, Send, ExternalLink, Award, AlertCircle, ShoppingBag,
+    BookOpen, Check
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
@@ -19,6 +20,13 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [activeTab, setActiveTab] = useState<'info' | 'wire'>('info');
 
+    // 도서 구매 인증 상태 (네이버 스마트스토어, YES24, 교보문고 등)
+    const [bookChannel, setBookChannel] = useState<'smartstore' | 'yes24' | 'kyobo' | 'other'>('smartstore');
+    const [orderNumber, setOrderNumber] = useState('');
+    const [bookBuyerName, setBookBuyerName] = useState('');
+    const [bookBuyerPhone, setBookBuyerPhone] = useState('');
+    const [isVerifyingBook, setIsVerifyingBook] = useState(false);
+
     // 무통장 입금 신청 폼 상태
     const [depositorName, setDepositorName] = useState('');
     const [phone, setPhone] = useState('');
@@ -30,17 +38,77 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
         if (typeof window !== 'undefined') {
             const savedName = localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '';
             const savedPhone = localStorage.getItem('user_phone') || '';
-            if (savedName) setDepositorName(savedName);
-            if (savedPhone) setPhone(savedPhone);
+            if (savedName) {
+                setDepositorName(savedName);
+                setBookBuyerName(savedName);
+            }
+            if (savedPhone) {
+                setPhone(savedPhone);
+                setBookBuyerPhone(savedPhone);
+            }
         }
     }, []);
+
+    // 도서 구매 정품 인증 처리 (스마트스토어, YES24, 교보문고 등)
+    const handleBookVerify = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const cleanOrder = orderNumber.trim();
+        const cleanName = bookBuyerName.trim() || depositorName.trim();
+        const cleanPhone = bookBuyerPhone.trim() || phone.trim();
+
+        if (!cleanOrder) {
+            alert('주문번호 또는 영수증 번호를 입력해 주세요.\n(네이버 스마트스토어 또는 YES24 결제내역에서 확인하실 수 있습니다)');
+            return;
+        }
+
+        setIsVerifyingBook(true);
+        try {
+            const finalUserId = userId || cleanPhone || cleanName || cleanOrder;
+            const res = await fetch('/api/auth/verify-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderNumber: cleanOrder,
+                    depositorName: cleanName,
+                    phone: cleanPhone,
+                    channel: bookChannel,
+                    userId: finalUserId
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                // 성공! 로컬 권한 즉시 세팅
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('myeongsim_book_verified', 'true');
+                    localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                    localStorage.setItem('myeongsim_paid_user', 'true');
+                    localStorage.setItem('myeongsim_verified_order', cleanOrder);
+                    if (cleanName) localStorage.setItem('user_name', cleanName);
+                    if (cleanPhone) localStorage.setItem('user_phone', cleanPhone);
+                    window.dispatchEvent(new Event('myeongsim_auth_change'));
+                }
+
+                alert('🎉 축하합니다! 도서 구매 정품 인증이 확인되었습니다.\n\n기본 제로포인트 명심 리포트, 사주 일진 에너지, 일진 선언문이 평생 무료로 즉시 해금되었습니다.');
+                await onRefresh();
+            } else {
+                alert(data.message || '주문번호가 올바르지 않거나 이미 등록된 번호입니다. 확인 후 다시 입력해 주세요.');
+            }
+        } catch (err) {
+            console.error('Book verify error:', err);
+            alert('인증 처리 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+        } finally {
+            setIsVerifyingBook(false);
+        }
+    };
 
     // 실시간 관리자 승인 확인
     const handleRefresh = async () => {
         setIsRefreshing(true);
         try {
             // 1. 서버 API로 승인 여부 실시간 조회
-            const nameToQuery = depositorName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || '' : '');
+            const nameToQuery = depositorName.trim() || bookBuyerName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || '' : '');
             const uidToQuery = userId || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
 
             const res = await fetch(`/api/payment/check-approval?name=${encodeURIComponent(nameToQuery)}&userId=${encodeURIComponent(uidToQuery)}&t=${Date.now()}`);
@@ -68,7 +136,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
             // 2. 부모 콜백 실행
             const isStillLocked = await onRefresh();
             if (isStillLocked) {
-                alert('⏳ 아직 관리자 승인 대기 중입니다.\n\n무통장 입금 신청을 완료하셨다면, 관리자가 입금 확인 후 즉시 열어드립니다. 잠시 후 다시 새로고침을 눌러주세요.');
+                alert('⏳ 아직 관리자 승인 대기 중입니다.\n\n무통장 입금 또는 도서 인증 신청을 완료하셨다면, 관리자가 확인 후 즉시 열어드립니다. 잠시 후 다시 새로고침을 눌러주세요.');
             } else {
                 alert('🎉 승인이 확인되었습니다! 환영합니다.');
             }
@@ -151,90 +219,181 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                 {/* 뱃지 */}
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/40 text-amber-300 text-[11px] font-mono font-black mb-2">
                     <Award size={13} className="text-amber-400" />
-                    <span>정식 멤버십 잠금 · 결제 후 즉시 이용 가능</span>
+                    <span>정식 멤버십 잠금 · 결제 또는 도서 인증 후 즉시 이용 가능</span>
                 </div>
 
                 <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    명심코칭 VIP 멤버십 전면 잠금
+                    명심코칭 정품 회원 전면 잠금
                 </h1>
                 
                 <p className="text-xs sm:text-sm text-gray-300 mt-1.5 leading-relaxed break-keep px-2">
-                    현재 결제 또는 관리자 승인이 완료되지 않은 계정입니다.<br />
-                    <span className="text-amber-300 font-bold">월정액 멤버십 결제</span> 또는 <span className="text-cyan-300 font-bold">관리자 승인</span> 시 124개 전 서비스가 즉시 해금됩니다.
+                    도서 구매자 인증 또는 월정액 VIP 신청이 완료되지 않은 상태입니다.<br />
+                    <span className="text-amber-300 font-bold">도서 구매 인증</span> 시 기본 리포트 평생 무료, <span className="text-cyan-300 font-bold">월정액 ALL-PASS</span> 시 124개 전 서비스가 즉시 해금됩니다.
                 </p>
 
-                {/* 가격 앵커링 디스플레이 (정가 289,000원 ➔ 98,000원) */}
-                <div className="mt-4 p-3.5 rounded-2xl bg-black/70 border border-amber-400/40 flex items-center justify-between px-4 text-left">
-                    <div>
-                        <span className="text-[11px] text-gray-400 line-through font-mono block">
-                            정가 월 289,000원
-                        </span>
-                        <span className="text-xs text-amber-400 font-black flex items-center gap-1">
-                            <Sparkles size={12} />
-                            <span>특허출원 기념 66% 파격 특별가</span>
-                        </span>
-                    </div>
-                    <div className="text-right">
-                        <div className="flex items-baseline justify-end gap-1">
-                            <span className="text-2xl font-black text-amber-300 tracking-tight font-mono">
-                                98,000
-                            </span>
-                            <span className="text-xs font-bold text-amber-200">원 / 월</span>
-                        </div>
-                        <span className="text-[10px] text-gray-400 font-mono block">
-                            (하루 3,200원대 ALL-PASS)
-                        </span>
-                    </div>
-                </div>
-
-                {/* 탭 전환 (① 안내 및 스마트스토어 / ② 무통장 입금 신청) */}
-                <div className="flex p-1 rounded-xl bg-slate-900 border border-white/10 mt-4 text-xs font-bold">
+                {/* 탭 전환 (① 도서 구매자 인증 / ② 무통장 입금 신청) */}
+                <div className="flex p-1 rounded-2xl bg-slate-900/90 border border-white/10 mt-4 text-xs font-bold gap-1">
                     <button
                         onClick={() => setActiveTab('info')}
-                        className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                        className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                             activeTab === 'info' 
-                                ? 'bg-amber-400 text-slate-950 font-black shadow' 
+                                ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/30' 
                                 : 'text-gray-400 hover:text-white'
                         }`}
                     >
-                        <ShoppingBag size={14} />
-                        <span>1. 스마트스토어 구매</span>
+                        <BookOpen size={14} className={activeTab === 'info' ? 'text-slate-950' : 'text-amber-400'} />
+                        <span>1. 도서 구매자 인증</span>
                     </button>
                     <button
                         onClick={() => setActiveTab('wire')}
-                        className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                        className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                             activeTab === 'wire' 
-                                ? 'bg-amber-400 text-slate-950 font-black shadow' 
+                                ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/30' 
                                 : 'text-gray-400 hover:text-white'
                         }`}
                     >
-                        <CreditCard size={14} />
-                        <span>2. 무통장 입금 (월 98,000원)</span>
+                        <CreditCard size={14} className={activeTab === 'wire' ? 'text-slate-950' : 'text-amber-400'} />
+                        <span>2. 월 98,000원 ALL-PASS</span>
                     </button>
                 </div>
 
-                {/* 탭 1: 스마트스토어 도서 구매 안내 */}
+                {/* 탭 1: 도서 구매자 인증 폼 (YES24 / 스마트스토어 / 교보문고 등) */}
                 {activeTab === 'info' && (
-                    <div className="mt-3.5 space-y-3 text-left animate-fade-in">
-                        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-xs text-gray-300 space-y-1.5">
-                            <div className="font-bold text-amber-300 flex items-center gap-1">
-                                <CheckCircle2 size={13} className="text-amber-400 shrink-0" />
-                                <span>네이버 스마트스토어 도서 구매 회원 혜택</span>
+                    <div className="mt-3.5 space-y-3.5 text-left animate-fade-in">
+                        {/* 혜택 안내 배너 */}
+                        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-transparent border border-amber-400/40 text-xs text-gray-300 space-y-1.5">
+                            <div className="font-bold text-amber-300 flex items-center gap-1.5 text-xs sm:text-sm">
+                                <CheckCircle2 size={15} className="text-amber-400 shrink-0" />
+                                <span>네이버 스마트스토어 · YES24 도서 구매 회원 혜택</span>
                             </div>
                             <p className="text-[11px] text-gray-300 leading-relaxed">
-                                청류 스마트스토어에서 도서를 구매하시면 기본 제로포인트 명심 리포트, 사주 일진 에너지, 일진 선언문이 <strong className="text-white">평생 무료 승인</strong>됩니다.
+                                도서를 구매하신 독자님은 아래에 <strong className="text-amber-300 font-bold">주문번호 또는 영수증 승인번호</strong>를 입력해 주시면 기본 제로포인트 명심 리포트, 사주 일진 에너지, 일진 선언문이 <strong className="text-white font-black underline underline-offset-2">평생 무료로 즉시 승인</strong>됩니다.
                             </p>
                         </div>
 
-                        <a
-                            href="https://smartstore.naver.com/cheongryubooks"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30 transition-transform hover:scale-[1.02] cursor-pointer"
-                        >
-                            <ExternalLink size={15} />
-                            <span>네이버 스마트스토어에서 구매하기</span>
-                        </a>
+                        {/* 도서 구매 인증 폼 */}
+                        <form onSubmit={handleBookVerify} className="space-y-3 bg-slate-950/70 p-4 rounded-2xl border border-amber-400/30">
+                            {/* 구매처 선택 칩 버튼 */}
+                            <div>
+                                <label className="block text-[11px] font-bold text-gray-300 mb-1.5">
+                                    도서 구매처 선택 *
+                                </label>
+                                <div className="grid grid-cols-4 gap-1 text-[11px] font-bold">
+                                    {[
+                                        { id: 'smartstore', label: '네이버스토어' },
+                                        { id: 'yes24', label: 'YES24' },
+                                        { id: 'kyobo', label: '교보문고' },
+                                        { id: 'other', label: '기타 서점' }
+                                    ].map((ch) => (
+                                        <button
+                                            key={ch.id}
+                                            type="button"
+                                            onClick={() => setBookChannel(ch.id as any)}
+                                            className={`py-1.5 rounded-lg border transition-all text-center cursor-pointer ${
+                                                bookChannel === ch.id
+                                                    ? 'bg-amber-400 text-slate-950 font-black border-amber-300 shadow'
+                                                    : 'bg-black/40 text-gray-400 border-white/10 hover:text-white'
+                                            }`}
+                                        >
+                                            {ch.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* 주문번호 입력 */}
+                            <div>
+                                <label className="block text-[11px] font-bold text-gray-300 mb-1">
+                                    주문번호 / 영수증 승인번호 *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={orderNumber}
+                                    onChange={(e) => setOrderNumber(e.target.value)}
+                                    placeholder={
+                                        bookChannel === 'smartstore'
+                                            ? '예: 20260904-12345678 (네이버페이 16자리)'
+                                            : bookChannel === 'yes24'
+                                            ? '예: YES24 주문번호 또는 승인번호'
+                                            : '예: 도서 구매 주문번호 또는 승인번호'
+                                    }
+                                    required
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/80 border border-amber-400/50 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-300 focus:ring-1 focus:ring-amber-300 font-mono"
+                                />
+                            </div>
+
+                            {/* 구매자 성함 & 연락처 */}
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="block text-[11px] font-bold text-gray-300 mb-1">
+                                        구매자 성함 (주문자명) *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={bookBuyerName}
+                                        onChange={(e) => setBookBuyerName(e.target.value)}
+                                        placeholder="예: 홍길동"
+                                        required
+                                        className="w-full px-3 py-2 rounded-xl bg-black/80 border border-white/15 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-bold text-gray-300 mb-1">
+                                        연락처 (확인용)
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        value={bookBuyerPhone}
+                                        onChange={(e) => setBookBuyerPhone(e.target.value)}
+                                        placeholder="예: 010-1234-5678"
+                                        className="w-full px-3 py-2 rounded-xl bg-black/80 border border-white/15 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400 font-mono"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 인증 및 즉시 해금 버튼 */}
+                            <button
+                                type="submit"
+                                disabled={isVerifyingBook}
+                                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/30 transition-transform hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-50 mt-1"
+                            >
+                                {isVerifyingBook ? (
+                                    <span className="inline-block w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        <Sparkles size={15} />
+                                        <span>도서 구매 정품 인증하기 (즉시 해금)</span>
+                                    </>
+                                )}
+                            </button>
+                        </form>
+
+                        {/* 아직 책을 안 산 분들을 위한 구매처 안내 */}
+                        <div className="pt-2 border-t border-white/10">
+                            <p className="text-[11px] text-gray-400 text-center mb-2">
+                                📚 아직 책을 구매하지 않으셨나요? 아래 서점에서 바로 구매하실 수 있습니다:
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <a
+                                    href="https://smartstore.naver.com/cheongryubooks"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all text-center"
+                                >
+                                    <ExternalLink size={13} />
+                                    <span>네이버 스마트스토어</span>
+                                </a>
+                                <a
+                                    href="https://search.shopping.naver.com/book/search?query=%EC%A0%9C%EB%A1%9C%ED%8F%AC%EC%9D%B8%ED%8A%B8%20%EB%AA%85%EC%8B%AC"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-cyan-400/30 transition-all text-center"
+                                >
+                                    <ExternalLink size={13} />
+                                    <span>YES24 / 교보 검색</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 )}
 
