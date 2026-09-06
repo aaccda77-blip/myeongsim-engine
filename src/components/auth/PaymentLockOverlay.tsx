@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Lock, RefreshCw, LogOut, Sparkles, CheckCircle2, ShieldCheck, 
     CreditCard, Send, ExternalLink, Award, AlertCircle, ShoppingBag,
-    BookOpen, Check
+    BookOpen, Check, MessageCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
@@ -46,8 +46,70 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                 setPhone(savedPhone);
                 setBookBuyerPhone(savedPhone);
             }
+            // 이전에 입금 신청한 기록이 있으면 접수 화면으로 복원
+            if (localStorage.getItem('myeongsim_pending_wire') === 'true') {
+                setWireSubmitted(true);
+            }
         }
     }, []);
+
+    // ⚡ [자동 승인 감지 Auto-Polling] 3.5초마다 백그라운드 자동 확인
+    useEffect(() => {
+        let isCancelled = false;
+        let timer: any = null;
+
+        const checkSilent = async () => {
+            try {
+                const nameToQuery = depositorName.trim() || bookBuyerName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || '' : '');
+                const uidToQuery = userId || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+
+                if (!nameToQuery && !uidToQuery) return;
+
+                const res = await fetch(`/api/payment/check-approval?name=${encodeURIComponent(nameToQuery)}&userId=${encodeURIComponent(uidToQuery)}&t=${Date.now()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.approved && !isCancelled) {
+                        if (data.tier === 'MONTHLY_98K' || data.tier?.includes('98000') || data.tier?.includes('MONTHLY')) {
+                            localStorage.setItem('myeongsim_monthly_vip', 'true');
+                            localStorage.setItem('myeongsim_paid_user', 'true');
+                        } else if (data.tier === 'BOOK_ZERO_POINT' || data.tier?.includes('BOOK')) {
+                            localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                            localStorage.setItem('myeongsim_book_verified', 'true');
+                            localStorage.setItem('myeongsim_paid_user', 'true');
+                        } else {
+                            localStorage.setItem('myeongsim_paid_user', 'true');
+                        }
+                        localStorage.removeItem('myeongsim_pending_wire');
+                        window.dispatchEvent(new Event('myeongsim_auth_change'));
+                        await onRefresh();
+                    }
+                }
+            } catch (e) {
+                // 조용히 재시도
+            }
+        };
+
+        timer = setInterval(checkSilent, 3500);
+
+        return () => {
+            isCancelled = true;
+            if (timer) clearInterval(timer);
+        };
+    }, [depositorName, bookBuyerName, userId, onRefresh]);
+
+    // 🎁 [30분 무료 맛보기 체험 즉시 발급]
+    const handleStartFreeTrial = () => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('myeongsim_paid_user', 'true');
+            localStorage.setItem('myeongsim_smartstore_vip', 'true');
+            localStorage.setItem('myeongsim_trial_active', 'true');
+            const exp = Date.now() + 30 * 60 * 1000;
+            localStorage.setItem('myeongsim_expires_at', new Date(exp).toISOString());
+            window.dispatchEvent(new Event('myeongsim_auth_change'));
+        }
+        alert('🎉 [30분 무료 맛보기 체험 활성화]\n\n관리자 승인을 기다리시는 동안 기본 제로포인트 명심 리포트 및 코칭을 30분간 먼저 둘러보실 수 있도록 즉시 열어드렸습니다! ✨');
+        onRefresh();
+    };
 
     // 도서 구매 정품 인증 처리 (스마트스토어, YES24, 교보문고 등)
     const handleBookVerify = async (e: React.FormEvent) => {
@@ -401,22 +463,58 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                 {activeTab === 'wire' && (
                     <div className="mt-3.5 space-y-3 text-left animate-fade-in">
                         {wireSubmitted ? (
-                            <div className="p-4 rounded-2xl bg-emerald-950/70 border border-emerald-500/40 text-center space-y-2">
+                            <div className="p-4 rounded-2xl bg-emerald-950/70 border border-emerald-500/40 text-center space-y-3">
                                 <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
                                 <h3 className="text-base font-black text-white">
                                     입금 신청이 성공적으로 접수되었습니다!
                                 </h3>
                                 <p className="text-xs text-emerald-200 leading-relaxed">
                                     관리자 화면에 즉시 등록되었습니다.<br />
-                                    입금 확인 후 <strong>관리자가 승인(열어주기)</strong>을 완료하면 즉시 잠금이 해제됩니다.
+                                    관리자가 확인 후 승인하면 <strong className="text-white underline">화면이 자동으로 감지되어 해금</strong>됩니다.
                                 </p>
-                                <button
-                                    onClick={handleRefresh}
-                                    className="w-full mt-2 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow cursor-pointer"
+
+                                {/* 💬 카카오톡 1:1 오픈채팅으로 빠른 승인 요청 버튼 */}
+                                <a
+                                    href="https://open.kakao.com/o/spgWFR8h"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-3.5 rounded-xl bg-[#FEE500] hover:bg-[#FADA0A] text-[#191919] font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                                 >
-                                    <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-                                    <span>승인 상태 실시간 확인</span>
+                                    <MessageCircle size={17} className="fill-[#191919]" />
+                                    <span>💬 카카오톡 1:1 오픈채팅으로 빠른 승인 요청</span>
+                                </a>
+
+                                {/* 🎁 대기 중 30분 무료 맛보기 체험 */}
+                                <button
+                                    type="button"
+                                    onClick={handleStartFreeTrial}
+                                    className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all cursor-pointer"
+                                >
+                                    <Sparkles size={14} className="text-amber-400" />
+                                    <span>기다리는 동안 30분 무료 맛보기로 즉시 둘러보기</span>
                                 </button>
+
+                                {/* 수동 실시간 확인 & 정보 수정 */}
+                                <div className="flex gap-2 pt-1">
+                                    <button
+                                        type="button"
+                                        onClick={handleRefresh}
+                                        className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow cursor-pointer"
+                                    >
+                                        <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                                        <span>승인 상태 수동 확인</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            localStorage.removeItem('myeongsim_pending_wire');
+                                            setWireSubmitted(false);
+                                        }}
+                                        className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-gray-300 font-medium text-xs transition-all cursor-pointer"
+                                    >
+                                        신청 수정
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <form onSubmit={handleWireSubmit} className="space-y-3">
@@ -479,8 +577,29 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                     </div>
                 )}
 
-                {/* 하단 새로고침 및 로그아웃 버튼 */}
+                {/* 하단 카카오톡 오픈채팅 & 무료 맛보기 & 새로고침 및 로그아웃 버튼 */}
                 <div className="mt-4 pt-3 border-t border-white/10 flex flex-col gap-2">
+                    {/* 카카오톡 1:1 오픈채팅 상시 지원 버튼 */}
+                    <a
+                        href="https://open.kakao.com/o/spgWFR8h"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-3 rounded-xl bg-[#FEE500] hover:bg-[#FADA0A] text-[#191919] font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                    >
+                        <MessageCircle size={16} className="fill-[#191919]" />
+                        <span>💬 카카오톡 1:1 오픈채팅 문의 / 빠른 승인 요청</span>
+                    </a>
+
+                    {/* 30분 무료 맛보기 체험 바로가기 */}
+                    <button
+                        type="button"
+                        onClick={handleStartFreeTrial}
+                        className="w-full py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all cursor-pointer"
+                    >
+                        <Sparkles size={14} className="text-amber-400" />
+                        <span>🎁 기다리지 않고 30분 무료 맛보기로 즉시 둘러보기</span>
+                    </button>
+
                     <button
                         onClick={handleRefresh}
                         disabled={isRefreshing}
