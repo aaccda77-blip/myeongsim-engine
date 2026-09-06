@@ -47,6 +47,7 @@ export default function GlobalPaymentLockGuard() {
                 const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
                                    localStorage.getItem('myeongsim_book_verified') === 'true';
                 const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true';
+                const isTrialActive = localStorage.getItem('myeongsim_trial_active') === 'true';
 
                 // 만료일 검사
                 const expiresAtStr = localStorage.getItem('myeongsim_expires_at');
@@ -56,7 +57,7 @@ export default function GlobalPaymentLockGuard() {
                     if (!isNaN(exp) && Date.now() > exp) isExpired = true;
                 }
 
-                if (isAdmin || ((isMonthly || isSmartVip || isPaid) && !isExpired)) {
+                if (isAdmin || ((isMonthly || isSmartVip || isPaid || isTrialActive) && !isExpired)) {
                     shouldLock = false;
                 }
             }

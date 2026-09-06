@@ -26,7 +26,19 @@ export default function SiteAccessGateOverlay() {
                           document.cookie.includes('myeongsim_site_access_client=granted') ||
                           document.cookie.includes('admin_session=');
         
-        setIsUnlocked(hasCookie);
+        let isTrialValid = false;
+        if (typeof window !== 'undefined') {
+            const isTrial = localStorage.getItem('myeongsim_trial_active') === 'true';
+            const expStr = localStorage.getItem('myeongsim_expires_at');
+            if (isTrial && expStr) {
+                const exp = new Date(expStr).getTime();
+                if (!isNaN(exp) && Date.now() <= exp) isTrialValid = true;
+            }
+        }
+
+        const hasLocalGranted = typeof window !== 'undefined' && localStorage.getItem('myeongsim_site_access') === 'granted';
+        
+        setIsUnlocked(hasCookie || isTrialValid || hasLocalGranted);
     }, [pathname]);
 
     // If on /gate page or already unlocked, don't show overlay

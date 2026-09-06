@@ -131,14 +131,25 @@ export default function ReportPage() {
         // Check authentication & Consent status
         const checkAuth = async () => {
             try {
-                // 0. 관리자 승인 세션 또는 사전 승인 게이트 통과자 즉시 인증 승인!
+                // 0. 관리자 승인 세션, 사전 승인 게이트 통과자, 또는 3분 맛보기 체험자 즉시 인증 승인!
                 if (typeof window !== 'undefined') {
                     const hasAdmin = document.cookie.includes('admin_session=');
                     const hasGate = document.cookie.includes('myeongsim_site_access=granted') ||
                                     document.cookie.includes('myeongsim_site_access_client=granted') ||
                                     localStorage.getItem('myeongsim_site_access') === 'granted';
-                    if (hasAdmin || hasGate) {
-                        console.log('[ReportPage] Admin or Gate access verified! Entering Report View directly.');
+                    
+                    let isTrialValid = false;
+                    const isTrialActive = localStorage.getItem('myeongsim_trial_active') === 'true';
+                    const expStr = localStorage.getItem('myeongsim_expires_at');
+                    if (isTrialActive && expStr) {
+                        const exp = new Date(expStr).getTime();
+                        if (!isNaN(exp) && Date.now() <= exp) {
+                            isTrialValid = true;
+                        }
+                    }
+
+                    if (hasAdmin || hasGate || isTrialValid) {
+                        console.log('[ReportPage] Admin, Gate access, or Free Trial verified! Entering Report View directly.');
                         if (isSubscribed) {
                             setIsAuthenticated(true);
                             setIsCheckingAuth(false);

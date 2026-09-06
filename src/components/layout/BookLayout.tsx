@@ -126,6 +126,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                 const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
                                    localStorage.getItem('myeongsim_book_verified') === 'true';
                 const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true';
+                const isTrialActive = localStorage.getItem('myeongsim_trial_active') === 'true';
 
                 // 만료일 검사
                 const expiresAtStr = localStorage.getItem('myeongsim_expires_at');
@@ -135,7 +136,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                     if (!isNaN(exp) && Date.now() > exp) isExpired = true;
                 }
 
-                if (isAdmin || ((isMonthly || isSmartVip || isPaid) && !isExpired)) {
+                if (isAdmin || ((isMonthly || isSmartVip || isPaid || isTrialActive) && !isExpired)) {
                     shouldLock = false;
                 }
             }
@@ -215,9 +216,21 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
         window.addEventListener('storage', handleAuthChange);
         window.addEventListener('myeongsim_auth_change', handleAuthChange);
 
+        // 3분 체험 만료 감지 타이머 (5초 간격)
+        const expiryTimer = setInterval(() => {
+            const expStr = typeof window !== 'undefined' ? localStorage.getItem('myeongsim_expires_at') : null;
+            if (expStr) {
+                const expTime = new Date(expStr).getTime();
+                if (!isNaN(expTime) && Date.now() > expTime) {
+                    checkUserStatus();
+                }
+            }
+        }, 5000);
+
         return () => {
             window.removeEventListener('storage', handleAuthChange);
             window.removeEventListener('myeongsim_auth_change', handleAuthChange);
+            clearInterval(expiryTimer);
         };
     }, []);
 

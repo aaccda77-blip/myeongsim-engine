@@ -32,6 +32,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
     const [phone, setPhone] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [wireSubmitted, setWireSubmitted] = useState(false);
+    const [isStartingTrial, setIsStartingTrial] = useState(false);
 
     // 저장된 이름/전화번호 불러오기
     useEffect(() => {
@@ -97,19 +98,41 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
         };
     }, [depositorName, bookBuyerName, userId, onRefresh]);
 
-    // 🎁 [3분 스피드 맛보기 체험 즉시 발급]
-    const handleStartFreeTrial = () => {
+    // 🎁 [3분 스피드 맛보기 체험 즉시 발급 및 리포트 직행]
+    const handleStartFreeTrial = async () => {
+        setIsStartingTrial(true);
         if (typeof window !== 'undefined') {
-            localStorage.setItem('myeongsim_paid_user', 'true');
-            localStorage.setItem('myeongsim_smartstore_vip', 'true');
-            localStorage.setItem('myeongsim_trial_active', 'true');
-            // 3분(180초) 타이트한 맛보기로 보안 및 결제 전환 극대화
-            const exp = Date.now() + 3 * 60 * 1000;
-            localStorage.setItem('myeongsim_expires_at', new Date(exp).toISOString());
-            window.dispatchEvent(new Event('myeongsim_auth_change'));
+            try {
+                // 1. 모든 가드를 단번에 통과하는 체험 권한 부여
+                localStorage.setItem('myeongsim_paid_user', 'true');
+                localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                localStorage.setItem('myeongsim_trial_active', 'true');
+                localStorage.setItem('myeongsim_site_access', 'granted');
+                
+                // 3분(180초) 타이트한 맛보기로 보안 및 결제 전환 극대화
+                const exp = Date.now() + 3 * 60 * 1000;
+                localStorage.setItem('myeongsim_expires_at', new Date(exp).toISOString());
+
+                // 게이트 통과 쿠키 180초간 발급
+                document.cookie = "myeongsim_site_access=granted; path=/; max-age=180; SameSite=Lax";
+                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=180; SameSite=Lax";
+
+                // 기본 닉네임이 없으면 게스트 닉네임 설정
+                if (!localStorage.getItem('user_name')) {
+                    localStorage.setItem('user_name', '체험 회원님');
+                }
+
+                window.dispatchEvent(new Event('myeongsim_auth_change'));
+
+                // 비동기 갱신 호출
+                await onRefresh();
+            } catch (err) {
+                console.error('Free trial launch error:', err);
+            }
+            
+            // 2. 팝업창 멈춤 없이 즉시 사주 만세력 리포트로 다이렉트 직행!
+            window.location.href = '/report';
         }
-        alert('⚡ [3분 스피드 맛보기 체험 시작]\n\n관리자 승인을 기다리시는 동안 기본 명심 리포트를 3분간 먼저 둘러보실 수 있습니다!\n(3분 후 자동으로 다시 잠기며, 관리자 승인 시 평생 무제한으로 해금됩니다)');
-        onRefresh();
     };
 
     // 도서 구매 정품 인증 처리 (스마트스토어, YES24, 교보문고 등)
@@ -489,10 +512,20 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                 <button
                                     type="button"
                                     onClick={handleStartFreeTrial}
-                                    className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all cursor-pointer"
+                                    disabled={isStartingTrial}
+                                    className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all cursor-pointer disabled:opacity-60"
                                 >
-                                    <Sparkles size={14} className="text-amber-400" />
-                                    <span>기다리는 동안 3분 스피드 맛보기 (핵심 분석 미리보기)</span>
+                                    {isStartingTrial ? (
+                                        <>
+                                            <span className="inline-block w-3.5 h-3.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                                            <span>⚡ 3분 맛보기로 입장 중...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Sparkles size={14} className="text-amber-400" />
+                                            <span>기다리는 동안 3분 스피드 맛보기 (핵심 분석 미리보기)</span>
+                                        </>
+                                    )}
                                 </button>
 
                                 {/* 수동 실시간 확인 & 정보 수정 */}
@@ -595,10 +628,20 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                     <button
                         type="button"
                         onClick={handleStartFreeTrial}
-                        className="w-full py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all cursor-pointer"
+                        disabled={isStartingTrial}
+                        className="w-full py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all cursor-pointer disabled:opacity-60"
                     >
-                        <Sparkles size={14} className="text-amber-400" />
-                        <span>⚡ 기다리지 않고 3분 스피드 맛보기로 둘러보기</span>
+                        {isStartingTrial ? (
+                            <>
+                                <span className="inline-block w-3.5 h-3.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                                <span>⚡ 3분 맛보기로 입장 중...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Sparkles size={14} className="text-amber-400" />
+                                <span>⚡ 기다리지 않고 3분 스피드 맛보기로 둘러보기</span>
+                            </>
+                        )}
                     </button>
 
                     <button
