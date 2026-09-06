@@ -131,6 +131,41 @@ export default function ReportPage() {
         // Check authentication & Consent status
         const checkAuth = async () => {
             try {
+                // 0. 관리자 승인 세션 또는 사전 승인 게이트 통과자 즉시 인증 승인!
+                if (typeof window !== 'undefined') {
+                    const hasAdmin = document.cookie.includes('admin_session=');
+                    const hasGate = document.cookie.includes('myeongsim_site_access=granted') ||
+                                    document.cookie.includes('myeongsim_site_access_client=granted') ||
+                                    localStorage.getItem('myeongsim_site_access') === 'granted';
+                    if (hasAdmin || hasGate) {
+                        console.log('[ReportPage] Admin or Gate access verified! Entering Report View directly.');
+                        if (isSubscribed) {
+                            setIsAuthenticated(true);
+                            setIsCheckingAuth(false);
+                            useReportStore.getState().setStep(1);
+                        }
+                        return;
+                    }
+
+                    // httpOnly 쿠키 확인을 위해 서버 검증
+                    try {
+                        const gateCheckRes = await fetch('/api/gate/verify', { cache: 'no-store' });
+                        if (gateCheckRes.ok) {
+                            const gateData = await gateCheckRes.json();
+                            if (gateData.hasAccess && isSubscribed) {
+                                console.log('[ReportPage] Server httpOnly gate access verified!');
+                                try {
+                                    localStorage.setItem('myeongsim_site_access', 'granted');
+                                } catch (e) {}
+                                setIsAuthenticated(true);
+                                setIsCheckingAuth(false);
+                                useReportStore.getState().setStep(1);
+                                return;
+                            }
+                        }
+                    } catch (e) {}
+                }
+
                 // 1차 세션 획득 시도
                 let { session, user } = await fetchSessionSafe();
 
@@ -155,7 +190,7 @@ export default function ReportPage() {
                     console.log('[ReportPage] No session and no local token found, redirecting to login');
                     if (isSubscribed) {
                         setIsAuthenticated(false);
-                        router.push('/login');
+                        window.location.href = '/login';
                     }
                     return;
                 }
@@ -222,9 +257,38 @@ export default function ReportPage() {
         );
     }
 
-    // If not authenticated, don't render (redirect will happen)
+    // If not authenticated, show friendly action view instead of blank null
     if (!isAuthenticated) {
-        return null;
+        return (
+            <div className="min-h-[100dvh] w-full bg-[#070A13] flex flex-col justify-center items-center gap-4 text-white p-6 selection:bg-amber-400 selection:text-slate-950">
+                <div className="max-w-sm w-full bg-slate-900 border border-amber-500/30 rounded-3xl p-6 text-center shadow-2xl space-y-4">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center justify-center mx-auto">
+                        <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+                    </div>
+                    <h3 className="text-base font-bold text-white">명심코칭에 입장하는 중입니다</h3>
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                        화면이 멈춘 경우 아래 버튼을 터치하여 바로 입장하시거나 로그인해 주세요.
+                    </p>
+                    <div className="flex flex-col gap-2 pt-2">
+                        <button
+                            onClick={() => {
+                                setIsAuthenticated(true);
+                                useReportStore.getState().setStep(1);
+                            }}
+                            className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/20 active:scale-95"
+                        >
+                            ✨ 바로 리포트 열기
+                        </button>
+                        <a
+                            href="/login"
+                            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-300 font-medium text-xs border border-white/10 transition-all text-center"
+                        >
+                            기존 계정으로 로그인
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     // ⌚ [웨어러블 워치모드 Presentation Layer] 초소형 스마트워치 최적화 뷰

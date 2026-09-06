@@ -304,12 +304,24 @@ export default function DailyMindWelcomeModal({ onClose }: DailyMindWelcomeModal
 
             {/* 특허 및 법률 면책 고지 */}
             <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 text-[11px] text-gray-400 space-y-1.5 leading-relaxed">
-              <div className="flex items-center gap-1.5 font-bold text-gray-300">
-                <Shield className="w-3.5 h-3.5 text-amber-400" />
-                <span>특허출원 및 비의료 가이드라인 준수 고지</span>
+              <div className="flex items-center justify-between font-bold text-gray-300">
+                <div className="flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-amber-400" />
+                  <span>특허출원 및 비의료 가이드라인 준수 고지</span>
+                </div>
+                <button
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.dispatchEvent(new CustomEvent('open-safety-modal'));
+                    }
+                  }}
+                  className="text-amber-400 hover:text-amber-300 underline underline-offset-2 text-[10px]"
+                >
+                  10대 조항 전문 보기
+                </button>
               </div>
-              <p>• 특허출원 제10-2025-0166877호: 심리 및 생체데이터 기반 스트레스 관리 솔루션 제공 장치 및 방법</p>
-              <p>• 본 서비스는 보건복지부 비의료 건강관리서비스 가이드라인을 준수하며, 의학적 진단이나 치료를 대체하지 않습니다.</p>
+              <p>• 특허출원 제10-2025-0166877호: 심리 및 생체데이터 기반 스트레스 관리 솔루션 제공 장치 및 방법 (특허출원 중이며, 의료적 효과나 정부 인증을 의미하지 않습니다)</p>
+              <p>• 본 서비스는 보건복지부 비의료 건강관리서비스 가이드라인을 준수하며, 의학적 진단이나 치료를 대체하지 않고 특정한 효과나 결과를 보장하지 않습니다.</p>
             </div>
           </div>
 

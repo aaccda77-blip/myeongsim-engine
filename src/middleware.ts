@@ -101,7 +101,10 @@ export async function middleware(request: NextRequest) {
     const isGateBypass = 
         pathname === '/' ||
         pathname === '/gate' ||
+        pathname === '/login' ||
+        pathname.startsWith('/auth') ||
         pathname.startsWith('/api/gate') ||
+        pathname.startsWith('/api/auth') ||
         pathname === '/admin/login' ||
         pathname.startsWith('/api/admin/login') ||
         pathname.startsWith('/_next') ||

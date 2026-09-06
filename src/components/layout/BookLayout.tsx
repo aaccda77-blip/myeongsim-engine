@@ -116,9 +116,12 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
         let shouldLock = true; // 기본값: 완전 잠금
 
         try {
-            // 1. 관리자 세션이거나 로컬 권한 보유 확인
+            // 1. 관리자 세션이거나 게이트 통과자, 로컬 권한 보유 확인
             if (typeof window !== 'undefined') {
-                const isAdmin = document.cookie.includes('admin_session=');
+                const isAdmin = document.cookie.includes('admin_session=') ||
+                                document.cookie.includes('myeongsim_site_access=granted') ||
+                                document.cookie.includes('myeongsim_site_access_client=granted') ||
+                                localStorage.getItem('myeongsim_site_access') === 'granted';
                 const isMonthly = localStorage.getItem('myeongsim_monthly_vip') === 'true';
                 const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
                                    localStorage.getItem('myeongsim_book_verified') === 'true';

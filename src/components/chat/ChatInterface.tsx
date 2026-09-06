@@ -3165,6 +3165,22 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             </div>
                         </form>
 
+                        {/* ⚖️ 비의료 건강관리 코칭 안내 캡션 (법적 보호 및 신뢰 제고) */}
+                        <div className="mt-2 px-1 flex items-center justify-between text-[11px] text-gray-400">
+                            <span className="truncate">※ 명심코칭은 비의료 멘탈 웰니스 코칭이며, 의학적 진단이나 치료를 대체하지 않습니다.</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (typeof window !== 'undefined') {
+                                        window.dispatchEvent(new CustomEvent('open-safety-modal'));
+                                    }
+                                }}
+                                className="text-amber-400/90 hover:text-amber-300 underline underline-offset-2 shrink-0 ml-2 font-medium"
+                            >
+                                서비스 안내
+                            </button>
+                        </div>
+
                         {/* 사업자 정보 팝업 모달 */}
                         <CompanyInfoModal 
                             isOpen={showCompanyModal} 

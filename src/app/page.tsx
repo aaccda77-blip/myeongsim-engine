@@ -1,13 +1,58 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Lock, Sparkles, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Lock, Sparkles, ArrowRight, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function HomePage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [checkingExistingAuth, setCheckingExistingAuth] = useState(true);
+
+    // 이미 게이트를 통과했거나 관리자 세션이 있는 경우 즉시 /report로 자동 이동
+    useEffect(() => {
+        let isCancelled = false;
+
+        const checkAuthAndRedirect = async () => {
+            try {
+                const localAccess = typeof window !== 'undefined' && localStorage.getItem('myeongsim_site_access') === 'granted';
+                const hasCookie = typeof document !== 'undefined' && (
+                    document.cookie.includes('myeongsim_site_access=granted') ||
+                    document.cookie.includes('myeongsim_site_access_client=granted') ||
+                    document.cookie.includes('admin_session=')
+                );
+
+                if (localAccess || hasCookie) {
+                    window.location.href = '/report';
+                    return;
+                }
+
+                // httpOnly 쿠키 확인을 위해 서버 GET 확인
+                const res = await fetch('/api/gate/verify', { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.hasAccess && !isCancelled) {
+                        try {
+                            localStorage.setItem('myeongsim_site_access', 'granted');
+                        } catch (e) {}
+                        window.location.href = '/report';
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn('[HomePage] auth check exception:', e);
+            } finally {
+                if (!isCancelled) setCheckingExistingAuth(false);
+            }
+        };
+
+        checkAuthAndRedirect();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,9 +80,13 @@ export default function HomePage() {
                 // Save access locally
                 try {
                     localStorage.setItem('myeongsim_site_access', 'granted');
+                    localStorage.setItem('myeongsim_monthly_vip', 'true');
+                    localStorage.setItem('myeongsim_paid_user', 'true');
+                    localStorage.setItem('user_name', trimmedUser);
                 } catch (e) {}
                 document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
                 document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
+                document.cookie = "admin_session=true; path=/; max-age=2592000; SameSite=Lax";
 
                 // Direct jump to main report
                 window.location.href = '/report';

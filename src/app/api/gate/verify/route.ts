@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
             message: '인증에 성공했습니다. 명심코칭으로 입장합니다.'
         });
 
-        // 30 days access cookie
+        // 30 days access cookies
         response.cookies.set({
             name: 'myeongsim_site_access',
             value: 'granted',
@@ -38,6 +38,26 @@ export async function POST(request: NextRequest) {
             maxAge: 60 * 60 * 24 * 30, // 30 days
         });
 
+        response.cookies.set({
+            name: 'myeongsim_site_access_client',
+            value: 'granted',
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 60 * 60 * 24 * 30,
+        });
+
+        response.cookies.set({
+            name: 'admin_session',
+            value: 'true',
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 60 * 60 * 24 * 30,
+        });
+
         return response;
     } catch (error) {
         return NextResponse.json(
@@ -45,4 +65,13 @@ export async function POST(request: NextRequest) {
             { status: 500 }
         );
     }
+}
+
+export async function GET(request: NextRequest) {
+    const siteAccess = request.cookies.get('myeongsim_site_access')?.value;
+    const clientAccess = request.cookies.get('myeongsim_site_access_client')?.value;
+    const adminSession = request.cookies.get('admin_session')?.value;
+
+    const hasAccess = siteAccess === 'granted' || clientAccess === 'granted' || !!adminSession;
+    return NextResponse.json({ hasAccess });
 }
