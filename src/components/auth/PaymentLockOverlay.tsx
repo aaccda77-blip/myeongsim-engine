@@ -97,17 +97,18 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
         };
     }, [depositorName, bookBuyerName, userId, onRefresh]);
 
-    // 🎁 [30분 무료 맛보기 체험 즉시 발급]
+    // 🎁 [3분 스피드 맛보기 체험 즉시 발급]
     const handleStartFreeTrial = () => {
         if (typeof window !== 'undefined') {
             localStorage.setItem('myeongsim_paid_user', 'true');
             localStorage.setItem('myeongsim_smartstore_vip', 'true');
             localStorage.setItem('myeongsim_trial_active', 'true');
-            const exp = Date.now() + 30 * 60 * 1000;
+            // 3분(180초) 타이트한 맛보기로 보안 및 결제 전환 극대화
+            const exp = Date.now() + 3 * 60 * 1000;
             localStorage.setItem('myeongsim_expires_at', new Date(exp).toISOString());
             window.dispatchEvent(new Event('myeongsim_auth_change'));
         }
-        alert('🎉 [30분 무료 맛보기 체험 활성화]\n\n관리자 승인을 기다리시는 동안 기본 제로포인트 명심 리포트 및 코칭을 30분간 먼저 둘러보실 수 있도록 즉시 열어드렸습니다! ✨');
+        alert('⚡ [3분 스피드 맛보기 체험 시작]\n\n관리자 승인을 기다리시는 동안 기본 명심 리포트를 3분간 먼저 둘러보실 수 있습니다!\n(3분 후 자동으로 다시 잠기며, 관리자 승인 시 평생 무제한으로 해금됩니다)');
         onRefresh();
     };
 
@@ -484,14 +485,14 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                     <span>💬 카카오톡 1:1 오픈채팅으로 빠른 승인 요청</span>
                                 </a>
 
-                                {/* 🎁 대기 중 30분 무료 맛보기 체험 */}
+                                {/* 🎁 대기 중 3분 스피드 맛보기 체험 */}
                                 <button
                                     type="button"
                                     onClick={handleStartFreeTrial}
                                     className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all cursor-pointer"
                                 >
                                     <Sparkles size={14} className="text-amber-400" />
-                                    <span>기다리는 동안 30분 무료 맛보기로 즉시 둘러보기</span>
+                                    <span>기다리는 동안 3분 스피드 맛보기 (핵심 분석 미리보기)</span>
                                 </button>
 
                                 {/* 수동 실시간 확인 & 정보 수정 */}
@@ -590,14 +591,14 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                         <span>💬 카카오톡 1:1 오픈채팅 문의 / 빠른 승인 요청</span>
                     </a>
 
-                    {/* 30분 무료 맛보기 체험 바로가기 */}
+                    {/* 3분 스피드 맛보기 체험 바로가기 */}
                     <button
                         type="button"
                         onClick={handleStartFreeTrial}
                         className="w-full py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all cursor-pointer"
                     >
                         <Sparkles size={14} className="text-amber-400" />
-                        <span>🎁 기다리지 않고 30분 무료 맛보기로 즉시 둘러보기</span>
+                        <span>⚡ 기다리지 않고 3분 스피드 맛보기로 둘러보기</span>
                     </button>
 
                     <button

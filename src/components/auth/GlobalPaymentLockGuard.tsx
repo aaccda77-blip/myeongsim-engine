@@ -131,9 +131,21 @@ export default function GlobalPaymentLockGuard() {
         window.addEventListener('storage', handleAuthChange);
         window.addEventListener('myeongsim_auth_change', handleAuthChange);
 
+        // 3분 체험 만료 실시간 감지 타이머 (5초 간격)
+        const expiryTimer = setInterval(() => {
+            const expStr = typeof window !== 'undefined' ? localStorage.getItem('myeongsim_expires_at') : null;
+            if (expStr) {
+                const expTime = new Date(expStr).getTime();
+                if (!isNaN(expTime) && Date.now() > expTime) {
+                    checkLockStatus();
+                }
+            }
+        }, 5000);
+
         return () => {
             window.removeEventListener('storage', handleAuthChange);
             window.removeEventListener('myeongsim_auth_change', handleAuthChange);
+            clearInterval(expiryTimer);
         };
     }, [pathname, checkLockStatus]);
 
