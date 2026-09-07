@@ -108,6 +108,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                 localStorage.setItem('myeongsim_smartstore_vip', 'true');
                 localStorage.setItem('myeongsim_trial_active', 'true');
                 localStorage.setItem('myeongsim_site_access', 'granted');
+                localStorage.setItem('myeongsim_view_mode', 'dashboard');
                 
                 // 3분(180초) 타이트한 맛보기로 보안 및 결제 전환 극대화
                 const exp = Date.now() + 3 * 60 * 1000;

@@ -117,7 +117,9 @@ export default function StageMap({ currentStage, onSelectStage, onClose }: Stage
                                     transition={{ delay: stage.id * 0.05 }}
                                     onClick={() => {
                                         if (!reportData?.birthDate || !reportData?.saju) {
-                                            alert('먼저 생년월일을 입력하고 "만세력 분석하기"를 완료해 주세요! 🔮');
+                                            alert('먼저 생년월일을 입력하고 "만세력 분석하기"를 완료해 주세요! 🔮\n생년월일 입력 화면으로 이동합니다.');
+                                            useReportStore.getState().setStep(1);
+                                            onClose();
                                             return;
                                         }
                                         setSelectedStage({ id: stage.id, title: stage.title });

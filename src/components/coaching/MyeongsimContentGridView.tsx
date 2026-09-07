@@ -8,6 +8,7 @@ import DailyScanWidget from './DailyScanWidget';
 import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
 import FounderWelcomeLetterBanner from './FounderWelcomeLetterBanner';
+import { useReportStore } from '@/store/useReportStore';
 
 const MultiDimensionalBlueprint = dynamic(() => import('@/components/chat/MultiDimensionalBlueprint'), { ssr: false });
 
@@ -36,6 +37,42 @@ export default function MyeongsimContentGridView({
   return (
     <div className="w-full max-w-4xl mx-auto space-y-5 pb-20 animate-in fade-in duration-500 text-left">
       
+      {/* ==========================================
+          0-A. 생년월일 미입력 상태 시 즉시 만세력 4기둥 분석창 직행 골든 배너
+          ========================================== */}
+      {!userProfile?.birthDate && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+          onClick={() => {
+            useReportStore.getState().setStep(1);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('myeongsim_view_mode', 'dashboard');
+              window.dispatchEvent(new CustomEvent('switch-view-mode', { detail: 'dashboard' }));
+            }
+          }}
+          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/25 via-yellow-500/20 to-amber-600/25 border-2 border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.3)] cursor-pointer text-left transition-all animate-pulse"
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-black text-amber-300 flex items-center gap-1.5">
+              <Sparkles size={16} className="text-amber-400 animate-spin" />
+              <span>생년월일 미입력 상태입니다</span>
+            </span>
+            <span className="text-xs bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+              내 사주 분석하기 ➔
+            </span>
+          </div>
+          <h4 className="text-sm sm:text-base font-black text-white">
+            🔮 생년월일을 입력하시면 내 만세력 4기둥과 오행 기질이 즉시 해금됩니다!
+          </h4>
+          <p className="text-xs text-amber-200/90 mt-1">
+            터치하시면 1초 만에 생년월일 입력 및 만세력 분석 화면으로 이동합니다.
+          </p>
+        </motion.div>
+      )}
+
       {/* ==========================================
           0. [Version 2: Emotional Founder Letter] 감성 편지글형 접이식 배너
           ========================================== */}

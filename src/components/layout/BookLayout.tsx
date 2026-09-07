@@ -49,8 +49,8 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
     const [isInquiryOpen, setIsInquiryOpen] = useState(false);
     const [intentParams, setIntentParams] = useState<{ intent: string | null; section: string | null }>({ intent: null, section: null });
 
-    // [NEW] 뷰 모드 스위치 (큐레이션 카드 모드 vs 딥 헬스케어 코칭 모드)
-    const [viewMode, setViewMode] = useState<'grid' | 'dashboard'>('grid');
+    // [NEW] 뷰 모드 스위치 (기본값: 생년월일 입력 및 14단계 리포트가 노출되는 'dashboard')
+    const [viewMode, setViewMode] = useState<'grid' | 'dashboard'>('dashboard');
     const [showMicroPassModal, setShowMicroPassModal] = useState(false);
     const [show64KeysModal, setShow64KeysModal] = useState(false);
     const [showOhaengModal, setShowOhaengModal] = useState(false);
@@ -59,14 +59,29 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
     useEffect(() => {
         try {
-            const savedMode = localStorage.getItem('myeongsim_view_mode');
-            if (savedMode === 'dashboard' || savedMode === 'grid') {
-                setViewMode(savedMode);
+            // 생년월일이 없으면 무조건 생년월일 입력 폼(dashboard, step 1)으로 열리도록 보장
+            const hasBirth = useReportStore.getState().reportData?.birthDate;
+            if (!hasBirth) {
+                setViewMode('dashboard');
+            } else {
+                const savedMode = localStorage.getItem('myeongsim_view_mode');
+                if (savedMode === 'dashboard' || savedMode === 'grid') {
+                    setViewMode(savedMode);
+                }
             }
         } catch (e) {
             console.warn('LocalStorage access warning:', e);
         }
-    }, []);
+
+        const handleSwitchEvent = (e: any) => {
+            const mode = e.detail || 'dashboard';
+            if (mode === 'dashboard' || mode === 'grid') {
+                setViewMode(mode);
+            }
+        };
+        window.addEventListener('switch-view-mode', handleSwitchEvent);
+        return () => window.removeEventListener('switch-view-mode', handleSwitchEvent);
+    }, [reportData]);
 
     const handleModeSwitch = (mode: 'grid' | 'dashboard') => {
         setViewMode(mode);
@@ -305,9 +320,11 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                             className="p-2 hover:bg-white/5 rounded-full relative transition-colors"
                             onClick={() => {
                                 // Check if birthDate exists in reportData
-                                const reportData = useReportStore.getState().reportData;
-                                if (!reportData?.birthDate) {
-                                    alert('먼저 생년월일을 입력하고 "만세력 분석하기"를 눌러주세요!');
+                                const curData = useReportStore.getState().reportData;
+                                if (!curData?.birthDate) {
+                                    alert('먼저 생년월일을 입력하고 "만세력 분석하기"를 눌러주세요!\n생년월일 입력 화면으로 즉시 이동합니다. 🔮');
+                                    setViewMode('dashboard');
+                                    useReportStore.getState().setStep(1);
                                     return;
                                 }
                                 setIsChatOpen(!isChatOpen);
@@ -369,7 +386,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
                 {/* 2. Main Content */}
                 <main className="flex-1 w-full relative pt-14 pb-20 overflow-hidden">
-                    {viewMode === 'grid' ? (
+                    {viewMode === 'grid' && reportData?.birthDate ? (
                         <div className="w-full h-full overflow-y-auto px-4 py-4 scrollbar-hide">
                             <MyeongsimContentGridView
                                 userProfile={reportData}
