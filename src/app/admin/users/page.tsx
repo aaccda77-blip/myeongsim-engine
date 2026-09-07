@@ -160,7 +160,7 @@ export default function AdminUsersPage() {
             const data = await response.json();
             if (data.success) {
                 if (mappedTier === 'MONTHLY_98K') {
-                    alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n회원: ${userCleanName || userId}\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 엠씨스퀘어 3D 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.`);
+                    alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n회원: ${userCleanName || userId}\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 명심 3D 입체 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.`);
                 } else if (mappedTier === 'BOOK_ZERO_POINT') {
                     alert(`📖 [전자책 《제로포인트》 구매자] 승인 완료!\n\n회원: ${userCleanName || userId}\n책 연계 3-Code 실전 인터랙티브 가이드, 1:1 맞춤 헌정 힐링송 신청권, AI 챗봇 20회 코칭권 및 기본 제로포인트 리포트가 정상 활성화되었습니다.`);
                 } else {

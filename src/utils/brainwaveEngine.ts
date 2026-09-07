@@ -170,7 +170,7 @@ export class BrainwaveEngine {
     // 마스터 게인
     private masterGain: GainNode | null = null;
 
-    // 🎧 엠씨스퀘어(MC Square) 바이노럴 & 3D 서라운드 모드
+    // 🎧 명심 3D 입체 바이노럴 서라운드 모드
     private isMcSquare = false;
     private leftOsc: OscillatorNode | null = null;
     private rightOsc: OscillatorNode | null = null;
@@ -266,7 +266,7 @@ export class BrainwaveEngine {
         }
     }
 
-    // 톤 및 브라운 노이즈 합성 로직 (엠씨스퀘어 바이노럴 & 3D 서라운드 지원)
+    // 톤 및 브라운 노이즈 합성 로직 (명심 3D 바이노럴 서라운드 지원)
     private startTone(preset: FrequencyPresetId) {
         if (!this.ctx || !this.masterGain) return;
         const ctx = this.ctx;
@@ -279,7 +279,7 @@ export class BrainwaveEngine {
         if (preset === 'brown_noise') {
             // 🌟 딥 브라운 노이즈
             const bufferSize = ctx.sampleRate * 4;
-            // 엠씨스퀘어 모드일 때는 2채널(L, R) 각각 독립 랜덤 노이즈 생성 -> 3D 입체 음향
+            // 명심 3D 서라운드 모드일 때는 2채널(L, R) 각각 독립 랜덤 노이즈 생성 -> 3D 입체 음향
             const numChannels = this.isMcSquare ? 2 : 1;
             const noiseBuffer = ctx.createBuffer(numChannels, bufferSize, ctx.sampleRate);
             
@@ -306,7 +306,7 @@ export class BrainwaveEngine {
             this.brownFilter.connect(this.freqGain);
             this.brownSource.start();
         } else if (this.isMcSquare) {
-            // 🎧 엠씨스퀘어(MC Square) 바이노럴 비트 합성 모드 (L/R 주파수 분리)
+            // 🎧 명심 바이노럴 비트 합성 모드 (L/R 주파수 분리)
             let baseHz = 528;
             let beatHz = 10; // 알파파 (10Hz 집중/몰입)
 

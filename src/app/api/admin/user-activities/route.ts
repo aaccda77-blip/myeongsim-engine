@@ -34,7 +34,7 @@ if (!globalForActivity.activityStore) {
                 id: 'init_2',
                 userId: '010-3849-5982',
                 userName: '이경윤 대표님',
-                action: '🎧 손목 사운드 랩 엠씨스퀘어 청취',
+                action: '🎧 손목 사운드 랩 명심 3D 입체 사운드 청취',
                 category: 'SOUND',
                 details: '528Hz 기적 3D 바이노럴 서라운드 (L/R 분리)',
                 timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString()

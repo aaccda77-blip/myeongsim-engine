@@ -228,7 +228,7 @@ export default function UserActivityModal({
                             <Activity size={28} className="mx-auto text-gray-600" />
                             <p className="text-xs text-gray-300 font-bold">아직 기록된 활동이 없습니다.</p>
                             <p className="text-[11px] text-gray-500 max-w-sm mx-auto">
-                                사용자가 워치 다이얼, 엠씨스퀘어 청취, 1:1 선언문 각인 등을 실행하면 실시간으로 여기에 시간대별로 기록됩니다.
+                                사용자가 워치 다이얼, 명심 3D 사운드 청취, 1:1 선언문 각인 등을 실행하면 실시간으로 여기에 시간대별로 기록됩니다.
                             </p>
                         </div>
                     ) : (

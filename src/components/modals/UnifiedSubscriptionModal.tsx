@@ -197,7 +197,7 @@ export default function UnifiedSubscriptionModal({
                                 <div className="space-y-1.5 text-xs text-gray-200">
                                     <div className="flex items-center gap-2">
                                         <span className="text-amber-400 font-bold">✓</span>
-                                        <span><strong>스마트워치 9대 퀀텀 다이얼</strong> & <strong>엠씨스퀘어 3D 서라운드</strong></span>
+                                        <span><strong>스마트워치 9대 퀀텀 다이얼</strong> & <strong>명심 3D 입체 서라운드</strong></span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-amber-400 font-bold">✓</span>

@@ -57,10 +57,10 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
     const [selectedId, setSelectedId] = useState<FrequencyPresetId>('brown_noise');
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(0.45);
-    const [isMcSquare, setIsMcSquare] = useState(true); // 기본적으로 엠씨스퀘어 입체 서라운드 활성화!
+    const [isMcSquare, setIsMcSquare] = useState(true); // 기본적으로 명심 3D 입체 서라운드 활성화!
     const [pulseToggle, setPulseToggle] = useState(false);
 
-    // 엠씨스퀘어 좌우 펄스 애니메이션 (L ↔ R 교차 점멸)
+    // 명심 3D 서라운드 좌우 펄스 애니메이션 (L ↔ R 교차 점멸)
     useEffect(() => {
         if (!isPlaying || !isMcSquare) return;
         const timer = setInterval(() => {
@@ -82,7 +82,7 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
             ActivityTracker.track(
                 `🎧 손목 사운드 랩 재생 (${currentPreset.name})`,
                 'SOUND',
-                isMcSquare ? `3D 엠씨스퀘어 입체 서라운드 (${currentPreset.hz})` : `일반 모노 (${currentPreset.hz})`
+                isMcSquare ? `명심 3D 입체 서라운드 (${currentPreset.hz})` : `일반 모노 (${currentPreset.hz})`
             );
         }
     };
@@ -133,7 +133,7 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
                 </button>
             </div>
 
-            {/* 엠씨스퀘어 3D 서라운드 원터치 토글 배너 */}
+            {/* 명심 3D 서라운드 원터치 토글 배너 */}
             <div className="w-full px-1">
                 <button
                     onClick={handleToggleMcSquare}
@@ -146,7 +146,7 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
                     <div className="flex items-center gap-1">
                         <Radio size={isLargeText ? 13 : 11} className={isMcSquare ? 'text-amber-400 animate-pulse' : 'text-gray-500'} />
                         <span className={`${isLargeText ? 'text-[11px]' : 'text-[9.5px]'} font-mono font-black ${isMcSquare ? 'text-amber-300' : 'text-gray-400'}`}>
-                            3D 엠씨스퀘어 서라운드
+                            명심 3D 입체 서라운드
                         </span>
                     </div>
                     <span className={`${isLargeText ? 'text-[9.5px] px-2 py-0.5' : 'text-[8.5px] px-1.5 py-0.2'} font-mono font-black rounded ${
@@ -195,7 +195,7 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
                         {currentPreset.name}
                     </h3>
 
-                    {/* 엠씨스퀘어 L/R 실시간 펄스 인디케이터 */}
+                    {/* 명심 3D 서라운드 L/R 실시간 펄스 인디케이터 */}
                     {isMcSquare ? (
                         <div className="flex items-center justify-center gap-1.5 mt-0.5">
                             <span className={`${isLargeText ? 'text-[9.5px]' : 'text-[8.5px]'} font-mono font-black transition-opacity ${
@@ -248,7 +248,7 @@ export function WearableBrainwaveAudio({ onNext }: WearableBrainwaveAudioProps) 
                     }`}
                 >
                     {isPlaying ? <Pause size={isLargeText ? 15 : 13} fill="currentColor" /> : <Play size={isLargeText ? 15 : 13} fill="currentColor" />}
-                    <span>{isPlaying ? '사운드 정지' : isMcSquare ? '🎧 엠씨스퀘어 입체 재생' : '손목 치유음 재생'}</span>
+                    <span>{isPlaying ? '사운드 정지' : isMcSquare ? '🎧 명심 3D 입체 재생' : '손목 치유음 재생'}</span>
                 </button>
             </div>
         </div>

@@ -217,12 +217,12 @@ export function WearableDailyAffirmation({ onGoToSoundLab }: WearableDailyAffirm
                         <RefreshCw size={isLargeText ? 13 : 11} className={isGenerating ? 'animate-spin text-amber-400' : ''} />
                     </button>
 
-                    {/* 엠씨스퀘어 연동 이동 */}
+                    {/* 명심 3D 사운드 연동 이동 */}
                     {onGoToSoundLab && (
                         <button
                             onClick={onGoToSoundLab}
                             className={`${isLargeText ? 'size-8' : 'size-7'} rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 flex items-center justify-center transition-all cursor-pointer border border-cyan-400/30 shrink-0`}
-                            title="엠씨스퀘어 몰입 사운드 재생"
+                            title="명심 3D 입체 사운드 재생"
                         >
                             <Headphones size={isLargeText ? 13 : 11} />
                         </button>

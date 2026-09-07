@@ -92,7 +92,7 @@ export default function WatchShowcasePage() {
                         <div className="p-3 rounded-2xl bg-white/[0.03] border border-emerald-500/20 flex flex-col items-center gap-1">
                             <Headphones size={16} className="text-emerald-400" />
                             <span className="text-xs font-bold text-white">손목 뇌파 사운드 랩</span>
-                            <span className="text-[10px] text-gray-400">엠씨스퀘어 입체음 & 528Hz 즉시 재생</span>
+                            <span className="text-[10px] text-gray-400">명심 3D 입체음 & 528Hz 즉시 재생</span>
                         </div>
                     </div>
                 </div>
