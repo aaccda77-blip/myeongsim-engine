@@ -33,9 +33,9 @@ export async function POST(req: NextRequest) {
             message: '무통장 입금 승인 신청이 성공적으로 접수되었습니다. 관리자 확인 후 즉시 124개 전 서비스가 활성화됩니다.',
             pendingItem,
             bankInfo: {
-                bank: '카카오뱅크',
-                accountNumber: '3333-01-2345678',
-                accountHolder: '청류 이경윤',
+                bank: '토스뱅크',
+                accountNumber: '1002-6847-4899',
+                accountHolder: '마인드플로우랩',
                 amount: Number(amount) || 98000,
             }
         });

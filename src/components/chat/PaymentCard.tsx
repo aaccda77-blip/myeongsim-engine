@@ -26,9 +26,9 @@ export default function PaymentCard({ onDetailedReport, userId = 'guest-id' }: P
     const [isCheckingApproval, setIsCheckingApproval] = useState(false);
 
     const BANK_INFO = {
-        bank: '카카오뱅크',
-        account: '3333-01-2345678',
-        holder: '청류 (이경윤)',
+        bank: '토스뱅크',
+        account: '1002-6847-4899',
+        holder: '마인드플로우랩',
         price: 98000,
     };
 
@@ -267,8 +267,8 @@ export default function PaymentCard({ onDetailedReport, userId = 'guest-id' }: P
                                     </div>
                                     <div className="bg-black/60 border border-amber-400/25 rounded-xl p-2.5 flex items-center justify-between">
                                         <div>
-                                            <span className="text-[10.5px] text-gray-400 block font-mono">카카오뱅크 (예금주: 청류 이경윤)</span>
-                                            <span className="text-sm font-black font-mono text-amber-300 tracking-wider">3333-01-2345678</span>
+                                            <span className="text-[10.5px] text-gray-400 block font-mono">토스뱅크 (예금주: 마인드플로우랩)</span>
+                                            <span className="text-sm font-black font-mono text-amber-300 tracking-wider">1002-6847-4899</span>
                                         </div>
                                         <button
                                             onClick={handleCopyAccount}
@@ -327,7 +327,7 @@ export default function PaymentCard({ onDetailedReport, userId = 'guest-id' }: P
                                     수분 내에 <strong className="text-amber-300">[열어주기 (승인)]</strong>를 완료합니다.
                                 </p>
                                 <div className="p-2.5 bg-black/60 rounded-xl border border-white/10 text-[10.5px] text-gray-400 font-mono">
-                                    카카오뱅크 3333-01-2345678 (예금주: 청류 이경윤) / 98,000원
+                                    토스뱅크 1002-6847-4899 (예금주: 마인드플로우랩) / 98,000원
                                 </div>
 
                                 <button

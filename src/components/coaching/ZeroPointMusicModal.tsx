@@ -388,7 +388,7 @@ export default function ZeroPointMusicModal({
     const [copiedOrderText, setCopiedOrderText] = useState<boolean>(false);
     const [isShareSuccess, setIsShareSuccess] = useState<boolean>(false);
 
-    // [NEW] 🏦 무통장 입금 및 관리자 승인 시스템 (카카오뱅크 3333-01-2345678 청류 이경윤)
+    // [NEW] 🏦 무통장 입금 및 관리자 승인 시스템 (토스뱅크 1002-6847-4899 마인드플로우랩)
     const [depositorName, setDepositorName] = useState<string>(effectiveProfile.userName || '');
     const [isAccountCopied, setIsAccountCopied] = useState<boolean>(false);
     const [isDepositSubmitted, setIsDepositSubmitted] = useState<boolean>(false);
@@ -396,7 +396,7 @@ export default function ZeroPointMusicModal({
     const [isCheckingApproval, setIsCheckingApproval] = useState<boolean>(false);
 
     const handleCopyAccount = () => {
-        navigator.clipboard.writeText('카카오뱅크 3333-01-2345678');
+        navigator.clipboard.writeText('토스뱅크 1002-6847-4899 마인드플로우랩');
         setIsAccountCopied(true);
         setTimeout(() => setIsAccountCopied(false), 2500);
     };
@@ -466,7 +466,7 @@ export default function ZeroPointMusicModal({
     };
 
     const getDepositSummaryText = () => {
-        return `[명심코칭 VIP 멤버십 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 신청 플랜: 월 98,000원 VIP 정액권 (432Hz 맞춤 노래 & 124개 전 서비스 무제한)\n- 입금액: 98,000원 (카카오뱅크 3333-01-2345678 청류 이경윤)\n- 사용자 사주 정보: ${effectiveProfile.userName} (${effectiveProfile.birthDate || '미입력'})`;
+        return `[명심코칭 VIP 멤버십 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 신청 플랜: 월 98,000원 VIP 정액권 (432Hz 맞춤 노래 & 124개 전 서비스 무제한)\n- 입금액: 98,000원 (토스뱅크 1002-6847-4899 마인드플로우랩)\n- 사용자 사주 정보: ${effectiveProfile.userName} (${effectiveProfile.birthDate || '미입력'})`;
     };
 
     const handleCopyDepositSummary = () => {
@@ -1705,8 +1705,8 @@ export default function ZeroPointMusicModal({
                                             </div>
                                             <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-between">
                                                 <div>
-                                                    <span className="text-[10px] text-gray-400 block font-mono">카카오뱅크 (예금주: 청류 이경윤)</span>
-                                                    <span className="text-xs font-black font-mono text-white tracking-wider">3333-01-2345678</span>
+                                                    <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (예금주: 마인드플로우랩)</span>
+                                                    <span className="text-xs font-black font-mono text-white tracking-wider">1002-6847-4899</span>
                                                 </div>
                                                 <button
                                                     onClick={handleCopyAccount}
@@ -1771,7 +1771,7 @@ export default function ZeroPointMusicModal({
 
                                         <div className="p-3 rounded-2xl bg-white/5 border border-slate-800 space-y-2">
                                             <div className="text-[10.5px] text-gray-400">
-                                                입금 계좌: <span className="text-amber-300 font-mono font-bold">카카오뱅크 3333-01-2345678 (청류 이경윤)</span>
+                                                입금 계좌: <span className="text-amber-300 font-mono font-bold">토스뱅크 1002-6847-4899 (마인드플로우랩)</span>
                                             </div>
                                             <div className="text-[11px] text-slate-300 bg-slate-900 px-3 py-2 rounded-xl border border-slate-700 flex items-center justify-between">
                                                 <span>입금자명: <strong className="text-white">{depositorName}</strong> (98,000원)</span>

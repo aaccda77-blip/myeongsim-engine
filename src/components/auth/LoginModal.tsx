@@ -172,9 +172,9 @@ export default function LoginModal({ onClose }: LoginModalProps) {
                                             className="mt-4 space-y-3"
                                         >
                                             <div className="bg-black/40 p-3 rounded-lg border border-gray-700/50 font-mono text-xs">
-                                                농협<br />
-                                                <span className="text-white text-sm font-bold block mt-1 select-all">351-0733-820813</span>
-                                                <span className="block mt-1">예금주: 이경윤</span>
+                                                토스뱅크<br />
+                                                <span className="text-white text-sm font-bold block mt-1 select-all">1002-6847-4899</span>
+                                                <span className="block mt-1">예금주: 마인드플로우랩</span>
                                             </div>
 
                                             <p className="text-xs text-gray-400 text-center">

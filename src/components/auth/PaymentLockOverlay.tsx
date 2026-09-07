@@ -557,12 +557,12 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                     <div className="flex items-center justify-between text-amber-300 font-bold mb-1">
                                         <span>입금 계좌 안내</span>
                                         <span className="text-[10px] bg-amber-400/20 px-2 py-0.5 rounded text-amber-200">
-                                            카카오뱅크
+                                            토스뱅크
                                         </span>
                                     </div>
                                     <div className="font-mono text-sm font-black text-white flex items-center justify-between">
-                                        <span>3333-01-2345678</span>
-                                        <span className="text-xs text-gray-300 font-normal">예금주: 청류 이경윤</span>
+                                        <span>1002-6847-4899</span>
+                                        <span className="text-xs text-gray-300 font-normal">예금주: 마인드플로우랩</span>
                                     </div>
                                     <div className="text-[11px] text-gray-400 mt-1">
                                         입금 금액: <strong className="text-amber-300 font-mono">98,000원</strong> (부가세 포함)

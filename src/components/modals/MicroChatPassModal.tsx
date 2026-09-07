@@ -34,9 +34,9 @@ export default function MicroChatPassModal({
     if (!isOpen) return null;
 
     const BANK_INFO = {
-        bank: '카카오뱅크',
-        account: '3333-01-2345678',
-        holder: '청류 (이경윤)',
+        bank: '토스뱅크',
+        account: '1002-6847-4899',
+        holder: '마인드플로우랩',
         price: 98000,
     };
 
@@ -119,7 +119,7 @@ export default function MicroChatPassModal({
     };
 
     const getDepositSummaryText = () => {
-        return `[명심코칭 VIP 멤버십 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 입금액: ${BANK_INFO.price.toLocaleString()}원 (카카오뱅크 3333-01-2345678 청류 이경윤)\n- 사용자 ID: ${userId}`;
+        return `[명심코칭 VIP 멤버십 입금 확인 요청]\n- 입금자명: ${depositorName}\n- 입금액: ${BANK_INFO.price.toLocaleString()}원 (토스뱅크 1002-6847-4899 마인드플로우랩)\n- 사용자 ID: ${userId}`;
     };
 
     const handleCopyDepositSummary = () => {
@@ -263,8 +263,8 @@ export default function MicroChatPassModal({
 
                                         <div className="bg-black/50 border border-amber-400/20 rounded-xl p-2.5 flex items-center justify-between">
                                             <div>
-                                                <span className="text-[10px] text-gray-400 block font-mono">카카오뱅크 (청류 이경윤)</span>
-                                                <span className="text-sm font-black font-mono text-white tracking-wider">3333-01-2345678</span>
+                                                <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (마인드플로우랩)</span>
+                                                <span className="text-sm font-black font-mono text-white tracking-wider">1002-6847-4899</span>
                                             </div>
                                             <button
                                                 onClick={handleCopyAccount}
@@ -314,7 +314,7 @@ export default function MicroChatPassModal({
 
                                     <div className="p-2.5 rounded-xl bg-white/5 border border-slate-800 flex flex-col items-center space-y-2">
                                         <div className="text-[10.5px] text-amber-300 font-mono">
-                                            카카오뱅크 3333-01-2345678 (청류 이경윤)
+                                            토스뱅크 1002-6847-4899 (마인드플로우랩)
                                         </div>
                                         <div className="w-full flex items-center justify-between text-[10px] text-gray-300 bg-slate-900 px-2.5 py-1.5 rounded border border-slate-700">
                                             <span>입금자명: <strong>{depositorName}</strong> (98,000원)</span>

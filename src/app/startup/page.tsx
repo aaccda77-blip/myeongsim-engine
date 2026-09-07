@@ -366,7 +366,7 @@ export default function StartupDashboard() {
     };
 
     const handleCopyAccount = () => {
-        navigator.clipboard.writeText('3333-01-2345678');
+        navigator.clipboard.writeText('1002-6847-4899');
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
     };
@@ -1004,8 +1004,8 @@ export default function StartupDashboard() {
                                         </div>
                                         <div className="bg-black/50 border border-amber-400/20 rounded-xl p-2.5 flex items-center justify-between">
                                             <div>
-                                                <span className="text-[10px] text-gray-400 block font-mono">카카오뱅크 (청류 이경윤)</span>
-                                                <span className="text-sm font-black font-mono text-white tracking-wider">3333-01-2345678</span>
+                                                <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (마인드플로우랩)</span>
+                                                <span className="text-sm font-black font-mono text-white tracking-wider">1002-6847-4899</span>
                                             </div>
                                             <button
                                                 onClick={handleCopyAccount}
@@ -3375,8 +3375,8 @@ export default function StartupDashboard() {
                                                 </div>
                                                 <div className="bg-black/50 border border-amber-400/20 rounded-xl p-2.5 flex items-center justify-between">
                                                     <div>
-                                                        <span className="text-[10px] text-gray-400 block font-mono">카카오뱅크 (청류 이경윤)</span>
-                                                        <span className="text-sm font-black font-mono text-white tracking-wider">3333-01-2345678</span>
+                                                        <span className="text-[10px] text-gray-400 block font-mono">토스뱅크 (마인드플로우랩)</span>
+                                                        <span className="text-sm font-black font-mono text-white tracking-wider">1002-6847-4899</span>
                                                     </div>
                                                     <button
                                                         onClick={handleCopyAccount}

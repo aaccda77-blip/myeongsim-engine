@@ -164,7 +164,7 @@ export default function UnifiedSubscriptionModal({
                                 관리자가 입금 내역 확인 후 수분 내에 <strong>[열어주기 (승인)]</strong>를 완료합니다.
                             </p>
                             <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-[11px] text-gray-400 font-mono">
-                                입금 계좌: 카카오뱅크 3333-01-2345678 (예금주: 청류 이경윤)
+                                입금 계좌: 토스뱅크 1002-6847-4899 (예금주: 마인드플로우랩)
                             </div>
                             <div className="space-y-2 pt-2">
                                 <button
@@ -275,10 +275,10 @@ export default function UnifiedSubscriptionModal({
                                     <div className="p-3 bg-black/60 rounded-xl border border-amber-400/30 text-center">
                                         <span className="text-[10px] text-gray-400 block font-mono">입금 전용 계좌</span>
                                         <span className="text-sm font-black text-amber-300 font-mono block mt-0.5">
-                                            카카오뱅크 3333-01-2345678
+                                            토스뱅크 1002-6847-4899
                                         </span>
                                         <span className="text-[11px] text-gray-300">
-                                            예금주: <strong>청류 (이경윤)</strong> · 금액: <strong className="text-amber-300">98,000원</strong>
+                                            예금주: <strong>마인드플로우랩</strong> · 금액: <strong className="text-amber-300">98,000원</strong>
                                         </span>
                                     </div>
 
