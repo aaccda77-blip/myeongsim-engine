@@ -19,6 +19,7 @@ import ChatMessageList from './modules/ChatMessageList';
 import ChatMoodSwitchBar from './modules/ChatMoodSwitchBar';
 import ChatTrendingChipsBar from './modules/ChatTrendingChipsBar';
 import { CoinShowerEffect, CoinShowerRef } from '@/components/effects/CoinShowerEffect';
+import { isUserApprovedSync, grantUserApprovalSync } from '@/lib/authGuardUtils';
 
 
 const PSYCH_PROTOCOLS = [
@@ -68,18 +69,36 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [showMindStateModal, setShowMindStateModal] = useState<boolean>(false);
     const [showDarkCodeModal, setShowDarkCodeModal] = useState<boolean>(false);
     const [showTrendingTopicModal, setShowTrendingTopicModal] = useState<boolean>(false);
-    const [isPaidUser, setIsPaidUser] = useState<boolean>(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('myeongsim_paid_user') === 'true';
-        }
-        return false;
-    });
+    const [isPaidUser, setIsPaidUser] = useState<boolean>(() => isUserApprovedSync());
     const [isPendingApproval, setIsPendingApproval] = useState<boolean>(() => {
         if (typeof window !== 'undefined') {
             return localStorage.getItem('myeongsim_pending_approval') === 'true';
         }
         return false;
     });
+
+    // ⚡ 실시간 관리자 승인 및 결제 권한 변경 동기화
+    useEffect(() => {
+        const syncPaidStatus = () => {
+            const approved = isUserApprovedSync();
+            setIsPaidUser(approved);
+            if (approved) {
+                setIsPendingApproval(false);
+                setCumulativeCount(0);
+            }
+        };
+
+        syncPaidStatus();
+        window.addEventListener('myeongsim_auth_change', syncPaidStatus);
+        window.addEventListener('storage', syncPaidStatus);
+        window.addEventListener('focus', syncPaidStatus);
+        return () => {
+            window.removeEventListener('myeongsim_auth_change', syncPaidStatus);
+            window.removeEventListener('storage', syncPaidStatus);
+            window.removeEventListener('focus', syncPaidStatus);
+        };
+    }, []);
+
     const [depositorName, setDepositorName] = useState<string>(() => {
         if (typeof window !== 'undefined') {
             return localStorage.getItem('myeongsim_depositor_name') || '';
@@ -183,17 +202,28 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
         setIsCheckingApproval(true);
         try {
             const savedName = localStorage.getItem('myeongsim_depositor_name') || depositorName;
-            const res = await fetch(`/api/payment/check-approval?name=${encodeURIComponent(savedName)}&userId=${encodeURIComponent(userId)}`);
+            const savedUserId = localStorage.getItem('myeongsim_user_id') || userId;
+            const savedEmail = localStorage.getItem('myeongsim_email') || '';
+            const savedPhone = localStorage.getItem('myeongsim_phone') || '';
+            const savedOrder = localStorage.getItem('myeongsim_verified_order') || '';
+
+            const params = new URLSearchParams();
+            if (savedUserId) params.set('userId', savedUserId);
+            if (savedName) params.set('name', savedName);
+            if (savedEmail) params.set('email', savedEmail);
+            if (savedPhone) params.set('phone', savedPhone);
+            if (savedOrder) params.set('orderNumber', savedOrder);
+            params.set('t', String(Date.now()));
+
+            const res = await fetch(`/api/payment/check-approval?${params.toString()}`);
             const data = await res.json();
             
             if (data.approved) {
-                localStorage.setItem('myeongsim_paid_user', 'true');
-                localStorage.removeItem('myeongsim_pending_approval');
-                localStorage.setItem('myeongsim_total_user_messages', '0');
+                grantUserApprovalSync(data.tier);
                 setIsPaidUser(true);
                 setIsPendingApproval(false);
                 setCumulativeCount(0);
-                alert('🎉 무통장 입금 승인이 확인되었습니다! 1:1 맞춤 챗봇 코칭 3회가 충전되었습니다.');
+                alert('🎉 무통장 입금 승인이 확인되었습니다! 1:1 맞춤 챗봇 코칭 및 전 VIP 서비스가 정상 해금되었습니다.');
             } else if (data.isPending) {
                 alert('⏳ 아직 입금 확인 중입니다. 담당자가 1~5분 이내 입금 확인 후 승인해 드립니다.');
             } else {
@@ -1161,12 +1191,9 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 userId={userId}
                 onCheckApproval={checkApprovalStatus}
                 onSuccessPay={() => {
+                    grantUserApprovalSync('MONTHLY_98K');
                     setIsPaidUser(true);
                     setCumulativeCount(0);
-                    if (typeof window !== 'undefined') {
-                        localStorage.setItem('myeongsim_paid_user', 'true');
-                        localStorage.setItem('myeongsim_total_user_messages', '0');
-                    }
                     setShowMicroPassModal(false);
                 }}
             />

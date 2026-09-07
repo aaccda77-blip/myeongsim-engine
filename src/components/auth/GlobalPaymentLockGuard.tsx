@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import PaymentLockOverlay from './PaymentLockOverlay';
 import { supabase } from '@/lib/supabaseClient';
-import { isUserApprovedSync } from '@/lib/authGuardUtils';
+import { isUserApprovedSync, grantUserApprovalSync } from '@/lib/authGuardUtils';
 
 export default function GlobalPaymentLockGuard() {
     const pathname = usePathname();
@@ -66,22 +66,27 @@ export default function GlobalPaymentLockGuard() {
             // 1. 관리자 세션이거나 승인된 로컬 권한 보유 확인
             if (typeof window !== 'undefined') {
                 const isAdmin = document.cookie.includes('admin_session=');
+                const isServerApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
                 const isMonthly = localStorage.getItem('myeongsim_monthly_vip') === 'true';
                 const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
                                    localStorage.getItem('myeongsim_book_verified') === 'true';
                 const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true';
+                const isSiteAccess = localStorage.getItem('myeongsim_site_access') === 'granted' ||
+                                     document.cookie.includes('myeongsim_site_access=granted');
                 const isTrialActive = localStorage.getItem('myeongsim_trial_active') === 'true';
 
-                // 만료일 검사
-                const expiresAtStr = localStorage.getItem('myeongsim_expires_at');
-                let isExpired = false;
-                if (expiresAtStr) {
-                    const exp = new Date(expiresAtStr).getTime();
-                    if (!isNaN(exp) && Date.now() > exp) isExpired = true;
-                }
-
-                if (isAdmin || ((isMonthly || isSmartVip || isPaid || isTrialActive) && !isExpired)) {
+                // 승인된 유료 회원 또는 관리자/사이트 액세스 권한 보유 시 무조건 잠금 해제
+                if (isAdmin || isServerApproved || isMonthly || isSmartVip || isPaid || isSiteAccess) {
                     shouldLock = false;
+                } else if (isTrialActive) {
+                    // 무료 맛보기 체험 사용자만 만료일(3분) 검사
+                    const expiresAtStr = localStorage.getItem('myeongsim_expires_at');
+                    if (expiresAtStr) {
+                        const exp = new Date(expiresAtStr).getTime();
+                        if (!isNaN(exp) && Date.now() <= exp) {
+                            shouldLock = false;
+                        }
+                    }
                 }
             }
 
@@ -110,20 +115,7 @@ export default function GlobalPaymentLockGuard() {
                             const checkData = await res.json();
                             if (checkData.approved) {
                                 shouldLock = false;
-                                if (checkData.tier === 'MONTHLY_98K' || checkData.tier?.includes('98000') || checkData.tier?.includes('MONTHLY')) {
-                                    localStorage.setItem('myeongsim_monthly_vip', 'true');
-                                    localStorage.setItem('myeongsim_paid_user', 'true');
-                                } else if (checkData.tier === 'BOOK_ZERO_POINT' || checkData.tier?.includes('BOOK')) {
-                                    localStorage.setItem('myeongsim_smartstore_vip', 'true');
-                                    localStorage.setItem('myeongsim_book_verified', 'true');
-                                    localStorage.setItem('myeongsim_paid_user', 'true');
-                                } else {
-                                    localStorage.setItem('myeongsim_paid_user', 'true');
-                                }
-                                localStorage.setItem('myeongsim_server_approved', 'true');
-                                localStorage.setItem('myeongsim_site_access', 'granted');
-                                document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
-                                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
+                                grantUserApprovalSync(checkData.tier);
                             }
                         }
                     } catch (e) {

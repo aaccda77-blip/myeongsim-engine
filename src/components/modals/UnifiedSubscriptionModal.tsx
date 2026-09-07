@@ -5,6 +5,7 @@ import {
     X, Sparkles, CheckCircle2, ShieldCheck, CreditCard, Send, 
     ExternalLink, Watch, Headphones, Heart, Star, BookOpen, AlertCircle, Award
 } from 'lucide-react';
+import { grantUserApprovalSync } from '@/lib/authGuardUtils';
 
 interface UnifiedSubscriptionModalProps {
     isOpen: boolean;
@@ -72,20 +73,22 @@ export default function UnifiedSubscriptionModal({
         try {
             const storedName = localStorage.getItem('myeongsim_depositor_name') || depositorName.trim();
             const storedUserId = localStorage.getItem('myeongsim_user_id') || phone.trim() || '';
+            const storedEmail = localStorage.getItem('myeongsim_email') || '';
+            const storedPhone = localStorage.getItem('myeongsim_phone') || phone.trim() || '';
+            const storedOrder = localStorage.getItem('myeongsim_verified_order') || '';
+
             const params = new URLSearchParams();
             if (storedUserId) params.set('userId', storedUserId);
             if (storedName) params.set('name', storedName);
+            if (storedEmail) params.set('email', storedEmail);
+            if (storedPhone) params.set('phone', storedPhone);
+            if (storedOrder) params.set('orderNumber', storedOrder);
 
             const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.approved) {
-                    if (typeof window !== 'undefined') {
-                        localStorage.setItem('myeongsim_server_approved', 'true');
-                        localStorage.setItem('myeongsim_monthly_vip', 'true');
-                        localStorage.setItem('myeongsim_paid_user', 'true');
-                        window.dispatchEvent(new Event('myeongsim_auth_change'));
-                    }
+                    grantUserApprovalSync(data.tier);
                     alert('🎉 [승인 완료] 관리자 승인이 완료되었습니다! 124개 전 VIP 서비스가 해금되었습니다.');
                     onClose();
                 } else {

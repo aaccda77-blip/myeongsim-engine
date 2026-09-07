@@ -32,6 +32,7 @@ import { getToken } from "firebase/messaging"; // [Added]
 import { TimeCapsule } from '@/components/ui/TimeCapsule'; // [Added] Pass Timer
 import { UrgentNoticeModal } from '@/components/ui/UrgentNoticeModal'; // [Added] Urgent Notice
 import { useAuthGuard } from '@/hooks/useAuthGuard'; // [Added] Auth Guard
+import { isUserApprovedSync, grantUserApprovalSync } from '@/lib/authGuardUtils';
 import UserStatusHUD from '@/components/UserStatusHUD'; // [Added] User Status HUD
 import { useFcmToken } from '@/hooks/useFcmToken'; // [Added] Hook Import
 import { useBioData } from '@/hooks/useBioData'; // [Phase 2]
@@ -376,8 +377,34 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [userExpiryDate, setUserExpiryDate] = useState<string | null>(null); // Ticket expiry
     const [userTier, setUserTier] = useState<string>(''); // [New] Store Tier for UI
 
-    // [Security] Calculate if membership is expired
-    const isExpired = userExpiryDate ? new Date(userExpiryDate) < new Date() : false;
+    // ⚡ [VIP & 관리자 승인 상태 실시간 반응형 동기화]
+    const [isVipState, setIsVipState] = useState<boolean>(() => isUserApprovedSync());
+
+    useEffect(() => {
+        const syncVipStatus = () => {
+            const approved = isUserApprovedSync();
+            setIsVipState(approved);
+            if (approved) {
+                setIsTrialMode(false);
+                setFreeTurns(0);
+            }
+        };
+
+        syncVipStatus();
+        window.addEventListener('myeongsim_auth_change', syncVipStatus);
+        window.addEventListener('storage', syncVipStatus);
+        window.addEventListener('focus', syncVipStatus);
+        return () => {
+            window.removeEventListener('myeongsim_auth_change', syncVipStatus);
+            window.removeEventListener('storage', syncVipStatus);
+            window.removeEventListener('focus', syncVipStatus);
+        };
+    }, []);
+
+    const isVipApproved = isPremiumMember || isVipState || (typeof window !== 'undefined' && isUserApprovedSync());
+
+    // [Security] Calculate if membership is expired (유료/승인 회원은 과거 체험 만료일 간섭 차단)
+    const isExpired = !isVipApproved && (userExpiryDate ? new Date(userExpiryDate) < new Date() : false);
 
     // [Focus Mode - Cognitive Load Reduction]
     const [isFocusMode, setIsFocusMode] = useState(false);
@@ -401,10 +428,10 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [pendingChoiceText, setPendingChoiceText] = useState<string | null>(null);
 
     // Check paid/VIP status from localStorage directly
-    const isPaidInStorage = typeof window !== 'undefined' ? localStorage.getItem('myeongsim_paid_user') === 'true' : false;
+    const isPaidInStorage = typeof window !== 'undefined' ? (isUserApprovedSync() || localStorage.getItem('myeongsim_paid_user') === 'true') : false;
 
-    const remainingChats = Math.max(0, FREE_TRIAL_LIMIT - freeTurns);
-    const isChatLocked = isExpired || (isTrialMode && !isPremiumMember && !isPaidInStorage && remainingChats <= 0);
+    const remainingChats = isVipApproved ? 999 : Math.max(0, FREE_TRIAL_LIMIT - freeTurns);
+    const isChatLocked = !isVipApproved && (isExpired || (isTrialMode && remainingChats <= 0));
 
     // [Init] UUID for Guest, but replaceable by Auth + Free Trial Counter
     // [Init] UUID for Guest, Persistence, and Auth Listener
@@ -1134,7 +1161,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
         }).catch(err => console.error("Memory Save Error (User):", err));
 
         // [Free Trial System] Increment turn counter (trial mode only)
-        if (isTrialMode && !isPremiumMember && !isPaidInStorage) {
+        if (!isVipApproved && isTrialMode && !isPremiumMember && !isPaidInStorage) {
             const newTurns = freeTurns + 1;
             setFreeTurns(newTurns);
             if (typeof window !== 'undefined') {
@@ -3093,7 +3120,11 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 <span className="text-[11px] font-medium text-gray-300 flex items-center gap-1 shrink-0">
                                     💬 1:1 명심 AI 코칭
                                 </span>
-                                {remainingChats > 0 ? (
+                                {isVipApproved ? (
+                                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-400/60 text-emerald-300 font-mono text-[10px] font-bold shrink-0 flex items-center gap-1 shadow-sm">
+                                        👑 VIP ALL-PASS 활성화 (무제한 코칭)
+                                    </span>
+                                ) : remainingChats > 0 ? (
                                     <span className="px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shrink-0">
                                         ⚡ 남은 수다 {remainingChats}회 / 3회
                                     </span>
@@ -3105,13 +3136,19 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                             </div>
 
                             <div className="flex items-center gap-1.5 shrink-0">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowMicroPassModal(true)}
-                                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
-                                >
-                                    <span>⚡ VIP 패스 해금</span>
-                                </button>
+                                {isVipApproved ? (
+                                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center gap-1 shrink-0">
+                                        ✨ 해금 완료
+                                    </span>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowMicroPassModal(true)}
+                                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
+                                    >
+                                        <span>⚡ VIP 패스 해금</span>
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     onClick={() => setShowCompanyModal(true)}
@@ -3243,10 +3280,10 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                 isOpen={showMicroPassModal}
                 onClose={() => setShowMicroPassModal(false)}
                 onSuccessPay={() => {
-                    setFreeTurns(0); // Resets turns so user gets 3 fresh turns!
-                    if (typeof window !== 'undefined') {
-                        sessionStorage.setItem('freeTurns', '0');
-                    }
+                    grantUserApprovalSync('MONTHLY_98K');
+                    setIsVipState(true);
+                    setIsTrialMode(false);
+                    setFreeTurns(0);
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 3000);
 

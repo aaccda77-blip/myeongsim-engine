@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
-import { isUserApprovedSync } from '@/lib/authGuardUtils';
+import { isUserApprovedSync, grantUserApprovalSync } from '@/lib/authGuardUtils';
 
 interface PaymentLockOverlayProps {
     onRefresh: () => Promise<boolean>;
@@ -100,22 +100,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                 if (res.ok) {
                     const data = await res.json();
                     if (data.approved && !isCancelled) {
-                        if (data.tier === 'MONTHLY_98K' || data.tier?.includes('98000') || data.tier?.includes('MONTHLY')) {
-                            localStorage.setItem('myeongsim_monthly_vip', 'true');
-                            localStorage.setItem('myeongsim_paid_user', 'true');
-                        } else if (data.tier === 'BOOK_ZERO_POINT' || data.tier?.includes('BOOK')) {
-                            localStorage.setItem('myeongsim_smartstore_vip', 'true');
-                            localStorage.setItem('myeongsim_book_verified', 'true');
-                            localStorage.setItem('myeongsim_paid_user', 'true');
-                        } else {
-                            localStorage.setItem('myeongsim_paid_user', 'true');
-                        }
-                        localStorage.setItem('myeongsim_server_approved', 'true');
-                        localStorage.setItem('myeongsim_site_access', 'granted');
-                        localStorage.removeItem('myeongsim_pending_wire');
-                        document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
-                        document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
-                        window.dispatchEvent(new Event('myeongsim_auth_change'));
+                        grantUserApprovalSync(data.tier);
                         await onRefresh();
                         window.location.reload();
                     }
@@ -301,25 +286,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
             const data = await res.json();
 
             if (data.approved) {
-                // 승인 완료! 로컬 권한 세팅
-                if (data.tier === 'MONTHLY_98K' || data.tier?.includes('98000') || data.tier?.includes('MONTHLY')) {
-                    localStorage.setItem('myeongsim_monthly_vip', 'true');
-                    localStorage.setItem('myeongsim_paid_user', 'true');
-                } else if (data.tier === 'BOOK_ZERO_POINT' || data.tier?.includes('BOOK')) {
-                    localStorage.setItem('myeongsim_smartstore_vip', 'true');
-                    localStorage.setItem('myeongsim_book_verified', 'true');
-                    localStorage.setItem('myeongsim_paid_user', 'true');
-                } else {
-                    localStorage.setItem('myeongsim_paid_user', 'true');
-                }
-
-                localStorage.setItem('myeongsim_server_approved', 'true');
-                localStorage.setItem('myeongsim_site_access', 'granted');
-                localStorage.removeItem('myeongsim_pending_wire');
-                document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
-                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
-
-                window.dispatchEvent(new Event('myeongsim_auth_change'));
+                grantUserApprovalSync(data.tier);
                 await onRefresh();
                 alert('🎉 축하합니다! 관리자 승인이 완료되었습니다.\n모든 명심 코칭 서비스가 정상 해금되었습니다. ✨');
                 window.location.reload();

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { grantUserApprovalSync } from '@/lib/authGuardUtils';
 
 export type UserTier = 'GUEST' | 'BOOK_ZERO_POINT' | 'MONTHLY_98K';
 
@@ -65,25 +66,8 @@ export function useSubscription(): SubscriptionState {
                 if (res.ok) {
                     const data = await res.json();
                     if (data.approved) {
-                        const isMonthly = data.tier === 'MONTHLY_98K' || data.tier?.includes('98000') || data.tier?.includes('MONTHLY');
-                        const isBook = data.tier === 'BOOK_ZERO_POINT' || data.tier?.includes('BOOK');
-
-                        localStorage.setItem('myeongsim_server_approved', 'true');
-                        localStorage.setItem('myeongsim_site_access', 'granted');
+                        grantUserApprovalSync(data.tier);
                         localStorage.setItem('myeongsim_approved_tier', data.tier || 'MONTHLY_98K');
-                        document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
-                        document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
-
-                        if (isMonthly) {
-                            localStorage.setItem('myeongsim_monthly_vip', 'true');
-                            localStorage.setItem('myeongsim_paid_user', 'true');
-                        } else if (isBook) {
-                            localStorage.setItem('myeongsim_smartstore_vip', 'true');
-                            localStorage.setItem('myeongsim_book_verified', 'true');
-                            localStorage.setItem('myeongsim_paid_user', 'true');
-                        } else {
-                            localStorage.setItem('myeongsim_paid_user', 'true');
-                        }
                     } else if (data.locked === true) {
                         // 관리자가 명시적으로 잠금(닫기) 처리한 경우에만 로컬 VIP 플래그 회수
                         localStorage.removeItem('myeongsim_server_approved');
@@ -116,25 +100,29 @@ export function useSubscription(): SubscriptionState {
             document.cookie.includes('admin_session=')
         );
         const siteAccess = siteAccessCookie || localStorage.getItem('myeongsim_site_access') === 'granted';
+        const serverApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
         const monthly = localStorage.getItem('myeongsim_monthly_vip') === 'true';
         const book = localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
                      localStorage.getItem('myeongsim_book_verified') === 'true';
-        const paid = siteAccess || localStorage.getItem('myeongsim_paid_user') === 'true';
+        const paid = siteAccess || serverApproved || localStorage.getItem('myeongsim_paid_user') === 'true';
 
-        // 만료일 체크
-        const expiresAtStr = localStorage.getItem('myeongsim_expires_at');
+        // 만료일 체크 (무료 맛보기 체험자에게만 적용, 승인/유료 회원은 영구 또는 30일 유효)
+        const isTrialActive = localStorage.getItem('myeongsim_trial_active') === 'true';
         let expired = false;
-        if (expiresAtStr) {
-            const expTime = new Date(expiresAtStr).getTime();
-            if (!isNaN(expTime) && Date.now() > expTime) {
-                expired = true;
+        if (isTrialActive && !serverApproved && !monthly && !book) {
+            const expiresAtStr = localStorage.getItem('myeongsim_expires_at');
+            if (expiresAtStr) {
+                const expTime = new Date(expiresAtStr).getTime();
+                if (!isNaN(expTime) && Date.now() > expTime) {
+                    expired = true;
+                }
             }
         }
         setIsExpired(expired);
 
-        setIsMonthlyVip(monthly && !expired);
+        setIsMonthlyVip(monthly || serverApproved);
         setIsBookZeroPoint(book);
-        setIsPaidUser((monthly || book || paid) && !expired);
+        setIsPaidUser((monthly || book || paid || serverApproved) && !expired);
     }, [syncWithServer]);
 
     useEffect(() => {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, ShieldCheck, CreditCard, Copy, Check, Building2, Clock, KeyRound, ArrowRight } from 'lucide-react';
 import MyeongsimSunLogo from '../common/MyeongsimSunLogo';
+import { grantUserApprovalSync } from '@/lib/authGuardUtils';
 
 interface MicroChatPassModalProps {
     isOpen: boolean;
@@ -87,20 +88,22 @@ export default function MicroChatPassModal({
         try {
             const storedName = localStorage.getItem('myeongsim_depositor_name') || depositorName.trim();
             const storedUserId = localStorage.getItem('myeongsim_user_id') || userId || '';
+            const storedEmail = localStorage.getItem('myeongsim_email') || '';
+            const storedPhone = localStorage.getItem('myeongsim_phone') || '';
+            const storedOrder = localStorage.getItem('myeongsim_verified_order') || secretCode.trim() || '';
+
             const params = new URLSearchParams();
             if (storedUserId) params.set('userId', storedUserId);
             if (storedName) params.set('name', storedName);
+            if (storedEmail) params.set('email', storedEmail);
+            if (storedPhone) params.set('phone', storedPhone);
+            if (storedOrder) params.set('orderNumber', storedOrder);
 
             const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.approved) {
-                    if (typeof window !== 'undefined') {
-                        localStorage.setItem('myeongsim_server_approved', 'true');
-                        localStorage.setItem('myeongsim_monthly_vip', 'true');
-                        localStorage.setItem('myeongsim_paid_user', 'true');
-                        window.dispatchEvent(new Event('myeongsim_auth_change'));
-                    }
+                    grantUserApprovalSync(data.tier);
                     alert('🎉 [승인 완료] 관리자 승인이 완료되었습니다! 124개 전 VIP 서비스가 해금되었습니다.');
                     if (onSuccessPay) onSuccessPay();
                     onClose();
@@ -160,11 +163,9 @@ export default function MicroChatPassModal({
                     alert(data.message || '🎉 도서 구매 주문번호가 정상 접수되었습니다! 관리자가 확인 후 수분 내에 [열어주기 (승인)]를 완료합니다.');
                     onClose();
                 } else if (data.success) {
-                    // 마스터 키의 경우 즉시 승인
+                    // 마스터 키 또는 즉시 승인
+                    grantUserApprovalSync('BOOK_ZERO_POINT');
                     if (typeof window !== 'undefined') {
-                        localStorage.setItem('myeongsim_server_approved', 'true');
-                        localStorage.setItem('myeongsim_paid_user', 'true');
-                        localStorage.setItem('myeongsim_total_user_messages', '0');
                         localStorage.setItem('myeongsim_verified_order', cleaned);
                     }
                     alert(data.message || '🎉 도서 구매 인증이 완료되었습니다!');

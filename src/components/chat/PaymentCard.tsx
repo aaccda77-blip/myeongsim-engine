@@ -6,6 +6,7 @@ import {
     CreditCard, Shield, Sparkles, ArrowRight, Building2, Copy, Check, 
     KeyRound, ExternalLink, RefreshCw, BookOpen, Award, CheckCircle2 
 } from 'lucide-react';
+import { grantUserApprovalSync } from '@/lib/authGuardUtils';
 import { motion } from 'framer-motion';
 
 interface PaymentCardProps {
@@ -83,21 +84,22 @@ export default function PaymentCard({ onDetailedReport, userId = 'guest-id' }: P
         try {
             const storedUserId = localStorage.getItem('myeongsim_user_id') || phone.trim() || userId;
             const storedName = localStorage.getItem('myeongsim_depositor_name') || depositorName.trim();
+            const storedEmail = localStorage.getItem('myeongsim_email') || '';
+            const storedPhone = localStorage.getItem('myeongsim_phone') || phone.trim() || '';
+            const storedOrder = localStorage.getItem('myeongsim_verified_order') || secretCode.trim() || '';
 
             const params = new URLSearchParams();
             if (storedUserId) params.set('userId', storedUserId);
             if (storedName) params.set('name', storedName);
+            if (storedEmail) params.set('email', storedEmail);
+            if (storedPhone) params.set('phone', storedPhone);
+            if (storedOrder) params.set('orderNumber', storedOrder);
 
             const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.approved) {
-                    if (typeof window !== 'undefined') {
-                        localStorage.setItem('myeongsim_server_approved', 'true');
-                        localStorage.setItem('myeongsim_monthly_vip', 'true');
-                        localStorage.setItem('myeongsim_paid_user', 'true');
-                        window.dispatchEvent(new Event('myeongsim_auth_change'));
-                    }
+                    grantUserApprovalSync(data.tier);
                     alert('🎉 [승인 완료] 관리자의 입금 확인이 완료되었습니다! 124개 전 VIP 서비스가 활성화되었습니다.');
                     if (onDetailedReport) onDetailedReport();
                 } else {
@@ -136,13 +138,9 @@ export default function PaymentCard({ onDetailedReport, userId = 'guest-id' }: P
             const data = await res.json();
 
             if (res.ok && data.success) {
+                grantUserApprovalSync('BOOK_ZERO_POINT');
                 if (typeof window !== 'undefined') {
-                    localStorage.setItem('myeongsim_server_approved', 'true');
-                    localStorage.setItem('myeongsim_smartstore_vip', 'true');
-                    localStorage.setItem('myeongsim_book_verified', 'true');
-                    localStorage.setItem('myeongsim_paid_user', 'true');
                     localStorage.setItem('myeongsim_verified_order', cleaned);
-                    window.dispatchEvent(new Event('myeongsim_auth_change'));
                 }
                 alert('🎉 도서 구매 인증이 확인되었습니다! 제로포인트 기본 콘텐츠 및 30회 코칭이 활성화되었습니다.');
                 if (onDetailedReport) onDetailedReport();
