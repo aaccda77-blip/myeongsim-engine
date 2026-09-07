@@ -81,8 +81,6 @@ const calculateOhaeng = (ganji: any) => {
 };
 
 export default function SajuSummaryModal({ isOpen, onClose, userProfile, onStartChat }: SajuSummaryModalProps) {
-    if (!isOpen) return null;
-
     const saju = userProfile?.saju || {};
 
     // Safety check: Ensure pillar objects exist
@@ -123,6 +121,8 @@ export default function SajuSummaryModal({ isOpen, onClose, userProfile, onStart
         if (percent < 15) return { text: '약함', color: 'text-gray-500' };
         return { text: '적정', color: 'text-green-400' };
     };
+
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-4">

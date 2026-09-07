@@ -30,6 +30,7 @@ export default function MicroChatPassModal({
     // 🎫 도서 구매자 시크릿 코드 상태
     const [secretCode, setSecretCode] = useState('');
     const [codeError, setCodeError] = useState<string | null>(null);
+    const [isCheckingApproval, setIsCheckingApproval] = useState(false);
 
     if (!isOpen) return null;
 
@@ -39,8 +40,6 @@ export default function MicroChatPassModal({
         holder: '마인드플로우랩',
         price: 98000,
     };
-
-    const [isCheckingApproval, setIsCheckingApproval] = useState(false);
 
     const handleCopyAccount = () => {
         navigator.clipboard.writeText(`${BANK_INFO.bank} ${BANK_INFO.account} ${BANK_INFO.holder}`);
