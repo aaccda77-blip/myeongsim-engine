@@ -560,13 +560,13 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                     <span>네이버 스마트스토어</span>
                                 </a>
                                 <a
-                                    href="https://search.shopping.naver.com/book/search?query=%EC%A0%9C%EB%A1%9C%ED%8F%AC%EC%9D%B8%ED%8A%B8%20%EB%AA%85%EC%8B%AC"
+                                    href="https://www.yes24.com/product/goods/195946431"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-cyan-400/30 transition-all text-center"
                                 >
                                     <ExternalLink size={13} />
-                                    <span>YES24 / 교보 검색</span>
+                                    <span>YES24</span>
                                 </a>
                             </div>
                         </div>
