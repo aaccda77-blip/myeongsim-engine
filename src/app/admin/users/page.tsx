@@ -99,19 +99,32 @@ export default function AdminUsersPage() {
                 mappedTier = 'PASS_24H';
             }
 
+            const targetUser = users.find(u => u.id === userId);
+            const userCleanName = targetUser?.depositorName?.replace('[입금신청]', '').trim() || targetUser?.name?.replace('[입금신청]', '').trim() || '';
+            const userPhone = targetUser?.phone || '';
+            const userEmail = targetUser?.email || '';
+
             const response = await fetch('/api/admin/users/approve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, tier: mappedTier, isActive: true })
+                body: JSON.stringify({ 
+                    userId, 
+                    name: userCleanName,
+                    depositorName: userCleanName,
+                    phone: userPhone,
+                    email: userEmail,
+                    tier: mappedTier, 
+                    isActive: true 
+                })
             });
             const data = await response.json();
             if (data.success) {
                 if (mappedTier === 'MONTHLY_98K') {
-                    alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 엠씨스퀘어 3D 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.`);
+                    alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n회원: ${userCleanName || userId}\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 엠씨스퀘어 3D 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.`);
                 } else if (mappedTier === 'BOOK_ZERO_POINT') {
-                    alert(`📖 [도서 구매자 기본 제로포인트] 승인 완료!\n\n책 연계 기본 명심 리포트 및 기초 제로포인트 코칭이 평생 무료로 열렸습니다. (심화 기능은 월정액 잠금 유지)`);
+                    alert(`📖 [도서 구매자 기본 제로포인트] 승인 완료!\n\n회원: ${userCleanName || userId}\n책 연계 기본 명심 리포트 및 기초 제로포인트 코칭이 평생 무료로 열렸습니다.`);
                 } else {
-                    alert(`성공: 승인이 완료되었습니다! ✨`);
+                    alert(`성공: [${userCleanName || userId}] 님의 승인이 완료되었습니다! ✨`);
                 }
                 fetchUsers();
             } else {
@@ -125,13 +138,26 @@ export default function AdminUsersPage() {
     const toggleUserLock = async (userId: string, currentActive: boolean) => {
         try {
             const nextActive = !currentActive;
+            const targetUser = users.find(u => u.id === userId);
+            const userCleanName = targetUser?.depositorName?.replace('[입금신청]', '').trim() || targetUser?.name?.replace('[입금신청]', '').trim() || '';
+            const userPhone = targetUser?.phone || '';
+            const userEmail = targetUser?.email || '';
+
             const res = await fetch('/api/admin/users/approve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, isActive: nextActive, tier: nextActive ? 'MONTHLY_98K' : 'GUEST' })
+                body: JSON.stringify({ 
+                    userId, 
+                    name: userCleanName,
+                    depositorName: userCleanName,
+                    phone: userPhone,
+                    email: userEmail,
+                    isActive: nextActive, 
+                    tier: nextActive ? 'MONTHLY_98K' : 'GUEST' 
+                })
             });
             if (res.ok) {
-                alert(nextActive ? '🟢 열어주기 (월정액 승인 완료!)' : '🔒 닫기 (잠금 처리 완료!)');
+                alert(nextActive ? `🟢 [${userCleanName || userId}] 열어주기 (승인 완료!)` : `🔒 [${userCleanName || userId}] 닫기 (잠금 처리 완료!)`);
                 fetchUsers();
             }
         } catch (e) {

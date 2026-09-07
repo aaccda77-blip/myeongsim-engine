@@ -66,10 +66,19 @@ export default function GlobalPaymentLockGuard() {
             if (typeof window !== 'undefined') {
                 const userName = localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '';
                 const queryId = userId || localStorage.getItem('user_id') || '';
+                const orderNum = localStorage.getItem('myeongsim_book_order') || localStorage.getItem('myeongsim_verified_order') || '';
+                const userPhone = localStorage.getItem('user_phone') || '';
 
-                if (userName || queryId) {
+                if (userName || queryId || orderNum || userPhone) {
                     try {
-                        const res = await fetch(`/api/payment/check-approval?name=${encodeURIComponent(userName)}&userId=${encodeURIComponent(queryId)}&t=${Date.now()}`);
+                        const params = new URLSearchParams();
+                        if (userName) params.set('name', userName);
+                        if (queryId) params.set('userId', queryId);
+                        if (orderNum) params.set('orderNumber', orderNum);
+                        if (userPhone) params.set('phone', userPhone);
+                        params.set('t', String(Date.now()));
+
+                        const res = await fetch(`/api/payment/check-approval?${params.toString()}`);
                         if (res.ok) {
                             const checkData = await res.json();
                             if (checkData.approved) {
@@ -84,6 +93,9 @@ export default function GlobalPaymentLockGuard() {
                                 } else {
                                     localStorage.setItem('myeongsim_paid_user', 'true');
                                 }
+                                localStorage.setItem('myeongsim_site_access', 'granted');
+                                document.cookie = "myeongsim_site_access=granted; path=/; max-age=86400; SameSite=Lax";
+                                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=86400; SameSite=Lax";
                             }
                         }
                     } catch (e) {
@@ -97,6 +109,9 @@ export default function GlobalPaymentLockGuard() {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
                     setUserId(user.id);
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('user_id', user.id);
+                    }
                     const { data: subscription } = await supabase
                         .from('users')
                         .select('expires_at, membership_tier, is_active')

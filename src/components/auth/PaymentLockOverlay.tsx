@@ -34,11 +34,12 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
     const [wireSubmitted, setWireSubmitted] = useState(false);
     const [isStartingTrial, setIsStartingTrial] = useState(false);
 
-    // 저장된 이름/전화번호 불러오기
+    // 저장된 이름/전화번호/주문번호 불러오기
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const savedName = localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '';
             const savedPhone = localStorage.getItem('user_phone') || '';
+            const savedOrder = localStorage.getItem('myeongsim_book_order') || localStorage.getItem('myeongsim_verified_order') || '';
             if (savedName) {
                 setDepositorName(savedName);
                 setBookBuyerName(savedName);
@@ -46,6 +47,9 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
             if (savedPhone) {
                 setPhone(savedPhone);
                 setBookBuyerPhone(savedPhone);
+            }
+            if (savedOrder) {
+                setOrderNumber(savedOrder);
             }
             // 이전에 입금 신청한 기록이 있으면 접수 화면으로 복원
             if (localStorage.getItem('myeongsim_pending_wire') === 'true') {
@@ -61,12 +65,21 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
 
         const checkSilent = async () => {
             try {
-                const nameToQuery = depositorName.trim() || bookBuyerName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || '' : '');
+                const nameToQuery = depositorName.trim() || bookBuyerName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '' : '');
                 const uidToQuery = userId || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+                const orderToQuery = orderNumber.trim() || (typeof window !== 'undefined' ? localStorage.getItem('myeongsim_book_order') || localStorage.getItem('myeongsim_verified_order') || '' : '');
+                const phoneToQuery = phone.trim() || bookBuyerPhone.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_phone') || '' : '');
 
-                if (!nameToQuery && !uidToQuery) return;
+                if (!nameToQuery && !uidToQuery && !orderToQuery && !phoneToQuery) return;
 
-                const res = await fetch(`/api/payment/check-approval?name=${encodeURIComponent(nameToQuery)}&userId=${encodeURIComponent(uidToQuery)}&t=${Date.now()}`);
+                const params = new URLSearchParams();
+                if (nameToQuery) params.set('name', nameToQuery);
+                if (uidToQuery) params.set('userId', uidToQuery);
+                if (orderToQuery) params.set('orderNumber', orderToQuery);
+                if (phoneToQuery) params.set('phone', phoneToQuery);
+                params.set('t', String(Date.now()));
+
+                const res = await fetch(`/api/payment/check-approval?${params.toString()}`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.approved && !isCancelled) {
@@ -80,7 +93,10 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                         } else {
                             localStorage.setItem('myeongsim_paid_user', 'true');
                         }
+                        localStorage.setItem('myeongsim_site_access', 'granted');
                         localStorage.removeItem('myeongsim_pending_wire');
+                        document.cookie = "myeongsim_site_access=granted; path=/; max-age=86400; SameSite=Lax";
+                        document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=86400; SameSite=Lax";
                         window.dispatchEvent(new Event('myeongsim_auth_change'));
                         await onRefresh();
                     }
@@ -96,7 +112,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
             isCancelled = true;
             if (timer) clearInterval(timer);
         };
-    }, [depositorName, bookBuyerName, userId, onRefresh]);
+    }, [depositorName, bookBuyerName, orderNumber, phone, bookBuyerPhone, userId, onRefresh]);
 
     // 🎁 [3분 스피드 맛보기 체험 즉시 발급 및 리포트 직행]
     const handleStartFreeTrial = async () => {
@@ -194,11 +210,27 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
     const handleRefresh = async () => {
         setIsRefreshing(true);
         try {
-            // 1. 서버 API로 승인 여부 실시간 조회
-            const nameToQuery = depositorName.trim() || bookBuyerName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || '' : '');
+            // 1. 쿼리 파라미터 취합 (이름, ID, 주문번호, 전화번호)
+            const nameToQuery = depositorName.trim() || bookBuyerName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '' : '');
             const uidToQuery = userId || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+            const orderToQuery = orderNumber.trim() || (typeof window !== 'undefined' ? localStorage.getItem('myeongsim_book_order') || localStorage.getItem('myeongsim_verified_order') || '' : '');
+            const phoneToQuery = phone.trim() || bookBuyerPhone.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_phone') || '' : '');
 
-            const res = await fetch(`/api/payment/check-approval?name=${encodeURIComponent(nameToQuery)}&userId=${encodeURIComponent(uidToQuery)}&t=${Date.now()}`);
+            // 입력값이 전혀 없으면 친절하게 안내
+            if (!nameToQuery && !uidToQuery && !orderToQuery && !phoneToQuery) {
+                alert('💡 관리자 승인 상태를 확인하려면 구매자 성함, 입금자명 또는 주문번호를 먼저 입력해 주세요.\n\n(위의 [구매자 성함] 또는 [주문번호] 칸에 입력하신 후 [승인 상태 확인]을 누르시면 즉시 조회됩니다.)');
+                setIsRefreshing(false);
+                return;
+            }
+
+            const params = new URLSearchParams();
+            if (nameToQuery) params.set('name', nameToQuery);
+            if (uidToQuery) params.set('userId', uidToQuery);
+            if (orderToQuery) params.set('orderNumber', orderToQuery);
+            if (phoneToQuery) params.set('phone', phoneToQuery);
+            params.set('t', String(Date.now()));
+
+            const res = await fetch(`/api/payment/check-approval?${params.toString()}`);
             const data = await res.json();
 
             if (data.approved) {
@@ -214,23 +246,30 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                     localStorage.setItem('myeongsim_paid_user', 'true');
                 }
 
+                localStorage.setItem('myeongsim_site_access', 'granted');
+                localStorage.removeItem('myeongsim_pending_wire');
+                document.cookie = "myeongsim_site_access=granted; path=/; max-age=86400; SameSite=Lax";
+                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=86400; SameSite=Lax";
+
                 window.dispatchEvent(new Event('myeongsim_auth_change'));
                 await onRefresh();
-                alert('🎉 축하합니다! 관리자 승인이 확인되었습니다.\n모든 서비스가 정상 해금되었습니다.');
+                alert('🎉 축하합니다! 관리자 승인이 완료되었습니다.\n모든 명심 코칭 서비스가 정상 해금되었습니다. ✨');
+                window.location.reload();
                 return;
             }
 
             // 2. 부모 콜백 실행
             const isStillLocked = await onRefresh();
             if (isStillLocked) {
-                alert('⏳ 아직 관리자 승인 대기 중입니다.\n\n무통장 입금 또는 도서 인증 신청을 완료하셨다면, 관리자가 확인 후 즉시 열어드립니다. 잠시 후 다시 새로고침을 눌러주세요.');
+                alert(data.message || '⏳ 아직 관리자 승인 대기 중입니다.\n\n무통장 입금 또는 도서 구매를 신청하셨다면, 관리자가 확인 후 즉시 열어드립니다. 잠시 후 다시 확인해 주세요.');
             } else {
                 alert('🎉 승인이 확인되었습니다! 환영합니다.');
+                window.location.reload();
             }
         } catch (e) {
             const isStillLocked = await onRefresh();
             if (isStillLocked) {
-                alert('⏳ 현재 관리자 승인 대기 중입니다.');
+                alert('⏳ 현재 관리자 승인 대기 중입니다. 잠시 후 다시 시도해 주세요.');
             }
         } finally {
             setIsRefreshing(false);
@@ -396,7 +435,12 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                 <input
                                     type="text"
                                     value={orderNumber}
-                                    onChange={(e) => setOrderNumber(e.target.value)}
+                                    onChange={(e) => {
+                                        setOrderNumber(e.target.value);
+                                        if (typeof window !== 'undefined') {
+                                            localStorage.setItem('myeongsim_book_order', e.target.value);
+                                        }
+                                    }}
                                     placeholder={
                                         bookChannel === 'smartstore'
                                             ? '예: 20260904-12345678 (네이버페이 16자리)'
@@ -418,7 +462,13 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                     <input
                                         type="text"
                                         value={bookBuyerName}
-                                        onChange={(e) => setBookBuyerName(e.target.value)}
+                                        onChange={(e) => {
+                                            setBookBuyerName(e.target.value);
+                                            if (typeof window !== 'undefined') {
+                                                localStorage.setItem('myeongsim_book_buyer', e.target.value);
+                                                localStorage.setItem('user_name', e.target.value);
+                                            }
+                                        }}
                                         placeholder="예: 홍길동"
                                         required
                                         className="w-full px-3 py-2 rounded-xl bg-black/80 border border-white/15 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400"
@@ -431,7 +481,12 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                     <input
                                         type="tel"
                                         value={bookBuyerPhone}
-                                        onChange={(e) => setBookBuyerPhone(e.target.value)}
+                                        onChange={(e) => {
+                                            setBookBuyerPhone(e.target.value);
+                                            if (typeof window !== 'undefined') {
+                                                localStorage.setItem('user_phone', e.target.value);
+                                            }
+                                        }}
                                         placeholder="예: 010-1234-5678"
                                         className="w-full px-3 py-2 rounded-xl bg-black/80 border border-white/15 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400 font-mono"
                                     />
@@ -578,7 +633,12 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                         <input
                                             type="text"
                                             value={depositorName}
-                                            onChange={(e) => setDepositorName(e.target.value)}
+                                            onChange={(e) => {
+                                                setDepositorName(e.target.value);
+                                                if (typeof window !== 'undefined') {
+                                                    localStorage.setItem('user_name', e.target.value);
+                                                }
+                                            }}
                                             placeholder="예: 홍길동"
                                             required
                                             className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400"
@@ -592,7 +652,12 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                                         <input
                                             type="tel"
                                             value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
+                                            onChange={(e) => {
+                                                setPhone(e.target.value);
+                                                if (typeof window !== 'undefined') {
+                                                    localStorage.setItem('user_phone', e.target.value);
+                                                }
+                                            }}
                                             placeholder="예: 010-1234-5678"
                                             className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-amber-400 font-mono"
                                         />

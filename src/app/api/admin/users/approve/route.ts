@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/adminAuth';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { removePendingWireTransfer } from '@/lib/pendingWireTransfers';
+import { removePendingWireTransfer, recordApprovedUser } from '@/lib/pendingWireTransfers';
 import { z } from 'zod';
 
 const ApproveSchema = z.object({
     userId: z.string().min(1),
+    name: z.string().optional(),
+    depositorName: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().optional(),
     tier: z.string().optional()
 });
 
@@ -23,7 +27,8 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid Input', details: result.error.issues }, { status: 400 });
         }
 
-        const { userId, tier: rawTier = '' } = result.data;
+        const { userId, tier: rawTier = '', name = '', depositorName = '', phone = '', email = '' } = result.data;
+        const effectiveName = (depositorName || name || '').replace('[입금신청]', '').trim();
         const isActiveExplicit = (body as any).isActive !== undefined ? Boolean((body as any).isActive) : true;
         const now = new Date();
         let expiresAt: Date | null = null;
@@ -70,26 +75,59 @@ export async function POST(request: NextRequest) {
             chatTurnsLeft = 50;
         }
 
-        console.log(`[Admin] Approving User: ${userId}, Tier: ${tier} (raw: ${rawTier}), Active: ${isActiveExplicit}`);
+        console.log(`[Admin] Approving User: ${userId} (${effectiveName}), Tier: ${tier}, Active: ${isActiveExplicit}`);
 
-        // Try updating Supabase users
-        const { data, error } = await supabaseAdmin
-            .from('users')
-            .upsert({
-                id: userId,
-                membership_tier: tier,
-                is_active: isActiveExplicit,
-                expires_at: expiresAt!.toISOString(),
-                payment_amount: paymentAmount,
-                chat_turns_left: chatTurnsLeft,
-                approved_at: now.toISOString(),
-                approved_by: 'admin_api'
-            }, { onConflict: 'id' })
-            .select();
+        // Build update object with name/phone preservation
+        const updatePayload: any = {
+            id: userId,
+            membership_tier: tier,
+            is_active: isActiveExplicit,
+            expires_at: expiresAt!.toISOString(),
+            payment_amount: paymentAmount,
+            chat_turns_left: chatTurnsLeft,
+            approved_at: now.toISOString(),
+            approved_by: 'admin_api'
+        };
+        if (effectiveName) updatePayload.name = effectiveName;
+        if (phone) updatePayload.phone = phone;
+        if (email && email.includes('@')) updatePayload.email = email;
 
-        // Mark as approved in pending memory store as well
+        // 1. Try updating Supabase users by ID
+        try {
+            await supabaseAdmin
+                .from('users')
+                .upsert(updatePayload, { onConflict: 'id' });
+        } catch (dbErr) {
+            console.warn('[AdminApprove] Supabase upsert error by id:', dbErr);
+        }
+
+        // 2. Also update by name in Supabase users if name is present
+        if (effectiveName) {
+            try {
+                await supabaseAdmin
+                    .from('users')
+                    .update({
+                        membership_tier: tier,
+                        is_active: isActiveExplicit,
+                        expires_at: expiresAt!.toISOString(),
+                        chat_turns_left: chatTurnsLeft,
+                        approved_at: now.toISOString()
+                    })
+                    .ilike('name', `%${effectiveName}%`);
+            } catch (nameErr) {
+                console.warn('[AdminApprove] Supabase update by name notice:', nameErr);
+            }
+        }
+
+        // 3. Mark as approved in pending memory store & record to approved cache
         if (isActiveExplicit) {
             removePendingWireTransfer(userId);
+            recordApprovedUser({
+                userId,
+                name: effectiveName,
+                phone,
+                tier
+            });
         }
 
         return NextResponse.json({
