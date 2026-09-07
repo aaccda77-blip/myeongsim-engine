@@ -10,6 +10,7 @@ import { RefinedButton } from '../design-system/RefinedButton';
 import { RefinedFormField } from '../design-system/RefinedFormField';
 import { ViewModeSwitcher } from '@/components/simple/ViewModeSwitcher';
 import { Check, Loader2, ArrowRight, Sparkles, User, Calendar, Clock } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 
 const calculateSajuMetrics = (pillars: any, isTimeUnknown: boolean) => {
     const ohaeng = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
@@ -136,6 +137,32 @@ export function RefinedCoverView() {
                 localStorage.setItem('user_name', name);
                 localStorage.setItem('user_profile', JSON.stringify(fullUserData));
             }
+
+            // [SYNC-DB] 입력된 실명 및 생년월일 정보를 관리자 DB와 100% 실시간 영구 동기화
+            const saveProfileToDb = async () => {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const currentUserId = session?.user?.id || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+                    const currentUserEmail = session?.user?.email || '';
+
+                    await fetch('/api/user/sync-profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name,
+                            birthDate,
+                            birthTime,
+                            calendarType,
+                            gender,
+                            userId: currentUserId,
+                            email: currentUserEmail
+                        })
+                    });
+                } catch (syncErr) {
+                    console.warn('[RefinedCoverView] 실시간 실명 동기화 예외:', syncErr);
+                }
+            };
+            saveProfileToDb();
 
             // 기질 분석 뷰로 이동
             setTimeout(() => {

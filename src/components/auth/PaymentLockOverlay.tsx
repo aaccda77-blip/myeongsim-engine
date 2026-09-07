@@ -193,6 +193,23 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                     window.dispatchEvent(new Event('myeongsim_auth_change'));
                 }
 
+                // [SYNC-DB] 도서 구매자 실명을 관리자 DB에 즉시 동기화
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const currentUid = session?.user?.id || userId || '';
+                    const currentEmail = session?.user?.email || '';
+                    await fetch('/api/user/sync-profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: cleanName,
+                            phone: cleanPhone,
+                            userId: currentUid,
+                            email: currentEmail
+                        })
+                    });
+                } catch (_) {}
+
                 alert('🎉 축하합니다! 도서 구매 정품 인증이 확인되었습니다.\n\n기본 제로포인트 명심 리포트, 사주 일진 에너지, 일진 선언문이 평생 무료로 즉시 해금되었습니다.');
                 await onRefresh();
             } else {
@@ -304,6 +321,23 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                 // 로컬에 이름 저장
                 localStorage.setItem('user_name', depositorName.trim());
                 if (phone) localStorage.setItem('user_phone', phone.trim());
+
+                // [SYNC-DB] 입금 신청자 실명을 관리자 DB에 즉시 동기화
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const currentUid = session?.user?.id || userId || '';
+                    const currentEmail = session?.user?.email || '';
+                    await fetch('/api/user/sync-profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: depositorName.trim(),
+                            phone: phone.trim(),
+                            userId: currentUid,
+                            email: currentEmail
+                        })
+                    });
+                } catch (_) {}
             } else {
                 setWireSubmitted(true);
             }

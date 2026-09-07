@@ -12,6 +12,8 @@ import MyeongsimSunLogo from '@/components/common/MyeongsimSunLogo';
 
 interface Subscriber {
     name?: string;
+    realName?: string;
+    googleName?: string;
     email?: string;
     depositorName?: string;
     phone?: string;
@@ -196,6 +198,10 @@ export default function AdminUsersPage() {
             const matchSearch = !searchLower ||
                                 (u.id && u.id.toLowerCase().includes(searchLower)) ||
                                 (u.name && u.name.toLowerCase().includes(searchLower)) ||
+                                (u.realName && u.realName.toLowerCase().includes(searchLower)) ||
+                                (u.googleName && u.googleName.toLowerCase().includes(searchLower)) ||
+                                (u.depositorName && u.depositorName.toLowerCase().includes(searchLower)) ||
+                                (u.email && u.email.toLowerCase().includes(searchLower)) ||
                                 (u.phone && u.phone.includes(searchLower)) ||
                                 (u.phone_hash && u.phone_hash.includes(searchLower)) ||
                                 (u.membership_tier && u.membership_tier.toLowerCase().includes(searchLower));
@@ -720,9 +726,14 @@ export default function AdminUsersPage() {
                                                                     <span className="bg-amber-400/20 px-2 py-0.5 rounded-lg border border-amber-400/40 text-amber-100">{mainName}</span>
                                                                 </span>
                                                             ) : (
-                                                                <span className="text-white font-extrabold text-base flex items-center gap-1">
+                                                                <span className="text-white font-extrabold text-base flex items-center gap-1.5 flex-wrap">
                                                                     <span>👤</span>
-                                                                    <span>{mainName}</span>
+                                                                    <span className="text-emerald-300 font-black tracking-tight">{mainName}</span>
+                                                                    {u.googleName && u.googleName !== mainName && (
+                                                                        <span className="text-[11px] bg-slate-800/90 text-gray-400 font-normal px-2 py-0.5 rounded-md border border-white/10" title="구글 간편 로그인 프로필 닉네임">
+                                                                            구글: <span className="text-gray-300 font-semibold">{u.googleName}</span>
+                                                                        </span>
+                                                                    )}
                                                                 </span>
                                                             )}
                                                             {isDepositApplicant && (

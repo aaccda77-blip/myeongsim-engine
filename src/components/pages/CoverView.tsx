@@ -164,30 +164,32 @@ export default function CoverView() {
         const metrics = calculateSajuMetrics(previewPillars, birthTime === 'unknown');
         const dayMaster = previewPillars.dayMaster || `${previewPillars.day.gan.char} (${previewPillars.day.gan.color})`;
 
-        // [SYNC-DB] 입력된 명리 생년월일 정보를 Supabase users 테이블에 영구 저장/동기화
+        // [SYNC-DB] 입력된 실명 및 생년월일 정보를 관리자 DB와 100% 실시간 영구 동기화
         const saveProfileToDb = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    const { error } = await supabase
-                        .from('users')
-                        .update({
-                            name: name,
-                            birth_date: birthDate,
-                            birth_time: birthTime,
-                            calendar_type: calendarType,
-                            gender: gender
-                        })
-                        .eq('id', session.user.id);
-                    
-                    if (error) {
-                        console.error('Failed to sync profile to users DB table:', error.message);
-                    } else {
-                        console.log('✅ [CoverView] Profile synced to users DB table successfully.');
-                    }
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('user_name', name);
                 }
+                const { data: { session } } = await supabase.auth.getSession();
+                const currentUserId = session?.user?.id || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+                const currentUserEmail = session?.user?.email || '';
+
+                await fetch('/api/user/sync-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        birthDate,
+                        birthTime,
+                        calendarType,
+                        gender,
+                        userId: currentUserId,
+                        email: currentUserEmail
+                    })
+                });
+                console.log('✅ [CoverView] Real user name synced to Admin DB successfully:', name);
             } catch (dbErr) {
-                console.error('Error syncing profile to DB:', dbErr);
+                console.warn('Sync profile notice:', dbErr);
             }
         };
         saveProfileToDb();

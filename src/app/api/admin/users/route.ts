@@ -26,10 +26,10 @@ export async function GET(request: NextRequest) {
                     if (isUserDeleted(au.id, au.email)) return;
 
                     const meta = au.user_metadata || {};
-                    const name = meta.full_name || meta.name || meta.display_name || meta.userName || meta.user_name || '';
+                    const socialName = meta.full_name || meta.name || meta.display_name || meta.userName || meta.user_name || '';
                     authUserMap[au.id] = {
                         email: au.email || '',
-                        name: name,
+                        name: socialName,
                         phone: au.phone || meta.phone || '',
                     };
                 });
@@ -38,7 +38,22 @@ export async function GET(request: NextRequest) {
             console.warn('[AdminUsers] listUsers error:', authErr);
         }
 
-        // 2. Fetch database `users` table
+        // 2. Fetch database `profiles` table for real names submitted via saju analysis
+        let profileMap: Record<string, { name?: string; birth_date?: string; gender?: string }> = {};
+        try {
+            const { data: profData } = await supabaseAdmin.from('profiles').select('id, name, birth_date, gender');
+            if (profData) {
+                profData.forEach(p => {
+                    if (p.id && p.name) {
+                        profileMap[p.id] = { name: p.name, birth_date: p.birth_date, gender: p.gender };
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('[AdminUsers] profiles fetch error:', e);
+        }
+
+        // 3. Fetch database `users` table
         const { data, error } = await supabaseAdmin
             .from('users')
             .select('*')
@@ -49,11 +64,17 @@ export async function GET(request: NextRequest) {
                 .filter(u => !isUserDeleted(u.id, u.email))
                 .map(u => {
                     const authInfo = authUserMap[u.id] || {};
+                    const profInfo = profileMap[u.id] || {};
                     const resolvedEmail = u.email || authInfo.email || '';
                     const emailPrefix = resolvedEmail.includes('@') ? resolvedEmail.split('@')[0] : '';
                     
-                    // 이름 결정: 입금자명 > DB 이름 > Auth 메타데이터 이름 > 이메일 ID > 기본 식별자
-                    let resolvedName = u.depositor_name || u.depositorName || u.name || authInfo.name || '';
+                    // 실제 사용자가 직접 입력한 실명 (사주 화면, 프로필, 입금자명)
+                    const realName = u.name || profInfo.name || u.depositor_name || u.depositorName || '';
+                    // 구글 소셜 계정 닉네임
+                    const googleName = authInfo.name || '';
+                    
+                    // 이름 우선순위: 사용자가 직접 입력한 실명(#1) > 구글 소셜 닉네임 > 이메일 ID > 기본 식별자
+                    let resolvedName = realName || googleName;
                     if (!resolvedName && emailPrefix) {
                         resolvedName = `${emailPrefix}`;
                     }
@@ -65,25 +86,34 @@ export async function GET(request: NextRequest) {
                         ...u,
                         email: resolvedEmail,
                         name: resolvedName,
+                        realName: realName,
+                        googleName: googleName,
+                        birth_date: u.birth_date || profInfo.birth_date || '',
+                        gender: u.gender || profInfo.gender || '',
                         phone: u.phone || authInfo.phone || '',
                         raw_id: u.id,
                     };
                 });
         }
 
-        // 3. Add any Auth Users who are not yet in the `users` table
+        // 4. Add any Auth Users who are not yet in the `users` table
         if (authUserMap) {
             Object.entries(authUserMap).forEach(([authId, info]) => {
                 if (isUserDeleted(authId, info.email)) return;
 
                 const exists = users.some(u => u.id === authId);
                 if (!exists) {
+                    const profInfo = profileMap[authId] || {};
                     const emailPrefix = (info.email && info.email.includes('@')) ? info.email.split('@')[0] : '';
-                    const resolvedName = info.name || (emailPrefix ? `${emailPrefix}` : `가입자_${authId.slice(0, 8)}`);
+                    const realName = profInfo.name || '';
+                    const googleName = info.name || '';
+                    const resolvedName = realName || googleName || (emailPrefix ? `${emailPrefix}` : `가입자_${authId.slice(0, 8)}`);
                     users.push({
                         id: authId,
                         email: info.email || '',
                         name: resolvedName,
+                        realName: realName,
+                        googleName: googleName,
                         phone: info.phone || '',
                         membership_tier: 'TRIAL',
                         is_active: true,
