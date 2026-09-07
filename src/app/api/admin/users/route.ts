@@ -3,6 +3,7 @@ import { verifyAdmin } from '@/lib/adminAuth';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { getPendingWireTransfers } from '@/lib/pendingWireTransfers';
 import { maskPhoneNumber } from '@/lib/phoneSecurity';
+import { isUserDeleted } from '@/lib/deletedUsers';
 
 export const dynamic = 'force-dynamic'; // Prevent caching
 
@@ -21,8 +22,10 @@ export async function GET(request: NextRequest) {
             const { data: authData } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
             if (authData?.users) {
                 authData.users.forEach(au => {
+                    // Skip deleted users immediately
+                    if (isUserDeleted(au.id, au.email)) return;
+
                     const meta = au.user_metadata || {};
-                    const provider = au.app_metadata?.provider || '이메일';
                     const name = meta.full_name || meta.name || meta.display_name || meta.userName || meta.user_name || '';
                     authUserMap[au.id] = {
                         email: au.email || '',
@@ -42,33 +45,37 @@ export async function GET(request: NextRequest) {
             .order('created_at', { ascending: false });
 
         if (!error && data) {
-            users = data.map(u => {
-                const authInfo = authUserMap[u.id] || {};
-                const resolvedEmail = u.email || authInfo.email || '';
-                const emailPrefix = resolvedEmail.includes('@') ? resolvedEmail.split('@')[0] : '';
-                
-                // 이름 결정: 입금자명 > DB 이름 > Auth 메타데이터 이름 > 이메일 ID > 기본 식별자
-                let resolvedName = u.depositor_name || u.depositorName || u.name || authInfo.name || '';
-                if (!resolvedName && emailPrefix) {
-                    resolvedName = `${emailPrefix}`;
-                }
-                if (!resolvedName) {
-                    resolvedName = `회원_${u.id.slice(0, 8)}`;
-                }
+            users = data
+                .filter(u => !isUserDeleted(u.id, u.email))
+                .map(u => {
+                    const authInfo = authUserMap[u.id] || {};
+                    const resolvedEmail = u.email || authInfo.email || '';
+                    const emailPrefix = resolvedEmail.includes('@') ? resolvedEmail.split('@')[0] : '';
+                    
+                    // 이름 결정: 입금자명 > DB 이름 > Auth 메타데이터 이름 > 이메일 ID > 기본 식별자
+                    let resolvedName = u.depositor_name || u.depositorName || u.name || authInfo.name || '';
+                    if (!resolvedName && emailPrefix) {
+                        resolvedName = `${emailPrefix}`;
+                    }
+                    if (!resolvedName) {
+                        resolvedName = `회원_${u.id.slice(0, 8)}`;
+                    }
 
-                return {
-                    ...u,
-                    email: resolvedEmail,
-                    name: resolvedName,
-                    phone: u.phone || authInfo.phone || '',
-                    raw_id: u.id,
-                };
-            });
+                    return {
+                        ...u,
+                        email: resolvedEmail,
+                        name: resolvedName,
+                        phone: u.phone || authInfo.phone || '',
+                        raw_id: u.id,
+                    };
+                });
         }
 
         // 3. Add any Auth Users who are not yet in the `users` table
         if (authUserMap) {
             Object.entries(authUserMap).forEach(([authId, info]) => {
+                if (isUserDeleted(authId, info.email)) return;
+
                 const exists = users.some(u => u.id === authId);
                 if (!exists) {
                     const emailPrefix = (info.email && info.email.includes('@')) ? info.email.split('@')[0] : '';
@@ -90,6 +97,8 @@ export async function GET(request: NextRequest) {
     // Merge in-memory pending wire transfers
     const pendingMemoryItems = getPendingWireTransfers();
     pendingMemoryItems.forEach(pending => {
+        if (isUserDeleted(pending.id)) return;
+
         const existingIndex = users.findIndex(u => u.id === pending.id || u.name === pending.depositorName || (u.depositorName && u.depositorName === pending.depositorName));
         if (existingIndex === -1) {
             users.unshift({
@@ -114,6 +123,9 @@ export async function GET(request: NextRequest) {
             }
         }
     });
+
+    // 최종 삭제된 회원 2차 필터링
+    users = users.filter(u => !isUserDeleted(u.id, u.email));
 
     // 승인 대기(is_active === false) 회원 무조건 최상단(#1 순위)으로 정렬
     users.sort((a, b) => {

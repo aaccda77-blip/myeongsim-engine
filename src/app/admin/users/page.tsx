@@ -166,16 +166,20 @@ export default function AdminUsersPage() {
     };
 
     const deleteUser = async (userId: string) => {
-        if (!confirm('정말로 이 가입자 정보를 삭제하시겠습니까?')) return;
+        const targetUser = users.find(u => u.id === userId);
+        const userName = targetUser?.name || targetUser?.depositorName || '이 가입자';
+        if (!confirm(`정말로 [${userName}] 가입자 정보를 완전히 영구 삭제하시겠습니까?`)) return;
         try {
             const response = await fetch('/api/admin/users/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId })
+                body: JSON.stringify({ userId, email: targetUser?.email })
             });
             const data = await response.json();
             if (data.success) {
-                alert('삭제되었습니다.');
+                // UI에서 즉시 제거
+                setUsers(prev => prev.filter(u => u.id !== userId));
+                alert(`[${userName}] 정보가 성공적으로 영구 삭제되었습니다.`);
                 fetchUsers();
             } else {
                 alert('삭제 실패: ' + data.error);

@@ -167,3 +167,22 @@ export function removePendingWireTransfer(id: string): void {
         });
     }
 }
+
+export function purgeUserFromMemory(id: string): void {
+    const cleanId = id.trim().toLowerCase();
+    
+    // pending store에서 제거
+    for (let i = globalPendingStore.length - 1; i >= 0; i--) {
+        if (globalPendingStore[i].id.toLowerCase() === cleanId || globalPendingStore[i].userId.toLowerCase() === cleanId) {
+            globalPendingStore.splice(i, 1);
+        }
+    }
+    
+    // approved store에서 제거
+    for (let i = globalApprovedStore.length - 1; i >= 0; i--) {
+        if (globalApprovedStore[i].userId.toLowerCase() === cleanId) {
+            globalApprovedStore.splice(i, 1);
+        }
+    }
+}
+
