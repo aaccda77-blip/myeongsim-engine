@@ -37,14 +37,26 @@ export function useSubscription(): SubscriptionState {
         setIsCheckingApproval(true);
 
         try {
-            const storedUserId = localStorage.getItem('myeongsim_user_id') || localStorage.getItem('myeongsim_phone') || '';
-            const storedName = localStorage.getItem('myeongsim_depositor_name') || localStorage.getItem('myeongsim_user_name') || '';
+            // 세션 유저 정보 우선 획득 (구글 로그인 등)
+            let sessionUid = '';
+            let sessionEmail = '';
+            try {
+                const { supabase } = await import('@/lib/supabaseClient');
+                const { data: { session } } = await supabase.auth.getSession();
+                sessionUid = session?.user?.id || '';
+                sessionEmail = session?.user?.email || '';
+            } catch (_) {}
+
+            const storedUserId = sessionUid || localStorage.getItem('user_id') || localStorage.getItem('myeongsim_user_id') || localStorage.getItem('myeongsim_phone') || '';
+            const storedName = localStorage.getItem('user_name') || localStorage.getItem('myeongsim_depositor_name') || localStorage.getItem('myeongsim_user_name') || '';
+            const storedEmail = sessionEmail || localStorage.getItem('user_email') || '';
 
             // 사용자 식별 정보가 있으면 서버에 승인 여부 확인
-            if (storedUserId || storedName) {
+            if (storedUserId || storedName || storedEmail) {
                 const params = new URLSearchParams();
                 if (storedUserId) params.set('userId', storedUserId);
                 if (storedName) params.set('name', storedName);
+                if (storedEmail) params.set('email', storedEmail);
 
                 const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`, {
                     cache: 'no-store'
@@ -53,11 +65,15 @@ export function useSubscription(): SubscriptionState {
                 if (res.ok) {
                     const data = await res.json();
                     if (data.approved) {
-                        const isMonthly = data.tier === 'MONTHLY_98K';
-                        const isBook = data.tier === 'BOOK_ZERO_POINT';
+                        const isMonthly = data.tier === 'MONTHLY_98K' || data.tier?.includes('98000') || data.tier?.includes('MONTHLY');
+                        const isBook = data.tier === 'BOOK_ZERO_POINT' || data.tier?.includes('BOOK');
 
                         localStorage.setItem('myeongsim_server_approved', 'true');
+                        localStorage.setItem('myeongsim_site_access', 'granted');
                         localStorage.setItem('myeongsim_approved_tier', data.tier || 'MONTHLY_98K');
+                        document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                        document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
+
                         if (isMonthly) {
                             localStorage.setItem('myeongsim_monthly_vip', 'true');
                             localStorage.setItem('myeongsim_paid_user', 'true');
@@ -65,11 +81,13 @@ export function useSubscription(): SubscriptionState {
                             localStorage.setItem('myeongsim_smartstore_vip', 'true');
                             localStorage.setItem('myeongsim_book_verified', 'true');
                             localStorage.setItem('myeongsim_paid_user', 'true');
-                            localStorage.removeItem('myeongsim_monthly_vip');
+                        } else {
+                            localStorage.setItem('myeongsim_paid_user', 'true');
                         }
-                    } else {
-                        // 관리자가 승인하지 않았거나 잠금 처리함 -> 로컬 VIP 플래그 강제 회수
+                    } else if (data.locked === true) {
+                        // 관리자가 명시적으로 잠금(닫기) 처리한 경우에만 로컬 VIP 플래그 회수
                         localStorage.removeItem('myeongsim_server_approved');
+                        localStorage.removeItem('myeongsim_site_access');
                         localStorage.removeItem('myeongsim_monthly_vip');
                         localStorage.removeItem('myeongsim_smartstore_vip');
                         localStorage.removeItem('myeongsim_book_verified');
@@ -91,14 +109,17 @@ export function useSubscription(): SubscriptionState {
         // 1. 서버 승인 상태 동기화
         await syncWithServer();
 
-        // 2. 서버 승인 마크가 있는 경우에만 유효
-        const serverApproved = localStorage.getItem('myeongsim_server_approved') === 'true';
-        const monthly = serverApproved && localStorage.getItem('myeongsim_monthly_vip') === 'true';
-        const book = serverApproved && (
-            localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
-            localStorage.getItem('myeongsim_book_verified') === 'true'
+        // 2. 권한 확인: 쿠키, 사이트 액세스, 로컬스토리지 권한 종합 인정
+        const siteAccessCookie = typeof document !== 'undefined' && (
+            document.cookie.includes('myeongsim_site_access=granted') ||
+            document.cookie.includes('myeongsim_site_access_client=granted') ||
+            document.cookie.includes('admin_session=')
         );
-        const paid = serverApproved && localStorage.getItem('myeongsim_paid_user') === 'true';
+        const siteAccess = siteAccessCookie || localStorage.getItem('myeongsim_site_access') === 'granted';
+        const monthly = localStorage.getItem('myeongsim_monthly_vip') === 'true';
+        const book = localStorage.getItem('myeongsim_smartstore_vip') === 'true' || 
+                     localStorage.getItem('myeongsim_book_verified') === 'true';
+        const paid = siteAccess || localStorage.getItem('myeongsim_paid_user') === 'true';
 
         // 만료일 체크
         const expiresAtStr = localStorage.getItem('myeongsim_expires_at');

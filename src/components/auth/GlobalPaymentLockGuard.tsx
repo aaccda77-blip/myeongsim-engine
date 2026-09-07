@@ -47,6 +47,22 @@ export default function GlobalPaymentLockGuard() {
         let shouldLock = true;
 
         try {
+            // 0. Supabase Session 및 사용자 식별 정보 사전 로드 (모바일 구글 로그인 등)
+            let sessionUid = '';
+            let sessionEmail = '';
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                    sessionUid = session.user.id || '';
+                    sessionEmail = session.user.email || '';
+                    if (sessionUid && !userId) setUserId(sessionUid);
+                    if (typeof window !== 'undefined') {
+                        if (sessionUid) localStorage.setItem('user_id', sessionUid);
+                        if (sessionEmail) localStorage.setItem('user_email', sessionEmail);
+                    }
+                }
+            } catch (_) {}
+
             // 1. 관리자 세션이거나 승인된 로컬 권한 보유 확인
             if (typeof window !== 'undefined') {
                 const isAdmin = document.cookie.includes('admin_session=');
@@ -72,20 +88,24 @@ export default function GlobalPaymentLockGuard() {
             // 2. 서버 실시간 승인 확인 (관리자가 /admin/users에서 열어주었는지 조회)
             if (typeof window !== 'undefined') {
                 const userName = localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '';
-                const queryId = userId || localStorage.getItem('user_id') || '';
+                const queryId = userId || sessionUid || localStorage.getItem('user_id') || '';
+                const queryEmail = sessionEmail || localStorage.getItem('user_email') || '';
                 const orderNum = localStorage.getItem('myeongsim_book_order') || localStorage.getItem('myeongsim_verified_order') || '';
                 const userPhone = localStorage.getItem('user_phone') || '';
 
-                if (userName || queryId || orderNum || userPhone) {
+                if (userName || queryId || queryEmail || orderNum || userPhone) {
                     try {
                         const params = new URLSearchParams();
                         if (userName) params.set('name', userName);
                         if (queryId) params.set('userId', queryId);
+                        if (queryEmail) params.set('email', queryEmail);
                         if (orderNum) params.set('orderNumber', orderNum);
                         if (userPhone) params.set('phone', userPhone);
                         params.set('t', String(Date.now()));
 
-                        const res = await fetch(`/api/payment/check-approval?${params.toString()}`);
+                        const res = await fetch(`/api/payment/check-approval?${params.toString()}`, {
+                            cache: 'no-store'
+                        });
                         if (res.ok) {
                             const checkData = await res.json();
                             if (checkData.approved) {
@@ -100,9 +120,10 @@ export default function GlobalPaymentLockGuard() {
                                 } else {
                                     localStorage.setItem('myeongsim_paid_user', 'true');
                                 }
+                                localStorage.setItem('myeongsim_server_approved', 'true');
                                 localStorage.setItem('myeongsim_site_access', 'granted');
-                                document.cookie = "myeongsim_site_access=granted; path=/; max-age=86400; SameSite=Lax";
-                                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=86400; SameSite=Lax";
+                                document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
                             }
                         }
                     } catch (e) {
@@ -111,28 +132,48 @@ export default function GlobalPaymentLockGuard() {
                 }
             }
 
-            // 3. Supabase Auth 및 users 테이블 확인
+            // 3. Supabase Auth 및 users 테이블 확인 (UID 또는 이메일 매칭)
             try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    setUserId(user.id);
-                    if (typeof window !== 'undefined') {
-                        localStorage.setItem('user_id', user.id);
+                const targetUid = sessionUid || userId;
+                const targetEmail = sessionEmail || (typeof window !== 'undefined' ? localStorage.getItem('user_email') || '' : '');
+                if (targetUid || targetEmail) {
+                    const orFilters: string[] = [];
+                    if (targetUid && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUid)) {
+                        orFilters.push(`id.eq.${targetUid}`);
                     }
-                    const { data: subscription } = await supabase
-                        .from('users')
-                        .select('expires_at, membership_tier, is_active')
-                        .eq('id', user.id)
-                        .single();
+                    if (targetEmail && targetEmail.includes('@')) {
+                        orFilters.push(`email.eq.${targetEmail.toLowerCase().trim()}`);
+                    }
 
-                    if (subscription) {
-                        const now = new Date().toISOString();
-                        const expiresAt = subscription.expires_at;
-                        const isExpired = !expiresAt || expiresAt < now;
-                        const isAdmin = subscription.membership_tier === 'ADMIN';
+                    if (orFilters.length > 0) {
+                        const { data: subscription } = await supabase
+                            .from('users')
+                            .select('expires_at, membership_tier, is_active')
+                            .or(orFilters.join(','))
+                            .order('updated_at', { ascending: false })
+                            .limit(1)
+                            .maybeSingle();
 
-                        if ((subscription.is_active && !isExpired) || isAdmin) {
-                            shouldLock = false;
+                        if (subscription) {
+                            const now = new Date().toISOString();
+                            const expiresAt = subscription.expires_at;
+                            const isExpired = !expiresAt || expiresAt < now;
+                            const isAdmin = subscription.membership_tier === 'ADMIN';
+
+                            if ((subscription.is_active && !isExpired) || isAdmin) {
+                                shouldLock = false;
+                                localStorage.setItem('myeongsim_site_access', 'granted');
+                                localStorage.setItem('myeongsim_server_approved', 'true');
+                                localStorage.setItem('myeongsim_paid_user', 'true');
+                                if (subscription.membership_tier === 'MONTHLY_98K') {
+                                    localStorage.setItem('myeongsim_monthly_vip', 'true');
+                                } else if (subscription.membership_tier === 'BOOK_ZERO_POINT') {
+                                    localStorage.setItem('myeongsim_smartstore_vip', 'true');
+                                    localStorage.setItem('myeongsim_book_verified', 'true');
+                                }
+                                document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
+                            }
                         }
                     }
                 }

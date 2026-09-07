@@ -173,24 +173,29 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
             setUser(authUser);
             if (authUser && typeof window !== 'undefined') {
                 localStorage.setItem('user_id', authUser.id);
+                if (authUser.email) localStorage.setItem('user_email', authUser.email);
             }
 
             if (typeof window !== 'undefined') {
                 const userName = localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '';
                 const queryId = authUser?.id || localStorage.getItem('user_id') || '';
+                const queryEmail = authUser?.email || localStorage.getItem('user_email') || '';
                 const orderNum = localStorage.getItem('myeongsim_book_order') || localStorage.getItem('myeongsim_verified_order') || '';
                 const userPhone = localStorage.getItem('user_phone') || '';
 
-                if (userName || queryId || orderNum || userPhone) {
+                if (userName || queryId || queryEmail || orderNum || userPhone) {
                     try {
                         const params = new URLSearchParams();
                         if (userName) params.set('name', userName);
                         if (queryId) params.set('userId', queryId);
+                        if (queryEmail) params.set('email', queryEmail);
                         if (orderNum) params.set('orderNumber', orderNum);
                         if (userPhone) params.set('phone', userPhone);
                         params.set('t', String(Date.now()));
 
-                        const res = await fetch(`/api/payment/check-approval?${params.toString()}`);
+                        const res = await fetch(`/api/payment/check-approval?${params.toString()}`, {
+                            cache: 'no-store'
+                        });
                         if (res.ok) {
                             const checkData = await res.json();
                             if (checkData.approved) {
@@ -205,9 +210,10 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                 } else {
                                     localStorage.setItem('myeongsim_paid_user', 'true');
                                 }
+                                localStorage.setItem('myeongsim_server_approved', 'true');
                                 localStorage.setItem('myeongsim_site_access', 'granted');
-                                document.cookie = "myeongsim_site_access=granted; path=/; max-age=86400; SameSite=Lax";
-                                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=86400; SameSite=Lax";
+                                document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
                             }
                         }
                     } catch (e) {
@@ -223,11 +229,16 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                 } catch (e) {}
 
                 try {
+                    const orFilters: string[] = [`id.eq.${authUser.id}`];
+                    if (authUser.email) orFilters.push(`email.eq.${authUser.email.toLowerCase().trim()}`);
+
                     const { data: subscription } = await supabase
                         .from('users')
                         .select('expires_at, membership_tier, is_active')
-                        .eq('id', authUser.id)
-                        .single();
+                        .or(orFilters.join(','))
+                        .order('updated_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
 
                     if (subscription) {
                         const now = new Date();
@@ -237,6 +248,11 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
                         if ((subscription.is_active && !isExpired) || isAdmin) {
                             shouldLock = false;
+                            localStorage.setItem('myeongsim_server_approved', 'true');
+                            localStorage.setItem('myeongsim_site_access', 'granted');
+                            localStorage.setItem('myeongsim_paid_user', 'true');
+                            document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                            document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
                         }
                     }
                 } catch (e) {}

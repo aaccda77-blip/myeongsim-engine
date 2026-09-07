@@ -71,16 +71,27 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
 
         const checkSilent = async () => {
             try {
+                // 세션 유저 정보 획득 (구글 간편 로그인 등)
+                let sessionUid = '';
+                let sessionEmail = '';
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    sessionUid = session?.user?.id || '';
+                    sessionEmail = session?.user?.email || '';
+                } catch (_) {}
+
                 const nameToQuery = depositorName.trim() || bookBuyerName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '' : '');
-                const uidToQuery = userId || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+                const uidToQuery = userId || sessionUid || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+                const emailToQuery = sessionEmail || (typeof window !== 'undefined' ? localStorage.getItem('user_email') || '' : '');
                 const orderToQuery = orderNumber.trim() || (typeof window !== 'undefined' ? localStorage.getItem('myeongsim_book_order') || localStorage.getItem('myeongsim_verified_order') || '' : '');
                 const phoneToQuery = phone.trim() || bookBuyerPhone.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_phone') || '' : '');
 
-                if (!nameToQuery && !uidToQuery && !orderToQuery && !phoneToQuery) return;
+                if (!nameToQuery && !uidToQuery && !emailToQuery && !orderToQuery && !phoneToQuery) return;
 
                 const params = new URLSearchParams();
                 if (nameToQuery) params.set('name', nameToQuery);
                 if (uidToQuery) params.set('userId', uidToQuery);
+                if (emailToQuery) params.set('email', emailToQuery);
                 if (orderToQuery) params.set('orderNumber', orderToQuery);
                 if (phoneToQuery) params.set('phone', phoneToQuery);
                 params.set('t', String(Date.now()));
@@ -99,12 +110,14 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                         } else {
                             localStorage.setItem('myeongsim_paid_user', 'true');
                         }
+                        localStorage.setItem('myeongsim_server_approved', 'true');
                         localStorage.setItem('myeongsim_site_access', 'granted');
                         localStorage.removeItem('myeongsim_pending_wire');
-                        document.cookie = "myeongsim_site_access=granted; path=/; max-age=86400; SameSite=Lax";
-                        document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=86400; SameSite=Lax";
+                        document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                        document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
                         window.dispatchEvent(new Event('myeongsim_auth_change'));
                         await onRefresh();
+                        window.location.reload();
                     }
                 }
             } catch (e) {
@@ -172,7 +185,15 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
 
         setIsVerifyingBook(true);
         try {
-            const finalUserId = userId || cleanPhone || cleanName || cleanOrder;
+            let sessionUid = '';
+            let sessionEmail = '';
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                sessionUid = session?.user?.id || '';
+                sessionEmail = session?.user?.email || '';
+            } catch (_) {}
+
+            const finalUserId = userId || sessionUid || cleanPhone || cleanName || cleanOrder;
             const res = await fetch('/api/auth/verify-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -180,6 +201,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                     orderNumber: cleanOrder,
                     depositorName: cleanName,
                     phone: cleanPhone,
+                    email: sessionEmail,
                     channel: bookChannel,
                     userId: finalUserId
                 })
@@ -190,12 +212,17 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
             if (res.ok && data.success) {
                 // 성공! 로컬 권한 즉시 세팅
                 if (typeof window !== 'undefined') {
+                    localStorage.setItem('myeongsim_server_approved', 'true');
                     localStorage.setItem('myeongsim_book_verified', 'true');
                     localStorage.setItem('myeongsim_smartstore_vip', 'true');
                     localStorage.setItem('myeongsim_paid_user', 'true');
+                    localStorage.setItem('myeongsim_site_access', 'granted');
                     localStorage.setItem('myeongsim_verified_order', cleanOrder);
                     if (cleanName) localStorage.setItem('user_name', cleanName);
                     if (cleanPhone) localStorage.setItem('user_phone', cleanPhone);
+                    if (sessionEmail) localStorage.setItem('user_email', sessionEmail);
+                    document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                    document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
                     window.dispatchEvent(new Event('myeongsim_auth_change'));
                 }
 
@@ -233,14 +260,28 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
     const handleRefresh = async () => {
         setIsRefreshing(true);
         try {
-            // 1. 쿼리 파라미터 취합 (이름, ID, 주문번호, 전화번호)
-            const nameToQuery = depositorName.trim() || bookBuyerName.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '' : '');
-            const uidToQuery = userId || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+            // 0. 세션 유저 정보 획득 (구글 간편 로그인 등)
+            let sessionUid = '';
+            let sessionEmail = '';
+            let sessionName = '';
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                sessionUid = session?.user?.id || '';
+                sessionEmail = session?.user?.email || '';
+                sessionName = session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name || '';
+                if (sessionUid && typeof window !== 'undefined') localStorage.setItem('user_id', sessionUid);
+                if (sessionEmail && typeof window !== 'undefined') localStorage.setItem('user_email', sessionEmail);
+            } catch (_) {}
+
+            // 1. 쿼리 파라미터 취합 (이름, ID, 이메일, 주문번호, 전화번호)
+            const nameToQuery = depositorName.trim() || bookBuyerName.trim() || sessionName || (typeof window !== 'undefined' ? localStorage.getItem('user_name') || localStorage.getItem('myeongsim_book_buyer') || '' : '');
+            const uidToQuery = userId || sessionUid || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+            const emailToQuery = sessionEmail || (typeof window !== 'undefined' ? localStorage.getItem('user_email') || '' : '');
             const orderToQuery = orderNumber.trim() || (typeof window !== 'undefined' ? localStorage.getItem('myeongsim_book_order') || localStorage.getItem('myeongsim_verified_order') || '' : '');
             const phoneToQuery = phone.trim() || bookBuyerPhone.trim() || (typeof window !== 'undefined' ? localStorage.getItem('user_phone') || '' : '');
 
-            // 입력값이 전혀 없으면 친절하게 안내
-            if (!nameToQuery && !uidToQuery && !orderToQuery && !phoneToQuery) {
+            // 입력값도 없고 세션 정보도 전혀 없으면 친절하게 안내
+            if (!nameToQuery && !uidToQuery && !emailToQuery && !orderToQuery && !phoneToQuery) {
                 alert('💡 관리자 승인 상태를 확인하려면 구매자 성함, 입금자명 또는 주문번호를 먼저 입력해 주세요.\n\n(위의 [구매자 성함] 또는 [주문번호] 칸에 입력하신 후 [승인 상태 확인]을 누르시면 즉시 조회됩니다.)');
                 setIsRefreshing(false);
                 return;
@@ -249,11 +290,14 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
             const params = new URLSearchParams();
             if (nameToQuery) params.set('name', nameToQuery);
             if (uidToQuery) params.set('userId', uidToQuery);
+            if (emailToQuery) params.set('email', emailToQuery);
             if (orderToQuery) params.set('orderNumber', orderToQuery);
             if (phoneToQuery) params.set('phone', phoneToQuery);
             params.set('t', String(Date.now()));
 
-            const res = await fetch(`/api/payment/check-approval?${params.toString()}`);
+            const res = await fetch(`/api/payment/check-approval?${params.toString()}`, {
+                cache: 'no-store'
+            });
             const data = await res.json();
 
             if (data.approved) {
@@ -269,10 +313,11 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                     localStorage.setItem('myeongsim_paid_user', 'true');
                 }
 
+                localStorage.setItem('myeongsim_server_approved', 'true');
                 localStorage.setItem('myeongsim_site_access', 'granted');
                 localStorage.removeItem('myeongsim_pending_wire');
-                document.cookie = "myeongsim_site_access=granted; path=/; max-age=86400; SameSite=Lax";
-                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=86400; SameSite=Lax";
+                document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
+                document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
 
                 window.dispatchEvent(new Event('myeongsim_auth_change'));
                 await onRefresh();
@@ -293,6 +338,8 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
             const isStillLocked = await onRefresh();
             if (isStillLocked) {
                 alert('⏳ 현재 관리자 승인 대기 중입니다. 잠시 후 다시 시도해 주세요.');
+            } else {
+                window.location.reload();
             }
         } finally {
             setIsRefreshing(false);
@@ -309,14 +356,26 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
 
         setIsSubmitting(true);
         try {
+            let sessionUid = '';
+            let sessionEmail = '';
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                sessionUid = session?.user?.id || '';
+                sessionEmail = session?.user?.email || '';
+            } catch (_) {}
+
+            const effectiveUserId = userId || sessionUid || phone.trim() || depositorName.trim();
+            const effectiveEmail = sessionEmail || (typeof window !== 'undefined' ? localStorage.getItem('user_email') || '' : '');
+
             const res = await fetch('/api/payment/request', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    userId: userId || phone || depositorName.trim(),
+                    userId: effectiveUserId,
                     amount: 98000,
                     depositorName: depositorName.trim(),
                     phone: phone.trim(),
+                    email: effectiveEmail,
                     productName: '특허출원기념 월정액 98,000원 ALL-PASS'
                 })
             });
@@ -324,15 +383,14 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
             const data = await res.json();
             if (data.success || res.ok) {
                 setWireSubmitted(true);
-                // 로컬에 이름 저장
+                // 로컬에 이름 및 이메일 저장
                 localStorage.setItem('user_name', depositorName.trim());
                 if (phone) localStorage.setItem('user_phone', phone.trim());
+                if (effectiveEmail) localStorage.setItem('user_email', effectiveEmail);
 
                 // [SYNC-DB] 입금 신청자 실명을 관리자 DB에 즉시 동기화
                 try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    const currentUid = session?.user?.id || userId || '';
-                    const currentEmail = session?.user?.email || '';
+                    const currentUid = sessionUid || userId || '';
                     await fetch('/api/user/sync-profile', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -340,7 +398,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                             name: depositorName.trim(),
                             phone: phone.trim(),
                             userId: currentUid,
-                            email: currentEmail
+                            email: effectiveEmail
                         })
                     });
                 } catch (_) {}

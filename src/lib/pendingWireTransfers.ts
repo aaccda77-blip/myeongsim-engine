@@ -7,6 +7,7 @@ export interface PendingWireTransfer {
     depositorName: string;
     phone: string;
     maskedPhone: string;
+    email?: string;
     amount: number;
     itemType: string;
     orderName: string;
@@ -21,11 +22,13 @@ const globalPendingStore: PendingWireTransfer[] = [];
 export async function addPendingWireTransfer(params: {
     depositorName: string;
     userId?: string;
+    email?: string;
+    phone?: string;
     amount?: number;
     itemType?: string;
     orderName?: string;
 }): Promise<PendingWireTransfer> {
-    const { depositorName, userId, amount = 890, itemType = 'CHAT_3', orderName = '명심코칭 수다 3회 충전권' } = params;
+    const { depositorName, userId, email = '', phone = '', amount = 890, itemType = 'CHAT_3', orderName = '명심코칭 수다 3회 충전권' } = params;
 
     // Generate a valid UUID if userId is missing or guest string
     let recordId = crypto.randomUUID();
@@ -33,15 +36,17 @@ export async function addPendingWireTransfer(params: {
         recordId = userId;
     }
 
-    const maskedPhone = maskPhoneNumber(depositorName);
+    const cleanEmail = email.trim().toLowerCase();
+    const maskedPhone = phone ? maskPhoneNumber(phone) : maskPhoneNumber(depositorName);
     const nowIso = new Date().toISOString();
 
     const pendingItem: PendingWireTransfer = {
         id: recordId,
         userId: recordId,
         depositorName: depositorName.trim(),
-        phone: maskedPhone,
+        phone: phone ? phone.trim() : maskedPhone,
         maskedPhone: maskedPhone,
+        email: cleanEmail || undefined,
         amount: amount,
         itemType: itemType,
         orderName: orderName,
@@ -51,7 +56,11 @@ export async function addPendingWireTransfer(params: {
     };
 
     // Store in global memory store (first position)
-    const existingIndex = globalPendingStore.findIndex(p => p.id === recordId || p.depositorName === depositorName.trim());
+    const existingIndex = globalPendingStore.findIndex(p => 
+        p.id === recordId || 
+        (cleanEmail && p.email === cleanEmail) || 
+        p.depositorName === depositorName.trim()
+    );
     if (existingIndex !== -1) {
         globalPendingStore[existingIndex] = pendingItem;
     } else {
@@ -60,18 +69,23 @@ export async function addPendingWireTransfer(params: {
 
     // Try Upserting into Supabase `users` table
     try {
+        const upsertPayload: any = {
+            id: recordId,
+            name: depositorName.trim(),
+            phone: phone ? phone.trim() : maskedPhone,
+            membership_tier: itemType,
+            is_active: false, // Waiting for admin approval
+            payment_amount: amount,
+            chat_turns_left: 3,
+            created_at: nowIso,
+        };
+        if (cleanEmail && cleanEmail.includes('@')) {
+            upsertPayload.email = cleanEmail;
+        }
+
         const { error: userErr } = await supabaseAdmin
             .from('users')
-            .upsert({
-                id: recordId,
-                name: depositorName.trim(),
-                phone: maskedPhone,
-                membership_tier: itemType,
-                is_active: false, // Waiting for admin approval
-                payment_amount: amount,
-                chat_turns_left: 3,
-                created_at: nowIso,
-            }, { onConflict: 'id' });
+            .upsert(upsertPayload, { onConflict: 'id' });
 
         if (userErr) {
             console.error('[PendingStore] Supabase users upsert error:', userErr);
@@ -80,6 +94,7 @@ export async function addPendingWireTransfer(params: {
                 await supabaseAdmin.from('users').insert({
                     id: recordId,
                     name: depositorName.trim(),
+                    email: cleanEmail || undefined,
                     is_active: false,
                     created_at: nowIso
                 });
@@ -100,6 +115,7 @@ export function getPendingWireTransfers(): PendingWireTransfer[] {
 export interface ApprovedUserRecord {
     userId: string;
     name?: string;
+    email?: string;
     phone?: string;
     tier: string;
     approvedAt: string;
@@ -107,15 +123,18 @@ export interface ApprovedUserRecord {
 
 const globalApprovedStore: ApprovedUserRecord[] = [];
 
-export function recordApprovedUser(record: { userId: string; name?: string; phone?: string; tier: string }) {
+export function recordApprovedUser(record: { userId: string; name?: string; email?: string; phone?: string; tier: string }) {
+    const cleanEmail = (record.email || '').trim().toLowerCase();
     const existingIndex = globalApprovedStore.findIndex(a => 
         a.userId === record.userId || 
+        (cleanEmail && a.email && a.email.toLowerCase() === cleanEmail) ||
         (record.name && a.name === record.name.trim()) ||
         (record.phone && a.phone === record.phone.trim())
     );
     const item: ApprovedUserRecord = {
         userId: record.userId,
         name: record.name?.trim(),
+        email: record.email?.trim(),
         phone: record.phone?.trim(),
         tier: record.tier,
         approvedAt: new Date().toISOString()
@@ -127,13 +146,15 @@ export function recordApprovedUser(record: { userId: string; name?: string; phon
     }
 }
 
-export function lookupApprovedUser(params: { userId?: string; name?: string; phone?: string }): ApprovedUserRecord | undefined {
-    const { userId, name, phone } = params;
+export function lookupApprovedUser(params: { userId?: string; name?: string; email?: string; phone?: string }): ApprovedUserRecord | undefined {
+    const { userId, name, email, phone } = params;
     const cleanName = (name || '').trim().toLowerCase();
+    const cleanEmail = (email || '').trim().toLowerCase();
     const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
 
     return globalApprovedStore.find(a => {
         if (userId && (a.userId === userId || a.userId.toLowerCase() === userId.toLowerCase())) return true;
+        if (cleanEmail && a.email && a.email.toLowerCase() === cleanEmail) return true;
         if (cleanName && a.name && (a.name.toLowerCase() === cleanName || a.name.toLowerCase().includes(cleanName) || cleanName.includes(a.name.toLowerCase()))) return true;
         if (cleanPhone && a.phone && a.phone.replace(/[^0-9]/g, '') === cleanPhone) return true;
         return false;

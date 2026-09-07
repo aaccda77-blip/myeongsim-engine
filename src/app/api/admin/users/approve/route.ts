@@ -101,7 +101,53 @@ export async function POST(request: NextRequest) {
             console.warn('[AdminApprove] Supabase upsert error by id:', dbErr);
         }
 
-        // 2. Also update by name in Supabase users if name is present
+        // 2. Also update by Email in Supabase users and Supabase Auth (Crucial for Google OAuth users!)
+        if (email && email.includes('@')) {
+            const cleanEmailLower = email.trim().toLowerCase();
+            try {
+                await supabaseAdmin
+                    .from('users')
+                    .update({
+                        membership_tier: tier,
+                        is_active: isActiveExplicit,
+                        expires_at: expiresAt!.toISOString(),
+                        chat_turns_left: chatTurnsLeft,
+                        approved_at: now.toISOString()
+                    })
+                    .eq('email', cleanEmailLower);
+            } catch (emailErr) {
+                console.warn('[AdminApprove] Supabase update by email notice:', emailErr);
+            }
+
+            try {
+                const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers();
+                const matchedAuth = authUsers?.users?.find(u => u.email?.toLowerCase() === cleanEmailLower);
+                if (matchedAuth) {
+                    await supabaseAdmin.auth.admin.updateUserById(matchedAuth.id, {
+                        user_metadata: {
+                            membership_tier: tier,
+                            is_active: isActiveExplicit,
+                            approved_at: now.toISOString()
+                        }
+                    });
+                    // Also guarantee users table has a record with auth UID
+                    await supabaseAdmin.from('users').upsert({
+                        id: matchedAuth.id,
+                        email: cleanEmailLower,
+                        name: effectiveName || matchedAuth.user_metadata?.full_name || undefined,
+                        membership_tier: tier,
+                        is_active: isActiveExplicit,
+                        expires_at: expiresAt!.toISOString(),
+                        chat_turns_left: chatTurnsLeft,
+                        approved_at: now.toISOString()
+                    }, { onConflict: 'id' });
+                }
+            } catch (authFindErr) {
+                console.warn('[AdminApprove] Auth sync by email error:', authFindErr);
+            }
+        }
+
+        // 3. Also update by Name in Supabase users if name is present
         if (effectiveName) {
             try {
                 await supabaseAdmin
@@ -119,12 +165,28 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // 3. Mark as approved in pending memory store & record to approved cache
+        // 4. Update Supabase Auth User Metadata if userId is UUID
+        if (userId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)) {
+            try {
+                await supabaseAdmin.auth.admin.updateUserById(userId, {
+                    user_metadata: {
+                        membership_tier: tier,
+                        is_active: isActiveExplicit,
+                        approved_at: now.toISOString()
+                    }
+                });
+            } catch (metaErr) {
+                console.warn('[AdminApprove] Auth metadata update notice:', metaErr);
+            }
+        }
+
+        // 5. Mark as approved in pending memory store & record to approved cache
         if (isActiveExplicit) {
             removePendingWireTransfer(userId);
             recordApprovedUser({
                 userId,
                 name: effectiveName,
+                email,
                 phone,
                 tier
             });

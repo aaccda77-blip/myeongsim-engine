@@ -129,14 +129,19 @@ export async function GET(request: NextRequest) {
     pendingMemoryItems.forEach(pending => {
         if (isUserDeleted(pending.id)) return;
 
-        const existingIndex = users.findIndex(u => u.id === pending.id || u.name === pending.depositorName || (u.depositorName && u.depositorName === pending.depositorName));
+        const existingIndex = users.findIndex(u => 
+            u.id === pending.id || 
+            (pending.email && u.email && u.email.toLowerCase() === pending.email.toLowerCase()) ||
+            u.name === pending.depositorName || 
+            (u.depositorName && u.depositorName === pending.depositorName)
+        );
         if (existingIndex === -1) {
             users.unshift({
                 id: pending.id,
-                email: '무통장 입금 신청',
+                email: pending.email || '무통장 입금 신청',
                 name: pending.depositorName ? `[입금신청] ${pending.depositorName}` : '입금 신청자',
                 depositorName: pending.depositorName,
-                phone: pending.maskedPhone || '',
+                phone: pending.phone || pending.maskedPhone || '',
                 membership_tier: pending.membership_tier || 'CHAT_PASS',
                 is_active: pending.is_active || false,
                 payment_amount: pending.amount || 890,
@@ -147,6 +152,12 @@ export async function GET(request: NextRequest) {
             if (pending.depositorName) {
                 users[existingIndex].depositorName = pending.depositorName;
                 users[existingIndex].name = `[입금신청] ${pending.depositorName}`;
+            }
+            if (pending.email && (!users[existingIndex].email || !users[existingIndex].email.includes('@'))) {
+                users[existingIndex].email = pending.email;
+            }
+            if (pending.phone && !users[existingIndex].phone) {
+                users[existingIndex].phone = pending.phone;
             }
             if (pending.is_active) {
                 users[existingIndex].is_active = true;

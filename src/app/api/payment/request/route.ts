@@ -10,7 +10,9 @@ export async function POST(req: NextRequest) {
             userId = '', 
             itemType = 'MONTHLY_98K', 
             orderName = '특허출원기념 월정액 98,000원 ALL-PASS',
-            productName = '' 
+            productName = '',
+            email = '',
+            phone = ''
         } = body;
 
         const effectiveOrderName = productName || orderName;
@@ -23,6 +25,8 @@ export async function POST(req: NextRequest) {
         const pendingItem = await addPendingWireTransfer({
             depositorName: depositorName.trim(),
             userId,
+            email: (email || '').trim().toLowerCase(),
+            phone: (phone || '').trim(),
             amount: Number(amount) || 98000,
             itemType: itemType || 'MONTHLY_98K',
             orderName: effectiveOrderName,

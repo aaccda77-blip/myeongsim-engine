@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json().catch(() => ({}));
-        const { orderNumber = '', userId = '', depositorName = '', channel } = body;
+        const { orderNumber = '', userId = '', depositorName = '', phone = '', email = '', channel } = body;
 
         if (!orderNumber || typeof orderNumber !== 'string') {
             return NextResponse.json({
@@ -49,6 +49,8 @@ export async function POST(req: NextRequest) {
         await addPendingWireTransfer({
             depositorName: depositorName || `[${channelLabel}] 독자 (${orderNumber.slice(-6)})`,
             userId: userId || orderNumber,
+            email: (email || '').trim().toLowerCase(),
+            phone: (phone || '').trim(),
             amount: 0,
             itemType: 'BOOK_ZERO_POINT',
             orderName: `[도서구매인증] ${channelLabel}: ${orderNumber}`
