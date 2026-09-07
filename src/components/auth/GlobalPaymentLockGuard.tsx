@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import PaymentLockOverlay from './PaymentLockOverlay';
 import { supabase } from '@/lib/supabaseClient';
+import { isUserApprovedSync } from '@/lib/authGuardUtils';
 
 export default function GlobalPaymentLockGuard() {
     const pathname = usePathname();
@@ -33,6 +34,12 @@ export default function GlobalPaymentLockGuard() {
 
     const checkLockStatus = useCallback(async (): Promise<boolean> => {
         if (isExemptRoute(pathname)) {
+            setIsLocked(false);
+            return false;
+        }
+
+        // ⚡ [Zero-Flicker Instant Pass] 이미 승인된 회원은 0.0001ms 만에 즉시 통과!
+        if (isUserApprovedSync()) {
             setIsLocked(false);
             return false;
         }
@@ -165,7 +172,8 @@ export default function GlobalPaymentLockGuard() {
         };
     }, [pathname, checkLockStatus]);
 
-    if (!mounted || isExemptRoute(pathname)) {
+    // 마운트 전이거나, 제외 경로이거나, 이미 승인된 사용자는 즉시 null 반환 (0초 완벽 통과)
+    if (!mounted || isExemptRoute(pathname) || isUserApprovedSync()) {
         return null;
     }
 

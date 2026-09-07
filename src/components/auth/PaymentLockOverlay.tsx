@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
+import { isUserApprovedSync } from '@/lib/authGuardUtils';
 
 interface PaymentLockOverlayProps {
     onRefresh: () => Promise<boolean>;
@@ -16,6 +17,11 @@ interface PaymentLockOverlayProps {
 }
 
 export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOverlayProps) {
+    // ⚡ [최종 무적 방패] 이미 승인된 사용자라면 어떤 경우에도 오버레이 렌더링 0초 원천 차단!
+    if (typeof window !== 'undefined' && isUserApprovedSync()) {
+        return null;
+    }
+
     const router = useRouter();
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [activeTab, setActiveTab] = useState<'info' | 'wire'>('info');

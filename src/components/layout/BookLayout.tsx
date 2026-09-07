@@ -15,6 +15,7 @@ const MptiPlannerOverlay = dynamic(() => import('../coaching/MptiPlannerModal'),
 // [New Imports]
 import { supabase } from '@/lib/supabaseClient';
 import PaymentLockOverlay from '@/components/auth/PaymentLockOverlay';
+import { isUserApprovedSync } from '@/lib/authGuardUtils';
 import { getTargetStepForStage } from '@/utils/StageMapping';
 
 import { useSearchParams } from 'next/navigation';
@@ -122,11 +123,22 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
     const [demoStage, setDemoStage] = useState(7); // [Demo] 7단계 모두 오픈
     const progressPercentage = (currentStep / totalSteps) * 100;
 
-    // [Commercial Strict Payment Lock] - 결제 또는 관리자 승인 없이는 모든 컨텐츠 전면 잠금
-    const [isLocked, setIsLocked] = useState(true);
-    const [isLoadingLock, setIsLoadingLock] = useState(true);
+    // [Zero-Flicker Commercial Strict Payment Lock]
+    // 이미 승인된 회원은 마운트 0초 만에 잠금 해제(false)로 시작하여 깜빡임 완벽 차단!
+    const [isLocked, setIsLocked] = useState<boolean>(() => {
+        if (typeof window === 'undefined') return false;
+        return !isUserApprovedSync();
+    });
+    const [isLoadingLock, setIsLoadingLock] = useState(false);
 
     const checkUserStatus = async (): Promise<boolean> => {
+        // 이미 승인된 유저는 0.0001ms 만에 통과!
+        if (isUserApprovedSync()) {
+            setIsLocked(false);
+            setIsLoadingLock(false);
+            return false;
+        }
+
         setIsLoadingLock(true);
         let shouldLock = true; // 기본값: 완전 잠금
 
@@ -477,7 +489,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
 
                 {/* [Strict Payment Guardian] */}
                 <AnimatePresence>
-                    {isLocked && (
+                    {isLocked && !isUserApprovedSync() && (
                         <PaymentLockOverlay onRefresh={checkUserStatus} userId={user?.id} />
                     )}
                 </AnimatePresence>
