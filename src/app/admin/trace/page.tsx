@@ -50,6 +50,10 @@ export default function ForensicTracePage() {
     const fetchLogs = async () => {
         try {
             const res = await fetch('/api/admin/trace');
+            if (res.status === 401) {
+                window.location.href = '/admin';
+                return;
+            }
             const data = await res.json();
             if (data.success) {
                 setRecentLogs(data.recentLogs || []);

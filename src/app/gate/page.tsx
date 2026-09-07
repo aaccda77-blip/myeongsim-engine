@@ -86,7 +86,6 @@ export default function GatePage() {
                 } catch (e) {}
                 document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
                 document.cookie = "myeongsim_site_access_client=granted; path=/; max-age=2592000; SameSite=Lax";
-                document.cookie = "admin_session=true; path=/; max-age=2592000; SameSite=Lax";
 
                 // Immediate redirect to main report
                 window.location.href = '/report';

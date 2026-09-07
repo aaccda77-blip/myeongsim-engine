@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { rateLimit } from '@/lib/rateLimit';
-import { getExpectedAdminToken } from '@/lib/adminAuth';
+import { getExpectedAdminToken, isValidAdminPassword } from '@/lib/adminAuth';
 
 const loginLimiter = rateLimit({
     interval: 15 * 60 * 1000, // 15분
@@ -22,28 +22,16 @@ export async function POST(req: Request) {
 
         const { password } = await req.json();
 
-        // Allowed Admin Passwords for easy access
-        const allowedPasswords = [
-            process.env.ADMIN_PASSWORD || 'dlruddbs77!@',
-            'dlruddbs77!@',
-            'myeongsim7777',
-            '7777',
-            'aaccda77',
-            'myeongsim_master_2024!'
-        ];
-
-        const isValid = allowedPasswords.some(pwd => pwd && pwd.trim() === password.trim());
-
-        if (isValid) {
-            const sessionToken = getExpectedAdminToken(process.env.ADMIN_PASSWORD || 'dlruddbs77!@');
+        if (password && isValidAdminPassword(password)) {
+            const sessionToken = getExpectedAdminToken(password);
             const response = NextResponse.json({ success: true });
 
-            // Set Cookie
+            // Set Cookie (4 hours)
             response.cookies.set('admin_session', sessionToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict', // [Security] Prevent CSRF
-                maxAge: 60 * 60 * 24, // 1 day
+                sameSite: 'strict',
+                maxAge: 60 * 60 * 4, // 4 hours
                 path: '/',
             });
 

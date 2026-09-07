@@ -1,11 +1,17 @@
 import { supabase } from '@/lib/supabaseClient';
 import { NextResponse } from 'next/server';
+import { verifyAdmin } from '@/lib/adminAuth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // GET: List All Pending Payments
 export async function GET() {
+    const isAdmin = await verifyAdmin();
+    if (!isAdmin) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const { data, error } = await supabase
             .from('payments')
@@ -30,6 +36,11 @@ export async function GET() {
 
 // PATCH: Approve Payment (PENDING -> PAID)
 export async function PATCH(req: Request) {
+    const isAdmin = await verifyAdmin();
+    if (!isAdmin) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const { id } = await req.json();
 

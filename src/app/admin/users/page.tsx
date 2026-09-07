@@ -32,6 +32,7 @@ interface Subscriber {
 export default function AdminUsersPage() {
     const [password, setPassword] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loginLoading, setLoginLoading] = useState(false);
     const [users, setUsers] = useState<Subscriber[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -51,6 +52,9 @@ export default function AdminUsersPage() {
                 setUsers(data);
                 setIsAuthenticated(true);
             } else if (response.status === 401) {
+                if (typeof window !== 'undefined') {
+                    sessionStorage.removeItem('myeongsim_admin_authed');
+                }
                 setIsAuthenticated(false);
             }
         } catch (error) {
@@ -60,19 +64,33 @@ export default function AdminUsersPage() {
     };
 
     useEffect(() => {
-        fetchUsers();
+        // 브라우저 탭 세션에서 명시적으로 로그인한 경우에만 복원 시도 (자동 풀림 방지)
+        if (typeof window !== 'undefined') {
+            const isSessionActive = sessionStorage.getItem('myeongsim_admin_authed') === 'true';
+            if (isSessionActive) {
+                fetchUsers();
+            }
+        }
     }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!password.trim()) {
+            alert('관리자 비밀번호를 입력해주세요.');
+            return;
+        }
+        setLoginLoading(true);
         try {
             const response = await fetch('/api/admin/auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password })
+                body: JSON.stringify({ password: password.trim() })
             });
             const data = await response.json();
             if (data.success) {
+                if (typeof window !== 'undefined') {
+                    sessionStorage.setItem('myeongsim_admin_authed', 'true');
+                }
                 setIsAuthenticated(true);
                 fetchUsers();
             } else {
@@ -80,7 +98,27 @@ export default function AdminUsersPage() {
             }
         } catch (error) {
             alert('로그인 오류가 발생했습니다.');
+        } finally {
+            setLoginLoading(false);
         }
+    };
+
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/admin/logout', { method: 'POST' });
+            await fetch('/api/admin/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'logout' })
+            });
+        } catch (e) {}
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('myeongsim_admin_authed');
+        }
+        setIsAuthenticated(false);
+        setPassword('');
+        setUsers([]);
+        alert('🔒 관리자 세션이 안전하게 종료되었습니다.');
     };
 
     const approveUser = async (userId: string, rawTier: string) => {
@@ -249,9 +287,11 @@ export default function AdminUsersPage() {
     }, []);
 
     useEffect(() => {
-        fetchVisitors();
-        fetchSecurity();
-    }, [fetchVisitors, fetchSecurity]);
+        if (isAuthenticated) {
+            fetchVisitors();
+            fetchSecurity();
+        }
+    }, [isAuthenticated, fetchVisitors, fetchSecurity]);
 
     // 👥 성별 및 연령대 인구통계 분석
     const demographicStats = useMemo(() => {
@@ -325,28 +365,40 @@ export default function AdminUsersPage() {
         return (
             <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
                 <div className="w-full max-w-md bg-slate-900 border border-amber-500/30 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
                     <MyeongsimSunLogo size={56} className="mx-auto mb-4" />
                     <h1 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-2">
-                        <Lock className="w-5 h-5 text-amber-400" /> 가입자 관리자 인증
+                        <Lock className="w-5 h-5 text-amber-400" /> 관리자 보안 인증
                     </h1>
-                    <p className="text-xs text-gray-400 mb-6">명심코칭 회원 현황 및 수다권 승인을 위한 대시보드입니다.</p>
+                    <p className="text-xs text-gray-400 mb-6">회원 승인 및 시스템 관리를 위해 관리자 비밀번호를 입력해주세요.</p>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="관리자 보안 비밀번호 입력"
-                            className="w-full bg-slate-800 border border-white/15 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-center text-sm focus:outline-none focus:border-amber-400"
+                            disabled={loginLoading}
+                            className="w-full bg-slate-800 border border-white/15 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-center text-sm focus:outline-none focus:border-amber-400 disabled:opacity-50"
                             autoFocus
                         />
                         <button
                             type="submit"
-                            className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-bold rounded-xl shadow-lg transition-all"
+                            disabled={loginLoading}
+                            className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                         >
-                            관리자 대시보드 입장
+                            {loginLoading ? (
+                                <>
+                                    <RefreshCw className="w-4 h-4 animate-spin" />
+                                    <span>인증 확인 중...</span>
+                                </>
+                            ) : (
+                                <span>관리자 대시보드 입장</span>
+                            )}
                         </button>
                     </form>
+                    <div className="mt-6 text-center text-[11px] text-gray-500">
+                        🔒 세션 보호: 브라우저 종료 시 또는 로그아웃 시 자동 재잠금됩니다.
+                    </div>
                 </div>
             </div>
         );
@@ -382,13 +434,11 @@ export default function AdminUsersPage() {
                         <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> 새로고침
                     </button>
                     <button
-                        onClick={async () => {
-                            await fetch('/api/admin/auth', { method: 'POST', body: JSON.stringify({ action: 'logout' }) });
-                            setIsAuthenticated(false);
-                            setPassword('');
-                        }}
-                        className="px-3.5 py-2 bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                        onClick={handleLogout}
+                        className="px-3.5 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+                        title="관리자 세션 즉시 종료 및 화면 잠금"
                     >
+                        <Lock className="w-3.5 h-3.5 text-red-400" />
                         <span>🔒 로그아웃</span>
                     </button>
                 </div>

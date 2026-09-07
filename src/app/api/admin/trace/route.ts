@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { blockOrder, unblockOrder, getBlockedOrders, isOrderBlocked } from '@/lib/orderVerification';
+import { verifyAdmin } from '@/lib/adminAuth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+    const isAdmin = await verifyAdmin();
+    if (!isAdmin) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const searchParams = request.nextUrl.searchParams;
         const searchCode = searchParams.get('code')?.trim().toUpperCase();
@@ -90,6 +96,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+    const isAdmin = await verifyAdmin();
+    if (!isAdmin) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const body = await request.json();
         const { action, orderNumber, reason } = body;
