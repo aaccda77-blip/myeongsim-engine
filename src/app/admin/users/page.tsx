@@ -25,6 +25,8 @@ interface Subscriber {
     expires_at?: string;
     payment_amount?: number;
     approved_at?: string;
+    approved_by?: string;
+    is_approved?: boolean;
     saju_summary?: string;
     chat_turns_left?: number;
 }
@@ -160,12 +162,13 @@ export default function AdminUsersPage() {
             const data = await response.json();
             if (data.success) {
                 if (mappedTier === 'MONTHLY_98K') {
-                    alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n회원: ${userCleanName || userId}\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 명심 3D 입체 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.`);
+                    alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n회원: ${userCleanName || userId}\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 명심 3D 입체 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.\n\n👉 [🎉 승인 완료 내역] 탭으로 이동하여 방금 승인한 내역을 확인합니다.`);
                 } else if (mappedTier === 'BOOK_ZERO_POINT') {
-                    alert(`📖 [전자책 《제로포인트》 구매자] 승인 완료!\n\n회원: ${userCleanName || userId}\n책 연계 3-Code 실전 인터랙티브 가이드, 1:1 맞춤 헌정 힐링송 신청권, AI 챗봇 20회 코칭권 및 기본 제로포인트 리포트가 정상 활성화되었습니다.`);
+                    alert(`📖 [전자책 《제로포인트》 구매자] 승인 완료!\n\n회원: ${userCleanName || userId}\n책 연계 3-Code 실전 인터랙티브 가이드, 1:1 맞춤 헌정 힐링송 신청권, AI 챗봇 20회 코칭권 및 기본 제로포인트 리포트가 정상 활성화되었습니다.\n\n👉 [🎉 승인 완료 내역] 탭으로 이동하여 방금 승인한 내역을 확인합니다.`);
                 } else {
-                    alert(`성공: [${userCleanName || userId}] 님의 승인이 완료되었습니다! ✨`);
+                    alert(`성공: [${userCleanName || userId}] 님의 승인이 완료되었습니다! ✨\n\n👉 [🎉 승인 완료 내역] 탭으로 이동하여 방금 승인한 내역을 확인합니다.`);
                 }
+                setFilterTier('APPROVED');
                 fetchUsers();
             } else {
                 alert('승인 실패: ' + (data.error || '알 수 없는 오류'));
@@ -245,18 +248,34 @@ export default function AdminUsersPage() {
                                 (u.membership_tier && u.membership_tier.toLowerCase().includes(searchLower));
 
             if (filterTier === 'ALL') return matchSearch;
+            if (filterTier === 'APPROVED') return matchSearch && (!!u.approved_at || (u.is_active && u.membership_tier !== 'TRIAL' && u.membership_tier !== 'FREE'));
             if (filterTier === 'ACTIVE') return matchSearch && u.is_active;
             if (filterTier === 'PENDING') return matchSearch && !u.is_active;
             if (filterTier === 'VIP') return matchSearch && (u.membership_tier?.includes('98') || u.membership_tier?.includes('VIP') || (u.payment_amount && u.payment_amount >= 98000));
+            if (filterTier === 'BOOK') return matchSearch && (u.membership_tier?.includes('BOOK') || u.membership_tier?.includes('도서'));
             return matchSearch && u.membership_tier === filterTier;
         });
 
-        // 승인 대기(is_active === false) 회원 최상단(#1 순위) 배치 정렬
+        // 'APPROVED' 탭일 때는 승인 일시(approved_at) 최신순으로 정렬 (최근 승인자가 맨 위)
+        if (filterTier === 'APPROVED') {
+            return list.sort((a, b) => {
+                const timeA = new Date(a.approved_at || a.created_at || 0).getTime();
+                const timeB = new Date(b.approved_at || b.created_at || 0).getTime();
+                return timeB - timeA;
+            });
+        }
+
+        // 일반 탭에서는 승인 대기(is_active === false) 회원 최상단(#1 순위) 배치, 그 다음 최근 승인자, 그 다음 가입일순
         return list.sort((a, b) => {
             const pendingA = a.is_active === false ? 1 : 0;
             const pendingB = b.is_active === false ? 1 : 0;
             if (pendingA !== pendingB) {
                 return pendingB - pendingA;
+            }
+            const approvedA = a.approved_at ? new Date(a.approved_at).getTime() : 0;
+            const approvedB = b.approved_at ? new Date(b.approved_at).getTime() : 0;
+            if (approvedA !== approvedB) {
+                return approvedB - approvedA;
             }
             return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
         });
@@ -344,13 +363,16 @@ export default function AdminUsersPage() {
         const total = users.length;
         const active = users.filter(u => u.is_active).length;
         const pending = users.filter(u => !u.is_active).length;
+        const approvedCount = users.filter(u => !!u.approved_at || (u.is_active && u.membership_tier !== 'TRIAL' && u.membership_tier !== 'FREE')).length;
         const microCount = users.filter(u => u.membership_tier?.includes('98') || (u.payment_amount && u.payment_amount >= 98000) || u.membership_tier?.includes('VIP')).length;
+        const bookCount = users.filter(u => u.membership_tier?.includes('BOOK') || u.membership_tier?.includes('도서')).length;
         
         const todayStr = new Date().toISOString().split('T')[0];
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
 
         const todaySignups = users.filter(u => u.created_at && u.created_at.startsWith(todayStr)).length;
+        const todayApprovals = users.filter(u => u.approved_at && u.approved_at.startsWith(todayStr)).length;
         const thisMonthSignups = users.filter(u => {
             if (!u.created_at) return false;
             const d = new Date(u.created_at);
@@ -358,7 +380,7 @@ export default function AdminUsersPage() {
         }).length;
         const totalRevenue = users.reduce((sum, u) => sum + (u.payment_amount || 0), 0);
 
-        return { total, active, pending, microCount, todaySignups, thisMonthSignups, totalRevenue };
+        return { total, active, pending, approvedCount, todayApprovals, microCount, bookCount, todaySignups, thisMonthSignups, totalRevenue };
     }, [users]);
 
     if (!isAuthenticated) {
@@ -444,7 +466,7 @@ export default function AdminUsersPage() {
                 </div>
             </div>
 
-            {/* Metrics Grid (방문자수 & 회원가입수 & 결제 종합 대시보드) */}
+            {/* Metrics Grid (방문자수 & 회원가입수 & 승인내역 & 결제 종합 대시보드) */}
             <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 mb-8">
                 {/* 오늘 실시간 방문자 */}
                 <div 
@@ -472,33 +494,57 @@ export default function AdminUsersPage() {
                         <UserPlus className="w-4 h-4 text-emerald-400" />
                     </div>
                     <p className="text-xl font-black text-emerald-400">{stats.todaySignups} 명</p>
-                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">이번 달: {stats.thisMonthSignups}명</span>
+                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">전체 누적: {stats.total}명</span>
                 </div>
 
-                {/* 전체 가입자 */}
-                <div className="bg-slate-900/90 border border-white/10 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                {/* ⏳ 입금·승인 대기 */}
+                <div 
+                    onClick={() => setFilterTier('PENDING')}
+                    className={`bg-slate-900/90 border rounded-2xl p-4 shadow-lg backdrop-blur-md cursor-pointer hover:scale-[1.03] transition-all duration-300 group ${
+                        stats.pending > 0 
+                            ? 'border-yellow-400/80 bg-yellow-950/20 hover:border-yellow-300 shadow-[0_0_20px_rgba(234,179,8,0.25)]' 
+                            : 'border-yellow-500/30 hover:border-yellow-400'
+                    }`}
+                    title="클릭하여 승인 대기 회원 목록 보기"
+                >
                     <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] text-gray-300 font-bold">전체 누적 회원</span>
-                        <Users className="w-4 h-4 text-white" />
+                        <span className="text-[11px] text-yellow-300 font-bold group-hover:underline flex items-center gap-1">
+                            ⏳ 승인 대기 <span className="text-[9px] bg-yellow-500/20 text-yellow-300 px-1 rounded">확인👉</span>
+                        </span>
+                        <Clock className={`w-4 h-4 text-yellow-400 ${stats.pending > 0 ? 'animate-pulse' : ''}`} />
                     </div>
-                    <p className="text-xl font-black text-white">{stats.total} 명</p>
-                    <span className="text-[10px] text-gray-400 font-mono mt-1 block">DB 등록 기준</span>
+                    <p className="text-xl font-black text-yellow-300">{stats.pending} 명</p>
+                    <span className="text-[10px] text-amber-300/90 font-mono mt-1 block font-bold">
+                        {stats.pending > 0 ? '⚡ 즉시 승인 필요!' : '대기 없음 (모두 승인됨)'}
+                    </span>
                 </div>
 
-                {/* 승인 완료 활성 회원 */}
-                <div className="bg-slate-900/90 border border-green-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                {/* 🎉 관리자 승인 완료 내역 */}
+                <div 
+                    onClick={() => setFilterTier('APPROVED')}
+                    className="bg-slate-900/90 border border-amber-500/50 hover:border-amber-400 rounded-2xl p-4 shadow-lg backdrop-blur-md cursor-pointer hover:scale-[1.03] hover:bg-amber-950/30 transition-all duration-300 group shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+                    title="클릭하여 관리자가 승인 완료한 모든 내역 보기"
+                >
                     <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] text-green-300 font-bold">활성 유료 회원</span>
-                        <UserCheck className="w-4 h-4 text-green-400" />
+                        <span className="text-[11px] text-amber-300 font-bold group-hover:underline flex items-center gap-1">
+                            🎉 관리자 승인완료 <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1 rounded">내역보기👉</span>
+                        </span>
+                        <Sparkles className="w-4 h-4 text-amber-400 animate-spin-slow" />
                     </div>
-                    <p className="text-xl font-black text-green-400">{stats.active} 명</p>
-                    <span className="text-[10px] text-amber-300 font-mono mt-1 block">대기 중: {stats.pending}명</span>
+                    <p className="text-xl font-black text-amber-300">{stats.approvedCount} 명</p>
+                    <span className="text-[10px] text-amber-400 font-mono mt-1 block">오늘 승인: {stats.todayApprovals}건 (기록 100% 보존)</span>
                 </div>
 
                 {/* VIP 결제자 */}
-                <div className="bg-slate-900/90 border border-yellow-500/30 rounded-2xl p-4 shadow-lg backdrop-blur-md">
+                <div 
+                    onClick={() => setFilterTier('VIP')}
+                    className="bg-slate-900/90 border border-yellow-500/30 hover:border-yellow-400 rounded-2xl p-4 shadow-lg backdrop-blur-md cursor-pointer hover:scale-[1.03] transition-all duration-300 group"
+                    title="클릭하여 월 98,000원 VIP 회원 목록 보기"
+                >
                     <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] text-yellow-300 font-bold">VIP 유료 회원</span>
+                        <span className="text-[11px] text-yellow-300 font-bold group-hover:underline flex items-center gap-1">
+                            VIP 유료 회원 <span className="text-[9px] bg-yellow-500/20 text-yellow-300 px-1 rounded">조회👉</span>
+                        </span>
                         <Zap className="w-4 h-4 text-yellow-400" />
                     </div>
                     <p className="text-xl font-black text-yellow-300">{stats.microCount} 명</p>
@@ -712,23 +758,68 @@ export default function AdminUsersPage() {
                         className="w-full bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-amber-400"
                     />
                 </div>
-                <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
+                <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
                     {[
-                        { key: 'ALL', label: '전체 보기' },
-                        { key: 'ACTIVE', label: '🟢 활성 회원' },
-                        { key: 'PENDING', label: '⏳ 승인 대기' },
-                        { key: 'VIP', label: '👑 월 98,000원 VIP' },
+                        { key: 'ALL', label: '전체 보기', count: stats.total },
+                        { key: 'APPROVED', label: '🎉 승인 완료 내역', count: stats.approvedCount, isApproved: true },
+                        { key: 'PENDING', label: '⏳ 승인 대기', count: stats.pending, isPending: true },
+                        { key: 'ACTIVE', label: '🟢 활성 회원', count: stats.active },
+                        { key: 'VIP', label: '👑 월 98,000원 VIP', count: stats.microCount },
+                        { key: 'BOOK', label: '📖 도서 구매자', count: stats.bookCount },
                     ].map(f => (
                         <button
                             key={f.key}
                             onClick={() => setFilterTier(f.key)}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${filterTier === f.key ? 'bg-amber-500 text-black shadow-md' : 'bg-slate-800 text-gray-400 hover:text-white border border-white/5'}`}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
+                                filterTier === f.key 
+                                    ? f.key === 'APPROVED'
+                                        ? 'bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black shadow-[0_0_15px_rgba(251,191,36,0.5)]'
+                                        : f.key === 'PENDING'
+                                        ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-950 font-black shadow-[0_0_15px_rgba(234,179,8,0.5)]'
+                                        : 'bg-amber-500 text-black shadow-md'
+                                    : f.key === 'APPROVED'
+                                    ? 'bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 border border-amber-500/40'
+                                    : f.key === 'PENDING' && stats.pending > 0
+                                    ? 'bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 border border-yellow-500/40 animate-pulse'
+                                    : 'bg-slate-800 text-gray-400 hover:text-white border border-white/5'
+                            }`}
                         >
-                            {f.label}
+                            <span>{f.label}</span>
+                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                filterTier === f.key ? 'bg-black/25 text-slate-950' : 'bg-white/10 text-gray-300'
+                            }`}>
+                                {f.count}
+                            </span>
                         </button>
                     ))}
                 </div>
             </div>
+
+            {/* 승인 완료 모드 안내 배너 */}
+            {filterTier === 'APPROVED' && (
+                <div className="max-w-7xl mx-auto mb-5 p-3.5 bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-slate-900 border border-amber-500/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-amber-200 shadow-md">
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-amber-400 animate-spin-slow shrink-0" />
+                        <span><strong>🎉 관리자 승인 완료 내역</strong>: 관리자가 직접 [열어주기] 또는 [승인] 처리한 모든 회원 기록입니다. 가장 최근에 승인된 순서대로 정렬되어 있습니다.</span>
+                    </div>
+                    <span className="font-mono text-[11px] bg-amber-400/20 px-2.5 py-1 rounded-lg border border-amber-400/30 text-amber-300 font-bold whitespace-nowrap self-end sm:self-auto">
+                        총 {stats.approvedCount}건 승인 기록 보존됨
+                    </span>
+                </div>
+            )}
+
+            {/* 승인 대기 모드 안내 배너 */}
+            {filterTier === 'PENDING' && (
+                <div className="max-w-7xl mx-auto mb-5 p-3.5 bg-gradient-to-r from-yellow-500/20 via-amber-500/10 to-slate-900 border border-yellow-500/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-yellow-200 shadow-md">
+                    <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-yellow-400 animate-pulse shrink-0" />
+                        <span><strong>⏳ 입금 확인 및 승인 대기 목록</strong>: 우측의 <strong>[🟢 열어주기]</strong> 또는 <strong>[승인]</strong> 버튼을 누르면 즉시 전체 페이지가 해금되며 <strong>[🎉 승인 완료 내역]</strong>에 영구 보존됩니다.</span>
+                    </div>
+                    <span className="font-mono text-[11px] bg-yellow-400/20 px-2.5 py-1 rounded-lg border border-yellow-400/30 text-yellow-300 font-bold whitespace-nowrap self-end sm:self-auto">
+                        {stats.pending}명 대기 중
+                    </span>
+                </div>
+            )}
 
             {/* Subscribers Table */}
             <div className="max-w-7xl mx-auto bg-slate-900/90 border border-white/10 rounded-2xl overflow-hidden shadow-xl">
@@ -736,10 +827,10 @@ export default function AdminUsersPage() {
                     <table className="w-full text-left text-xs">
                         <thead className="bg-slate-800/90 text-gray-300 border-b border-white/10 uppercase tracking-wider font-semibold">
                             <tr>
-                                <th className="p-4">가입자 식별 ID</th>
-                                <th className="p-4">가입 일시</th>
+                                <th className="p-4">가입자 식별 ID / 성명</th>
+                                <th className="p-4">가입 / 승인 일시</th>
                                 <th className="p-4">현재 등급</th>
-                                <th className="p-4">상태</th>
+                                <th className="p-4">상태 & 승인 내역</th>
                                 <th className="p-4">만료 예정일</th>
                                 <th className="p-4 text-center">권한 승인 관리</th>
                                 <th className="p-4 text-center">관리</th>
@@ -758,7 +849,7 @@ export default function AdminUsersPage() {
                                         const cleanName = (u.name || '').replace('[입금신청]', '').trim();
                                         const emailPrefix = (u.email && u.email.includes('@')) ? u.email.split('@')[0] : '';
                                         
-                                        const isDepositApplicant = !!cleanDepositor || (u.name && u.name.includes('[입금신청]')) || u.email === '무통장 입금 신청' || !u.is_active;
+                                        const isDepositApplicant = !u.is_active && (!!cleanDepositor || (u.name && u.name.includes('[입금신청]')) || u.email === '무통장 입금 신청');
                                         
                                         // 최우선 실명 표기
                                         const mainName = cleanDepositor || cleanName || (emailPrefix ? `${emailPrefix}님` : `가입자_${u.id.slice(0, 8)}`);
@@ -766,7 +857,13 @@ export default function AdminUsersPage() {
                                         const phoneInfo = u.phone || (u.phone_hash ? `010-****-${u.phone_hash.slice(-4)}` : '');
 
                                         return (
-                                            <tr key={u.id} className={`transition-colors ${isDepositApplicant ? 'bg-amber-500/10 hover:bg-amber-500/15 border-l-4 border-l-amber-400' : 'hover:bg-slate-800/50'}`}>
+                                            <tr key={u.id} className={`transition-colors ${
+                                                isDepositApplicant 
+                                                    ? 'bg-yellow-500/10 hover:bg-yellow-500/15 border-l-4 border-l-yellow-400' 
+                                                    : u.approved_at
+                                                    ? 'bg-amber-500/5 hover:bg-amber-500/10 border-l-4 border-l-amber-400'
+                                                    : 'hover:bg-slate-800/50'
+                                            }`}>
                                                 <td className="p-4">
                                                     <div className="flex flex-col gap-1">
                                                         <div className="font-bold text-sm text-amber-300 flex items-center gap-2 flex-wrap">
@@ -787,8 +884,13 @@ export default function AdminUsersPage() {
                                                                 </span>
                                                             )}
                                                             {isDepositApplicant && (
-                                                                <span className="text-[11px] bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black px-2.5 py-0.5 rounded-full shadow animate-pulse">
+                                                                <span className="text-[11px] bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-950 font-black px-2.5 py-0.5 rounded-full shadow animate-pulse">
                                                                     ⚡ 입금확인 대기 ({u.payment_amount?.toLocaleString() || '890'}원)
+                                                                </span>
+                                                            )}
+                                                            {u.approved_at && (
+                                                                <span className="text-[10px] bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black px-2 py-0.5 rounded-full shadow-sm flex items-center gap-0.5">
+                                                                    <span>👑 승인완료</span>
                                                                 </span>
                                                             )}
                                                         </div>
@@ -828,7 +930,17 @@ export default function AdminUsersPage() {
                                                     </div>
                                                 </td>
                                         <td className="p-4 text-gray-400">
-                                            {u.created_at ? new Date(u.created_at).toLocaleString('ko-KR') : '-'}
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-gray-300 text-xs">
+                                                    가입: {u.created_at ? new Date(u.created_at).toLocaleString('ko-KR') : '-'}
+                                                </span>
+                                                {u.approved_at && (
+                                                    <span className="text-amber-300 font-bold text-xs flex items-center gap-1">
+                                                        <span>🎉 승인:</span>
+                                                        <span className="font-mono text-amber-200">{new Date(u.approved_at).toLocaleString('ko-KR')}</span>
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="p-4">
                                             <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${
@@ -842,13 +954,25 @@ export default function AdminUsersPage() {
                                         </td>
                                         <td className="p-4">
                                             {u.is_active ? (
-                                                <span className="text-green-400 font-bold flex items-center gap-1">
-                                                    🟢 활성(열림)
-                                                </span>
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-green-400 font-bold flex items-center gap-1">
+                                                        🟢 활성(열림)
+                                                    </span>
+                                                    {u.approved_at ? (
+                                                        <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md font-bold w-fit flex items-center gap-1 shadow-sm">
+                                                            <span>👑 승인 내역 보존됨</span>
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-[10px] text-gray-500">일반 회원</span>
+                                                    )}
+                                                </div>
                                             ) : (
-                                                <span className="text-amber-400 font-bold flex items-center gap-1">
-                                                    ⏳ 승인대기
-                                                </span>
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-amber-400 font-bold flex items-center gap-1">
+                                                        ⏳ 승인대기
+                                                    </span>
+                                                    <span className="text-[10px] text-amber-500/80 font-mono">입금 확인 필요</span>
+                                                </div>
                                             )}
                                         </td>
                                         <td className="p-4 text-gray-400 font-mono">

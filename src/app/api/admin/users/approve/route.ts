@@ -186,9 +186,25 @@ export async function POST(request: NextRequest) {
             recordApprovedUser({
                 userId,
                 name: effectiveName,
+                depositorName: effectiveName,
                 email,
                 phone,
-                tier
+                tier,
+                amount: paymentAmount,
+                approvedBy: '관리자 (Admin)',
+                status: 'APPROVED'
+            });
+        } else {
+            recordApprovedUser({
+                userId,
+                name: effectiveName,
+                depositorName: effectiveName,
+                email,
+                phone,
+                tier: 'GUEST',
+                amount: 0,
+                approvedBy: '관리자 (Admin)',
+                status: 'LOCKED'
             });
         }
 
@@ -196,6 +212,8 @@ export async function POST(request: NextRequest) {
             success: true,
             tier,
             isActive: isActiveExplicit,
+            approvedAt: now.toISOString(),
+            approvedBy: '관리자 (Admin)',
             chatTurnsLeft,
             unlockedModules: (tier === 'MONTHLY_98K' || tier === 'STARTUP_VIP')
                 ? ['all_pass', 'watch_9_dials', 'bio_care', 'zero_music', 'coaching_50', 'report_108']

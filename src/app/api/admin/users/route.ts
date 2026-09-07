@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/adminAuth';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { getPendingWireTransfers } from '@/lib/pendingWireTransfers';
+import { getPendingWireTransfers, getApprovedUsers } from '@/lib/pendingWireTransfers';
 import { maskPhoneNumber } from '@/lib/phoneSecurity';
 import { isUserDeleted } from '@/lib/deletedUsers';
 
@@ -92,6 +92,9 @@ export async function GET(request: NextRequest) {
                         gender: u.gender || profInfo.gender || '',
                         phone: u.phone || authInfo.phone || '',
                         raw_id: u.id,
+                        approved_at: u.approved_at || undefined,
+                        approved_by: u.approved_by || (u.approved_at ? '관리자 (Admin)' : undefined),
+                        is_approved: !!u.approved_at || (u.is_active && u.membership_tier !== 'TRIAL'),
                     };
                 });
         }
@@ -124,7 +127,7 @@ export async function GET(request: NextRequest) {
         }
     }
 
-    // Merge in-memory pending wire transfers
+    // 5. Merge in-memory pending wire transfers
     const pendingMemoryItems = getPendingWireTransfers();
     pendingMemoryItems.forEach(pending => {
         if (isUserDeleted(pending.id)) return;
@@ -139,7 +142,7 @@ export async function GET(request: NextRequest) {
             users.unshift({
                 id: pending.id,
                 email: pending.email || '무통장 입금 신청',
-                name: pending.depositorName ? `[입금신청] ${pending.depositorName}` : '입금 신청자',
+                name: pending.depositorName ? (pending.is_active ? pending.depositorName : `[입금신청] ${pending.depositorName}`) : '입금 신청자',
                 depositorName: pending.depositorName,
                 phone: pending.phone || pending.maskedPhone || '',
                 membership_tier: pending.membership_tier || 'CHAT_PASS',
@@ -151,7 +154,9 @@ export async function GET(request: NextRequest) {
         } else {
             if (pending.depositorName) {
                 users[existingIndex].depositorName = pending.depositorName;
-                users[existingIndex].name = `[입금신청] ${pending.depositorName}`;
+                if (!users[existingIndex].is_active && !users[existingIndex].approved_at) {
+                    users[existingIndex].name = `[입금신청] ${pending.depositorName}`;
+                }
             }
             if (pending.email && (!users[existingIndex].email || !users[existingIndex].email.includes('@'))) {
                 users[existingIndex].email = pending.email;
@@ -165,15 +170,80 @@ export async function GET(request: NextRequest) {
         }
     });
 
+    // 6. Merge approved users (from persistent file & memory store)
+    const approvedList = getApprovedUsers();
+    approvedList.forEach(approved => {
+        if (isUserDeleted(approved.userId, approved.email)) return;
+
+        const cleanEmail = (approved.email || '').toLowerCase().trim();
+        const cleanPhone = (approved.phone || '').replace(/[^0-9]/g, '');
+        const cleanName = (approved.name || approved.depositorName || '').trim().toLowerCase();
+
+        const existingIndex = users.findIndex(u => {
+            if (approved.userId && (u.id === approved.userId || (u.raw_id && u.raw_id === approved.userId))) return true;
+            if (cleanEmail && u.email && u.email.toLowerCase() === cleanEmail) return true;
+            if (cleanPhone && u.phone && u.phone.replace(/[^0-9]/g, '') === cleanPhone) return true;
+            if (cleanName && u.depositorName && u.depositorName.trim().toLowerCase() === cleanName) return true;
+            if (cleanName && u.realName && u.realName.trim().toLowerCase() === cleanName) return true;
+            return false;
+        });
+
+        const isUserActive = approved.status !== 'LOCKED';
+
+        if (existingIndex !== -1) {
+            users[existingIndex].is_active = isUserActive;
+            if (isUserActive) {
+                users[existingIndex].membership_tier = approved.tier || users[existingIndex].membership_tier;
+                users[existingIndex].approved_at = approved.approvedAt;
+                users[existingIndex].approved_by = approved.approvedBy || '관리자 (Admin)';
+                users[existingIndex].is_approved = true;
+                if (approved.amount) {
+                    users[existingIndex].payment_amount = Math.max(users[existingIndex].payment_amount || 0, approved.amount);
+                }
+                if (users[existingIndex].name && users[existingIndex].name.startsWith('[입금신청]')) {
+                    users[existingIndex].name = users[existingIndex].name.replace('[입금신청]', '').trim();
+                }
+            } else {
+                users[existingIndex].is_active = false;
+                users[existingIndex].membership_tier = 'GUEST';
+            }
+        } else {
+            // New approved user not yet in DB
+            users.unshift({
+                id: approved.userId,
+                email: approved.email || '',
+                name: approved.name || approved.depositorName || `승인회원_${approved.userId.slice(0, 8)}`,
+                depositorName: approved.depositorName || approved.name,
+                phone: approved.phone || '',
+                membership_tier: approved.tier || 'MONTHLY_98K',
+                is_active: isUserActive,
+                payment_amount: approved.amount || (approved.tier === 'MONTHLY_98K' ? 98000 : 19800),
+                chat_turns_left: approved.tier === 'MONTHLY_98K' ? 50 : 20,
+                created_at: approved.approvedAt,
+                approved_at: approved.approvedAt,
+                approved_by: approved.approvedBy || '관리자 (Admin)',
+                is_approved: isUserActive
+            });
+        }
+    });
+
     // 최종 삭제된 회원 2차 필터링
     users = users.filter(u => !isUserDeleted(u.id, u.email));
 
-    // 승인 대기(is_active === false) 회원 무조건 최상단(#1 순위)으로 정렬
+    // 정렬 우선순위:
+    // 1순위: 승인 대기(is_active === false) 회원 최상단 (#1)
+    // 2순위: 최근 승인 완료 회원(approved_at 최신순)
+    // 3순위: 가입 일시(created_at 최신순)
     users.sort((a, b) => {
         const pendingA = a.is_active === false ? 1 : 0;
         const pendingB = b.is_active === false ? 1 : 0;
         if (pendingA !== pendingB) {
             return pendingB - pendingA; // is_active === false 우선 노출
+        }
+        const approvedA = a.approved_at ? new Date(a.approved_at).getTime() : 0;
+        const approvedB = b.approved_at ? new Date(b.approved_at).getTime() : 0;
+        if (approvedA !== approvedB) {
+            return approvedB - approvedA; // 최근 승인순 우선 노출
         }
         return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     });

@@ -1,5 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { maskPhoneNumber } from '@/lib/phoneSecurity';
+import fs from 'fs';
+import path from 'path';
 
 export interface PendingWireTransfer {
     id: string;
@@ -111,51 +113,124 @@ export function getPendingWireTransfers(): PendingWireTransfer[] {
     return globalPendingStore;
 }
 
-// 승인 완료된 유저 캐시 (메모리상에 24시간 보존하여 클라이언트 폴링에 즉시 응답)
+// 승인 완료된 유저 캐시 (메모리 + 파일 영구 저장소에 보존하여 관리자 대시보드와 클라이언트 폴링에 100% 즉시 응답)
 export interface ApprovedUserRecord {
     userId: string;
     name?: string;
+    depositorName?: string;
     email?: string;
     phone?: string;
     tier: string;
+    amount?: number;
+    orderName?: string;
     approvedAt: string;
+    approvedBy?: string;
+    status?: 'APPROVED' | 'LOCKED';
 }
 
 const globalApprovedStore: ApprovedUserRecord[] = [];
 
-export function recordApprovedUser(record: { userId: string; name?: string; email?: string; phone?: string; tier: string }) {
+function getApprovedStoragePath(): string {
+    return path.join(process.cwd(), 'src', 'data', 'approved_users.json');
+}
+
+function loadApprovedUsersFromFile(): void {
+    try {
+        const filePath = getApprovedStoragePath();
+        if (fs.existsSync(filePath)) {
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const data = JSON.parse(content);
+            if (Array.isArray(data)) {
+                data.forEach(item => {
+                    if (item.userId && !globalApprovedStore.some(a => a.userId === item.userId)) {
+                        globalApprovedStore.push(item);
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.warn('[PendingStore] loadApprovedUsersFromFile warning:', e);
+    }
+}
+
+// 초기 기동 시 파일에서 복원
+loadApprovedUsersFromFile();
+
+function saveApprovedUsersToFile(): void {
+    try {
+        const dirPath = path.join(process.cwd(), 'src', 'data');
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
+        }
+        const filePath = getApprovedStoragePath();
+        fs.writeFileSync(filePath, JSON.stringify(globalApprovedStore, null, 2), 'utf-8');
+    } catch (e) {
+        console.error('[PendingStore] saveApprovedUsersToFile error:', e);
+    }
+}
+
+export function getApprovedUsers(): ApprovedUserRecord[] {
+    loadApprovedUsersFromFile();
+    return [...globalApprovedStore].sort((a, b) => 
+        new Date(b.approvedAt || 0).getTime() - new Date(a.approvedAt || 0).getTime()
+    );
+}
+
+export function recordApprovedUser(record: { 
+    userId: string; 
+    name?: string; 
+    depositorName?: string;
+    email?: string; 
+    phone?: string; 
+    tier: string;
+    amount?: number;
+    orderName?: string;
+    approvedBy?: string;
+    status?: 'APPROVED' | 'LOCKED';
+}) {
+    loadApprovedUsersFromFile();
     const cleanEmail = (record.email || '').trim().toLowerCase();
     const existingIndex = globalApprovedStore.findIndex(a => 
         a.userId === record.userId || 
         (cleanEmail && a.email && a.email.toLowerCase() === cleanEmail) ||
-        (record.name && a.name === record.name.trim()) ||
-        (record.phone && a.phone === record.phone.trim())
+        (record.depositorName && a.depositorName && a.depositorName.trim() === record.depositorName.trim()) ||
+        (record.name && a.name && a.name.trim() === record.name.trim()) ||
+        (record.phone && a.phone && a.phone.trim() === record.phone.trim())
     );
     const item: ApprovedUserRecord = {
         userId: record.userId,
-        name: record.name?.trim(),
-        email: record.email?.trim(),
-        phone: record.phone?.trim(),
+        name: record.name?.trim() || (existingIndex !== -1 ? globalApprovedStore[existingIndex].name : undefined),
+        depositorName: record.depositorName?.trim() || (existingIndex !== -1 ? globalApprovedStore[existingIndex].depositorName : undefined),
+        email: record.email?.trim() || (existingIndex !== -1 ? globalApprovedStore[existingIndex].email : undefined),
+        phone: record.phone?.trim() || (existingIndex !== -1 ? globalApprovedStore[existingIndex].phone : undefined),
         tier: record.tier,
-        approvedAt: new Date().toISOString()
+        amount: record.amount || (existingIndex !== -1 ? globalApprovedStore[existingIndex].amount : undefined),
+        orderName: record.orderName || (existingIndex !== -1 ? globalApprovedStore[existingIndex].orderName : undefined),
+        approvedAt: new Date().toISOString(),
+        approvedBy: record.approvedBy || '관리자 (Admin)',
+        status: record.status || 'APPROVED'
     };
     if (existingIndex !== -1) {
         globalApprovedStore[existingIndex] = item;
     } else {
         globalApprovedStore.unshift(item);
     }
+    saveApprovedUsersToFile();
 }
 
 export function lookupApprovedUser(params: { userId?: string; name?: string; email?: string; phone?: string }): ApprovedUserRecord | undefined {
+    loadApprovedUsersFromFile();
     const { userId, name, email, phone } = params;
     const cleanName = (name || '').trim().toLowerCase();
     const cleanEmail = (email || '').trim().toLowerCase();
     const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
 
     return globalApprovedStore.find(a => {
+        if (a.status === 'LOCKED') return false;
         if (userId && (a.userId === userId || a.userId.toLowerCase() === userId.toLowerCase())) return true;
         if (cleanEmail && a.email && a.email.toLowerCase() === cleanEmail) return true;
         if (cleanName && a.name && (a.name.toLowerCase() === cleanName || a.name.toLowerCase().includes(cleanName) || cleanName.includes(a.name.toLowerCase()))) return true;
+        if (cleanName && a.depositorName && (a.depositorName.toLowerCase() === cleanName || a.depositorName.toLowerCase().includes(cleanName) || cleanName.includes(a.depositorName.toLowerCase()))) return true;
         if (cleanPhone && a.phone && a.phone.replace(/[^0-9]/g, '') === cleanPhone) return true;
         return false;
     });
@@ -168,8 +243,11 @@ export function approvePendingWireTransfer(idOrName: string): boolean {
         recordApprovedUser({
             userId: target.id,
             name: target.depositorName,
+            depositorName: target.depositorName,
             phone: target.phone,
-            tier: target.membership_tier || 'MONTHLY_98K'
+            amount: target.amount,
+            tier: target.membership_tier || 'MONTHLY_98K',
+            status: 'APPROVED'
         });
         return true;
     }
@@ -183,8 +261,11 @@ export function removePendingWireTransfer(id: string): void {
         recordApprovedUser({
             userId: globalPendingStore[index].id,
             name: globalPendingStore[index].depositorName,
+            depositorName: globalPendingStore[index].depositorName,
             phone: globalPendingStore[index].phone,
-            tier: globalPendingStore[index].membership_tier || 'MONTHLY_98K'
+            amount: globalPendingStore[index].amount,
+            tier: globalPendingStore[index].membership_tier || 'MONTHLY_98K',
+            status: 'APPROVED'
         });
     }
 }
@@ -205,5 +286,6 @@ export function purgeUserFromMemory(id: string): void {
             globalApprovedStore.splice(i, 1);
         }
     }
+    saveApprovedUsersToFile();
 }
 
