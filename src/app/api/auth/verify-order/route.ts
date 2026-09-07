@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
             success: true,
             approved: true,
             tier: 'BOOK_ZERO_POINT',
-            message: result.message || '🎉 도서 구매 정품 인증이 완료되었습니다! 기본 제로포인트 명심 리포트가 평생 무료로 활성화되었습니다.',
+            message: result.message || '🎉 도서 구매 정품 인증이 완료되었습니다! 《제로포인트》 독자 전용 3-Code 실전 인터랙티브 가이드와 기본 명심 코칭이 활성화되었습니다.',
             record: result.record
         });
     } catch (error: any) {

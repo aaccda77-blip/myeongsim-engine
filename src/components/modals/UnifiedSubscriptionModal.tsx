@@ -219,7 +219,7 @@ export default function UnifiedSubscriptionModal({
                             <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-400/20 text-[11px] text-cyan-200 leading-relaxed flex items-start gap-2">
                                 <BookOpen size={14} className="text-cyan-400 shrink-0 mt-0.5" />
                                 <span>
-                                    <strong>도서 구매 고객님 안내:</strong> 책에 약속된 기본 제로포인트 코칭은 평생 무료이며, 최신 스마트워치 웰니스·바이오케어·108 확장은 본 월정액 멤버십 회원 전용으로 제공됩니다.
+                                    <strong>도서 구매 고객님 안내:</strong> 전자책에 약속된 《제로포인트》 3-Code 인터랙티브 가이드 및 기본 제로포인트 코칭이 제공되며, 최신 스마트워치 웰니스·바이오케어·108 확장은 본 월정액 멤버십 회원 전용으로 제공됩니다.
                                 </span>
                             </div>
 

@@ -210,7 +210,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                     });
                 } catch (_) {}
 
-                alert('🎉 축하합니다! 도서 구매 정품 인증이 확인되었습니다.\n\n기본 제로포인트 명심 리포트, 사주 일진 에너지, 일진 선언문이 평생 무료로 즉시 해금되었습니다.');
+                alert('🎉 축하합니다! 도서 구매 정품 인증이 확인되었습니다.\n\n전자책 《제로포인트》 3-Code 실전 인터랙티브 가이드, 1:1 맞춤 헌정 힐링송 신청권, 명심 AI 챗봇 20회 VIP 코칭권 및 기본 제로포인트 리포트가 즉시 해금되었습니다.');
                 await onRefresh();
             } else {
                 alert(data.message || '주문번호가 올바르지 않거나 이미 등록된 번호입니다. 확인 후 다시 입력해 주세요.');
@@ -388,7 +388,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                 
                 <p className="text-xs sm:text-sm text-gray-300 mt-1.5 leading-relaxed break-keep px-2">
                     도서 구매자 인증 또는 월정액 VIP 신청이 완료되지 않은 상태입니다.<br />
-                    <span className="text-amber-300 font-bold">도서 구매 인증</span> 시 기본 리포트 평생 무료, <span className="text-cyan-300 font-bold">월정액 ALL-PASS</span> 시 124개 전 서비스가 즉시 해금됩니다.
+                    <span className="text-amber-300 font-bold">전자책 구매 인증</span> 시 책에 명시된 독자 전용 혜택이 즉시 열리며, <span className="text-cyan-300 font-bold">월정액 ALL-PASS</span> 시 124개 전 서비스가 즉시 해금됩니다.
                 </p>
 
                 {/* 탭 전환 (① 도서 구매자 인증 / ② 무통장 입금 신청) */}
@@ -421,14 +421,37 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                 {activeTab === 'info' && (
                     <div className="mt-3.5 space-y-3.5 text-left animate-fade-in">
                         {/* 혜택 안내 배너 */}
-                        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-transparent border border-amber-400/40 text-xs text-gray-300 space-y-1.5">
-                            <div className="font-bold text-amber-300 flex items-center gap-1.5 text-xs sm:text-sm">
-                                <CheckCircle2 size={15} className="text-amber-400 shrink-0" />
-                                <span>네이버 스마트스토어 · YES24 도서 구매 회원 혜택</span>
+                        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-transparent border border-amber-400/40 text-xs text-gray-300 space-y-2">
+                            <div className="font-bold text-amber-300 flex items-center justify-between text-xs sm:text-sm">
+                                <span className="flex items-center gap-1.5">
+                                    <CheckCircle2 size={15} className="text-amber-400 shrink-0" />
+                                    <span>전자책 《제로포인트》 구매 독자 전용 혜택</span>
+                                </span>
+                                <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-400/30 font-mono font-bold">
+                                    등록 독자 한정
+                                </span>
                             </div>
                             <p className="text-[11px] text-gray-300 leading-relaxed">
-                                도서를 구매하신 독자님은 아래에 <strong className="text-amber-300 font-bold">주문번호 또는 영수증 승인번호</strong>를 입력해 주시면 기본 제로포인트 명심 리포트, 사주 일진 에너지, 일진 선언문이 <strong className="text-white font-black underline underline-offset-2">평생 무료로 즉시 승인</strong>됩니다.
+                                도서를 구매하신 독자님은 아래에 <strong className="text-amber-300 font-bold">주문번호 또는 영수증 승인번호</strong>를 입력해 주시면 전자책에 명시된 독자 전용 혜택이 즉시 인증·승인됩니다:
                             </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-[11px]">
+                                <div className="flex items-center gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-lg border border-white/5 text-amber-200">
+                                    <span>✨</span>
+                                    <span><strong>《제로포인트》 3-Code</strong> 실전 인터랙티브 가이드</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-lg border border-white/5 text-amber-200">
+                                    <span>🎵</span>
+                                    <span><strong>1:1 맞춤 헌정 힐링송(MP3)</strong> 무료 작곡 신청</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-lg border border-white/5 text-amber-200">
+                                    <span>🤖</span>
+                                    <span><strong>명심 AI 챗봇 20회</strong> VIP 코칭 대화권 즉시 활성화</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-lg border border-white/5 text-amber-200">
+                                    <span>📊</span>
+                                    <span><strong>기본 제로포인트 리포트</strong> 및 사주 일진 에너지</span>
+                                </div>
+                            </div>
                         </div>
 
                         {/* 도서 구매 인증 폼 */}
