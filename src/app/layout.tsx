@@ -6,6 +6,7 @@ import GoogleAuthSync from "@/components/auth/GoogleAuthSync";
 import VisitorTracker from "@/components/analytics/VisitorTracker";
 import SiteAccessGateOverlay from "@/components/auth/SiteAccessGateOverlay";
 import GlobalPaymentLockGuard from "@/components/auth/GlobalPaymentLockGuard";
+import ChunkLoadErrorHandler from "@/components/common/ChunkLoadErrorHandler";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 // 1. 폰트 변수 선언
@@ -62,6 +63,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased notranslate`}
             >
                 <LanguageProvider>
+                    <ChunkLoadErrorHandler />
                     <SafetyDisclaimerModal />
                     {/* <PushTestButton /> - Debug Only */}
                     <GoogleAuthSync />
