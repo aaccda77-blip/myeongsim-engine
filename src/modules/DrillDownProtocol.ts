@@ -763,10 +763,10 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
 
 
 
-    // 15. 🚀 무실패 스타트업 설계 (STARTUP_DESIGN - Restored)
+    // 15. 🚀 비즈니스 아키텍처 (STARTUP_DESIGN)
     STARTUP_DESIGN: {
         id: 'STARTUP_DESIGN',
-        label: "무실패 스타트업 (Original)",
+        label: "비즈니스 아키텍처",
         icon: "🚀",
         neuro_trigger: "내 사주에 맞는 무실패 창업 전략",
         style: 'premium_gold',

@@ -72,6 +72,7 @@ const NtsBusinessCareerModal = dynamic(() => import('@/components/coaching/NtsBu
 const ZeroPointMusicModal = dynamic(() => import('@/components/coaching/ZeroPointMusicModal'), { ssr: false });
 const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/AwarenessQuestDashboard'), { ssr: false });
 const UnifiedSubscriptionModal = dynamic(() => import('@/components/modals/UnifiedSubscriptionModal'), { ssr: false });
+const BusinessArchitectureDashboard = dynamic(() => import('@/components/startup/BusinessArchitectureDashboard'), { ssr: false });
 
 
 
@@ -565,6 +566,8 @@ export default function DrillDownIconMenu({
     const [showZeroPointMusic, setShowZeroPointMusic] = useState(false); // [NEW] 사주 맞춤 제로포인트 음악 모달
     const [showAwarenessQuestDashboard, setShowAwarenessQuestDashboard] = useState(false); // [NEW] 108 핵심 자각 퀘스트 대시보드
     const [awarenessQuestInitialPhase, setAwarenessQuestInitialPhase] = useState('all');
+    const [showBusinessArchitecture, setShowBusinessArchitecture] = useState(false); // [NEW] 비즈니스 아키텍처 대시보드
+    const [businessArchitectureTab, setBusinessArchitectureTab] = useState<'dna' | 'wealth' | 'timing'>('dna');
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
@@ -795,10 +798,33 @@ export default function DrillDownIconMenu({
             return;
         }
 
-        // [NEW] 스타트업 창업 전략 페이지로 이동
+        // [NEW] 비즈니스 아키텍처 (CEO DNA, 머니 마그넷, 퀀텀 스케일) 대시보드
+        if (subItem.intent === 'ms_startup_dna' || subItem.id === 'sd_dna') {
+            setSelectedIcon(null);
+            setBusinessArchitectureTab('dna');
+            setShowBusinessArchitecture(true);
+            return;
+        }
+
+        if (subItem.intent === 'ms_startup_wealth' || subItem.id === 'sd_wealth') {
+            setSelectedIcon(null);
+            setBusinessArchitectureTab('wealth');
+            setShowBusinessArchitecture(true);
+            return;
+        }
+
+        if (subItem.intent === 'ms_startup_timing' || subItem.id === 'sd_timing') {
+            setSelectedIcon(null);
+            setBusinessArchitectureTab('timing');
+            setShowBusinessArchitecture(true);
+            return;
+        }
+
+        // [NEW] 스타트업 창업 전략 / 비즈니스 아키텍처 대시보드로 이동
         if (subItem.intent === 'startup_strategy_view') {
             setSelectedIcon(null);
-            window.location.href = '/report/startup';
+            setBusinessArchitectureTab('dna');
+            setShowBusinessArchitecture(true);
             return;
         }
 
@@ -2522,6 +2548,23 @@ export default function DrillDownIconMenu({
                     onSelectIntent(intent || 'awareness_108_coaching', prompt);
                 }}
             />
+
+            {/* [NEW] 🚀 비즈니스 아키텍처 대시보드 모달 */}
+            {showBusinessArchitecture && (
+                <div className="fixed inset-0 z-[2100] flex items-end md:items-center justify-center bg-black/80 backdrop-blur-md p-0 md:p-6 animate-in fade-in duration-200">
+                    <div className="w-full max-w-4xl max-h-[92vh] flex flex-col">
+                        <BusinessArchitectureDashboard
+                            onClose={() => setShowBusinessArchitecture(false)}
+                            initialTab={businessArchitectureTab}
+                            userProfile={userProfile || reportData}
+                            onChatIntent={(intent, prompt) => {
+                                setShowBusinessArchitecture(false);
+                                onSelectIntent(intent, prompt);
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* 👑 [대표님 요청] 공식 통합 월 98,000원 VIP 정액권 & 스마트스토어 도서구매 잠금 모달 */}
             <UnifiedSubscriptionModal
