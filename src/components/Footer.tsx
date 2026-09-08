@@ -81,12 +81,13 @@ export default function Footer() {
                     <span>|</span>
                     <a href="/privacy" className="hover:text-white transition-colors cursor-pointer font-bold text-gray-200">개인정보처리방침</a>
                     <span>|</span>
-                    <button
+                    <a
+                        href="/service-notice"
                         onClick={handleOpenLegalModal}
                         className="hover:text-amber-300 text-amber-400/90 transition-colors cursor-pointer font-bold inline-flex items-center gap-1"
                     >
                         <span>근거 기반 접근 및 서비스 안내 (전문)</span>
-                    </button>
+                    </a>
                 </div>
 
                 {/* Copyright */}

@@ -69,7 +69,7 @@ export default function SafetyDisclaimerModal() {
                                         {LEGAL_NOTICES.title}
                                     </h2>
                                     <p className="text-[11px] text-gray-400 mt-0.5">
-                                        보건복지부 비의료 가이드라인 및 의료법·표시광고법 준수 고지
+                                        {LEGAL_NOTICES.subtitle}
                                     </p>
                                 </div>
                             </div>
@@ -245,11 +245,11 @@ export default function SafetyDisclaimerModal() {
                                                         {section.subItems && (
                                                             <div className="space-y-2 my-2">
                                                                 {section.subItems.map((item, iIdx) => (
-                                                                    <div key={iIdx} className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                                                                    <div key={iIdx} className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
                                                                         <span className="text-xs font-black text-amber-300 block">
                                                                             ◈ {item.name}
                                                                         </span>
-                                                                        <p className="text-xs text-gray-300 leading-relaxed">
+                                                                        <p className="text-xs text-gray-300 leading-relaxed whitespace-pre-line font-normal">
                                                                             {item.desc}
                                                                         </p>
                                                                     </div>
