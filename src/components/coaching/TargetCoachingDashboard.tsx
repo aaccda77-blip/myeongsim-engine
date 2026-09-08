@@ -31,6 +31,7 @@ import {
     FileText,
     Send,
     Play,
+    Pause,
     Info,
     Check,
     ChevronDown,
@@ -49,7 +50,6 @@ import { useReportStore } from '@/store/useReportStore';
 import { generateChatPromptFromIntent } from '@/modules/DrillDownProtocol';
 
 export type TargetTab = 'all' | 'timing' | 'solution' | 'tactics';
-export type ViewMode = 'tactical' | 'wellness';
 
 interface TargetCoachingDashboardProps {
     isOpen?: boolean;
@@ -75,9 +75,13 @@ export default function TargetCoachingDashboard({
 
     const [activeTab, setActiveTab] = useState<TargetTab>(initialTab);
     const [selectedCardId, setSelectedCardId] = useState<string | null>(initialCardId || null);
-    const [viewMode, setViewMode] = useState<ViewMode>('wellness'); // 웰니스 기본 모드
     const [radarAngle, setRadarAngle] = useState(0);
-    const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+
+    // 🌿 1분 박스 브리딩(Box Breathing) 트레이너 상태
+    const [isBreathingTrainerOpen, setIsBreathingTrainerOpen] = useState(false);
+    const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale' | 'rest'>('inhale');
+    const [breathSeconds, setBreathSeconds] = useState(4);
+    const [selectedOrganKey, setSelectedOrganKey] = useState<'wood' | 'fire' | 'earth' | 'metal' | 'water'>('wood');
 
     // initialCardId 변경 시 자동 반영 및 탭 동기화
     useEffect(() => {
@@ -97,16 +101,23 @@ export default function TargetCoachingDashboard({
         return () => clearInterval(interval);
     }, []);
 
-    // 🌿 웰니스 호흡 바이오피드백 주기 (4초 들이마시기, 4초 멈추기, 4초 내쉬기)
+    // 🌿 박스 브리딩 실시간 타이머 (4초 들이마시기 -> 4초 멈추기 -> 4초 내쉬기 -> 4초 비우기)
     useEffect(() => {
-        const breathInterval = setInterval(() => {
-            setBreathPhase((prev) => {
-                if (prev === 'inhale') return 'hold';
-                if (prev === 'hold') return 'exhale';
-                return 'inhale';
+        const timer = setInterval(() => {
+            setBreathSeconds((prevSec) => {
+                if (prevSec <= 1) {
+                    setBreathPhase((prevPhase) => {
+                        if (prevPhase === 'inhale') return 'hold';
+                        if (prevPhase === 'hold') return 'exhale';
+                        if (prevPhase === 'exhale') return 'rest';
+                        return 'inhale';
+                    });
+                    return 4;
+                }
+                return prevSec - 1;
             });
-        }, 4000);
-        return () => clearInterval(breathInterval);
+        }, 1000);
+        return () => clearInterval(timer);
     }, []);
 
     // 👤 사주 및 프로필 기반 실시간 전술 & 웰니스 메트릭 계산
@@ -125,7 +136,8 @@ export default function TargetCoachingDashboard({
             organFocus: string;
             wellnessFood: string;
             vagusNerveTip: string;
-            hrvTarget: string;
+            acupressurePoint: string;
+            dominantOrgan: 'wood' | 'fire' | 'earth' | 'metal' | 'water';
         }> = {
             '甲': {
                 type: '전진 돌파형 (Pioneer)',
@@ -136,7 +148,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '간(肝)·담(膽) 에너지 과열 완화',
                 wellnessFood: '구기자차, 녹색 잎채소, 레몬수',
                 vagusNerveTip: '아침 4-7-8 호흡으로 교감신경 진정',
-                hrvTarget: '심박변이도(HRV) 65ms 이상 유지'
+                acupressurePoint: '태충혈(太衝穴) 지압으로 간화(肝火) 완화',
+                dominantOrgan: 'wood'
             },
             '乙': {
                 type: '유연 네트워크형 (Adapter)',
@@ -147,7 +160,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '근육 긴장 완화 & 림프 순환',
                 wellnessFood: '생강차, 블루베리, 따뜻한 온수',
                 vagusNerveTip: '가벼운 스트레칭과 견갑골 롤링',
-                hrvTarget: '심박변이도(HRV) 62ms 이상 유지'
+                acupressurePoint: '양릉천(陽陵泉) 마사지로 근막 이완',
+                dominantOrgan: 'wood'
             },
             '丙': {
                 type: '스케일업 확장형 (Visionary)',
@@ -158,7 +172,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '심장(心) 화기 쿨다운 & 안구 피로',
                 wellnessFood: '국화차, 토마토, 맥문동',
                 vagusNerveTip: '눈가 냉찜질 및 5분간 암실 휴식',
-                hrvTarget: '심박변이도(HRV) 70ms 이상 유지'
+                acupressurePoint: '노궁혈(勞宮穴) 지압으로 심장 열 진정',
+                dominantOrgan: 'fire'
             },
             '丁': {
                 type: '정밀 타겟형 (Strategist)',
@@ -169,7 +184,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '뇌 신경 피로 회복 & 수면 딥슬립',
                 wellnessFood: '대추차, 호두, 카모마일',
                 vagusNerveTip: '잠들기 1시간 전 스마트폰 블루라이트 차단',
-                hrvTarget: '심박변이도(HRV) 68ms 이상 유지'
+                acupressurePoint: '신문혈(神門穴) 마사지로 수면 유도',
+                dominantOrgan: 'fire'
             },
             '戊': {
                 type: '플랫폼 구축형 (Anchor)',
@@ -180,7 +196,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '비장(脾)·위장 소화 흡수 밸런스',
                 wellnessFood: '단호박, 양배추, 발효 효소',
                 vagusNerveTip: '식후 15분 느린 걷기와 복부 온찜질',
-                hrvTarget: '심박변이도(HRV) 60ms 이상 유지'
+                acupressurePoint: '족삼리(足三里) 지압으로 소화력 증진',
+                dominantOrgan: 'earth'
             },
             '己': {
                 type: '내실 결실형 (Cultivator)',
@@ -191,7 +208,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '소화기계 점막 보호 & 만성 피로',
                 wellnessFood: '마(산약)즙, 연근, 보리차',
                 vagusNerveTip: '미주신경 자극을 위한 콧노래(Humming) 루틴',
-                hrvTarget: '심박변이도(HRV) 64ms 이상 유지'
+                acupressurePoint: '중완혈(中脘穴) 온열 테라피',
+                dominantOrgan: 'earth'
             },
             '庚': {
                 type: '결단 혁신형 (Executioner)',
@@ -202,7 +220,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '폐(肺)·호흡기 산소포화도 & 대장 건강',
                 wellnessFood: '도라지 배즙, 은행, 백년초',
                 vagusNerveTip: '박스 브리딩(Box Breathing) 5세트',
-                hrvTarget: '심박변이도(HRV) 66ms 이상 유지'
+                acupressurePoint: '척택혈(尺澤穴) 지압으로 폐 기능 강화',
+                dominantOrgan: 'metal'
             },
             '辛': {
                 type: '초정밀 완결형 (Craftsman)',
@@ -213,7 +232,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '피부 점막 보습 & 감각 과민 완화',
                 wellnessFood: '백목이버섯, 배, 알로에',
                 vagusNerveTip: '아로마 테라피(라벤더/유칼립투스) 심호흡',
-                hrvTarget: '심박변이도(HRV) 69ms 이상 유지'
+                acupressurePoint: '합곡혈(合谷穴) 지압으로 전신 순환',
+                dominantOrgan: 'metal'
             },
             '壬': {
                 type: '글로벌 유통형 (Deep Ocean)',
@@ -224,7 +244,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '신장(腎)·비뇨기 에너지 & 부신 피로',
                 wellnessFood: '검은콩, 흑임자, 산수유',
                 vagusNerveTip: '족욕(40도 온수 15분)으로 하체 혈류 순환',
-                hrvTarget: '심박변이도(HRV) 72ms 이상 유지'
+                acupressurePoint: '용천혈(湧泉穴) 지압으로 원기 충전',
+                dominantOrgan: 'water'
             },
             '癸': {
                 type: '영감 통찰형 (Wise Mind)',
@@ -235,7 +256,8 @@ export default function TargetCoachingDashboard({
                 organFocus: '수족 냉증 완화 & 뇌척수액 순환',
                 wellnessFood: '계피차, 생강대추차, 꿀',
                 vagusNerveTip: '명치 마사지와 척추 정렬 요가 스트레칭',
-                hrvTarget: '심박변이도(HRV) 67ms 이상 유지'
+                acupressurePoint: '태계혈(太谿穴) 마사지로 신수(腎水) 보양',
+                dominantOrgan: 'water'
             },
         };
 
@@ -246,14 +268,68 @@ export default function TargetCoachingDashboard({
             dayMaster,
             ...currentProfile,
             attackRatio: 68,
-            recoveryRatio: 32, // 부교감신경 회복 비율
-            stressIndex: 28, // 100점 만점 중 28점(양호)
-            wellnessScore: 94.8,
+            recoveryRatio: 32,
+            stressIndex: 26,
+            wellnessScore: 96.2,
             currentSeason: '2026 병오년(丙午年) 화기(火氣) 조율 생체 주기',
         };
     }, [effectiveProfile]);
 
-    // 📋 타겟 코칭 3대 메뉴 & 10대 전술 데이터 (기존 메뉴 구조 100% 보존 + 웰니스 바이오해킹 엔진 융합)
+    // 5대 장부(五臟六腑) 인터랙티브 데이터 매핑
+    const ORGAN_DATA = useMemo(() => ({
+        wood: {
+            name: '목(木) - 간·담 (肝/膽)',
+            sub: '해독 · 근육 피로 · 시력',
+            score: 82,
+            color: '#10B981',
+            status: '활동성 최적',
+            food: '구기자, 미나리, 레몬수',
+            tip: '눈의 피로를 풀어주고 근육의 젖산을 배출하는 림프 스트레칭이 효과적입니다.',
+            point: sajuMetrics.acupressurePoint
+        },
+        fire: {
+            name: '화(火) - 심·소장 (心/小腸)',
+            sub: '혈류 · 심박수 · 수면 질',
+            score: 90,
+            color: '#EF4444',
+            status: '과열 주의 (쿨링 필요)',
+            food: '국화차, 토마토, 맥문동',
+            tip: '심장의 화기(火氣)를 식히기 위해 오후 2시 이후 카페인을 중단하세요.',
+            point: '노궁혈(손바닥 중앙)을 지그시 눌러 심장 박동 안정'
+        },
+        earth: {
+            name: '토(土) - 비·위장 (脾/胃)',
+            sub: '소화 흡수 · 에너지 전환 · 면역',
+            score: 68,
+            color: '#F59E0B',
+            status: '보양 권장',
+            food: '단호박, 양배추, 마즙',
+            tip: '찬 음식을 피하고 식사 후 15분간 가볍게 산책하면 기혈 순환이 촉진됩니다.',
+            point: '족삼리(무릎 아래 3마디) 지압으로 소화력 증강'
+        },
+        metal: {
+            name: '금(金) - 폐·대장 (肺/大腸)',
+            sub: '호흡기 · 산소포화도 · 피부',
+            score: 72,
+            color: '#E2E8F0',
+            status: '보습 & 심호흡 필요',
+            food: '도라지 배즙, 은행, 백목이버섯',
+            tip: '깊은 복식호흡으로 폐활량을 늘리고 실내 습도를 50%로 유지하세요.',
+            point: '합곡혈(엄지와 검지 사이) 지압으로 대장 독소 배출'
+        },
+        water: {
+            name: '수(水) - 신·방광 (腎/膀胱)',
+            sub: '부신 호르몬 · 수분 대사 · 원기',
+            score: 79,
+            color: '#06B6D4',
+            status: '온열 유지',
+            food: '검은콩, 흑임자, 산수유',
+            tip: '하체를 따뜻하게 유지하고 자기 전 따뜻한 물로 족욕을 권장합니다.',
+            point: '용천혈(발바닥 중앙 오목한 곳) 마사지로 원기 회복'
+        }
+    }), [sajuMetrics]);
+
+    // 📋 타겟 코칭 3대 메뉴 & 10대 전술 데이터
     const TACTICAL_SECTIONS = useMemo(() => [
         {
             sectionId: 'timing',
@@ -345,7 +421,7 @@ export default function TargetCoachingDashboard({
                         summary: '현재 운세는 수비보다는 적극적 공세가 유리하지만, 신체적으로는 교감신경 과부하를 막기 위해 [32%의 의도적 회복(Recovery)]이 반드시 병행되어야 합니다.',
                         points: [
                             `활동 태세(${sajuMetrics.attackRatio}%): 목표를 향한 과감한 실행과 선제적 주도권 확보`,
-                            `회복 태세(${sajuMetrics.recoveryRatio}%): ${sajuMetrics.hrvTarget}`,
+                            `회복 태세(${sajuMetrics.recoveryRatio}%): 지압 포인트 [${sajuMetrics.acupressurePoint}]`,
                             '주의: 승부욕에 치우쳐 수면과 식사를 거르면 2주 뒤 급격한 에너지 다운 발생'
                         ],
                         actionLabel: '자율신경계 & 전략 포지션 조율받기'
@@ -380,7 +456,7 @@ export default function TargetCoachingDashboard({
                         summary: `대표님의 사주 원국 오행 분석 결과, 현재 가장 집중 케어가 필요한 신체 부위는 [${sajuMetrics.organFocus}]입니다. ${sajuMetrics.ohaengNeed}의 영양 처방이 필요합니다.`,
                         points: [
                             `추천 바이오푸드: ${sajuMetrics.wellnessFood}`,
-                            '오행 수치: 목(간담) 82점, 화(심혈관) 90점, 토(비위) 65점, 금(폐대장) 70점, 수(신장) 78점',
+                            `추천 지압 혈자리: ${sajuMetrics.acupressurePoint}`,
                             '개운 티 테라피: 따뜻한 찻물로 체내 미세 염증을 완화하고 장 점막 회복'
                         ],
                         actionLabel: '오행 맞춤 영양 & 장부 밸런스 처방받기'
@@ -526,10 +602,10 @@ export default function TargetCoachingDashboard({
         return TACTICAL_SECTIONS.filter((s) => s.sectionId === activeTab);
     }, [activeTab, TACTICAL_SECTIONS]);
 
-    // 🚀 원터치 AI 인텐트 실행 핸들러 (웰니스 페르소나 강화)
+    // 🚀 원터치 AI 인텐트 실행 핸들러 (웰니스 닥터 & 사주 바이오해킹 페르소나 강화)
     const handleTriggerIntent = (intent: string, title: string) => {
         const basePrompt = generateChatPromptFromIntent(intent, effectiveProfile);
-        const wellnessEnhancedPrompt = `[웰니스 코칭 모드 요청]\n사주 일간: ${sajuMetrics.dayMaster} (${sajuMetrics.type})\n오행 장부 상태: ${sajuMetrics.organFocus}\n요청 주제: ${title}\n\n기본 질문: ${basePrompt}\n\n위 주제에 대해 단순한 운세 풀이를 넘어, 자율신경계(HRV), 5대 장부 밸런스, 서카디안 리듬(호르몬/골든타임), 구체적 바이오해킹 행동 요령을 결합하여 세계 최고 수준의 전인적 웰니스 코칭으로 안내해 주세요.`;
+        const wellnessEnhancedPrompt = `[세계 최고 수준 웰니스 코칭 요청]\n대표님 사주 일간: ${sajuMetrics.dayMaster} (${sajuMetrics.type})\n오행 장부 집중 케어: ${sajuMetrics.organFocus}\n지압 포인트: ${sajuMetrics.acupressurePoint}\n선택 주제: ${title}\n\n기본 질문: ${basePrompt}\n\n[코칭 가이드라인]\n1. 단순한 운세 풀이나 일반적인 위로를 완전히 배제하고, 실리콘밸리 바이오해킹(자율신경계 HRV, 서카디안 호르몬)과 동양 5,000년 오행 생체 의학을 결합한 하이엔드 웰니스 닥터 관점으로 답변해 주세요.\n2. 오늘 당장 실천할 수 있는 [3단계 바이오해킹 처방(호흡/식단/행동 시간대)]을 명쾌하게 제시해 주세요.`;
 
         if (onChatIntent) {
             onChatIntent(intent, wellnessEnhancedPrompt);
@@ -551,15 +627,15 @@ export default function TargetCoachingDashboard({
                     <div
                         className="absolute w-[500px] h-[500px] -top-20 -right-20 rounded-full border border-emerald-400/25 transition-all duration-1000"
                         style={{
-                            transform: breathPhase === 'inhale' ? 'scale(1.15)' : breathPhase === 'hold' ? 'scale(1.15)' : 'scale(0.95)',
-                            opacity: breathPhase === 'hold' ? 0.6 : 0.3,
-                            boxShadow: '0 0 60px rgba(16,185,129,0.2)'
+                            transform: breathPhase === 'inhale' ? 'scale(1.18)' : breathPhase === 'hold' ? 'scale(1.18)' : breathPhase === 'exhale' ? 'scale(0.92)' : 'scale(0.92)',
+                            opacity: breathPhase === 'hold' ? 0.7 : 0.35,
+                            boxShadow: '0 0 60px rgba(16,185,129,0.25)'
                         }}
                     />
                 </div>
 
                 {/* ── 1. 상단 HUD & 웰니스 모드 바 ── */}
-                <div className="relative z-10 px-4 py-3.5 sm:px-6 sm:py-4 border-b border-emerald-500/20 bg-slate-950/90 backdrop-blur-xl flex items-center justify-between shrink-0">
+                <div className="relative z-10 px-4 py-3 sm:px-6 sm:py-3.5 border-b border-emerald-500/20 bg-slate-950/90 backdrop-blur-xl flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25 border border-emerald-300/40">
                             <Heart className="w-5 h-5 text-slate-950 animate-pulse" />
@@ -567,11 +643,11 @@ export default function TargetCoachingDashboard({
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-black px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 tracking-wider">
-                                    HOLISTIC WELLNESS & TACTICS
+                                <span className="text-[10.5px] font-black px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 tracking-wider">
+                                    HOLISTIC WELLNESS & BIO-HACKING
                                 </span>
                                 <span className="text-[11px] text-gray-400 hidden sm:inline-block">
-                                    사주 생체 리듬 & 5대 장부 바이오해킹
+                                    사주 생체 리듬 & 5대 장부 조율 지휘 본부
                                 </span>
                             </div>
                             <h2 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2 mt-0.5">
@@ -583,15 +659,20 @@ export default function TargetCoachingDashboard({
                         </div>
                     </div>
 
-                    {/* 실시간 호흡 가이드 미니 인디케이터 & 닫기 */}
-                    <div className="flex items-center gap-3">
-                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[11px]">
+                    {/* 실시간 박스 브리딩 토글 & 닫기 */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setIsBreathingTrainerOpen(!isBreathingTrainerOpen)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-[11px] text-emerald-200 transition-all cursor-pointer shadow-sm active:scale-95"
+                            title="4초 박스 브리딩 트레이너 열기/닫기"
+                        >
                             <Wind className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                            <span className="text-gray-300">호흡 리셋:</span>
-                            <span className="font-bold text-emerald-300 uppercase">
-                                {breathPhase === 'inhale' ? '들이마시기 (4s)' : breathPhase === 'hold' ? '멈추기 (4s)' : '내쉬기 (4s)'}
+                            <span className="hidden sm:inline font-bold">1분 호흡 리셋:</span>
+                            <span className="font-mono font-black text-emerald-300 uppercase">
+                                {breathPhase === 'inhale' ? '들숨' : breathPhase === 'hold' ? '멈춤' : breathPhase === 'exhale' ? '날숨' : '비움'} {breathSeconds}s
                             </span>
-                        </div>
+                        </button>
 
                         {onClose && (
                             <button
@@ -605,6 +686,60 @@ export default function TargetCoachingDashboard({
                         )}
                     </div>
                 </div>
+
+                {/* ── [NEW] 인터랙티브 4초 박스 브리딩(Box Breathing) 트레이너 오버레이 ── */}
+                <AnimatePresence>
+                    {isBreathingTrainerOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="relative z-20 bg-gradient-to-r from-emerald-950/90 via-slate-950 to-teal-950/90 border-b border-emerald-500/30 p-4 sm:p-5 overflow-hidden"
+                        >
+                            <div className="max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                    {/* 숨 쉬는 원형 그래픽 */}
+                                    <div className="relative w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                                        <motion.div
+                                            animate={{
+                                                scale: breathPhase === 'inhale' ? [1, 1.3] : breathPhase === 'hold' ? 1.3 : breathPhase === 'exhale' ? [1.3, 0.9] : 0.9
+                                            }}
+                                            transition={{ duration: 4, ease: 'easeInOut' }}
+                                            className="absolute inset-1 rounded-full bg-emerald-400/30"
+                                        />
+                                        <span className="text-sm font-black text-white z-10 font-mono">{breathSeconds}</span>
+                                        <span className="text-[9px] font-bold text-emerald-200 z-10">SEC</span>
+                                    </div>
+
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-black text-emerald-300 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30">
+                                                네이비씰(Navy SEAL) 박스 브리딩
+                                            </span>
+                                            <span className="text-[11px] text-gray-300 font-bold">
+                                                {breathPhase === 'inhale' && '폐 가득 깊게 들이마시기'}
+                                                {breathPhase === 'hold' && '숨을 멈추고 심박수 안정화'}
+                                                {breathPhase === 'exhale' && '입으로 천천히 끝까지 내쉬기'}
+                                                {breathPhase === 'rest' && '비운 상태에서 온몸 이완하기'}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-gray-300 mt-1">
+                                            미주신경(Vagus Nerve)을 즉각 활성화하여 교감신경 긴장을 풀고 뇌파를 안정시킵니다.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setIsBreathingTrainerOpen(false)}
+                                    className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-xs font-bold transition-all shrink-0 cursor-pointer"
+                                >
+                                    트레이너 접기 ✕
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* ── 2. 사용자 사주 기반 실시간 웰니스 브리핑 헤더 ── */}
                 <div className="relative z-10 p-4 sm:p-5 bg-gradient-to-r from-emerald-950/40 via-slate-900/70 to-slate-950/90 border-b border-emerald-500/20 shrink-0">
@@ -621,9 +756,11 @@ export default function TargetCoachingDashboard({
                                         {sajuMetrics.currentSeason}
                                     </span>
                                 </div>
-                                <p className="text-xs text-gray-300 mt-1 flex items-center gap-1.5">
+                                <p className="text-xs text-gray-300 mt-1 flex items-center gap-1.5 flex-wrap">
                                     <Leaf className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                    <span>장부 케어 포커스: <strong className="text-white font-bold">{sajuMetrics.organFocus}</strong></span>
+                                    <span>장부 케어: <strong className="text-white font-bold">{sajuMetrics.organFocus}</strong></span>
+                                    <span className="text-gray-500 hidden sm:inline">|</span>
+                                    <span className="text-emerald-300 text-[11px]">지압: {sajuMetrics.acupressurePoint}</span>
                                 </p>
                             </div>
                         </div>
@@ -663,7 +800,52 @@ export default function TargetCoachingDashboard({
                     </div>
                 </div>
 
-                {/* ── 3. 전략 & 웰니스 카테고리 탭 스위처 ── */}
+                {/* ── [NEW] 5대 장부(五臟六腑) 인터랙티브 바이오 밸런서 바 ── */}
+                <div className="relative z-10 px-4 py-2.5 bg-slate-950/80 border-b border-white/5 shrink-0 overflow-x-auto no-scrollbar">
+                    <div className="flex items-center gap-2 min-w-max">
+                        <span className="text-[10.5px] font-black text-gray-400 flex items-center gap-1 shrink-0 mr-1">
+                            <Activity className="w-3 h-3 text-emerald-400" />
+                            5대 장부 진단:
+                        </span>
+                        {Object.entries(ORGAN_DATA).map(([key, data]) => {
+                            const isSelected = selectedOrganKey === key;
+                            return (
+                                <button
+                                    key={key}
+                                    type="button"
+                                    onClick={() => setSelectedOrganKey(key as any)}
+                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                                        isSelected
+                                            ? 'bg-white/15 border-emerald-400 text-white shadow-sm'
+                                            : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                                    }`}
+                                >
+                                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: data.color }} />
+                                    <span>{data.name.split(' ')[0]}</span>
+                                    <span className="text-[10px] opacity-80">{data.score}점</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                    {/* 선택된 장부 실시간 미니 처방 배너 */}
+                    <div className="mt-2 p-2 rounded-xl bg-slate-900/90 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
+                        <div className="flex items-center gap-2">
+                            <span className="font-black text-white">{ORGAN_DATA[selectedOrganKey].name}</span>
+                            <span className="text-gray-400">({ORGAN_DATA[selectedOrganKey].sub})</span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                                {ORGAN_DATA[selectedOrganKey].status}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-300">
+                            <span className="text-emerald-300 font-bold">추천:</span>
+                            <span>{ORGAN_DATA[selectedOrganKey].food}</span>
+                            <span className="text-gray-500 hidden sm:inline">|</span>
+                            <span className="text-gray-400 hidden sm:inline">{ORGAN_DATA[selectedOrganKey].tip}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── 3. 웰니스 & 전술 카테고리 탭 스위처 ── */}
                 <div className="relative z-10 px-4 pt-3 pb-2 bg-slate-950 border-b border-white/5 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
                     <button
                         type="button"
@@ -675,7 +857,7 @@ export default function TargetCoachingDashboard({
                         }`}
                     >
                         <Layers className="w-3.5 h-3.5" />
-                        <span>전체 웰니스 조망 (10대 전술)</span>
+                        <span>전체 웰니스 조망 (10대 모듈)</span>
                     </button>
 
                     {TACTICAL_SECTIONS.map((section) => {
@@ -907,8 +1089,12 @@ export default function TargetCoachingDashboard({
                 {/* ── 5. [NEW] 세계 최고 수준 웰니스 상세 인스펙터 모달 (Wellness Deep Inspector) ── */}
                 <AnimatePresence>
                     {selectedCard && (
-                        <div className="fixed inset-0 z-[2200] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+                        <div
+                            onClick={() => setSelectedCardId(null)}
+                            className="fixed inset-0 z-[2200] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+                        >
                             <motion.div
+                                onClick={(e) => e.stopPropagation()}
                                 initial={{ opacity: 0, scale: 0.95, y: 15 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: 15 }}

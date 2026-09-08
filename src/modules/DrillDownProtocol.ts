@@ -108,46 +108,46 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         ]
     },
 
-    // 2. [실전 코칭] (Strategy Lab)
+    // 2. [타겟 웰니스 코칭] (Strategy Lab & Holistic Wellness)
     STRATEGY_LAB: {
         id: 'STRATEGY_LAB',
-        label: "2. 실전 코칭",
+        label: "2. 타겟 웰니스 코칭",
         icon: "🎯",
-        neuro_trigger: "이기는 타이밍과 전략의 모든 것",
+        neuro_trigger: "생체 리듬 최적화와 이기는 전략",
         style: 'premium_gold',
         sub_menus: [
             {
                 id: "strat_2_1",
-                label: "2-1. 타이밍 전략 (Timing)",
-                desc: "승부수와 골든타임",
+                label: "2-1. 타이밍 전략 (Timing & Circadian)",
+                desc: "승부수 & 서카디안 생체 리듬",
                 intent: "NAV_STRAT_TIMING",
                 children: [
-                    { id: "sl_15", label: "15. 올해의 주요 바이오 리듬 (Rhythm)", desc: "1년 및 10년 단위 인생 판세 분석", intent: "saju_daewoon_flow" },
-                    { id: "sl_20", label: "20. 오늘의 데일리 프로토콜 (Mission)", desc: "매일 아침 받는 구체적 행동 지침", intent: "daily_fortune" },
-                    { id: "sl_26", label: "26. 골든 타임 (Bio-Clock)", desc: "하루 중 가장 운이 좋은 시간대", intent: "golden_time_analysis" },
-                    { id: "sl_17", label: "17. 전략 포지션 (Action Code)", desc: "올해 내가 취해야 할 태도(공격/수비)", intent: "ms_12sinsal_strategy" }
+                    { id: "sl_15", label: "15. 올해의 주요 바이오 리듬 (Rhythm)", desc: "10년 대운 판세 & 신경계 번아웃 방어", intent: "saju_daewoon_flow" },
+                    { id: "sl_20", label: "20. 오늘의 데일리 프로토콜 (Mission)", desc: "모닝 햇빛·도파민 리셋 3대 루틴", intent: "daily_fortune" },
+                    { id: "sl_26", label: "26. 골든 타임 (Bio-Clock)", desc: "서카디안 피크 & 세포 재생 수면 윈도우", intent: "golden_time_analysis" },
+                    { id: "sl_17", label: "17. 전략 포지션 (Action Code)", desc: "교감신경(활동) vs 부교감신경(회복) 밸런스", intent: "ms_12sinsal_strategy" }
                 ]
             },
             {
                 id: "strat_2_2",
-                label: "2-2. 개운 솔루션 (Solution)",
-                desc: "부족한 운을 채우는 비법",
+                label: "2-2. 개운 솔루션 (Solution & Bio-Energetics)",
+                desc: "5대 생체 장부(五臟六腑) 치유 비법",
                 intent: "NAV_STRAT_SOLUTION",
                 children: [
-                    { id: "sl_16", label: "16. 오행 에너지 점수", desc: "실시간 내 운의 수치화 그래프", intent: "ohaeng_balance_report" },
-                    { id: "sl_18", label: "18. 비밀 병기 (허자/입묘)", desc: "위기 탈출을 위한 히든카드", intent: "ms_hidden_weapon" },
-                    { id: "sl_39", label: "39. AI 작명소 (성명학)", desc: "부족한 운을 채우는 이름/닉네임", intent: "ms_naming_ai" },
-                    { id: "sl_21", label: "21. 하늘의 조언 (주역)", desc: "답답할 때 던지는 동양 철학의 신탁", intent: "ms_iching_oracle" }
+                    { id: "sl_16", label: "16. 오행 에너지 점수", desc: "오장육부 생체 장부 활력도 & 결핍 치유", intent: "ohaeng_balance_report" },
+                    { id: "sl_18", label: "18. 비밀 병기 (허자/입묘)", desc: "무의식 스트레스 해소 & 회복 탄력성", intent: "ms_hidden_weapon" },
+                    { id: "sl_39", label: "39. AI 작명소 (성명학)", desc: "528Hz 음성 주파수 & 성대 미주신경 튜닝", intent: "ms_naming_ai" },
+                    { id: "sl_21", label: "21. 하늘의 조언 (주역)", desc: "주역 64괘 기반 알파파 마음챙김 명상", intent: "ms_iching_oracle" }
                 ]
             },
             {
                 id: "strat_2_3",
-                label: "2-3. 현실 조작 (Tactics)",
-                desc: "환경과 방향을 활용한 개운",
+                label: "2-3. 현실 조작 (Tactics & Environment)",
+                desc: "생체 공간 풍수 & 어싱(Earthing) 환경 최적화",
                 intent: "NAV_STRAT_TACTICS",
                 children: [
-                    { id: "sl_29", label: "29. 방위 나침반 (기문둔갑)", desc: "지금 행운을 잡으러 가는 방향", intent: "ms_lucky_direction" },
-                    { id: "sl_32", label: "32. 리얼타임 싱크", desc: "날씨, 뉴스 등 외부 환경 연동 조언", intent: "smart_context_card" }
+                    { id: "sl_29", label: "29. 방위 나침반 (기문둔갑)", desc: "기문둔갑 생명력 대길 방위 & 어싱 워킹", intent: "ms_lucky_direction" },
+                    { id: "sl_32", label: "32. 리얼타임 싱크", desc: "기압·습도·일진 연동 면역 바이오싱크", intent: "smart_context_card" }
                 ]
             }
         ]
