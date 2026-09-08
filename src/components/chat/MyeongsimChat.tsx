@@ -568,203 +568,141 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     };
 
     return (
-        <div className="flex flex-col h-[100dvh] sm:h-[780px] sm:max-h-[92vh] w-full max-w-4xl bg-[#040714] sm:bg-[#040714]/95 backdrop-blur-3xl border-0 sm:border border-white/15 rounded-none sm:rounded-[32px] overflow-hidden shadow-[0_0_80px_rgba(15,23,42,0.8)] font-sans relative text-left">
+        <div className="flex flex-col h-[100dvh] sm:h-[840px] sm:max-h-[94vh] w-full max-w-4xl bg-[#040714] sm:bg-[#040714]/95 backdrop-blur-3xl border-0 sm:border border-white/15 rounded-none sm:rounded-[32px] overflow-hidden shadow-[0_0_80px_rgba(15,23,42,0.8)] font-sans relative text-left">
             
-            {/* ── 1. 세계 최고 수준 웰니스 헤더 (모바일 초강력 콤팩트 최적화) ── */}
-            <header className="p-3 sm:p-5 border-b border-white/10 bg-gradient-to-r from-slate-950 via-slate-900/90 to-indigo-950/80 flex flex-col gap-2.5 shrink-0 relative z-20">
-                <div className="flex items-center justify-between gap-2">
-                    {/* 브랜딩 & 아바타 */}
-                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                        <button
-                            onClick={handleGoHome}
-                            title="메인으로 돌아가기"
-                            className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-all border border-white/10 active:scale-95 flex items-center justify-center shrink-0"
-                        >
-                            <ArrowLeft className="w-4 h-4 text-amber-300" />
-                        </button>
+            {/* ── 1. 단일 슬림 글래스 헤더 (Single Slim Header: ~56px) ── */}
+            <header className="px-3.5 sm:px-6 py-2.5 sm:py-3 border-b border-white/10 bg-gradient-to-r from-slate-950 via-slate-900/95 to-indigo-950/90 flex items-center justify-between gap-2 shrink-0 relative z-20 backdrop-blur-xl">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                    <button
+                        onClick={handleGoHome}
+                        title="메인으로 돌아가기"
+                        className="p-1.5 sm:p-2 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-all border border-white/10 active:scale-95 flex items-center justify-center shrink-0"
+                    >
+                        <ArrowLeft className="w-4 h-4 text-amber-300" />
+                    </button>
 
-                        <div className="relative group shrink-0">
-                            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-400/30 via-purple-600/30 to-indigo-600/30 border border-amber-400/40 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.25)]">
-                                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
-                            </div>
-                            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-slate-950 rounded-full animate-ping" />
-                            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-slate-950 rounded-full" />
+                    <div className="relative shrink-0">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-400/30 via-purple-600/30 to-indigo-600/30 border border-amber-400/40 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.25)]">
+                            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
                         </div>
+                        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-slate-950 rounded-full animate-ping" />
+                        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-slate-950 rounded-full" />
+                    </div>
 
-                        <div className="min-w-0">
-                            <div className="flex items-center gap-1.5 flex-nowrap">
-                                <h2 className="text-white font-black text-sm sm:text-lg tracking-tight whitespace-nowrap">명심 AI 코치</h2>
-                                <span className="text-[9px] sm:text-[10px] text-amber-300 font-mono font-extrabold bg-amber-400/10 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-400/30 shadow-inner whitespace-nowrap">
-                                    📜 특허출원중
-                                </span>
-                            </div>
-                            <p className="text-gray-400 text-[11px] mt-0.5 hidden sm:flex items-center gap-1.5">
-                                <span>세계 최고 수준 3세대 최신 심리 과학적 도구 & 사주 명리 융합 코칭</span>
-                            </p>
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-nowrap">
+                            <h2 className="text-white font-black text-sm sm:text-base tracking-tight whitespace-nowrap">명심 AI 코치</h2>
+                            <span className="text-[9px] sm:text-[10px] text-amber-300 font-mono font-bold bg-amber-400/10 px-1.5 py-0.5 rounded-full border border-amber-400/30 whitespace-nowrap">
+                                📜 특허출원
+                            </span>
                         </div>
-                    </div>
-
-                    {/* 컨트롤 버튼들 (모바일 반응형 콤팩트) */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                        {/* 432Hz Ambient Healing Sound Toggle */}
-                        <button
-                            type="button"
-                            onClick={toggle432HzBgm}
-                            title={isBgmPlaying ? '432Hz 힐링 음원 끄기' : '432Hz 평온 명상 음원 켜기'}
-                            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-1 border cursor-pointer whitespace-nowrap ${
-                                isBgmPlaying
-                                    ? 'bg-amber-400 text-slate-950 border-amber-300 animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.5)] font-black'
-                                    : 'bg-white/5 hover:bg-white/15 text-amber-300 border-amber-400/30'
-                            }`}
-                        >
-                            <Music size={13} className={isBgmPlaying ? 'animate-spin' : ''} />
-                            <span className="text-[11px] sm:text-xs">{isBgmPlaying ? '432Hz 켜짐' : '432Hz'}</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => setShowDarkCodeModal(true)}
-                            title="책 3장 연동 다크코드 자비 변환기 & 음성 안식 스캔"
-                            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-950/70 hover:bg-purple-900/90 border border-purple-400/50 text-purple-200 hover:text-white text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
-                        >
-                            <Shield className="w-3.5 h-3.5 text-purple-300 animate-pulse" />
-                            <span>🛡️ 다크코드 변환</span>
-                        </button>
-
-                        <button
-                            onClick={handleNewChat}
-                            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-200 hover:text-white text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-1 whitespace-nowrap"
-                        >
-                            <MessageSquarePlus className="w-3.5 h-3.5 text-emerald-300" />
-                            <span className="hidden sm:inline">새 대화</span>
-                        </button>
+                        <p className="text-gray-400 text-[10px] sm:text-[11px] hidden sm:flex items-center gap-1 truncate font-medium">
+                            <span>3세대 인지코칭 × 사주 명리 1:1 영혼 코치</span>
+                        </p>
                     </div>
                 </div>
 
-                {/* ── 🔬 대한민국 특허 출원 공식 인증 뱃지 바 ── */}
-                <div className="bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-indigo-500/20 border border-amber-400/40 px-3 py-1.5 rounded-xl sm:rounded-2xl flex items-center justify-between gap-2 shadow-inner text-[10px] sm:text-xs">
-                    <div className="flex items-center gap-1.5 text-amber-300 font-black">
-                        <Sparkles size={13} className="text-amber-400 animate-spin" />
-                        <span>🔬 특허출원 제10-2025-0166877호 탑재</span>
-                    </div>
-                    <span className="text-[9px] sm:text-[10px] text-amber-200/90 font-mono font-bold truncate">
-                        심리·기질 × 뇌신경 인지재구성 공인 알고리즘
-                    </span>
-                </div>
+                {/* 헤더 우측 유틸리티 버튼들 */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                    {/* 432Hz Ambient Healing Sound Toggle */}
+                    <button
+                        type="button"
+                        onClick={toggle432HzBgm}
+                        title={isBgmPlaying ? '432Hz 힐링 음원 끄기' : '432Hz 평온 명상 음원 켜기'}
+                        className={`px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 flex items-center gap-1 border cursor-pointer whitespace-nowrap ${
+                            isBgmPlaying
+                                ? 'bg-amber-400 text-slate-950 border-amber-300 animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.5)] font-black'
+                                : 'bg-white/5 hover:bg-white/15 text-amber-300 border-amber-400/30'
+                        }`}
+                    >
+                        <Music size={12} className={isBgmPlaying ? 'animate-spin' : ''} />
+                        <span className="text-[11px]">{isBgmPlaying ? '432Hz ON' : '432Hz'}</span>
+                    </button>
 
-                {/* ── 3세대 최신 심리 과학적 도구 8대 라이브 오라 바 (모바일 콤팩트) ── */}
-                <div className="bg-slate-900/90 border border-cyan-500/30 px-3 py-1.5 rounded-xl sm:rounded-2xl flex items-center justify-between gap-2 shadow-inner overflow-hidden">
-                    <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" />
-                        <span className="text-[10px] sm:text-xs font-black text-cyan-300 font-mono tracking-tight whitespace-nowrap">
-                            🧠 3세대 최신 심리 과학적 도구:
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0 overflow-x-auto no-scrollbar py-0.5">
-                        {PSYCH_PROTOCOLS.map((p) => (
-                            <button
-                                key={p.code}
-                                type="button"
-                                onClick={() => setSelectedProtocol(p)}
-                                title={p.desc}
-                                className={`px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-black font-mono transition-all border ${p.badge} hover:scale-105 active:scale-95 cursor-pointer shadow-sm whitespace-nowrap`}
-                            >
-                                {p.code}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                    {/* 다크코드 변환기 모달 트리거 */}
+                    <button
+                        type="button"
+                        onClick={() => setShowDarkCodeModal(true)}
+                        title="다크코드 자비 변환기 & 음성 안식 스캔"
+                        className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-400/40 text-purple-200 hover:text-white text-xs font-bold transition-all shadow-sm active:scale-95 flex items-center gap-1 whitespace-nowrap cursor-pointer"
+                    >
+                        <Shield className="w-3.5 h-3.5 text-purple-300" />
+                        <span className="text-[11px] hidden xs:inline sm:inline">다크코드</span>
+                    </button>
 
-                {/* ── 실시간 3S 코칭 진도율 & 뇌파 공명 바 ── */}
-                <div className="flex flex-col gap-1 pt-1 border-t border-white/10">
-                    <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold">
-                        <span className="text-amber-300 flex items-center gap-1.5 truncate">
-                            <Activity size={12} className="text-amber-400 animate-pulse shrink-0" />
-                            <span className="truncate">3S 진도: {messages.length <= 2 ? '🛡️ SCAN (33%)' : messages.length <= 6 ? '🧠 SYNC (66%)' : '👑 SHIFT (100%)'}</span>
-                        </span>
-                        <span className="flex items-center gap-1">
-                            {isPaidUser ? (
-                                <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-sm">
-                                    👑 VVIP 무제한
-                                </span>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => userMessageCount >= 3 && setShowMicroPassModal(true)}
-                                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black border transition-all ${
-                                        userMessageCount >= 3
-                                            ? 'bg-rose-500/20 text-rose-300 border-rose-400/50 animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.4)] cursor-pointer'
-                                            : 'bg-amber-400/20 text-amber-300 border-amber-400/40'
-                                    }`}
-                                >
-                                    {userMessageCount >= 3 ? '🔒 무료 코칭 완료 (3/3회 - 잠금)' : `🎯 무료 코칭 [${userMessageCount}/3회 완료]`}
-                                </button>
-                            )}
-                        </span>
-                    </div>
-                    <div className="w-full h-1 bg-slate-950 rounded-full overflow-hidden border border-white/10 flex">
-                        <div
-                            className="h-full bg-gradient-to-r from-rose-500 via-blue-400 to-amber-400 transition-all duration-500 rounded-full"
-                            style={{
-                                width: messages.length === 0 ? '15%' : `${Math.min(100, Math.max(33, (messages.length / 8) * 100))}%`
-                            }}
-                        />
-                    </div>
+                    {/* 새 대화 버튼 */}
+                    <button
+                        onClick={handleNewChat}
+                        title="새로운 코칭 대화 시작"
+                        className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-emerald-950/50 hover:bg-emerald-900/70 border border-emerald-500/40 text-emerald-200 hover:text-white text-xs font-bold transition-all shadow-sm active:scale-95 flex items-center gap-1 whitespace-nowrap cursor-pointer"
+                    >
+                        <MessageSquarePlus className="w-3.5 h-3.5 text-emerald-300" />
+                        <span className="text-[11px] hidden sm:inline">새 대화</span>
+                    </button>
                 </div>
             </header>
 
-            {/* ── [ONBOARDING SYNC CONFIRMATION BANNER] 4단계 온보딩 데이터(MBTI, 애니어그램, 수면, 에너지, 스트레스) 100% 연동 확인 배너 ── */}
-            <div className="bg-gradient-to-r from-amber-950/90 via-purple-950/80 to-slate-950 border-b border-amber-400/40 px-3 sm:px-5 py-2 flex items-center justify-between gap-2 shrink-0 z-10 shadow-lg backdrop-blur-md">
-                <div className="flex items-center gap-2 min-w-0 overflow-x-auto no-scrollbar py-0.5">
-                    <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-[10px] sm:text-xs shrink-0 shadow-sm flex items-center gap-1">
-                        <CheckCircle2 size={12} className="fill-slate-950 text-amber-400 shrink-0" />
-                        <span>기질·심리지표 동기화 완료</span>
-                    </span>
-                    <div className="text-[11px] sm:text-xs text-amber-200 font-medium whitespace-nowrap flex items-center gap-1.5 font-mono">
-                        <span className="font-bold text-white">{clientSajuData?.userName || '회원'}님</span>
-                        <span className="text-amber-400/60">|</span>
+            {/* ── 2. 초슬림 스마트 상태 바 (Smart Status Bar: ~28px) ── */}
+            <div className="px-3.5 sm:px-6 py-1.5 bg-slate-950/90 border-b border-white/10 flex items-center justify-between gap-2 text-[10px] sm:text-[11px] shrink-0 z-10">
+                {/* 좌측: 사용자 맞춤 프로필 요약 & 8대 도구 빠른 확인 */}
+                <div className="flex items-center gap-2 min-w-0 overflow-x-auto no-scrollbar">
+                    <span className="flex items-center gap-1 text-amber-200 font-semibold truncate font-mono">
+                        <span className="text-white font-bold">{clientSajuData?.userName || '명심가'}님</span>
+                        <span className="text-amber-400/60">·</span>
                         <span className="text-yellow-300 font-bold">{clientSajuData?.dayMaster ? `${clientSajuData.dayMaster}일간` : '사주 분석'}</span>
-                        {clientSajuData?.mbti && (
-                            <>
-                                <span className="text-amber-400/60">|</span>
-                                <span className="text-emerald-300 font-bold">16대 마인드: {getMindArchitectureTitle(clientSajuData.mbti)}</span>
-                            </>
-                        )}
-                        {clientSajuData?.enneagram && (
-                            <>
-                                <span className="text-amber-400/60">|</span>
-                                <span className="text-purple-300 font-bold">코어 엔진: {getMotivationEngineTitle(clientSajuData.enneagram)}</span>
-                            </>
-                        )}
-                        {clientSajuData?.disc && (
-                            <>
-                                <span className="text-amber-400/60">|</span>
-                                <span className="text-cyan-300 font-bold">행동: {getDiscProtocolTitle(clientSajuData.disc)}</span>
-                            </>
-                        )}
-                        {clientSajuData?.big5 && (
-                            <>
-                                <span className="text-amber-400/60">|</span>
-                                <span className="text-sky-300 font-bold">멘탈: {getBig5MatrixTitle(clientSajuData.big5)}</span>
-                            </>
-                        )}
                         {clientSajuData?.energyLevel && (
                             <>
-                                <span className="text-amber-400/60">|</span>
-                                <span className="text-amber-300">에너지 {clientSajuData.energyLevel}%</span>
+                                <span className="text-amber-400/60 hidden xs:inline">·</span>
+                                <span className="text-amber-300 hidden xs:inline">에너지 {clientSajuData.energyLevel}%</span>
                             </>
                         )}
-                        {clientSajuData?.sleepQuality && (
-                            <>
-                                <span className="text-amber-400/60">|</span>
-                                <span className="text-sky-300">수면 {clientSajuData.sleepQuality}점</span>
-                            </>
-                        )}
-                    </div>
+                    </span>
+
+                    <button
+                        type="button"
+                        onClick={() => setSelectedProtocol(PSYCH_PROTOCOLS[0])}
+                        className="px-2 py-0.5 rounded-full bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 text-[10px] font-bold transition-all shrink-0 flex items-center gap-1 active:scale-95 cursor-pointer"
+                        title="3세대 8대 심리과학 도구 (ACT, CFT, MBCT 등) 확인"
+                    >
+                        <BrainCircuit size={11} className="text-cyan-400" />
+                        <span>8대 심리도구</span>
+                    </button>
                 </div>
-                <span className="text-[10px] text-emerald-400 font-mono font-bold shrink-0 hidden md:inline-flex items-center gap-1">
-                    <span>⚡ AI 1:1 맞춤 연결됨</span>
-                </span>
+
+                {/* 우측: 3S 코칭 진도 & 이용권 상태 */}
+                <div className="flex items-center gap-2 shrink-0 font-mono">
+                    <div className="flex items-center gap-1.5 text-amber-300 font-bold">
+                        <span className="text-[10px]">
+                            3S: {messages.length <= 2 ? '🛡️SCAN 33%' : messages.length <= 6 ? '🧠SYNC 66%' : '👑SHIFT 100%'}
+                        </span>
+                        <div className="w-10 sm:w-14 h-1 bg-slate-800 rounded-full overflow-hidden border border-white/10 hidden xs:block">
+                            <div
+                                className="h-full bg-gradient-to-r from-rose-500 via-blue-400 to-amber-400 rounded-full transition-all duration-500"
+                                style={{
+                                    width: messages.length === 0 ? '20%' : `${Math.min(100, Math.max(33, (messages.length / 8) * 100))}%`
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    {isPaidUser ? (
+                        <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-sm">
+                            👑 VVIP
+                        </span>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => userMessageCount >= 3 && setShowMicroPassModal(true)}
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-all ${
+                                userMessageCount >= 3
+                                    ? 'bg-rose-500/20 text-rose-300 border-rose-400/50 animate-pulse cursor-pointer'
+                                    : 'bg-amber-400/10 text-amber-300 border-amber-400/30'
+                            }`}
+                        >
+                            {userMessageCount >= 3 ? '🔒 무료완료' : `무료 ${userMessageCount}/3회`}
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* ── 2. 메시지 영역 ── */}
@@ -888,33 +826,33 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                         ))}
                                     </div>
 
-                                    {/* 3세대 현장 코칭심리학 메커니즘 & 음성/복사 인터랙션 툴바 */}
-                                    <div className="flex items-center justify-between gap-2 text-[10px] font-mono pt-3 border-t border-white/10 mt-3 flex-wrap">
-                                        <div className="flex items-center gap-1.5 text-cyan-300 font-bold">
-                                            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" />
-                                            <span>🔬 3세대 현장 코칭심리학 메커니즘 (ACT · CFT · MBCT · IFS)</span>
+                                    {/* 3세대 현장 코칭심리학 & 음성/복사 인터랙션 툴바 */}
+                                    <div className="flex items-center justify-between gap-2 text-[10px] font-mono pt-2.5 border-t border-white/10 mt-2.5">
+                                        <div className="flex items-center gap-1.5 text-cyan-300 font-bold truncate">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+                                            <span className="truncate text-[10px]">3세대 코칭심리학 (ACT·CFT·MBCT·IFS)</span>
                                         </div>
 
-                                        <div className="flex items-center gap-1.5 ml-auto">
+                                        <div className="flex items-center gap-1 shrink-0 ml-auto">
                                             {/* TTS 음성 청취 버튼 */}
                                             <button
                                                 type="button"
                                                 onClick={() => handleSpeak(m.id, m.content)}
-                                                className={`px-2.5 py-1 rounded-xl font-bold transition-all border flex items-center gap-1 cursor-pointer ${
+                                                className={`px-2 py-1 rounded-lg font-bold transition-all border flex items-center gap-1 cursor-pointer text-[10px] ${
                                                     speakingMessageId === m.id
-                                                        ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.5)] animate-pulse'
+                                                        ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.5)] animate-pulse font-black'
                                                         : 'bg-white/5 hover:bg-white/15 text-amber-300 border-amber-400/30'
                                                 }`}
                                             >
                                                 {speakingMessageId === m.id ? (
                                                     <>
-                                                        <VolumeX size={12} />
-                                                        <span>음성 정지</span>
+                                                        <VolumeX size={11} />
+                                                        <span>정지</span>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Volume2 size={12} />
-                                                        <span>🔊 음성 힐링</span>
+                                                        <Volume2 size={11} />
+                                                        <span>음성</span>
                                                     </>
                                                 )}
                                             </button>
@@ -923,16 +861,16 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                             <button
                                                 type="button"
                                                 onClick={() => handleCopy(m.id, m.content)}
-                                                className="px-3 py-1.5 rounded-xl font-bold bg-white/10 hover:bg-white/20 text-gray-200 hover:text-white border border-white/15 transition-all flex items-center gap-1.5 cursor-pointer text-xs min-h-[36px] shadow-sm"
+                                                className="px-2 py-1 rounded-lg font-bold bg-white/10 hover:bg-white/20 text-gray-200 hover:text-white border border-white/15 transition-all flex items-center gap-1 cursor-pointer text-[10px] shadow-sm"
                                             >
                                                 {copiedMessageId === m.id ? (
                                                     <>
-                                                        <Check size={12} className="text-emerald-400" />
-                                                        <span className="text-emerald-400 font-bold">복사됨!</span>
+                                                        <Check size={11} className="text-emerald-400" />
+                                                        <span className="text-emerald-400 font-bold">복사됨</span>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Copy size={12} />
+                                                        <Copy size={11} />
                                                         <span>복사</span>
                                                     </>
                                                 )}
@@ -1043,89 +981,84 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                 <Footer />
             </div>
 
-            {/* ── 3. 상용화 결제 퍼널 브릿지 (CTA Banner - 모바일 최적화) ── */}
-            {messages.length > 0 && (
-                <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-amber-950/60 via-purple-950/60 to-slate-950 border-t border-amber-500/30 flex items-center justify-between text-xs gap-2 shrink-0">
-                    <span className="text-gray-200 font-bold flex items-center gap-1.5 truncate text-[11px] sm:text-xs">
-                        <Sparkles size={13} className="text-amber-400 shrink-0" />
-                        <span className="truncate">{userMessageCount < 3 ? `🎁 첫 3회 1:1 영혼 코칭 무료 체험 중 (${userMessageCount}/3회)` : `🔒 3회 무료 완료! [도서 구매 인증 시 20회 + 올인원 패키지 무료 해금]` }</span>
+            {/* ── 3. 단일 스마트 퀵 추천 바 (Single Smart Quick Bar: ~38px) ── */}
+            <div className="px-3 sm:px-4 py-2 border-t border-white/10 bg-slate-950/95 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+                {/* 1) 마음 상태 세밀 조율 모달 트리거 */}
+                <button
+                    type="button"
+                    onClick={() => setShowMindStateModal(true)}
+                    className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400/20 to-yellow-400/20 hover:from-amber-400/30 hover:to-yellow-400/30 border border-amber-400/40 text-amber-300 text-[11px] font-black shrink-0 flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap shadow-sm"
+                >
+                    <Smile size={13} className="text-amber-400" />
+                    <span>✨ 마음 조율</span>
+                </button>
+
+                {/* 2) 2026 추천 주제 모달 트리거 */}
+                <button
+                    type="button"
+                    onClick={() => setShowTrendingTopicModal(true)}
+                    className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 hover:from-indigo-500/30 hover:to-purple-500/30 border border-purple-400/40 text-purple-200 text-[11px] font-black shrink-0 flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap shadow-sm"
+                >
+                    <Sparkles size={13} className="text-purple-300" />
+                    <span>🔥 추천 질문</span>
+                </button>
+
+                <span className="text-white/20 shrink-0 font-light">|</span>
+
+                {/* 3) 원터치 퀵 추천 질문 칩들 (팝업 단어 100% 제거 & 즉시 질문 전송) */}
+                {[
+                    { label: '🛡️ 완벽주의 뇌 쿨링', prompt: '내 안의 완벽주의 다크코드를 80% 미학으로 뇌 쿨링(ACT) 해줘' },
+                    { label: '🔥 번아웃 메타인지', prompt: '엔진 과열로 가슴이 답답하고 번아웃 오는데 메타인지로 정밀 교정해줘' },
+                    { label: '💰 2026 사업·재물운', prompt: '내 사주 기반 2026년 사업·재물운과 B2B 스케일업 방향을 분석해줘' },
+                    { label: '🌙 듀얼트랙 시간대', prompt: '밤/새벽 집중형 vs 낮 활동형 듀얼트랙 시간대 처방을 알려줘' },
+                    { label: '🧘 432Hz 제로포인트', prompt: '오늘의 432Hz 제로포인트 순수 자각 명상 가이드를 알려줘' },
+                    { label: '💎 80% 미학 실천', prompt: '내 일간 기질에 맞는 80% 미학 실천 가이드를 알려줘' },
+                ].map((chip, idx) => (
+                    <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleChipClick(chip.prompt)}
+                        className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/40 text-gray-300 hover:text-white text-[11px] font-medium transition-all shrink-0 active:scale-95 cursor-pointer whitespace-nowrap flex items-center gap-1"
+                    >
+                        <span>{chip.label}</span>
+                    </button>
+                ))}
+            </div>
+
+            {/* ── 4. 무료 체험 알림 인라인 텍스트 (초슬림 ~22px) ── */}
+            {!isPaidUser && (
+                <div className="px-4 py-1.5 bg-gradient-to-r from-amber-500/10 via-purple-500/10 to-transparent border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400 shrink-0">
+                    <span className="flex items-center gap-1 text-amber-300/90 font-medium truncate">
+                        <Sparkles size={11} className="text-amber-400 shrink-0" />
+                        <span className="truncate">{userMessageCount < 3 ? `1:1 코칭 무료 체험 중 (${userMessageCount}/3회)` : `🔒 3회 무료 완료 (도서 인증 시 20회 무료 해금)`}</span>
                     </span>
                     <button
+                        type="button"
                         onClick={() => setShowMicroPassModal(true)}
-                        className="py-1 px-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black shadow-md transition-all active:scale-95 flex items-center gap-1 text-[11px] sm:text-xs shrink-0 whitespace-nowrap"
+                        className="text-amber-300 hover:text-amber-200 font-bold underline transition-colors shrink-0 cursor-pointer ml-2 whitespace-nowrap"
                     >
-                        ⚡ 도서 인증 / 무통장
+                        도서 인증 / 무통장 충전 ➔
                     </button>
                 </div>
             )}
 
-            {/* ── 4. 실시간 감정 스위치 & 추천 대화 칩 (세밀 팝업창 100% 연동) ── */}
-            <div className="p-2 sm:p-3 border-t border-white/10 bg-slate-950/90 flex flex-col gap-2 shrink-0">
-                {/* 1) 마음 상태 행: 팝업 트리거 버튼 & 4대 대표 감정 칩 */}
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            {/* ── 5. 메시지 입력 폼 (모던 미니멀 다크 글래스) ── */}
+            <form onSubmit={onSubmit} className="p-2.5 sm:p-3.5 border-t border-white/10 bg-[#040714] shrink-0 relative">
+                <div className="relative flex items-center bg-black/60 border border-white/15 focus-within:border-amber-400/60 rounded-2xl transition-all shadow-inner px-2 py-1">
+                    {/* STT 음성 마이크 버튼 */}
                     <button
                         type="button"
-                        onClick={() => setShowMindStateModal(true)}
-                        className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 text-[10px] sm:text-[11px] font-black shrink-0 flex items-center gap-1 shadow-md active:scale-95 cursor-pointer whitespace-nowrap animate-pulse"
+                        onClick={toggleListening}
+                        title={isListening ? '음성 인식 멈추기' : '음성으로 말하기 (STT)'}
+                        className={`p-2 rounded-xl transition-all shrink-0 cursor-pointer ${
+                            isListening
+                                ? 'bg-rose-500 text-white animate-pulse shadow-[0_0_12px_rgba(244,63,94,0.6)]'
+                                : 'text-gray-400 hover:text-amber-300 hover:bg-white/5'
+                        }`}
                     >
-                        <Smile size={12} className="text-slate-950 fill-slate-950" />
-                        <span>🎯 8대 세밀 감정 팝업창</span>
-                    </button>
-                    
-                    {[
-                        { label: '🛡️ 완벽주의·마비', prompt: '내 안의 완벽주의 다크코드를 80% 미학으로 뇌 쿨링(ACT) 해줘' },
-                        { label: '🔥 번아웃·조바심', prompt: '엔진 과열로 가슴이 답답하고 번아웃 오는데 메타인지로 정밀 교정해줘' },
-                        { label: '🌧️ 무기력·고갈', prompt: '에너지가 완전히 고갈되어 아무것도 못하겠는데 2026년 활력 기운 재배선해줘' },
-                        { label: '👑 평온·영점 각성', prompt: '오늘의 432Hz 제로포인트 순수 자각 명상 가이드를 알려줘' },
-                    ].map((emo, idx) => (
-                        <button
-                            key={idx}
-                            type="button"
-                            onClick={() => {
-                                setSelectedMood(emo.label);
-                                setShowMindStateModal(true);
-                            }}
-                            className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-amber-400/20 border border-white/15 hover:border-amber-400/60 text-gray-200 hover:text-amber-200 text-[10px] sm:text-[11px] font-bold transition-all shrink-0 active:scale-95 cursor-pointer whitespace-nowrap flex items-center gap-1"
-                        >
-                            <span>{emo.label}</span>
-                            <span className="text-[9px] text-amber-300/80 font-mono">✨팝업</span>
-                        </button>
-                    ))}
-                </div>
-
-                {/* 2) 2026 트렌딩 핫이슈 주제 행: 팝업 트리거 버튼 & 8대 주제 칩 */}
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                    <button
-                        type="button"
-                        onClick={() => setShowTrendingTopicModal(true)}
-                        className="px-3 py-1.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white text-[10px] sm:text-xs font-black shadow-lg shrink-0 flex items-center gap-1.5 active:scale-95 cursor-pointer whitespace-nowrap"
-                    >
-                        <Sparkles size={13} className="text-yellow-300 animate-spin" />
-                        <span>🔥 2026 핫이슈 주제 8선 팝업창</span>
+                        {isListening ? <MicOff size={16} /> : <Mic size={16} />}
                     </button>
 
-                    {[
-                        '💰 "사주 기반 재물·사업 ➔ B2B 30만원 스케일업 정밀 분석"',
-                        '🌙 "밤/새벽 집중형 vs 낮 활동형 듀얼트랙 시간대 처방"',
-                        '🧠 "64괘 뇌 신경망 3S 1분 리셋 알고리즘"',
-                        '🔮 "내 일간 기질에 맞는 80% 미학 실천 가이드"'
-                    ].map((chip, idx) => (
-                        <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setShowTrendingTopicModal(true)}
-                            className="text-[10px] sm:text-xs font-extrabold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-indigo-500/40 text-indigo-200 hover:text-white transition-all whitespace-nowrap shrink-0 shadow-md active:scale-95 cursor-pointer flex items-center gap-1"
-                        >
-                            <span>{chip}</span>
-                            <span className="text-[9px] text-cyan-300 font-mono">🔍팝업</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* ── 5. 메시지 입력 폼 ── */}
-            <form onSubmit={onSubmit} className="p-3 sm:p-4 border-t border-white/10 bg-[#040714] shrink-0 relative">
-                <div className="relative flex items-end">
                     <textarea
                         value={input}
                         onChange={handleInputChange}
@@ -1146,36 +1079,39 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                 }
                             }
                         }}
-                        placeholder={userMessageCount >= 3 && !isPaidUser ? "🔒 첫 3회 무료 체험 완료! 도서 인증 또는 VIP 프리패스로 계속 대화 가능" : "마음속 고민이나 질문을 편하게 남겨주세요... (Enter 전송)"}
-                        className={`w-full bg-black/70 border rounded-2xl py-3.5 pl-4 pr-13 text-white outline-none transition-all resize-none overflow-y-auto no-scrollbar text-xs sm:text-sm font-medium ${userMessageCount >= 3 && !isPaidUser ? 'border-amber-500/60 bg-amber-950/20 text-amber-200 placeholder:text-amber-400/80 cursor-pointer' : 'border-white/15 focus:border-amber-400/60 placeholder:text-gray-500'}`}
+                        placeholder={userMessageCount >= 3 && !isPaidUser ? "🔒 3회 무료 완료! 도서 인증 또는 무통장 충전으로 계속 대화 가능" : "마음속 고민이나 질문을 편하게 남겨주세요... (Enter 전송)"}
+                        className="w-full bg-transparent border-0 text-white outline-none resize-none overflow-y-auto no-scrollbar text-xs sm:text-sm font-medium py-2 px-2 placeholder:text-gray-500"
                         rows={1}
-                        style={{ minHeight: '50px', maxHeight: '130px' }}
+                        style={{ minHeight: '38px', maxHeight: '110px' }}
                     />
 
                     {/* 전송 버튼 */}
                     <button
                         type="submit"
                         disabled={!input.trim() || isLoading}
-                        className="absolute right-2 bottom-2 w-9 h-9 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 rounded-xl flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg active:scale-95 cursor-pointer"
+                        className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-950 rounded-xl flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md active:scale-95 cursor-pointer shrink-0 ml-1"
                     >
-                        <Send className="w-4.5 h-4.5" />
+                        <Send className="w-4 h-4" />
                     </button>
                 </div>
+                {sttError && (
+                    <p className="text-[10px] text-rose-400 mt-1 px-1">{sttError}</p>
+                )}
             </form>
 
-            {/* ── 회사 정보 및 고객센터 (1줄 스림 디자인) ── */}
-            <div className="py-2 bg-[#040714] border-t border-white/5 shrink-0 flex items-center justify-center gap-2 text-[10px] text-gray-500 font-medium">
+            {/* ── 회사 정보 및 고객센터 (초슬림 1줄 링크) ── */}
+            <div className="py-1.5 bg-[#040714] border-t border-white/5 shrink-0 flex items-center justify-center gap-2 text-[10px] text-gray-500 font-medium">
                 <button
                     type="button"
                     onClick={() => setShowCompanyModal(true)}
-                    className="hover:text-gray-300 transition-colors underline cursor-pointer flex items-center gap-1"
+                    className="hover:text-gray-300 transition-colors underline cursor-pointer"
                 >
                     🏢 마인드플로우랩 사업자 정보 및 고객센터
                 </button>
-                <span>|</span>
-                <a href="/terms" className="hover:text-gray-300 transition-colors cursor-pointer">이용약관</a>
-                <span>|</span>
-                <a href="/privacy" className="hover:text-gray-300 transition-colors font-bold cursor-pointer">개인정보처리방침</a>
+                <span>·</span>
+                <a href="/terms" className="hover:text-gray-300 transition-colors">이용약관</a>
+                <span>·</span>
+                <a href="/privacy" className="hover:text-gray-300 transition-colors font-bold">개인정보처리방침</a>
             </div>
 
                         {/* 회사 정보 팝업 모달 */}
@@ -1235,22 +1171,44 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="bg-[#0b1329] border border-cyan-500/40 p-6 rounded-3xl max-w-lg w-full shadow-2xl space-y-4 relative text-left"
+                        className="bg-[#0b1329] border border-cyan-500/40 p-5 sm:p-6 rounded-3xl max-w-lg w-full shadow-2xl space-y-4 relative text-left"
                     >
                         <button
                             onClick={() => setSelectedProtocol(null)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+                            className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer text-xs"
                         >
                             ✕ 닫기
                         </button>
                         <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
                             <BrainCircuit className="w-6 h-6 text-cyan-400" />
                             <div>
-                                <h3 className="text-white font-black text-base sm:text-lg">제3세대 현장 코칭심리학 8대 과학적 엔진</h3>
-                                <p className="text-gray-400 text-xs">명심 AI 코치 실시간 가동 근거중심 심리코칭 프로토콜</p>
+                                <h3 className="text-white font-black text-base sm:text-lg">3세대 현장 코칭심리학 8대 과학적 엔진</h3>
+                                <p className="text-gray-400 text-xs">🔬 특허출원 제10-2025-0166877호 공인 알고리즘 연동</p>
                             </div>
                         </div>
 
+                        {/* 8대 프로토콜 탭 스위처 */}
+                        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-1">
+                            {PSYCH_PROTOCOLS.map((p) => {
+                                const isSelected = selectedProtocol.code === p.code;
+                                return (
+                                    <button
+                                        key={p.code}
+                                        type="button"
+                                        onClick={() => setSelectedProtocol(p)}
+                                        className={`px-2 py-1 rounded-lg text-[10px] font-black font-mono transition-all border shrink-0 cursor-pointer ${
+                                            isSelected
+                                                ? 'bg-cyan-400 text-slate-950 border-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] scale-105'
+                                                : 'bg-white/5 hover:bg-white/10 text-gray-300 border-white/10'
+                                        }`}
+                                    >
+                                        {p.code}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* 선택된 프로토콜 상세 설명 */}
                         <div className="bg-cyan-950/40 border border-cyan-500/30 p-4 rounded-2xl space-y-2">
                             <div className="flex items-center justify-between">
                                 <span className={`px-2.5 py-0.5 rounded text-xs font-black font-mono border ${selectedProtocol.badge}`}>
@@ -1258,15 +1216,16 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                                 </span>
                                 <span className="text-cyan-300 font-extrabold text-xs">{selectedProtocol.name}</span>
                             </div>
-                            <p className="text-xs text-cyan-100 leading-relaxed">{selectedProtocol.desc}</p>
+                            <p className="text-xs text-cyan-100 leading-relaxed font-medium">{selectedProtocol.desc}</p>
                         </div>
 
+                        {/* AI 실시간 융합 작동 설명 */}
                         <div className="text-[11px] text-gray-300 space-y-1.5 bg-white/5 p-3.5 rounded-2xl border border-white/5">
                             <p className="font-bold text-amber-300 flex items-center gap-1.5">
                                 <Sparkles size={14} /> AI 실시간 융합 작동 메커니즘
                             </p>
                             <p className="leading-relaxed">
-                                명심 AI 코치는 사용자와 대화하는 도중 사고 왜곡, 불안, 완벽주의를 실시간 감지하여 <strong>{selectedProtocol.name}({selectedProtocol.code})</strong>의 실전 코칭적 도구를 타고난 사주 오행 기운과 1:1로 맞물려 가동합니다.
+                                명심 AI 코치는 대화 중 사고 왜곡이나 번아웃, 완벽주의를 실시간 감지하여 <strong>{selectedProtocol.name}({selectedProtocol.code})</strong>의 실전 코칭 도구를 타고난 사주 오행 기운과 1:1로 맞물려 가동합니다.
                             </p>
                         </div>
                     </motion.div>

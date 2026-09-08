@@ -14,7 +14,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import MyeongsimChat from '@/components/chat/MyeongsimChat';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, BookOpen, ArrowLeft, Home, HelpCircle, Check, Copy } from 'lucide-react';
+import { Sparkles, BookOpen, ArrowLeft, Home, HelpCircle, Check, Copy, ChevronDown, ChevronUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ViewModeSwitcher } from '@/components/simple/ViewModeSwitcher';
 
@@ -24,6 +24,7 @@ export default function MyeongsimChatWrapper() {
     const [isBookVerified, setIsBookVerified] = useState(false);
     const [buyerName, setBuyerName] = useState('');
     const [copiedChip, setCopiedChip] = useState<string | null>(null);
+    const [isDocentExpanded, setIsDocentExpanded] = useState(false);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -44,7 +45,7 @@ export default function MyeongsimChatWrapper() {
     // ── 로딩 중: 스켈레톤 UI
     if (isLoading) {
         return (
-            <div className="flex flex-col h-[600px] max-h-[85vh] w-full max-w-2xl bg-[#0d131a]/80 border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-pulse select-none">
+            <div className="flex flex-col h-[600px] max-h-[85vh] w-full max-w-4xl bg-[#0d131a]/80 border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-pulse select-none">
                 <div className="p-4 border-b border-white/10 bg-white/5 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-white/10" />
                     <div className="space-y-2">
@@ -70,20 +71,20 @@ export default function MyeongsimChatWrapper() {
         : `guest-${Math.random().toString(36).slice(2, 9)}`;
 
     return (
-        <div className="w-full max-w-2xl space-y-3 select-none">
+        <div className="w-full max-w-4xl space-y-2 select-none">
             {/* 상단 쾌속 네비게이션 헤더 */}
-            <div className="flex items-center justify-between px-2 pt-2">
+            <div className="flex items-center justify-between px-2 pt-1">
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => router.push('/report')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-bold text-gray-300 border border-white/10 transition-all cursor-pointer"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-bold text-gray-300 border border-white/10 transition-all cursor-pointer"
                     >
                         <ArrowLeft size={13} />
-                        <span>대시보드로</span>
+                        <span>대시보드</span>
                     </button>
                     <button
                         onClick={() => router.push('/library')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-xs font-bold text-purple-300 border border-purple-400/20 transition-all cursor-pointer"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-xs font-bold text-purple-300 border border-purple-400/20 transition-all cursor-pointer"
                     >
                         <BookOpen size={13} />
                         <span>📖 도서관</span>
@@ -95,60 +96,71 @@ export default function MyeongsimChatWrapper() {
                 </div>
             </div>
 
-            {/* 🌟 《ZERO POINT》 전용 북 도슨트 AI 코칭 배너 🌟 */}
-            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#141d2e] via-[#101b2a] to-[#141d2e] border border-cyan-400/30 text-left space-y-2.5 shadow-lg">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="size-7 rounded-lg bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center text-cyan-300">
-                            <BookOpen size={14} />
+            {/* 🌟 《ZERO POINT》 전용 북 도슨트 AI 코칭 초슬림 토글 배너 🌟 */}
+            <div className="rounded-2xl bg-gradient-to-r from-[#141d2e]/90 via-[#101b2a]/90 to-[#141d2e]/90 border border-cyan-400/30 text-left overflow-hidden shadow-md">
+                <button
+                    type="button"
+                    onClick={() => setIsDocentExpanded(!isDocentExpanded)}
+                    className="w-full px-3.5 py-2 flex items-center justify-between gap-2 hover:bg-white/5 transition-all cursor-pointer text-left"
+                >
+                    <div className="flex items-center gap-2 min-w-0">
+                        <div className="size-6 rounded-lg bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center text-cyan-300 shrink-0">
+                            <BookOpen size={12} />
                         </div>
-                        <div>
-                            <div className="flex items-center gap-1.5">
-                                <h3 className="text-xs sm:text-sm font-bold text-white">
-                                    《ZERO POINT》 1:1 북 도슨트 코칭
-                                </h3>
-                                {isBookVerified && (
-                                    <span className="px-1.5 py-0.2 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 font-mono text-[9px] font-bold">
-                                        독자 VIP
-                                    </span>
-                                )}
-                            </div>
-                            <p className="text-[10px] text-gray-400">
-                                책 309페이지의 핵심 철학과 사주 기질을 결합해 AI가 1:1로 해석해 드립니다.
-                            </p>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                            <h3 className="text-xs font-bold text-white truncate">
+                                《ZERO POINT》 1:1 북 도슨트 코칭
+                            </h3>
+                            {isBookVerified && (
+                                <span className="px-1.5 py-0.2 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 font-mono text-[9px] font-bold shrink-0">
+                                    독자 VIP
+                                </span>
+                            )}
                         </div>
                     </div>
-                </div>
 
-                {/* 추천 질문 칩 리스트 */}
-                <div className="space-y-1">
-                    <span className="text-[10px] text-cyan-300/80 font-mono flex items-center gap-1">
-                        <Sparkles size={10} />
-                        <span>추천 질문 클릭 시 자동 복사 ➔ 채팅창에 붙여넣어 물어보세요!</span>
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                        {[
-                            { id: 'c1', text: '공적영지(알아차림을 알아차림)를 일상에서 실천하려면?' },
-                            { id: 'c2', text: '달리는 자전거 위에서 멈춘다는 것의 구체적 의미는?' },
-                            { id: 'c3', text: '내 안의 소음과 번아웃을 식히는 제로포인트 호흡법은?' },
-                            { id: 'c4', text: '내 사주 오행 기질과 제로포인트의 상관관계는?' }
-                        ].map((chip) => (
-                            <button
-                                key={chip.id}
-                                type="button"
-                                onClick={() => handleCopyChip(chip.text)}
-                                className="px-2.5 py-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-400/30 text-[11px] text-gray-300 hover:text-white transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
-                            >
-                                <span>{chip.text}</span>
-                                {copiedChip === chip.text ? (
-                                    <Check size={11} className="text-emerald-400" />
-                                ) : (
-                                    <Copy size={10} className="text-gray-500" />
-                                )}
-                            </button>
-                        ))}
+                    <div className="flex items-center gap-1 text-[11px] text-cyan-300/80 font-medium shrink-0">
+                        <span>{isDocentExpanded ? '접기' : '추천 질문 보기'}</span>
+                        {isDocentExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                     </div>
-                </div>
+                </button>
+
+                <AnimatePresence>
+                    {isDocentExpanded && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="px-3.5 pb-3 pt-1 border-t border-white/5 space-y-2 overflow-hidden"
+                        >
+                            <p className="text-[10px] text-gray-400 leading-relaxed">
+                                책 309페이지의 핵심 철학과 사주 기질을 결합해 AI가 1:1로 해석해 드립니다. 질문을 복사해 아래 채팅창에 남겨보세요.
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                                {[
+                                    { id: 'c1', text: '공적영지(알아차림을 알아차림)를 일상에서 실천하려면?' },
+                                    { id: 'c2', text: '달리는 자전거 위에서 멈춘다는 것의 구체적 의미는?' },
+                                    { id: 'c3', text: '내 안의 소음과 번아웃을 식히는 제로포인트 호흡법은?' },
+                                    { id: 'c4', text: '내 사주 오행 기질과 제로포인트의 상관관계는?' }
+                                ].map((chip) => (
+                                    <button
+                                        key={chip.id}
+                                        type="button"
+                                        onClick={() => handleCopyChip(chip.text)}
+                                        className="px-2.5 py-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-400/30 text-[11px] text-gray-300 hover:text-white transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                                    >
+                                        <span>{chip.text}</span>
+                                        {copiedChip === chip.text ? (
+                                            <Check size={11} className="text-emerald-400" />
+                                        ) : (
+                                            <Copy size={10} className="text-gray-500" />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* 인증 상태 배지 (개발 환경) */}
