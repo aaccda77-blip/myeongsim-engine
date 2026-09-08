@@ -380,30 +380,92 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     // ⚡ [VIP & 관리자 승인 상태 실시간 반응형 동기화]
     const [isVipState, setIsVipState] = useState<boolean>(() => isUserApprovedSync());
 
+    // ⚡ [서버 관리자 승인 실시간 검증 & 폴링]
     useEffect(() => {
-        const syncVipStatus = () => {
-            const approved = isUserApprovedSync();
-            setIsVipState(approved);
-            if (approved) {
-                setIsTrialMode(false);
-                setFreeTurns(0);
+        let isCancelled = false;
+
+        const checkApprovalWithServer = async () => {
+            // 1. 최고 관리자 세션 체크 (관리자는 항상 전체 해금)
+            const isAdmin = typeof document !== 'undefined' && (
+                document.cookie.includes('admin_session=') ||
+                sessionStorage.getItem('myeongsim_admin_authed') === 'true' ||
+                localStorage.getItem('myeongsim_admin_authenticated') === 'true'
+            );
+            if (isAdmin) {
+                setIsVipState(true);
+                return;
+            }
+
+            // 2. 서버에 실제 승인 여부 질의
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const sessionUser = session?.user;
+                const uid = sessionUser?.id || (typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '');
+                const uEmail = sessionUser?.email || (typeof window !== 'undefined' ? localStorage.getItem('user_email') || '' : '');
+                const uName = (typeof window !== 'undefined' ? localStorage.getItem('user_name') || '' : '');
+                const uPhone = (typeof window !== 'undefined' ? localStorage.getItem('user_phone') || '' : '');
+
+                // 아무런 식별 정보가 없다면 미승인 잠금
+                if (!uid && !uEmail && !uName && !uPhone) {
+                    setIsVipState(false);
+                    return;
+                }
+
+                const params = new URLSearchParams();
+                if (uid) params.set('userId', uid);
+                if (uEmail) params.set('email', uEmail);
+                if (uName) params.set('name', uName);
+                if (uPhone) params.set('phone', uPhone);
+                params.set('t', String(Date.now()));
+
+                const res = await fetch(`/api/payment/check-approval?${params.toString()}`, { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (isCancelled) return;
+                    if (data.approved) {
+                        grantUserApprovalSync(data.tier);
+                        setIsVipState(true);
+                        setIsPremiumMember(true);
+                    } else {
+                        // 관리자가 승인하지 않은 경우: 브라우저에 남아있던 가짜 승인 플래그를 정화하고 잠금!
+                        localStorage.removeItem('myeongsim_server_approved');
+                        localStorage.removeItem('myeongsim_monthly_vip');
+                        localStorage.removeItem('myeongsim_paid_user');
+                        setIsVipState(false);
+                        setIsPremiumMember(false);
+                    }
+                }
+            } catch (err) {
+                console.warn('[ChatInterface] check-approval polling error:', err);
             }
         };
 
-        syncVipStatus();
+        checkApprovalWithServer();
+        const interval = setInterval(checkApprovalWithServer, 3500);
+
+        const syncVipStatus = () => {
+            const approved = isUserApprovedSync();
+            setIsVipState(approved);
+        };
+
         window.addEventListener('myeongsim_auth_change', syncVipStatus);
         window.addEventListener('storage', syncVipStatus);
-        window.addEventListener('focus', syncVipStatus);
+        window.addEventListener('focus', checkApprovalWithServer);
         return () => {
+            isCancelled = true;
+            clearInterval(interval);
             window.removeEventListener('myeongsim_auth_change', syncVipStatus);
             window.removeEventListener('storage', syncVipStatus);
-            window.removeEventListener('focus', syncVipStatus);
+            window.removeEventListener('focus', checkApprovalWithServer);
         };
     }, []);
 
     const isVipApproved = isPremiumMember || isVipState || (typeof window !== 'undefined' && isUserApprovedSync());
 
-    // [Security] Calculate if membership is expired (유료/승인 회원은 과거 체험 만료일 간섭 차단)
+    // 🔒 [핵심] 관리자 승인이 안 되어 있으면 이 챗봇도 무조건 잠금 상태로 설정!
+    const isChatLocked = !isVipApproved;
+
+    // [Security] Calculate if membership is expired
     const isExpired = !isVipApproved && (userExpiryDate ? new Date(userExpiryDate) < new Date() : false);
 
     // [Focus Mode - Cognitive Load Reduction]
@@ -430,8 +492,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     // Check paid/VIP status from localStorage directly
     const isPaidInStorage = typeof window !== 'undefined' ? (isUserApprovedSync() || localStorage.getItem('myeongsim_paid_user') === 'true') : false;
 
-    const remainingChats = isVipApproved ? 999 : Math.max(0, FREE_TRIAL_LIMIT - freeTurns);
-    const isChatLocked = !isVipApproved && (isExpired || (isTrialMode && remainingChats <= 0));
+    const remainingChats = isVipApproved ? 999 : 0;
 
     // [Init] UUID for Guest, but replaceable by Auth + Free Trial Counter
     // [Init] UUID for Guest, Persistence, and Auth Listener
@@ -3124,13 +3185,10 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-400/60 text-emerald-300 font-mono text-[10px] font-bold shrink-0 flex items-center gap-1 shadow-sm">
                                         👑 VIP ALL-PASS 활성화 (무제한 코칭)
                                     </span>
-                                ) : remainingChats > 0 ? (
-                                    <span className="px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shrink-0">
-                                        ⚡ 남은 수다 {remainingChats}회 / 3회
-                                    </span>
                                 ) : (
-                                    <span className="px-2 py-0.5 rounded-full bg-red-950/90 border border-red-500/60 text-red-300 font-mono text-[10px] font-bold animate-pulse shrink-0">
-                                        🔒 무료 체험 완료 (VIP 패스 해금)
+                                    <span className="px-2.5 py-0.5 rounded-full bg-red-950/90 border border-red-500/60 text-red-300 font-mono text-[10px] font-bold shrink-0 flex items-center gap-1 shadow-sm animate-pulse">
+                                        <Lock size={10} className="text-red-400" />
+                                        <span>🔒 관리자 승인 대기 (잠금)</span>
                                     </span>
                                 )}
                             </div>
@@ -3144,9 +3202,10 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                     <button
                                         type="button"
                                         onClick={() => setShowMicroPassModal(true)}
-                                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 ${remainingChats <= 0 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black animate-bounce font-black' : 'bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40'}`}
+                                        className="px-2.5 py-1 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shrink-0 bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black active:scale-95 animate-pulse"
                                     >
-                                        <span>⚡ VIP 패스 해금</span>
+                                        <Lock size={10} />
+                                        <span>⚡ VIP 승인 확인 / 해금</span>
                                     </button>
                                 )}
                                 <button
@@ -3177,9 +3236,9 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder={isChatLocked ? "🔒 첫 3회 무료 체험 완료! 도서 인증 또는 VIP 패스로 계속 대화 가능" : "대화를 시작해보세요..."}
+                                placeholder={isChatLocked ? "🔒 관리자 승인 대기 중입니다 (관리자 승인 시 실시간 자동 해금)" : "대화를 시작해보세요..."}
                                 className={`w-full bg-deep-slate/80 backdrop-blur-xl border rounded-2xl pl-4 sm:pl-5 pr-12 sm:pr-14 py-3.5 sm:py-4 text-white placeholder-gray-400 focus:outline-none transition-all relative z-10 text-sm sm:text-base shadow-inner ${isChatLocked ? 'border-amber-500/60 bg-amber-950/20 text-amber-200 placeholder-amber-400/80 cursor-pointer' : 'border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30'}`}
-                                autoFocus
+                                autoFocus={!isChatLocked}
                                 onClick={() => {
                                     if (isChatLocked) {
                                         setShowMicroPassModal(true);

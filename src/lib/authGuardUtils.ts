@@ -17,26 +17,16 @@ export const isUserApprovedSync = (): boolean => {
             return true;
         }
 
-        // 2. 서버 승인 완료 플래그 (가장 최우선 신뢰)
+        // 2. 서버 승인 완료 플래그 (관리자가 승인했거나 결제 확인된 경우만)
         if (localStorage.getItem('myeongsim_server_approved') === 'true') {
             return true;
         }
 
-        // 3. 관리자가 승인(열어주기)하여 발급된 영구/일반 액세스 권한
-        const siteAccessCookie = document.cookie.includes('myeongsim_site_access=granted') ||
-                                 document.cookie.includes('myeongsim_site_access_client=granted');
-        const siteAccessLocal = localStorage.getItem('myeongsim_site_access') === 'granted';
-        if (siteAccessCookie || siteAccessLocal) {
-            return true;
-        }
-
-        // 4. 월정액 VIP 및 도서 구매자 인증 상태
-        const isMonthly = localStorage.getItem('myeongsim_monthly_vip') === 'true';
-        const isSmartVip = localStorage.getItem('myeongsim_smartstore_vip') === 'true';
+        // 3. 월정액 VIP 및 도서 구매자 인증 상태 (반드시 서버 승인 플래그와 함께 있을 때만 유효)
         const isBookVerified = localStorage.getItem('myeongsim_book_verified') === 'true';
-        const isPaid = localStorage.getItem('myeongsim_paid_user') === 'true';
+        const hasServerApproval = localStorage.getItem('myeongsim_server_approved') === 'true';
 
-        if (isMonthly || isSmartVip || isBookVerified || isPaid) {
+        if (isBookVerified && hasServerApproval) {
             return true;
         }
 

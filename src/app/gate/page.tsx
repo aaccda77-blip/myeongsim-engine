@@ -80,8 +80,6 @@ export default function GatePage() {
                 // Save access locally in browser
                 try {
                     localStorage.setItem('myeongsim_site_access', 'granted');
-                    localStorage.setItem('myeongsim_monthly_vip', 'true');
-                    localStorage.setItem('myeongsim_paid_user', 'true');
                     localStorage.setItem('user_name', trimmedUser);
                 } catch (e) {}
                 document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
