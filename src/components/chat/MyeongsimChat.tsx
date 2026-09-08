@@ -840,7 +840,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
             return (
                 <div key={i} className="bg-rose-950/40 border-l-4 border-rose-500 p-3 rounded-r-2xl shadow-inner">
                     <span className="text-xs text-rose-400 font-black block mb-1">🛡️ Step 1. SCAN (다크코드 자비 수용)</span>
-                    <div className="text-rose-100/90 leading-relaxed">{formatted}</div>
+                    <div className="text-rose-100/90 leading-relaxed whitespace-pre-line">{formatted}</div>
                 </div>
             );
         }
@@ -849,7 +849,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
             return (
                 <div key={i} className="bg-blue-950/40 border-l-4 border-blue-400 p-3 rounded-r-2xl shadow-inner">
                     <span className="text-xs text-blue-400 font-black block mb-1">🧠 Step 2. SYNC (뉴럴코드 역량 재배선)</span>
-                    <div className="text-blue-100/90 leading-relaxed">{formatted}</div>
+                    <div className="text-blue-100/90 leading-relaxed whitespace-pre-line">{formatted}</div>
                 </div>
             );
         }
@@ -858,11 +858,11 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
             return (
                 <div key={i} className="bg-amber-950/40 border-l-4 border-amber-500 p-3 rounded-r-2xl shadow-inner">
                     <span className="text-xs text-amber-400 font-black block mb-1">👑 Step 3. SHIFT (메타코드 영점 각성)</span>
-                    <div className="text-amber-100/90 leading-relaxed">{formatted}</div>
+                    <div className="text-amber-100/90 leading-relaxed whitespace-pre-line">{formatted}</div>
                 </div>
             );
         }
-        return <p key={i} className="leading-relaxed">{formatted}</p>;
+        return <p key={i} className="leading-relaxed whitespace-pre-line">{formatted}</p>;
     });
 })()}
 

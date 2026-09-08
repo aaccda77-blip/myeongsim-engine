@@ -159,7 +159,9 @@ export async function POST(request: Request) {
         systemInstruction: { role: 'system', parts: [{ text: SYSTEM_PROMPT }] },
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 2048,
+          maxOutputTokens: 8192,
+          // @ts-ignore
+          thinkingConfig: { thinkingBudget: 512 },
           responseMimeType: 'application/json',
         },
       });

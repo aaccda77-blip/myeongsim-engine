@@ -53,7 +53,9 @@ export async function POST(req: Request) {
             history: formattedHistory.slice(0, -1), // All except the last user message
             generationConfig: {
                 temperature: 0.7,
-                maxOutputTokens: 250,
+                maxOutputTokens: 4096,
+                // @ts-ignore
+                thinkingConfig: { thinkingBudget: 256 }
             }
         });
 

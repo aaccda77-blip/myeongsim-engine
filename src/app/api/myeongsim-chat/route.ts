@@ -268,13 +268,19 @@ ${userName} 선생님, 질문해 주셔서 감사합니다! 선생님의 섬세�
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+        const isThinkingModel = modelName.includes('2.5');
+        const generationConfig: any = {
+            maxOutputTokens: 8192,
+            temperature: 0.7,
+        };
+        if (isThinkingModel) {
+            generationConfig.thinkingConfig = { thinkingBudget: 512 };
+        }
+
         const model = genAI.getGenerativeModel({
             model: modelName,
             systemInstruction,
-            generationConfig: {
-                maxOutputTokens: 2048,
-                temperature: 0.7,
-            }
+            generationConfig,
         });
 
         // Vercel AI SDK format -> Google Gemini format (최대 10개 히스토리만 유지하여 과도한 토큰 소모 방어)
@@ -300,7 +306,15 @@ ${userName} 선생님, 질문해 주셔서 감사합니다! 선생님의 섬세�
             async start(controller) {
                 try {
                     for await (const chunk of streamResult.stream) {
-                        const rawChunk = chunk.text();
+                        let rawChunk = '';
+                        try {
+                            rawChunk = chunk.text();
+                        } catch (chunkErr) {
+                            // Non-text / metadata / safety chunk
+                            continue;
+                        }
+                        if (!rawChunk) continue;
+
                         const chunkText = TextSanitizer.sanitize(rawChunk);
                         fullAiText += chunkText;
                         controller.enqueue(encoder.encode(`0:${JSON.stringify(chunkText)}\n`));
