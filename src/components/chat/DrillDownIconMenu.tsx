@@ -576,6 +576,7 @@ export default function DrillDownIconMenu({
     const [businessArchitectureTab, setBusinessArchitectureTab] = useState<'dna' | 'wealth' | 'timing'>('dna');
     const [showTargetDashboard, setShowTargetDashboard] = useState(false); // [NEW] 타겟 코칭 전술 지휘 본부 대시보드
     const [targetDashboardTab, setTargetDashboardTab] = useState<'all' | 'timing' | 'solution' | 'tactics'>('all');
+    const [targetDashboardCardId, setTargetDashboardCardId] = useState<string | null>(null); // [NEW] 타겟 코칭 특정 전술 카드 선택
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
@@ -833,6 +834,53 @@ export default function DrillDownIconMenu({
             setSelectedIcon(null);
             setBusinessArchitectureTab('dna');
             setShowBusinessArchitecture(true);
+            return;
+        }
+
+        // [NEW] 🎯 타겟 코칭 (Strategy Lab) 전술 지휘 대시보드 및 초정밀 인스펙터 연동
+        if (subItem.id === 'strat_2_1' || subItem.intent === 'NAV_STRAT_TIMING') {
+            setSelectedIcon(null);
+            setTargetDashboardTab('timing');
+            setTargetDashboardCardId(null);
+            setShowTargetDashboard(true);
+            return;
+        }
+
+        if (subItem.id === 'strat_2_2' || subItem.intent === 'NAV_STRAT_SOLUTION') {
+            setSelectedIcon(null);
+            setTargetDashboardTab('solution');
+            setTargetDashboardCardId(null);
+            setShowTargetDashboard(true);
+            return;
+        }
+
+        if (subItem.id === 'strat_2_3' || subItem.intent === 'NAV_STRAT_TACTICS') {
+            setSelectedIcon(null);
+            setTargetDashboardTab('tactics');
+            setTargetDashboardCardId(null);
+            setShowTargetDashboard(true);
+            return;
+        }
+
+        // 10대 세부 전술 카드 클릭 시: 챗봇으로 튕기지 않고 초정밀 전술 인스펙터 대시보드로 즉시 이동!
+        const TACTICAL_SUBITEM_MAP: Record<string, { tab: 'all' | 'timing' | 'solution' | 'tactics'; cardId: string }> = {
+            'sl_15': { tab: 'timing', cardId: 'sl_15' },
+            'sl_20': { tab: 'timing', cardId: 'sl_20' },
+            'sl_26': { tab: 'timing', cardId: 'sl_26' },
+            'sl_17': { tab: 'timing', cardId: 'sl_17' },
+            'sl_16': { tab: 'solution', cardId: 'sl_16' },
+            'sl_18': { tab: 'solution', cardId: 'sl_18' },
+            'sl_39': { tab: 'solution', cardId: 'sl_39' },
+            'sl_21': { tab: 'solution', cardId: 'sl_21' },
+            'sl_29': { tab: 'tactics', cardId: 'sl_29' },
+            'sl_32': { tab: 'tactics', cardId: 'sl_32' },
+        };
+
+        if (TACTICAL_SUBITEM_MAP[subItem.id]) {
+            setSelectedIcon(null);
+            setTargetDashboardTab(TACTICAL_SUBITEM_MAP[subItem.id].tab);
+            setTargetDashboardCardId(TACTICAL_SUBITEM_MAP[subItem.id].cardId);
+            setShowTargetDashboard(true);
             return;
         }
 
@@ -2167,6 +2215,7 @@ export default function DrillDownIconMenu({
                             <div 
                                 onClick={() => {
                                     setTargetDashboardTab('all');
+                                    setTargetDashboardCardId(null);
                                     setShowTargetDashboard(true);
                                     handleClose();
                                 }}
@@ -2718,11 +2767,16 @@ export default function DrillDownIconMenu({
                     <div className="w-full max-w-5xl max-h-[92vh] flex flex-col rounded-3xl overflow-hidden border border-amber-400/40 shadow-2xl">
                         <TargetCoachingDashboard
                             isOpen={showTargetDashboard}
-                            onClose={() => setShowTargetDashboard(false)}
+                            onClose={() => {
+                                setShowTargetDashboard(false);
+                                setTargetDashboardCardId(null);
+                            }}
                             initialTab={targetDashboardTab}
+                            initialCardId={targetDashboardCardId}
                             userProfile={userProfile || reportData}
                             onChatIntent={(intent, prompt) => {
                                 setShowTargetDashboard(false);
+                                setTargetDashboardCardId(null);
                                 onSelectIntent(intent, prompt);
                             }}
                         />
