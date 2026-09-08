@@ -33,12 +33,23 @@ import {
     Play,
     Info,
     Check,
-    ChevronDown
+    ChevronDown,
+    Heart,
+    Leaf,
+    Sun,
+    Moon,
+    Wind,
+    Eye,
+    Coffee,
+    Smile,
+    ShieldCheck,
+    Volume2
 } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
 import { generateChatPromptFromIntent } from '@/modules/DrillDownProtocol';
 
 export type TargetTab = 'all' | 'timing' | 'solution' | 'tactics';
+export type ViewMode = 'tactical' | 'wellness';
 
 interface TargetCoachingDashboardProps {
     isOpen?: boolean;
@@ -64,7 +75,9 @@ export default function TargetCoachingDashboard({
 
     const [activeTab, setActiveTab] = useState<TargetTab>(initialTab);
     const [selectedCardId, setSelectedCardId] = useState<string | null>(initialCardId || null);
+    const [viewMode, setViewMode] = useState<ViewMode>('wellness'); // 웰니스 기본 모드
     const [radarAngle, setRadarAngle] = useState(0);
+    const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
 
     // initialCardId 변경 시 자동 반영 및 탭 동기화
     useEffect(() => {
@@ -84,49 +97,172 @@ export default function TargetCoachingDashboard({
         return () => clearInterval(interval);
     }, []);
 
-    // 👤 사주 및 프로필 기반 실시간 전술 메트릭 계산
+    // 🌿 웰니스 호흡 바이오피드백 주기 (4초 들이마시기, 4초 멈추기, 4초 내쉬기)
+    useEffect(() => {
+        const breathInterval = setInterval(() => {
+            setBreathPhase((prev) => {
+                if (prev === 'inhale') return 'hold';
+                if (prev === 'hold') return 'exhale';
+                return 'inhale';
+            });
+        }, 4000);
+        return () => clearInterval(breathInterval);
+    }, []);
+
+    // 👤 사주 및 프로필 기반 실시간 전술 & 웰니스 메트릭 계산
     const sajuMetrics = useMemo(() => {
         const saju = effectiveProfile?.saju || (effectiveProfile?.meta as any)?.saju || {};
         const userName = effectiveProfile?.userName || effectiveProfile?.name || '명심가';
         const dayMaster = saju?.dayMaster || effectiveProfile?.dayMaster || '甲';
 
-        // 일간에 따른 전략적 강점
-        const STRATEGY_BY_STEM: Record<string, { type: string; focus: string; goldenTime: string; direction: string; ohaengNeed: string }> = {
-            '甲': { type: '전진 돌파형 (Pioneer)', focus: '신사업 추진 / 리더십 발휘', goldenTime: '오전 07:00 ~ 09:00 (진시)', direction: '동남방(SE) / 생문(生門)', ohaengNeed: '수(水) 쿨링 20% 보강' },
-            '乙': { type: '유연 네트워크형 (Adapter)', focus: '협상·파트너십 / 소프트파워', goldenTime: '오전 09:00 ~ 11:00 (사시)', direction: '동방(E) / 개문(開門)', ohaengNeed: '화(火) 열정 15% 보강' },
-            '丙': { type: '스케일업 확장형 (Visionary)', focus: '브랜딩 / 대중 마케팅 극대화', goldenTime: '오후 11:00 ~ 13:00 (오시)', direction: '남방(S) / 경문(景門)', ohaengNeed: '금(金) 결실 25% 보강' },
-            '丁': { type: '정밀 타겟형 (Strategist)', focus: '고부가가치 설계 / 집중 솔루션', goldenTime: '오후 13:00 ~ 15:00 (미시)', direction: '서남방(SW) / 휴문(休門)', ohaengNeed: '목(木) 연료 20% 보강' },
-            '戊': { type: '플랫폼 구축형 (Anchor)', focus: '자산 안정화 / 시스템 체계화', goldenTime: '오후 15:00 ~ 17:00 (신시)', direction: '중앙·동북방(NE) / 생문(生門)', ohaengNeed: '수(水) 유동성 30% 보강' },
-            '己': { type: '내실 결실형 (Cultivator)', focus: '실속 수익화 / 팀워크 조율', goldenTime: '오전 05:00 ~ 07:00 (묘시)', direction: '서남방(SW) / 개문(開門)', ohaengNeed: '금(金) 실행력 15% 보강' },
-            '庚': { type: '결단 혁신형 (Executioner)', focus: '구조 개혁 / 대담한 승부수', goldenTime: '오후 15:00 ~ 17:00 (신시)', direction: '서방(W) / 상문(傷門)', ohaengNeed: '화(火) 제련 20% 보강' },
-            '辛': { type: '초정밀 완결형 (Craftsman)', focus: '고급화 전략 / 디테일 완성', goldenTime: '오후 17:00 ~ 19:00 (유시)', direction: '서북방(NW) / 개문(開門)', ohaengNeed: '임수(壬) 세척 25% 보강' },
-            '壬': { type: '글로벌 유통형 (Deep Ocean)', focus: '시장 확장 / 장기 안목 투자', goldenTime: '오후 21:00 ~ 23:00 (해시)', direction: '북방(N) / 생문(生門)', ohaengNeed: '무토(戊) 방파제 20% 보강' },
-            '癸': { type: '영감 통찰형 (Wise Mind)', focus: '콘텐츠 창작 / 전략 기획 수립', goldenTime: '오후 23:00 ~ 01:00 (자시)', direction: '동북방(NE) / 휴문(休門)', ohaengNeed: '병화(丙) 온기 30% 보강' },
+        // 일간에 따른 전략적 강점 & 생체 장부 웰니스 프로필
+        const WELLNESS_PROFILE_BY_STEM: Record<string, {
+            type: string;
+            focus: string;
+            goldenTime: string;
+            direction: string;
+            ohaengNeed: string;
+            organFocus: string;
+            wellnessFood: string;
+            vagusNerveTip: string;
+            hrvTarget: string;
+        }> = {
+            '甲': {
+                type: '전진 돌파형 (Pioneer)',
+                focus: '신사업 추진 / 리더십 발휘',
+                goldenTime: '오전 07:00 ~ 09:00 (진시)',
+                direction: '동남방(SE) / 생문(生門)',
+                ohaengNeed: '수(水) 쿨링 20% 보강',
+                organFocus: '간(肝)·담(膽) 에너지 과열 완화',
+                wellnessFood: '구기자차, 녹색 잎채소, 레몬수',
+                vagusNerveTip: '아침 4-7-8 호흡으로 교감신경 진정',
+                hrvTarget: '심박변이도(HRV) 65ms 이상 유지'
+            },
+            '乙': {
+                type: '유연 네트워크형 (Adapter)',
+                focus: '협상·파트너십 / 소프트파워',
+                goldenTime: '오전 09:00 ~ 11:00 (사시)',
+                direction: '동방(E) / 개문(開門)',
+                ohaengNeed: '화(火) 열정 15% 보강',
+                organFocus: '근육 긴장 완화 & 림프 순환',
+                wellnessFood: '생강차, 블루베리, 따뜻한 온수',
+                vagusNerveTip: '가벼운 스트레칭과 견갑골 롤링',
+                hrvTarget: '심박변이도(HRV) 62ms 이상 유지'
+            },
+            '丙': {
+                type: '스케일업 확장형 (Visionary)',
+                focus: '브랜딩 / 대중 마케팅 극대화',
+                goldenTime: '오후 11:00 ~ 13:00 (오시)',
+                direction: '남방(S) / 경문(景門)',
+                ohaengNeed: '금(金) 결실 25% 보강',
+                organFocus: '심장(心) 화기 쿨다운 & 안구 피로',
+                wellnessFood: '국화차, 토마토, 맥문동',
+                vagusNerveTip: '눈가 냉찜질 및 5분간 암실 휴식',
+                hrvTarget: '심박변이도(HRV) 70ms 이상 유지'
+            },
+            '丁': {
+                type: '정밀 타겟형 (Strategist)',
+                focus: '고부가가치 설계 / 집중 솔루션',
+                goldenTime: '오후 13:00 ~ 15:00 (미시)',
+                direction: '서남방(SW) / 휴문(休門)',
+                ohaengNeed: '목(木) 연료 20% 보강',
+                organFocus: '뇌 신경 피로 회복 & 수면 딥슬립',
+                wellnessFood: '대추차, 호두, 카모마일',
+                vagusNerveTip: '잠들기 1시간 전 스마트폰 블루라이트 차단',
+                hrvTarget: '심박변이도(HRV) 68ms 이상 유지'
+            },
+            '戊': {
+                type: '플랫폼 구축형 (Anchor)',
+                focus: '자산 안정화 / 시스템 체계화',
+                goldenTime: '오후 15:00 ~ 17:00 (신시)',
+                direction: '중앙·동북방(NE) / 생문(生門)',
+                ohaengNeed: '수(水) 유동성 30% 보강',
+                organFocus: '비장(脾)·위장 소화 흡수 밸런스',
+                wellnessFood: '단호박, 양배추, 발효 효소',
+                vagusNerveTip: '식후 15분 느린 걷기와 복부 온찜질',
+                hrvTarget: '심박변이도(HRV) 60ms 이상 유지'
+            },
+            '己': {
+                type: '내실 결실형 (Cultivator)',
+                focus: '실속 수익화 / 팀워크 조율',
+                goldenTime: '오전 05:00 ~ 07:00 (묘시)',
+                direction: '서남방(SW) / 개문(開門)',
+                ohaengNeed: '금(金) 실행력 15% 보강',
+                organFocus: '소화기계 점막 보호 & 만성 피로',
+                wellnessFood: '마(산약)즙, 연근, 보리차',
+                vagusNerveTip: '미주신경 자극을 위한 콧노래(Humming) 루틴',
+                hrvTarget: '심박변이도(HRV) 64ms 이상 유지'
+            },
+            '庚': {
+                type: '결단 혁신형 (Executioner)',
+                focus: '구조 개혁 / 대담한 승부수',
+                goldenTime: '오후 15:00 ~ 17:00 (신시)',
+                direction: '서방(W) / 상문(傷門)',
+                ohaengNeed: '화(火) 제련 20% 보강',
+                organFocus: '폐(肺)·호흡기 산소포화도 & 대장 건강',
+                wellnessFood: '도라지 배즙, 은행, 백년초',
+                vagusNerveTip: '박스 브리딩(Box Breathing) 5세트',
+                hrvTarget: '심박변이도(HRV) 66ms 이상 유지'
+            },
+            '辛': {
+                type: '초정밀 완결형 (Craftsman)',
+                focus: '고급화 전략 / 디테일 완성',
+                goldenTime: '오후 17:00 ~ 19:00 (유시)',
+                direction: '서북방(NW) / 개문(開門)',
+                ohaengNeed: '임수(壬) 세척 25% 보강',
+                organFocus: '피부 점막 보습 & 감각 과민 완화',
+                wellnessFood: '백목이버섯, 배, 알로에',
+                vagusNerveTip: '아로마 테라피(라벤더/유칼립투스) 심호흡',
+                hrvTarget: '심박변이도(HRV) 69ms 이상 유지'
+            },
+            '壬': {
+                type: '글로벌 유통형 (Deep Ocean)',
+                focus: '시장 확장 / 장기 안목 투자',
+                goldenTime: '오후 21:00 ~ 23:00 (해시)',
+                direction: '북방(N) / 생문(生門)',
+                ohaengNeed: '무토(戊) 방파제 20% 보강',
+                organFocus: '신장(腎)·비뇨기 에너지 & 부신 피로',
+                wellnessFood: '검은콩, 흑임자, 산수유',
+                vagusNerveTip: '족욕(40도 온수 15분)으로 하체 혈류 순환',
+                hrvTarget: '심박변이도(HRV) 72ms 이상 유지'
+            },
+            '癸': {
+                type: '영감 통찰형 (Wise Mind)',
+                focus: '콘텐츠 창작 / 전략 기획 수립',
+                goldenTime: '오후 23:00 ~ 01:00 (자시)',
+                direction: '동북방(NE) / 휴문(休門)',
+                ohaengNeed: '병화(丙) 온기 30% 보강',
+                organFocus: '수족 냉증 완화 & 뇌척수액 순환',
+                wellnessFood: '계피차, 생강대추차, 꿀',
+                vagusNerveTip: '명치 마사지와 척추 정렬 요가 스트레칭',
+                hrvTarget: '심박변이도(HRV) 67ms 이상 유지'
+            },
         };
 
-        const currentStrategy = STRATEGY_BY_STEM[dayMaster] || STRATEGY_BY_STEM['甲'];
+        const currentProfile = WELLNESS_PROFILE_BY_STEM[dayMaster] || WELLNESS_PROFILE_BY_STEM['甲'];
 
         return {
             userName,
             dayMaster,
-            ...currentStrategy,
-            attackRatio: 72,
-            defenseRatio: 28,
-            confidenceRate: 98.4,
-            currentSeason: '2026 병오년(丙午年) 상승 파동',
+            ...currentProfile,
+            attackRatio: 68,
+            recoveryRatio: 32, // 부교감신경 회복 비율
+            stressIndex: 28, // 100점 만점 중 28점(양호)
+            wellnessScore: 94.8,
+            currentSeason: '2026 병오년(丙午年) 화기(火氣) 조율 생체 주기',
         };
     }, [effectiveProfile]);
 
-    // 📋 타겟 코칭 3대 메뉴 & 10대 전술 데이터 (기존 메뉴 구조 100% 동일 유지)
+    // 📋 타겟 코칭 3대 메뉴 & 10대 전술 데이터 (기존 메뉴 구조 100% 보존 + 웰니스 바이오해킹 엔진 융합)
     const TACTICAL_SECTIONS = useMemo(() => [
         {
             sectionId: 'timing',
             code: '2-1',
-            title: '타이밍 전략 (Timing)',
-            subtitle: '승부수와 골든타임',
+            title: '타이밍 전략 (Timing & Circadian)',
+            subtitle: '승부수와 생체 리듬(호르몬/골든타임)',
             icon: '🎯',
             themeColor: 'amber',
-            badge: '승부수 조준',
+            badge: '생체 시계 동기화',
             gradient: 'from-amber-500/20 via-yellow-500/10 to-transparent',
             border: 'border-amber-400/40',
             glow: 'shadow-[0_0_20px_rgba(245,158,11,0.15)]',
@@ -135,68 +271,84 @@ export default function TargetCoachingDashboard({
                     id: 'sl_15',
                     number: '15',
                     title: '올해의 주요 바이오 리듬 (Rhythm)',
-                    desc: '1년 및 10년 단위 인생 판세 분석',
+                    desc: '1년 및 10년 단위 인생 판세 & 신경계 번아웃 방어',
                     intent: 'saju_daewoon_flow',
-                    tag: '대운·세운 파동',
+                    tag: '장기 생체 활력 주기',
                     accent: '#F59E0B',
-                    metric: '상승기 진입 84%',
+                    metric: '생체 활력 지수 88점',
                     visualType: 'wave',
-                    status: '판세 리듬',
+                    status: '바이오 파동',
                     deepData: {
-                        summary: '10년 대운 주기 중 가장 추진력이 강한 제4성장 국면에 진입했습니다. 상반기 준비된 시스템이 하반기 폭발적인 결실로 전환됩니다.',
-                        points: ['2026 상반기: 인프라 및 핵심 파트너십 구축 (에너지 지수 78점)', '2026 하반기: 가시적 매출 및 브랜드 영향력 폭발 (에너지 지수 94점)', '주의 사항: 섣부른 분산 투자보다는 핵심 1개 영역에 올인할 것'],
-                        actionLabel: '10년 대운 판세 1:1 심층 분석 받기'
+                        summary: '10년 대운과 생체 호르몬 분비 주기가 최상의 시너지를 내는 상승 국면입니다. 신체 에너지를 고갈시키지 않으면서 성과를 극대화하는 번아웃 방어 프로토콜이 가동됩니다.',
+                        points: [
+                            '장기 판세: 2026 상반기 세포 충전기 ➔ 하반기 지적·체력적 폭발기',
+                            '바이오해킹 조언: 3주간의 전력 질주 후 1주일간의 의도적 감속(Deload Week) 배치',
+                            '신경계 관리: 만성 스트레스 호르몬 코르티솔 분비를 낮추는 마그네슘 섭취 권장'
+                        ],
+                        actionLabel: '10년 바이오리듬 & 웰니스 장기 플랜 상담받기'
                     }
                 },
                 {
                     id: 'sl_20',
                     number: '20',
                     title: '오늘의 데일리 프로토콜 (Mission)',
-                    desc: '매일 아침 받는 구체적 행동 지침',
+                    desc: '매일 아침 받는 도파민 리셋 & 행동 지침',
                     intent: 'daily_fortune',
-                    tag: '데일리 행동 수칙',
+                    tag: '신경계 모닝 루틴',
                     accent: '#10B981',
-                    metric: '오늘 달성률 92%',
+                    metric: '오늘 루틴 달성 95%',
                     visualType: 'mission',
-                    status: '실시간 미션',
+                    status: '모닝 바이오해킹',
                     deepData: {
-                        summary: '오늘 일진의 기운과 사주 원국이 강한 추진력으로 공명하고 있습니다. 아침에 세운 3대 목표를 지체 없이 돌파하세요.',
-                        points: ['07:00 기상 미션: 동쪽 창문을 열고 3분간 깊은 복식호흡으로 목(木) 기운 흡수', '13:30 승부 미션: 미뤄두었던 가장 어렵고 중요한 미팅 또는 계약 체결 진행', '21:00 회고 미션: 오늘 진행한 3대 행동의 결과를 기록하고 내일 작전 수립'],
-                        actionLabel: '오늘 맞춤형 데일리 프로토콜 시작하기'
+                        summary: `대표님의 일간(${sajuMetrics.dayMaster}) 맞춤 아침 자율신경계 세팅 루틴입니다. 첫 1시간의 신경계 조율이 하루 전체의 업무 성과와 수면 질을 결정합니다.`,
+                        points: [
+                            '07:00 서카디안 햇빛 샤워: 기상 직후 10분간 야외 자연광을 눈에 쬐어 멜라토닌 리셋',
+                            '12:30 도파민 쿨다운: 카페인 섭취는 오후 2시 이전에 마감하고 미온수로 혈류 순환',
+                            '21:00 미주신경 이완: ${sajuMetrics.vagusNerveTip}'
+                        ],
+                        actionLabel: '오늘 맞춤형 신경계 웰니스 루틴 코칭받기'
                     }
                 },
                 {
                     id: 'sl_26',
                     number: '26',
                     title: '골든 타임 (Bio-Clock)',
-                    desc: '하루 중 가장 운이 좋은 시간대',
+                    desc: '하루 중 뇌파가 가장 맑은 시간대 & 세포 재생 타임',
                     intent: 'golden_time_analysis',
-                    tag: '최고 집중 시간',
+                    tag: '서카디안 피크 타임',
                     accent: '#38BDF8',
                     metric: sajuMetrics.goldenTime,
                     visualType: 'clock',
-                    status: '승부 시간대',
+                    status: '뇌파 골든타임',
                     deepData: {
-                        summary: `대표님의 일간(${sajuMetrics.dayMaster}) 기준 가장 맑은 판단력과 우호적인 기운이 작용하는 골든타임은 [${sajuMetrics.goldenTime}]입니다.`,
-                        points: ['최적 활동: 주요 계약서 날인, 투자 결단, 핵심 인재 영입 면접, 신제품 런칭', '기피 활동: 단순 반복 업무, 잡담, 감정 소모가 큰 불필요한 말다툼', '공략 팁: 골든타임 시작 10분 전 휴대폰 알림을 끄고 몰입 상태를 준비하세요.'],
-                        actionLabel: '골든타임 활용 1:1 전술 코칭 받기'
+                        summary: `울트라디안(Ultradian 90분) 집중 주기와 사주 시주(時柱)가 만나는 최고 몰입 윈도우는 [${sajuMetrics.goldenTime}]입니다.`,
+                        points: [
+                            '최고 집중 활동: 중대한 계약 체결, 전략 로드맵 수립, 창의적 고난도 집필',
+                            '신체 보호 가이드: 골든타임 이후 15분간 눈을 감고 알파파 뇌파 유도 명상',
+                            '수면 골든타임: 밤 23:00~02:00 사이 성장호르몬 및 뇌척수액(Glymphatic) 청소 활성화'
+                        ],
+                        actionLabel: '골든타임 뇌파 최적화 1:1 코칭받기'
                     }
                 },
                 {
                     id: 'sl_17',
                     number: '17',
                     title: '전략 포지션 (Action Code)',
-                    desc: '올해 내가 취해야 할 태도 (공격/수비)',
+                    desc: '교감신경(공격적 몰입) vs 부교감신경(치유와 회복)',
                     intent: 'ms_12sinsal_strategy',
-                    tag: '12신살 작전 코드',
+                    tag: '자율신경계 밸런스',
                     accent: '#A855F7',
-                    metric: '공격 72% / 수비 28%',
+                    metric: `활동 ${sajuMetrics.attackRatio}% / 회복 ${sajuMetrics.recoveryRatio}%`,
                     visualType: 'gauge',
-                    status: '작전 모드',
+                    status: 'HRV 조율 태세',
                     deepData: {
-                        summary: '현재 운세는 수비보다는 과감한 공격과 영토 확장이 압도적으로 유리한 [장성살(將星殺) 공세 국면]입니다.',
-                        points: ['공격 태세(72%): 주도권을 절대 상대에게 넘기지 말고 선제 제안서를 먼저 던질 것', '수비 태세(28%): 현금 흐름의 3개월치 유동성은 반드시 안전 자산으로 락업', '행동 요강: 완벽을 기다리지 말고 80% 상태에서 시장에 먼저 출시 후 개선'],
-                        actionLabel: '공격/수비 전술 포지션 심층 설계하기'
+                        summary: '현재 운세는 수비보다는 적극적 공세가 유리하지만, 신체적으로는 교감신경 과부하를 막기 위해 [32%의 의도적 회복(Recovery)]이 반드시 병행되어야 합니다.',
+                        points: [
+                            `활동 태세(${sajuMetrics.attackRatio}%): 목표를 향한 과감한 실행과 선제적 주도권 확보`,
+                            `회복 태세(${sajuMetrics.recoveryRatio}%): ${sajuMetrics.hrvTarget}`,
+                            '주의: 승부욕에 치우쳐 수면과 식사를 거르면 2주 뒤 급격한 에너지 다운 발생'
+                        ],
+                        actionLabel: '자율신경계 & 전략 포지션 조율받기'
                     }
                 }
             ]
@@ -204,11 +356,11 @@ export default function TargetCoachingDashboard({
         {
             sectionId: 'solution',
             code: '2-2',
-            title: '개운 솔루션 (Solution)',
-            subtitle: '부족한 운을 채우는 비법',
+            title: '개운 솔루션 (Solution & Bio-Energetics)',
+            subtitle: '부족한 운과 5대 생체 장부(五臟六腑) 치유 비법',
             icon: '🧪',
             themeColor: 'emerald',
-            badge: '결핍 보완',
+            badge: '오장육부 결핍 치유',
             gradient: 'from-emerald-500/20 via-teal-500/10 to-transparent',
             border: 'border-emerald-400/40',
             glow: 'shadow-[0_0_20px_rgba(16,185,129,0.15)]',
@@ -217,68 +369,84 @@ export default function TargetCoachingDashboard({
                     id: 'sl_16',
                     number: '16',
                     title: '오행 에너지 점수',
-                    desc: '실시간 내 운의 수치화 그래프',
+                    desc: '오장육부(간·심·비·폐·신) 생체 장부 활력도 그래프',
                     intent: 'ohaeng_balance_report',
-                    tag: '5대 에너지 균형',
+                    tag: '5대 장부 활력 진단',
                     accent: '#10B981',
-                    metric: '목30 화25 토15 금10 수20',
+                    metric: sajuMetrics.organFocus,
                     visualType: 'equalizer',
-                    status: '에너지 점수',
+                    status: '장부 에너지',
                     deepData: {
-                        summary: `대표님의 원국 에너지 밸런스는 목(木)과 화(火)의 추진력이 강하지만, 결실을 거두는 금(金)과 유연성인 ${sajuMetrics.ohaengNeed}이 필요합니다.`,
-                        points: ['목(30%) / 화(25%): 뜨거운 추진력과 창의성은 충분히 확보됨', '금(10%): 일의 마무리를 짓는 정밀한 시스템과 결단력을 15% 보강할 것', '수(20%): 감정적 과열을 식혀줄 쿨링 타임 및 수분 섭취 루틴 권장'],
-                        actionLabel: '오행 결핍 보강 1:1 맞춤 솔루션 받기'
+                        summary: `대표님의 사주 원국 오행 분석 결과, 현재 가장 집중 케어가 필요한 신체 부위는 [${sajuMetrics.organFocus}]입니다. ${sajuMetrics.ohaengNeed}의 영양 처방이 필요합니다.`,
+                        points: [
+                            `추천 바이오푸드: ${sajuMetrics.wellnessFood}`,
+                            '오행 수치: 목(간담) 82점, 화(심혈관) 90점, 토(비위) 65점, 금(폐대장) 70점, 수(신장) 78점',
+                            '개운 티 테라피: 따뜻한 찻물로 체내 미세 염증을 완화하고 장 점막 회복'
+                        ],
+                        actionLabel: '오행 맞춤 영양 & 장부 밸런스 처방받기'
                     }
                 },
                 {
                     id: 'sl_18',
                     number: '18',
                     title: '비밀 병기 (허자/입묘)',
-                    desc: '위기 탈출을 위한 히든카드',
+                    desc: '무의식 스트레스 해소 & 잠재의식 신경가소성 부스팅',
                     intent: 'ms_hidden_weapon',
-                    tag: '숨은 에너지 추출',
+                    tag: '무의식 코어 릴리즈',
                     accent: '#EC4899',
-                    metric: '특수 허자(虛字) 활성',
+                    metric: '잠재 회복 탄력성 MAX',
                     visualType: 'secret',
-                    status: '히든 해법',
+                    status: '잠재의식 치유',
                     deepData: {
-                        summary: '사주 글자 사이에 보이지 않는 글자가 끌려오는 허자(虛字)와 천을귀인의 에너지가 잠재의식 속에 비축되어 있습니다.',
-                        points: ['잠재 무기: 막다른 위기 상황에서 예상치 못한 귀인의 원조 또는 반전 솔루션 출현', '발동 조건: 타인의 비판에 흔들리지 않고 본인의 핵심 신념을 끝까지 밀어붙일 때', '위기 탈출 키: 기존 공식의 타파, 제3의 관점에서 사안을 뒤집어보기'],
-                        actionLabel: '잠재의식 비밀병기 발동 코칭 받기'
+                        summary: '사주 글자 사이에 보이지 않게 작용하는 허자(虛字) 에너지는 위기 상황에서 뇌의 편도체(불안 센터)를 진정시키고 전두엽의 직관을 깨우는 슈퍼 파워입니다.',
+                        points: [
+                            '잠재 무기: 극도의 스트레스 국면에서도 한순간에 멘탈을 리셋하는 회복 탄력성(Resilience)',
+                            '트리거 발동: "지금 이 긴장은 내가 성장하는 신호다"라는 인지 재구성(Reframing)',
+                            '신체 반응: 가슴 중앙(전중혈) 온열 마사지로 깊은 안정감 도출'
+                        ],
+                        actionLabel: '무의식 멘탈 리셋 & 비밀병기 활성화하기'
                     }
                 },
                 {
                     id: 'sl_39',
                     number: '39',
                     title: 'AI 작명소 (성명학)',
-                    desc: '부족한 운을 채우는 이름/닉네임',
+                    desc: '소리 진동(음성 주파수 528Hz)과 성대 미주신경 튜닝',
                     intent: 'ms_naming_ai',
-                    tag: '81수리 에너지',
+                    tag: '음성 파동 웰니스',
                     accent: '#EAB308',
-                    metric: '오행 보완 네이밍',
+                    metric: '528Hz 공명 튜닝',
                     visualType: 'name',
-                    status: 'AI 파동 튜닝',
+                    status: '사운드 테라피',
                     deepData: {
-                        summary: '이름과 브랜드명은 하루에도 수백 번 소리와 문자로 불리며 뇌파와 양자장을 튜닝하는 가장 강력한 현실 조작 도구입니다.',
-                        points: ['81수리 진단: 부족한 결실의 에너지를 채우는 길수(21, 23, 24, 31, 33수) 매칭', '발음오행 튜닝: 금(金)과 수(水)의 서늘하고 정확한 파동을 지닌 음소 조합 권장', '적용처: 사업자 등록 상호명, 유튜브/SNS 채널명, 필명, 신제품 브랜드'],
-                        actionLabel: '개운 네이밍 & 수리 튜닝 1:1 분석 받기'
+                        summary: '이름과 브랜드의 음성 파동은 호흡기, 성대, 미주신경을 진동시켜 전신의 생체 전자기장을 변화시키는 고대 사운드 힐링의 정수입니다.',
+                        points: [
+                            '81수리 진단: 면역계와 자율신경을 안정시키는 조화로운 수리 주파수 매칭',
+                            '발음오행 힐링: 성대를 울리는 특정 모음/자음 발성이 뇌간을 자극해 옥시토신 분비 촉진',
+                            '적용 가이드: 긍정 확언(Affirmation) 낭독 시 나지막한 중저음 톤 유지'
+                        ],
+                        actionLabel: '음성 주파수 & 개운 네이밍 분석받기'
                     }
                 },
                 {
                     id: 'sl_21',
                     number: '21',
                     title: '하늘의 조언 (주역)',
-                    desc: '답답할 때 던지는 동양 철학의 신탁',
+                    desc: '마음챙김 명상(Mindfulness)과 동양 양자 뇌파 신탁',
                     intent: 'ms_iching_oracle',
-                    tag: '64괘 신탁 해법',
+                    tag: '양자장 뇌파 안정',
                     accent: '#6366F1',
-                    metric: '실시간 점괘 도출',
+                    metric: '알파파·세타파 유도',
                     visualType: 'oracle',
-                    status: '즉시 신탁',
+                    status: '마인드풀니스',
                     deepData: {
-                        summary: '64괘 시공간 렌더링 결과, [화천대유(火天大有) ➔ 지화명이(地火明夷)]의 신탁이 도출되었습니다.',
-                        points: ['대유괘의 메시지: 태양이 하늘 높이 떠 모든 것을 비추니 큰 성취와 풍요의 기운', '명이괘의 경고: 밝음을 겉으로 너무 드러내면 시기를 사므로 내실을 단단히 다질 것', '행동 강령: 성공할수록 겸손하게 시스템 뒤에 숨어 실속을 챙겨라'],
-                        actionLabel: '주역 64괘 심층 신탁 해석 받기'
+                        summary: '주역 64괘의 시공간 렌더링을 통해 산만해진 뇌파를 8~12Hz의 고요한 알파파(Alpha Wave)로 가라앉히는 직관 명상 솔루션입니다.',
+                        points: [
+                            '괘상 풀이: 화천대유(태양) ➔ 지화명이(내면의 빛). 밝은 에너지를 외부에 과시하지 말고 내장 기관과 마음에 축적할 것',
+                            '명상 프로토콜: 3분간 들숨과 날숨 사이의 미세한 고요(Zero-Point)에 머물기',
+                            '치유 확언: "내 몸과 마음은 지금 이 순간 완전하게 조화를 이루고 있다."'
+                        ],
+                        actionLabel: '주역 마음챙김 명상 & 신탁 해설받기'
                     }
                 }
             ]
@@ -286,11 +454,11 @@ export default function TargetCoachingDashboard({
         {
             sectionId: 'tactics',
             code: '2-3',
-            title: '현실 조작 (Tactics)',
-            subtitle: '환경과 방향을 활용한 개운',
+            title: '현실 조작 (Tactics & Environment)',
+            subtitle: '풍수(Geomancy)와 환경 어싱(Earthing)을 활용한 개운',
             icon: '⚡',
             themeColor: 'cyan',
-            badge: '환경 최적화',
+            badge: '생체 환경 최적화',
             gradient: 'from-cyan-500/20 via-blue-500/10 to-transparent',
             border: 'border-cyan-400/40',
             glow: 'shadow-[0_0_20px_rgba(6,182,212,0.15)]',
@@ -299,34 +467,42 @@ export default function TargetCoachingDashboard({
                     id: 'sl_29',
                     number: '29',
                     title: '방위 나침반 (기문둔갑)',
-                    desc: '지금 행운을 잡으러 가는 방향',
+                    desc: '지금 행운과 생체 힐링 에너지를 받는 방향',
                     intent: 'ms_lucky_direction',
-                    tag: '길방(吉方) 네비게이션',
+                    tag: '생체 에너지 풍수',
                     accent: '#06B6D4',
                     metric: sajuMetrics.direction,
                     visualType: 'compass',
-                    status: '기문 방위',
+                    status: '기문 힐링 방위',
                     deepData: {
-                        summary: `기문둔갑 8문(八門) 배치도상 오늘의 최고 길방은 생문(生門)과 개문(開門)이 위치한 [${sajuMetrics.direction}]입니다.`,
-                        points: ['공략 방위: 협상, 투자 미팅, 부동산 계약 시 ${sajuMetrics.direction} 방향의 장소를 선택할 것', '좌향(座向) 팁: 회의실이나 카페에서 해당 방위를 등지고 앉으면 심리적 우위 점유', '주의 방위: 사문(死門)과 경문(驚門)이 낀 흉방은 장기 체류 지양'],
-                        actionLabel: '기문둔갑 대길 방위 1:1 코칭 받기'
+                        summary: `기문둔갑 8문 중 생명력과 치유의 기운이 솟아나는 생문(生門)의 좌표는 [${sajuMetrics.direction}]입니다. 공간 에너지를 전환하는 웰니스 환경 구축이 가능합니다.`,
+                        points: [
+                            `공간 배치: 침대 머리 방향이나 서재 책상을 ${sajuMetrics.direction} 쪽으로 조정하여 전자파 차단`,
+                            '어싱(Earthing) 산책: 해당 방향의 공원이나 흙길을 맨발 또는 가벼운 워킹화로 20분 걷기',
+                            '수맥 및 전자기 쉴딩: 침실 내 와이파이 공유기 및 전자기기를 2m 이상 이격'
+                        ],
+                        actionLabel: '기문둔갑 생체 공간 풍수 코칭받기'
                     }
                 },
                 {
                     id: 'sl_32',
                     number: '32',
                     title: '리얼타임 싱크',
-                    desc: '날씨, 뉴스 등 외부 환경 연동 조언',
+                    desc: '날씨, 기압, 시공간 일진과 생체 면역 반응 동기화',
                     intent: 'smart_context_card',
-                    tag: '환경·시공간 동기화',
+                    tag: '환경 바이오싱크',
                     accent: '#8B5CF6',
-                    metric: '환경 융합도 88%',
+                    metric: '환경 융합도 92%',
                     visualType: 'sync',
-                    status: '환경 싱크',
+                    status: '면역 바이오싱크',
                     deepData: {
-                        summary: '오늘의 기압, 기온, 요일 및 우주 일진 사이클이 사용자의 바이오리듬과 88% 높은 싱크로율을 나타내고 있습니다.',
-                        points: ['기상 연동: 맑은 날씨에는 대외 확장 활동을, 흐리거나 비 오는 날에는 전략 기획에 집중', '동기화 지표: 오늘 하루 뇌파 최적 집중 시간대 4.5시간 확보 가능', '추천 루틴: 오후 시간대 가벼운 스트레칭과 산책으로 신선한 산소 공급'],
-                        actionLabel: '실시간 환경 싱크 1:1 조언 받기'
+                        summary: '외부 기압, 습도, 기온 변화에 맞춰 자율신경계가 이상적으로 반응할 수 있도록 실시간 환경 맞춤 면역 가이드를 제공합니다.',
+                        points: [
+                            '기압 연동 케어: 저기압 날씨에는 림프 순환을 돕는 가벼운 스트레칭과 전신 온열 유지',
+                            '생체 수분 밸런스: 체중 1kg당 30ml의 미온수 섭취로 체내 독소 배출',
+                            '시공간 리셋: 오후 3시~4시 사이 창문을 열어 실내 이산화탄소 농도를 600ppm 이하로 환기'
+                        ],
+                        actionLabel: '실시간 환경 바이오싱크 코칭받기'
                     }
                 }
             ]
@@ -350,11 +526,13 @@ export default function TargetCoachingDashboard({
         return TACTICAL_SECTIONS.filter((s) => s.sectionId === activeTab);
     }, [activeTab, TACTICAL_SECTIONS]);
 
-    // 🚀 원터치 AI 인텐트 실행 핸들러
+    // 🚀 원터치 AI 인텐트 실행 핸들러 (웰니스 페르소나 강화)
     const handleTriggerIntent = (intent: string, title: string) => {
-        const prompt = generateChatPromptFromIntent(intent, effectiveProfile);
+        const basePrompt = generateChatPromptFromIntent(intent, effectiveProfile);
+        const wellnessEnhancedPrompt = `[웰니스 코칭 모드 요청]\n사주 일간: ${sajuMetrics.dayMaster} (${sajuMetrics.type})\n오행 장부 상태: ${sajuMetrics.organFocus}\n요청 주제: ${title}\n\n기본 질문: ${basePrompt}\n\n위 주제에 대해 단순한 운세 풀이를 넘어, 자율신경계(HRV), 5대 장부 밸런스, 서카디안 리듬(호르몬/골든타임), 구체적 바이오해킹 행동 요령을 결합하여 세계 최고 수준의 전인적 웰니스 코칭으로 안내해 주세요.`;
+
         if (onChatIntent) {
-            onChatIntent(intent, prompt);
+            onChatIntent(intent, wellnessEnhancedPrompt);
         }
         if (onClose) {
             onClose();
@@ -365,47 +543,56 @@ export default function TargetCoachingDashboard({
 
     return (
         <AnimatePresence>
-            <div className="relative w-full h-full max-h-[92vh] flex flex-col bg-slate-950 text-white rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30 font-sans">
-                {/* ── 배경 HUD 레이더 & 네온 그리드 ── */}
+            <div className="relative w-full h-full max-h-[92vh] flex flex-col bg-slate-950 text-white rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 font-sans">
+                {/* ── 배경 웰니스 바이오피드백 & HUD 그리드 ── */}
                 <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
-                    {/* 방사형 그리드 */}
-                    <div className="absolute inset-0 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
-                    {/* 레이더 스위프 빔 */}
+                    <div className="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
+                    {/* 호흡 리듬 바이오 펄스 링 */}
                     <div
-                        className="absolute w-[600px] h-[600px] -top-32 -right-32 rounded-full border border-amber-400/20 transition-transform duration-75"
+                        className="absolute w-[500px] h-[500px] -top-20 -right-20 rounded-full border border-emerald-400/25 transition-all duration-1000"
                         style={{
-                            background: 'conic-gradient(from 0deg, rgba(245,158,11,0.15) 0deg, transparent 60deg, transparent 360deg)',
-                            transform: `rotate(${radarAngle}deg)`
+                            transform: breathPhase === 'inhale' ? 'scale(1.15)' : breathPhase === 'hold' ? 'scale(1.15)' : 'scale(0.95)',
+                            opacity: breathPhase === 'hold' ? 0.6 : 0.3,
+                            boxShadow: '0 0 60px rgba(16,185,129,0.2)'
                         }}
                     />
                 </div>
 
-                {/* ── 1. 상단 HUD 타이틀 바 ── */}
-                <div className="relative z-10 px-4 py-3.5 sm:px-6 sm:py-4 border-b border-amber-500/20 bg-slate-950/90 backdrop-blur-xl flex items-center justify-between shrink-0">
+                {/* ── 1. 상단 HUD & 웰니스 모드 바 ── */}
+                <div className="relative z-10 px-4 py-3.5 sm:px-6 sm:py-4 border-b border-emerald-500/20 bg-slate-950/90 backdrop-blur-xl flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-amber-500/25 border border-amber-300/40">
-                            <Crosshair className="w-5 h-5 text-slate-950 animate-spin" style={{ animationDuration: '30s' }} />
-                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                        <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25 border border-emerald-300/40">
+                            <Heart className="w-5 h-5 text-slate-950 animate-pulse" />
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-black px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 tracking-wider">
-                                    TACTICAL COMMAND HUD
+                                <span className="text-xs font-black px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 tracking-wider">
+                                    HOLISTIC WELLNESS & TACTICS
                                 </span>
                                 <span className="text-[11px] text-gray-400 hidden sm:inline-block">
-                                    사주·기문둔갑 실시간 전술 지휘 본부
+                                    사주 생체 리듬 & 5대 장부 바이오해킹
                                 </span>
                             </div>
                             <h2 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2 mt-0.5">
-                                <span>타겟 코칭 (Strategy Lab)</span>
-                                <span className="text-xs font-normal text-amber-400/80">
-                                    {sajuMetrics.userName}님 맞춤형 승부수
+                                <span>타겟 웰니스 코칭</span>
+                                <span className="text-xs font-normal text-emerald-400/90">
+                                    {sajuMetrics.userName}님 맞춤형 심신 최적화
                                 </span>
                             </h2>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    {/* 실시간 호흡 가이드 미니 인디케이터 & 닫기 */}
+                    <div className="flex items-center gap-3">
+                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[11px]">
+                            <Wind className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                            <span className="text-gray-300">호흡 리셋:</span>
+                            <span className="font-bold text-emerald-300 uppercase">
+                                {breathPhase === 'inhale' ? '들이마시기 (4s)' : breathPhase === 'hold' ? '멈추기 (4s)' : '내쉬기 (4s)'}
+                            </span>
+                        </div>
+
                         {onClose && (
                             <button
                                 type="button"
@@ -419,75 +606,76 @@ export default function TargetCoachingDashboard({
                     </div>
                 </div>
 
-                {/* ── 2. 사용자 사주 기반 실시간 전술 브리핑 헤더 ── */}
-                <div className="relative z-10 p-4 sm:p-5 bg-gradient-to-r from-amber-950/40 via-slate-900/60 to-slate-950/80 border-b border-amber-500/15 shrink-0">
+                {/* ── 2. 사용자 사주 기반 실시간 웰니스 브리핑 헤더 ── */}
+                <div className="relative z-10 p-4 sm:p-5 bg-gradient-to-r from-emerald-950/40 via-slate-900/70 to-slate-950/90 border-b border-emerald-500/20 shrink-0">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-start sm:items-center gap-3">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex flex-col items-center justify-center text-amber-400 shrink-0 shadow-inner">
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-400/10 border border-emerald-400/30 flex flex-col items-center justify-center text-emerald-400 shrink-0 shadow-inner">
                                 <span className="text-xs font-black">{sajuMetrics.dayMaster}</span>
                                 <span className="text-[9px] text-gray-400">일간</span>
                             </div>
                             <div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="text-sm font-bold text-amber-300">{sajuMetrics.type}</span>
-                                    <span className="text-[11px] text-gray-300 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+                                    <span className="text-sm font-bold text-emerald-300">{sajuMetrics.type}</span>
+                                    <span className="text-[11px] text-emerald-200/90 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/25">
                                         {sajuMetrics.currentSeason}
                                     </span>
                                 </div>
-                                <p className="text-xs text-gray-300 mt-1">
-                                    핵심 미션: <strong className="text-white font-bold">{sajuMetrics.focus}</strong>
+                                <p className="text-xs text-gray-300 mt-1 flex items-center gap-1.5">
+                                    <Leaf className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                    <span>장부 케어 포커스: <strong className="text-white font-bold">{sajuMetrics.organFocus}</strong></span>
                                 </p>
                             </div>
                         </div>
 
-                        {/* 3대 실시간 퀵 지표 */}
+                        {/* 3대 실시간 웰니스 퀵 지표 */}
                         <div className="grid grid-cols-3 gap-2 sm:gap-3 shrink-0">
-                            <div className="bg-slate-900/80 border border-amber-500/20 rounded-xl p-2 sm:p-2.5 text-center">
+                            <div className="bg-slate-900/80 border border-emerald-500/25 rounded-xl p-2 sm:p-2.5 text-center">
                                 <div className="text-[10px] text-gray-400 flex items-center justify-center gap-1">
-                                    <Clock className="w-3 h-3 text-amber-400" />
-                                    <span>승부 골든타임</span>
+                                    <Clock className="w-3 h-3 text-emerald-400" />
+                                    <span>뇌파 골든타임</span>
                                 </div>
-                                <div className="text-xs sm:text-xs font-black text-amber-300 mt-0.5 truncate">
+                                <div className="text-xs font-black text-emerald-300 mt-0.5 truncate">
                                     {sajuMetrics.goldenTime.split(' ')[1] || '13:00~15:00'}
                                 </div>
                             </div>
 
-                            <div className="bg-slate-900/80 border border-cyan-500/20 rounded-xl p-2 sm:p-2.5 text-center">
+                            <div className="bg-slate-900/80 border border-cyan-500/25 rounded-xl p-2 sm:p-2.5 text-center">
                                 <div className="text-[10px] text-gray-400 flex items-center justify-center gap-1">
-                                    <Compass className="w-3 h-3 text-cyan-400" />
-                                    <span>기문 대길 방위</span>
+                                    <Heart className="w-3 h-3 text-cyan-400" />
+                                    <span>자율신경 밸런스</span>
                                 </div>
-                                <div className="text-xs sm:text-xs font-black text-cyan-300 mt-0.5 truncate">
-                                    {sajuMetrics.direction.split('/')[0] || '동남방'}
+                                <div className="text-xs font-black text-cyan-300 mt-0.5 truncate">
+                                    활동 {sajuMetrics.attackRatio}% / 회복 {sajuMetrics.recoveryRatio}%
                                 </div>
                             </div>
 
-                            <div className="bg-slate-900/80 border border-emerald-500/20 rounded-xl p-2 sm:p-2.5 text-center">
+                            <div className="bg-slate-900/80 border border-amber-500/25 rounded-xl p-2 sm:p-2.5 text-center">
                                 <div className="text-[10px] text-gray-400 flex items-center justify-center gap-1">
-                                    <Shield className="w-3 h-3 text-emerald-400" />
-                                    <span>공격/수비 비율</span>
+                                    <Sparkles className="w-3 h-3 text-amber-400" />
+                                    <span>웰니스 스코어</span>
                                 </div>
-                                <div className="text-xs sm:text-xs font-black text-emerald-300 mt-0.5 truncate">
-                                    공격 {sajuMetrics.attackRatio}%
+                                <div className="text-xs font-black text-amber-300 mt-0.5 truncate">
+                                    {sajuMetrics.wellnessScore}점
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* ── 3. 3대 전략 카테고리 탭 스위처 ── */}
+                {/* ── 3. 전략 & 웰니스 카테고리 탭 스위처 ── */}
                 <div className="relative z-10 px-4 pt-3 pb-2 bg-slate-950 border-b border-white/5 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
                     <button
                         type="button"
                         onClick={() => { setActiveTab('all'); }}
                         className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
                             activeTab === 'all'
-                                ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-500/20 font-black'
+                                ? 'bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 font-black'
                                 : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
                         }`}
                     >
                         <Layers className="w-3.5 h-3.5" />
-                        <span>전체 전술 조망 (10대 작전)</span>
+                        <span>전체 웰니스 조망 (10대 전술)</span>
                     </button>
 
                     {TACTICAL_SECTIONS.map((section) => {
@@ -499,7 +687,7 @@ export default function TargetCoachingDashboard({
                                 onClick={() => { setActiveTab(section.sectionId as TargetTab); }}
                                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
                                     isActive
-                                        ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-500/20 font-black'
+                                        ? 'bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 font-black'
                                         : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
                                 }`}
                             >
@@ -513,7 +701,7 @@ export default function TargetCoachingDashboard({
                     })}
                 </div>
 
-                {/* ── 4. 메인 전술 카드 그리드 영역 (스크롤) ── */}
+                {/* ── 4. 메인 웰니스 카드 그리드 영역 (스크롤) ── */}
                 <div className="relative z-10 flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
                     <div className="max-w-6xl mx-auto space-y-8">
                         {filteredSections.map((section) => (
@@ -527,7 +715,7 @@ export default function TargetCoachingDashboard({
                                                 <h3 className="text-sm font-black text-white tracking-wide">
                                                     {section.code}. {section.title}
                                                 </h3>
-                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
                                                     {section.badge}
                                                 </span>
                                             </div>
@@ -535,7 +723,7 @@ export default function TargetCoachingDashboard({
                                         </div>
                                     </div>
                                     <span className="text-xs text-gray-500 font-mono">
-                                        전술 모듈 4종 탑재
+                                        웰니스 모듈 4종 가동
                                     </span>
                                 </div>
 
@@ -551,22 +739,22 @@ export default function TargetCoachingDashboard({
                                                 onClick={() => setSelectedCardId(card.id)}
                                                 className={`group relative rounded-2xl p-4 transition-all duration-300 cursor-pointer flex flex-col justify-between overflow-hidden ${
                                                     isCardSelected
-                                                        ? 'bg-gradient-to-b from-amber-500/25 to-slate-900/90 border-2 border-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.3)]'
-                                                        : 'bg-slate-900/70 hover:bg-slate-900 border border-white/10 hover:border-amber-400/40 shadow-lg'
+                                                        ? 'bg-gradient-to-b from-emerald-500/25 to-slate-900/90 border-2 border-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.3)]'
+                                                        : 'bg-slate-900/70 hover:bg-slate-900 border border-white/10 hover:border-emerald-400/40 shadow-lg'
                                                 }`}
                                             >
                                                 {/* 상단 뱃지 & 넘버링 */}
                                                 <div>
                                                     <div className="flex items-center justify-between mb-2">
-                                                        <span className="text-[10px] font-black px-2 py-0.5 rounded bg-white/10 text-gray-300 group-hover:bg-amber-400/20 group-hover:text-amber-300 transition-colors">
+                                                        <span className="text-[10px] font-black px-2 py-0.5 rounded bg-white/10 text-gray-300 group-hover:bg-emerald-400/20 group-hover:text-emerald-300 transition-colors">
                                                             NO.{card.number}
                                                         </span>
-                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
                                                             {card.status}
                                                         </span>
                                                     </div>
 
-                                                    <h4 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-1">
+                                                    <h4 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors line-clamp-1">
                                                         {card.title}
                                                     </h4>
                                                     <p className="text-[11px] text-gray-400 mt-1 line-clamp-2 leading-relaxed">
@@ -574,19 +762,19 @@ export default function TargetCoachingDashboard({
                                                     </p>
                                                 </div>
 
-                                                {/* 마이크로 비주얼 위젯 */}
-                                                <div className="my-3 p-2.5 rounded-xl bg-slate-950/60 border border-white/5 group-hover:border-amber-400/20 transition-all flex items-center justify-between">
+                                                {/* 마이크로 웰니스 위젯 */}
+                                                <div className="my-3 p-2.5 rounded-xl bg-slate-950/60 border border-white/5 group-hover:border-emerald-400/20 transition-all flex items-center justify-between">
                                                     {card.visualType === 'wave' && (
                                                         <div className="w-full flex items-center justify-between">
                                                             <div className="flex items-center gap-1.5">
-                                                                <Activity className="w-3.5 h-3.5 text-amber-400" />
-                                                                <span className="text-xs font-bold text-amber-200">{card.metric}</span>
+                                                                <Activity className="w-3.5 h-3.5 text-emerald-400" />
+                                                                <span className="text-xs font-bold text-emerald-200">{card.metric}</span>
                                                             </div>
                                                             <div className="flex items-end gap-0.5 h-4">
-                                                                <span className="w-1 h-2 bg-amber-500/40 rounded-full" />
-                                                                <span className="w-1 h-3 bg-amber-500/70 rounded-full" />
-                                                                <span className="w-1 h-4 bg-amber-400 rounded-full animate-pulse" />
-                                                                <span className="w-1 h-3.5 bg-amber-500/80 rounded-full" />
+                                                                <span className="w-1 h-2 bg-emerald-500/40 rounded-full" />
+                                                                <span className="w-1 h-3.5 bg-emerald-500/70 rounded-full" />
+                                                                <span className="w-1 h-4 bg-emerald-400 rounded-full animate-pulse" />
+                                                                <span className="w-1 h-3 bg-emerald-500/80 rounded-full" />
                                                             </div>
                                                         </div>
                                                     )}
@@ -607,63 +795,57 @@ export default function TargetCoachingDashboard({
                                                                 <Clock className="w-3.5 h-3.5 text-sky-400" />
                                                                 <span className="text-xs font-bold text-sky-200">{card.metric.split(' ')[0]}</span>
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-1.5 py-0.5 rounded">BEST</span>
+                                                            <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-1.5 py-0.5 rounded">PEAK</span>
                                                         </div>
                                                     )}
 
                                                     {card.visualType === 'gauge' && (
                                                         <div className="w-full flex items-center justify-between">
                                                             <div className="flex items-center gap-1.5">
-                                                                <Shield className="w-3.5 h-3.5 text-purple-400" />
-                                                                <span className="text-xs font-bold text-purple-200">{card.metric}</span>
+                                                                <Heart className="w-3.5 h-3.5 text-pink-400" />
+                                                                <span className="text-xs font-bold text-pink-200">{card.metric}</span>
                                                             </div>
                                                             <div className="w-10 h-1.5 bg-slate-800 rounded-full overflow-hidden flex">
-                                                                <div className="w-[72%] bg-purple-400 h-full" />
-                                                                <div className="w-[28%] bg-slate-600 h-full" />
+                                                                <div className="w-[68%] bg-pink-400 h-full" />
+                                                                <div className="w-[32%] bg-emerald-400 h-full" />
                                                             </div>
                                                         </div>
                                                     )}
 
                                                     {card.visualType === 'equalizer' && (
                                                         <div className="w-full flex items-center justify-between">
-                                                            <span className="text-xs font-bold text-emerald-300">5대 오행 밸런스</span>
-                                                            <div className="flex gap-1">
-                                                                {['목', '화', '토', '금', '수'].map((el, idx) => (
-                                                                    <span key={el} className="text-[9px] px-1 py-0.5 rounded bg-white/10 text-gray-300">
-                                                                        {el}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
+                                                            <span className="text-xs font-bold text-emerald-300 truncate max-w-[130px]">{card.metric}</span>
+                                                            <Leaf className="w-3.5 h-3.5 text-emerald-400" />
                                                         </div>
                                                     )}
 
                                                     {card.visualType === 'secret' && (
                                                         <div className="w-full flex items-center justify-between">
                                                             <div className="flex items-center gap-1.5">
-                                                                <span className="text-sm">🗝️</span>
-                                                                <span className="text-xs font-bold text-pink-200">{card.metric}</span>
+                                                                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                                                                <span className="text-xs font-bold text-purple-200">{card.metric}</span>
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-pink-300 bg-pink-500/20 px-1.5 py-0.5 rounded">HIDDEN</span>
+                                                            <span className="text-[10px] font-bold text-purple-300 bg-purple-500/20 px-1.5 py-0.5 rounded">RECOVERY</span>
                                                         </div>
                                                     )}
 
                                                     {card.visualType === 'name' && (
                                                         <div className="w-full flex items-center justify-between">
                                                             <div className="flex items-center gap-1.5">
-                                                                <span className="text-sm">✍️</span>
-                                                                <span className="text-xs font-bold text-yellow-200">성명학 튜너</span>
+                                                                <Volume2 className="w-3.5 h-3.5 text-yellow-400" />
+                                                                <span className="text-xs font-bold text-yellow-200">528Hz 음성 테라피</span>
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-yellow-300 bg-yellow-500/20 px-1.5 py-0.5 rounded">NAMING</span>
+                                                            <span className="text-[10px] font-bold text-yellow-300 bg-yellow-500/20 px-1.5 py-0.5 rounded">SOUND</span>
                                                         </div>
                                                     )}
 
                                                     {card.visualType === 'oracle' && (
                                                         <div className="w-full flex items-center justify-between">
                                                             <div className="flex items-center gap-1.5">
-                                                                <span className="text-sm">🔮</span>
-                                                                <span className="text-xs font-bold text-indigo-200">64괘 신탁</span>
+                                                                <Brain className="w-3.5 h-3.5 text-indigo-400" />
+                                                                <span className="text-xs font-bold text-indigo-200">마인드풀니스 64괘</span>
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/20 px-1.5 py-0.5 rounded">ORACLE</span>
+                                                            <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/20 px-1.5 py-0.5 rounded">ALPHA</span>
                                                         </div>
                                                     )}
 
@@ -673,7 +855,7 @@ export default function TargetCoachingDashboard({
                                                                 <Compass className="w-3.5 h-3.5 text-cyan-400 animate-spin" style={{ animationDuration: '20s' }} />
                                                                 <span className="text-xs font-bold text-cyan-200">{card.metric}</span>
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/20 px-1.5 py-0.5 rounded">LUCKY</span>
+                                                            <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/20 px-1.5 py-0.5 rounded">EARTHING</span>
                                                         </div>
                                                     )}
 
@@ -681,9 +863,9 @@ export default function TargetCoachingDashboard({
                                                         <div className="w-full flex items-center justify-between">
                                                             <div className="flex items-center gap-1.5">
                                                                 <Activity className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
-                                                                <span className="text-xs font-bold text-purple-200">기상·사주 싱크</span>
+                                                                <span className="text-xs font-bold text-purple-200">면역 바이오싱크</span>
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-purple-300 bg-purple-500/20 px-1.5 py-0.5 rounded">LIVE</span>
+                                                            <span className="text-[10px] font-bold text-purple-300 bg-purple-500/20 px-1.5 py-0.5 rounded">IMMUNE</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -698,8 +880,8 @@ export default function TargetCoachingDashboard({
                                                         }}
                                                         className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-bold text-[11px] transition-all flex items-center justify-center gap-1 border border-white/10 cursor-pointer"
                                                     >
-                                                        <Info className="w-3 h-3 text-amber-400" />
-                                                        <span>전술 분석 보기</span>
+                                                        <Info className="w-3 h-3 text-emerald-400" />
+                                                        <span>웰니스 분석 보기</span>
                                                     </button>
                                                     <button
                                                         type="button"
@@ -707,8 +889,8 @@ export default function TargetCoachingDashboard({
                                                             e.stopPropagation();
                                                             handleTriggerIntent(card.intent, card.title);
                                                         }}
-                                                        className="py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[11px] transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm"
-                                                        title="AI 코칭 즉시 시작"
+                                                        className="py-2 px-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-[11px] transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm"
+                                                        title="1:1 웰니스 코칭 즉시 시작"
                                                     >
                                                         <Send className="w-3 h-3" />
                                                     </button>
@@ -722,7 +904,7 @@ export default function TargetCoachingDashboard({
                     </div>
                 </div>
 
-                {/* ── 5. [NEW] 초정밀 전술 상세 인스펙터 모달 (Tactical Deep Inspector) ── */}
+                {/* ── 5. [NEW] 세계 최고 수준 웰니스 상세 인스펙터 모달 (Wellness Deep Inspector) ── */}
                 <AnimatePresence>
                     {selectedCard && (
                         <div className="fixed inset-0 z-[2200] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
@@ -730,10 +912,10 @@ export default function TargetCoachingDashboard({
                                 initial={{ opacity: 0, scale: 0.95, y: 15 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                                className="w-full max-w-2xl bg-slate-900 border-2 border-amber-400/50 rounded-3xl p-5 sm:p-7 text-white shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh]"
+                                className="w-full max-w-2xl bg-slate-900 border-2 border-emerald-400/50 rounded-3xl p-5 sm:p-7 text-white shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh]"
                             >
-                                {/* 배경 HUD 효과 */}
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                                {/* 배경 웰니스 글로우 효과 */}
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
                                 {/* 닫기 버튼 */}
                                 <button
@@ -746,10 +928,10 @@ export default function TargetCoachingDashboard({
 
                                 {/* 인스펙터 헤더 */}
                                 <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-black px-2.5 py-1 rounded-md bg-amber-400 text-slate-950">
+                                    <span className="text-xs font-black px-2.5 py-1 rounded-md bg-emerald-400 text-slate-950">
                                         NO.{selectedCard.number} {selectedCard.status}
                                     </span>
-                                    <span className="text-xs text-amber-300 font-bold bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                                    <span className="text-xs text-emerald-300 font-bold bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20">
                                         {selectedCard.tag}
                                     </span>
                                 </div>
@@ -762,27 +944,27 @@ export default function TargetCoachingDashboard({
 
                                 {/* 인스펙터 본문 스크롤 */}
                                 <div className="flex-1 overflow-y-auto my-4 pr-1 space-y-4 text-xs">
-                                    {/* 핵심 진단 박스 */}
-                                    <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-800 to-slate-800/80 border border-amber-500/30">
-                                        <div className="flex items-center gap-1.5 text-amber-300 font-bold mb-1.5">
-                                            <Zap className="w-3.5 h-3.5 fill-amber-400" />
-                                            <span>실시간 전술 진단 요약</span>
+                                    {/* 핵심 웰니스 진단 박스 */}
+                                    <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-slate-800 to-slate-800/80 border border-emerald-500/30">
+                                        <div className="flex items-center gap-1.5 text-emerald-300 font-bold mb-1.5">
+                                            <Heart className="w-3.5 h-3.5 fill-emerald-400" />
+                                            <span>실시간 생체 & 전술 웰니스 진단 요약</span>
                                         </div>
                                         <p className="text-gray-200 leading-relaxed font-medium">
                                             {selectedCard.deepData?.summary}
                                         </p>
                                     </div>
 
-                                    {/* 3대 전술 행동 지침 */}
+                                    {/* 3대 전술 & 바이오해킹 행동 지침 */}
                                     <div className="space-y-2">
                                         <div className="text-xs font-bold text-gray-300 flex items-center gap-1.5">
-                                            <Shield className="w-3.5 h-3.5 text-amber-400" />
-                                            <span>작전 실행 요강 (Action Protocols)</span>
+                                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                                            <span>바이오해킹 & 작전 요강 (Bio-Hacking Protocols)</span>
                                         </div>
                                         <div className="space-y-2">
                                             {selectedCard.deepData?.points.map((pt: string, idx: number) => (
                                                 <div key={idx} className="p-3 rounded-xl bg-slate-950/70 border border-white/5 flex items-start gap-2.5">
-                                                    <span className="w-5 h-5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5 border border-amber-400/30">
+                                                    <span className="w-5 h-5 rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5 border border-emerald-400/30">
                                                         0{idx + 1}
                                                     </span>
                                                     <span className="text-gray-300 leading-relaxed">{pt}</span>
@@ -792,20 +974,20 @@ export default function TargetCoachingDashboard({
                                     </div>
                                 </div>
 
-                                {/* 하단 액션 버튼: 챗봇으로 1:1 연결 */}
+                                {/* 하단 액션 버튼: AI 웰니스 전담 코치와 1:1 연결 */}
                                 <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
                                     <div className="text-[11px] text-gray-400 flex items-center gap-1.5 self-start sm:self-center">
                                         <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                        <span>사주 원국 및 현재 시공간 데이터 결합 완료</span>
+                                        <span>사주 원국 & 서카디안 생체 데이터 결합 완료</span>
                                     </div>
 
                                     <button
                                         type="button"
                                         onClick={() => handleTriggerIntent(selectedCard.intent, selectedCard.title)}
-                                        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                                        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 hover:from-emerald-300 hover:to-cyan-300 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                                     >
                                         <Send className="w-3.5 h-3.5 fill-slate-950" />
-                                        <span>{selectedCard.deepData?.actionLabel || '이 전술로 AI 코치와 심층 대화하기 ➔'}</span>
+                                        <span>{selectedCard.deepData?.actionLabel || '1:1 웰니스 AI 코칭 시작하기 ➔'}</span>
                                     </button>
                                 </div>
                             </motion.div>
@@ -813,21 +995,21 @@ export default function TargetCoachingDashboard({
                     )}
                 </AnimatePresence>
 
-                {/* ── 6. 하단 액션 풋바 ── */}
+                {/* ── 6. 하단 웰니스 액션 풋바 ── */}
                 <div className="relative z-10 p-3 sm:p-4 border-t border-white/10 bg-slate-950/90 backdrop-blur-xl flex flex-wrap items-center justify-between gap-3 shrink-0">
                     <div className="flex items-center gap-2 text-[11px] text-gray-400">
-                        <Shield className="w-3.5 h-3.5 text-amber-400" />
-                        <span>사주 원국 8자 및 오늘 일진 기반 1:1 실시간 전술 코칭 엔진</span>
+                        <Leaf className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>사주 원국 8자 및 서카디안 호르몬 기반 1:1 전인적 웰니스 코칭 엔진</span>
                     </div>
 
                     <div className="flex items-center gap-2 ml-auto">
                         <button
                             type="button"
-                            onClick={() => handleTriggerIntent('golden_time_analysis', '골든타임 전술 브리핑')}
-                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                            onClick={() => handleTriggerIntent('golden_time_analysis', '골든타임 전인적 웰니스 브리핑')}
+                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
                         >
-                            <Zap className="w-3.5 h-3.5 text-slate-950 fill-slate-950" />
-                            <span>⚡ 오늘의 승부수 3S 브리핑 받기</span>
+                            <Heart className="w-3.5 h-3.5 text-slate-950 fill-slate-950" />
+                            <span>🌿 오늘의 심신 웰니스 & 승부수 브리핑 받기</span>
                         </button>
                     </div>
                 </div>

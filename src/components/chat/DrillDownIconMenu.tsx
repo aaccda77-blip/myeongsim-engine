@@ -2219,26 +2219,26 @@ export default function DrillDownIconMenu({
                                     setShowTargetDashboard(true);
                                     handleClose();
                                 }}
-                                className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-amber-950/80 via-yellow-950/70 to-slate-950 border-2 border-amber-400/50 shadow-[0_0_30px_rgba(245,158,11,0.35)] cursor-pointer hover:border-amber-300 hover:scale-[1.01] transition-all flex items-center justify-between group"
+                                className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-emerald-950/85 via-slate-950 to-amber-950/75 border-2 border-emerald-400/50 shadow-[0_0_30px_rgba(16,185,129,0.3)] cursor-pointer hover:border-emerald-300 hover:scale-[1.01] transition-all flex items-center justify-between group"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="size-11 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-2xl animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.4)]">
-                                        🎯
+                                    <div className="size-11 rounded-xl bg-emerald-400/20 border border-emerald-300/40 flex items-center justify-center text-2xl animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                                        🌿
                                     </div>
                                     <div>
                                         <div className="text-sm font-black text-white flex items-center gap-1.5">
-                                            <span>타겟 코칭 전술 지휘 본부 대시보드</span>
-                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-mono font-black shadow-sm">
-                                                FULL HUD
+                                            <span>타겟 웰니스 & 전술 지휘 본부 대시보드</span>
+                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-mono font-black shadow-sm">
+                                                WELLNESS HUD
                                             </span>
                                         </div>
-                                        <p className="text-xs text-amber-200/90 mt-0.5 font-medium">
-                                            승부수 골든타임 · 10대 전술 매트릭스 · 3D 레이더 조준경
+                                        <p className="text-xs text-emerald-200/90 mt-0.5 font-medium">
+                                            서카디안 골든타임 · 5대 장부 바이오해킹 · 1:1 심신 웰니스
                                         </p>
                                     </div>
                                 </div>
-                                <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/30 flex items-center gap-1 shrink-0 group-hover:brightness-110">
-                                    <span>대시보드 열기</span>
+                                <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-black text-xs shadow-md shadow-emerald-500/30 flex items-center gap-1 shrink-0 group-hover:brightness-110">
+                                    <span>웰니스 열기</span>
                                     <span>→</span>
                                 </div>
                             </div>
