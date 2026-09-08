@@ -298,6 +298,20 @@ export default function MicroChatPassModal({
                                         <CreditCard className="w-4 h-4 text-slate-950" />
                                         <span>{isProcessing ? '처리 중...' : '⚡ 98,000원 입금 완료 신청 및 승인 요청 ➔'}</span>
                                     </button>
+
+                                    <div className="pt-2 border-t border-white/10 text-center">
+                                        <p className="text-[10px] text-gray-400 mb-1.5">
+                                            💳 네이버페이 / 카드 간편 결제를 원하시나요?
+                                        </p>
+                                        <a
+                                            href="https://smartstore.naver.com/cheongryubooks/products/13751650301"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all text-center cursor-pointer"
+                                        >
+                                            <span>🛒 네이버 스마트스토어에서 결제하기 ➔</span>
+                                        </a>
+                                    </div>
                                 </div>
                             ) : (
                                 /* 입금 확인 요청 완료 & 승인 확인 안내 화면 */
@@ -392,6 +406,21 @@ export default function MicroChatPassModal({
                                 <Sparkles className="w-4 h-4 fill-current" />
                                 <span>주문/영수증 인증하고 혜택 해금 ➔</span>
                             </button>
+
+                            {/* 네이버 스마트스토어 바로 구매 링크 */}
+                            <div className="pt-2 border-t border-white/10 text-center">
+                                <p className="text-[10.5px] text-gray-400 mb-2">
+                                    📚 아직 도서가 없으신가요? 스마트스토어에서 결제 시 16자리 주문번호가 즉시 발급됩니다:
+                                </p>
+                                <a
+                                    href="https://smartstore.naver.com/cheongryubooks/products/13751650301"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:brightness-110 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md transition-all text-center cursor-pointer"
+                                >
+                                    <span>🛍️ 네이버 스마트스토어에서 구매하기 ➔</span>
+                                </a>
+                            </div>
                         </div>
                     )}
 

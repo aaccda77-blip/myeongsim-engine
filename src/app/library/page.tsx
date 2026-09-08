@@ -29,7 +29,7 @@ const BOOK_INFO = {
     isbn: '979-11-220953-0-2',
     price: '11,000원',
     yes24Url: 'https://www.yes24.com/product/goods/195946431',
-    smartstoreUrl: 'https://smartstore.naver.com/cheongryubooks',
+    smartstoreUrl: 'https://smartstore.naver.com/cheongryubooks/products/13751650301',
     totalPages: 309
 };
 

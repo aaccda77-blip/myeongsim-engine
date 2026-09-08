@@ -239,7 +239,7 @@ export default function PaymentCard({ onDetailedReport, userId = 'guest-id' }: P
                         </div>
 
                         <a
-                            href="https://smartstore.naver.com"
+                            href="https://smartstore.naver.com/cheongryubooks/products/13751650301"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98]"

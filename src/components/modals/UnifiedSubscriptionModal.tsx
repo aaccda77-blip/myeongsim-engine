@@ -288,7 +288,7 @@ export default function UnifiedSubscriptionModal({
                             {tab === 'info' && (
                                 <div className="space-y-2.5 pt-1 animate-fade-in">
                                     <a
-                                        href="https://smartstore.naver.com"
+                                        href="https://smartstore.naver.com/cheongryubooks/products/13751650301"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(251,191,36,0.4)] transition-all cursor-pointer active:scale-[0.98]"

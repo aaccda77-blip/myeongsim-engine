@@ -964,14 +964,25 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                         </div>
 
                         {/* Modal Trigger Button */}
-                        <button
-                            type="button"
-                            onClick={() => setShowMicroPassModal(true)}
-                            className="w-full max-w-md py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-base sm:text-lg shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer mx-auto"
-                        >
-                            <Zap className="w-5 h-5 text-slate-950 fill-slate-950" />
-                            <span>✨ 도서 인증 / 무통장 충전하기 ➔</span>
-                        </button>
+                        <div className="flex flex-col gap-2 w-full max-w-md mx-auto">
+                            <button
+                                type="button"
+                                onClick={() => setShowMicroPassModal(true)}
+                                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-base sm:text-lg shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                                <Zap className="w-5 h-5 text-slate-950 fill-slate-950" />
+                                <span>✨ 도서 인증 / 무통장 충전하기 ➔</span>
+                            </button>
+
+                            <a
+                                href="https://smartstore.naver.com/cheongryubooks/products/13751650301"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-2.5 px-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all text-center cursor-pointer shadow-md"
+                            >
+                                <span>🛍️ 네이버 스마트스토어에서 도서 구매하기 ➔</span>
+                            </a>
+                        </div>
                     </motion.div>
                 )}
 

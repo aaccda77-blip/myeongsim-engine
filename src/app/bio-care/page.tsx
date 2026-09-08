@@ -127,7 +127,7 @@ export default function BioCarePage() {
                         </button>
 
                         <a
-                            href="https://smartstore.naver.com/cheongryubooks"
+                            href="https://smartstore.naver.com/cheongryubooks/products/13751650301"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-amber-300 border border-amber-400/30 font-bold text-xs flex items-center justify-center gap-2 transition-all"

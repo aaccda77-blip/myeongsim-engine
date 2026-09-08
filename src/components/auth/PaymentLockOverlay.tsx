@@ -605,7 +605,7 @@ export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOve
                             </p>
                             <div className="grid grid-cols-2 gap-2">
                                 <a
-                                    href="https://smartstore.naver.com/cheongryubooks"
+                                    href="https://smartstore.naver.com/cheongryubooks/products/13751650301"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-amber-400/30 transition-all text-center"

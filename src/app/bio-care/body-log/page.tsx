@@ -183,7 +183,7 @@ export default function BodyLogPage() {
                             <span>{isCheckingApproval ? '승인 상태 확인 중...' : '⚡ 관리자 승인 완료 확인 (새로고침)'}</span>
                         </button>
                         <a
-                            href="https://smartstore.naver.com"
+                            href="https://smartstore.naver.com/cheongryubooks/products/13751650301"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
