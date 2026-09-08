@@ -3,7 +3,9 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { X, ExternalLink, Shield, Sparkles, BookOpen, User, Briefcase, Activity, Heart, HelpCircle } from 'lucide-react';
+import { X, ExternalLink, Shield, Sparkles, BookOpen, User, Briefcase, Activity, Heart, HelpCircle, Calendar } from 'lucide-react';
+import { useReportStore } from '@/store/useReportStore';
+import { useViewMode } from '@/hooks/useViewMode';
 
 interface SimpleAllFeaturesDrawerProps {
     isOpen: boolean;
@@ -17,13 +19,22 @@ export function SimpleAllFeaturesDrawer({
     onSelectReport
 }: SimpleAllFeaturesDrawerProps) {
     const router = useRouter();
+    const { setViewMode } = useViewMode();
 
     if (!isOpen) return null;
+
+    const handleGoToBirthdate = () => {
+        onClose();
+        useReportStore.getState().setStep(1);
+        setViewMode('classic');
+        router.push('/report');
+    };
 
     const sections = [
         {
             category: '나를 이해하기',
             items: [
+                { title: '📅 생년월일·사주 재입력 페이지', desc: '선천 생년월시 및 양력/음력 만세력 분석', action: handleGoToBirthdate },
                 { title: '나의 리포트 (기질·성격 분석)', desc: '14단계 입체 기질 진단서', action: () => { onClose(); onSelectReport(); } },
                 { title: '바이오-싱크 (생체 동기화)', desc: '실시간 심박/스트레스 관리', action: () => { onClose(); router.push('/bio-care'); } },
                 { title: '3D 신경망 정밀 진단', desc: 'X/Y/Z 축 3-Code 의식 측정', action: () => { onClose(); router.push('/neural-diagnosis'); } },
