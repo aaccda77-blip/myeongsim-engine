@@ -221,7 +221,7 @@ export function recordApprovedUser(record: {
 export function lookupApprovedUser(params: { userId?: string; name?: string; email?: string; phone?: string }): ApprovedUserRecord | undefined {
     loadApprovedUsersFromFile();
     const { userId, name, email, phone } = params;
-    const cleanName = (name || '').trim().toLowerCase();
+    const cleanName = (name || '').replace('[입금신청]', '').replace(/\s+/g, '').toLowerCase();
     const cleanEmail = (email || '').trim().toLowerCase();
     const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
 
@@ -229,9 +229,21 @@ export function lookupApprovedUser(params: { userId?: string; name?: string; ema
         if (a.status === 'LOCKED') return false;
         if (userId && (a.userId === userId || a.userId.toLowerCase() === userId.toLowerCase())) return true;
         if (cleanEmail && a.email && a.email.toLowerCase() === cleanEmail) return true;
-        if (cleanName && a.name && (a.name.toLowerCase() === cleanName || a.name.toLowerCase().includes(cleanName) || cleanName.includes(a.name.toLowerCase()))) return true;
-        if (cleanName && a.depositorName && (a.depositorName.toLowerCase() === cleanName || a.depositorName.toLowerCase().includes(cleanName) || cleanName.includes(a.depositorName.toLowerCase()))) return true;
-        if (cleanPhone && a.phone && a.phone.replace(/[^0-9]/g, '') === cleanPhone) return true;
+
+        const aName = (a.name || '').replace('[입금신청]', '').replace(/\s+/g, '').toLowerCase();
+        const aDepName = (a.depositorName || '').replace('[입금신청]', '').replace(/\s+/g, '').toLowerCase();
+
+        if (cleanName && cleanName.length >= 2) {
+            if (aName === cleanName || (aName.length >= 2 && (aName.includes(cleanName) || cleanName.includes(aName)))) return true;
+            if (aDepName === cleanName || (aDepName.length >= 2 && (aDepName.includes(cleanName) || cleanName.includes(aDepName)))) return true;
+        }
+
+        if (cleanPhone && cleanPhone.length >= 4 && a.phone) {
+            const aPhone = a.phone.replace(/[^0-9]/g, '');
+            if (aPhone === cleanPhone) return true;
+            if (cleanPhone.length >= 7 && (aPhone.endsWith(cleanPhone.slice(-7)) || cleanPhone.endsWith(aPhone.slice(-7)))) return true;
+            if (cleanPhone.length >= 4 && aPhone.endsWith(cleanPhone.slice(-4))) return true;
+        }
         return false;
     });
 }

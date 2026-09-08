@@ -50,14 +50,18 @@ export function useSubscription(): SubscriptionState {
 
             const storedUserId = sessionUid || localStorage.getItem('user_id') || localStorage.getItem('myeongsim_user_id') || localStorage.getItem('myeongsim_phone') || '';
             const storedName = localStorage.getItem('user_name') || localStorage.getItem('myeongsim_depositor_name') || localStorage.getItem('myeongsim_user_name') || '';
-            const storedEmail = sessionEmail || localStorage.getItem('user_email') || '';
+            const storedEmail = sessionEmail || localStorage.getItem('user_email') || localStorage.getItem('myeongsim_email') || '';
+            const storedPhone = localStorage.getItem('myeongsim_phone') || '';
+            const storedOrder = localStorage.getItem('myeongsim_verified_order') || '';
 
             // 사용자 식별 정보가 있으면 서버에 승인 여부 확인
-            if (storedUserId || storedName || storedEmail) {
+            if (storedUserId || storedName || storedEmail || storedPhone || storedOrder) {
                 const params = new URLSearchParams();
                 if (storedUserId) params.set('userId', storedUserId);
                 if (storedName) params.set('name', storedName);
                 if (storedEmail) params.set('email', storedEmail);
+                if (storedPhone) params.set('phone', storedPhone);
+                if (storedOrder) params.set('orderNumber', storedOrder);
 
                 const res = await fetch(`/api/payment/check-approval?${params.toString()}&t=${Date.now()}`, {
                     cache: 'no-store'
@@ -90,10 +94,27 @@ export function useSubscription(): SubscriptionState {
     const refreshStatus = useCallback(async () => {
         if (typeof window === 'undefined') return;
 
-        // 1. 서버 승인 상태 동기화
+        // 1. 관리자 세션 즉각 감지 (관리자는 100% 무조건 모든 기능 영구 해금)
+        const isAdmin = typeof document !== 'undefined' && (
+            document.cookie.includes('admin_session=') ||
+            sessionStorage.getItem('myeongsim_admin_authed') === 'true' ||
+            sessionStorage.getItem('myeongsim_admin_authenticated') === 'true' ||
+            localStorage.getItem('myeongsim_admin_authenticated') === 'true'
+        );
+
+        if (isAdmin) {
+            grantUserApprovalSync('MONTHLY_98K');
+            setIsMonthlyVip(true);
+            setIsBookZeroPoint(true);
+            setIsPaidUser(true);
+            setIsExpired(false);
+            return;
+        }
+
+        // 2. 서버 승인 상태 동기화
         await syncWithServer();
 
-        // 2. 권한 확인: 쿠키, 사이트 액세스, 로컬스토리지 권한 종합 인정
+        // 3. 권한 확인: 쿠키, 사이트 액세스, 로컬스토리지 권한 종합 인정
         const siteAccessCookie = typeof document !== 'undefined' && (
             document.cookie.includes('myeongsim_site_access=granted') ||
             document.cookie.includes('myeongsim_site_access_client=granted') ||
@@ -109,7 +130,7 @@ export function useSubscription(): SubscriptionState {
         // 만료일 체크 (무료 맛보기 체험자에게만 적용, 승인/유료 회원은 영구 또는 30일 유효)
         const isTrialActive = localStorage.getItem('myeongsim_trial_active') === 'true';
         let expired = false;
-        if (isTrialActive && !serverApproved && !monthly && !book) {
+        if (isTrialActive && !serverApproved && !monthly && !book && !siteAccess && !isAdmin) {
             const expiresAtStr = localStorage.getItem('myeongsim_expires_at');
             if (expiresAtStr) {
                 const expTime = new Date(expiresAtStr).getTime();
@@ -120,9 +141,10 @@ export function useSubscription(): SubscriptionState {
         }
         setIsExpired(expired);
 
-        setIsMonthlyVip(monthly || serverApproved);
-        setIsBookZeroPoint(book);
-        setIsPaidUser((monthly || book || paid || serverApproved) && !expired);
+        const isVipFull = Boolean(isAdmin || monthly || serverApproved || siteAccess);
+        setIsMonthlyVip(isVipFull);
+        setIsBookZeroPoint(Boolean(book || isVipFull));
+        setIsPaidUser(Boolean(isVipFull || book || paid) && !expired);
     }, [syncWithServer]);
 
     useEffect(() => {
@@ -159,8 +181,8 @@ export function useSubscription(): SubscriptionState {
         ? 'BOOK_ZERO_POINT' 
         : 'GUEST';
 
-    const canAccessDeepFeatures = isMonthlyVip;
-    const canAccessZeroPoint = isMonthlyVip || isBookZeroPoint || isPaidUser;
+    const canAccessDeepFeatures = Boolean(isMonthlyVip);
+    const canAccessZeroPoint = Boolean(isMonthlyVip || isBookZeroPoint || isPaidUser);
 
     return {
         isMonthlyVip,

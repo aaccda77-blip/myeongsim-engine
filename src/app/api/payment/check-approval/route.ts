@@ -18,6 +18,21 @@ export async function GET(req: NextRequest) {
         let userId = userIdParam;
         let email = emailParam;
 
+        // ⚡ [최고 관리자 프리패스] 관리자 세션 쿠키가 있으면 무조건 ALL-PASS 완전 해금!
+        const adminSessionCookie = req.cookies.get('admin_session')?.value || '';
+        const clientAdminCookie = req.cookies.get('myeongsim_admin_authenticated')?.value || '';
+        if (adminSessionCookie || clientAdminCookie) {
+            return NextResponse.json({
+                approved: true,
+                chatTurnsLeft: 9999,
+                tier: 'MONTHLY_98K',
+                unlockedModules: ['all_pass', 'monthly_vip', 'watch_9_dials', 'bio_care', 'zero_music', 'coaching_50', 'report_108'],
+                message: '👑 [최고 관리자] ALL-PASS 정상 해금 완료'
+            }, {
+                headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+            });
+        }
+
         // ⚡ [모바일 자동 감지] 헤더 또는 쿠키의 Supabase Auth 토큰에서 로그인 유저 자동 추출
         if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
             try {

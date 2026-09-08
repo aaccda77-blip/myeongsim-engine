@@ -6,9 +6,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { 
     Users, Search, ShieldCheck, Clock, RefreshCw, Trash2, Compass, Share2, Shield, Lock, AlertTriangle, CheckCircle2, MapPin, PieChart, UserCheck2, 
-    UserCheck, CreditCard, Sparkles, Filter, ChevronRight, Key, Calendar, Zap, TrendingUp, Eye, UserPlus, DollarSign
+    UserCheck, CreditCard, Sparkles, Filter, ChevronRight, Key, Calendar, Zap, TrendingUp, Eye, UserPlus, DollarSign, Home
 } from 'lucide-react';
 import MyeongsimSunLogo from '@/components/common/MyeongsimSunLogo';
+import { grantUserApprovalSync } from '@/lib/authGuardUtils';
 
 interface Subscriber {
     name?: string;
@@ -161,6 +162,13 @@ export default function AdminUsersPage() {
             });
             const data = await response.json();
             if (data.success) {
+                // [NEW] 관리자 브라우저에서도 즉시 VIP 전체 해금 적용
+                grantUserApprovalSync(mappedTier);
+                localStorage.setItem('myeongsim_server_approved', 'true');
+                localStorage.setItem('myeongsim_site_access', 'granted');
+                localStorage.setItem('myeongsim_monthly_vip', 'true');
+                localStorage.setItem('myeongsim_paid_user', 'true');
+
                 if (mappedTier === 'MONTHLY_98K') {
                     alert(`👑 [특허출원 월정액 98,000원 ALL-PASS] 승인 완료!\n\n회원: ${userCleanName || userId}\n워치 9대 킬러 다이얼 + 1:1 일진 선언문 + 명심 3D 입체 사운드 + 바이오케어 + 108 리포트 123개 전 페이지가 완전 해금되었습니다.\n\n👉 [🎉 승인 완료 내역] 탭으로 이동하여 방금 승인한 내역을 확인합니다.`);
                 } else if (mappedTier === 'BOOK_ZERO_POINT') {
@@ -440,18 +448,41 @@ export default function AdminUsersPage() {
                         <p className="text-xs text-gray-400">전체 회원 등급, 월 98,000원 VIP ALL-PASS 승인 및 실시간 가입 현황</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                    <button
+                        onClick={() => {
+                            grantUserApprovalSync('MONTHLY_98K');
+                            localStorage.setItem('myeongsim_server_approved', 'true');
+                            localStorage.setItem('myeongsim_site_access', 'granted');
+                            localStorage.setItem('myeongsim_monthly_vip', 'true');
+                            localStorage.setItem('myeongsim_paid_user', 'true');
+                            alert('👑 [대표님 브라우저 해금 완료]\n\n현재 사용 중이신 기기의 모든 124개 서비스가 영구 해금되었습니다!\n홈 화면으로 가시면 모든 자물쇠(🔒)가 풀려 있습니다.');
+                        }}
+                        className="px-3.5 py-2 bg-gradient-to-r from-amber-500/30 via-yellow-500/30 to-amber-500/20 hover:from-amber-500/40 hover:to-yellow-500/40 text-amber-300 border border-amber-500/50 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-amber-500/10 cursor-pointer active:scale-95"
+                        title="현재 사용 중인 브라우저의 모든 124개 잠금장치를 0.001초 만에 즉시 풉니다"
+                    >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                        <span>👑 내 브라우저 VIP 즉시 해금</span>
+                    </button>
+                    <Link
+                        href="/"
+                        className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer text-slate-200"
+                        title="메인 홈 화면으로 이동"
+                    >
+                        <Home className="w-3.5 h-3.5 text-slate-300" />
+                        <span>🏠 홈 화면</span>
+                    </Link>
                     <Link
                         href="/admin/trace"
                         className="px-3.5 py-2 bg-gradient-to-r from-red-500/20 to-amber-500/20 hover:from-red-500/30 hover:to-amber-500/30 text-amber-300 border border-amber-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
                         title="불법 유출자 포렌식 역추적기"
                     >
                         <Shield className="w-3.5 h-3.5 text-amber-400" />
-                        <span>🚨 포렌식 역추적기</span>
+                        <span>🚨 포렌식</span>
                     </Link>
                     <button
                         onClick={fetchUsers}
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+                        className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                         <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> 새로고침
                     </button>

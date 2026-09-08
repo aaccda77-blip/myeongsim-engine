@@ -71,9 +71,23 @@ export default function UnifiedSubscriptionModal({
     const handleCheckApprovalStatus = async () => {
         setIsCheckingApproval(true);
         try {
-            const storedName = localStorage.getItem('myeongsim_depositor_name') || depositorName.trim();
-            const storedUserId = localStorage.getItem('myeongsim_user_id') || phone.trim() || '';
-            const storedEmail = localStorage.getItem('myeongsim_email') || '';
+            // 1. 관리자 세션인 경우 즉시 무조건 완전 해금
+            const isAdmin = typeof document !== 'undefined' && (
+                document.cookie.includes('admin_session=') ||
+                sessionStorage.getItem('myeongsim_admin_authed') === 'true' ||
+                sessionStorage.getItem('myeongsim_admin_authenticated') === 'true' ||
+                localStorage.getItem('myeongsim_admin_authenticated') === 'true'
+            );
+            if (isAdmin) {
+                grantUserApprovalSync('MONTHLY_98K');
+                alert('👑 [최고 관리자 인증] 모든 124개 VIP 서비스가 즉시 해금되었습니다!');
+                onClose();
+                return;
+            }
+
+            const storedName = localStorage.getItem('myeongsim_depositor_name') || localStorage.getItem('user_name') || depositorName.trim();
+            const storedUserId = localStorage.getItem('myeongsim_user_id') || localStorage.getItem('user_id') || phone.trim() || '';
+            const storedEmail = localStorage.getItem('myeongsim_email') || localStorage.getItem('user_email') || '';
             const storedPhone = localStorage.getItem('myeongsim_phone') || phone.trim() || '';
             const storedOrder = localStorage.getItem('myeongsim_verified_order') || '';
 
@@ -188,6 +202,22 @@ export default function UnifiedSubscriptionModal({
                         </div>
                     ) : (
                         <>
+                            {/* 이미 승인/입금 완료한 사용자를 위한 빠른 해금 버튼 */}
+                            <div className="p-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/10 border border-amber-400/40 flex items-center justify-between gap-2">
+                                <div className="text-[11px] text-amber-200">
+                                    <span className="font-bold">이미 관리자 승인을 받으셨나요?</span>
+                                    <span className="text-[10px] text-gray-400 block">버튼을 누르면 1초 만에 모든 잠금이 해제됩니다.</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleCheckApprovalStatus}
+                                    disabled={isCheckingApproval}
+                                    className="px-3 py-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shrink-0 shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                                >
+                                    {isCheckingApproval ? '확인 중...' : '⚡ 즉시 잠금 해제'}
+                                </button>
+                            </div>
+
                             {/* 포함 혜택 5대 핵심 가치 스택 */}
                             <div className="space-y-2 bg-white/[0.03] p-3.5 rounded-2xl border border-white/10">
                                 <span className="text-[11px] font-mono font-bold text-amber-300 flex items-center gap-1 mb-1">

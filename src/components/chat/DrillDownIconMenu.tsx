@@ -22,6 +22,7 @@ import HealingMusicPlayerModal from '@/components/chat/HealingMusicPlayerModal';
 import { assembleFullReport } from '@/services/ReportAssembler';
 import { useReportStore } from '@/store/useReportStore'; // [New] Import for navigation
 import { useSubscription } from '@/hooks/useSubscription'; // [NEW] 이용권 상태 확인
+import { isUserApprovedSync } from '@/lib/authGuardUtils'; // [NEW] 실시간 동기식 권한 검증
 import { useLanguage } from '@/contexts/LanguageContext'; // [Multi-Language]
 import {
     ICON_DRILL_DOWN_MAP,
@@ -468,13 +469,17 @@ export default function DrillDownIconMenu({
     const { 
         isMonthlyVip, 
         isBookZeroPoint, 
-        canAccessDeepFeatures, 
-        canAccessZeroPoint, 
+        canAccessDeepFeatures: rawCanAccessDeep, 
+        canAccessZeroPoint: rawCanAccessZero, 
         openModal, 
         isModalOpen, 
         closeModal, 
         modalFeatureName 
     } = useSubscription();
+
+    const isMasterApproved = typeof window !== 'undefined' ? isUserApprovedSync() : false;
+    const canAccessDeepFeatures = Boolean(rawCanAccessDeep || isMasterApproved);
+    const canAccessZeroPoint = Boolean(rawCanAccessZero || isMasterApproved);
 
     const renderLockBadge = (isDeep: boolean = true) => {
         const isLocked = isDeep ? !canAccessDeepFeatures : !canAccessZeroPoint;
