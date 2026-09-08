@@ -74,6 +74,7 @@ const ZeroPointMusicModal = dynamic(() => import('@/components/coaching/ZeroPoin
 const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/AwarenessQuestDashboard'), { ssr: false });
 const UnifiedSubscriptionModal = dynamic(() => import('@/components/modals/UnifiedSubscriptionModal'), { ssr: false });
 const BusinessArchitectureDashboard = dynamic(() => import('@/components/startup/BusinessArchitectureDashboard'), { ssr: false });
+const TargetCoachingDashboard = dynamic(() => import('@/components/coaching/TargetCoachingDashboard'), { ssr: false });
 
 
 
@@ -573,6 +574,8 @@ export default function DrillDownIconMenu({
     const [awarenessQuestInitialPhase, setAwarenessQuestInitialPhase] = useState('all');
     const [showBusinessArchitecture, setShowBusinessArchitecture] = useState(false); // [NEW] 비즈니스 아키텍처 대시보드
     const [businessArchitectureTab, setBusinessArchitectureTab] = useState<'dna' | 'wealth' | 'timing'>('dna');
+    const [showTargetDashboard, setShowTargetDashboard] = useState(false); // [NEW] 타겟 코칭 전술 지휘 본부 대시보드
+    const [targetDashboardTab, setTargetDashboardTab] = useState<'all' | 'timing' | 'solution' | 'tactics'>('all');
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
@@ -1979,24 +1982,43 @@ export default function DrillDownIconMenu({
                         sub: icon.neuro_trigger // Or translate trigger if needed
                     };
 
+                    const isStrategy = icon.id === 'STRATEGY_LAB';
+
                     return (
                         <button
                             key={icon.id}
-                            style={styles.iconButton}
+                            style={{
+                                ...styles.iconButton,
+                                ...(isStrategy ? { position: 'relative' } : {})
+                            }}
                             onMouseEnter={() => setHoveredIcon(icon.id)}
                             onMouseLeave={() => setHoveredIcon(null)}
                             onClick={() => handleIconClick(icon)}
                         >
-                            {/* 추천 배지 */}
-                            {(icon as any).badge && (
+                            {/* 추천 배지 or 타겟 코칭 전용 HUD 배지 */}
+                            {isStrategy ? (
+                                <span style={{
+                                    ...styles.badge,
+                                    background: 'linear-gradient(135deg, #f59e0b, #ef4444)',
+                                    color: '#fff',
+                                    boxShadow: '0 0 10px rgba(245, 158, 11, 0.6)',
+                                    animation: 'pulse 2s infinite'
+                                }}>
+                                    🎯 전술 HUD
+                                </span>
+                            ) : (icon as any).badge ? (
                                 <span style={styles.badge}>{(icon as any).badge}</span>
-                            )}
+                            ) : null}
 
                             {/* 3D 아이콘 컨테이너 */}
                             <div
                                 style={{
                                     ...styles.iconWrapper,
                                     ...(isHovered ? styles.iconWrapperHover : {}),
+                                    ...(isStrategy ? {
+                                        boxShadow: '0 0 16px rgba(245, 158, 11, 0.4)',
+                                        border: '1.5px solid rgba(245, 158, 11, 0.6)'
+                                    } : {})
                                 }}
                                 className={getIconStyleClass(icon.style)}
                             >
@@ -2004,7 +2026,10 @@ export default function DrillDownIconMenu({
                             </div>
 
                             {/* 라벨 */}
-                            <span style={styles.iconLabel}>
+                            <span style={{
+                                ...styles.iconLabel,
+                                ...(isStrategy ? { color: '#FBBF24', fontWeight: 700 } : {})
+                            }}>
                                 {friendlyLabel?.main || icon.label}
                             </span>
 
@@ -2137,6 +2162,39 @@ export default function DrillDownIconMenu({
                             </div>
                         )}
 
+                        {/* 🎯 타겟 코칭 전술 지휘 본부 대시보드 런처 배너 */}
+                        {selectedIcon.id === 'STRATEGY_LAB' && (
+                            <div 
+                                onClick={() => {
+                                    setTargetDashboardTab('all');
+                                    setShowTargetDashboard(true);
+                                    handleClose();
+                                }}
+                                className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-amber-950/80 via-yellow-950/70 to-slate-950 border-2 border-amber-400/50 shadow-[0_0_30px_rgba(245,158,11,0.35)] cursor-pointer hover:border-amber-300 hover:scale-[1.01] transition-all flex items-center justify-between group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="size-11 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-2xl animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                                        🎯
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-black text-white flex items-center gap-1.5">
+                                            <span>타겟 코칭 전술 지휘 본부 대시보드</span>
+                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-mono font-black shadow-sm">
+                                                FULL HUD
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-amber-200/90 mt-0.5 font-medium">
+                                            승부수 골든타임 · 10대 전술 매트릭스 · 3D 레이더 조준경
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/30 flex items-center gap-1 shrink-0 group-hover:brightness-110">
+                                    <span>대시보드 열기</span>
+                                    <span>→</span>
+                                </div>
+                            </div>
+                        )}
+
                         {/* 서브메뉴 리스트 (Dynamic Rendering) */}
                         <div style={{ paddingBottom: '20px' }}>
                             {/* currentMenuDepth를 우선 사용, 없으면(초기) selectedIcon.sub_menus 사용 */}
@@ -2153,11 +2211,68 @@ export default function DrillDownIconMenu({
                                 const resolvedLabel = resolveDynamicText(baseLabel, userProfile, t);
                                 const resolvedDesc = resolveDynamicText(baseDesc, userProfile, t);
 
+                                // 🎯 [타겟 코칭 전용 고품질 전술 스타일링]
+                                const isStrategyLab = selectedIcon.id === 'STRATEGY_LAB';
+                                let customIcon = subItem.children ? '📂' : (subItem.icon || selectedIcon.icon);
+                                let tacticalBadge = null;
+                                let customItemStyle: React.CSSProperties = {};
+
+                                if (isStrategyLab) {
+                                    if (subItem.id === 'strat_2_1') {
+                                        customIcon = '🎯';
+                                        tacticalBadge = '승부수 조준';
+                                        customItemStyle = {
+                                            background: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(15,20,35,0.9) 100%)',
+                                            border: '1px solid rgba(245,158,11,0.35)',
+                                            boxShadow: '0 4px 15px rgba(245,158,11,0.1)'
+                                        };
+                                    } else if (subItem.id === 'strat_2_2') {
+                                        customIcon = '🧪';
+                                        tacticalBadge = '결핍 보완';
+                                        customItemStyle = {
+                                            background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(15,20,35,0.9) 100%)',
+                                            border: '1px solid rgba(16,185,129,0.35)',
+                                            boxShadow: '0 4px 15px rgba(16,185,129,0.1)'
+                                        };
+                                    } else if (subItem.id === 'strat_2_3') {
+                                        customIcon = '⚡';
+                                        tacticalBadge = '환경 최적화';
+                                        customItemStyle = {
+                                            background: 'linear-gradient(135deg, rgba(6,182,212,0.12) 0%, rgba(15,20,35,0.9) 100%)',
+                                            border: '1px solid rgba(6,182,212,0.35)',
+                                            boxShadow: '0 4px 15px rgba(6,182,212,0.1)'
+                                        };
+                                    } else {
+                                        // 하위 세부 전술 항목들
+                                        const TACTICAL_CHILD_ICONS: Record<string, { icon: string; badge: string }> = {
+                                            'sl_15': { icon: '📈', badge: '10년 판세' },
+                                            'sl_20': { icon: '⚡', badge: '오늘 미션' },
+                                            'sl_26': { icon: '⏰', badge: '골든타임' },
+                                            'sl_17': { icon: '🛡️', badge: '공격/수비' },
+                                            'sl_16': { icon: '📊', badge: '5대 에너지' },
+                                            'sl_18': { icon: '🗝️', badge: '비밀병기' },
+                                            'sl_39': { icon: '✍️', badge: '성명학 튜닝' },
+                                            'sl_21': { icon: '🔮', badge: '주역 64괘' },
+                                            'sl_29': { icon: '🧭', badge: '기문둔갑' },
+                                            'sl_32': { icon: '🌐', badge: '실시간 융합' },
+                                        };
+                                        if (TACTICAL_CHILD_ICONS[subItem.id]) {
+                                            customIcon = TACTICAL_CHILD_ICONS[subItem.id].icon;
+                                            tacticalBadge = TACTICAL_CHILD_ICONS[subItem.id].badge;
+                                        }
+                                        customItemStyle = {
+                                            background: 'rgba(255,255,255,0.04)',
+                                            border: '1px solid rgba(245,158,11,0.2)'
+                                        };
+                                    }
+                                }
+
                                 return (
                                     <div
                                         key={subItem.id}
                                         style={{
                                             ...styles.subMenuItem,
+                                            ...customItemStyle,
                                             ...(isHovered ? styles.subMenuItemHover : {}),
                                         }}
                                         onMouseEnter={() => setHoveredSubItem(subItem.id)}
@@ -2165,20 +2280,46 @@ export default function DrillDownIconMenu({
                                         onClick={() => handleSubMenuSelect(subItem)}
                                     >
                                         <span style={styles.subMenuIcon}>
-                                            {/* 하위 메뉴가 있으면 폴더 아이콘, 아니면 메인 아이콘/기본값 */}
-                                            {subItem.children ? '📂' : (subItem.icon || selectedIcon.icon)}
+                                            {customIcon}
                                         </span>
                                         <div style={{ flex: 1 }}>
-                                            <div style={styles.subMenuLabel}>{resolvedLabel}</div>
+                                            <div style={{ ...styles.subMenuLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <span>{resolvedLabel}</span>
+                                                {tacticalBadge && (
+                                                    <span style={{
+                                                        fontSize: '10px',
+                                                        padding: '1px 6px',
+                                                        borderRadius: '6px',
+                                                        background: 'rgba(245,158,11,0.2)',
+                                                        color: '#FCD34D',
+                                                        fontWeight: 700,
+                                                        border: '1px solid rgba(245,158,11,0.3)'
+                                                    }}>
+                                                        {tacticalBadge}
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div style={styles.subMenuDesc}>{resolvedDesc}</div>
                                         </div>
 
                                         {/* 네비게이션 화살표 or 프리미엄 배지 */}
                                         {subItem.children ? (
                                             <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>ᐳ</span>
-                                        ) : subItem.isPremium && (
+                                        ) : subItem.isPremium ? (
                                             <span style={styles.premiumBadge}>PRO</span>
-                                        )}
+                                        ) : isStrategyLab ? (
+                                            <span style={{
+                                                fontSize: '10.5px',
+                                                padding: '3px 8px',
+                                                borderRadius: '8px',
+                                                background: 'rgba(245,158,11,0.15)',
+                                                color: '#FBBF24',
+                                                fontWeight: 700,
+                                                border: '1px solid rgba(245,158,11,0.3)'
+                                            }}>
+                                                실행 ➔
+                                            </span>
+                                        ) : null}
                                     </div>
                                 );
                             })}
@@ -2564,6 +2705,24 @@ export default function DrillDownIconMenu({
                             userProfile={userProfile || reportData}
                             onChatIntent={(intent, prompt) => {
                                 setShowBusinessArchitecture(false);
+                                onSelectIntent(intent, prompt);
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* [NEW] 🎯 타겟 코칭 전술 지휘 본부 대시보드 모달 (사이버네틱 HUD) */}
+            {showTargetDashboard && (
+                <div className="fixed inset-0 z-[2100] flex items-end md:items-center justify-center bg-black/85 backdrop-blur-md p-0 md:p-6 animate-in fade-in duration-200">
+                    <div className="w-full max-w-5xl max-h-[92vh] flex flex-col rounded-3xl overflow-hidden border border-amber-400/40 shadow-2xl">
+                        <TargetCoachingDashboard
+                            isOpen={showTargetDashboard}
+                            onClose={() => setShowTargetDashboard(false)}
+                            initialTab={targetDashboardTab}
+                            userProfile={userProfile || reportData}
+                            onChatIntent={(intent, prompt) => {
+                                setShowTargetDashboard(false);
                                 onSelectIntent(intent, prompt);
                             }}
                         />
