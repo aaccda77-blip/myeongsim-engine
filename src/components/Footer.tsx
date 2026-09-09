@@ -64,8 +64,8 @@ export default function Footer() {
                         <p>전화번호: <strong className="text-gray-200 font-mono">010-9114-2352</strong></p>
                         <p>이메일: <span className="font-mono text-amber-300">mindflowlabbooks@naver.com</span></p>
                     </div>
-                    <p className="text-gray-400 text-[11px] leading-normal">
-                        문의하기 게시판 또는 고객센터 전화/이메일로 문의주시면 신속히 안내해 드립니다.
+                    <p className="text-amber-200/90 text-[11px] leading-normal font-medium">
+                        ※ 전화 부재 시 이메일이나, 문자메시지로 부탁드립니다. (확인 후 신속히 연락드립니다)
                     </p>
                     <div className="pt-1">
                         <a 

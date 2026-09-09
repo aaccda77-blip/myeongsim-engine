@@ -452,13 +452,16 @@ export default function SupportInquiryModal({ isOpen, onClose, initialView = 'ma
                                             </div>
                                             <div className="flex items-center justify-between">
                                                 <span className="text-gray-400">고객센터 전화:</span>
-                                                <a href="tel:010-9114-2352" className="font-mono text-white font-bold hover:underline">
-                                                    010-9114-2352
-                                                </a>
+                                                <div className="text-right">
+                                                    <a href="tel:010-9114-2352" className="font-mono text-white font-bold hover:underline">
+                                                        010-9114-2352
+                                                    </a>
+                                                    <span className="text-[10px] text-amber-300 block">문자 상담 가능</span>
+                                                </div>
                                             </div>
-                                            <div className="flex flex-col gap-0.5 pt-1.5 border-t border-white/5 text-[11px] text-gray-400">
-                                                <span>운영시간: 평일 09:00 ~ 18:00 (주말 및 공휴일은 이메일로 순차 답변)</span>
-                                                <span>※ 문의 양식 작성 또는 위 이메일로 직접 보내주시면 24시간 내 신속하게 안내해 드립니다.</span>
+                                            <div className="flex flex-col gap-1 pt-1.5 border-t border-white/5 text-[11px] text-gray-400">
+                                                <span>운영시간: 평일 09:00 ~ 18:00 (주말 및 공휴일은 이메일/문자 순차 답변)</span>
+                                                <span className="text-amber-200 font-medium">※ 전화 부재 시 이메일이나, 문자메시지로 부탁드립니다. (확인 후 신속히 연락드립니다)</span>
                                             </div>
                                         </div>
                                     </div>
