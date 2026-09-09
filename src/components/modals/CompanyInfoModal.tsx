@@ -41,13 +41,17 @@ export default function CompanyInfoModal({ isOpen, onClose }: CompanyInfoModalPr
                             <Building2 size={20} />
                         </div>
                         <div>
-                            <h3 className="text-white font-black text-base">명심코칭 (마인드플로우랩)</h3>
+                            <h3 className="text-white font-black text-base">마인드플로우랩 (개인 사업자)</h3>
                             <p className="text-gray-400 text-xs font-medium">사업자 정보 및 고객센터 안내</p>
                         </div>
                     </div>
 
                     {/* Business Info */}
                     <div className="space-y-2 text-xs text-gray-300 bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <div className="flex justify-between items-center py-1 border-b border-white/5">
+                            <span className="text-gray-400">상호명</span>
+                            <span className="font-semibold text-gray-200">마인드플로우랩 (개인 사업자)</span>
+                        </div>
                         <div className="flex justify-between items-center py-1 border-b border-white/5">
                             <span className="text-gray-400">대표자</span>
                             <span className="font-semibold text-gray-200">이경윤</span>
@@ -60,6 +64,10 @@ export default function CompanyInfoModal({ isOpen, onClose }: CompanyInfoModalPr
                             <span className="text-gray-400">통신판매업신고번호</span>
                             <span className="font-mono text-gray-200 font-semibold">2026-세종-0576</span>
                         </div>
+                        <div className="flex flex-col py-1 border-b border-white/5 gap-0.5">
+                            <span className="text-gray-400">사업장 소재지</span>
+                            <span className="text-gray-200 font-medium">세종특별자치시 산울7로 10 (산울마을8단지) 808동 204호 (우 : 30091)</span>
+                        </div>
                         <div className="flex justify-between items-center py-1 text-amber-300">
                             <span className="text-gray-400">특허출원번호</span>
                             <span className="font-mono font-bold">제10-2025-0166877호</span>
@@ -71,9 +79,12 @@ export default function CompanyInfoModal({ isOpen, onClose }: CompanyInfoModalPr
                         <h4 className="font-bold text-gray-200 flex items-center gap-1.5">
                             <Mail size={14} className="text-amber-400" /> 고객센터
                         </h4>
-                        <p className="text-gray-300 font-mono text-xs">support@myeongsimcoaching.com</p>
+                        <div className="space-y-1 text-gray-300 text-xs">
+                            <p>전화번호: <strong className="text-white font-mono">010-9114-2352</strong></p>
+                            <p>이메일: <span className="font-mono text-amber-300 font-semibold">mindflowlabbooks@naver.com</span></p>
+                        </div>
                         <p className="text-gray-400 text-[11px] leading-relaxed">
-                            ※ 전화 상담은 제공하지 않습니다. 문의하기 게시판을 이용해주시면 빠르게 답변드리겠습니다.
+                            ※ 문의하기 게시판 또는 고객센터 전화/이메일로 문의주시면 빠르고 정성스럽게 답변드리겠습니다.
                         </p>
                         <div className="pt-1">
                             <a

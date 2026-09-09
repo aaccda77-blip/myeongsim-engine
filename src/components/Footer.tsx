@@ -42,11 +42,12 @@ export default function Footer() {
 
                 {/* 브랜드명 & 대표자 / 사업자 / 통신판매 정보 */}
                 <div className="space-y-1.5 pt-1">
-                    <h3 className="text-sm font-black text-gray-100">명심코칭 (마인드플로우랩)</h3>
+                    <h3 className="text-sm font-black text-gray-100">마인드플로우랩 (개인 사업자)</h3>
                     <div className="space-y-0.5 text-gray-400 text-xs">
-                        <p>대표 <strong className="text-gray-300 font-normal">이경윤</strong></p>
+                        <p>대표자 <strong className="text-gray-300 font-normal">이경윤</strong></p>
                         <p>사업자등록번호 <strong className="text-gray-300 font-normal">838-03-03892</strong></p>
                         <p>통신판매업신고번호 <strong className="text-gray-300 font-normal">2026-세종-0576</strong></p>
+                        <p>사업장 소재지 <strong className="text-gray-300 font-normal">세종특별자치시 산울7로 10 (산울마을8단지) 808동 204호 (우 : 30091)</strong></p>
                         <p className="leading-relaxed">
                             특허출원번호 <strong className="text-amber-300 font-mono font-normal">제10-2025-0166877호</strong>
                             <span className="text-gray-400 text-[11px] ml-1.5 block sm:inline">
@@ -59,11 +60,12 @@ export default function Footer() {
                 {/* 고객센터 정보 */}
                 <div className="space-y-2 pt-3 border-t border-white/5">
                     <h4 className="text-xs font-bold text-gray-200">고객센터</h4>
-                    <div className="text-gray-300 font-mono text-xs">
-                        support@myeongsimcoaching.com
+                    <div className="text-gray-300 text-xs space-y-1">
+                        <p>전화번호: <strong className="text-gray-200 font-mono">010-9114-2352</strong></p>
+                        <p>이메일: <span className="font-mono text-amber-300">mindflowlabbooks@naver.com</span></p>
                     </div>
                     <p className="text-gray-400 text-[11px] leading-normal">
-                        전화 상담은 제공하지 않습니다. 문의하기 게시판을 이용해주세요.
+                        문의하기 게시판 또는 고객센터 전화/이메일로 문의주시면 신속히 안내해 드립니다.
                     </p>
                     <div className="pt-1">
                         <a 
