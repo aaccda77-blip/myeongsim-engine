@@ -48,44 +48,43 @@ export function SimpleHeader({ userName, onOpenProfile }: SimpleHeaderProps) {
 
     return (
         <>
-            <header className="flex items-center justify-between pb-2 pt-1">
-                <div className="space-y-1 text-left min-w-0 pr-2">
-                    <h1 className="text-xl sm:text-2xl font-black text-[#F4F6F8] tracking-tight truncate">
-                        안녕하세요, {userName}님
-                    </h1>
-                    <p className="text-xs sm:text-sm text-[#9AA7B7] font-medium truncate">
-                        오늘의 나를 차분히 확인해보세요.
-                    </p>
-                    {/* 📅 생년월일 페이지 바로가기 메뉴 칩 */}
-                    <div className="pt-0.5 flex items-center gap-2">
+            <header className="space-y-2 pb-2.5 pt-1 border-b border-white/[0.06]">
+                {/* 1열: 상단 타이틀 & 뷰모드 스위처 */}
+                <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-lg sm:text-xl font-black text-white tracking-tight truncate flex items-center gap-1.5">
+                            <span>안녕하세요, {userName}님</span>
+                            <span className="text-sm">👋</span>
+                        </h1>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <ViewModeSwitcher />
                         <button
-                            onClick={() => setShowBirthMenu(true)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-semibold transition-all shadow-sm active:scale-95 group cursor-pointer"
-                            title="생년월일 및 사주 페이지 메뉴"
+                            type="button"
+                            onClick={() => router.push('/settings')}
+                            className="p-1.5 sm:p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 transition-all border border-white/10 cursor-pointer"
+                            title="프로필 및 설정"
                         >
-                            <Calendar size={13} className="text-amber-400 group-hover:scale-110 transition-transform" />
-                            <span>생년월일·사주 페이지</span>
-                            <ChevronRight size={13} className="text-amber-400/70 group-hover:translate-x-0.5 transition-transform" />
+                            <User size={15} />
                         </button>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                    <ViewModeSwitcher />
+                {/* 2열: 서브 안내 문구 & 사주 원국·생년월일 메뉴 칩 */}
+                <div className="flex items-center justify-between gap-2 pt-0.5">
+                    <p className="text-xs text-gray-400 font-medium truncate">
+                        오늘의 나를 차분히 확인해보세요.
+                    </p>
                     <button
+                        type="button"
                         onClick={() => setShowBirthMenu(true)}
-                        className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 transition-all border border-amber-500/30 flex items-center gap-1 cursor-pointer"
-                        title="생년월일 페이지 메뉴"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0 cursor-pointer group"
+                        title="사주 원국 및 생년월일 메뉴"
                     >
-                        <Calendar size={16} className="text-amber-400" />
-                        <span className="hidden sm:inline text-xs font-bold text-amber-200">생년월일</span>
-                    </button>
-                    <button
-                        onClick={() => router.push('/settings')}
-                        className="p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 transition-all border border-white/10 cursor-pointer"
-                        title="프로필 및 설정"
-                    >
-                        <User size={16} />
+                        <Calendar size={12} className="text-amber-400 group-hover:scale-110 transition-transform" />
+                        <span>사주 원국·생년월일</span>
+                        <ChevronRight size={11} className="text-amber-400/70 group-hover:translate-x-0.5 transition-transform" />
                     </button>
                 </div>
             </header>

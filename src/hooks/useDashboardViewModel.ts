@@ -24,6 +24,8 @@ export interface DashboardViewModel {
         pointDesc: string;
         keywords: string[];
         dailyGanji: string;
+        doAction?: string;
+        avoidAction?: string;
     };
     coaching: {
         question: string;
@@ -108,15 +110,100 @@ export function useDashboardViewModel(): DashboardViewModel {
         };
     }, [dailyPillar]);
 
-    // 4. 오늘의 핵심 인사이트
+    // 4. 오늘의 핵심 인사이트 (flow.shortDesc와 중복되지 않는 고유한 일진 행동 강령)
     const dailyInsight = useMemo(() => {
+        const zhi = dailyPillar.zhi || '묘';
+        const insightMap: Record<string, { desc: string; keywords: string[]; doAction: string; avoidAction: string }> = {
+            '자': { 
+                desc: '감정의 파도를 가라앉히고, 조용히 계획과 문서의 뼈대를 세우면 직관이 큰 힘을 발휘합니다.', 
+                keywords: ['심층 직관', '구조 기획', '감정 정류'],
+                doAction: '중요한 생각 메모하기',
+                avoidAction: '충동적인 감정 표출'
+            },
+            '축': { 
+                desc: '묵묵히 한 우물을 파면 실속이 따릅니다. 타인과의 비교를 멈추고 내 영역의 내실을 다지세요.', 
+                keywords: ['내실 구축', '인내와 실속', '에너지 보존'],
+                doAction: '밀린 업무 하나 끝내기',
+                avoidAction: '남과의 쓸데없는 비교'
+            },
+            '인': { 
+                desc: '강한 돌파력이 깃드는 날입니다. 완벽하게 준비하려 망설이지 말고 가볍게 첫 단추를 꿰세요.', 
+                keywords: ['도전 실행', '스피드 돌파', '새로운 장'],
+                doAction: '미루던 일 즉시 착수',
+                avoidAction: '완벽주의로 인한 망설임'
+            },
+            '묘': { 
+                desc: '상상력과 유연함이 돋보이는 날입니다. 딱딱한 고정관념을 벗어나 부드럽게 타협점을 찾으세요.', 
+                keywords: ['창의적 발상', '유연한 소통', '관계 확장'],
+                doAction: '새로운 시각 열어두기',
+                avoidAction: '지나친 고집과 경직'
+            },
+            '진': { 
+                desc: '상황의 변동성이 큰 날입니다. 변화에 맞서 싸우지 말고 파도를 타듯 유연하게 대처하면 기회가 됩니다.', 
+                keywords: ['변화 적응', '기회 포착', '유연한 전환'],
+                doAction: '흐름에 가볍게 맡기기',
+                avoidAction: '과도한 통제 욕구'
+            },
+            '사': { 
+                desc: '집중력과 분석력이 날카로운 날입니다. 가장 까다롭고 머리 아픈 핵심 과제 하나를 끝장내기 좋습니다.', 
+                keywords: ['핵심 돌파', '몰입의 성과', '명확한 솔루션'],
+                doAction: '최우선 과제에 초집중',
+                avoidAction: '에너지 분산과 딴청'
+            },
+            '오': { 
+                desc: '자신의 역량과 매력을 솔직하게 드러내기 좋은 날입니다. 당당하고 따뜻한 태도가 아군을 부릅니다.', 
+                keywords: ['존재감 발휘', '당당한 설득', '동기 부여'],
+                doAction: '자신감 있게 의견 말하기',
+                avoidAction: '감정적인 언쟁'
+            },
+            '미': { 
+                desc: '서두르면 마찰이 생기기 쉽습니다. 내 주장을 펴기보다 상대방의 말을 한 템포 경청하는 것이 유리합니다.', 
+                keywords: ['완충과 조화', '경청의 힘', '평정심 유지'],
+                doAction: '상대방 이야기 귀 기울이기',
+                avoidAction: '조급한 결론 강요'
+            },
+            '신': { 
+                desc: '생각의 군더더기를 쳐내야 할 시간입니다. 불필요한 약속과 잡념을 정리하고 본질적인 일만 남기세요.', 
+                keywords: ['선택과 집중', '군더더기 삭제', '명쾌한 결단'],
+                doAction: '우선순위 재정렬하기',
+                avoidAction: '잡다한 일 끌어안기'
+            },
+            '유': { 
+                desc: '노력의 결실이 뚜렷해지는 날입니다. 마무리의 디테일을 정교하게 세공하여 완성도를 극대화하세요.', 
+                keywords: ['정밀 세공', '프로의 디테일', '결실 수확'],
+                doAction: '디테일 꼼꼼히 점검',
+                avoidAction: '어설픈 마무리'
+            },
+            '술': { 
+                desc: '원칙과 신뢰가 최고의 무기입니다. 잔꾀나 요행을 바라지 말고 기본에 충실할 때 든든한 방어막이 섭니다.', 
+                keywords: ['원칙 준수', '신뢰의 자산', '안정적 방어'],
+                doAction: '약속과 신뢰 지키기',
+                avoidAction: '무리한 모험과 편법'
+            },
+            '해': { 
+                desc: '내면의 온기를 회복하고 에너지를 저장하는 날입니다. 과도한 외적 활동보다 마음에 휴식을 선물하세요.', 
+                keywords: ['감정 디톡스', '내면 정렬', '온화한 회복'],
+                doAction: '따뜻한 차와 온전한 휴식',
+                avoidAction: '늦은 밤 스마트폰 중독'
+            },
+        };
+
+        const target = insightMap[zhi] || {
+            desc: '내면의 중심을 지키며 오늘 하루 주어진 순간에 차분히 머무르기 좋은 날입니다.',
+            keywords: ['중심 잡기', '차분한 관찰', '균형 유지'],
+            doAction: '깊은 심호흡 3번',
+            avoidAction: '주변 소음에 흔들림'
+        };
+
         return {
             pointTitle: '오늘의 포인트',
-            pointDesc: flow.shortDesc,
-            keywords: ['관점 전환', '아이디어', '차분한 실행'],
-            dailyGanji: `${dailyPillar.gan}${dailyPillar.zhi}일`
+            pointDesc: target.desc,
+            keywords: target.keywords,
+            dailyGanji: `${dailyPillar.gan}${dailyPillar.zhi}일`,
+            doAction: target.doAction,
+            avoidAction: target.avoidAction
         };
-    }, [flow, dailyPillar]);
+    }, [dailyPillar]);
 
     // 5. 오늘의 코칭 질문
     const coaching = useMemo(() => {

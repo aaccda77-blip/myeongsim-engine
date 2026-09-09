@@ -57,6 +57,8 @@ export function SimpleDashboard({ onSwitchToClassicReport }: SimpleDashboardProp
                         pointDesc={vm.dailyInsight.pointDesc}
                         keywords={vm.dailyInsight.keywords}
                         dailyGanji={vm.dailyInsight.dailyGanji}
+                        doAction={vm.dailyInsight.doAction}
+                        avoidAction={vm.dailyInsight.avoidAction}
                     />
 
                     {/* 4. 오늘의 코칭 */}
