@@ -503,10 +503,12 @@ export default function LibraryPage() {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [previewPageIndex, setPreviewPageIndex] = useState(0);
 
-    // 뷰어 설정 상태
-    const [activeTab, setActiveTab] = useState<'reader' | 'pdf' | 'benefits'>('pdf');
+    // 뷰어 설정 상태 (모바일 및 범용 호환성을 위해 시력보호 e-리더를 기본 탭으로 설정)
+    const [activeTab, setActiveTab] = useState<'reader' | 'pdf' | 'benefits'>('reader');
     const [selectedChapter, setSelectedChapter] = useState(CHAPTERS[0]);
     const [fontSize, setFontSize] = useState<number>(15);
+    const [isTrialUser, setIsTrialUser] = useState(false);
+    const [isMobileDevice, setIsMobileDevice] = useState(false);
 
     // 보안 경고 토스트 상태
     const [securityAlert, setSecurityAlert] = useState<string | null>(null);
@@ -518,10 +520,18 @@ export default function LibraryPage() {
     const audioCtxRef = useRef<AudioContext | null>(null);
     const oscRef = useRef<OscillatorNode | null>(null);
 
+    // 👤 중복 '님' 방지 및 단정한 호칭 정제 ('체험 회원님님' 방지)
+    const displayBuyerName = useMemo(() => {
+        if (!buyerName || buyerName.trim() === '' || buyerName === '명심코칭 VIP 독자') return 'VIP 정품 독자';
+        const clean = buyerName.trim();
+        return clean.endsWith('님') ? clean : `${clean}님`;
+    }, [buyerName]);
+
     // 🛡️ 안심 개인정보 마스킹 (Social DRM - 개인정보 유출 0% 방지)
     const maskedBuyerName = useMemo(() => {
         if (!buyerName || buyerName.trim() === '' || buyerName === '명심코칭 VIP 독자') return 'VIP 정품 독자';
         const clean = buyerName.trim();
+        if (clean.includes('체험 회원')) return '체험 회원님';
         if (clean.length === 2) return `${clean[0]}*`;
         if (clean.length >= 3) return `${clean[0]}*${clean[clean.length - 1]}`;
         return clean;
@@ -538,6 +548,15 @@ export default function LibraryPage() {
     const securePdfStreamUrl = useMemo(() => {
         return `/api/library/secure-pdf?buyer=${encodeURIComponent(buyerName)}&order=${encodeURIComponent(orderNumber)}&serial=${encodeURIComponent(serialKey)}#toolbar=0&navpanes=0&scrollbar=1`;
     }, [buyerName, orderNumber, serialKey]);
+
+    // 📱 모바일 디바이스 감지 (모바일 브라우저의 PDF Object 태그 블랙아웃 방지)
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+            const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+            setIsMobileDevice(mobileRegex.test(userAgent) || window.innerWidth < 768);
+        }
+    }, []);
 
     // 🛡️ 우클릭/인쇄/단축키(Ctrl+S, Ctrl+P) 보안 방지
     useEffect(() => {
@@ -580,6 +599,14 @@ export default function LibraryPage() {
             let savedName = localStorage.getItem('myeongsim_book_buyer') || localStorage.getItem('user_name') || '';
             let savedOrder = localStorage.getItem('myeongsim_book_order') || '';
 
+            // 🌟 [정품 구매자 vs 사이트 체험 회원 엄격한 분리] 🌟
+            const isBookVerified = localStorage.getItem('myeongsim_book_verified') === 'true';
+            const isTrial = !isBookVerified && (
+                localStorage.getItem('myeongsim_paid_user') === 'true' || 
+                localStorage.getItem('myeongsim_trial_active') === 'true' || 
+                localStorage.getItem('myeongsim_smartstore_vip') === 'true'
+            );
+
             if (urlOrder || urlName || urlAutoVerify) {
                 savedName = urlName || savedName;
                 savedOrder = urlOrder || 'SMARTSTORE-VIP';
@@ -594,15 +621,24 @@ export default function LibraryPage() {
                 localStorage.setItem('myeongsim_site_access', 'granted');
                 document.cookie = "myeongsim_site_access=granted; path=/; max-age=2592000; SameSite=Lax";
                 setIsVerified(true);
+                setIsTrialUser(false);
                 setShowVerifySuccessModal(true);
                 confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+            } else if (isBookVerified) {
+                // 실제 도서 정품 인증 완료자
+                setIsVerified(true);
+                setIsTrialUser(false);
+                setBuyerName(savedName);
+                setOrderNumber(savedOrder);
+            } else if (isTrial) {
+                // 사이트 무료 맛보기 체험 회원 (도서 309p 완권은 구매 인증 필요)
+                setIsVerified(false);
+                setIsTrialUser(true);
+                setBuyerName(savedName || '체험 회원');
+                setOrderNumber(savedOrder || '2026-TRIAL-GUEST');
             } else {
-                const verified = localStorage.getItem('myeongsim_book_verified') === 'true' || 
-                                 localStorage.getItem('myeongsim_paid_user') === 'true' || 
-                                 localStorage.getItem('myeongsim_smartstore_vip') === 'true';
-                if (verified) {
-                    setIsVerified(true);
-                }
+                setIsVerified(false);
+                setIsTrialUser(false);
                 setBuyerName(savedName);
                 setOrderNumber(savedOrder);
             }
@@ -615,6 +651,7 @@ export default function LibraryPage() {
                     .then(data => {
                         if (data && data.blocked) {
                             setIsVerified(false);
+                            setIsTrialUser(false);
                             setIsBlockedByAdmin(true);
                             setBlockedReason(data.reason || '관리자 권한 회수 (환불 취소 또는 허위 번호)');
                             localStorage.removeItem('myeongsim_book_verified');
@@ -744,6 +781,7 @@ export default function LibraryPage() {
             }
 
             setIsVerified(true);
+            setIsTrialUser(false);
             setShowVerifySuccessModal(true);
             confetti({
                 particleCount: 110,
@@ -927,6 +965,22 @@ export default function LibraryPage() {
                 {/* ── 3. 미인증 독자: 구매 인증 폼 ── */}
                 {!isVerified ? (
                     <div className="p-5 rounded-3xl bg-[#0f0a22]/90 border border-amber-400/40 shadow-2xl space-y-4 text-center">
+                        {/* 🎁 사이트 체험 회원 맞춤 안내 배너 */}
+                        {isTrialUser && (
+                            <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-950/80 via-indigo-950/80 to-purple-950/80 border border-cyan-400/50 text-left space-y-2 shadow-lg">
+                                <div className="flex items-center gap-2 text-cyan-300 font-bold text-xs">
+                                    <Sparkles size={14} className="text-cyan-400" />
+                                    <span>🎁 {displayBuyerName}의 맛보기 체험 안내</span>
+                                </div>
+                                <p className="text-[11px] text-gray-200 leading-relaxed font-medium">
+                                    현재 사이트 체험 모드로 이용 중이시며, 상단 <strong className="text-cyan-300">[📖 무료 미리보기 (Look Inside)]</strong> 버튼을 통해 책의 핵심 내용을 바로 맛보실 수 있습니다.
+                                </p>
+                                <p className="text-[10px] text-amber-300 font-medium">
+                                    💡 <strong>309p 출판 원문 전권 열람</strong> 및 <strong>VIP 2대 특전(헌정 힐링송 무료 작곡권, AI 코칭 대화권)</strong>은 아래 서점 주문번호 인증 즉시 평생 소장용으로 자동 활성화됩니다!
+                                </p>
+                            </div>
+                        )}
+
                         <div className="size-12 rounded-2xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center mx-auto text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                             <Lock size={24} />
                         </div>
@@ -1016,7 +1070,7 @@ export default function LibraryPage() {
                                 </span>
                             </div>
                             <div className="text-[10px] text-gray-300 space-y-0.5 font-mono">
-                                <p>• 소유자: <strong className="text-white">{buyerName}님</strong> (주문: {orderNumber})</p>
+                                <p>• 소유자: <strong className="text-white">{displayBuyerName}</strong> (주문: {orderNumber})</p>
                                 <p>• 라이선스 키: <span className="text-amber-300">{serialKey}</span></p>
                                 <p className="text-[9px] text-rose-300 leading-tight pt-0.5">
                                     ⚖️ <strong>법적 고지:</strong> 본 전자책에는 구매자 고유 디지털 워터마크가 각인되어 있습니다. 무단 캡처, 복제, 유출 시 저작권법 제136조에 따라 5년 이하의 징역 또는 5천만원 이하의 벌금형에 처해질 수 있습니다.
@@ -1171,13 +1225,13 @@ export default function LibraryPage() {
                                     </div>
                                 </div>
 
-                                {/* 인라인 PDF 컨테이너 */}
+                                {/* 인라인 PDF 컨테이너 (모바일 블랙아웃 완벽 방어) */}
                                 <div className="relative w-full h-[580px] rounded-3xl bg-[#080512] border-2 border-cyan-400/40 overflow-hidden shadow-2xl select-none">
                                     {/* 상단 안심 워터마크 바 */}
                                     <div className="absolute top-0 left-0 right-0 z-20 bg-slate-950/95 backdrop-blur-md px-3.5 py-1.5 border-b border-white/10 flex items-center justify-between text-[10px] font-mono text-cyan-300">
                                         <span className="flex items-center gap-1.5">
                                             <Shield size={11} className="text-cyan-400" />
-                                            <span>👤 {maskedBuyerName} 님 안심 정품 열람</span>
+                                            <span>👤 {displayBuyerName} 안심 정품 열람</span>
                                             <span className="text-gray-400 hidden sm:inline">({maskedOrderNumber})</span>
                                         </span>
                                         <span className="text-amber-300 font-bold flex items-center gap-1">
@@ -1186,46 +1240,72 @@ export default function LibraryPage() {
                                         </span>
                                     </div>
 
-                                    {/* 모바일 최적화 PDF 뷰어 프레임 (확대 배율 스타일 적용) */}
-                                    <div className="w-full h-full pt-7 overflow-auto flex items-center justify-center bg-[#1a162b]">
-                                        <div 
-                                            className="w-full h-full transition-transform duration-200 origin-top"
-                                            style={{ transform: `scale(${pdfZoom / 100})`, transformOrigin: 'top center' }}
-                                        >
-                                            <object
-                                                data={securePdfStreamUrl}
-                                                type="application/pdf"
-                                                className="w-full h-full border-none"
-                                            >
-                                                {/* 모바일 최적화 안내 폴백 */}
-                                                <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-xs text-gray-300 space-y-4 bg-[#120f24]">
-                                                    <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300 text-2xl">
-                                                        📖
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="text-sm font-bold text-white mb-1">《ZERO POINT》 보안 PDF 스트림</h4>
-                                                        <p className="text-gray-400 text-[11px] leading-relaxed">
-                                                            모바일 브라우저의 보안 정책상 전체화면 또는 초고화질 뷰어로 가장 쾌적하게 열람하실 수 있습니다.
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex flex-col gap-2 w-full max-w-xs">
-                                                        <button
-                                                            onClick={() => setIsPdfFullscreen(true)}
-                                                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-bold shadow-lg shadow-cyan-500/20 active:scale-95 transition-all flex items-center justify-center gap-1.5"
-                                                        >
-                                                            <span>🖥️ 보안 전체화면으로 크게 읽기</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setActiveTab('reader')}
-                                                            className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-cyan-300 font-bold active:scale-95 transition-all text-xs"
-                                                        >
-                                                            <span>✨ 초고화질 e-Reader 모드로 읽기</span>
-                                                        </button>
-                                                    </div>
+                                    {/* 모바일 환경 전용 뷰어 허브 (검은 화면 0% 방지) */}
+                                    {isMobileDevice ? (
+                                        <div className="w-full h-full pt-10 px-5 pb-6 flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-b from-[#160f33] via-[#0d0724] to-[#080417]">
+                                            <div className="size-16 rounded-3xl bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 text-3xl shadow-[0_0_25px_rgba(6,182,212,0.3)]">
+                                                📱
+                                            </div>
+                                            
+                                            <div className="space-y-1 max-w-sm">
+                                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 text-[10px] font-mono font-bold mb-1">
+                                                    <Sparkles size={11} />
+                                                    <span>스마트폰 최적화 스트리밍</span>
                                                 </div>
-                                            </object>
+                                                <h4 className="text-base font-black text-white">
+                                                    《ZERO POINT》 309p 정품 열람
+                                                </h4>
+                                                <p className="text-xs text-gray-300 leading-relaxed font-medium">
+                                                    스마트폰 브라우저에서는 아래 전용 버튼을 통해 <strong className="text-cyan-300">내장 고화질 뷰어로 309페이지 원문</strong>을 시원하게 확대/축소하며 감상하실 수 있습니다.
+                                                </p>
+                                            </div>
+
+                                            <div className="flex flex-col gap-2.5 w-full max-w-xs pt-1">
+                                                {/* 1. 모바일 브라우저 네이티브 PDF 뷰어 (새 탭에서 초고속 열람) */}
+                                                <a
+                                                    href={securePdfStreamUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-cyan-500/30 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                                >
+                                                    <span>🚀 모바일 고화질 PDF 바로 열기</span>
+                                                    <ExternalLink size={14} />
+                                                </a>
+
+                                                {/* 2. 보안 전체화면 뷰어 */}
+                                                <button
+                                                    onClick={() => setIsPdfFullscreen(true)}
+                                                    className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-white/15 cursor-pointer"
+                                                >
+                                                    <Layers size={13} className="text-cyan-400" />
+                                                    <span>🖥️ 보안 전체화면 모드로 보기</span>
+                                                </button>
+
+                                                {/* 3. 시력보호 e-리더로 읽기 */}
+                                                <button
+                                                    onClick={() => setActiveTab('reader')}
+                                                    className="w-full py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-bold active:scale-95 transition-all text-xs border border-cyan-500/25 flex items-center justify-center gap-1.5 cursor-pointer"
+                                                >
+                                                    <BookOpen size={13} />
+                                                    <span>✨ 시력보호 e-Reader (텍스트)로 읽기</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        /* PC 환경: 안정적인 인라인 PDF 스트림 프레임 */
+                                        <div className="w-full h-full pt-7 overflow-auto flex items-center justify-center bg-[#1a162b]">
+                                            <div 
+                                                className="w-full h-full transition-transform duration-200 origin-top"
+                                                style={{ transform: `scale(${pdfZoom / 100})`, transformOrigin: 'top center' }}
+                                            >
+                                                <iframe
+                                                    src={securePdfStreamUrl}
+                                                    className="w-full h-full border-none"
+                                                    title="ZERO POINT DRM Protected PDF"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* 모바일 사용자를 위한 안내 배너 */}
@@ -1348,7 +1428,7 @@ export default function LibraryPage() {
 
                             <div className="flex items-center gap-2">
                                 <span className="text-[10px] font-mono text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-400/30 hidden sm:inline">
-                                    {buyerName}님 라이선스
+                                    {displayBuyerName} 라이선스
                                 </span>
                                 <button
                                     onClick={() => setIsPdfFullscreen(false)}
@@ -1369,7 +1449,7 @@ export default function LibraryPage() {
                             >
                                 {[1, 2, 3, 4, 5, 6, 7, 8].map((row) => (
                                     <div key={row} className="whitespace-nowrap flex justify-around">
-                                        <span>🔒 {maskedBuyerName} 님 정품 | {maskedOrderNumber} | 무단배포금지</span>
+                                        <span>🔒 {displayBuyerName} 정품 | {maskedOrderNumber} | 무단배포금지</span>
                                         <span>⚠️ 저작권법 제136조 형사책임 추적 | {purchaseDate}</span>
                                     </div>
                                 ))}
@@ -1380,17 +1460,34 @@ export default function LibraryPage() {
                                 className="w-full h-full transition-transform duration-150 origin-top flex items-center justify-center select-none"
                                 style={{ transform: `scale(${pdfZoom / 100})`, transformOrigin: 'top center' }}
                             >
-                                <object
-                                    data={securePdfStreamUrl}
-                                    type="application/pdf"
-                                    className="w-full h-full border-none"
-                                >
+                                {isMobileDevice ? (
+                                    <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-4">
+                                        <div className="size-16 rounded-3xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-3xl text-cyan-300">
+                                            📱
+                                        </div>
+                                        <div className="space-y-1 max-w-sm">
+                                            <h4 className="text-sm font-bold text-white">모바일 전체화면 네이티브 열람</h4>
+                                            <p className="text-gray-400 text-xs leading-relaxed">
+                                                스마트폰 브라우저에서는 아래 버튼을 누르면 스마트폰 전용 고화질 PDF 뷰어로 309페이지를 초고화질로 편안하게 확대/축소하며 감상하실 수 있습니다.
+                                            </p>
+                                        </div>
+                                        <a
+                                            href={securePdfStreamUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs sm:text-sm shadow-xl flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <span>🚀 스마트폰 고화질 PDF 열기</span>
+                                            <ExternalLink size={14} />
+                                        </a>
+                                    </div>
+                                ) : (
                                     <iframe
                                         src={securePdfStreamUrl}
                                         className="w-full h-full border-none"
                                         title="ZERO POINT Fullscreen PDF"
                                     />
-                                </object>
+                                )}
                             </div>
                         </div>
                     </div>
