@@ -51,7 +51,7 @@ export default function TermsPage() {
             <h2 className="font-bold text-sm text-amber-300">제 2 조 (회사 정보의 게시)</h2>
             <p>회사는 다음 사항을 회원이 알아보기 쉽도록 서비스 하단 및 관련 화면에 상시 표시합니다:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-400 text-[11px] pl-1">
-              <li>상호명: 마인드플로우랩 (개인 사업자)</li>
+              <li>상호명: 마인드플로우랩</li>
               <li>대표자: 이경윤</li>
               <li>사업자등록번호: 838-03-03892</li>
               <li>통신판매업신고번호: 2026-세종-0576</li>

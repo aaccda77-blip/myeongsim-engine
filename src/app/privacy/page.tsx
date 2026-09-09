@@ -137,7 +137,7 @@ export default function PrivacyPage() {
               회사는 이용자의 개인정보 관련 문의 및 불만 처리를 위해 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.
             </p>
             <div className="bg-black/50 p-3 rounded-xl border border-white/5 text-[11px] space-y-1 text-gray-300 mt-1">
-              <p>• <strong>회사명:</strong> 마인드플로우랩 (개인 사업자)</p>
+              <p>• <strong>회사명:</strong> 마인드플로우랩</p>
               <p>• <strong>사업장 소재지:</strong> 세종특별자치시 산울7로 10 (산울마을8단지) 808동 204호 (우 : 30091)</p>
               <p>• <strong>개인정보 보호책임자:</strong> 이경윤 대표</p>
               <p>• <strong>고객센터 전화:</strong> 010-9114-2352</p>

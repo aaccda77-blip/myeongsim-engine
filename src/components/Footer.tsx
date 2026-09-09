@@ -42,7 +42,7 @@ export default function Footer() {
 
                 {/* 브랜드명 & 대표자 / 사업자 / 통신판매 정보 */}
                 <div className="space-y-1.5 pt-1">
-                    <h3 className="text-sm font-black text-gray-100">마인드플로우랩 (개인 사업자)</h3>
+                    <h3 className="text-sm font-black text-gray-100">마인드플로우랩</h3>
                     <div className="space-y-0.5 text-gray-400 text-xs">
                         <p>대표자 <strong className="text-gray-300 font-normal">이경윤</strong></p>
                         <p>사업자등록번호 <strong className="text-gray-300 font-normal">838-03-03892</strong></p>

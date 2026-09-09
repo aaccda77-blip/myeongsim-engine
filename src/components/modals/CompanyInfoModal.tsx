@@ -41,7 +41,7 @@ export default function CompanyInfoModal({ isOpen, onClose }: CompanyInfoModalPr
                             <Building2 size={20} />
                         </div>
                         <div>
-                            <h3 className="text-white font-black text-base">마인드플로우랩 (개인 사업자)</h3>
+                            <h3 className="text-white font-black text-base">마인드플로우랩</h3>
                             <p className="text-gray-400 text-xs font-medium">사업자 정보 및 고객센터 안내</p>
                         </div>
                     </div>
@@ -50,7 +50,7 @@ export default function CompanyInfoModal({ isOpen, onClose }: CompanyInfoModalPr
                     <div className="space-y-2 text-xs text-gray-300 bg-white/5 p-4 rounded-2xl border border-white/5">
                         <div className="flex justify-between items-center py-1 border-b border-white/5">
                             <span className="text-gray-400">상호명</span>
-                            <span className="font-semibold text-gray-200">마인드플로우랩 (개인 사업자)</span>
+                            <span className="font-semibold text-gray-200">마인드플로우랩</span>
                         </div>
                         <div className="flex justify-between items-center py-1 border-b border-white/5">
                             <span className="text-gray-400">대표자</span>
