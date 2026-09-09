@@ -75,6 +75,7 @@ const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/Awar
 const UnifiedSubscriptionModal = dynamic(() => import('@/components/modals/UnifiedSubscriptionModal'), { ssr: false });
 const BusinessArchitectureDashboard = dynamic(() => import('@/components/startup/BusinessArchitectureDashboard'), { ssr: false });
 const TargetCoachingDashboard = dynamic(() => import('@/components/coaching/TargetCoachingDashboard'), { ssr: false });
+const AssessmentComparisonModal = dynamic(() => import('@/components/modals/AssessmentComparisonModal'), { ssr: false });
 
 
 
@@ -577,6 +578,7 @@ export default function DrillDownIconMenu({
     const [showTargetDashboard, setShowTargetDashboard] = useState(false); // [NEW] 타겟 코칭 전술 지휘 본부 대시보드
     const [targetDashboardTab, setTargetDashboardTab] = useState<'all' | 'timing' | 'solution' | 'tactics'>('all');
     const [targetDashboardCardId, setTargetDashboardCardId] = useState<string | null>(null); // [NEW] 타겟 코칭 특정 전술 카드 선택
+    const [showAssessmentComparisonModal, setShowAssessmentComparisonModal] = useState(false); // [NEW] 28대 성격·심리검사 초격차 비교 모달
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
 
     const { reportData } = useReportStore();
@@ -1350,6 +1352,28 @@ export default function DrillDownIconMenu({
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#FCD34D' }}>{t('menu.my_report')}</div>
                         <div style={styles.neuroTrigger}>{t('menu.diagnosis_summary')}</div>
+                    </div>
+                </button>
+
+                {/* 🌟 [세계 최고 수준] ⚖️ 28대 성격·심리검사 vs 명심코칭 초격차 비교 팝업 (상시 오픈) 🌟 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowAssessmentComparisonModal(true)}
+                    title="28대 성격·심리검사와 명심코칭의 초격차 비교분석"
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(16, 185, 129, 0.25))',
+                        border: '1.5px solid rgba(245, 158, 11, 0.6)',
+                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>⚖️</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#FBBF24', fontWeight: 'bold' }}>유형검사 비교</div>
+                        <div style={styles.neuroTrigger}>28대 검사 초격차</div>
                     </div>
                 </button>
 
@@ -2783,6 +2807,16 @@ export default function DrillDownIconMenu({
                     </div>
                 </div>
             )}
+
+            {/* [NEW] ⚖️ 28대 성격·심리검사 vs 명심코칭 초격차 비교 모달 */}
+            <AssessmentComparisonModal
+                isOpen={showAssessmentComparisonModal}
+                onClose={() => setShowAssessmentComparisonModal(false)}
+                onStartCoaching={(assessmentName: string, prompt?: string) => {
+                    setShowAssessmentComparisonModal(false);
+                    onSelectIntent('assessment_benchmark_coaching', prompt || `[28대 검사 비교] ${assessmentName}와 명심코칭 분석`);
+                }}
+            />
 
             {/* 👑 [대표님 요청] 공식 통합 월 98,000원 VIP 정액권 & 스마트스토어 도서구매 잠금 모달 */}
             <UnifiedSubscriptionModal
