@@ -35,7 +35,7 @@ export function SimpleDashboard({ onSwitchToClassicReport }: SimpleDashboardProp
     };
 
     return (
-        <div className="relative min-h-screen w-full bg-[#182333] text-[#F4F6F8] font-sans pb-28 px-4 pt-3 max-w-md mx-auto text-left space-y-4 select-none">
+        <div className="relative min-h-screen w-full bg-gradient-to-b from-[#0d1524] via-[#080d17] to-[#04060c] text-[#F4F6F8] font-sans pb-32 px-3.5 sm:px-4 pt-2.5 max-w-md mx-auto text-left space-y-4 select-none">
             
             {/* 1. HEADER */}
             <SimpleHeader userName={vm.user.name} />
