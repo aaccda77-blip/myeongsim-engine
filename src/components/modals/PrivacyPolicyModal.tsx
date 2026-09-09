@@ -97,7 +97,7 @@ export const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps)
                             <li>개인정보 처리 정지 요구</li>
                             <li>회원 탈퇴 (즉시 처리)</li>
                         </ul>
-                        <p className="mt-2">권리 행사는 앱 내 "설정 &gt; 개인정보 관리" 또는 이메일(privacy@myeongsim.com)로 가능합니다.</p>
+                        <p className="mt-2">권리 행사는 앱 내 "설정 &gt; 개인정보 관리" 또는 이메일(mindflowlabbooks@naver.com)로 가능합니다.</p>
                     </section>
 
                     <section>
@@ -111,9 +111,9 @@ export const PrivacyPolicyModal = ({ isOpen, onClose }: PrivacyPolicyModalProps)
                     <section>
                         <h3 className="text-white font-bold mb-2">8. 개인정보 보호책임자</h3>
                         <div className="bg-slate-800 p-4 rounded-lg mt-2">
-                            <p><strong>개인정보 보호책임자:</strong> 홍길동</p>
-                            <p><strong>이메일:</strong> privacy@myeongsim.com</p>
-                            <p><strong>전화:</strong> 02-1234-5678</p>
+                            <p><strong>개인정보 보호책임자:</strong> 이경윤 대표</p>
+                            <p><strong>이메일:</strong> mindflowlabbooks@naver.com</p>
+                            <p><strong>전화:</strong> 010-9114-2352</p>
                             <p className="mt-2 text-xs text-slate-400">개인정보 침해 신고: 개인정보침해신고센터 (privacy.kisa.or.kr / 국번없이 118)</p>
                         </div>
                     </section>

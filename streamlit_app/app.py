@@ -73,7 +73,7 @@ if not access_key:
             발송된 <strong>접속 링크(Access Key)</strong>를 통해 입장하실 수 있습니다.
         </p>
         <hr style="border-color: #333;">
-        <p style="font-size: 0.9em; color: #666;">문의: support@myeongsim.com</p>
+        <p style="font-size: 0.9em; color: #666;">문의: mindflowlabbooks@naver.com</p>
     </div>
     """, unsafe_allow_html=True)
     st.stop()

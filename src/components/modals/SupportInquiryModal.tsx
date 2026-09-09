@@ -16,7 +16,8 @@ import {
     Square, 
     Clock, 
     ShieldCheck,
-    Send
+    Send,
+    Mail
 } from 'lucide-react';
 import { useReportStore } from '@/store/useReportStore';
 
@@ -267,7 +268,7 @@ export default function SupportInquiryModal({ isOpen, onClose, initialView = 'ma
                                 </div>
                                 <h3 className="text-lg font-bold text-white">문의가 정상 접수되었습니다!</h3>
                                 <p className="text-xs text-gray-400 leading-relaxed">
-                                    담당팀이 내용 확인 후 빠르게 24시간 이내에 안내해 드리겠습니다.
+                                    접수하신 내용은 <span className="text-amber-300 font-mono font-bold">mindflowlabbooks@naver.com</span>으로 안전하게 전달되었으며, 24시간 이내에 신속히 답변드리겠습니다.
                                 </p>
                             </div>
                         )}
@@ -433,6 +434,34 @@ export default function SupportInquiryModal({ isOpen, onClose, initialView = 'ma
                                             </div>
                                         ))
                                     )}
+                                </div>
+
+                                {/* 공식 고객지원 센터 안내 카드 */}
+                                <div className="p-4 pt-0">
+                                    <div className="bg-slate-900/90 border border-white/10 rounded-2xl p-4 space-y-2.5 text-xs text-gray-300">
+                                        <div className="flex items-center gap-2 text-amber-400 font-bold border-b border-white/5 pb-2">
+                                            <Mail className="w-4 h-4" />
+                                            <span>공식 고객지원 센터</span>
+                                        </div>
+                                        <div className="space-y-1.5 text-xs">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-400">문의 이메일:</span>
+                                                <a href="mailto:mindflowlabbooks@naver.com" className="font-mono text-amber-300 hover:underline font-bold">
+                                                    mindflowlabbooks@naver.com
+                                                </a>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-400">고객센터 전화:</span>
+                                                <a href="tel:010-9114-2352" className="font-mono text-white font-bold hover:underline">
+                                                    010-9114-2352
+                                                </a>
+                                            </div>
+                                            <div className="flex flex-col gap-0.5 pt-1.5 border-t border-white/5 text-[11px] text-gray-400">
+                                                <span>운영시간: 평일 09:00 ~ 18:00 (주말 및 공휴일은 이메일로 순차 답변)</span>
+                                                <span>※ 문의 양식 작성 또는 위 이메일로 직접 보내주시면 24시간 내 신속하게 안내해 드립니다.</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
