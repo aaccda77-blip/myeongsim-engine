@@ -10,6 +10,7 @@ import {
 import confetti from 'canvas-confetti';
 import { AWARENESS_PHASES, ALL_AWARENESS_QUESTS, AwarenessQuestItem, AwarenessPhase } from '@/data/awarenessQuests108';
 import { saju108Matrix } from '@/data/saju108Matrix';
+import QuestPreFlightBriefingModal from './QuestPreFlightBriefingModal';
 import { useReportStore } from '@/store/useReportStore';
 
 interface AwarenessQuestDashboardProps {
@@ -32,6 +33,7 @@ export default function AwarenessQuestDashboard({
     const [isLargeText, setIsLargeText] = useState<boolean>(false);
     const [completedMap, setCompletedMap] = useState<Record<string, boolean>>({});
     const [selectedQuest, setSelectedQuest] = useState<AwarenessQuestItem | null>(null);
+    const [briefingQuest, setBriefingQuest] = useState<AwarenessQuestItem | null>(null);
     const [isPlayingBgm, setIsPlayingBgm] = useState<boolean>(false);
     const bgmAudioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -446,7 +448,7 @@ export default function AwarenessQuestDashboard({
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleLaunchCoaching(quest);
+                                                    setBriefingQuest(quest);
                                                 }}
                                                 className="px-2 py-1 rounded-lg bg-purple-500/15 hover:bg-purple-500/30 text-purple-300 border border-purple-400/30 font-bold flex items-center gap-1 transition-all cursor-pointer"
                                             >
@@ -557,7 +559,11 @@ export default function AwarenessQuestDashboard({
                                     </button>
 
                                     <button
-                                        onClick={() => handleLaunchCoaching(selectedQuest)}
+                                        onClick={() => {
+                                            const q = selectedQuest;
+                                            setSelectedQuest(null);
+                                            setBriefingQuest(q);
+                                        }}
                                         className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all hover:scale-[1.02] cursor-pointer"
                                     >
                                         <MessageSquare size={16} />
@@ -569,6 +575,24 @@ export default function AwarenessQuestDashboard({
                     );
                 })()}
             </AnimatePresence>
+
+            {/* 7. [NEW] 🚀 퀘스트 프리-플라이트 AI 코칭 브리핑 HUD 모달 */}
+            <QuestPreFlightBriefingModal
+                isOpen={!!briefingQuest}
+                quest={briefingQuest}
+                onClose={() => setBriefingQuest(null)}
+                onStartCoaching={(prompt, intent) => {
+                    if (onStartChatCoaching) {
+                        onStartChatCoaching(prompt, intent);
+                        onClose();
+                    } else {
+                        if (typeof window !== 'undefined') {
+                            sessionStorage.setItem('myeongsim_pending_prompt', prompt);
+                            window.location.href = '/report';
+                        }
+                    }
+                }}
+            />
 
         </div>
     );
