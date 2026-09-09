@@ -578,6 +578,79 @@ export default function DrillDownIconMenu({
     const [targetDashboardTab, setTargetDashboardTab] = useState<'all' | 'timing' | 'solution' | 'tactics'>('all');
     const [targetDashboardCardId, setTargetDashboardCardId] = useState<string | null>(null); // [NEW] 타겟 코칭 특정 전술 카드 선택
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
+    // [NEW] 전용 대시보드가 없어 바로 챗봇으로 튕겨넘어가는 컨텐츠 공사중/업데이트중 상태
+    const [underConstructionItem, setUnderConstructionItem] = useState<SubMenuItem | null>(null);
+
+    // [Helper] 전용 대시보드/모달/페이지 존재 여부 판별 함수
+    const hasDedicatedDashboard = (subItem: SubMenuItem): boolean => {
+        if (!subItem) return false;
+        // 1. 하위 계층 메뉴 폴더
+        if (subItem.children && subItem.children.length > 0) return true;
+
+        // 2. 전용 모달 및 대시보드가 연결된 intent 목록
+        const dedicatedIntents = [
+            'saju_basic_analysis',
+            'strength_talent_report',
+            'strength_report_view',
+            'nts_business_career',
+            'nts_business_view',
+            'startup_strategy_view',
+            'ms_startup_dna',
+            'ms_startup_wealth',
+            'ms_startup_timing',
+            'NAV_STRAT_TIMING',
+            'NAV_STRAT_SOLUTION',
+            'NAV_STRAT_TACTICS',
+            'energy_dashboard_view',
+            'integral_checkin_view',
+            'sos_breathing_guide',
+            'play_healing_music',
+            'daily_health_qa',
+            'health_qa_archive',
+            'health_qa_custom',
+            'bio_care_med_literacy',
+            'bio_care_nutri_synergy',
+            'bio_care_body_log',
+            'bio_care_educator_note',
+            'iching_code_search',
+            'ms_quantum_108',
+            'saju_108_awakening',
+            'ms_quantum_alchemy',
+            'emotion_alchemy_view',
+            'ms_quantum_shadow',
+            'shadow_work_view',
+            'ms_3d_full_scan',
+            'ms_3d_x_axis',
+            'ms_3d_y_axis',
+            'ms_3d_z_axis',
+            'ms_64_neural_code',
+            'ms_3s_protocol_start',
+            'FULL_REPORT_ARCHIVE',
+            'therapy_archetype_view',
+            'today_matrix_modal',
+            'sub_consciousness_frequency',
+            'dark_code_debugging',
+            'awareness_quest',
+            'target_coaching'
+        ];
+
+        if (subItem.intent) {
+            if (dedicatedIntents.includes(subItem.intent)) return true;
+            if (subItem.intent.startsWith('NAV_PHASE_')) return true;
+        }
+
+        // 3. 전용 ID 매핑
+        const dedicatedIds = [
+            'strat_2_1', 'strat_2_2', 'strat_2_3',
+            'sd_dna', 'sd_wealth', 'sd_timing',
+            'FULL_REPORT',
+            'sl_15', 'sl_20', 'sl_26', 'sl_17', 'sl_16', 'sl_18', 'sl_39', 'sl_21', 'sl_29', 'sl_32'
+        ];
+
+        if (subItem.id && dedicatedIds.includes(subItem.id)) return true;
+
+        return false;
+    };
 
     const { reportData } = useReportStore();
 
@@ -1067,6 +1140,12 @@ export default function DrillDownIconMenu({
                 setSelectedTherapyArchetype(THERAPY_ARCHETYPES["ARCH_ACT_CONTROLLER"]);
                 setShowTherapyModal(true);
             }
+            return;
+        }
+
+        // [NEW] 전용 대시보드가 없는 컨텐츠는 챗봇으로 바로 튕기지 않고 공사중/업데이트중 안내 팝업 먼저 표시
+        if (!hasDedicatedDashboard(subItem)) {
+            setUnderConstructionItem(subItem);
             return;
         }
 
@@ -2332,8 +2411,26 @@ export default function DrillDownIconMenu({
                                             {customIcon}
                                         </span>
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ ...styles.subMenuLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <div style={{ ...styles.subMenuLabel, display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                                                 <span>{resolvedLabel}</span>
+                                                {!hasDedicatedDashboard(subItem) && (
+                                                    <span style={{
+                                                        fontSize: '9.5px',
+                                                        padding: '1.5px 6px',
+                                                        borderRadius: '6px',
+                                                        background: 'rgba(245, 158, 11, 0.18)',
+                                                        color: '#FBBF24',
+                                                        fontWeight: 700,
+                                                        border: '1px solid rgba(245, 158, 11, 0.4)',
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '3px',
+                                                        whiteSpace: 'nowrap'
+                                                    }}>
+                                                        <span>🛠️</span>
+                                                        <span>업데이트중</span>
+                                                    </span>
+                                                )}
                                                 {tacticalBadge && (
                                                     <span style={{
                                                         fontSize: '10px',
@@ -2351,7 +2448,7 @@ export default function DrillDownIconMenu({
                                             <div style={styles.subMenuDesc}>{resolvedDesc}</div>
                                         </div>
 
-                                        {/* 네비게이션 화살표 or 프리미엄 배지 */}
+                                        {/* 네비게이션 화살표 or 프리미엄 배지 or 공사중 배지 */}
                                         {subItem.children ? (
                                             <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>ᐳ</span>
                                         ) : subItem.isPremium ? (
@@ -2367,6 +2464,19 @@ export default function DrillDownIconMenu({
                                                 border: '1px solid rgba(245,158,11,0.3)'
                                             }}>
                                                 실행 ➔
+                                            </span>
+                                        ) : !hasDedicatedDashboard(subItem) ? (
+                                            <span style={{
+                                                fontSize: '10px',
+                                                padding: '2px 7px',
+                                                borderRadius: '7px',
+                                                background: 'rgba(234, 88, 12, 0.15)',
+                                                color: '#FB923C',
+                                                fontWeight: 700,
+                                                border: '1px solid rgba(234, 88, 12, 0.35)',
+                                                whiteSpace: 'nowrap'
+                                            }}>
+                                                🚧 공사중
                                             </span>
                                         ) : null}
                                     </div>
@@ -2780,6 +2890,58 @@ export default function DrillDownIconMenu({
                                 onSelectIntent(intent, prompt);
                             }}
                         />
+                    </div>
+                </div>
+            )}
+
+            {/* [NEW] 🛠️ 공사중/업데이트중 안내 팝업 모달 */}
+            {underConstructionItem && (
+                <div className="fixed inset-0 z-[2500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+                    <div className="w-full max-w-sm bg-slate-950 border-2 border-amber-500/40 rounded-3xl p-5 shadow-2xl text-center space-y-4 relative overflow-hidden">
+                        {/* 배경 그라디언트 */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 to-transparent pointer-events-none" />
+
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-2xl mx-auto text-slate-950 shadow-lg shadow-amber-500/30">
+                            🛠️
+                        </div>
+
+                        <div>
+                            <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                                전용 대시보드 공사중 · 그래픽 업데이트
+                            </span>
+                            <h3 className="text-base font-black text-white mt-2">
+                                [{underConstructionItem.label.replace(/^[0-9.-]+\s*/, '')}]
+                            </h3>
+                            <p className="text-xs text-gray-300 mt-2 leading-relaxed font-medium">
+                                현재 세계 최고 수준의 비주얼 그래픽 대시보드로 <strong className="text-amber-300">정밀 공사/업데이트</strong>가 진행 중입니다.
+                            </p>
+                            <p className="text-[11px] text-gray-400 mt-1">
+                                지금 바로 <strong>명심 AI 코치와 1:1 챗봇 상담</strong>으로 맞춤형 분석을 확인하시겠습니까?
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-1">
+                            <button
+                                type="button"
+                                onClick={() => setUnderConstructionItem(null)}
+                                className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 font-bold text-xs transition-colors cursor-pointer"
+                            >
+                                취소 (머무르기)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const item = underConstructionItem;
+                                    setUnderConstructionItem(null);
+                                    setSelectedIcon(null);
+                                    const prompt = generateChatPromptFromIntent(item.intent, userProfile);
+                                    onSelectIntent(item.intent, prompt);
+                                }}
+                                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-400/25 cursor-pointer flex items-center justify-center gap-1"
+                            >
+                                <span>💬 챗봇 상담 받기</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
