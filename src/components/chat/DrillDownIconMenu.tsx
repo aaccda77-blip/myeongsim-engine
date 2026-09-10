@@ -75,7 +75,6 @@ const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/Awar
 const UnifiedSubscriptionModal = dynamic(() => import('@/components/modals/UnifiedSubscriptionModal'), { ssr: false });
 const BusinessArchitectureDashboard = dynamic(() => import('@/components/startup/BusinessArchitectureDashboard'), { ssr: false });
 const TargetCoachingDashboard = dynamic(() => import('@/components/coaching/TargetCoachingDashboard'), { ssr: false });
-const AssessmentComparisonModal = dynamic(() => import('@/components/modals/AssessmentComparisonModal'), { ssr: false });
 const MyeongsimMemoryGameModal = dynamic(() => import('@/components/coaching/MyeongsimMemoryGameModal'), { ssr: false });
 // [NEW] 🏛️ 명심코칭 평생교육원 공인 커리큘럼 & 5단계 자격 사다리 모달
 const MyeongsimAcademyCurriculumModal = dynamic(() => import('@/components/modals/MyeongsimAcademyCurriculumModal'), { ssr: false });
@@ -590,7 +589,6 @@ export default function DrillDownIconMenu({
     const [targetDashboardTab, setTargetDashboardTab] = useState<'all' | 'timing' | 'solution' | 'tactics'>('all');
     const [targetDashboardCardId, setTargetDashboardCardId] = useState<string | null>(null); // [NEW] 타겟 코칭 특정 전술 카드 선택
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
-    const [showAssessmentComparisonModal, setShowAssessmentComparisonModal] = useState(false); // [NEW] 공인 성격·심리검사 벤치마크 모달
     const [showMemoryGameModal, setShowMemoryGameModal] = useState(false); // [NEW] 명심 자각 기억 훈련소 (단기·중기·장기 기억 게임)
     // [NEW] 🏛️ 명심 평생교육원 공인 커리큘럼 모달 및 자격 잠금 알림 상태
     const [showCurriculumModal, setShowCurriculumModal] = useState(false);
@@ -1575,28 +1573,6 @@ export default function DrillDownIconMenu({
                         <div style={styles.neuroTrigger}>
                             {language === 'en' ? '3-Stage Game' : language === 'jp' ? '記憶ゲーム' : language === 'cn' ? '三阶演练' : '단·중·장기 게임'}
                         </div>
-                    </div>
-                </button>
-
-                {/* 🌟 [공인 평가도구 존중 & 비교] ⚖️ 28대 성격검사 vs 명심코칭 벤치마크 🌟 */}
-                <button
-                    style={styles.iconButton}
-                    onClick={() => setShowAssessmentComparisonModal(true)}
-                    title="공인 성격·심리검사와 명심코칭의 상호보완 벤치마크 및 공식 사이트 안내"
-                >
-                    <div style={{
-                        ...styles.iconWrapper,
-                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(16, 185, 129, 0.25))',
-                        border: '1.5px solid rgba(245, 158, 11, 0.6)',
-                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
-                        position: 'relative',
-                        zIndex: 10
-                    }}>
-                        <span style={{ fontSize: '20px' }}>⚖️</span>
-                    </div>
-                    <div>
-                        <div style={{ ...styles.iconLabel, color: '#FBBF24', fontWeight: 'bold' }}>성격검사 벤치마크</div>
-                        <div style={styles.neuroTrigger}>공인검사 & 명심코칭</div>
                     </div>
                 </button>
 
@@ -3150,16 +3126,6 @@ export default function DrillDownIconMenu({
                     </div>
                 </div>
             )}
-
-            {/* [NEW] ⚖️ 28대 공인 성격·심리검사 vs 명심코칭 존중 벤치마크 모달 */}
-            <AssessmentComparisonModal
-                isOpen={showAssessmentComparisonModal}
-                onClose={() => setShowAssessmentComparisonModal(false)}
-                onStartCoaching={(assessmentName: string, prompt?: string) => {
-                    setShowAssessmentComparisonModal(false);
-                    onSelectIntent('assessment_benchmark_coaching', prompt || `[공인검사 시너지 코칭] ${assessmentName}와 명심코칭 분석`);
-                }}
-            />
 
             {/* [NEW] 🧠 명심 자각 기억 훈련소 (단기·중기·장기 기억 게임 모달) */}
                         {/* [NEW] 🏛️ 명심코칭 평생교육원 공인 커리큘럼 대시보드 모달 */}
