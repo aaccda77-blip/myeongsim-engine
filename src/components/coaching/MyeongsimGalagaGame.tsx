@@ -288,6 +288,9 @@ export default function MyeongsimGalagaGame({
     // 📱 모바일/PC 화면 확대 (Fullscreen / Cinema Expand) 상태
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
+    // 🌟 실시간 자각 승화 통찰 텍스트 (크고 선명하게 상단 노출)
+    const [latestInsight, setLatestInsight] = useState<string | null>("잡념을 격퇴하면 자각의 빛이 깨어납니다!");
+
     // 💥 최신형 궁극기: 제로 노바 (Zero Nova) 게이지 (0 ~ 100)
     const [ultimateGauge, setUltimateGauge] = useState<number>(0);
 
@@ -850,17 +853,22 @@ export default function MyeongsimGalagaGame({
 
         ge.enemyBullets = [];
 
+        if (ge.enemies.length > 0) {
+            const firstInsight = ge.enemies[0].insight;
+            ge.floatingTexts = [{
+                x: w / 2,
+                y: h / 2 - 20,
+                text: "✨ " + firstInsight,
+                color: '#38bdf8',
+                life: 75,
+                maxLife: 75,
+                vy: -0.6
+            }];
+            setLatestInsight(`💥 제로 노바 발동! "${firstInsight}"`);
+        }
+
         for (let i = ge.enemies.length - 1; i >= 0; i--) {
             const e = ge.enemies[i];
-            ge.floatingTexts.push({
-                x: e.x,
-                y: e.y - 8,
-                text: e.insight,
-                color: '#34d399',
-                life: 60,
-                maxLife: 60,
-                vy: -1.2
-            });
 
             setPurifiedStats(prev => {
                 const current = prev[e.text] || { count: 0, insight: e.insight, tag: e.tag };
@@ -929,7 +937,7 @@ export default function MyeongsimGalagaGame({
         setUltimateGauge(0);
         setTractorNotice(null);
         setWaveBanner(t.waveBanner[1]);
-        setTimeout(() => setWaveBanner(null), 2500);
+        setTimeout(() => setWaveBanner(null), 1800);
         setPurifiedStats({});
         setGameState('playing');
         unlockAudio();
@@ -1157,10 +1165,32 @@ export default function MyeongsimGalagaGame({
                 ctx.fillRect(3, -2, 3, 3);
                 ctx.restore();
 
-                ctx.font = 'bold 10px sans-serif';
+                // 🏷️ 잡념 왜곡 텍스트: 고대비 캡슐 배지 & 12px 굵은 글씨 (모바일 화면 잘림 방지 클램핑)
+                ctx.font = 'bold 12px sans-serif';
+                const textMetrics = ctx.measureText(e.text);
+                const tw = textMetrics.width;
+                const badgeW = tw + 14;
+                const badgeH = 20;
+                // 좌우 화면 경계 밖으로 나가지 않도록 x좌표 철저히 클램핑
+                const badgeX = Math.max(6, Math.min(w - badgeW - 6, e.x - badgeW / 2));
+                const badgeY = Math.max(4, e.y - 24);
+
+                ctx.fillStyle = 'rgba(6, 10, 24, 0.92)';
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 6);
+                } else {
+                    ctx.rect(badgeX, badgeY, badgeW, badgeH);
+                }
+                ctx.fill();
+                ctx.strokeStyle = e.color || '#f43f5e';
+                ctx.lineWidth = 1.4;
+                ctx.stroke();
+
                 ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
-                ctx.fillText(e.text, e.x, e.y - 16);
+                ctx.textBaseline = 'middle';
+                ctx.fillText(e.text, badgeX + badgeW / 2, badgeY + badgeH / 2);
 
                 for (let bi = ge.bullets.length - 1; bi >= 0; bi--) {
                     const b = ge.bullets[bi];
@@ -1185,15 +1215,27 @@ export default function MyeongsimGalagaGame({
                                 });
                             }
 
+                            // 겹침 방지: 화면 내 떠다니는 통찰 텍스트는 최대 2개만 유지하여 가독성 보장
+                            if (ge.floatingTexts.length >= 2) {
+                                ge.floatingTexts.shift();
+                            }
+                            let targetY = Math.max(60, e.y - 14);
+                            if (ge.floatingTexts.length > 0) {
+                                const prevFt = ge.floatingTexts[ge.floatingTexts.length - 1];
+                                if (Math.abs(prevFt.y - targetY) < 32) {
+                                    targetY = prevFt.y - 32;
+                                }
+                            }
                             ge.floatingTexts.push({
                                 x: e.x,
-                                y: e.y - 8,
+                                y: targetY,
                                 text: e.insight,
                                 color: '#34d399',
-                                life: 55,
-                                maxLife: 55,
-                                vy: -1.0
+                                life: 65,
+                                maxLife: 65,
+                                vy: -0.8
                             });
+                            setLatestInsight(e.insight);
                             playInsightSound();
 
                             ge.combo++;
@@ -1371,10 +1413,13 @@ export default function MyeongsimGalagaGame({
                 ctx.strokeStyle = '#ffffff';
                 ctx.strokeRect(w / 2 - 80, 16, 160, 8);
 
-                ctx.font = 'bold 11px sans-serif';
-                ctx.fillStyle = '#fecdd3';
+                ctx.font = 'bold 13px sans-serif';
+                ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
-                ctx.fillText(b.tractorState === 'stunned' ? '⚡ STUNNED (그로기)' : t.bossName, w / 2, 12);
+                ctx.shadowColor = b.tractorState === 'stunned' ? '#38bdf8' : '#f43f5e';
+                ctx.shadowBlur = 8;
+                ctx.fillText(b.tractorState === 'stunned' ? '⚡ STUNNED (에고 그로기 상태!)' : `👹 ${t.bossName}`, w / 2, 12);
+                ctx.shadowBlur = 0;
 
                 for (let bi = ge.bullets.length - 1; bi >= 0; bi--) {
                     const blt = ge.bullets[bi];
@@ -1452,13 +1497,13 @@ export default function MyeongsimGalagaGame({
                     setWave(ge.wave);
                     ge.enemies = spawnEnemyWave(w, ge.wave);
                     setWaveBanner(t.waveBanner[ge.wave as 2 | 3]);
-                    setTimeout(() => setWaveBanner(null), 2500);
+                    setTimeout(() => setWaveBanner(null), 1800);
                     playPowerupSound();
                 } else if (ge.wave === 3) {
                     ge.wave = 4;
                     setWave(4);
                     setWaveBanner(t.waveBanner[4]);
-                    setTimeout(() => setWaveBanner(null), 2500);
+                    setTimeout(() => setWaveBanner(null), 1800);
                     ge.boss = spawnBoss(w);
                 }
             }
@@ -1510,13 +1555,18 @@ export default function MyeongsimGalagaGame({
 
                 ctx.fillStyle = it.type === 'power' ? '#f59e0b' : it.type === 'shield' ? '#06b6d4' : it.type === 'drone' ? '#a855f7' : '#ec4899';
                 ctx.beginPath();
-                ctx.roundRect(it.x - 14, it.y - 10, 28, 20, 8);
+                if (ctx.roundRect) {
+                    ctx.roundRect(it.x - 18, it.y - 12, 36, 24, 8);
+                } else {
+                    ctx.rect(it.x - 18, it.y - 12, 36, 24);
+                }
                 ctx.fill();
 
-                ctx.font = 'bold 9px sans-serif';
+                ctx.font = 'bold 12px sans-serif';
                 ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
-                ctx.fillText(it.label, it.x, it.y + 4);
+                ctx.textBaseline = 'middle';
+                ctx.fillText(it.label, it.x, it.y);
 
                 const dist = Math.hypot(it.x - ge.player.x, it.y - ge.player.y);
                 if (dist < 28) {
@@ -1557,21 +1607,44 @@ export default function MyeongsimGalagaGame({
                 }
             }
 
-            // 13. 초록빛 긍정 승화 플로팅 텍스트
+            // 13. 초록빛 긍정 승화 플로팅 텍스트 (13px 굵은 폰트 + 고대비 에메랄드 캡슐 + 테두리 클램핑)
             for (let i = ge.floatingTexts.length - 1; i >= 0; i--) {
                 const ft = ge.floatingTexts[i];
                 ft.y += ft.vy;
                 ft.life--;
 
-                const alpha = Math.min(1, ft.life / (ft.maxLife * 0.4));
+                const alpha = Math.min(1, ft.life / (ft.maxLife * 0.3));
                 ctx.save();
                 ctx.globalAlpha = alpha;
-                ctx.font = 'bold 12px sans-serif';
-                ctx.fillStyle = ft.color;
-                ctx.shadowColor = ft.color;
+                ctx.font = 'bold 13px sans-serif';
+                const ftMetrics = ctx.measureText(ft.text);
+                const pillW = ftMetrics.width + 20;
+                const pillH = 26;
+                const pillX = Math.max(8, Math.min(w - pillW - 8, ft.x - pillW / 2));
+                const pillY = ft.y - pillH / 2;
+
+                // 고대비 다크 에메랄드 배경 캡슐
+                ctx.fillStyle = 'rgba(4, 20, 24, 0.94)';
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(pillX, pillY, pillW, pillH, 8);
+                } else {
+                    ctx.rect(pillX, pillY, pillW, pillH);
+                }
+                ctx.fill();
+
+                ctx.strokeStyle = '#34d399';
+                ctx.lineWidth = 1.6;
+                ctx.shadowColor = '#10b981';
                 ctx.shadowBlur = 10;
+                ctx.stroke();
+
+                // 텍스트 출력
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowBlur = 0;
                 ctx.textAlign = 'center';
-                ctx.fillText(ft.text, ft.x, ft.y);
+                ctx.textBaseline = 'middle';
+                ctx.fillText(ft.text, pillX + pillW / 2, pillY + pillH / 2);
                 ctx.restore();
 
                 if (ft.life <= 0) ge.floatingTexts.splice(i, 1);
@@ -1933,6 +2006,14 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                 </div>
             </div>
 
+            {/* 🌟 실시간 자각 승화 통찰 바 (크고 선명한 글씨로 즉시 확인!) */}
+            <div className="w-full max-w-lg mb-1.5 px-3 py-1.5 rounded-xl bg-emerald-950/85 border border-emerald-400/50 flex items-center justify-center gap-1.5 text-center shadow-[0_0_15px_rgba(16,185,129,0.25)] shrink-0">
+                <Sparkles size={14} className="text-emerald-400 shrink-0 animate-pulse" />
+                <span className="text-xs sm:text-[13px] font-black text-emerald-200 tracking-tight break-keep">
+                    {latestInsight || t.pureFactMsg}
+                </span>
+            </div>
+
             {/* 캔버스 게임 화면 프레임 */}
             <div 
                 onClick={unlockAudio}
@@ -1985,7 +2066,7 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
-                            className="absolute top-1/3 inset-x-6 mx-auto py-2 px-4 rounded-2xl bg-indigo-950/90 border-2 border-cyan-400 text-cyan-200 text-xs sm:text-sm font-black text-center shadow-[0_0_30px_rgba(6,182,212,0.7)] z-20 flex items-center justify-center gap-1.5"
+                            className="absolute top-10 inset-x-6 mx-auto py-2 px-4 rounded-2xl bg-indigo-950/95 border-2 border-cyan-400 text-cyan-200 text-xs sm:text-sm font-black text-center shadow-[0_0_30px_rgba(6,182,212,0.7)] z-20 flex items-center justify-center gap-1.5"
                         >
                             <Sparkles size={16} className="text-yellow-400 animate-spin" />
                             <span>{waveBanner}</span>
