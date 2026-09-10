@@ -6,7 +6,7 @@ import {
     Brain, Zap, Target, Award, CheckCircle2, XCircle, 
     ChevronRight, ChevronLeft, RotateCcw, Sparkles, Volume2, 
     Flame, ArrowRight, Check, Share2, HelpCircle, Lock, X,
-    Heart, Scissors, Activity, Pill, ShieldAlert, Sparkle, RefreshCw
+    Heart, Scissors, Activity, Pill, ShieldAlert, Sparkle, RefreshCw, Gamepad2
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
@@ -20,6 +20,7 @@ import {
 } from '@/data/MyeongsimMemoryGameDB';
 import { passAcademyExam, getAcademyState } from '@/lib/questUnlockManager';
 import { ACADEMY_COURSES, ACADEMY_EXAMS } from '@/data/MyeongsimAcademyDB';
+import MyeongsimGalagaGame from './MyeongsimGalagaGame';
 
 interface MyeongsimMemoryGameModalProps {
     isOpen: boolean;
@@ -33,10 +34,11 @@ const GAME_I18N = {
         modalTitle: "명심 멘탈 피트니스 훈련소",
         modalSubtitle: "뇌과학 3단계 기억법으로 마시는 마음 0점 리셋 디지털 캡슐",
         medicalDisclaimer: "본 시스템은 의료법상 질병의 치료를 위한 의약품이나 의료기기가 아니며, 인지과학 원리를 게임화한 '멘탈 피트니스 및 자기자각 코칭' 솔루션입니다.",
-        tabCapsule: "💊 3초 마인드 캡슐",
+        tabCapsule: "💊 3초 캡슐",
         tabSmasher: "⚔️ 패턴 슬라이서",
-        tabPractice: "🧬 5-STEP 신경 도장",
-        tabCabinet: "🗄️ 마음 비타민 도감",
+        tabGalaga: "👾 갤러그 잡념격퇴",
+        tabPractice: "🧬 5-STEP 도장",
+        tabCabinet: "🗄️ 비타민 도감",
         levelLabel: "Lv.",
         levelTitle: ["자각의 입문자", "렌즈의 관찰자", "패턴 브레이커", "감정 연금술사", "제로포인트 마스터"],
         expLabel: "자각 EXP",
@@ -76,9 +78,10 @@ const GAME_I18N = {
         modalTitle: "Mind Fitness Dojo & Digital Capsule",
         modalSubtitle: "Reset your mind to Zero Point with 3-Stage Neuro-Habit Capsules",
         medicalDisclaimer: "This service is a mental fitness & self-coaching tool, not a medical drug or medical device.",
-        tabCapsule: "💊 3-Sec Mind Capsule",
+        tabCapsule: "💊 3-Sec Capsule",
         tabSmasher: "⚔️ Pattern Smasher",
-        tabPractice: "🧬 5-STEP Neuro Dojo",
+        tabGalaga: "👾 Galaga Buster",
+        tabPractice: "🧬 5-STEP Dojo",
         tabCabinet: "🗄️ Vitamin Cabinet",
         levelLabel: "Lv.",
         levelTitle: ["Awareness Novice", "Lens Observer", "Pattern Breaker", "Emotional Alchemist", "Zero Point Master"],
@@ -119,10 +122,11 @@ const GAME_I18N = {
         modalTitle: "明心 メンタルフィットネス訓練所",
         modalSubtitle: "脳科学3段階記憶法で飲むマインドゼロポイントデジタルカプセル",
         medicalDisclaimer: "本サービスは医療機器や医薬品ではなく、認知科学に基づくメンタルフィットネス・コーチングゲームです。",
-        tabCapsule: "💊 3秒マインドカプセル",
+        tabCapsule: "💊 3秒カプセル",
         tabSmasher: "⚔️ パターンスライサー",
-        tabPractice: "🧬 5-STEP 神経道場",
-        tabCabinet: "🗄️ 心のビタミン図鑑",
+        tabGalaga: "👾 ギャラガ雑念撃退",
+        tabPractice: "🧬 5-STEP 道場",
+        tabCabinet: "🗄️ ビタミン図鑑",
         levelLabel: "Lv.",
         levelTitle: ["自覚の初心者", "レンズの観察者", "パターンブレイカー", "感情の錬金術師", "ゼロポイントマスター"],
         expLabel: "自覚EXP",
@@ -162,10 +166,11 @@ const GAME_I18N = {
         modalTitle: "明心心智健身训练所",
         modalSubtitle: "基于脑科学三阶段记忆法的心理归零数字胶囊",
         medicalDisclaimer: "本系统并非用于医疗诊疗的药品或器械，属于基于认知科学的心智健身与自我觉察教练游戏。",
-        tabCapsule: "💊 3秒心智胶囊",
+        tabCapsule: "💊 3秒胶囊",
         tabSmasher: "⚔️ 模式粉碎机",
-        tabPractice: "🧬 5步神经工坊",
-        tabCabinet: "🗄️ 心灵维他命柜",
+        tabGalaga: "👾 大蜜蜂消消乐",
+        tabPractice: "🧬 5步工坊",
+        tabCabinet: "🗄️ 维他命柜",
         levelLabel: "Lv.",
         levelTitle: ["自知入门者", "滤镜观察者", "模式粉碎者", "情绪炼金师", "零点宗师"],
         expLabel: "觉察EXP",
@@ -211,8 +216,8 @@ export default function MyeongsimMemoryGameModal({
     const t = GAME_I18N[language as keyof typeof GAME_I18N] || GAME_I18N.kr;
     const langKey = (language as 'kr' | 'en' | 'jp' | 'cn') || 'kr';
 
-    // ── 1. 탭 상태 (capsule, smasher, practice, cabinet) ──
-    const [activeTab, setActiveTab] = useState<'capsule' | 'smasher' | 'practice' | 'cabinet'>('capsule');
+    // ── 1. 5대 탭 상태 (capsule, smasher, galaga, practice, cabinet) ──
+    const [activeTab, setActiveTab] = useState<'capsule' | 'smasher' | 'galaga' | 'practice' | 'cabinet'>('capsule');
 
     // ── 2. 게임 진행 상황 ──
     const [progress, setProgress] = useState<UserGameProgress>(INITIAL_GAME_PROGRESS);
@@ -230,7 +235,7 @@ export default function MyeongsimMemoryGameModal({
     const [isSliced, setIsSliced] = useState<boolean>(false);
     const [isShattered, setIsShattered] = useState<boolean>(false);
 
-    // ── 5. [모드 3] 🧬 5-STEP 실전 자각 도장 상태 ──
+    // ── 5. [모드 4] 🧬 5-STEP 실전 자각 도장 상태 ──
     const [practiceStepIndex, setPracticeStepIndex] = useState<number>(0);
     const [userAnswers, setUserAnswers] = useState<{ [step: number]: string }>({});
     const [isPracticeComplete, setIsPracticeComplete] = useState<boolean>(false);
@@ -255,9 +260,7 @@ export default function MyeongsimMemoryGameModal({
             gain.connect(ctx.destination);
             osc.start();
             osc.stop(ctx.currentTime + duration);
-        } catch (e) {
-            // Audio policy mute fallback
-        }
+        } catch (e) {}
     };
 
     const playCapsulePop = () => {
@@ -488,7 +491,7 @@ export default function MyeongsimMemoryGameModal({
                 </div>
 
                 {/* ── 2. 의식 레벨 & EXP 진행 바 ── */}
-                <div className="px-5 py-2.5 bg-[#090c19] border-b border-white/5 flex items-center justify-between text-xs gap-3">
+                <div className="px-5 py-2 bg-[#090c19] border-b border-white/5 flex items-center justify-between text-xs gap-3">
                     <div className="flex items-center gap-2">
                         <span className="text-[11px] font-black text-cyan-300 font-mono">
                             {t.levelLabel}{progress.level}
@@ -512,61 +515,73 @@ export default function MyeongsimMemoryGameModal({
                     </div>
                 </div>
 
-                {/* ── 3. 4대 알약 모드 탭 ── */}
-                <div className="px-4 py-2 bg-[#0e1226] border-b border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                {/* ── 3. 5대 아케이드 탭 (반응형 그리드 & 캡슐 칩) ── */}
+                <div className="px-3 py-2 bg-[#0e1226] border-b border-white/10 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
                     <button
                         onClick={() => setActiveTab('capsule')}
-                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
                             activeTab === 'capsule'
                                 ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.25)]'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
                         <Pill size={14} className="text-cyan-400" />
-                        <span className="truncate">{t.tabCapsule}</span>
+                        <span>{t.tabCapsule}</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('smasher')}
-                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
                             activeTab === 'smasher'
                                 ? 'bg-amber-500/25 text-amber-300 border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.25)]'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
                         <Scissors size={14} className="text-amber-400" />
-                        <span className="truncate">{t.tabSmasher}</span>
+                        <span>{t.tabSmasher}</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab('galaga')}
+                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                            activeTab === 'galaga'
+                                ? 'bg-rose-500/25 text-rose-300 border border-rose-400/50 shadow-[0_0_15px_rgba(244,63,94,0.3)] animate-pulse'
+                                : 'text-gray-400 hover:text-white bg-white/5'
+                        }`}
+                    >
+                        <Gamepad2 size={14} className="text-rose-400" />
+                        <span>{t.tabGalaga}</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('practice')}
-                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
                             activeTab === 'practice'
                                 ? 'bg-purple-500/25 text-purple-300 border border-purple-400/50 shadow-[0_0_15px_rgba(168,85,247,0.25)]'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
                         <Brain size={14} className="text-purple-400" />
-                        <span className="truncate">{t.tabPractice}</span>
+                        <span>{t.tabPractice}</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('cabinet')}
-                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
                             activeTab === 'cabinet'
                                 ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
                         <Award size={14} className="text-emerald-400" />
-                        <span className="truncate">{t.tabCabinet} ({progress.masteredCardIds.length}/{MEMORY_CARDS_DB.length})</span>
+                        <span>{t.tabCabinet}</span>
                     </button>
                 </div>
 
                 {/* ── 4. 탭별 컨텐츠 바디 ── */}
-                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
                     
-                    {/* [모드 1: 💊 3초 마인드 캡슐 복용] */}
+                    {/* [모드 1: 💊 3초 마인드 캡슐] */}
                     {activeTab === 'capsule' && (
                         <div className="max-w-md mx-auto space-y-5 text-center">
                             <div className="flex items-center justify-between text-[11px] text-gray-400 font-mono px-1">
@@ -741,8 +756,6 @@ export default function MyeongsimMemoryGameModal({
                             </div>
 
                             <div className="relative p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#191e36] via-[#121526] to-[#0a0d1a] border border-amber-400/40 shadow-xl overflow-hidden space-y-4">
-                                
-                                {/* 1. 사건 (Point) */}
                                 <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-400/30 flex items-center gap-3">
                                     <span className="size-7 rounded-xl bg-cyan-500/20 text-cyan-300 font-mono font-black text-xs flex items-center justify-center shrink-0">
                                         POINT
@@ -752,7 +765,6 @@ export default function MyeongsimMemoryGameModal({
                                     </p>
                                 </div>
 
-                                {/* 2. 왜곡된 선 (Line) & 슬라이스 절단 */}
                                 <div className="relative my-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-950/60 to-purple-950/60 border border-rose-500/40 text-center">
                                     {!isSliced ? (
                                         <div className="space-y-2">
@@ -788,7 +800,6 @@ export default function MyeongsimMemoryGameModal({
                                     )}
                                 </div>
 
-                                {/* 3. 찌그러진 안경 (Lens) ➔ 정화된 사실 */}
                                 <div className="p-4 rounded-2xl bg-black/40 border border-white/10 transition-all">
                                     {!isShattered ? (
                                         <div className="flex items-center gap-3 text-gray-400">
@@ -834,7 +845,20 @@ export default function MyeongsimMemoryGameModal({
                         </div>
                     )}
 
-                    {/* [모드 3: 🧬 5-STEP 실전 자각 도장] */}
+                    {/* [모드 3: 👾 갤러그 잡념격퇴 아케이드 (NEW!)] */}
+                    {activeTab === 'galaga' && (
+                        <div className="max-w-lg mx-auto py-1">
+                            <MyeongsimGalagaGame
+                                language={langKey}
+                                onExpEarned={(amt) => addExp(amt)}
+                                onExamClear={(lvl) => {
+                                    setUnlockedNotice({ level: lvl, skills: ['Galaga Master'] });
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {/* [모드 4: 🧬 5-STEP 실전 자각 도장] */}
                     {activeTab === 'practice' && (
                         <div className="max-w-lg mx-auto space-y-4">
                             {!isPracticeComplete ? (
@@ -949,7 +973,7 @@ export default function MyeongsimMemoryGameModal({
                         </div>
                     )}
 
-                    {/* [모드 4: 🗄️ 마음 비타민 도감] */}
+                    {/* [모드 5: 🗄️ 마음 비타민 도감] */}
                     {activeTab === 'cabinet' && (
                         <div className="max-w-xl mx-auto space-y-4">
                             <div className="flex items-center justify-between text-xs px-1">
