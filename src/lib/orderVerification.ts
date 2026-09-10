@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { findSmartStoreOrder, markOrderAsClaimed, syncSmartStoreOrders } from './naverCommerceApi';
 import fs from 'fs';
 import path from 'path';
 
@@ -201,7 +202,51 @@ export async function verifySmartStoreOrder(
         };
     }
 
-    // 3. Check Supabase DB for duplicate usage (if table or metadata exists)
+    const isMaster = cleanOrder.includes('CHEONGRYU-MASTER') || cleanOrder.includes('VIP-FREEPASS');
+    const digitsOnly = cleanOrder.replace(/[^0-9]/g, '');
+    const isSmartStoreCandidate = channel === 'smartstore' || digitsOnly.length >= 14 || cleanOrder.includes('SMARTSTORE');
+
+    // 3. 네이버 스마트스토어 동기화 DB(Supabase / 로컬)에서 정품 대조
+    let naverMatch = await findSmartStoreOrder(cleanOrder);
+
+    // 만약 DB에 아직 없다면, 방금 결제한 최신 주문일 수 있으므로 네이버 API 즉시 1회 자동 동기화 시도
+    if (!naverMatch.found && isSmartStoreCandidate && !isMaster) {
+        try {
+            await syncSmartStoreOrders(7);
+            naverMatch = await findSmartStoreOrder(cleanOrder);
+        } catch (syncErr) {
+            console.warn('[Order Verification] Live sync attempt error:', syncErr);
+        }
+    }
+
+    // 4. 스마트스토어 주문번호인데 네이버 실제 결제 내역에 없는 경우 -> 가짜 번호 원천 차단!
+    if (isSmartStoreCandidate && !isMaster && !naverMatch.found) {
+        return {
+            success: false,
+            message: '❌ 네이버 스마트스토어(청류출판사) 결제 내역에서 일치하는 주문을 찾을 수 없습니다. 네이버페이 결제내역의 16자리 주문번호를 정확히 확인해 주세요.'
+        };
+    }
+
+    // 네이버 결제 내역이 확인된 경우 상태 점검
+    if (naverMatch.found && naverMatch.order) {
+        if (naverMatch.isClaimed) {
+            return {
+                success: false,
+                message: `이미 디지털도서관 인증이 완료된 주문번호입니다. (인증일: ${naverMatch.order.claimedAt ? new Date(naverMatch.order.claimedAt).toLocaleDateString('ko-KR') : '완료됨'}) - 주문 1건당 1회만 이용 가능합니다.`
+            };
+        }
+
+        // 취소나 환불 상태 여부 점검
+        const status = naverMatch.order.orderStatus.toUpperCase();
+        if (status.includes('CANCEL') || status.includes('REFUND') || status.includes('FAIL')) {
+            return {
+                success: false,
+                message: `🚫 결제 취소 또는 환불 처리된 주문번호입니다. (상태: ${naverMatch.order.orderStatus})`
+            };
+        }
+    }
+
+    // 5. Check Supabase DB for duplicate usage (if table or metadata exists)
     if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
         try {
             const { data } = await supabaseAdmin
@@ -221,20 +266,20 @@ export async function verifySmartStoreOrder(
         }
     }
 
-    // Determine if SmartStore (either explicit channel, or 16-digit standard Naver SmartStore order pattern)
-    const digitsOnly = cleanOrder.replace(/[^0-9]/g, '');
-    const isSmartStore = channel === 'smartstore' || digitsOnly.length >= 14 || cleanOrder.includes('SMARTSTORE');
+    // Determine if SmartStore
+    const isSmartStore = naverMatch.found || channel === 'smartstore' || digitsOnly.length >= 14 || cleanOrder.includes('SMARTSTORE');
 
     const unlockedModules = isSmartStore
         ? ['zero_music', 'coaching_20', 'startup_vip', 'dark_code_debugger', 'bio_care']
         : ['zero_music', 'coaching_20'];
 
-    // 4. Mark as used & save to persistence
+    // 5. Mark as used & save to persistence
     const nowIso = new Date().toISOString();
+    const confirmedName = depositorName || (naverMatch.order?.ordererName) || (isSmartStore ? '청류스토어 VIP 독자' : '도서 구매 독자');
     const record: VerifiedOrderRecord = {
         orderNumber: cleanOrder,
         userId: userId || `user-${cleanOrder.slice(0, 8)}`,
-        depositorName: depositorName || (isSmartStore ? '청류스토어 VIP 독자' : '도서 구매 독자'),
+        depositorName: confirmedName,
         channel: isSmartStore ? 'smartstore' : 'general',
         isSmartStore,
         unlockedModules,
@@ -243,6 +288,11 @@ export async function verifySmartStoreOrder(
 
     usedOrderNumbersStore.set(cleanOrder, record);
     savePersistentOrder(record);
+
+    // 네이버 스마트스토어 주문 테이블에서도 Claimed 마킹
+    if (naverMatch.found) {
+        await markOrderAsClaimed(cleanOrder, confirmedName, `CR-DRM-${cleanOrder.slice(-8)}`);
+    }
 
     // 5. Save to Supabase (if available)
     if (process.env.SUPABASE_SERVICE_ROLE_KEY && userId) {

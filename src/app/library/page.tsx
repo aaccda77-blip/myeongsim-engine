@@ -307,108 +307,526 @@ AWARENESS OF AWARENESS
 ];
 
 // 🌐 도서관 다국어 번역 사전
+// 🌐 도서관 다국어 번역 사전
 const LIBRARY_I18N: Record<Language, any> = {
     kr: {
         title: "명심코칭 디지털 도서관",
         bookTitle: "《ZERO POINT (제로 포인트)》",
         bookSubtitle: "AWARENESS OF AWARENESS",
         catchphrase: "내 안의 소음이 멈추고, 운명의 알고리즘이 리셋되는 순간",
-        author: "지은이: 이경윤 | 출판: 청류",
+        authorInfo: "• 지은이: 이경윤 | 출판: 청류 (EDITIONS CHEONGRYU)",
+        isbnInfo: "• e-ISBN: 979-11-220953-0-2",
+        priceText: "11,000원",
+        priceLabel: "• 정가:",
+        fixedPriceLawBadge: "도서정가제 준수",
+        officialBookBadge: "공식 출판 도서",
+        totalPagesBadge: "총 309p",
+        zoomInText: "크게보기",
         tabPdf: "309p 출판 원본 (PDF)",
         tabReader: "시력보호 e-리더",
         tabBenefits: "독자 VIP 특전",
         btnPreview: "📖 YES24 스타일 무료 미리보기 (Look Inside - 무료 15p)",
         buyYes24: "📗 YES24에서 구매",
         buySmartstore: "🛍️ 스마트스토어 구매",
-        authTitle: "정품 구매 인증 및 전면 VIP 해금",
-        authDesc: "네이버 스마트스토어 또는 서점에서 결제하신 구매자 성함과 주문번호를 입력하시면, 《ZERO POINT》 309페이지 전자책과 3대 VIP 슈퍼패키지가 즉시 영구 해금됩니다!",
-        namePlaceholder: "예: 홍길동 (입금자/구매자 성함)",
-        orderPlaceholder: "예: 20260904-12345678 (네이버페이 주문번호)",
+        trialNoticeTitle: "의 맛보기 체험 안내",
+        trialNoticeDesc: "현재 사이트 체험 모드로 이용 중이시며, 상단 [📖 무료 미리보기 (Look Inside)] 버튼을 통해 책의 핵심 내용을 바로 맛보실 수 있습니다.",
+        trialNoticeBenefit: "💡 309p 출판 원문 전권 열람 및 VIP 2대 특전(헌정 힐링송 무료 작곡권, AI 코칭 대화권)은 아래 서점 주문번호 인증 즉시 평생 소장용으로 자동 활성화됩니다!",
+        authSectionBadge: "👑 네이버 스마트스토어 구매자 전용 도서관",
+        authSectionTitle: "스마트스토어 정품 구매 인증 및 도서관 열람",
+        authNoticeTitle: "⚠️ 도서관 이용 권한 & 도서정가제 준수 안내",
+        lawBadge: "법률 제22조 준수",
+        authNoticeMain: "• 본 명심코칭 전자도서관(309p 전자책 완권)은 네이버 스마트스토어 도서 정품 구매 승인이 확인된 고객만 이용 가능합니다.",
+        authNoticeLawBox: "⚖️ 『출판문화산업진흥법 제22조(도서정가제)』 엄격 준수 고지:\n본 서비스는 출판 간행물의 정가를 결제하고 정품 인증을 완료한 승인 회원에게만 1인 1열람 권한을 제공하며, 비구매자에 대한 무단 무료 열람 및 불법 배포를 엄격히 금지합니다.",
+        authNoticeExternal: "• YES24 등 외부 서점 전자책 구매자님: 각 서점의 전용 뷰어(예: YES24 eBook 앱 또는 PC 뷰어)를 이용해 주시기 바랍니다.",
+        platformLabel: "구매처",
+        optSmartstore: "🛍️ 네이버 스마트스토어 (청류출판사) [도서관 전권 열람 전용]",
+        optYes24: "📗 YES24 [특전 신청 - 전자책은 YES24 뷰어 이용]",
+        optKyobo: "📚 교보문고 [특전 신청 - 전자책은 교보 뷰어 이용]",
+        optBookk: "📖 부크크 [특전 신청]",
+        optOther: "기타 서점",
+        nameLabel: "구매자 성함",
+        orderLabelField: "주문번호",
+        yes24NoticeTitle: "📱 YES24 전자책(eBook) 구매 독자 안내",
+        yes24ViewerBtn: "YES24 뷰어 바로가기",
+        yes24NoticeBody: "YES24에서 전자책을 구매하신 독자님은 YES24 전용 전자책 뷰어(YES24 eBook 앱 또는 PC 웹 서재)를 이용해 주시기 바랍니다.",
+        yes24NoticeBenefit: "🎁 아래에 YES24 주문번호를 입력하시면 명심코칭 도서관의 VIP 헌정 힐링송 작곡권 및 AI 코칭 20회 대화권이 즉시 활성화됩니다!",
         btnVerify: "✨ 1초 즉시 인증 및 전면 해금하기",
-        soundLabBtn: "🎧 뇌파 치유 사운드 랩",
-        soundLabDesc: "7대 솔페지오 & 자연음 믹싱",
+        soundLabBtn: "치유 사운드",
         homeBtn: "홈으로",
         drmTag: "DRM 2.0 포렌식 보안 적용",
+        drmHeaderTitle: "[청류출판사 DRM 2.0 포렌식 보안 적용]",
         verifiedBadge: "정품 라이선스",
-        readingTip: "종이책 원본 디자인 그대로 읽기",
-        streamBadge: "YES24·교보 보안스트림 적용"
+        ownerLabel: "• 소유자:",
+        orderText: "주문:",
+        licenseKeyLabel: "• 라이선스 키:",
+        lawNoticeVerified: "⚖️ 도서정가제 준수 인증: 본 전자도서는 『출판문화산업진흥법 제22조』에 의거하여 정가 구매가 승인 확인된 회원 1인에게만 부여된 합법적 정품 라이선스입니다.",
+        copyrightWarning: "⚖️ 저작권법 고지: 본 전자책에는 구매자 고유 디지털 워터마크가 각인되어 있습니다. 무단 캡처, 복제, 유출 시 저작권법 제136조에 따라 5년 이하의 징역 또는 5천만원 이하의 벌금형에 처해질 수 있습니다.",
+        pdfViewTitle: "원문 PDF 열람",
+        pdfStreamSub: "총 309p 정품 스트림",
+        streamBadge: "YES24·교보 보안스트림 적용",
+        adminDownload: "📥 관리자 다운로드",
+        adminDownloading: "각인 중...",
+        fullscreenBtn: "🖥️ 전체화면",
+        safeReadingTag: "안심 정품 열람",
+        drmStreamTag: "DRM 2.0 포렌식 각인 스트림",
+        mobileHubTitle: "안심 모바일 리더 모드",
+        mobileHubDesc: "모바일 화면에 최적화된 고화질 전체화면 뷰어로 즉시 연결됩니다.",
+        mobileOpenBtn: "📱 모바일 고화질 전체화면 열기",
+        screenSmallQuestion: "화면이 작게 느껴지시나요?",
+        switchToFullscreen: "전체화면 모드로 전환 ➔",
+        smartstoreNamePlaceholder: "예: 홍길동 (네이버페이 구매자 성함)",
+        smartstoreOrderLabel: "네이버페이 주문번호 (16자리)",
+        smartstoreOrderPlaceholder: "예: 20260904-12345678",
+        smartstoreBtnText: "👑 네이버 스마트스토어 올인원 패키지 전면 해금하기",
+        smartstoreVerifyingText: "네이버 스마트스토어 주문번호 검증 중...",
+        smartstoreGuideBadge: "네이버 스마트스토어 VIP",
+        yes24NamePlaceholder: "예: 홍길동 (YES24 주문자 성함)",
+        yes24OrderLabel: "YES24 주문번호",
+        yes24OrderPlaceholder: "예: 26090412345 (마이페이지 주문내역)",
+        yes24BtnText: "📗 YES24 정품 독자 인증 및 도서 해금하기",
+        yes24VerifyingText: "YES24 주문번호 검증 중...",
+        yes24GuideBadge: "YES24 독자 전용",
+        kyoboNamePlaceholder: "예: 홍길동 (교보문고 구매자 성함)",
+        kyoboOrderLabel: "교보문고 주문/영수증 번호",
+        kyoboOrderPlaceholder: "예: 202609040001 (주문내역 또는 영수증)",
+        kyoboBtnText: "📚 교보문고 정품 독자 인증 및 도서 해금하기",
+        kyoboVerifyingText: "교보문고 주문번호 검증 중...",
+        kyoboGuideBadge: "교보문고 독자 전용",
+        bookkNamePlaceholder: "예: 홍길동 (부크크 주문자 성함)",
+        bookkOrderLabel: "부크크 주문번호",
+        bookkOrderPlaceholder: "예: B20260904-1234",
+        bookkBtnText: "📖 부크크 정품 독자 인증 및 도서 해금하기",
+        bookkVerifyingText: "부크크 주문번호 검증 중...",
+        bookkGuideBadge: "부크크 독자 전용",
+        errNameRequired: "네이버 스마트스토어 결제 시 입력하신 구매자 성함을 입력해주세요.",
+        errOrderRequired: "네이버페이 결제내역의 주문번호(16자리)를 올바르게 입력해주세요. (예: 20260904-12345678)",
+        brainwaveSoundLab: "🎧 뇌파 치유 사운드 랩",
+        solfeggioMixing: "6대 솔페지오 & 자연음 믹싱",
+        downloadPersonalPdf: "소장용 다운로드",
+        goToPdfTab: "309p 출판원문 ➔",
+        zoomOut: "축소",
+        zoomIn: "확대",
+        mobileOptimizedBadge: "스마트폰 최적화 스트리밍",
+        mobileBookTitle: "《ZERO POINT》 309p 정품 열람",
+        mobileStreamDesc: "스마트폰 브라우저에서는 아래 전용 버튼을 통해 내장 고화질 뷰어로 309페이지 원문을 시원하게 확대/축소하며 감상하실 수 있습니다.",
+        openMobilePdfBtn: "🚀 모바일 고화질 PDF 바로 열기",
+        openFullscreenViewerBtn: "🖥️ 보안 전체화면 모드로 보기",
+        switchToReaderBtn: "✨ 시력보호 e-Reader (텍스트)로 읽기",
+        vipTabTitle: "《제로포인트》 독자 한정 2대 특별 특전",
+        vipTabSub: "책 2페이지 및 308페이지 수록 혜택",
+        vipBenefit1Title: "1. 1:1 맞춤 헌정 힐링송(MP3) 무료 작곡 신청",
+        vipBenefit1Desc: "대표님의 사주 기질과 주파수(432Hz/528Hz)를 분석하여 세상에 단 하나뿐인 전용 치유 음원을 무료로 작곡하여 증정합니다.",
+        vipBenefit1Btn: "🎵 헌정 힐링송 무료 작곡 신청하기 ➔",
+        vipBenefit2Title: "2. 명심 AI 챗봇 20회 VIP 코칭 대화권 즉시 활성화",
+        vipBenefit2Desc: "책을 읽다 생긴 의문이나 다크코드 디버깅을 명심 AI 수석 코치와 20회 동안 1:1 심층 상담할 수 있는 VIP 이용권이 자동 지급되었습니다.",
+        vipBenefit2Btn: "💬 명심 AI VIP 코칭 시작하기 ➔",
+        closeBtn: "닫기",
+        fullscreenTitle: "《ZERO POINT》 전체화면 뷰어",
+        licenseBadgeLabel: "라이선스",
+        mobileFullscreenNativeTitle: "모바일 전체화면 네이티브 열람",
+        mobileFullscreenNativeDesc: "스마트폰 브라우저에서는 아래 버튼을 누르면 스마트폰 전용 고화질 PDF 뷰어로 309페이지를 초고화질로 편안하게 확대/축소하며 감상하실 수 있습니다.",
+        openMobileNativePdfBtn: "🚀 스마트폰 고화질 PDF 열기",
+        coverModalTitle: "《ZERO POINT (제로 포인트)》 공식 출판 표지",
+        coverModalAuthor: "지은이: 이경윤 | 출판: 청류 (EDITIONS CHEONGRYU) · 979-11-220953-0-2",
+        coverModalDismiss: "(화면 아무 곳이나 누르면 닫힙니다)",
+        previewModalTitle: "《ZERO POINT》 미리보기",
+        previewEndTitle: "🎉 무료 미리보기가 여기까지입니다!",
+        previewEndDesc: "다음 장부터 제2부 제로포인트의 감정 연금술과 20일 기적의 실전 자각 훈련(75~185p) 전문이 본격적으로 펼쳐집니다!",
+        previewBuyYes24: "📗 YES24에서 구매하고 전편 읽기 ➔",
+        previewBuySmartstore: "🛍️ 청류스마트스토어 올인원 패키지 구매 ➔",
+        previewAlreadyBought: "🔑 이미 구매하셨다면? 구매 인증하고 전편 해금하기",
+        prevPageBtn: "← 이전 페이지",
+        nextPageBtn: "다음 페이지 →"
     },
     en: {
         title: "Myeongsim Digital Library",
         bookTitle: "《ZERO POINT》",
         bookSubtitle: "AWARENESS OF AWARENESS",
         catchphrase: "When the inner noise stops, the algorithm of destiny resets",
-        author: "Author: Kyeong-Yoon Lee | Publisher: Cheongryu",
+        authorInfo: "• Author: Kyeong-Yoon Lee | Publisher: Cheongryu (EDITIONS CHEONGRYU)",
+        isbnInfo: "• e-ISBN: 979-11-220953-0-2",
+        priceText: "KRW 11,000",
+        priceLabel: "• List Price:",
+        fixedPriceLawBadge: "Fixed Price Law Compliant",
+        officialBookBadge: "Official Publication",
+        totalPagesBadge: "Total 309p",
+        zoomInText: "Zoom In",
         tabPdf: "309p Original (PDF)",
         tabReader: "Eye-Care e-Reader",
-        tabBenefits: "VIP Reader Benefits",
+        tabBenefits: "VIP Benefits",
         btnPreview: "📖 Look Inside (Free 15p Preview)",
         buyYes24: "📗 Buy on YES24",
         buySmartstore: "🛍️ Buy on SmartStore",
-        authTitle: "Verify Purchase & Unlock Full VIP Access",
-        authDesc: "Enter your Buyer Name and Order Number to instantly unlock the 309-page e-Book 《ZERO POINT》 and all 3 VIP Super Packages!",
-        namePlaceholder: "e.g. John Doe (Buyer Name)",
-        orderPlaceholder: "e.g. 20260904-12345678 (Order Number)",
+        trialNoticeTitle: "'s Preview Experience Guide",
+        trialNoticeDesc: "You are currently in site preview mode. Click the [📖 Look Inside] button above to explore key highlights.",
+        trialNoticeBenefit: "💡 Reading the full 309p published text and unlocking 2 VIP perks (custom healing song, AI coaching) will activate permanently upon order verification below!",
+        authSectionBadge: "👑 SmartStore Buyer Exclusive Library",
+        authSectionTitle: "SmartStore Genuine Verification & Reading",
+        authNoticeTitle: "⚠️ Library Access & Fixed Book Price Law Notice",
+        lawBadge: "Article 22 Compliant",
+        authNoticeMain: "• This digital library (full 309p e-Book) is strictly available only to customers whose genuine purchase on Naver SmartStore has been verified.",
+        authNoticeLawBox: "⚖️ Strict Compliance with Article 22 of Publishing Industry Promotion Act (Fixed Book Price Law):\nThis service grants single-reader access strictly to verified buyers who paid the fixed statutory retail price. Unauthorized free access or illicit distribution to non-buyers is strictly prohibited.",
+        authNoticeExternal: "• Buyers from external bookstores (YES24, etc.): Please use the dedicated viewer of each bookstore (e.g. YES24 eBook App or PC Viewer).",
+        platformLabel: "Purchase Platform",
+        optSmartstore: "🛍️ Naver SmartStore (Cheongryu) [Full Reading Exclusive]",
+        optYes24: "📗 YES24 [Benefit Claim - Use YES24 Viewer for e-Book]",
+        optKyobo: "📚 Kyobo [Benefit Claim - Use Kyobo Viewer for e-Book]",
+        optBookk: "📖 Bookk [Benefit Claim]",
+        optOther: "Other Bookstores",
+        nameLabel: "Buyer Name",
+        orderLabelField: "Order Number",
+        yes24NoticeTitle: "📱 YES24 e-Book Reader Notice",
+        yes24ViewerBtn: "Go to YES24 Viewer",
+        yes24NoticeBody: "Readers who purchased the e-Book on YES24 are advised to use the dedicated YES24 eBook App or PC Web Library.",
+        yes24NoticeBenefit: "🎁 Enter your YES24 Order Number below to activate your VIP Dedicated Healing Song Composition & 20 AI Coaching Sessions!",
         btnVerify: "✨ Verify & Unlock in 1 Sec",
-        soundLabBtn: "🎧 Brainwave Sound Lab",
-        soundLabDesc: "7 Solfeggio & Nature Ambients",
+        soundLabBtn: "Healing Sound",
         homeBtn: "Home",
         drmTag: "DRM 2.0 Forensic Security Applied",
+        drmHeaderTitle: "[Cheongryu DRM 2.0 Forensic Security Applied]",
         verifiedBadge: "Official License",
-        readingTip: "Read Book in Original Print Layout",
-        streamBadge: "Secure DRM Streaming"
+        ownerLabel: "• Owner:",
+        orderText: "Order:",
+        licenseKeyLabel: "• License Key:",
+        lawNoticeVerified: "⚖️ Fixed Price Law Verified: This e-Book is a legitimate single-user license granted strictly to a verified buyer paying full statutory price under Article 22.",
+        copyrightWarning: "⚖️ Copyright Notice: This e-Book contains a unique forensic digital watermark. Unauthorized capture, duplication, or leak is subject to criminal prosecution under copyright laws.",
+        pdfViewTitle: "Original PDF View",
+        pdfStreamSub: "309p Official Stream",
+        streamBadge: "Secure DRM Streaming",
+        adminDownload: "📥 Admin Download",
+        adminDownloading: "Watermarking...",
+        fullscreenBtn: "🖥️ Fullscreen",
+        safeReadingTag: "Official Reading",
+        drmStreamTag: "DRM 2.0 Forensic Stream",
+        mobileHubTitle: "Secure Mobile Reader Mode",
+        mobileHubDesc: "Optimized high-definition fullscreen viewer for mobile screens.",
+        mobileOpenBtn: "📱 Open Mobile Fullscreen",
+        screenSmallQuestion: "Does the screen feel small?",
+        switchToFullscreen: "Switch to Fullscreen ➔",
+        smartstoreNamePlaceholder: "e.g. John Doe (Naver Pay Buyer Name)",
+        smartstoreOrderLabel: "Naver Pay Order Number (16 digits)",
+        smartstoreOrderPlaceholder: "e.g. 20260904-12345678",
+        smartstoreBtnText: "👑 Unlock Naver SmartStore All-in-One Package",
+        smartstoreVerifyingText: "Verifying SmartStore Order Number...",
+        smartstoreGuideBadge: "Naver SmartStore VIP",
+        yes24NamePlaceholder: "e.g. John Doe (YES24 Buyer Name)",
+        yes24OrderLabel: "YES24 Order Number",
+        yes24OrderPlaceholder: "e.g. 26090412345 (Order History)",
+        yes24BtnText: "📗 Verify YES24 Reader & Unlock Book",
+        yes24VerifyingText: "Verifying YES24 Order Number...",
+        yes24GuideBadge: "YES24 Reader Exclusive",
+        kyoboNamePlaceholder: "e.g. John Doe (Kyobo Buyer Name)",
+        kyoboOrderLabel: "Kyobo Order / Receipt Number",
+        kyoboOrderPlaceholder: "e.g. 202609040001 (Order History)",
+        kyoboBtnText: "📚 Verify Kyobo Reader & Unlock Book",
+        kyoboVerifyingText: "Verifying Kyobo Order Number...",
+        kyoboGuideBadge: "Kyobo Reader Exclusive",
+        bookkNamePlaceholder: "e.g. John Doe (Bookk Buyer Name)",
+        bookkOrderLabel: "Bookk Order Number",
+        bookkOrderPlaceholder: "e.g. B20260904-1234",
+        bookkBtnText: "📖 Verify Bookk Reader & Unlock Book",
+        bookkVerifyingText: "Verifying Bookk Order Number...",
+        bookkGuideBadge: "Bookk Reader Exclusive",
+        errNameRequired: "Please enter the buyer's name used during payment.",
+        errOrderRequired: "Please enter a valid 16-digit order number. (e.g. 20260904-12345678)",
+        brainwaveSoundLab: "🎧 Brainwave Sound Lab",
+        solfeggioMixing: "6 Solfeggio & Nature Mix",
+        downloadPersonalPdf: "Download PDF",
+        goToPdfTab: "309p Full Text ➔",
+        zoomOut: "Zoom Out",
+        zoomIn: "Zoom In",
+        mobileOptimizedBadge: "Smartphone Optimized Stream",
+        mobileBookTitle: "《ZERO POINT》 309p Official Stream",
+        mobileStreamDesc: "On mobile browsers, tap the button below to comfortably read and zoom the full 309-page text via the built-in HD viewer.",
+        openMobilePdfBtn: "🚀 Open Mobile High-Res PDF",
+        openFullscreenViewerBtn: "🖥️ Open Secure Fullscreen Mode",
+        switchToReaderBtn: "✨ Read with Eye-Care e-Reader",
+        vipTabTitle: "《ZERO POINT》 Exclusive 2 VIP Reader Perks",
+        vipTabSub: "Perks featured on pages 2 and 308 of the book",
+        vipBenefit1Title: "1. Free 1:1 Custom Dedicated Healing Song (MP3)",
+        vipBenefit1Desc: "We analyze your natural energy disposition and resonance frequency (432Hz/528Hz) to compose a one-of-a-kind personal healing soundtrack for free.",
+        vipBenefit1Btn: "🎵 Apply for Free Healing Song Composition ➔",
+        vipBenefit2Title: "2. Myeongsim AI VIP Coaching (20 Sessions) Activated",
+        vipBenefit2Desc: "A VIP pass allowing 20 in-depth 1:1 coaching sessions with Myeongsim AI to clarify questions and debug unconscious dark codes has been granted.",
+        vipBenefit2Btn: "💬 Start Myeongsim AI VIP Coaching ➔",
+        closeBtn: "Close",
+        fullscreenTitle: "《ZERO POINT》 Fullscreen Viewer",
+        licenseBadgeLabel: "License",
+        mobileFullscreenNativeTitle: "Mobile Native Fullscreen Reading",
+        mobileFullscreenNativeDesc: "Tap the button below to open in your smartphone high-definition viewer, allowing comfortable zoom and smooth navigation across 309 pages.",
+        openMobileNativePdfBtn: "🚀 Open Smartphone HD PDF",
+        coverModalTitle: "《ZERO POINT》 Official Book Cover",
+        coverModalAuthor: "Author: Kyeong-Yoon Lee | Publisher: Cheongryu · 979-11-220953-0-2",
+        coverModalDismiss: "(Click anywhere on the screen to close)",
+        previewModalTitle: "《ZERO POINT》 Preview",
+        previewEndTitle: "🎉 That's the end of the free preview!",
+        previewEndDesc: "From the next chapter, Part 2 Emotional Alchemy of Zero Point and the 20-Day Miraculous Awareness Training (pp. 75-185) begin!",
+        previewBuyYes24: "📗 Buy on YES24 & Read Full Book ➔",
+        previewBuySmartstore: "🛍️ Buy Cheongryu SmartStore All-in-One Package ➔",
+        previewAlreadyBought: "🔑 Already purchased? Verify & Unlock Full Book",
+        prevPageBtn: "← Previous",
+        nextPageBtn: "Next →"
     },
     jp: {
         title: "明心コーチング電子図書館",
         bookTitle: "《ZERO POINT (ゼロポイント)》",
         bookSubtitle: "AWARENESS OF AWARENESS",
         catchphrase: "心の中のノイズが静まり、運命のアルゴリズムがリセットされる瞬間",
-        author: "著者: イ・ギョンユン | 出版: 晴流",
+        authorInfo: "• 著者: イ・ギョンユン | 出版: 晴流 (EDITIONS CHEONGRYU)",
+        isbnInfo: "• e-ISBN: 979-11-220953-0-2",
+        priceText: "11,000ウォン",
+        priceLabel: "• 定価:",
+        fixedPriceLawBadge: "定価法遵守",
+        officialBookBadge: "公式出版図書",
+        totalPagesBadge: "全 309p",
+        zoomInText: "拡大表示",
         tabPdf: "309p 出版原本 (PDF)",
         tabReader: "視力保護 e-リーダー",
         tabBenefits: "読者VIP特典",
         btnPreview: "📖 試し読み (Look Inside - 無料15p)",
         buyYes24: "📗 YES24で購入",
         buySmartstore: "🛍️ ストアで購入",
-        authTitle: "正規購入認証＆全VIPアクセス解放",
-        authDesc: "ご購入時のお名前と注文番号を入力すると、309ページの電子書籍《ZERO POINT》と全VIP特典が即座に解放されます！",
-        namePlaceholder: "例: 山田太郎 (購入者氏名)",
-        orderPlaceholder: "例: 20260904-12345678 (注文番号)",
+        trialNoticeTitle: "様のお試し体験のご案内",
+        trialNoticeDesc: "現在サイト体験モードでご利用中です。上部の「📖 試し読み (Look Inside)」ボタンから主要内容をお試しいただけます。",
+        trialNoticeBenefit: "💡 309p出版原本の全編閲覧およびVIP2大特典(治癒ソング作曲権、AI対話権)は、下記注文番号認証により即時生涯有効化されます！",
+        authSectionBadge: "👑 ネイバーストア購入者専用図書館",
+        authSectionTitle: "ストア正規購入認証＆図書館閲覧",
+        authNoticeTitle: "⚠️ 図書館利用権限＆定価法遵守のご案内",
+        lawBadge: "法律第22条遵守",
+        authNoticeMain: "• 本電子図書館(全309p電子書籍)は、ネイバーストアでの正規品購入が承認確認されたお客様のみご利用いただけます。",
+        authNoticeLawBox: "⚖️ 『出版文化産業振興法第22条(定価法)』厳格遵守告知：\n本サービスは定価をお支払いいただき正規認証を完了した承認会員様のみに1人1閲覧権を付与し、未購入者への無断無料閲覧および違法配布を固く禁じます。",
+        authNoticeExternal: "• YES24等の外部書店電子書籍購入者様：各書店の専用リーダー(YES24 eBookアプリ等)をご利用ください。",
+        platformLabel: "購入先",
+        optSmartstore: "🛍️ ネイバーストア (晴流) [図書館全編閲覧専用]",
+        optYes24: "📗 YES24 [特典申請 - 電子書籍はYES24リーダーをご利用ください]",
+        optKyobo: "📚 教保文庫 [特典申請 - 電子書籍は教保リーダーをご利用ください]",
+        optBookk: "📖 Bookk [特典申請]",
+        optOther: "その他の書店",
+        nameLabel: "購入者氏名",
+        orderLabelField: "注文番号",
+        yes24NoticeTitle: "📱 YES24 電子書籍ご購入の読者様へ",
+        yes24ViewerBtn: "YES24リーダーへ移動",
+        yes24NoticeBody: "YES24で電子書籍を購入された読者様は、YES24専用リーダー(YES24 eBookアプリまたはPCウェブ本棚)をご利用ください。",
+        yes24NoticeBenefit: "🎁 下記にYES24注文番号を入力すると、VIP治癒ソング作曲権とAIコーチング20回利用権が即時有効化されます！",
         btnVerify: "✨ 1秒即時認証＆全編解放",
-        soundLabBtn: "🎧 脳波ヒーリングサウンドラボ",
-        soundLabDesc: "7大ソルフェジオ周波数＆自然音ミキシング",
+        soundLabBtn: "治癒サウンド",
         homeBtn: "ホーム",
         drmTag: "DRM 2.0 真正性保護適用",
+        drmHeaderTitle: "[晴流出版社 DRM 2.0 真正性セキュリティ適用]",
         verifiedBadge: "正規ライセンス",
-        readingTip: "印刷版のデザインそのまま読む",
-        streamBadge: "安全ストリーミング適用"
+        ownerLabel: "• 所有者:",
+        orderText: "注文:",
+        licenseKeyLabel: "• ライセンスキー:",
+        lawNoticeVerified: "⚖️ 定価法遵守認証：本電子書籍は『出版文化産業振興法第22条』に基づき定価購入が承認された会員様1名にのみ付与された適法ライセンスです。",
+        copyrightWarning: "⚖️ 著作権法告知：本電子書籍には購入者固有のデジタル透かしが刻印されています。無断キャプチャや複製・流出時は著作権法第136条により刑事処罰の対象となります。",
+        pdfViewTitle: "原本PDF閲覧",
+        pdfStreamSub: "全309p 正規品ストリーム",
+        streamBadge: "安全ストリーミング適用",
+        adminDownload: "📥 管理者ダウンロード",
+        adminDownloading: "刻印中...",
+        fullscreenBtn: "🖥️ 全画面",
+        safeReadingTag: "安心の正規品閲覧",
+        drmStreamTag: "DRM 2.0 真正性ストリーム",
+        mobileHubTitle: "安心モバイルリーダーモード",
+        mobileHubDesc: "モバイル画面に最適化された高画質全画面ビューアへ即時接続します。",
+        mobileOpenBtn: "📱 モバイル高画質全画面を開く",
+        screenSmallQuestion: "画面が小さく感じられますか？",
+        switchToFullscreen: "全画面モードに切り替え ➔",
+        smartstoreNamePlaceholder: "例: 山田太郎 (ストア購入者氏名)",
+        smartstoreOrderLabel: "ストア注文番号 (16桁)",
+        smartstoreOrderPlaceholder: "例: 20260904-12345678",
+        smartstoreBtnText: "👑 ストア All-in-One パッケージを全編解放",
+        smartstoreVerifyingText: "ストア注文番号を検証中...",
+        smartstoreGuideBadge: "ネイバーストア VIP",
+        yes24NamePlaceholder: "例: 山田太郎 (YES24購入者氏名)",
+        yes24OrderLabel: "YES24注文番号",
+        yes24OrderPlaceholder: "例: 26090412345 (注文履歴)",
+        yes24BtnText: "📗 YES24正規読者認証＆全編解放",
+        yes24VerifyingText: "YES24注文番号を検証中...",
+        yes24GuideBadge: "YES24読者専用",
+        kyoboNamePlaceholder: "例: 山田太郎 (教保文庫購入者氏名)",
+        kyoboOrderLabel: "教保文庫注文/レシート番号",
+        kyoboOrderPlaceholder: "例: 202609040001 (注文履歴)",
+        kyoboBtnText: "📚 教保文庫正規読者認証＆全編解放",
+        kyoboVerifyingText: "教保文庫注文番号を検証中...",
+        kyoboGuideBadge: "教保文庫読者専用",
+        bookkNamePlaceholder: "例: 山田太郎 (Bookk購入者氏名)",
+        bookkOrderLabel: "Bookk注文番号",
+        bookkOrderPlaceholder: "例: B20260904-1234",
+        bookkBtnText: "📖 Bookk正規読者認証＆全編解放",
+        bookkVerifyingText: "Bookk注文番号を検証中...",
+        bookkGuideBadge: "Bookk読者専用",
+        errNameRequired: "決済時に入力された購入者氏名を入力してください。",
+        errOrderRequired: "注文番号を正しく入力してください。(例: 20260904-12345678)",
+        brainwaveSoundLab: "🎧 脳波治癒サウンドラボ",
+        solfeggioMixing: "6大ソルフェジオ＆自然音ミキシング",
+        downloadPersonalPdf: "保存用ダウンロード",
+        goToPdfTab: "309p 出版原本 ➔",
+        zoomOut: "縮小",
+        zoomIn: "拡大",
+        mobileOptimizedBadge: "スマホ最適化ストリーミング",
+        mobileBookTitle: "《ZERO POINT》 309p 正規品閲覧",
+        mobileStreamDesc: "スマホブラウザでは、下記の専用ボタンから内蔵高画質ビューアで309ページの原本を快適に拡大・縮小してご覧いただけます。",
+        openMobilePdfBtn: "🚀 モバイル高画質PDFを直接開く",
+        openFullscreenViewerBtn: "🖥️ セキュリティ全画面モードで表示",
+        switchToReaderBtn: "✨ 視力保護e-Readerで読む",
+        vipTabTitle: "《ZERO POINT》読者限定 2大特別特典",
+        vipTabSub: "書籍2ページおよび308ページ掲載特典",
+        vipBenefit1Title: "1. 1:1オーダーメイド治癒ソング(MP3)無料作曲申請",
+        vipBenefit1Desc: "お客様の四柱推命気質と周波数(432Hz/528Hz)を分析し、世界で唯一の専用ヒーリング音源を無料で作曲・進呈します。",
+        vipBenefit1Btn: "🎵 治癒ソング無料作曲を申し込む ➔",
+        vipBenefit2Title: "2. 明心AI 20回 VIPコーチング対話権 即時有効化",
+        vipBenefit2Desc: "読書中の疑問やダークコードのデバッグを、明心AI首席コーチと20回にわたり1:1で深層相談できるVIP利用権が付与されました。",
+        vipBenefit2Btn: "💬 明心AI VIPコーチングを始める ➔",
+        closeBtn: "閉じる",
+        fullscreenTitle: "《ZERO POINT》 全画面ビューア",
+        licenseBadgeLabel: "ライセンス",
+        mobileFullscreenNativeTitle: "モバイル全画面ネイティブ閲覧",
+        mobileFullscreenNativeDesc: "スマホブラウザでは、下記のボタンを押すとスマホ専用の高画質PDFビューアで309ページを超高画質で快適に拡大・縮小してご覧いただけます。",
+        openMobileNativePdfBtn: "🚀 スマホ高画質PDFを開く",
+        coverModalTitle: "《ZERO POINT (ゼロポイント)》 公式出版表紙",
+        coverModalAuthor: "著者: イ・ギョンユン | 出版: 晴流 · 979-11-220953-0-2",
+        coverModalDismiss: "(画面のどこかをクリックすると閉じます)",
+        previewModalTitle: "《ZERO POINT》 試し読み",
+        previewEndTitle: "🎉 無料の試し読みはここまでです！",
+        previewEndDesc: "次の章から第2部ゼロポイントの感情錬金術と20日間の奇跡の実践自覚訓練(75〜185p)の全文が本格的に展開されます！",
+        previewBuyYes24: "📗 YES24で購入して全編を読む ➔",
+        previewBuySmartstore: "🛍️ 晴流ストア All-in-One パッケージを購入 ➔",
+        previewAlreadyBought: "🔑 すでにご購入済みですか？ 購入認証して全編解放",
+        prevPageBtn: "← 前のページ",
+        nextPageBtn: "次のページ →"
     },
     cn: {
         title: "明心教练电子图书馆",
         bookTitle: "《ZERO POINT (零点)》",
         bookSubtitle: "AWARENESS OF AWARENESS",
         catchphrase: "当内在噪音止息，命运算法重置的瞬间",
-        author: "作者: 李庆润 | 出版: 清流",
+        authorInfo: "• 作者: 李庆润 | 出版: 清流 (EDITIONS CHEONGRYU)",
+        isbnInfo: "• e-ISBN: 979-11-220953-0-2",
+        priceText: "11,000韩元",
+        priceLabel: "• 定价:",
+        fixedPriceLawBadge: "遵循图书定价法",
+        officialBookBadge: "官方出版图书",
+        totalPagesBadge: "共 309页",
+        zoomInText: "点击放大",
         tabPdf: "309页 原版 (PDF)",
         tabReader: "护眼电子阅读器",
         tabBenefits: "读者VIP特权",
         btnPreview: "📖 免费试读 (Look Inside - 15页)",
         buyYes24: "📗 YES24 购买",
         buySmartstore: "🛍️ 官方商城购买",
-        authTitle: "正版购买验证与全VIP解锁",
-        authDesc: "输入购买者姓名和订单号，即可瞬间解锁309页全本电子书《ZERO POINT》及所有VIP超值特权！",
-        namePlaceholder: "例: 张三 (购买者姓名)",
-        orderPlaceholder: "例: 20260904-12345678 (订单号)",
+        trialNoticeTitle: "的试读体验指南",
+        trialNoticeDesc: "您当前处于网站体验模式，可通过上方的[📖 免费试读 (Look Inside)]按钮抢先体验核心精彩内容。",
+        trialNoticeBenefit: "💡 309页完整正版阅读及VIP两大特权（定制疗愈颂、AI教练对话券）在下方验证订单号后立即永久激活！",
+        authSectionBadge: "👑 官方商城购买者专用图书馆",
+        authSectionTitle: "官方商城正版验证与图书馆阅读",
+        authNoticeTitle: "⚠️ 图书馆使用权限与图书定价法须知",
+        lawBadge: "遵循法律第22条",
+        authNoticeMain: "• 本明心教练电子图书馆（309页全本电子书）仅限在官方微店/商城正版购买并审核通过的用户使用。",
+        authNoticeLawBox: "⚖️ 严格遵循《出版物定价管理法》相关法规：\n本服务仅向支付全额定价并完成正版认证的核准会员提供一人一权阅读权限，严禁向未购买者提供免费阅读或非法传播。",
+        authNoticeExternal: "• YES24等外部电子书平台购买者：请使用各平台专属阅读器（如 YES24 eBook 应用或网页阅读器）进行阅读。",
+        platformLabel: "购买渠道",
+        optSmartstore: "🛍️ 官方商城 (清流) [图书馆全本阅读专用]",
+        optYes24: "📗 YES24 [特权领取 - 电子书请使用YES24阅读器]",
+        optKyobo: "📚 教保文库 [特权领取 - 电子书请使用教保阅读器]",
+        optBookk: "📖 Bookk [特权领取]",
+        optOther: "其他书店",
+        nameLabel: "购买者姓名",
+        orderLabelField: "订单号",
+        yes24NoticeTitle: "📱 YES24 电子书购买读者须知",
+        yes24ViewerBtn: "前往 YES24 阅读器",
+        yes24NoticeBody: "在 YES24 购买电子书的读者，请使用 YES24 专属阅读器（YES24 eBook 应用或电脑网页书架）阅读。",
+        yes24NoticeBenefit: "🎁 在下方输入 YES24 订单号，即可瞬间激活 VIP 专属疗愈颂定制权及 20 次 AI 深度教练对话特权！",
         btnVerify: "✨ 1秒即刻验证与解锁",
-        soundLabBtn: "🎧 脑波疗愈声音实验室",
-        soundLabDesc: "七大索尔菲吉奥频率与自然白噪音混音",
+        soundLabBtn: "疗愈声音",
         homeBtn: "主页",
         drmTag: "DRM 2.0 版权保护应用",
+        drmHeaderTitle: "[清流出版社 DRM 2.0 取证安全保护应用]",
         verifiedBadge: "正版授权",
-        readingTip: "纸质书排版原汁原味阅读",
-        streamBadge: "安全加密流式阅读"
+        ownerLabel: "• 持有人:",
+        orderText: "订单:",
+        licenseKeyLabel: "• 授权密钥:",
+        lawNoticeVerified: "⚖️ 图书定价法认证：本电子图书为严格依照《出版物定价管理法》第22条向全额正版购买核准会员提供的一对一合法专属许可。",
+        copyrightWarning: "⚖️ 版权法声明：本电子书内嵌购买者专属数字取证水印。严禁截屏、盗印或非法传播，违者将依法追究刑事与民事法律责任。",
+        pdfViewTitle: "原版PDF阅读",
+        pdfStreamSub: "共309页 正版加密阅读",
+        streamBadge: "安全加密流式阅读",
+        adminDownload: "📥 管理员下载",
+        adminDownloading: "水印刻印中...",
+        fullscreenBtn: "🖥️ 全屏模式",
+        safeReadingTag: "正版安心阅读",
+        drmStreamTag: "DRM 2.0 取证加密流",
+        mobileHubTitle: "移动端安全阅读模式",
+        mobileHubDesc: "即刻进入适配移动端屏幕的高清全屏阅读器。",
+        mobileOpenBtn: "📱 开启移动端高清全屏",
+        screenSmallQuestion: "感觉画面太小了吗？",
+        switchToFullscreen: "切换至全屏模式 ➔",
+        smartstoreNamePlaceholder: "例: 张三 (官方商城购买者姓名)",
+        smartstoreOrderLabel: "官方商城订单号 (16位数字)",
+        smartstoreOrderPlaceholder: "例: 20260904-12345678",
+        smartstoreBtnText: "👑 全面解锁官方商城 All-in-One 全套正版礼包",
+        smartstoreVerifyingText: "正在验证官方商城订单号...",
+        smartstoreGuideBadge: "官方商城 VIP",
+        yes24NamePlaceholder: "例: 张三 (YES24购买者姓名)",
+        yes24OrderLabel: "YES24 订单号",
+        yes24OrderPlaceholder: "例: 26090412345 (个人中心订单记录)",
+        yes24BtnText: "📗 YES24正版读者验证并解锁特权",
+        yes24VerifyingText: "正在验证 YES24 订单号...",
+        yes24GuideBadge: "YES24读者专属",
+        kyoboNamePlaceholder: "例: 张三 (教保文库购买者姓名)",
+        kyoboOrderLabel: "教保文库订单/收据号",
+        kyoboOrderPlaceholder: "例: 202609040001 (订单记录)",
+        kyoboBtnText: "📚 教保文库正版读者验证并解锁特权",
+        kyoboVerifyingText: "正在验证教保文库订单号...",
+        kyoboGuideBadge: "教保文库读者专属",
+        bookkNamePlaceholder: "例: 张三 (Bookk购买者姓名)",
+        bookkOrderLabel: "Bookk 订单号",
+        bookkOrderPlaceholder: "例: B20260904-1234",
+        bookkBtnText: "📖 Bookk正版读者验证并解锁特权",
+        bookkVerifyingText: "正在验证 Bookk 订单号...",
+        bookkGuideBadge: "Bookk读者专属",
+        errNameRequired: "请输入购买时填写的购买者姓名。",
+        errOrderRequired: "请正确输入订单号。(例: 20260904-12345678)",
+        brainwaveSoundLab: "🎧 脑波疗愈声音工坊",
+        solfeggioMixing: "6大索尔菲吉欧频率与自然混音",
+        downloadPersonalPdf: "下载典藏版",
+        goToPdfTab: "309页出版原著 ➔",
+        zoomOut: "缩小",
+        zoomIn: "放大",
+        mobileOptimizedBadge: "手机优化加密流",
+        mobileBookTitle: "《ZERO POINT》 309页 正版阅读",
+        mobileStreamDesc: "在移动端浏览器中，可通过下方专属按钮使用内置高清阅读器舒适缩放浏览309页全本原著。",
+        openMobilePdfBtn: "🚀 直接打开移动端高清PDF",
+        openFullscreenViewerBtn: "🖥️ 安全全屏模式阅读",
+        switchToReaderBtn: "✨ 使用护眼电子阅读器阅读",
+        vipTabTitle: "《零点》读者专属 2大独家VIP特权",
+        vipTabSub: "本书第2页及第308页所载专属福利",
+        vipBenefit1Title: "1. 1对1专属定制疗愈颂(MP3)免费作曲申请",
+        vipBenefit1Desc: "深度分析您的生辰五行气韵与疗愈共振频率(432Hz/528Hz)，免费为您专属定制世间绝无仅有的疗愈音频。",
+        vipBenefit1Btn: "🎵 免费申请专属疗愈颂作曲 ➔",
+        vipBenefit2Title: "2. 明心AI 20次 VIP深度教练对话权益即刻激活",
+        vipBenefit2Desc: "已自动发放VIP特权卡，可与明心AI首席教练进行20次一对一深度对谈，解答阅读疑问并调试潜意识暗黑代码。",
+        vipBenefit2Btn: "💬 开启明心AI VIP教练对谈 ➔",
+        closeBtn: "关闭",
+        fullscreenTitle: "《零点》全屏阅读器",
+        licenseBadgeLabel: "授权",
+        mobileFullscreenNativeTitle: "移动端原生全屏阅读",
+        mobileFullscreenNativeDesc: "在手机浏览器中点击下方按钮，即可使用手机专属超清PDF阅读器，舒适缩放沉浸式阅读309页全本。",
+        openMobileNativePdfBtn: "🚀 打开手机高清PDF",
+        coverModalTitle: "《ZERO POINT (零点)》 官方正版封面",
+        coverModalAuthor: "作者: 李庆润 | 出版: 清流 · 979-11-220953-0-2",
+        coverModalDismiss: "(点击屏幕任意位置即可关闭)",
+        previewModalTitle: "《零点》试读",
+        previewEndTitle: "🎉 免费试读到此结束！",
+        previewEndDesc: "下一章将正式展开第2部《零点的情绪炼金术》以及长达20天的奇迹觉察实战训练（第75~185页）全本内容！",
+        previewBuyYes24: "📗 在 YES24 购买并阅读全书 ➔",
+        previewBuySmartstore: "🛍️ 购买清流官方商城 All-in-One 尊享礼包 ➔",
+        previewAlreadyBought: "🔑 已经购买？立刻验证并解锁全书",
+        prevPageBtn: "← 上一页",
+        nextPageBtn: "下一页 →"
     }
 };
+
 
 export default function LibraryPage() {
     const router = useRouter();
@@ -431,42 +849,44 @@ export default function LibraryPage() {
         switch (purchasePlatform) {
             case 'yes24':
                 return {
-                    namePlaceholder: '예: 홍길동 (YES24 주문자 성함)',
-                    orderLabel: 'YES24 주문번호',
-                    orderPlaceholder: '예: 26090412345 (마이페이지 주문내역)',
-                    btnText: '📗 YES24 정품 독자 인증 및 도서 해금하기',
-                    verifyingText: 'YES24 주문번호 검증 중...',
-                    guideBadge: 'YES24 독자 전용'
+                    namePlaceholder: tLib.yes24NamePlaceholder,
+                    orderLabel: tLib.yes24OrderLabel,
+                    orderPlaceholder: tLib.yes24OrderPlaceholder,
+                    btnText: tLib.yes24BtnText,
+                    verifyingText: tLib.yes24VerifyingText,
+                    guideBadge: tLib.yes24GuideBadge,
+                    bannerNotice: tLib.yes24NoticeBody,
+                    externalViewerUrl: 'https://www.yes24.com/Member/FTMypageEBookList.aspx'
                 };
             case 'kyobo':
                 return {
-                    namePlaceholder: '예: 홍길동 (교보문고 구매자 성함)',
-                    orderLabel: '교보문고 주문/영수증 번호',
-                    orderPlaceholder: '예: 202609040001 (주문내역 또는 영수증)',
-                    btnText: '📚 교보문고 정품 독자 인증 및 도서 해금하기',
-                    verifyingText: '교보문고 주문번호 검증 중...',
-                    guideBadge: '교보문고 독자 전용'
+                    namePlaceholder: tLib.kyoboNamePlaceholder,
+                    orderLabel: tLib.kyoboOrderLabel,
+                    orderPlaceholder: tLib.kyoboOrderPlaceholder,
+                    btnText: tLib.kyoboBtnText,
+                    verifyingText: tLib.kyoboVerifyingText,
+                    guideBadge: tLib.kyoboGuideBadge
                 };
             case 'bookk':
                 return {
-                    namePlaceholder: '예: 홍길동 (부크크 주문자 성함)',
-                    orderLabel: '부크크 주문번호',
-                    orderPlaceholder: '예: B20260904-1234',
-                    btnText: '📖 부크크 정품 독자 인증 및 도서 해금하기',
-                    verifyingText: '부크크 주문번호 검증 중...',
-                    guideBadge: '부크크 독자 전용'
+                    namePlaceholder: tLib.bookkNamePlaceholder,
+                    orderLabel: tLib.bookkOrderLabel,
+                    orderPlaceholder: tLib.bookkOrderPlaceholder,
+                    btnText: tLib.bookkBtnText,
+                    verifyingText: tLib.bookkVerifyingText,
+                    guideBadge: tLib.bookkGuideBadge
                 };
             default:
                 return {
-                    namePlaceholder: '예: 홍길동 (네이버페이 구매자 성함)',
-                    orderLabel: '네이버페이 주문번호 (16자리)',
-                    orderPlaceholder: '예: 20260904-12345678',
-                    btnText: '👑 네이버 스마트스토어 올인원 패키지 전면 해금하기',
-                    verifyingText: '네이버 스마트스토어 주문번호 검증 중...',
-                    guideBadge: '네이버 스마트스토어 VIP'
+                    namePlaceholder: tLib.smartstoreNamePlaceholder,
+                    orderLabel: tLib.smartstoreOrderLabel,
+                    orderPlaceholder: tLib.smartstoreOrderPlaceholder,
+                    btnText: tLib.smartstoreBtnText,
+                    verifyingText: tLib.smartstoreVerifyingText,
+                    guideBadge: tLib.smartstoreGuideBadge
                 };
         }
-    }, [purchasePlatform]);
+    }, [purchasePlatform, tLib]);
 
 
     // 🔍 확대/축소 및 🖥️ 전체화면 상태
@@ -723,12 +1143,12 @@ export default function LibraryPage() {
         const cleanOrder = orderNumber.trim();
 
         if (!cleanName) {
-            setVerificationError('네이버 스마트스토어 결제 시 입력하신 구매자 성함을 입력해주세요.');
+            setVerificationError(tLib.errNameRequired);
             return;
         }
 
         if (!cleanOrder || cleanOrder.length < 8) {
-            setVerificationError('네이버페이 결제내역의 주문번호(16자리)를 올바르게 입력해주세요. (예: 20260904-12345678)');
+            setVerificationError(tLib.errOrderRequired);
             return;
         }
 
@@ -868,7 +1288,7 @@ export default function LibraryPage() {
                     ) : (
                         <div className="flex items-center gap-1">
                             <Volume2 size={13} className="text-cyan-400" />
-                            <span className="text-[10px] font-mono font-bold">치유 사운드</span>
+                            <span className="text-[10px] font-mono font-bold whitespace-nowrap">{tLib.soundLabBtn}</span>
                         </div>
                     )}
                 </button>
@@ -895,7 +1315,7 @@ export default function LibraryPage() {
                             {/* 호버 시 나타나는 돋보기 오버레이 */}
                             <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-amber-300">
                                 <ZoomIn size={18} className="animate-pulse" />
-                                <span className="text-[9px] font-bold">크게보기</span>
+                                <span className="text-[9px] font-bold">{tLib.zoomInText}</span>
                             </div>
                             <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20 pointer-events-none" />
                         </div>
@@ -904,24 +1324,24 @@ export default function LibraryPage() {
                         <div className="space-y-1.5 flex-1 min-w-0">
                             <div className="flex items-center gap-1.5">
                                 <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                                    공식 출판 도서
+                                    {tLib.officialBookBadge}
                                 </span>
                                 <span className="text-[9px] text-gray-400 font-mono">
-                                    총 {BOOK_INFO.totalPages}p
+                                    {tLib.totalPagesBadge}
                                 </span>
                             </div>
 
                             <h2 className="text-sm font-black text-white leading-snug">
-                                《{BOOK_INFO.title}》
+                                {tLib.bookTitle}
                             </h2>
                             <p className="text-[10px] text-gray-300 leading-relaxed font-medium">
-                                내 안의 소음이 멈추고 운명의 알고리즘이 리셋되는 순간
+                                {tLib.catchphrase}
                             </p>
 
                             <div className="pt-1 space-y-0.5 text-[10px] text-gray-400 font-mono">
-                                <p>• 지은이: {BOOK_INFO.author} | 출판: {BOOK_INFO.publisher}</p>
-                                <p>• e-ISBN: {BOOK_INFO.isbn}</p>
-                                <p>• 정가: <span className="text-amber-300 font-bold">{BOOK_INFO.price}</span></p>
+                                <p>{tLib.authorInfo}</p>
+                                <p>{tLib.isbnInfo}</p>
+                                <p>{tLib.priceLabel} <span className="text-amber-300 font-bold">{tLib.priceText}</span> <span className="text-[9px] text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/30 font-sans">{tLib.fixedPriceLawBadge}</span></p>
                             </div>
                         </div>
                     </div>
@@ -970,13 +1390,13 @@ export default function LibraryPage() {
                             <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-950/80 via-indigo-950/80 to-purple-950/80 border border-cyan-400/50 text-left space-y-2 shadow-lg">
                                 <div className="flex items-center gap-2 text-cyan-300 font-bold text-xs">
                                     <Sparkles size={14} className="text-cyan-400" />
-                                    <span>🎁 {displayBuyerName}의 맛보기 체험 안내</span>
+                                    <span>🎁 {displayBuyerName}{tLib.trialNoticeTitle}</span>
                                 </div>
                                 <p className="text-[11px] text-gray-200 leading-relaxed font-medium">
-                                    현재 사이트 체험 모드로 이용 중이시며, 상단 <strong className="text-cyan-300">[📖 무료 미리보기 (Look Inside)]</strong> 버튼을 통해 책의 핵심 내용을 바로 맛보실 수 있습니다.
+                                    {tLib.trialNoticeDesc}
                                 </p>
                                 <p className="text-[10px] text-amber-300 font-medium">
-                                    💡 <strong>309p 출판 원문 전권 열람</strong> 및 <strong>VIP 2대 특전(헌정 힐링송 무료 작곡권, AI 코칭 대화권)</strong>은 아래 서점 주문번호 인증 즉시 평생 소장용으로 자동 활성화됩니다!
+                                    {tLib.trialNoticeBenefit}
                                 </p>
                             </div>
                         )}
@@ -985,17 +1405,36 @@ export default function LibraryPage() {
                             <Lock size={24} />
                         </div>
 
-                        <div className="space-y-1.5">
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-[11px] font-mono font-bold">
+                        <div className="space-y-2">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400/20 via-yellow-400/20 to-amber-500/20 border border-amber-400/50 text-amber-300 text-[11px] font-mono font-black shadow-md">
                                 <Sparkles size={12} />
-                                <span>네이버 스마트스토어 & 서점 독자 전용</span>
+                                <span>{tLib.authSectionBadge}</span>
                             </div>
                             <h3 className="text-base font-black text-white">
-                                {tLib.authTitle}
+                                {tLib.authSectionTitle}
                             </h3>
-                            <p className="text-xs text-gray-300 leading-relaxed">
-                                {tLib.authDesc}
-                            </p>
+
+                            {/* ⚠️ 스마트스토어 구매자 전용 명확한 이용 안내 배너 & 도서정가제 준수 명시 */}
+                            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-950/90 via-[#1f1505] to-amber-950/90 border-2 border-amber-400/60 text-left space-y-2 shadow-xl">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1.5 text-amber-300 font-black text-xs">
+                                        <AlertCircle size={15} className="text-amber-400 shrink-0 animate-pulse" />
+                                        <span>{tLib.authNoticeTitle}</span>
+                                    </div>
+                                    <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-950/90 text-emerald-300 border border-emerald-500/40">
+                                        {tLib.lawBadge}
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-white leading-relaxed font-bold">
+                                    {tLib.authNoticeMain}
+                                </p>
+                                <div className="p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-[11px] text-emerald-200 leading-relaxed font-medium whitespace-pre-line">
+                                    {tLib.authNoticeLawBox}
+                                </div>
+                                <p className="text-[10px] text-cyan-200 leading-relaxed font-medium pt-0.5 border-t border-white/10">
+                                    {tLib.authNoticeExternal}
+                                </p>
+                            </div>
                         </div>
 
                         {verificationError && (
@@ -1006,22 +1445,48 @@ export default function LibraryPage() {
 
                         <form onSubmit={handleVerifyPurchase} className="space-y-2.5 text-left">
                             <div>
-                                <label className="text-[10px] text-gray-400 block mb-1">구매처</label>
+                                <label className="text-[10px] text-gray-400 block mb-1">{tLib.platformLabel}</label>
                                 <select
                                     value={purchasePlatform}
                                     onChange={(e) => setPurchasePlatform(e.target.value)}
                                     className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
                                 >
-                                    <option value="smartstore">네이버 스마트스토어 (청류출판사)</option>
-                                    <option value="yes24">YES24</option>
-                                    <option value="kyobo">교보문고</option>
-                                    <option value="bookk">부크크</option>
-                                    <option value="other">기타 서점</option>
+                                    <option value="smartstore">{tLib.optSmartstore}</option>
+                                    <option value="yes24">{tLib.optYes24}</option>
+                                    <option value="kyobo">{tLib.optKyobo}</option>
+                                    <option value="bookk">{tLib.optBookk}</option>
+                                    <option value="other">{tLib.optOther}</option>
                                 </select>
                             </div>
 
+                            {/* 📱 YES24 전자책 뷰어 이용 안내 배너 */}
+                            {purchasePlatform === 'yes24' && (
+                                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-950/90 to-indigo-950/90 border border-blue-400/50 space-y-1.5 shadow-lg animate-fade-in">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-blue-300 flex items-center gap-1.5">
+                                            {tLib.yes24NoticeTitle}
+                                        </span>
+                                        <a 
+                                            href="https://www.yes24.com/Member/FTMypageEBookList.aspx" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-[10px] font-bold text-cyan-300 hover:text-cyan-200 hover:underline flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-lg transition-colors"
+                                        >
+                                            <span>{tLib.yes24ViewerBtn}</span>
+                                            <ExternalLink size={10} />
+                                        </a>
+                                    </div>
+                                    <p className="text-[11px] text-gray-200 leading-relaxed font-medium">
+                                        {tLib.yes24NoticeBody}
+                                    </p>
+                                    <p className="text-[10px] text-amber-300 font-medium">
+                                        {tLib.yes24NoticeBenefit}
+                                    </p>
+                                </div>
+                            )}
+
                             <div>
-                                <label className="text-[10px] text-gray-400 block mb-1">구매자 성함</label>
+                                <label className="text-[10px] text-gray-400 block mb-1">{tLib.nameLabel}</label>
                                 <input
                                     type="text"
                                     value={buyerName}
@@ -1063,17 +1528,20 @@ export default function LibraryPage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5 text-xs font-black text-cyan-300">
                                     <Shield size={14} className="text-cyan-400" />
-                                    <span>[청류출판사 DRM 2.0 포렌식 보안 적용]</span>
+                                    <span>{tLib.drmHeaderTitle}</span>
                                 </div>
                                 <span className="text-[9px] font-mono text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-400/30">
-                                    정품 라이선스
+                                    {tLib.verifiedBadge}
                                 </span>
                             </div>
                             <div className="text-[10px] text-gray-300 space-y-0.5 font-mono">
-                                <p>• 소유자: <strong className="text-white">{displayBuyerName}</strong> (주문: {orderNumber})</p>
-                                <p>• 라이선스 키: <span className="text-amber-300">{serialKey}</span></p>
+                                <p>{tLib.ownerLabel} <strong className="text-white">{displayBuyerName}</strong> ({tLib.orderText} {orderNumber})</p>
+                                <p>{tLib.licenseKeyLabel} <span className="text-amber-300">{serialKey}</span></p>
+                                <p className="text-[9px] text-emerald-300 leading-tight pt-0.5">
+                                    {tLib.lawNoticeVerified}
+                                </p>
                                 <p className="text-[9px] text-rose-300 leading-tight pt-0.5">
-                                    ⚖️ <strong>법적 고지:</strong> 본 전자책에는 구매자 고유 디지털 워터마크가 각인되어 있습니다. 무단 캡처, 복제, 유출 시 저작권법 제136조에 따라 5년 이하의 징역 또는 5천만원 이하의 벌금형에 처해질 수 있습니다.
+                                    {tLib.copyrightWarning}
                                 </p>
                             </div>
                         </div>
@@ -1115,9 +1583,9 @@ export default function LibraryPage() {
                                             }`}
                                         >
                                             <Sparkles size={13} className={isPlayingSound ? 'animate-spin' : ''} />
-                                            <span>{isPlayingSound ? `🎧 ${activeSoundName} 사운드 랩 ON` : '🎧 뇌파 치유 사운드 랩'}</span>
+                                            <span>{isPlayingSound ? `🎧 ${activeSoundName} ON` : tLib.brainwaveSoundLab}</span>
                                         </button>
-                                        <span className="text-[11px] text-gray-400 hidden sm:inline">6대 솔페지오 & 자연음 믹싱</span>
+                                        <span className="text-[11px] text-gray-400 hidden sm:inline">{tLib.solfeggioMixing}</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         {allowDownload && (
@@ -1127,14 +1595,14 @@ export default function LibraryPage() {
                                                 className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow-sm cursor-pointer flex items-center gap-1"
                                             >
                                                 <Download size={12} className={isDownloadingPdf ? "animate-bounce" : ""} />
-                                                <span>{isDownloadingPdf ? '각인 중...' : '소장용 다운로드'}</span>
+                                                <span>{isDownloadingPdf ? tLib.adminDownloading : tLib.downloadPersonalPdf}</span>
                                             </button>
                                         )}
                                         <button
                                             onClick={() => setActiveTab('pdf')}
                                             className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
                                         >
-                                            309p 출판원문 ➔
+                                            {tLib.goToPdfTab}
                                         </button>
                                     </div>
                                 </div>
@@ -1163,8 +1631,8 @@ export default function LibraryPage() {
                                             <FileText size={13} />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-white leading-none">원문 PDF 열람</p>
-                                            <p className="text-[9px] text-gray-400 font-mono mt-0.5">총 309p 정품 스트림</p>
+                                            <p className="text-xs font-bold text-white leading-none">{tLib.pdfViewTitle}</p>
+                                            <p className="text-[9px] text-gray-400 font-mono mt-0.5">{tLib.pdfStreamSub}</p>
                                         </div>
                                     </div>
 
@@ -1173,7 +1641,7 @@ export default function LibraryPage() {
                                         <button
                                             onClick={() => setPdfZoom(prev => Math.max(80, prev - 15))}
                                             className="size-6 rounded bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-300 hover:text-white"
-                                            title="축소"
+                                            title={tLib.zoomOut}
                                         >
                                             <ZoomOut size={12} />
                                         </button>
@@ -1183,7 +1651,7 @@ export default function LibraryPage() {
                                         <button
                                             onClick={() => setPdfZoom(prev => Math.min(250, prev + 15))}
                                             className="size-6 rounded bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-300 hover:text-white"
-                                            title="확대"
+                                            title={tLib.zoomIn}
                                         >
                                             <ZoomIn size={12} />
                                         </button>
@@ -1202,15 +1670,15 @@ export default function LibraryPage() {
                                                 onClick={handleDownloadSecurePdf}
                                                 disabled={isDownloadingPdf}
                                                 className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-                                                title="관리자 전용 포렌식 각인 다운로드"
+                                                title={tLib.adminDownload}
                                             >
                                                 <Download size={13} className={isDownloadingPdf ? "animate-bounce" : ""} />
-                                                <span>{isDownloadingPdf ? '각인 중...' : '📥 관리자 다운로드'}</span>
+                                                <span>{isDownloadingPdf ? tLib.adminDownloading : tLib.adminDownload}</span>
                                             </button>
                                         ) : (
                                             <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-[10px] text-gray-300">
                                                 <Shield size={11} className="text-cyan-400" />
-                                                <span>YES24·교보 보안스트림 적용</span>
+                                                <span>{tLib.streamBadge}</span>
                                             </span>
                                         )}
 
@@ -1220,7 +1688,7 @@ export default function LibraryPage() {
                                             className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer"
                                         >
                                             <Layers size={13} />
-                                            <span>🖥️ 전체화면</span>
+                                            <span>{tLib.fullscreenBtn}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -1231,12 +1699,12 @@ export default function LibraryPage() {
                                     <div className="absolute top-0 left-0 right-0 z-20 bg-slate-950/95 backdrop-blur-md px-3.5 py-1.5 border-b border-white/10 flex items-center justify-between text-[10px] font-mono text-cyan-300">
                                         <span className="flex items-center gap-1.5">
                                             <Shield size={11} className="text-cyan-400" />
-                                            <span>👤 {displayBuyerName} 안심 정품 열람</span>
+                                            <span>👤 {displayBuyerName} {tLib.safeReadingTag}</span>
                                             <span className="text-gray-400 hidden sm:inline">({maskedOrderNumber})</span>
                                         </span>
                                         <span className="text-amber-300 font-bold flex items-center gap-1">
                                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                            <span>DRM 2.0 포렌식 각인 스트림</span>
+                                            <span>{tLib.drmStreamTag}</span>
                                         </span>
                                     </div>
 
@@ -1250,13 +1718,13 @@ export default function LibraryPage() {
                                             <div className="space-y-1 max-w-sm">
                                                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 text-[10px] font-mono font-bold mb-1">
                                                     <Sparkles size={11} />
-                                                    <span>스마트폰 최적화 스트리밍</span>
+                                                    <span>{tLib.mobileOptimizedBadge}</span>
                                                 </div>
                                                 <h4 className="text-base font-black text-white">
-                                                    《ZERO POINT》 309p 정품 열람
+                                                    {tLib.mobileBookTitle}
                                                 </h4>
                                                 <p className="text-xs text-gray-300 leading-relaxed font-medium">
-                                                    스마트폰 브라우저에서는 아래 전용 버튼을 통해 <strong className="text-cyan-300">내장 고화질 뷰어로 309페이지 원문</strong>을 시원하게 확대/축소하며 감상하실 수 있습니다.
+                                                    {tLib.mobileStreamDesc}
                                                 </p>
                                             </div>
 
@@ -1268,7 +1736,7 @@ export default function LibraryPage() {
                                                     rel="noopener noreferrer"
                                                     className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-cyan-500/30 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                                 >
-                                                    <span>🚀 모바일 고화질 PDF 바로 열기</span>
+                                                    <span>{tLib.openMobilePdfBtn}</span>
                                                     <ExternalLink size={14} />
                                                 </a>
 
@@ -1278,7 +1746,7 @@ export default function LibraryPage() {
                                                     className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-white/15 cursor-pointer"
                                                 >
                                                     <Layers size={13} className="text-cyan-400" />
-                                                    <span>🖥️ 보안 전체화면 모드로 보기</span>
+                                                    <span>{tLib.openFullscreenViewerBtn}</span>
                                                 </button>
 
                                                 {/* 3. 시력보호 e-리더로 읽기 */}
@@ -1287,7 +1755,7 @@ export default function LibraryPage() {
                                                     className="w-full py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-bold active:scale-95 transition-all text-xs border border-cyan-500/25 flex items-center justify-center gap-1.5 cursor-pointer"
                                                 >
                                                     <BookOpen size={13} />
-                                                    <span>✨ 시력보호 e-Reader (텍스트)로 읽기</span>
+                                                    <span>{tLib.switchToReaderBtn}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -1310,12 +1778,12 @@ export default function LibraryPage() {
 
                                 {/* 모바일 사용자를 위한 안내 배너 */}
                                 <div className="p-3 rounded-2xl bg-indigo-950/40 border border-indigo-400/30 flex items-center justify-between text-xs text-gray-300">
-                                    <span>📱 화면이 작게 느껴지시나요?</span>
+                                    <span>📱 {tLib.screenSmallQuestion}</span>
                                     <button
                                         onClick={() => setIsPdfFullscreen(true)}
                                         className="text-cyan-300 font-bold flex items-center gap-1 hover:underline"
                                     >
-                                        <span>전체화면 모드로 전환 ➔</span>
+                                        <span>{tLib.switchToFullscreen}</span>
                                     </button>
                                 </div>
                             </div>
@@ -1331,10 +1799,10 @@ export default function LibraryPage() {
                                         </div>
                                         <div>
                                             <h3 className="text-sm font-black text-white">
-                                                《제로포인트》 독자 한정 2대 특별 특전
+                                                {tLib.vipTabTitle}
                                             </h3>
                                             <p className="text-[10px] text-purple-200">
-                                                책 2페이지 및 308페이지 수록 혜택
+                                                {tLib.vipTabSub}
                                             </p>
                                         </div>
                                     </div>
@@ -1342,31 +1810,31 @@ export default function LibraryPage() {
                                     <div className="space-y-2.5 text-xs">
                                         <div className="p-3.5 rounded-2xl bg-black/50 border border-purple-500/30 space-y-1.5">
                                             <p className="font-black text-amber-300 flex items-center gap-1.5">
-                                                <span>1. 1:1 맞춤 헌정 힐링송(MP3) 무료 작곡 신청</span>
+                                                <span>{tLib.vipBenefit1Title}</span>
                                             </p>
                                             <p className="text-[11px] text-gray-300 leading-relaxed font-medium">
-                                                대표님의 사주 기질과 주파수(432Hz/528Hz)를 분석하여 세상에 단 하나뿐인 전용 치유 음원을 무료로 작곡하여 증정합니다.
+                                                {tLib.vipBenefit1Desc}
                                             </p>
                                             <button
                                                 onClick={() => setShowHealingSongModal(true)}
                                                 className="w-full py-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-black text-xs transition-all mt-1 cursor-pointer active:scale-98 shadow-md"
                                             >
-                                                🎵 헌정 힐링송 무료 작곡 신청하기 ➔
+                                                {tLib.vipBenefit1Btn}
                                             </button>
                                         </div>
 
                                         <div className="p-3.5 rounded-2xl bg-black/50 border border-cyan-500/30 space-y-1.5">
                                             <p className="font-black text-cyan-300 flex items-center gap-1.5">
-                                                <span>2. 명심 AI 챗봇 20회 VIP 코칭 대화권 즉시 활성화</span>
+                                                <span>{tLib.vipBenefit2Title}</span>
                                             </p>
                                             <p className="text-[11px] text-gray-300 leading-relaxed font-medium">
-                                                책을 읽다 생긴 의문이나 다크코드 디버깅을 명심 AI 수석 코치와 20회 동안 1:1 심층 상담할 수 있는 VIP 이용권이 자동 지급되었습니다.
+                                                {tLib.vipBenefit2Desc}
                                             </p>
                                             <button
                                                 onClick={() => router.push('/myeongsim-chat')}
                                                 className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs transition-all mt-1"
                                             >
-                                                💬 명심 AI VIP 코칭 시작하기 ➔
+                                                {tLib.vipBenefit2Btn}
                                             </button>
                                         </div>
                                     </div>
@@ -1392,10 +1860,10 @@ export default function LibraryPage() {
                                     className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-300 flex items-center gap-1 cursor-pointer"
                                 >
                                     <ArrowLeft size={14} />
-                                    <span>닫기</span>
+                                    <span>{tLib.closeBtn}</span>
                                 </button>
                                 <span className="text-xs font-black text-white hidden sm:inline">
-                                    《ZERO POINT》 전체화면 뷰어
+                                    {tLib.fullscreenTitle}
                                 </span>
                             </div>
 
@@ -1404,7 +1872,7 @@ export default function LibraryPage() {
                                 <button
                                     onClick={() => setPdfZoom(prev => Math.max(80, prev - 20))}
                                     className="size-7 rounded bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-300"
-                                    title="축소"
+                                    title={tLib.zoomOut}
                                 >
                                     <ZoomOut size={14} />
                                 </button>
@@ -1414,7 +1882,7 @@ export default function LibraryPage() {
                                 <button
                                     onClick={() => setPdfZoom(prev => Math.min(300, prev + 20))}
                                     className="size-7 rounded bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-300"
-                                    title="확대"
+                                    title={tLib.zoomIn}
                                 >
                                     <ZoomIn size={14} />
                                 </button>
@@ -1428,12 +1896,12 @@ export default function LibraryPage() {
 
                             <div className="flex items-center gap-2">
                                 <span className="text-[10px] font-mono text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-400/30 hidden sm:inline">
-                                    {displayBuyerName} 라이선스
+                                    {displayBuyerName} {tLib.licenseBadgeLabel}
                                 </span>
                                 <button
                                     onClick={() => setIsPdfFullscreen(false)}
                                     className="size-8 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 flex items-center justify-center text-sm font-bold transition-all cursor-pointer"
-                                    title="전체화면 닫기"
+                                    title={tLib.closeBtn}
                                 >
                                     ✕
                                 </button>
@@ -1466,9 +1934,9 @@ export default function LibraryPage() {
                                             📱
                                         </div>
                                         <div className="space-y-1 max-w-sm">
-                                            <h4 className="text-sm font-bold text-white">모바일 전체화면 네이티브 열람</h4>
+                                            <h4 className="text-sm font-bold text-white">{tLib.mobileFullscreenNativeTitle}</h4>
                                             <p className="text-gray-400 text-xs leading-relaxed">
-                                                스마트폰 브라우저에서는 아래 버튼을 누르면 스마트폰 전용 고화질 PDF 뷰어로 309페이지를 초고화질로 편안하게 확대/축소하며 감상하실 수 있습니다.
+                                                {tLib.mobileFullscreenNativeDesc}
                                             </p>
                                         </div>
                                         <a
@@ -1477,7 +1945,7 @@ export default function LibraryPage() {
                                             rel="noopener noreferrer"
                                             className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs sm:text-sm shadow-xl flex items-center gap-2 cursor-pointer"
                                         >
-                                            <span>🚀 스마트폰 고화질 PDF 열기</span>
+                                            <span>{tLib.openMobileNativePdfBtn}</span>
                                             <ExternalLink size={14} />
                                         </a>
                                     </div>
@@ -1534,13 +2002,13 @@ export default function LibraryPage() {
                             {/* 하단 캡션 안내 */}
                             <div className="mt-4 text-center space-y-1">
                                 <h3 className="text-base font-black text-white">
-                                    《ZERO POINT (제로 포인트)》 공식 출판 표지
+                                    {tLib.coverModalTitle}
                                 </h3>
                                 <p className="text-xs text-gray-300 font-mono">
-                                    지은이: 이경윤 | 출판: 청류 (EDITIONS CHEONGRYU) · 979-11-220953-0-2
+                                    {tLib.coverModalAuthor}
                                 </p>
                                 <p className="text-[11px] text-amber-300/80 pt-1 cursor-pointer hover:underline" onClick={() => setIsCoverModalOpen(false)}>
-                                    (화면 아무 곳이나 누르면 닫힙니다)
+                                    {tLib.coverModalDismiss}
                                 </p>
                             </div>
                         </motion.div>
@@ -1599,11 +2067,11 @@ export default function LibraryPage() {
                                         <BookOpen size={14} />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-black text-white leading-tight">《ZERO POINT》 미리보기</p>
-                                        <p className="text-[10px] text-cyan-300 font-mono">
-                                            {PREVIEW_PAGES[previewPageIndex].tag} ({previewPageIndex + 1} / {PREVIEW_PAGES.length})
-                                        </p>
-                                    </div>
+                                         <p className="text-xs font-black text-white leading-tight">{tLib.previewModalTitle}</p>
+                                         <p className="text-[10px] text-cyan-300 font-mono">
+                                             {PREVIEW_PAGES[previewPageIndex].tag} ({previewPageIndex + 1} / {PREVIEW_PAGES.length})
+                                         </p>
+                                     </div>
                                 </div>
 
                                 <button
@@ -1652,10 +2120,10 @@ export default function LibraryPage() {
                                         </div>
                                         <div className="space-y-1">
                                             <h4 className="text-xs font-black text-white">
-                                                🎉 무료 미리보기가 여기까지입니다!
+                                                {tLib.previewEndTitle}
                                             </h4>
                                             <p className="text-[11px] text-gray-300 leading-relaxed">
-                                                다음 장부터 <strong className="text-amber-300">제2부 제로포인트의 감정 연금술</strong>과 <strong className="text-cyan-300">20일 기적의 실전 자각 훈련(75~185p)</strong> 전문이 본격적으로 펼쳐집니다!
+                                                {tLib.previewEndDesc}
                                             </p>
                                         </div>
 
@@ -1666,7 +2134,7 @@ export default function LibraryPage() {
                                                 rel="noopener noreferrer"
                                                 className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs shadow-md flex items-center justify-center gap-1.5"
                                             >
-                                                <span>📗 YES24에서 구매하고 전편 읽기 ➔</span>
+                                                <span>{tLib.previewBuyYes24}</span>
                                                 <ExternalLink size={13} />
                                             </a>
                                             <a
@@ -1675,7 +2143,7 @@ export default function LibraryPage() {
                                                 rel="noopener noreferrer"
                                                 className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs shadow-md flex items-center justify-center gap-1.5"
                                             >
-                                                <span>🛍️ 청류스마트스토어 올인원 패키지 구매 ➔</span>
+                                                <span>{tLib.previewBuySmartstore}</span>
                                                 <ExternalLink size={13} />
                                             </a>
                                             <button
@@ -1684,7 +2152,7 @@ export default function LibraryPage() {
                                                 }}
                                                 className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/15 text-cyan-200 text-[11px] font-bold"
                                             >
-                                                🔑 이미 구매하셨다면? 구매 인증하고 전편 해금하기
+                                                {tLib.previewAlreadyBought}
                                             </button>
                                         </div>
                                     </div>
@@ -1698,7 +2166,7 @@ export default function LibraryPage() {
                                     disabled={previewPageIndex === 0}
                                     className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-300 disabled:opacity-30 cursor-pointer"
                                 >
-                                    ← 이전 페이지
+                                    {tLib.prevPageBtn}
                                 </button>
 
                                 <span className="text-[11px] font-mono text-cyan-300 font-bold">
@@ -1710,7 +2178,7 @@ export default function LibraryPage() {
                                     disabled={previewPageIndex === PREVIEW_PAGES.length - 1}
                                     className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 text-xs font-black disabled:opacity-30 cursor-pointer"
                                 >
-                                    다음 페이지 →
+                                    {tLib.nextPageBtn}
                                 </button>
                             </div>
                         </motion.div>

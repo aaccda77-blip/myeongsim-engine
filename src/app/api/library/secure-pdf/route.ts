@@ -201,45 +201,45 @@ export async function GET(request: NextRequest) {
             const page = pages[i];
             const { width, height } = page.getSize();
 
-            // 1. 대각선 중앙 메인 포렌식 워터마크 (독서 방해 없는 12% 투명도)
+            // 1. 대각선 중앙 메인 포렌식 워터마크 (독자 시력 보호 및 몰입을 위한 초은은한 4% 투명도)
             page.drawText(watermarkMain, {
                 x: width * 0.06,
                 y: height * 0.46,
-                size: 11,
+                size: 10.5,
                 font: helveticaBold,
-                color: rgb(0.75, 0.2, 0.2), // 세련된 버건디 레드 보안톤
-                opacity: 0.12,
+                color: rgb(0.5, 0.5, 0.55), // 눈에 자극 없는 뉴트럴 소프트 실버그레이
+                opacity: 0.04, // 4% 극저조도 (독서 방해 0%)
                 rotate: degrees(33),
             });
 
             page.drawText(watermarkSub, {
                 x: width * 0.06,
                 y: height * 0.42,
-                size: 8.5,
+                size: 8,
                 font: helvetica,
-                color: rgb(0.2, 0.2, 0.7), // 딥 네이비 보안톤
-                opacity: 0.12,
+                color: rgb(0.5, 0.5, 0.55),
+                opacity: 0.035, // 3.5%
                 rotate: degrees(33),
             });
 
-            // 2. 상단 헤더 포렌식 식별자 (모든 페이지 상단 각인)
+            // 2. 상단 헤더 포렌식 식별자 (모든 페이지 상단 각인 - 부드러운 저투명도)
             page.drawText(`[CHEONGRYU e-LIBRARY] ${trackingCode} | ${maskedSerial} | P.${i + 1}/${totalPages}`, {
                 x: 24,
                 y: height - 16,
-                size: 7,
+                size: 6.8,
                 font: helvetica,
-                color: rgb(0.35, 0.35, 0.35),
-                opacity: 0.45,
+                color: rgb(0.45, 0.45, 0.45),
+                opacity: 0.18, // 18% 은은한 가독성
             });
 
             // 3. 하단 푸터 무단배포 처벌 경고 (저작권법 제136조 명시)
             page.drawText(`ALL RIGHTS RESERVED (C) CHEONGRYU BOOKS. FOR LICENSED INDIVIDUAL USE ONLY. UNAUTHORIZED DISTRIBUTION IS PUNISHABLE BY LAW.`, {
                 x: 24,
                 y: 11,
-                size: 6.2,
+                size: 6,
                 font: helveticaBold,
-                color: rgb(0.55, 0.15, 0.15),
-                opacity: 0.45,
+                color: rgb(0.45, 0.45, 0.45),
+                opacity: 0.18,
             });
         }
 

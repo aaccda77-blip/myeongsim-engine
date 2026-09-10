@@ -1,5 +1,20 @@
 [
   {
+    "orderNumber": "VIP-FREEPASS",
+    "userId": "admin-user",
+    "depositorName": "관리자",
+    "channel": "smartstore",
+    "isSmartStore": true,
+    "unlockedModules": [
+      "zero_music",
+      "coaching_20",
+      "startup_vip",
+      "dark_code_debugger",
+      "bio_care"
+    ],
+    "verifiedAt": "2026-09-10T01:46:49.354Z"
+  },
+  {
     "orderNumber": "20260904-88439999",
     "userId": "u-1",
     "depositorName": "이경윤",

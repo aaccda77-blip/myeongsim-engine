@@ -7,6 +7,8 @@ import {
     Type, AlignLeft, AlignJustify, List, Moon, Sun, Bookmark, Check,
     Maximize2, Minimize2, Sparkles, ChevronLeft, ChevronRight, Settings2, RotateCcw
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { markTextbookRead } from '@/lib/questUnlockManager';
 
 interface Chapter {
     id: string;
@@ -36,7 +38,7 @@ export const READER_THEMES = [
         subText: '#94a3b8',
         border: 'rgba(255,255,255,0.08)',
         accent: '#f59e0b',
-        watermark: 'rgba(245, 158, 11, 0.08)',
+        watermark: 'rgba(255, 255, 255, 0.035)', // 독자 배려 3.5% 극저조도
         barBg: 'rgba(15, 23, 42, 0.95)'
     },
     {
@@ -49,7 +51,7 @@ export const READER_THEMES = [
         subText: '#685e52',
         border: 'rgba(92, 70, 44, 0.12)',
         accent: '#b45309',
-        watermark: 'rgba(92, 70, 44, 0.06)',
+        watermark: 'rgba(92, 70, 44, 0.028)', // 2.8% 은은한 종이 질감
         barBg: 'rgba(248, 244, 236, 0.95)'
     },
     {
@@ -62,7 +64,7 @@ export const READER_THEMES = [
         subText: '#6b5c4b',
         border: 'rgba(84, 60, 32, 0.14)',
         accent: '#92400e',
-        watermark: 'rgba(84, 60, 32, 0.07)',
+        watermark: 'rgba(84, 60, 32, 0.03)', // 3%
         barBg: 'rgba(237, 228, 211, 0.95)'
     },
     {
@@ -75,7 +77,7 @@ export const READER_THEMES = [
         subText: '#4d6354',
         border: 'rgba(34, 74, 48, 0.12)',
         accent: '#15803d',
-        watermark: 'rgba(34, 74, 48, 0.06)',
+        watermark: 'rgba(34, 74, 48, 0.028)', // 2.8%
         barBg: 'rgba(234, 240, 232, 0.95)'
     },
     {
@@ -88,10 +90,158 @@ export const READER_THEMES = [
         subText: '#64748b',
         border: 'rgba(255,255,255,0.12)',
         accent: '#38bdf8',
-        watermark: 'rgba(255, 255, 255, 0.05)',
+        watermark: 'rgba(255, 255, 255, 0.025)', // 2.5%
         barBg: 'rgba(0, 0, 0, 0.95)'
     }
 ];
+
+// 🌐 4개 국어 리더기 다국어 사전
+const READER_I18N = {
+    kr: {
+        toc: '목차',
+        tocTooltip: '전체 목차 열람',
+        bookmarkTooltip: '이 페이지 책갈피',
+        chapterLabel: '챕터',
+        ttsListen: '듣기',
+        ttsReading: '낭독중',
+        ttsResume: '이어듣기',
+        ttsTooltipPlay: 'AI 오디오북 음성 낭독',
+        ttsTooltipPause: '오디오북 일시정지',
+        ttsTooltipStop: '오디오북 정지',
+        ttsUnsupported: '이 브라우저는 오디오북 음성 낭독 기능을 지원하지 않습니다.',
+        settingsTooltip: '독서 설정 (테마, 글꼴, 크기)',
+        themeTitle: '🎨 시력 보호 테마 선택 (밀리의 서재 / 교보 스타일)',
+        fontLabel: '서체',
+        fontSerif: '명조체',
+        fontSans: '고딕체',
+        fontSizeLabel: '글자 크기',
+        lineHeightLabel: '줄간격',
+        lineTight: '좁게',
+        lineNormal: '보통',
+        lineWide: '넓게',
+        bookBy: '《ZERO POINT》 by 이경윤 (청류)',
+        copyAlert: '⚠️ 복사 불가: 본 도서는 저작권법 제136조에 의해 무단 전재가 엄격히 차단됩니다.',
+        prevChapter: '이전 챕터',
+        nextChapter: '다음 챕터',
+        tocModalTitle: '전체 도서 목차 (총 309p)',
+        closeBtn: '✕ 닫기',
+        themes: {
+            dark: '다크',
+            cream: '크림',
+            sepia: '세피아',
+            green: '말차',
+            black: '블랙'
+        }
+    },
+    en: {
+        toc: 'TOC',
+        tocTooltip: 'View Table of Contents',
+        bookmarkTooltip: 'Bookmark this page',
+        chapterLabel: 'Chapter',
+        ttsListen: 'Listen',
+        ttsReading: 'Reading',
+        ttsResume: 'Resume',
+        ttsTooltipPlay: 'AI Audiobook Speech',
+        ttsTooltipPause: 'Pause Audiobook',
+        ttsTooltipStop: 'Stop Audiobook',
+        ttsUnsupported: 'Your browser does not support audio speech synthesis.',
+        settingsTooltip: 'Reading Settings (Theme, Font, Size)',
+        themeTitle: '🎨 Eye-Care Themes Preset',
+        fontLabel: 'Font',
+        fontSerif: 'Serif',
+        fontSans: 'Sans',
+        fontSizeLabel: 'Font Size',
+        lineHeightLabel: 'Line Height',
+        lineTight: 'Tight',
+        lineNormal: 'Normal',
+        lineWide: 'Wide',
+        bookBy: '《ZERO POINT》 by Kyeong-Yoon Lee (Cheongryu)',
+        copyAlert: '⚠️ Copy Restricted: Unauthorized reproduction is strictly prohibited under Copyright Law.',
+        prevChapter: 'Previous',
+        nextChapter: 'Next',
+        tocModalTitle: 'Table of Contents (309p)',
+        closeBtn: '✕ Close',
+        themes: {
+            dark: 'Dark',
+            cream: 'Cream',
+            sepia: 'Sepia',
+            green: 'Matcha',
+            black: 'Black'
+        }
+    },
+    jp: {
+        toc: '目次',
+        tocTooltip: '全目次を表示',
+        bookmarkTooltip: 'このページにしおりを挟む',
+        chapterLabel: '章',
+        ttsListen: '朗読',
+        ttsReading: '朗読中',
+        ttsResume: '再開',
+        ttsTooltipPlay: 'AIオーディオブック音声朗読',
+        ttsTooltipPause: 'オーディオブック一時停止',
+        ttsTooltipStop: 'オーディオブック停止',
+        ttsUnsupported: 'お使いのブラウザは音声朗読に対応していません。',
+        settingsTooltip: '読書設定 (テーマ、フォント、サイズ)',
+        themeTitle: '🎨 視力保護テーマ選択',
+        fontLabel: '書体',
+        fontSerif: '明朝体',
+        fontSans: 'ゴシック体',
+        fontSizeLabel: '文字サイズ',
+        lineHeightLabel: '行間',
+        lineTight: '狭い',
+        lineNormal: '普通',
+        lineWide: '広い',
+        bookBy: '《ZERO POINT》 李京潤 (晴流)',
+        copyAlert: '⚠️ コピー不可: 著作権法に基づき無断転載は厳格に禁止されています。',
+        prevChapter: '前の章',
+        nextChapter: '次の章',
+        tocModalTitle: '図書目次 (全309p)',
+        closeBtn: '✕ 閉じる',
+        themes: {
+            dark: 'ダーク',
+            cream: 'クリーム',
+            sepia: 'セピア',
+            green: '抹茶',
+            black: 'ブラック'
+        }
+    },
+    cn: {
+        toc: '目录',
+        tocTooltip: '查看完整目录',
+        bookmarkTooltip: '书签此页',
+        chapterLabel: '章',
+        ttsListen: '朗读',
+        ttsReading: '朗读中',
+        ttsResume: '继续',
+        ttsTooltipPlay: 'AI有声书语音朗读',
+        ttsTooltipPause: '暂停朗读',
+        ttsTooltipStop: '停止朗读',
+        ttsUnsupported: '该浏览器不支持语音朗读功能。',
+        settingsTooltip: '阅读设置 (主题、字体、字号)',
+        themeTitle: '🎨 护眼阅读主题选择',
+        fontLabel: '字体',
+        fontSerif: '宋体',
+        fontSans: '黑体',
+        fontSizeLabel: '字号大小',
+        lineHeightLabel: '行间距',
+        lineTight: '紧凑',
+        lineNormal: '标准',
+        lineWide: '宽松',
+        bookBy: '《ZERO POINT》 李京润 (晴流)',
+        copyAlert: '⚠️ 禁止复制: 根据版权法严禁未经授权擅自转载与复制。',
+        prevChapter: '上一章',
+        nextChapter: '下一章',
+        tocModalTitle: '图书完整目录 (共309页)',
+        closeBtn: '✕ 关闭',
+        themes: {
+            dark: '暗黑',
+            cream: '米黄',
+            sepia: '复古',
+            green: '抹茶',
+            black: '纯黑'
+        }
+    }
+};
 
 export default function RefinedEBookReader({
     chapters,
@@ -101,6 +251,9 @@ export default function RefinedEBookReader({
     purchaseDate,
     onReportSecurityAlert
 }: RefinedEBookReaderProps) {
+    const { language } = useLanguage();
+    const t = READER_I18N[language as keyof typeof READER_I18N] || READER_I18N.kr;
+
     // 1. 독서 뷰어 상태
     const [themeId, setThemeId] = useState<'dark' | 'cream' | 'sepia' | 'green' | 'black'>('dark');
     const [fontFamily, setFontFamily] = useState<'serif' | 'sans'>('serif');
@@ -174,14 +327,14 @@ export default function RefinedEBookReader({
     // ── 4. AI 오디오북 (Web Speech TTS) ──
     const startTts = () => {
         if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-            alert('이 브라우저는 오디오북 음성 낭독 기능을 지원하지 않습니다.');
+            alert(t.ttsUnsupported);
             return;
         }
 
         window.speechSynthesis.cancel();
         const textToRead = `${currentChapter.title}. ${currentChapter.content}`;
         const utterance = new SpeechSynthesisUtterance(textToRead);
-        utterance.lang = 'ko-KR';
+        utterance.lang = language === 'en' ? 'en-US' : language === 'jp' ? 'ja-JP' : language === 'cn' ? 'zh-CN' : 'ko-KR';
         utterance.rate = 0.95;
         utterance.pitch = 1.0;
 
@@ -267,10 +420,10 @@ export default function RefinedEBookReader({
                             borderColor: currentTheme.border,
                             color: currentTheme.text 
                         }}
-                        title="전체 목차 열람"
+                        title={t.tocTooltip}
                     >
                         <List size={14} style={{ color: currentTheme.accent }} />
-                        <span className="text-[11px]">목차</span>
+                        <span className="text-[11px]">{t.toc}</span>
                     </button>
 
                     <button
@@ -281,7 +434,7 @@ export default function RefinedEBookReader({
                             borderColor: currentTheme.border,
                             color: bookmarkedChapters.includes(currentChapter.id) ? currentTheme.accent : currentTheme.subText
                         }}
-                        title="이 페이지 책갈피"
+                        title={t.bookmarkTooltip}
                     >
                         <Bookmark size={14} fill={bookmarkedChapters.includes(currentChapter.id) ? 'currentColor' : 'none'} />
                     </button>
@@ -293,7 +446,7 @@ export default function RefinedEBookReader({
                         {currentChapter.title}
                     </span>
                     <span className="text-[9px] font-mono block" style={{ color: currentTheme.subText }}>
-                        {currentChapterIndex + 1} / {chapters.length} 챕터 ({currentChapter.page})
+                        {currentChapterIndex + 1} / {chapters.length} {t.chapterLabel} ({currentChapter.page})
                     </span>
                 </div>
 
@@ -308,7 +461,7 @@ export default function RefinedEBookReader({
                             borderColor: currentTheme.border,
                             color: isTtsPlaying ? '#ffffff' : currentTheme.text 
                         }}
-                        title={isTtsPlaying ? '오디오북 일시정지' : 'AI 오디오북 음성 낭독'}
+                        title={isTtsPlaying ? t.ttsTooltipPause : t.ttsTooltipPlay}
                     >
                         {isTtsPlaying ? (
                             isTtsPaused ? <Play size={13} /> : <Pause size={13} />
@@ -316,7 +469,7 @@ export default function RefinedEBookReader({
                             <Volume2 size={13} style={{ color: currentTheme.accent }} />
                         )}
                         <span className="text-[10px] font-bold">
-                            {isTtsPlaying ? (isTtsPaused ? '이어듣기' : '낭독중') : '듣기'}
+                            {isTtsPlaying ? (isTtsPaused ? t.ttsResume : t.ttsReading) : t.ttsListen}
                         </span>
                     </button>
 
@@ -325,7 +478,7 @@ export default function RefinedEBookReader({
                             onClick={stopTts}
                             className="p-1.5 rounded-xl text-xs border cursor-pointer"
                             style={{ backgroundColor: currentTheme.cardBg, borderColor: currentTheme.border, color: currentTheme.subText }}
-                            title="오디오북 정지"
+                            title={t.ttsTooltipStop}
                         >
                             <Square size={11} />
                         </button>
@@ -340,7 +493,7 @@ export default function RefinedEBookReader({
                             borderColor: currentTheme.border,
                             color: showSettingsDrawer ? currentTheme.accent : currentTheme.text 
                         }}
-                        title="독서 설정 (테마, 글꼴, 크기)"
+                        title={t.settingsTooltip}
                     >
                         <Settings2 size={14} />
                     </button>
@@ -363,7 +516,7 @@ export default function RefinedEBookReader({
                         {/* 테마 색상 5종 셀렉터 */}
                         <div className="space-y-1.5">
                             <span className="text-[11px] font-bold flex items-center gap-1" style={{ color: currentTheme.subText }}>
-                                <span>🎨 시력 보호 테마 선택 (밀리의 서재 / 교보 스타일)</span>
+                                <span>{t.themeTitle}</span>
                             </span>
                             <div className="grid grid-cols-5 gap-1.5">
                                 {READER_THEMES.map((th) => (
@@ -381,7 +534,7 @@ export default function RefinedEBookReader({
                                         }}
                                     >
                                         <span>{th.icon}</span>
-                                        <span className="text-[9px] truncate">{th.name.split(' ')[0]}</span>
+                                        <span className="text-[9px] truncate">{t.themes[th.id as keyof typeof t.themes] || th.name.split(' ')[0]}</span>
                                     </button>
                                 ))}
                             </div>
@@ -391,7 +544,7 @@ export default function RefinedEBookReader({
                         <div className="grid grid-cols-3 gap-2 pt-1 border-t" style={{ borderColor: currentTheme.border }}>
                             {/* 서체 토글 (명조 vs 고딕) */}
                             <div className="space-y-1">
-                                <span className="text-[10px] font-bold" style={{ color: currentTheme.subText }}>서체</span>
+                                <span className="text-[10px] font-bold" style={{ color: currentTheme.subText }}>{t.fontLabel}</span>
                                 <div className="grid grid-cols-2 gap-1">
                                     <button
                                         onClick={() => setFontFamily('serif')}
@@ -404,7 +557,7 @@ export default function RefinedEBookReader({
                                             borderColor: fontFamily === 'serif' ? currentTheme.accent : currentTheme.border 
                                         }}
                                     >
-                                        명조체
+                                        {t.fontSerif}
                                     </button>
                                     <button
                                         onClick={() => setFontFamily('sans')}
@@ -417,14 +570,14 @@ export default function RefinedEBookReader({
                                             borderColor: fontFamily === 'sans' ? currentTheme.accent : currentTheme.border 
                                         }}
                                     >
-                                        고딕체
+                                        {t.fontSans}
                                     </button>
                                 </div>
                             </div>
 
                             {/* 글자 크기 조절 */}
                             <div className="space-y-1">
-                                <span className="text-[10px] font-bold" style={{ color: currentTheme.subText }}>글자 크기</span>
+                                <span className="text-[10px] font-bold" style={{ color: currentTheme.subText }}>{t.fontSizeLabel}</span>
                                 <div className="flex items-center justify-between p-1 rounded-lg border" style={{ backgroundColor: currentTheme.bg, borderColor: currentTheme.border }}>
                                     <button
                                         onClick={() => handleFontSizeChange(-1)}
@@ -448,7 +601,7 @@ export default function RefinedEBookReader({
 
                             {/* 줄간격 토글 */}
                             <div className="space-y-1">
-                                <span className="text-[10px] font-bold" style={{ color: currentTheme.subText }}>줄간격</span>
+                                <span className="text-[10px] font-bold" style={{ color: currentTheme.subText }}>{t.lineHeightLabel}</span>
                                 <div className="grid grid-cols-3 gap-0.5">
                                     {[1.7, 2.0, 2.3].map((lh) => (
                                         <button
@@ -461,7 +614,7 @@ export default function RefinedEBookReader({
                                                 borderColor: lineHeight === lh ? currentTheme.accent : currentTheme.border 
                                             }}
                                         >
-                                            {lh === 1.7 ? '좁게' : lh === 2.0 ? '보통' : '넓게'}
+                                            {lh === 1.7 ? t.lineTight : lh === 2.0 ? t.lineNormal : t.lineWide}
                                         </button>
                                     ))}
                                 </div>
@@ -473,18 +626,18 @@ export default function RefinedEBookReader({
 
             {/* ── 3. 전자책 본문 컨테이너 (정밀 워터마크 레이어) ── */}
             <div className="relative p-6 sm:p-8 space-y-6 select-none transition-colors duration-300">
-                {/* 은은한 대각선 포렌식 워터마크 */}
+                {/* 독자 배려형 초은은한 대각선 포렌식 워터마크 */}
                 <div 
-                    className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-around select-none text-[11px] font-mono font-bold overflow-hidden"
+                    className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-around select-none text-[9.5px] font-mono tracking-widest overflow-hidden opacity-90"
                     style={{ 
-                        transform: 'rotate(-18deg) scale(1.15)',
+                        transform: 'rotate(-16deg) scale(1.1)',
                         color: currentTheme.watermark
                     }}
                 >
-                    {[1, 2, 3, 4, 5, 6, 7].map((row) => (
-                        <div key={row} className="whitespace-nowrap flex justify-around">
-                            <span>🔒 {buyerName} | {orderNumber} | {serialKey} | 무단배포금지</span>
-                            <span className="hidden sm:inline">⚠️ 저작권법 제136조 형사책임 추적 | {purchaseDate}</span>
+                    {[1, 2, 3, 4].map((row) => (
+                        <div key={row} className="whitespace-nowrap flex justify-around opacity-80">
+                            <span>CHEONGRYU DRM • {buyerName || 'VIP'} • {orderNumber || 'LICENSED'}</span>
+                            <span className="hidden sm:inline">PROTECTED EDITION • {serialKey || 'CR-DRM'}</span>
                         </div>
                     ))}
                 </div>
@@ -503,7 +656,7 @@ export default function RefinedEBookReader({
                             {currentChapter.page}
                         </span>
                         <span className="text-[10px] font-mono" style={{ color: currentTheme.subText }}>
-                            《ZERO POINT》 by 이경윤 (청류)
+                            {t.bookBy}
                         </span>
                     </div>
                     <h2 
@@ -530,11 +683,45 @@ export default function RefinedEBookReader({
                     }}
                     onCopy={(e) => {
                         e.preventDefault();
-                        onReportSecurityAlert('⚠️ 복사 불가: 본 도서는 저작권법 제136조에 의해 무단 전재가 엄격히 차단됩니다.');
+                        onReportSecurityAlert(t.copyAlert);
                     }}
                 >
                     {currentChapter.content}
                 </article>
+
+                {/* ── 3-1. [NEW] 🏛️ 챕터 완독 & 자격 스킬 퀘스트 인증 바 ── */}
+                <div 
+                    className="p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3 relative z-20"
+                    style={{ 
+                        backgroundColor: currentTheme.cardBg, 
+                        borderColor: currentTheme.border 
+                    }}
+                >
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-black text-sm shadow">
+                            🏛️
+                        </div>
+                        <div>
+                            <span className="text-[10px] font-bold text-amber-400">평생교육원 연계 퀘스트</span>
+                            <h4 className="text-xs font-black" style={{ color: currentTheme.text }}>
+                                이 챕터를 완독하셨나요?
+                            </h4>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                markTextbookRead('book_01');
+                                alert('✅ [독서 인증 완료] 《ZERO POINT》 챕터 완독이 기록되었습니다! 이제 [기억 훈련소]에서 승급 시험을 치르고 새로운 코칭 스킬을 해금하세요!');
+                            }
+                        }}
+                        className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow cursor-pointer flex items-center gap-1.5"
+                    >
+                        <span>✅ 완독 인증 & 퀘스트 기록</span>
+                    </button>
+                </div>
 
                 {/* ── 4. 하단 네비게이션 & 이전/다음 챕터 버튼 ── */}
                 <div className="pt-6 border-t flex items-center justify-between gap-3 relative z-20" style={{ borderColor: currentTheme.border }}>
@@ -549,7 +736,7 @@ export default function RefinedEBookReader({
                         }}
                     >
                         <ChevronLeft size={16} />
-                        <span>이전 챕터</span>
+                        <span>{t.prevChapter}</span>
                     </button>
 
                     <span className="text-xs font-mono font-bold" style={{ color: currentTheme.subText }}>
@@ -565,7 +752,7 @@ export default function RefinedEBookReader({
                             color: themeId === 'cream' || themeId === 'sepia' ? '#ffffff' : '#0a0f1d' 
                         }}
                     >
-                        <span>다음 챕터</span>
+                        <span>{t.nextChapter}</span>
                         <ChevronRight size={16} />
                     </button>
                 </div>
@@ -593,13 +780,13 @@ export default function RefinedEBookReader({
                             <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: currentTheme.border }}>
                                 <div className="flex items-center gap-2">
                                     <List size={18} style={{ color: currentTheme.accent }} />
-                                    <h3 className="text-base font-black">전체 도서 목차 (총 309p)</h3>
+                                    <h3 className="text-base font-black">{t.tocModalTitle}</h3>
                                 </div>
                                 <button
                                     onClick={() => setShowTocDrawer(false)}
                                     className="p-1 rounded-lg hover:opacity-80 text-xs font-bold"
                                 >
-                                    ✕ 닫기
+                                    {t.closeBtn}
                                 </button>
                             </div>
 

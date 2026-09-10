@@ -75,6 +75,18 @@ const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/Awar
 const UnifiedSubscriptionModal = dynamic(() => import('@/components/modals/UnifiedSubscriptionModal'), { ssr: false });
 const BusinessArchitectureDashboard = dynamic(() => import('@/components/startup/BusinessArchitectureDashboard'), { ssr: false });
 const TargetCoachingDashboard = dynamic(() => import('@/components/coaching/TargetCoachingDashboard'), { ssr: false });
+const AssessmentComparisonModal = dynamic(() => import('@/components/modals/AssessmentComparisonModal'), { ssr: false });
+const MyeongsimMemoryGameModal = dynamic(() => import('@/components/coaching/MyeongsimMemoryGameModal'), { ssr: false });
+// [NEW] 🏛️ 명심코칭 평생교육원 공인 커리큘럼 & 5단계 자격 사다리 모달
+const MyeongsimAcademyCurriculumModal = dynamic(() => import('@/components/modals/MyeongsimAcademyCurriculumModal'), { ssr: false });
+import { 
+    isSkillUnlocked, 
+    getRequiredCourseForSkill, 
+    getAcademyState, 
+    toggleAcademyCheatMode, 
+    ACADEMY_UPDATE_EVENT 
+} from '@/lib/questUnlockManager';
+import { ACADEMY_COURSES } from '@/data/MyeongsimAcademyDB';
 
 
 
@@ -578,6 +590,69 @@ export default function DrillDownIconMenu({
     const [targetDashboardTab, setTargetDashboardTab] = useState<'all' | 'timing' | 'solution' | 'tactics'>('all');
     const [targetDashboardCardId, setTargetDashboardCardId] = useState<string | null>(null); // [NEW] 타겟 코칭 특정 전술 카드 선택
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
+    const [showAssessmentComparisonModal, setShowAssessmentComparisonModal] = useState(false); // [NEW] 공인 성격·심리검사 벤치마크 모달
+    const [showMemoryGameModal, setShowMemoryGameModal] = useState(false); // [NEW] 명심 자각 기억 훈련소 (단기·중기·장기 기억 게임)
+    // [NEW] 🏛️ 명심 평생교육원 공인 커리큘럼 모달 및 자격 잠금 알림 상태
+    const [showCurriculumModal, setShowCurriculumModal] = useState(false);
+    const [lockedSkillNotice, setLockedSkillNotice] = useState<{ skillId: string; name: string; course: any } | null>(null);
+    const [academyState, setAcademyState] = useState(getAcademyState());
+
+    // 교육원 자격 상태 실시간 동기화
+    useEffect(() => {
+        const update = () => setAcademyState(getAcademyState());
+        window.addEventListener(ACADEMY_UPDATE_EVENT, update);
+        return () => window.removeEventListener(ACADEMY_UPDATE_EVENT, update);
+    }, []);
+
+    // 스킬 클릭 제어 함수
+    const handleSkillClick = (skillId: string, skillName: string, originalAction: () => void) => {
+        if (isSkillUnlocked(skillId)) {
+            originalAction();
+        } else {
+            const reqCourse = getRequiredCourseForSkill(skillId);
+            setLockedSkillNotice({
+                skillId,
+                name: skillName,
+                course: reqCourse
+            });
+        }
+    };
+
+    // 스킬 잠금 시각 스타일 (비활성/흑백 필터)
+    const getSkillLockStyle = (skillId: string) => {
+        const unlocked = isSkillUnlocked(skillId);
+        if (unlocked) return {};
+        return {
+            filter: 'grayscale(70%)',
+            opacity: 0.65
+        };
+    };
+
+    // 평생교육원 레벨 자물쇠 뱃지
+    const renderAcademyLockBadge = (skillId: string) => {
+        if (isSkillUnlocked(skillId)) return null;
+        const reqCourse = getRequiredCourseForSkill(skillId);
+        return (
+            <span style={{
+                position: 'absolute',
+                top: '-4px',
+                right: '-4px',
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1.5px solid #F59E0B',
+                borderRadius: '9999px',
+                padding: '1.5px 4px',
+                fontSize: '9px',
+                lineHeight: 1,
+                zIndex: 25,
+                boxShadow: '0 2px 6px rgba(0,0,0,0.8)',
+                color: '#FCD34D',
+                fontWeight: 'bold'
+            }}>
+                🔒 Lv.{reqCourse ? reqCourse.levelNumber : '?'}
+            </span>
+        );
+    };
+
     // [NEW] 전용 대시보드가 없어 바로 챗봇으로 튕겨넘어가는 컨텐츠 공사중/업데이트중 상태
     const [underConstructionItem, setUnderConstructionItem] = useState<SubMenuItem | null>(null);
 
@@ -1358,6 +1433,51 @@ export default function DrillDownIconMenu({
                 )
             }
 
+            {/* 🏛️ [명심코칭 평생교육원 공인 자격 퀘스트 헤더 바] */}
+            <div className="w-full mb-2.5 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-slate-900/90 to-purple-500/20 border border-amber-400/40 flex items-center justify-between gap-2 shadow-xl backdrop-blur-md">
+                <div className="flex items-center gap-2.5 overflow-hidden">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 flex items-center justify-center text-slate-950 text-lg font-black shadow-md shadow-amber-500/30 flex-shrink-0">
+                        🏛️
+                    </div>
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-400/25 text-amber-300 border border-amber-400/40">
+                                {language === 'en' ? 'Lifelong Academy' : language === 'jp' ? '平生教育院' : language === 'cn' ? '平生教育院' : '평생교육원 공인자격'}
+                            </span>
+                            <span className="text-xs font-black text-white truncate">
+                                {ACADEMY_COURSES.find(c => c.levelNumber === academyState.currentLevel)?.title[(language === 'en' || language === 'jp' || language === 'cn') ? language : 'kr'] || '명심 셀프코치'}
+                            </span>
+                            <span className="text-[10px] text-amber-300 font-extrabold">
+                                (Lv.{academyState.currentLevel}/5)
+                            </span>
+                        </div>
+                        <div className="text-[10px] text-gray-300 truncate mt-0.5">
+                            {academyState.currentLevel >= 5 
+                                ? '👑 최고위 마스터·강사 자격 취득! 전 스킬 마스터' 
+                                : `다음 퀘스트: Level ${academyState.currentLevel + 1} 자격 취득 시 상위 코칭 스킬 해금!`}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button
+                        type="button"
+                        onClick={() => setShowCurriculumModal(true)}
+                        className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-[11px] sm:text-xs transition-all shadow-md shadow-amber-400/25 flex items-center gap-1 cursor-pointer"
+                    >
+                        <span>📜 커리큘럼</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setShowMemoryGameModal(true)}
+                        className="px-2.5 py-1.5 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 border border-purple-400/40 text-purple-200 font-bold text-[11px] sm:text-xs transition-all flex items-center gap-1 cursor-pointer"
+                        title="자격 승급 시험 응시"
+                    >
+                        <span>🎓 자격시험</span>
+                    </button>
+                </div>
+            </div>
+
             {/* [NEW] 4대 전문 카테고리 (IA) 탭 바 */}
             <div className="flex items-center gap-1.5 mb-2 px-3 overflow-x-auto pb-1 scrollbar-none text-[11px] font-bold">
                 {[
@@ -1432,6 +1552,54 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* 🧠 [대표님 요청 신규] 🎮 명심 자각 기억 훈련소 (단기·중기·장기 기억 게임) - 나의 리포트 바로 옆 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowMemoryGameModal(true)}
+                    title="영단어·한자 암기법처럼 체화하는 3단계 자각 기억 훈련 게임"
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.35), rgba(6, 182, 212, 0.3))',
+                        border: '1.5px solid rgba(168, 85, 247, 0.7)',
+                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.35)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🎮</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#c084fc', fontWeight: 'bold' }}>
+                            {language === 'en' ? 'Memory Dojo' : language === 'jp' ? '記憶道場' : language === 'cn' ? '记忆演练' : '기억 훈련소'}
+                        </div>
+                        <div style={styles.neuroTrigger}>
+                            {language === 'en' ? '3-Stage Game' : language === 'jp' ? '記憶ゲーム' : language === 'cn' ? '三阶演练' : '단·중·장기 게임'}
+                        </div>
+                    </div>
+                </button>
+
+                {/* 🌟 [공인 평가도구 존중 & 비교] ⚖️ 28대 성격검사 vs 명심코칭 벤치마크 🌟 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowAssessmentComparisonModal(true)}
+                    title="공인 성격·심리검사와 명심코칭의 상호보완 벤치마크 및 공식 사이트 안내"
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(16, 185, 129, 0.25))',
+                        border: '1.5px solid rgba(245, 158, 11, 0.6)',
+                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>⚖️</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#FBBF24', fontWeight: 'bold' }}>성격검사 벤치마크</div>
+                        <div style={styles.neuroTrigger}>공인검사 & 명심코칭</div>
+                    </div>
+                </button>
+
                 {/* 🌟 [대표님 요청 신규] 📖 명심코칭도서관 (도서 《제로 포인트》 독자 전용 서재) 🌟 */}
                 <button
                     style={styles.iconButton}
@@ -1460,16 +1628,16 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* 🌟 [세계 최고 수준] ⌚ 스마트워치 웰니스 코칭 (Ultra & Galaxy Watch 생체 코칭) 🌟 */}
+                {/* 🌟 [세계 최고 수준] ⌚ 스마트워치 웰니스 코칭 (Level 3 전문코치) 🌟 */}
                 <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                    style={{ ...styles.iconButton, ...getSkillLockStyle('WATCH_WELLNESS') }}
+                    onClick={() => handleSkillClick('WATCH_WELLNESS', '스마트워치 웰니스 코칭', () => {
                         if (!canAccessDeepFeatures) {
                             openModal('스마트워치 웰니스 (9대 킬러 다이얼)');
                             return;
                         }
                         router.push('/watch');
-                    }}
+                    })}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1479,6 +1647,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderAcademyLockBadge('WATCH_WELLNESS')}
                         {renderLockBadge(true)}
                         <span style={{ fontSize: '20px' }}>⌚</span>
                     </div>
@@ -1488,11 +1657,10 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-
-                {/* [NEW] 🎧 기질 1:1 맞춤 코칭 에세이노래 (432Hz 주파수 리셋) - 나의 리포트 바로 옆 */}
+                {/* [NEW] 🎧 기질 1:1 맞춤 코칭 에세이노래 (Level 3 전문코치) */}
                 <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                    style={{ ...styles.iconButton, ...getSkillLockStyle('COACHING_SONG') }}
+                    onClick={() => handleSkillClick('COACHING_SONG', '기질 1:1 맞춤 코칭 에세이노래', () => {
                         if (!canAccessDeepFeatures) {
                             openModal('기질 1:1 맞춤 코칭 에세이노래');
                             return;
@@ -1504,7 +1672,7 @@ export default function DrillDownIconMenu({
                             return;
                         }
                         setShowZeroPointMusic(true);
-                    }}
+                    })}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1514,6 +1682,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderAcademyLockBadge('COACHING_SONG')}
                         {renderLockBadge(true)}
                         <span style={{ fontSize: '20px' }}>🎧</span>
                     </div>
@@ -1523,10 +1692,10 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 💼 국세청 공식 업태·종목 추천 (1:1 실전 창업·직업 리포트) */}
+                {/* [NEW] 💼 국세청 공식 업태·종목 추천 (Level 3 전문코치) */}
                 <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                    style={{ ...styles.iconButton, ...getSkillLockStyle('NTS_CAREER') }}
+                    onClick={() => handleSkillClick('NTS_CAREER', '국세청 공식 창업·N잡 리포트', () => {
                         if (!canAccessDeepFeatures) {
                             openModal('국세청 공식 업태·종목 창업 리포트');
                             return;
@@ -1538,7 +1707,7 @@ export default function DrillDownIconMenu({
                             return;
                         }
                         setShowNtsCareerModal(true);
-                    }}
+                    })}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1548,6 +1717,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderAcademyLockBadge('NTS_CAREER')}
                         {renderLockBadge(true)}
                         <span style={{ fontSize: '20px' }}>💼</span>
                     </div>
@@ -1557,16 +1727,16 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 제로포인트 3S 융합 진단 메뉴 (나의 리포트 바로 옆) */}
+                {/* [NEW] 제로포인트 3S 융합 진단 메뉴 (Level 1 셀프코치) */}
                 <button
-                    style={styles.iconButton}
-                    onClick={() => {
+                    style={{ ...styles.iconButton, ...getSkillLockStyle('ZERO_POINT_3S') }}
+                    onClick={() => handleSkillClick('ZERO_POINT_3S', '제로포인트 3S 융합 진단', () => {
                         if (!canAccessZeroPoint) {
                             openModal('제로포인트 3S 융합 진단');
                             return;
                         }
                         setShowZeroPointMatrix(true);
-                    }}
+                    })}
                 >
                     <div style={{
                         ...styles.iconWrapper,
@@ -1576,6 +1746,7 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
+                        {renderAcademyLockBadge('ZERO_POINT_3S')}
                         {renderLockBadge(false)}
                         <span style={{ fontSize: '20px' }}>🌌</span>
                     </div>
@@ -1585,16 +1756,20 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 명심 마스터 코어 메뉴 */}
+                {/* [NEW] 명심 마스터 코어 메뉴 (Level 2 프랙티셔너) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('내면치유 코어 5대 솔루션');
-                            return;
-                        }
-                        window.location.href = '/master-core';
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('INNER_HEALING') }} 
+                        onClick={() => handleSkillClick('INNER_HEALING', '내면치유 코어 5대 솔루션', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('내면치유 코어 5대 솔루션');
+                                return;
+                            }
+                            window.location.href = '/master-core';
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.2))', border: '1px solid rgba(168, 85, 247, 0.4)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.25)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('INNER_HEALING')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>💎</span>
                         </div>
@@ -1605,7 +1780,7 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-                {/* [NEW] 오늘의 명심 카드 (Myeongsim Oracle) 메뉴 */}
+                {/* [NEW] 오늘의 명심 카드 (Level 0 기본 해금) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
                         if (!canAccessDeepFeatures) {
@@ -1627,18 +1802,22 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-                {/* [NEW] 나의 본재 자각 메뉴 */}
+                {/* [NEW] 나의 본재 자각 메뉴 (Level 1 셀프코치) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('본재(本財) 기질 해독');
-                            return;
-                        }
-                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) { alert('본재 기질 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
-                        setShowMyeongsimGenius(true);
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('GENIUS_DECODE') }} 
+                        onClick={() => handleSkillClick('GENIUS_DECODE', '본재(本財) 기질 해독', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('본재(本財) 기질 해독');
+                                return;
+                            }
+                            const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                            if (!hasBirthDate) { alert('본재 기질 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
+                            setShowMyeongsimGenius(true);
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.2))', border: '1px solid rgba(236, 72, 153, 0.4)', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('GENIUS_DECODE')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>💡</span>
                         </div>
@@ -1649,18 +1828,22 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-                {/* [NEW] 천명 지도 메뉴 */}
+                {/* [NEW] 천명 지도 메뉴 (Level 4 프로코치) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('천명 지도 운명 분석');
-                            return;
-                        }
-                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) { alert('천명 지도 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
-                        setShow64KeysModal(true);
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('DESTINY_MAP') }} 
+                        onClick={() => handleSkillClick('DESTINY_MAP', '천명 지도 64코드', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('천명 지도 운명 분석');
+                                return;
+                            }
+                            const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                            if (!hasBirthDate) { alert('천명 지도 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
+                            setShow64KeysModal(true);
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(147, 51, 234, 0.2))', border: '1px solid rgba(245, 158, 11, 0.4)', boxShadow: '0 4px 15px rgba(245, 158, 11, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('DESTINY_MAP')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🗺️</span>
                         </div>
@@ -1671,19 +1854,22 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-
-                {/* [NEW] 천부 성정 메뉴 */}
+                {/* [NEW] 천부 성정 메뉴 (Level 4 프로코치) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('천부 성정 8페이지 전면 해독');
-                            return;
-                        }
-                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) { alert('천부 성정 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
-                        setShowGeniusReport(true);
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('GENIUS_REPORT') }} 
+                        onClick={() => handleSkillClick('GENIUS_REPORT', '천부 성정 8페이지 전면 해독', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('천부 성정 8페이지 전면 해독');
+                                return;
+                            }
+                            const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                            if (!hasBirthDate) { alert('천부 성정 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
+                            setShowGeniusReport(true);
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.2))', border: '1px solid rgba(99, 102, 241, 0.4)', boxShadow: '0 4px 15px rgba(99, 102, 241, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('GENIUS_REPORT')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🧬</span>
                         </div>
@@ -1694,18 +1880,22 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-                {/* [NEW] 격국 연금술 메뉴 */}
+                {/* [NEW] 격국 연금술 메뉴 (Level 4 프로코치) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'business') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('격국 연금술 에너지 균형');
-                            return;
-                        }
-                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) { alert('격국 분석 및 균형 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
-                        router.push('/master-core/alignment');
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('ALIGNMENT') }} 
+                        onClick={() => handleSkillClick('ALIGNMENT', '격국 연금술 에너지 균형', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('격국 연금술 에너지 균형');
+                                return;
+                            }
+                            const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                            if (!hasBirthDate) { alert('격국 분석 및 균형 분석을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
+                            router.push('/master-core/alignment');
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(59, 130, 246, 0.2))', border: '1px solid rgba(167, 139, 250, 0.4)', boxShadow: '0 4px 15px rgba(167, 139, 250, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('ALIGNMENT')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>☯️</span>
                         </div>
@@ -1716,18 +1906,22 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-                {/* [NEW] 다크디코딩 메뉴 */}
+                {/* [NEW] 다크디코딩 메뉴 (Level 2 프랙티셔너) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('다크 디코딩 에너지 전환');
-                            return;
-                        }
-                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) { alert('다크 감정 분석 및 디코딩을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
-                        router.push('/master-core/dark-decoding');
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('DARK_DECODING') }} 
+                        onClick={() => handleSkillClick('DARK_DECODING', '다크 디코딩 에너지 전환', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('다크 디코딩 에너지 전환');
+                                return;
+                            }
+                            const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                            if (!hasBirthDate) { alert('다크 감정 분석 및 디코딩을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
+                            router.push('/master-core/dark-decoding');
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(99, 102, 241, 0.2))', border: '1px solid rgba(239, 68, 68, 0.4)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('DARK_DECODING')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>⚡</span>
                         </div>
@@ -1738,18 +1932,22 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-                {/* [NEW] 마인드 디버거 메뉴 */}
+                {/* [NEW] 마인드 디버거 메뉴 (Level 3 전문코치) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'ai') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('마인드 디버거 의식 시간 재배선');
-                            return;
-                        }
-                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) { alert('의식 오류 분석 및 디버깅을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
-                        router.push('/master-core/dark-code-debugger');
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('MIND_DEBUGGER') }} 
+                        onClick={() => handleSkillClick('MIND_DEBUGGER', '마인드 디버거 의식 시간 재배선', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('마인드 디버거 의식 시간 재배선');
+                                return;
+                            }
+                            const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                            if (!hasBirthDate) { alert('의식 오류 분석 및 디버깅을 위해 생년월일을 먼저 등록해주세요.'); useReportStore.getState().setStep(1); return; }
+                            router.push('/master-core/dark-code-debugger');
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(99, 102, 241, 0.2))', border: '1px solid rgba(16, 185, 129, 0.4)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('MIND_DEBUGGER')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>💻</span>
                         </div>
@@ -1760,16 +1958,20 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-                {/* [NEW] 마스터 리포트 메뉴 */}
+                {/* [NEW] 마스터 리포트 메뉴 (Level 4 프로코치) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('통합 심층 마스터 리포트');
-                            return;
-                        }
-                        setShowSovereignReport(true);
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('SOVEREIGN_REPORT') }} 
+                        onClick={() => handleSkillClick('SOVEREIGN_REPORT', '통합 심층 마스터 리포트', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('통합 심층 마스터 리포트');
+                                return;
+                            }
+                            setShowSovereignReport(true);
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2))', border: '1px solid rgba(139,92,246,0.4)', boxShadow: '0 4px 15px rgba(139,92,246,0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('SOVEREIGN_REPORT')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🔬</span>
                         </div>
@@ -1780,29 +1982,32 @@ export default function DrillDownIconMenu({
                     </button>
                 )}
 
-                {/* [NEW] 거울의방 메뉴 */}
+                {/* [NEW] 거울의방 메뉴 (Level 2 프랙티셔너) */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
-                    <button style={styles.iconButton} onClick={() => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('거울의 방 참나 자각 코칭');
-                            return;
-                        }
-                        const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
-                        if (!hasBirthDate) { alert('자각 코칭을 시작하기 위해 생년월일을 먼저 입력해주세요.'); useReportStore.getState().setStep(1); return; }
-                        setShowMirrorRoom(true);
-                    }}>
+                    <button 
+                        style={{ ...styles.iconButton, ...getSkillLockStyle('MIRROR_ROOM') }} 
+                        onClick={() => handleSkillClick('MIRROR_ROOM', '거울의 방 참나 자각 코칭', () => {
+                            if (!canAccessDeepFeatures) {
+                                openModal('거울의 방 참나 자각 코칭');
+                                return;
+                            }
+                            const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
+                            if (!hasBirthDate) { alert('자각 코칭을 시작하기 위해 생년월일을 먼저 입력해주세요.'); useReportStore.getState().setStep(1); return; }
+                            setShowMirrorRoom(true);
+                        })}
+                    >
                         <div style={{ ...styles.iconWrapper, background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.2))', border: '1px solid rgba(168, 85, 247, 0.4)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)', position: 'relative', zIndex: 10 }}>
+                            {renderAcademyLockBadge('MIRROR_ROOM')}
                             {renderLockBadge(true)}
                             <span style={{ fontSize: '20px' }}>🪞</span>
                         </div>
                         <div>
                             <div style={{ ...styles.iconLabel, color: '#c084fc' }}>거울의 방</div>
-                            <div style={styles.neuroTrigger}>참나 자각과 의식 탐구</div>
+                            <div style={styles.neuroTrigger}>참나 자각 코칭</div>
                         </div>
                     </button>
                 )}
-
-                {/* [NEW] 경계 너머 메뉴 */}
+{/* [NEW] 경계 너머 메뉴 */}
                 {(activeCategoryTab === 'all' || activeCategoryTab === 'psych') && (
                     <button style={styles.iconButton} onClick={() => {
                         if (!canAccessDeepFeatures) {
@@ -2945,6 +3150,97 @@ export default function DrillDownIconMenu({
                     </div>
                 </div>
             )}
+
+            {/* [NEW] ⚖️ 28대 공인 성격·심리검사 vs 명심코칭 존중 벤치마크 모달 */}
+            <AssessmentComparisonModal
+                isOpen={showAssessmentComparisonModal}
+                onClose={() => setShowAssessmentComparisonModal(false)}
+                onStartCoaching={(assessmentName: string, prompt?: string) => {
+                    setShowAssessmentComparisonModal(false);
+                    onSelectIntent('assessment_benchmark_coaching', prompt || `[공인검사 시너지 코칭] ${assessmentName}와 명심코칭 분석`);
+                }}
+            />
+
+            {/* [NEW] 🧠 명심 자각 기억 훈련소 (단기·중기·장기 기억 게임 모달) */}
+                        {/* [NEW] 🏛️ 명심코칭 평생교육원 공인 커리큘럼 대시보드 모달 */}
+            <MyeongsimAcademyCurriculumModal
+                isOpen={showCurriculumModal}
+                onClose={() => setShowCurriculumModal(false)}
+                onOpenExam={(quizId) => {
+                    setShowCurriculumModal(false);
+                    setShowMemoryGameModal(true);
+                }}
+            />
+
+            {/* [NEW] 🔒 평생교육원 공인 자격 잠금 안내 모달 */}
+            {lockedSkillNotice && (
+                <div className="fixed inset-0 z-[2700] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+                    <div className="w-full max-w-sm bg-slate-950 border-2 border-amber-500/50 rounded-3xl p-5 shadow-2xl text-center space-y-4 relative overflow-hidden text-white">
+                        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 to-transparent pointer-events-none" />
+
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-3xl mx-auto text-slate-950 shadow-lg shadow-amber-500/30">
+                            🔒
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                                평생교육원 공인 자격 잠금
+                            </span>
+                            <h3 className="text-base font-black text-white mt-1">
+                                [{lockedSkillNotice.name}]
+                            </h3>
+                            <p className="text-xs text-gray-300 leading-relaxed font-medium">
+                                이 고급 코칭 스킬은 <strong className="text-amber-300">명심코칭 평생교육원 {lockedSkillNotice.course?.title?.kr || '상위 자격'}</strong> 과정을 이수하고 자격을 취득해야 해금됩니다.
+                            </p>
+                            {lockedSkillNotice.course && (
+                                <div className="p-2.5 rounded-xl bg-black/50 border border-white/10 text-left text-xs space-y-1">
+                                    <div className="text-purple-300 font-bold">
+                                        역할: {lockedSkillNotice.course.targetRole.kr}
+                                    </div>
+                                    <div className="text-gray-400 text-[11px]">
+                                        필수 평가: {lockedSkillNotice.course.badge} 승급 시험 통과
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="space-y-2 pt-1">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setLockedSkillNotice(null);
+                                    setShowCurriculumModal(true);
+                                }}
+                                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow-md shadow-amber-400/25 cursor-pointer flex items-center justify-center gap-1"
+                            >
+                                <span>📜 평생교육원 커리큘럼 보기</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setLockedSkillNotice(null);
+                                    setShowMemoryGameModal(true);
+                                }}
+                                className="w-full py-2 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400/40 text-purple-200 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1"
+                            >
+                                <span>🎓 자격 승급 시험 도전하기</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setLockedSkillNotice(null)}
+                                className="w-full py-1 text-gray-500 hover:text-gray-300 text-[11px] font-medium cursor-pointer"
+                            >
+                                닫기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+<MyeongsimMemoryGameModal
+                isOpen={showMemoryGameModal}
+                onClose={() => setShowMemoryGameModal(false)}
+            />
 
             {/* 👑 [대표님 요청] 공식 통합 월 98,000원 VIP 정액권 & 스마트스토어 도서구매 잠금 모달 */}
             <UnifiedSubscriptionModal
