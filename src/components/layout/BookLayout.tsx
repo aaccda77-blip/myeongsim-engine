@@ -315,7 +315,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
             <div className="w-full max-w-md h-[100dvh] bg-deep-slate text-text-gray font-sans flex flex-col relative shadow-2xl md:border-x md:border-white/10 z-10">
 
                 {/* 1. Header */}
-                <header className="h-14 px-2 sm:px-3 flex items-center justify-between border-b border-white/5 bg-deep-slate/90 backdrop-blur-md z-50 absolute top-0 left-0 right-0 overflow-hidden">
+                <header className="h-14 px-2 sm:px-3 flex items-center justify-between border-b border-white/5 bg-deep-slate/90 backdrop-blur-md z-50 absolute top-0 left-0 right-0">
                     <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                         <button
                             className="p-1.5 hover:bg-white/5 rounded-xl transition-colors cursor-pointer text-gray-400 hover:text-white shrink-0"
@@ -340,34 +340,23 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                             title="생년월일 입력 및 사주 만세력 원국 분석 페이지로 이동"
                         >
                             <span className="text-xs">🔮</span>
-                            <span className="font-extrabold whitespace-nowrap hidden sm:inline">생년월일 입력</span>
-                            <span className="font-extrabold whitespace-nowrap sm:hidden">생년월일</span>
+                            <span className="font-extrabold whitespace-nowrap">생년월일</span>
                         </button>
                     </div>
 
                     <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                        {/* ⚡ [명심코칭 3-Code × 3S Protocol 선언문 버튼] */}
-                        <button
-                            className="h-8 px-2 sm:px-2.5 rounded-xl bg-amber-400/15 border border-amber-400/30 text-amber-300 hover:bg-amber-400/25 transition-all text-xs font-black flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
-                            onClick={() => window.dispatchEvent(new CustomEvent('open-3code-manifesto'))}
-                            title="명심코칭 3-Code × 3S Protocol 선언문 열람"
-                        >
-                            <span>⚡</span>
-                            <span className="hidden sm:inline">3-Code × 3S</span>
-                            <span className="sm:hidden">3S</span>
-                        </button>
-
                         {/* 🌟 [간편모드 / 기본모드 전환 스위처] 🌟 */}
                         <ViewModeSwitcher />
 
                         {/* [NEW] 맞춤 코칭 플래너 적용 시 나타나는 🧭 버튼 */}
                         {isPlannerApplied && (
                             <button
-                                className="p-2 hover:bg-white/5 rounded-full relative transition-colors"
+                                className="p-1.5 hover:bg-white/5 rounded-xl relative transition-colors shrink-0 cursor-pointer"
                                 onClick={() => {
                                     setPlannerOpen(!isPlannerOpen);
                                     if (isChatOpen) setIsChatOpen(false);
                                 }}
+                                title="맞춤 코칭 플래너"
                             >
                                 <Compass className={`w-5 h-5 ${isPlannerOpen ? 'text-[#10b748]' : 'text-gray-400'}`} />
                                 <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
@@ -378,7 +367,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         )}
 
                         <button
-                            className="p-2 hover:bg-white/5 rounded-full relative transition-colors"
+                            className="p-1.5 hover:bg-white/5 rounded-xl relative transition-colors cursor-pointer shrink-0 text-gray-400 hover:text-white"
                             onClick={() => {
                                 // Check if birthDate exists in reportData
                                 const curData = useReportStore.getState().reportData;
@@ -391,6 +380,7 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                                 setIsChatOpen(!isChatOpen);
                                 if (isPlannerOpen) setPlannerOpen(false);
                             }}
+                            title="명심 AI 코칭 채팅"
                         >
                             <MessageCircle className={`w-5 h-5 ${isChatOpen ? 'text-primary-olive' : 'text-gray-400'}`} />
                             {/* 알림 도트 (나중에 실제 알림 상태와 연동 필요) */}

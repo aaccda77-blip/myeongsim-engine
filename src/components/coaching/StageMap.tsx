@@ -115,7 +115,7 @@ export default function StageMap({ currentStage, onSelectStage, onClose }: Stage
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }
                             }}
-                            className="w-full mb-5 p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-cyan-500/20 border border-amber-400/50 text-left flex items-center justify-between shadow-lg shadow-amber-500/15 cursor-pointer active:scale-98 transition-all group"
+                            className="w-full mb-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-cyan-500/20 border border-amber-400/50 text-left flex items-center justify-between shadow-lg shadow-amber-500/15 cursor-pointer active:scale-98 transition-all group"
                         >
                             <div className="flex items-center gap-2.5">
                                 <div className="size-9 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-lg group-hover:scale-110 transition-transform">
@@ -127,6 +127,30 @@ export default function StageMap({ currentStage, onSelectStage, onClose }: Stage
                                         <span className="text-[9px] bg-amber-400/20 px-1.5 py-0.5 rounded text-amber-200">1단계</span>
                                     </h4>
                                     <p className="text-[10px] text-gray-400">만세력 정보 수정 및 새 사주 입력</p>
+                                </div>
+                            </div>
+                            <ChevronRight size={16} className="text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                        </motion.button>
+
+                        {/* ⚡ [선언문] 명심코칭 3-Code × 3S Protocol 선언문 바로가기 */}
+                        <motion.button
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            onClick={() => {
+                                window.dispatchEvent(new CustomEvent('open-3code-manifesto'));
+                                onClose();
+                            }}
+                            className="w-full mb-5 p-3 rounded-2xl bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 text-left flex items-center justify-between shadow-sm cursor-pointer active:scale-98 transition-all group"
+                        >
+                            <div className="flex items-center gap-2.5">
+                                <div className="size-9 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-lg group-hover:scale-110 transition-transform">
+                                    ⚡
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-black text-amber-300 flex items-center gap-1">
+                                        <span>3-Code × 3S Protocol 선언문</span>
+                                    </h4>
+                                    <p className="text-[10px] text-gray-400">명심코칭 혁신 헌장 및 원리 열람</p>
                                 </div>
                             </div>
                             <ChevronRight size={16} className="text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
