@@ -689,40 +689,6 @@ export default function RefinedEBookReader({
                     {currentChapter.content}
                 </article>
 
-                {/* ── 3-1. [NEW] 🏛️ 챕터 완독 & 자격 스킬 퀘스트 인증 바 ── */}
-                <div 
-                    className="p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3 relative z-20"
-                    style={{ 
-                        backgroundColor: currentTheme.cardBg, 
-                        borderColor: currentTheme.border 
-                    }}
-                >
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-black text-sm shadow">
-                            🏛️
-                        </div>
-                        <div>
-                            <span className="text-[10px] font-bold text-amber-400">평생교육원 연계 퀘스트</span>
-                            <h4 className="text-xs font-black" style={{ color: currentTheme.text }}>
-                                이 챕터를 완독하셨나요?
-                            </h4>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={() => {
-                            if (typeof window !== 'undefined') {
-                                markTextbookRead('book_01');
-                                alert('✅ [독서 인증 완료] 《ZERO POINT》 챕터 완독이 기록되었습니다! 이제 [기억 훈련소]에서 승급 시험을 치르고 새로운 코칭 스킬을 해금하세요!');
-                            }
-                        }}
-                        className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow cursor-pointer flex items-center gap-1.5"
-                    >
-                        <span>✅ 완독 인증 & 퀘스트 기록</span>
-                    </button>
-                </div>
-
                 {/* ── 4. 하단 네비게이션 & 이전/다음 챕터 버튼 ── */}
                 <div className="pt-6 border-t flex items-center justify-between gap-3 relative z-20" style={{ borderColor: currentTheme.border }}>
                     <button

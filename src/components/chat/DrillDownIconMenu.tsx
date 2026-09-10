@@ -1434,51 +1434,6 @@ export default function DrillDownIconMenu({
                 )
             }
 
-            {/* 🏛️ [명심코칭 평생교육원 공인 자격 퀘스트 헤더 바] */}
-            <div className="w-full mb-2.5 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-slate-900/90 to-purple-500/20 border border-amber-400/40 flex items-center justify-between gap-2 shadow-xl backdrop-blur-md">
-                <div className="flex items-center gap-2.5 overflow-hidden">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 flex items-center justify-center text-slate-950 text-lg font-black shadow-md shadow-amber-500/30 flex-shrink-0">
-                        🏛️
-                    </div>
-                    <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-400/25 text-amber-300 border border-amber-400/40">
-                                {language === 'en' ? 'Lifelong Academy' : language === 'jp' ? '平生教育院' : language === 'cn' ? '平生教育院' : '평생교육원 공인자격'}
-                            </span>
-                            <span className="text-xs font-black text-white truncate">
-                                {ACADEMY_COURSES.find(c => c.levelNumber === academyState.currentLevel)?.title[(language === 'en' || language === 'jp' || language === 'cn') ? language : 'kr'] || '명심 셀프코치'}
-                            </span>
-                            <span className="text-[10px] text-amber-300 font-extrabold">
-                                (Lv.{academyState.currentLevel}/5)
-                            </span>
-                        </div>
-                        <div className="text-[10px] text-gray-300 truncate mt-0.5">
-                            {academyState.currentLevel >= 5 
-                                ? '👑 최고위 마스터·강사 자격 취득! 전 스킬 마스터' 
-                                : `다음 퀘스트: Level ${academyState.currentLevel + 1} 자격 취득 시 상위 코칭 스킬 해금!`}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <button
-                        type="button"
-                        onClick={() => setShowCurriculumModal(true)}
-                        className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-[11px] sm:text-xs transition-all shadow-md shadow-amber-400/25 flex items-center gap-1 cursor-pointer"
-                    >
-                        <span>📜 커리큘럼</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setShowMemoryGameModal(true)}
-                        className="px-2.5 py-1.5 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 border border-purple-400/40 text-purple-200 font-bold text-[11px] sm:text-xs transition-all flex items-center gap-1 cursor-pointer"
-                        title="자격 승급 시험 응시"
-                    >
-                        <span>🎓 자격시험</span>
-                    </button>
-                </div>
-            </div>
-
             {/* [NEW] 4대 전문 카테고리 (IA) 탭 바 */}
             <div className="flex items-center gap-1.5 mb-2 px-3 overflow-x-auto pb-1 scrollbar-none text-[11px] font-bold">
                 {[
@@ -3157,81 +3112,6 @@ export default function DrillDownIconMenu({
             )}
 
             {/* [NEW] 🧠 명심 자각 기억 훈련소 (단기·중기·장기 기억 게임 모달) */}
-                        {/* [NEW] 🏛️ 명심코칭 평생교육원 공인 커리큘럼 대시보드 모달 */}
-            <MyeongsimAcademyCurriculumModal
-                isOpen={showCurriculumModal}
-                onClose={() => setShowCurriculumModal(false)}
-                onOpenExam={(quizId) => {
-                    setShowCurriculumModal(false);
-                    setShowMemoryGameModal(true);
-                }}
-            />
-
-            {/* [NEW] 🔒 평생교육원 공인 자격 잠금 안내 모달 */}
-            {lockedSkillNotice && (
-                <div className="fixed inset-0 z-[2700] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="w-full max-w-sm bg-slate-950 border-2 border-amber-500/50 rounded-3xl p-5 shadow-2xl text-center space-y-4 relative overflow-hidden text-white">
-                        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 to-transparent pointer-events-none" />
-
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-3xl mx-auto text-slate-950 shadow-lg shadow-amber-500/30">
-                            🔒
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
-                                평생교육원 공인 자격 잠금
-                            </span>
-                            <h3 className="text-base font-black text-white mt-1">
-                                [{lockedSkillNotice.name}]
-                            </h3>
-                            <p className="text-xs text-gray-300 leading-relaxed font-medium">
-                                이 고급 코칭 스킬은 <strong className="text-amber-300">명심코칭 평생교육원 {lockedSkillNotice.course?.title?.kr || '상위 자격'}</strong> 과정을 이수하고 자격을 취득해야 해금됩니다.
-                            </p>
-                            {lockedSkillNotice.course && (
-                                <div className="p-2.5 rounded-xl bg-black/50 border border-white/10 text-left text-xs space-y-1">
-                                    <div className="text-purple-300 font-bold">
-                                        역할: {lockedSkillNotice.course.targetRole.kr}
-                                    </div>
-                                    <div className="text-gray-400 text-[11px]">
-                                        필수 평가: {lockedSkillNotice.course.badge} 승급 시험 통과
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="space-y-2 pt-1">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setLockedSkillNotice(null);
-                                    setShowCurriculumModal(true);
-                                }}
-                                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow-md shadow-amber-400/25 cursor-pointer flex items-center justify-center gap-1"
-                            >
-                                <span>📜 평생교육원 커리큘럼 보기</span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setLockedSkillNotice(null);
-                                    setShowMemoryGameModal(true);
-                                }}
-                                className="w-full py-2 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400/40 text-purple-200 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1"
-                            >
-                                <span>🎓 자격 승급 시험 도전하기</span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setLockedSkillNotice(null)}
-                                className="w-full py-1 text-gray-500 hover:text-gray-300 text-[11px] font-medium cursor-pointer"
-                            >
-                                닫기
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
 <MyeongsimMemoryGameModal
                 isOpen={showMemoryGameModal}
                 onClose={() => setShowMemoryGameModal(false)}

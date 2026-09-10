@@ -315,17 +315,17 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
             <div className="w-full max-w-md h-[100dvh] bg-deep-slate text-text-gray font-sans flex flex-col relative shadow-2xl md:border-x md:border-white/10 z-10">
 
                 {/* 1. Header */}
-                <header className="h-14 px-3 flex items-center justify-between border-b border-white/5 bg-deep-slate/80 backdrop-blur-md z-50 absolute top-0 left-0 right-0">
-                    <div className="flex items-center gap-1.5">
+                <header className="h-14 px-2 sm:px-3 flex items-center justify-between border-b border-white/5 bg-deep-slate/90 backdrop-blur-md z-50 absolute top-0 left-0 right-0 overflow-hidden">
+                    <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                         <button
-                            className="p-1.5 hover:bg-white/5 rounded-full transition-colors cursor-pointer"
+                            className="p-1.5 hover:bg-white/5 rounded-xl transition-colors cursor-pointer text-gray-400 hover:text-white shrink-0"
                             onClick={() => setIsMapOpen(true)}
                             title="전체 메뉴"
                         >
-                            <Menu className="w-5 h-5 text-gray-400" />
+                            <Menu className="w-5 h-5" />
                         </button>
                         <button
-                            className="p-1.5 hover:bg-white/5 rounded-full transition-colors cursor-pointer text-amber-400"
+                            className="p-1.5 hover:bg-white/5 rounded-xl transition-colors cursor-pointer text-amber-400 hover:text-amber-300 shrink-0"
                             onClick={() => setIsInquiryOpen(true)}
                             title="문의하기 게시판"
                         >
@@ -336,18 +336,19 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         <button
                             type="button"
                             onClick={handleGoToBirthInput}
-                            className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-cyan-500/20 hover:from-amber-500/30 hover:to-cyan-500/30 border border-amber-400/40 text-amber-200 text-[11px] sm:text-xs font-black flex items-center gap-1 shadow-[0_0_12px_rgba(245,158,11,0.25)] cursor-pointer active:scale-95 transition-all"
+                            className="h-8 px-2 sm:px-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/10 hover:from-amber-500/30 hover:to-yellow-500/30 border border-amber-400/40 text-amber-300 text-xs font-black flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 transition-all whitespace-nowrap shrink-0"
                             title="생년월일 입력 및 사주 만세력 원국 분석 페이지로 이동"
                         >
-                            <span className="text-sm animate-pulse">🔮</span>
-                            <span className="font-extrabold text-amber-300">생년월일 입력</span>
+                            <span className="text-xs">🔮</span>
+                            <span className="font-extrabold whitespace-nowrap hidden sm:inline">생년월일 입력</span>
+                            <span className="font-extrabold whitespace-nowrap sm:hidden">생년월일</span>
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                         {/* ⚡ [명심코칭 3-Code × 3S Protocol 선언문 버튼] */}
                         <button
-                            className="px-2.5 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 hover:bg-amber-400/25 transition-all text-xs font-black flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
+                            className="h-8 px-2 sm:px-2.5 rounded-xl bg-amber-400/15 border border-amber-400/30 text-amber-300 hover:bg-amber-400/25 transition-all text-xs font-black flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
                             onClick={() => window.dispatchEvent(new CustomEvent('open-3code-manifesto'))}
                             title="명심코칭 3-Code × 3S Protocol 선언문 열람"
                         >

@@ -407,7 +407,7 @@ export default function MyeongsimGalagaGame({
         isTouching: boolean;
         animId: number | null;
     }>({
-        player: { x: 200, y: 430, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120, hasDrone: false, droneAngle: 0 },
+        player: { x: 200, y: 420, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120, hasDrone: false, droneAngle: 0 },
         bullets: [],
         enemies: [],
         enemyBullets: [],
@@ -431,7 +431,7 @@ export default function MyeongsimGalagaGame({
         wave: 1,
         shakeTimer: 0,
         keys: {},
-        mousePos: { x: 200, y: 430 },
+        mousePos: { x: 200, y: 420 },
         isTouching: false,
         animId: null
     });
@@ -981,7 +981,7 @@ export default function MyeongsimGalagaGame({
         const h = canvas ? canvas.height : 500;
 
         gameEngineRef.current = {
-            player: { x: w / 2, y: h - 55, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120, hasDrone: false, droneAngle: 0 },
+            player: { x: w / 2, y: h - 75, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120, hasDrone: false, droneAngle: 0 },
             bullets: [],
             enemies: spawnEnemyWave(w, 1),
             enemyBullets: [],
@@ -1005,7 +1005,7 @@ export default function MyeongsimGalagaGame({
             wave: 1,
             shakeTimer: 0,
             keys: {},
-            mousePos: { x: w / 2, y: h - 55 },
+            mousePos: { x: w / 2, y: h - 75 },
             isTouching: false,
             animId: null
         };
@@ -1130,7 +1130,7 @@ export default function MyeongsimGalagaGame({
                 }
             }
 
-            // 4. 플레이어 이동
+            // 4. 플레이어 이동 (동적 안전 비행 영역)
             const p = ge.player;
             if (ge.keys['ArrowLeft'] || ge.keys['a'] || ge.keys['A']) {
                 p.x -= p.speed;
@@ -1138,10 +1138,20 @@ export default function MyeongsimGalagaGame({
             if (ge.keys['ArrowRight'] || ge.keys['d'] || ge.keys['D']) {
                 p.x += p.speed;
             }
+            if (ge.keys['ArrowUp'] || ge.keys['w'] || ge.keys['W']) {
+                p.y -= p.speed;
+            }
+            if (ge.keys['ArrowDown'] || ge.keys['s'] || ge.keys['S']) {
+                p.y += p.speed;
+            }
             if (ge.mousePos.x !== p.x) {
                 p.x += (ge.mousePos.x - p.x) * 0.32;
             }
+            if (ge.mousePos.y !== undefined && ge.mousePos.y !== p.y) {
+                p.y += (ge.mousePos.y - p.y) * 0.25;
+            }
             p.x = Math.max(26, Math.min(w - 26, p.x));
+            p.y = Math.max(h * 0.45, Math.min(h - 75, p.y));
 
             if (p.shieldTimer > 0) p.shieldTimer--;
 

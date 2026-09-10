@@ -42,10 +42,10 @@ export default function UnifiedSubscriptionModal({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: phone.trim() || depositorName.trim(),
-                    amount: 98000,
+                    amount: 0,
                     depositorName: depositorName.trim(),
                     phone: phone.trim(),
-                    productName: '특허출원기념 월정액 ALL-PASS VIP'
+                    productName: '베타오픈기념 도서구매 시 전면무료개방 (구매승인)'
                 })
             });
 
@@ -57,7 +57,7 @@ export default function UnifiedSubscriptionModal({
             }
             setSubmitted(true);
         } catch (e) {
-            console.error('Wire submit error:', e);
+            console.error('Submit error:', e);
             if (typeof window !== 'undefined') {
                 localStorage.setItem('myeongsim_pending_approval', 'true');
                 localStorage.setItem('myeongsim_depositor_name', depositorName.trim());
@@ -134,35 +134,37 @@ export default function UnifiedSubscriptionModal({
                 <div className="relative px-6 pt-6 pb-4 bg-gradient-to-b from-amber-500/20 via-amber-500/5 to-transparent border-b border-amber-400/20 text-center">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[11px] font-mono font-black mb-2">
                         <Award size={13} className="text-amber-400" />
-                        <span>특허 출원 완료 기념 · 얼리액세스 한정 프로모션</span>
+                        <span>🎉 명심코칭 앱 베타 오픈 기념 · 도서 구매자 특별 혜택</span>
                     </div>
 
                     <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                        명심코칭 VIP 올패스 멤버십
+                        도서 구매 시 한시적 전면 무료 개방!
                     </h2>
                     <p className="text-xs text-amber-200/90 mt-1">
-                        {featureName}을(를) 포함한 123개 전 서비스를 무제한 이용하실 수 있습니다.
+                        도서 《제로 포인트》 구매 고객님께 월 98,000원 멤버십을 한시적으로 전면 무료 개방합니다.<br />
+                        (도서 구매 후 승인 시 {featureName}을(를) 포함한 전 서비스 즉시 무료 이용)
                     </p>
 
-                    {/* 가격 앵커링 디스플레이 (289,000원 ➔ 98,000원) */}
-                    <div className="mt-3.5 p-3 rounded-2xl bg-black/60 border border-amber-400/40 flex items-center justify-between px-4">
+                    {/* 가격 앵커링 디스플레이 (98,000원 ✕ ➔ 0원 무료) */}
+                    <div className="mt-3.5 p-3.5 rounded-2xl bg-black/70 border border-amber-400/40 flex items-center justify-between px-4">
                         <div className="text-left">
-                            <span className="text-[11px] text-gray-400 line-through block font-mono">
-                                정가 월 289,000원
+                            <span className="text-xs text-red-400 line-through block font-mono font-bold">
+                                정가 월 98,000원 ✕
                             </span>
-                            <span className="text-xs text-amber-400 font-bold">
-                                66% 파격 특별 지원가
+                            <span className="text-xs text-amber-400 font-black flex items-center gap-1">
+                                <Sparkles size={12} />
+                                <span>베타 오픈 한시적 무료 개방</span>
                             </span>
                         </div>
                         <div className="text-right">
                             <div className="flex items-baseline justify-end gap-1">
-                                <span className="text-2xl sm:text-3xl font-black text-amber-300 font-mono tracking-tight drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">
-                                    98,000
+                                <span className="text-2xl sm:text-3xl font-black text-amber-300 font-mono tracking-tight drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]">
+                                    0
                                 </span>
-                                <span className="text-xs font-bold text-white">원 / 월</span>
+                                <span className="text-xs font-black text-amber-400">원 / 무료</span>
                             </div>
-                            <span className="text-[10px] text-gray-400 font-mono">
-                                하루 약 3,200원대 (커피 한 잔)
+                            <span className="text-[10px] text-emerald-400 font-bold">
+                                도서 구매 후 승인 시 즉시 이용
                             </span>
                         </div>
                     </div>
@@ -175,13 +177,13 @@ export default function UnifiedSubscriptionModal({
                             <div className="size-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mx-auto text-emerald-300">
                                 <CheckCircle2 size={36} className="animate-bounce" />
                             </div>
-                            <h3 className="text-lg font-black text-white">무통장 입금 신청 완료!</h3>
+                            <h3 className="text-lg font-black text-white">도서 구매 승인 신청 접수 완료!</h3>
                             <p className="text-xs text-gray-300 leading-relaxed max-w-xs mx-auto">
-                                <strong className="text-amber-300">{depositorName}</strong>님의 입금 신청이 접수되었습니다.<br />
-                                관리자가 입금 내역 확인 후 수분 내에 <strong>[열어주기 (승인)]</strong>를 완료합니다.
+                                <strong className="text-amber-300">{depositorName}</strong>님의 도서 구매 무료 승인 신청이 접수되었습니다.<br />
+                                관리자가 구매 내역 확인 후 수분 내에 <strong>[전면 무료 승인]</strong>을 완료합니다.
                             </p>
                             <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-[11px] text-gray-400 font-mono">
-                                입금 계좌: 토스뱅크 1002-6847-4899 (예금주: 마인드플로우랩)
+                                도서 구매 고객 대상: 월 98,000원 멤버십 124개 전 서비스 한시적 전면 무료 개방
                             </div>
                             <div className="space-y-2 pt-2">
                                 <button
@@ -222,7 +224,7 @@ export default function UnifiedSubscriptionModal({
                             <div className="space-y-2 bg-white/[0.03] p-3.5 rounded-2xl border border-white/10">
                                 <span className="text-[11px] font-mono font-bold text-amber-300 flex items-center gap-1 mb-1">
                                     <Sparkles size={12} />
-                                    <span>월 98,000원에 무제한 제공되는 5대 VIP 혜택</span>
+                                    <span>도서 구매 시 한시적 전면 무료 개방되는 5대 VIP 혜택</span>
                                 </span>
                                 <div className="space-y-1.5 text-xs text-gray-200">
                                     <div className="flex items-center gap-2">
@@ -239,7 +241,7 @@ export default function UnifiedSubscriptionModal({
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-amber-400 font-bold">✓</span>
-                                        <span><strong>108 인생 대전환 리포트</strong> & <strong>AI 마스터코어</strong> 20회 심층 코칭</span>
+                                        <span><strong>108 인생 대전환 리포트</strong> & <strong>AI 마스터코어</strong> 심층 코칭</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-amber-400 font-bold">✓</span>
@@ -249,11 +251,14 @@ export default function UnifiedSubscriptionModal({
                             </div>
 
                             {/* 도서 구매 고객을 위한 안내 뱃지 */}
-                            <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-400/20 text-[11px] text-cyan-200 leading-relaxed flex items-start gap-2">
-                                <BookOpen size={14} className="text-cyan-400 shrink-0 mt-0.5" />
-                                <span>
-                                    <strong>도서 구매 고객님 안내:</strong> 전자책에 약속된 《제로포인트》 3-Code 인터랙티브 가이드 및 기본 제로포인트 코칭이 제공되며, 최신 스마트워치 웰니스·바이오케어·108 확장은 본 월정액 멤버십 회원 전용으로 제공됩니다.
-                                </span>
+                            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 leading-relaxed flex items-start gap-2.5">
+                                <BookOpen size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                                <div>
+                                    <strong className="text-amber-300 block mb-0.5">🎉 베타 오픈 기념 한시적 전면 무료 개방 안내</strong>
+                                    <span>
+                                        도서 《제로 포인트》를 구매하신 모든 독자님께 정가 98,000원 상당의 멤버십을 한시적으로 <strong>전면 무료 개방</strong>합니다. 도서 구매 후 승인 신청하시면 전 서비스를 즉시 무료로 이용하실 수 있습니다.
+                                    </span>
+                                </div>
                             </div>
 
                             {/* 2대 결제 창구 선택 탭 */}
@@ -268,7 +273,7 @@ export default function UnifiedSubscriptionModal({
                                     }`}
                                 >
                                     <ExternalLink size={13} />
-                                    <span>1. 스마트스토어 결제</span>
+                                    <span>1. 도서 구매하기</span>
                                 </button>
                                 <button
                                     type="button"
@@ -280,11 +285,11 @@ export default function UnifiedSubscriptionModal({
                                     }`}
                                 >
                                     <CreditCard size={13} />
-                                    <span>2. 무통장 입금 신청</span>
+                                    <span>2. 도서 구매 무료 승인 신청</span>
                                 </button>
                             </div>
 
-                            {/* 탭 1: 스마트스토어 링크 결제 */}
+                            {/* 탭 1: 스마트스토어 도서 구매 링크 */}
                             {tab === 'info' && (
                                 <div className="space-y-2.5 pt-1 animate-fade-in">
                                     <a
@@ -293,32 +298,32 @@ export default function UnifiedSubscriptionModal({
                                         rel="noopener noreferrer"
                                         className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(251,191,36,0.4)] transition-all cursor-pointer active:scale-[0.98]"
                                     >
-                                        <span>🛒 스마트스토어에서 98,000원 결제하기</span>
+                                        <span>📚 스마트스토어에서 도서 《제로포인트》 구매하기</span>
                                         <ExternalLink size={14} />
                                     </a>
                                     <p className="text-[10px] text-gray-400 text-center">
-                                        네이버페이, 신용카드, 계좌이체 등 가장 편리한 수단으로 결제하실 수 있습니다.
+                                        도서를 구매하신 후 [2. 도서 구매 무료 승인 신청] 탭에서 신청해 주시면 관리자 확인 후 전면 무료 승인됩니다.
                                     </p>
                                 </div>
                             )}
 
-                            {/* 탭 2: 무통장 입금 신청 폼 */}
+                            {/* 탭 2: 도서 구매자 무료 승인 신청 폼 */}
                             {tab === 'wire' && (
                                 <form onSubmit={handleWireSubmit} className="space-y-3 pt-1 animate-fade-in">
                                     <div className="p-3 bg-black/60 rounded-xl border border-amber-400/30 text-center">
-                                        <span className="text-[10px] text-gray-400 block font-mono">입금 전용 계좌</span>
-                                        <span className="text-sm font-black text-amber-300 font-mono block mt-0.5">
-                                            토스뱅크 1002-6847-4899
+                                        <span className="text-[10px] text-amber-300 block font-mono font-bold">✨ 도서 구매자 전면 무료 승인 창구</span>
+                                        <span className="text-sm font-black text-white block mt-0.5">
+                                            도서 《제로포인트》 구매 고객 무료 사용 승인 신청
                                         </span>
                                         <span className="text-[11px] text-gray-300">
-                                            예금주: <strong>마인드플로우랩</strong> · 금액: <strong className="text-amber-300">98,000원</strong>
+                                            비용: <span className="line-through text-red-400 font-mono">월 98,000원 ✕</span> ➔ <strong className="text-emerald-400 font-bold">0원 (한시적 전면 무료)</strong>
                                         </span>
                                     </div>
 
                                     <div className="space-y-2">
                                         <div>
                                             <label className="text-[11px] text-gray-300 font-bold block mb-1">
-                                                입금자명 (실제 송금하시는 성함) *
+                                                구매자 성함 (도서 주문자명) *
                                             </label>
                                             <input
                                                 type="text"
@@ -350,7 +355,7 @@ export default function UnifiedSubscriptionModal({
                                         className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg transition-all cursor-pointer disabled:opacity-50"
                                     >
                                         <Send size={13} />
-                                        <span>{isSubmitting ? '신청 처리 중...' : '98,000원 입금 완료 신청하기'}</span>
+                                        <span>{isSubmitting ? '신청 처리 중...' : '⚡ 도서 구매 확인 및 전면 무료 승인 신청하기'}</span>
                                     </button>
                                 </form>
                             )}
@@ -360,8 +365,8 @@ export default function UnifiedSubscriptionModal({
 
                 {/* 하단 희소성 안내 문구 */}
                 <div className="p-3 bg-black/80 border-t border-white/10 text-center">
-                    <p className="text-[10px] text-gray-500 font-mono">
-                        ⚡ 본 특별가는 앱 부분 오픈 기념 한정 혜택으로, 사전 공지 없이 정가(289,000원)로 환원될 수 있습니다.
+                    <p className="text-[10px] text-gray-400 font-mono">
+                        ⚡ 명심코칭 앱 베타 오픈 기념 한정 혜택: 도서 구매 후 승인 시 월 98,000원 전 서비스가 한시적으로 전면 무료 개방됩니다.
                     </p>
                 </div>
             </div>

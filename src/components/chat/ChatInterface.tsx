@@ -54,6 +54,7 @@ import { useLanguage } from '@/contexts/LanguageContext'; // [NEW] Localization
 import { PexelsImage } from './PexelsImage'; // [NEW] Pexels Image Component
 import BioEnergyBlueprintModal from '../modals/BioEnergyBlueprintModal'; // [NEW] Bio-Energy Blueprint Modal
 import { ICON_DRILL_DOWN_MAP } from '@/modules/DrillDownProtocol'; // [NEW] Dynamic Label Lookup
+import { checkAiQuestionLimit, recordAiQuestion, getRemainingAiQuestions } from '@/lib/aiQuestionLimit'; // [Beta] AI 질문 제한 모듈
 
 // [NEW] Myeongsim Secret Room Modular Injection
 import MyeongsimSecretRoom from '../coaching/MyeongsimSecretRoom';
@@ -363,6 +364,16 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
     const [showMicroPassModal, setShowMicroPassModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState<'IDLE' | 'PENDING' | 'SUCCESS'>('IDLE');
+    const [aiRemainingQuestions, setAiRemainingQuestions] = useState<number>(3);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const isAdmin = document.cookie.includes('admin_session=') || 
+                localStorage.getItem('myeongsim_admin_authenticated') === 'true' || 
+                sessionStorage.getItem('myeongsim_admin_authed') === 'true';
+            setAiRemainingQuestions(getRemainingAiQuestions(isAdmin));
+        }
+    }, []);
 
     const [gapMetrics, setGapMetrics] = useState({ gapLevel: 10, matchingScore: 90 }); // Initial: Stable
     const [interruptQuestion, setInterruptQuestion] = useState<any | null>(null);
@@ -1090,6 +1101,28 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
             return;
         }
 
+        // 🛡️ [AI 질문 제한] 베타 오픈 정책: 하루 3회 이하 & 동일 질문 연속 3회 이상 금지
+        if (hiddenPayload !== "SYSTEM_TRIGGER") {
+            const isAdmin = typeof document !== 'undefined' && (
+                document.cookie.includes('admin_session=') ||
+                localStorage.getItem('myeongsim_admin_authenticated') === 'true' ||
+                sessionStorage.getItem('myeongsim_admin_authed') === 'true'
+            );
+
+            const limitCheck = checkAiQuestionLimit(msgToSend, isAdmin);
+            if (!limitCheck.allowed) {
+                // 한도 초과 또는 동일 질문 연속 입력 차단 안내 메시지 UI에 친절히 출력
+                setMessages(prev => [...prev, {
+                    id: `limit-${Date.now()}`,
+                    role: 'assistant',
+                    content: limitCheck.message || 'AI 질문 한도에 도달했습니다.',
+                    type: 'text'
+                }]);
+                setInput('');
+                return;
+            }
+        }
+
         // [Feature] Radio Mode Intervention (Simple Type)
         // If voice is playing, treat text input as a "listener comment" intervention
         let effectiveHiddenPayload = hiddenPayload;
@@ -1625,11 +1658,11 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                     }
                                 }}
-                                className="px-2 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 text-amber-300 text-[10.5px] font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                                className="px-2 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 text-amber-300 text-[10.5px] font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95 whitespace-nowrap shrink-0"
                                 title="생년월일 입력 및 사주 만세력 1단계 화면으로 이동"
                             >
-                                <span>🔮</span>
-                                <span>생년월일</span>
+                                <span className="shrink-0">🔮</span>
+                                <span className="whitespace-nowrap">생년월일</span>
                             </button>
 
                             <button
