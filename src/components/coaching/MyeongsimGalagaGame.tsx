@@ -1855,7 +1855,7 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
             {/* 캔버스 게임 화면 프레임 */}
             <div 
                 onClick={unlockAudio}
-                className="relative w-full h-[370px] sm:h-[450px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]"
+                className="relative w-full h-[440px] sm:h-[480px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]"
             >
                 <canvas
                     ref={canvasRef}
@@ -2012,19 +2012,30 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                                     <span>{t.purifiedTitle}:</span>
                                     <span className="text-cyan-400">총 {Object.values(purifiedStats).reduce((acc, cur) => acc + cur.count, 0)}개 정화</span>
                                 </div>
-                                <div className="max-h-24 sm:max-h-32 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
+                                <div className="max-h-[200px] sm:max-h-[250px] overflow-y-auto space-y-2 pr-1 scrollbar-thin scrollbar-thumb-cyan-500/30">
                                     {Object.entries(purifiedStats).length > 0 ? (
                                         Object.entries(purifiedStats).map(([thought, data], idx) => (
-                                            <div key={idx} className="p-1.5 bg-black/40 rounded-lg border border-white/5 text-[10px] space-y-0.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-amber-400 font-bold text-[9px] bg-amber-400/10 px-1 py-0.2 rounded border border-amber-400/20">
-                                                        #{data.tag}
+                                            <div key={idx} className="p-2 sm:p-2.5 bg-black/60 rounded-xl border border-white/10 text-[10px] sm:text-[11px] space-y-1.5 shadow-sm">
+                                                <div className="flex items-center justify-between pb-1 border-b border-white/10">
+                                                    <span className="text-amber-300 font-extrabold text-[10px] sm:text-[11px] bg-amber-400/15 px-2 py-0.5 rounded-md border border-amber-400/30 flex items-center gap-1">
+                                                        <span>🏷️</span>
+                                                        <span>#{data.tag}</span>
                                                     </span>
-                                                    <span className="text-gray-400 text-[9px]">{data.count}회 격퇴</span>
+                                                    <span className="text-cyan-300 font-mono text-[10px] sm:text-[11px] font-semibold bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-800/40">
+                                                        {data.count}회 정화
+                                                    </span>
                                                 </div>
-                                                <div className="flex items-center justify-between gap-1">
-                                                    <span className="text-rose-300 line-through truncate max-w-[110px]">{thought}</span>
-                                                    <span className="text-emerald-300 font-bold truncate max-w-[160px]">➔ {data.insight}</span>
+                                                <div className="flex items-start gap-1.5 text-rose-300/85 text-[10.5px] sm:text-[11.5px] leading-relaxed">
+                                                    <span className="text-rose-400 font-bold shrink-0 mt-0.5">✕</span>
+                                                    <span className="line-through decoration-rose-400/60 break-keep whitespace-normal">
+                                                        {thought}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-start gap-1.5 text-emerald-300 font-bold text-[11px] sm:text-[12px] leading-relaxed bg-emerald-950/40 p-2 rounded-lg border border-emerald-500/25">
+                                                    <span className="text-emerald-400 font-black shrink-0 mt-0.5">➔</span>
+                                                    <span className="break-keep whitespace-normal text-emerald-200">
+                                                        {data.insight}
+                                                    </span>
                                                 </div>
                                             </div>
                                         ))

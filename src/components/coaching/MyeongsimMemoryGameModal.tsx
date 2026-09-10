@@ -1008,12 +1008,12 @@ export default function MyeongsimMemoryGameModal({
                                                 <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ${
                                                     isMastered ? 'bg-cyan-400 text-slate-950' : 'bg-white/10 text-gray-400'
                                                 }`}>
-                                                    {isMastered ? '보유중' : '미복용'}
+                                                    {isMastered ? '보유중' : '미습득'}
                                                 </span>
                                             </div>
 
                                             <div className="space-y-0.5 my-1">
-                                                <span className="text-[9px] font-mono font-bold text-cyan-300 block truncate">
+                                                <span className="text-[9px] font-mono font-bold text-cyan-300 block break-keep">
                                                     {theme.vitaminName[langKey] || theme.vitaminName.kr}
                                                 </span>
                                                 <p className="text-[11px] font-bold text-white line-clamp-2 leading-tight">
@@ -1021,7 +1021,7 @@ export default function MyeongsimMemoryGameModal({
                                                 </p>
                                             </div>
 
-                                            <div className="text-[9px] font-mono text-gray-400 truncate">
+                                            <div className="text-[9px] font-mono text-gray-400">
                                                 쿨다운: {theme.coolDownScore}%
                                             </div>
                                         </div>
