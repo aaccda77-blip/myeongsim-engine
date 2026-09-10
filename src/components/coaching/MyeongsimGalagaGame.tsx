@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Zap, RotateCcw, Award, Volume2, VolumeX, 
     Sparkles, Flame, Shield, Heart, Skull, Trophy, ArrowLeft, ArrowRight,
-    Volume1, CheckCircle2, Copy, Check, Activity, Brain, Radio, Music
+    Volume1, CheckCircle2, Copy, Check, Activity, Brain, Radio, Music,
+    Maximize2, Minimize2
 } from 'lucide-react';
 import { passAcademyExam } from '@/lib/questUnlockManager';
 
@@ -45,6 +46,8 @@ const GALAGA_I18N = {
         certCopied: "✅ 클립보드 복사 완료!",
         nextStage: "다음 멘탈 스테이지 도전 ➔",
         novaBtn: "💥 제로 노바 (全화면 정화)",
+        expandScreen: "화면 확대",
+        shrinkScreen: "화면 축소",
         waveBanner: {
             1: "WAVE 1: 일상 잡념 정찰대",
             2: "WAVE 2: 불안 & 과잉일반화 편대",
@@ -81,6 +84,8 @@ const GALAGA_I18N = {
         certCopied: "✅ Copied to Clipboard!",
         nextStage: "Next Mental Stage ➔",
         novaBtn: "💥 ZERO NOVA (Full Cleansing)",
+        expandScreen: "Expand",
+        shrinkScreen: "Shrink",
         waveBanner: {
             1: "WAVE 1: Routine Thought Scouts",
             2: "WAVE 2: Anxiety & Generalization Fleet",
@@ -117,6 +122,8 @@ const GALAGA_I18N = {
         certCopied: "✅ コピー完了！",
         nextStage: "次のステージへ挑戦 ➔",
         novaBtn: "💥 ゼロ・ノヴァ (全体浄化)",
+        expandScreen: "画面拡大",
+        shrinkScreen: "画面縮小",
         waveBanner: {
             1: "WAVE 1: 日常雑念偵察隊",
             2: "WAVE 2: 不安と過度な一般化編隊",
@@ -153,6 +160,8 @@ const GALAGA_I18N = {
         certCopied: "✅ 复制成功！",
         nextStage: "挑战下一心智关卡 ➔",
         novaBtn: "💥 零点新星 (全屏净化)",
+        expandScreen: "放大画面",
+        shrinkScreen: "缩小画面",
         waveBanner: {
             1: "WAVE 1: 日常杂念先锋队",
             2: "WAVE 2: 焦虑与过度概括编队",
@@ -275,6 +284,9 @@ export default function MyeongsimGalagaGame({
     const [tractorNotice, setTractorNotice] = useState<string | null>(null);
     const [waveBanner, setWaveBanner] = useState<string | null>("WAVE 1: 일상 잡념 정찰대");
     const [copied, setCopied] = useState<boolean>(false);
+
+    // 📱 모바일/PC 화면 확대 (Fullscreen / Cinema Expand) 상태
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
     // 💥 최신형 궁극기: 제로 노바 (Zero Nova) 게이지 (0 ~ 100)
     const [ultimateGauge, setUltimateGauge] = useState<number>(0);
@@ -1780,13 +1792,63 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
         });
     };
 
+    // 📱 화면 확대 / 축소 토글
+    const toggleExpand = useCallback(() => {
+        unlockAudio();
+        setIsExpanded(prev => {
+            const next = !prev;
+            if (next) {
+                try {
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(() => {});
+                    }
+                } catch (err) {}
+                document.body.style.overflow = 'hidden';
+            } else {
+                try {
+                    if (document.fullscreenElement && document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    }
+                } catch (err) {}
+                document.body.style.overflow = '';
+            }
+            return next;
+        });
+    }, []);
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            if (!document.fullscreenElement && isExpanded) {
+                setIsExpanded(false);
+                document.body.style.overflow = '';
+            }
+        };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isExpanded) {
+                setIsExpanded(false);
+                document.body.style.overflow = '';
+            }
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            window.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = '';
+        };
+    }, [isExpanded]);
+
     return (
         <div 
             onClick={unlockAudio}
-            className="flex flex-col items-center justify-center w-full max-w-lg mx-auto select-none"
+            className={
+                isExpanded
+                    ? "fixed inset-0 z-[9999] w-screen h-[100dvh] bg-[#060814] flex flex-col items-center justify-between p-2 sm:p-3 select-none overflow-hidden"
+                    : "flex flex-col items-center justify-center w-full max-w-lg mx-auto select-none"
+            }
         >
             {/* 상단 HUD 바 */}
-            <div className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#0c1022] rounded-2xl border border-white/10 flex items-center justify-between text-xs mb-2 shadow-md">
+            <div className="w-full max-w-lg px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#0c1022] rounded-2xl border border-white/10 flex items-center justify-between text-xs mb-1.5 sm:mb-2 shadow-md shrink-0">
                 <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 font-mono font-bold text-cyan-300 text-[11px] sm:text-xs">
                         <Trophy size={13} className="text-amber-400" />
@@ -1815,7 +1877,26 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     ))}
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                    {/* 📱 모바일 화면 확대 / 축소 토글 버튼 */}
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleExpand();
+                        }}
+                        className={`p-1 sm:p-1.5 rounded-xl border flex items-center gap-1 cursor-pointer transition-all ${
+                            isExpanded 
+                                ? 'bg-amber-500/25 text-amber-300 border-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.3)]' 
+                                : 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40 hover:bg-cyan-500/30'
+                        }`}
+                        title={isExpanded ? t.shrinkScreen : t.expandScreen}
+                    >
+                        {isExpanded ? <Minimize2 size={13} className="text-amber-400" /> : <Maximize2 size={13} className="animate-pulse text-cyan-300" />}
+                        <span className="text-[9px] sm:text-[10px] font-mono font-bold">
+                            {isExpanded ? t.shrinkScreen : t.expandScreen}
+                        </span>
+                    </button>
+
                     {/* BGM 토글 버튼 */}
                     <button
                         onClick={(e) => {
@@ -1855,7 +1936,11 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
             {/* 캔버스 게임 화면 프레임 */}
             <div 
                 onClick={unlockAudio}
-                className="relative w-full h-[440px] sm:h-[480px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]"
+                className={
+                    isExpanded
+                        ? "relative w-full max-w-lg flex-1 min-h-[320px] max-h-[calc(100dvh-175px)] rounded-3xl overflow-hidden border-2 border-cyan-400/60 shadow-[0_0_50px_rgba(6,182,212,0.4)] bg-[#060814] flex items-center justify-center"
+                        : "relative w-full h-[440px] sm:h-[480px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]"
+                }
             >
                 <canvas
                     ref={canvasRef}
@@ -1865,8 +1950,22 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
-                    className="w-full h-full cursor-crosshair touch-none"
+                    className="w-full h-full max-h-full object-contain cursor-crosshair touch-none"
                 />
+
+                {/* 미확대 상태일 때 우측 하단 화면 확대 퀵버튼 */}
+                {!isExpanded && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleExpand();
+                        }}
+                        className="absolute bottom-3 right-3 px-2.5 py-1.5 rounded-xl bg-cyan-950/85 border border-cyan-400/60 text-cyan-200 text-[10px] sm:text-[11px] font-bold flex items-center gap-1 shadow-lg shadow-cyan-500/25 backdrop-blur-sm z-20 cursor-pointer hover:bg-cyan-900/90 active:scale-95 transition-all"
+                    >
+                        <Maximize2 size={12} className="text-cyan-300 animate-pulse" />
+                        <span>화면 확대</span>
+                    </button>
+                )}
 
                 {/* 사운드 활성화 안내 */}
                 {!soundActive && (
@@ -2073,7 +2172,7 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
             </div>
 
             {/* 💥 최신형 궁극기 게이지 & 발동 바 */}
-            <div className="w-full flex items-center gap-2 mt-2 px-1">
+            <div className="w-full max-w-lg flex items-center gap-2 mt-1.5 sm:mt-2 px-1 shrink-0">
                 <div className="flex-1 bg-black/50 border border-white/10 rounded-xl h-9 px-2 flex items-center gap-2">
                     <Zap size={14} className={ultimateGauge >= 100 ? 'text-amber-400 animate-bounce' : 'text-gray-500'} />
                     <div className="flex-1 bg-white/10 rounded-full h-2 overflow-hidden">
@@ -2106,7 +2205,7 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
             </div>
 
             {/* 모바일 원터치 이동 패드 */}
-            <div className="w-full flex items-center justify-between gap-2.5 mt-2 px-1">
+            <div className="w-full max-w-lg flex items-center justify-between gap-2.5 mt-1.5 sm:mt-2 px-1 shrink-0">
                 <button
                     onClick={moveLeft}
                     className="flex-1 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/40 text-white font-bold text-xs flex items-center justify-center gap-1 border border-white/10 cursor-pointer transition-all"
@@ -2126,7 +2225,21 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                 </button>
             </div>
 
-            <p className="text-[10px] text-gray-400 font-mono mt-1.5 text-center">
+            {/* 확대 모드 시 하단 축소 바로가기 버튼 */}
+            {isExpanded && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpand();
+                    }}
+                    className="mt-1 py-1 px-3.5 rounded-xl bg-white/5 hover:bg-white/10 active:bg-white/20 text-gray-400 hover:text-white text-[10px] font-mono flex items-center gap-1.5 border border-white/10 cursor-pointer transition-all shrink-0"
+                >
+                    <Minimize2 size={12} className="text-amber-400" />
+                    <span>기본 화면으로 축소 (Esc)</span>
+                </button>
+            )}
+
+            <p className="text-[10px] text-gray-400 font-mono mt-1 sm:mt-1.5 text-center shrink-0">
                 {t.controlsGuide}
             </p>
         </div>
