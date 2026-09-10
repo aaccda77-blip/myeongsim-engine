@@ -3,9 +3,9 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-    Zap, RotateCcw, Award, Play, Pause, Volume2, VolumeX, 
+    Zap, RotateCcw, Award, Volume2, VolumeX, 
     Sparkles, Flame, Shield, Heart, Skull, Trophy, ArrowLeft, ArrowRight,
-    Volume1, CheckCircle2, RefreshCw, Copy, Check, Activity, Brain, ShieldAlert
+    Volume1, CheckCircle2, Copy, Check, Activity, Brain, ShieldAlert
 } from 'lucide-react';
 import { passAcademyExam } from '@/lib/questUnlockManager';
 
@@ -37,13 +37,19 @@ const GALAGA_I18N = {
         feverBanner: "🔥 과몰입 피버 모드! 3-WAY 레이저 가동!",
         tractorWarning: "⚡ 보스의 집착 트랙터 빔 가동! 4발 사격으로 깨뜨리세요!",
         tractorBroken: "💥 트랙터 빔 파괴! 보스 그로기 상태!",
-        certTitle: "디지털 마음 처방전 & 영점 인증서",
-        certSub: "인지행동 재구성(CBT Reframing) 완료 공인",
-        purifiedTitle: "정화된 인지왜곡 목록",
+        certTitle: "마인드 영점 리셋 & 자각 인증서",
+        certSub: "마음 영점 회복(Zero Point Reset) 공인",
+        purifiedTitle: "정화된 인지왜곡 및 승화 목록",
         brainwaveStatus: "뇌파 동조율: α(알파)파 99.4% 고요 상태 달성",
         copyCert: "📋 인증서 텍스트 복사",
         certCopied: "✅ 클립보드 복사 완료!",
-        nextStage: "다음 멘탈 스테이지 도전 ➔"
+        nextStage: "다음 멘탈 스테이지 도전 ➔",
+        waveBanner: {
+            1: "WAVE 1: 일상 잡념 정찰대",
+            2: "WAVE 2: 불안 & 과잉일반화 편대",
+            3: "WAVE 3: 심층 자책 엘리트 편대",
+            4: "FINAL WAVE: 거대 에고 보스 결전!"
+        }
     },
     en: {
         title: "Zero-Point Galaga: Mind Invaders",
@@ -55,7 +61,7 @@ const GALAGA_I18N = {
         soundPrompt: "🔊 Tap screen to enable authentic 8-Bit retro sounds!",
         bossWarning: "⚠️ WARNING: Giant Ego Boss Approaching! ⚠️",
         gameOver: "GAME OVER (Take a deep breath)",
-        gameClear: "🎉 Victory! All Dark Thoughts Destroyed!",
+        gameClear: "🎉 Victory! All Distorted Thoughts Dissolved!",
         startBtn: "🚀 Launch Fighter!",
         restartBtn: "🔄 Try Again",
         controlsGuide: "PC: Mouse Move / Mobile: Touch Drag or Bottom Buttons",
@@ -66,13 +72,19 @@ const GALAGA_I18N = {
         feverBanner: "🔥 HYPER FOCUS FEVER! 3-WAY Laser Active!",
         tractorWarning: "⚡ Ego Tractor Beam! Hit 4 shots to break it!",
         tractorBroken: "💥 Tractor Beam Broken! Boss Stunned!",
-        certTitle: "Digital Mind Rx & Zero-Point Certificate",
-        certSub: "Cognitive Reframing (CBT) Verified",
-        purifiedTitle: "Purified Distortions Summary",
+        certTitle: "Mind Zero-Point Reset Certificate",
+        certSub: "Zero Point Reset Verified",
+        purifiedTitle: "Purified Cognitive Distortions",
         brainwaveStatus: "Brainwave: 99.4% Alpha State Coherence Achieved",
         copyCert: "📋 Copy Certificate",
         certCopied: "✅ Copied to Clipboard!",
-        nextStage: "Next Mental Stage ➔"
+        nextStage: "Next Mental Stage ➔",
+        waveBanner: {
+            1: "WAVE 1: Routine Thought Scouts",
+            2: "WAVE 2: Anxiety & Generalization Fleet",
+            3: "WAVE 3: Deep Guilt Elite Squadron",
+            4: "FINAL WAVE: Giant Distorted Ego Boss!"
+        }
     },
     jp: {
         title: "明心 ギャラガ: 雑念撃退アーケード",
@@ -95,13 +107,19 @@ const GALAGA_I18N = {
         feverBanner: "🔥 過没入フィーバー！3-WAYレーザー発動！",
         tractorWarning: "⚡ 執着のトラクタービーム！4発撃ち込んで破壊せよ！",
         tractorBroken: "💥 トラクタービーム破壊！ボス気絶！",
-        certTitle: "デジタル処方箋＆ゼロポイント認証書",
-        certSub: "認知再構成 (CBT) 完了公認",
+        certTitle: "マインドゼロポイントリセット認定証",
+        certSub: "ゼロポイントリセット公認",
         purifiedTitle: "浄化された思考の歪み一覧",
         brainwaveStatus: "脳波：α波99.4% 同調状態達成",
-        copyCert: "📋 認証書をコピー",
+        copyCert: "📋 認定証をコピー",
         certCopied: "✅ コピー完了！",
-        nextStage: "次のステージへ挑戦 ➔"
+        nextStage: "次のステージへ挑戦 ➔",
+        waveBanner: {
+            1: "WAVE 1: 日常雑念偵察隊",
+            2: "WAVE 2: 不安と過度な一般化編隊",
+            3: "WAVE 3: 深層自責エリート編隊",
+            4: "FINAL WAVE: 巨大エゴボス決戦！"
+        }
     },
     cn: {
         title: "明心大蜜蜂: 杂念击退街机",
@@ -124,48 +142,103 @@ const GALAGA_I18N = {
         feverBanner: "🔥 超极专注FEVER! 3-WAY 激光全开！",
         tractorWarning: "⚡ 执念牵引光束！命中4次将其瓦解！",
         tractorBroken: "💥 光束破碎！魔王陷入眩晕！",
-        certTitle: "心智数字化处方与零点认证",
-        certSub: "认知重塑 (CBT) 完毕公认",
-        purifiedTitle: "已净化的认知偏差清单",
+        certTitle: "心智零点重塑认证证书",
+        certSub: "心智归零 (Zero Point) 完毕公认",
+        purifiedTitle: "已净化的认知偏差及升华清单",
         brainwaveStatus: "脑波状态：99.4% 阿尔法波共振清明",
         copyCert: "📋 复制认证文本",
         certCopied: "✅ 复制成功！",
-        nextStage: "挑战下一心智关卡 ➔"
+        nextStage: "挑战下一心智关卡 ➔",
+        waveBanner: {
+            1: "WAVE 1: 日常杂念先锋队",
+            2: "WAVE 2: 焦虑与过度概括编队",
+            3: "WAVE 3: 深层自责精锐编队",
+            4: "FINAL WAVE: 巨型执念魔王决战！"
+        }
     }
 };
 
-const THOUGHT_DATA: Record<string, Array<{ text: string; insight: string; color: string; points: number }>> = {
+// 🌟 CBT 16대 인지왜곡 다채로운 데이터베이스 🌟
+interface ThoughtItem {
+    text: string;
+    insight: string;
+    tag: string;
+    color: string;
+    points: number;
+}
+
+const THOUGHT_DATA: Record<string, Array<ThoughtItem>> = {
     kr: [
-        { text: "난 무능해", insight: "✨ 배우는 중이다!", color: "#f87171", points: 10 },
-        { text: "모든 게 망했어", insight: "🌱 새로운 기회다!", color: "#fb923c", points: 15 },
-        { text: "날 비웃을 거야", insight: "💪 내 삶의 주인공은 나!", color: "#facc15", points: 20 },
-        { text: "다 때려치워", insight: "🧘 잠시 숨을 고르자!", color: "#c084fc", points: 25 },
-        { text: "과거의 후회", insight: "🕊️ 지나간 허상일 뿐!", color: "#38bdf8", points: 30 },
-        { text: "모두 내 탓이야", insight: "☀️ 스스로를 안아주자!", color: "#f43f5e", points: 20 }
+        { tag: "흑백논리", text: "완벽하지 않으면 실패야", insight: "✨ 과정 자체가 소중한 성장이다!", color: "#f87171", points: 15 },
+        { tag: "파국화", text: "모든 게 다 끝장났어", insight: "🌱 새로운 시작의 문이 열렸다!", color: "#fb923c", points: 20 },
+        { tag: "독심술", text: "날 무시하고 비웃을 거야", insight: "💪 타인의 시선은 내 본질이 아니다!", color: "#facc15", points: 20 },
+        { tag: "점쟁이오류", text: "앞으로도 영원히 안 풀려", insight: "☀️ 미래는 지금 이 순간 만들어진다!", color: "#38bdf8", points: 25 },
+        { tag: "과잉일반화", text: "난 언제나 늘 실패자였어", insight: "🎯 이번 한 번의 값진 경험일 뿐!", color: "#c084fc", points: 20 },
+        { tag: "정신적여과", text: "칭찬은 가짜고 비난만 진짜", insight: "🌸 내 안의 빛과 장점을 바라보자!", color: "#34d399", points: 20 },
+        { tag: "감정적추론", text: "불안하니까 분명 나쁜 일 생겨", insight: "🕊️ 감정은 구름일 뿐 실체가 아니다!", color: "#fb7185", points: 25 },
+        { tag: "당위적사고", text: "난 무조건 완벽해야만 해", insight: "🌿 있는 그대로의 나로도 충분하다!", color: "#818cf8", points: 25 },
+        { tag: "개인화/자책", text: "전부 나 때문에 이렇게 된 거야", insight: "🤍 자책을 내려놓고 스스로를 안아주자!", color: "#f43f5e", points: 30 },
+        { tag: "명명하기", text: "난 구제불능 게으름뱅이야", insight: "⚡ 지금 잠시 에너지를 충전 중이다!", color: "#e879f9", points: 20 },
+        { tag: "비교함정", text: "남들은 앞서는데 나만 뒤처졌어", insight: "🛤️ 내 인생만의 고유한 속도가 있다!", color: "#2dd4bf", points: 25 },
+        { tag: "후회집착", text: "그때 그 선택만 안 했어도...", insight: "🌅 과거는 흘러갔고 현재가 선물이다!", color: "#60a5fa", points: 30 },
+        { tag: "무력감", text: "아무리 발버둥쳐도 소용없어", insight: "🔥 작은 1보가 거대한 기적을 만든다!", color: "#fbbf24", points: 25 },
+        { tag: "거절공포", text: "거절당하면 내 가치가 없어", insight: "💎 나의 본질적 가치는 불변이다!", color: "#a78bfa", points: 25 },
+        { tag: "피해의식", text: "세상이 나만 억까하고 괴롭혀", insight: "🧘 중심을 잡고 내 영점으로 복귀한다!", color: "#fdba74", points: 25 },
+        { tag: "완벽주의", text: "실수 하나도 용납할 수 없어", insight: "🎨 실수는 최고의 지혜를 주는 스승!", color: "#4ade80", points: 25 }
     ],
     en: [
-        { text: "I'm incompetent", insight: "✨ Still learning!", color: "#f87171", points: 10 },
-        { text: "Everything is ruined", insight: "🌱 A fresh start!", color: "#fb923c", points: 15 },
-        { text: "They will laugh at me", insight: "💪 I own my story!", color: "#facc15", points: 20 },
-        { text: "Just give up", insight: "🧘 Breathe & pause!", color: "#c084fc", points: 25 },
-        { text: "Past regret", insight: "🕊️ Only a passing cloud!", color: "#38bdf8", points: 30 },
-        { text: "It's all my fault", insight: "☀️ Be gentle with myself!", color: "#f43f5e", points: 20 }
+        { tag: "All-or-Nothing", text: "If it's not perfect, it's failure", insight: "✨ Every step is valuable growth!", color: "#f87171", points: 15 },
+        { tag: "Catastrophizing", text: "Everything is ruined forever", insight: "🌱 A new door of opportunity opens!", color: "#fb923c", points: 20 },
+        { tag: "Mind Reading", text: "They will surely judge and mock me", insight: "💪 Other's thoughts do not define me!", color: "#facc15", points: 20 },
+        { tag: "Fortune Telling", text: "Things will never get better", insight: "☀️ The future is created right now!", color: "#38bdf8", points: 25 },
+        { tag: "Overgeneralizing", text: "I am always a complete failure", insight: "🎯 It is just one single experience!", color: "#c084fc", points: 20 },
+        { tag: "Mental Filtering", text: "Only negative things count", insight: "🌸 Witness my inner light and gifts!", color: "#34d399", points: 20 },
+        { tag: "Emotional Reason", text: "I feel anxious so disaster comes", insight: "🕊️ Feelings are passing clouds!", color: "#fb7185", points: 25 },
+        { tag: "Should Statements", text: "I must do everything flawlessly", insight: "🌿 I am worthy as I am!", color: "#818cf8", points: 25 },
+        { tag: "Personalization", text: "Everything bad is solely my fault", insight: "🤍 Release guilt and embrace myself!", color: "#f43f5e", points: 30 },
+        { tag: "Labeling", text: "I am totally hopeless and lazy", insight: "⚡ I am recharging my battery!", color: "#e879f9", points: 20 },
+        { tag: "Comparison Trap", text: "Others advance while I lag behind", insight: "🛤️ I walk my own unique timeline!", color: "#2dd4bf", points: 25 },
+        { tag: "Regret Trap", text: "If only I hadn't made that choice", insight: "🌅 Past has gone; now is the true gift!", color: "#60a5fa", points: 30 },
+        { tag: "Helplessness", text: "No matter what I do, it's useless", insight: "🔥 One tiny step builds a miracle!", color: "#fbbf24", points: 25 },
+        { tag: "Rejection Fear", text: "Rejection means I am worthless", insight: "💎 My intrinsic dignity is untouched!", color: "#a78bfa", points: 25 },
+        { tag: "Victim Mindset", text: "The universe is against me", insight: "🧘 Grounded peace at Zero Point!", color: "#fdba74", points: 25 },
+        { tag: "Perfectionism", text: "I cannot tolerate a single mistake", insight: "🎨 Mistakes are life's greatest teacher!", color: "#4ade80", points: 25 }
     ],
     jp: [
-        { text: "私は無能だ", insight: "✨ 学びの途中だ！", color: "#f87171", points: 10 },
-        { text: "全部おしまいだ", insight: "🌱 新たな好機だ！", color: "#fb923c", points: 15 },
-        { text: "笑われるかも", insight: "💪 私の人生の主役は私！", color: "#facc15", points: 20 },
-        { text: "もう投げ出したい", insight: "🧘 一息ついて整えよう！", color: "#c084fc", points: 25 },
-        { text: "過去の後悔", insight: "🕊️ 過ぎ去った幻影！", color: "#38bdf8", points: 30 },
-        { text: "全部私のせい", insight: "☀️ 自分を許して包もう！", color: "#f43f5e", points: 20 }
+        { tag: "白黒思考", text: "完璧でなければ全て失敗だ", insight: "✨ プロセス自体が尊い成長だ！", color: "#f87171", points: 15 },
+        { tag: "破局的思考", text: "もう全部おしまいだ", insight: "🌱 新たな好機の扉が開いた！", color: "#fb923c", points: 20 },
+        { tag: "読心術", text: "皆私を心の中で見下している", insight: "💪 他人の視線は私の本質ではない！", color: "#facc15", points: 20 },
+        { tag: "占い師の誤謬", text: "今後も永遠に好転しない", insight: "☀️ 未来は今この瞬間に創られる！", color: "#38bdf8", points: 25 },
+        { tag: "過度の一般化", text: "私はいつも失敗者だった", insight: "🎯 今回の一度の尊い経験に過ぎない！", color: "#c084fc", points: 20 },
+        { tag: "心のフィルター", text: "称賛は嘘で批判だけが本物だ", insight: "🌸 自分の中の光と長所を見つめよう！", color: "#34d399", points: 20 },
+        { tag: "感情的推論", text: "不安だから悪いことが起きる", insight: "🕊️ 感情は過ぎ去る雲に過ぎない！", color: "#fb7185", points: 25 },
+        { tag: "べき思考", text: "絶対に完璧でなければならない", insight: "🌿 ありのままの私で十分だ！", color: "#818cf8", points: 25 },
+        { tag: "自己関連づけ", text: "全て私のせいでこうなった", insight: "🤍 自責を手放し、自分を抱きしめよう！", color: "#f43f5e", points: 30 },
+        { tag: "レッテル貼り", text: "私は救いようのない怠け者だ", insight: "⚡ 今はエネルギーを充電中だ！", color: "#e879f9", points: 20 },
+        { tag: "比較の罠", text: "皆先を行くのに私だけ遅れている", insight: "🛤️ 私の人生には固有の速度がある！", color: "#2dd4bf", points: 25 },
+        { tag: "後悔の執着", text: "あの時あの選択さえしなければ…", insight: "🌅 過去は過ぎ去り、今が贈り物だ！", color: "#60a5fa", points: 30 },
+        { tag: "無力感", text: "どんなにもがいても無駄だ", insight: "🔥 小さな一歩が大きな奇跡を生む！", color: "#fbbf24", points: 25 },
+        { tag: "拒絶恐怖", text: "拒絶されたら私には価値がない", insight: "💎 私の本質的価値は不変だ！", color: "#a78bfa", points: 25 },
+        { tag: "被害妄想", text: "世界が私を苦しめている", insight: "🧘 軸を整え、ゼロポイントへ復帰する！", color: "#fdba74", points: 25 },
+        { tag: "完璧主義", text: "ミスは一つも許されない", insight: "🎨 失敗は最大の知恵を授ける師！", color: "#4ade80", points: 25 }
     ],
     cn: [
-        { text: "我很无能", insight: "✨ 正在学习进阶！", color: "#f87171", points: 10 },
-        { text: "全都搞砸了", insight: "🌱 崭新的生机！", color: "#fb923c", points: 15 },
-        { text: "别人会嘲笑我", insight: "💪 我是自己生命的主角！", color: "#facc15", points: 20 },
-        { text: "彻底放弃吧", insight: "🧘 停下来深呼吸！", color: "#c084fc", points: 25 },
-        { text: "过去的懊悔", insight: "🕊️ 只是过眼云烟！", color: "#38bdf8", points: 30 },
-        { text: "都是我的错", insight: "☀️ 温柔拥抱自己！", color: "#f43f5e", points: 20 }
+        { tag: "非黑即白", text: "不完美就是彻底失败", insight: "✨ 过程本身就是宝贵的成长！", color: "#f87171", points: 15 },
+        { tag: "灾难化", text: "一切全都彻底完蛋了", insight: "🌱 崭新机缘之门已经开启！", color: "#fb923c", points: 20 },
+        { tag: "读心术", text: "别人肯定在暗暗嘲笑我", insight: "💪 他人的看法不是我的本质！", color: "#facc15", points: 20 },
+        { tag: "算命师谬误", text: "以后永远都好不起来了", insight: "☀️ 未来正在当下这一刻被创造！", color: "#38bdf8", points: 25 },
+        { tag: "过度概括", text: "我从来都是个失败者", insight: "🎯 这只是单次宝贵的体验！", color: "#c084fc", points: 20 },
+        { tag: "心理过滤", text: "夸赞是假的批评才是真的", insight: "🌸 凝视内在的光芒与天赋！", color: "#34d399", points: 20 },
+        { tag: "情绪化推理", text: "我感到焦虑就一定会出事", insight: "🕊️ 情绪只是过往浮云而非实体！", color: "#fb7185", points: 25 },
+        { tag: "应该句式", text: "我必须无条件做到十全十美", insight: "🌿 此时此刻的我就已足够圆满！", color: "#818cf8", points: 25 },
+        { tag: "自责归因", text: "全都是因为我才变成这样的", insight: "🤍 放下内疚，温柔拥抱自己！", color: "#f43f5e", points: 30 },
+        { tag: "乱贴标签", text: "我是个不可救药的懒骨头", insight: "⚡ 我只是正在静心充电蓄能！", color: "#e879f9", points: 20 },
+        { tag: "攀比陷阱", text: "别人突飞猛进只有我落后", insight: "🛤️ 我拥有专属于自己的人生节奏！", color: "#2dd4bf", points: 25 },
+        { tag: "后悔执念", text: "要是当初没做那个决定该多好…", insight: "🌅 过往已随风逝，当下才是馈赠！", color: "#60a5fa", points: 30 },
+        { tag: "习得无助", text: "再怎么挣扎也毫无意义", insight: "🔥 微小的一步足以缔造伟大奇迹！", color: "#fbbf24", points: 25 },
+        { tag: "惧怕拒绝", text: "一旦被拒绝我就毫无价值", insight: "💎 我的本真价值恒久不变！", color: "#a78bfa", points: 25 },
+        { tag: "受害者心态", text: "整个世界都在故意为难我", insight: "🧘 守定核心，安住于心智零点！", color: "#fdba74", points: 25 },
+        { tag: "完美主义", text: "哪怕一点疏漏也绝不能容忍", insight: "🎨 瑕疵是赋予至高智慧的导师！", color: "#4ade80", points: 25 }
     ]
 };
 
@@ -178,7 +251,7 @@ export default function MyeongsimGalagaGame({
     const thoughts = THOUGHT_DATA[language] || THOUGHT_DATA.kr;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-    // 오디오 컨텍스트
+    // 오디오 컨텍스트 싱글톤
     const audioCtxRef = useRef<AudioContext | null>(null);
     const [soundActive, setSoundActive] = useState<boolean>(false);
 
@@ -194,10 +267,13 @@ export default function MyeongsimGalagaGame({
     const [comboCount, setComboCount] = useState<number>(0);
     const [isFeverMode, setIsFeverMode] = useState<boolean>(false);
     const [tractorNotice, setTractorNotice] = useState<string | null>(null);
+    const [waveBanner, setWaveBanner] = useState<string | null>("WAVE 1: 일상 잡념 정찰대");
     const [copied, setCopied] = useState<boolean>(false);
 
-    // 정화 통계 저장
-    const [purifiedStats, setPurifiedStats] = useState<{ [thoughtText: string]: { count: number; insight: string } }>({});
+    // 정화 통계 저장 (다채로운 인지왜곡별 통계)
+    const [purifiedStats, setPurifiedStats] = useState<{ 
+        [thoughtText: string]: { count: number; insight: string; tag: string } 
+    }>({});
 
     const gameEngineRef = useRef<{
         player: { x: number; y: number; width: number; height: number; speed: number; power: number; shieldTimer: number };
@@ -211,12 +287,14 @@ export default function MyeongsimGalagaGame({
             height: number; 
             text: string; 
             insight: string; 
+            tag: string;
             color: string; 
             points: number; 
             hp: number; 
             maxHp: number; 
             diveTimer: number; 
-            hitFlash: number 
+            hitFlash: number;
+            isElite?: boolean;
         }>;
         enemyBullets: Array<{ x: number; y: number; vx: number; vy: number; radius: number }>;
         particles: Array<{ x: number; y: number; vx: number; vy: number; color: string; life: number; maxLife: number; size: number }>;
@@ -276,7 +354,7 @@ export default function MyeongsimGalagaGame({
         animId: null
     });
 
-    // ── 🔊 Web Audio API 레트로 신디사이저 2.5 ──
+    // ── 🔊 Web Audio API 레트로 사운드 신디사이저 ──
     const getAudioContext = useCallback(() => {
         if (typeof window === 'undefined') return null;
         if (!audioCtxRef.current) {
@@ -304,7 +382,7 @@ export default function MyeongsimGalagaGame({
         }
     }, [getAudioContext]);
 
-    // 1. 🚀 갤러그 레이저 피치 드롭 발사음 (1150Hz -> 160Hz)
+    // 레이저 발사음
     const playLaserSound = useCallback((isFever: boolean = false) => {
         if (isMuted) return;
         const ctx = getAudioContext();
@@ -331,7 +409,7 @@ export default function MyeongsimGalagaGame({
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
-    // 2. 💥 백색 노이즈 아케이드 폭발음
+    // 폭발음 (White noise)
     const playExplosionSound = useCallback(() => {
         if (isMuted) return;
         const ctx = getAudioContext();
@@ -366,7 +444,7 @@ export default function MyeongsimGalagaGame({
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
-    // 3. ✨ 콤보 차임벨 (도-미-솔-도 아르페지오 상승)
+    // 콤보 상승음
     const playComboSound = useCallback((combo: number) => {
         if (isMuted) return;
         const ctx = getAudioContext();
@@ -392,7 +470,7 @@ export default function MyeongsimGalagaGame({
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
-    // 4. 🔥 과몰입 피버 팡파레
+    // 피버 팡파레
     const playFeverSound = useCallback(() => {
         if (isMuted) return;
         const ctx = getAudioContext();
@@ -419,7 +497,7 @@ export default function MyeongsimGalagaGame({
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
-    // 5. 🔔 통찰 승화 크리스탈 차임벨 (880Hz)
+    // 통찰 승화 크리스탈 차임 (880Hz)
     const playInsightSound = useCallback(() => {
         if (isMuted) return;
         const ctx = getAudioContext();
@@ -443,7 +521,7 @@ export default function MyeongsimGalagaGame({
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
-    // 6. ⚡ 보스 트랙터 빔 우우웅 펄스
+    // 트랙터 빔 사운드
     const playTractorSound = useCallback(() => {
         if (isMuted) return;
         const ctx = getAudioContext();
@@ -467,7 +545,7 @@ export default function MyeongsimGalagaGame({
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
-    // 7. ✨ 파워업 획득
+    // 파워업 사운드
     const playPowerupSound = useCallback(() => {
         if (isMuted) return;
         const ctx = getAudioContext();
@@ -491,7 +569,7 @@ export default function MyeongsimGalagaGame({
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
-    // 8. 🚨 보스 경고 사이렌
+    // 보스 경고 사이렌
     const playBossAlertSound = useCallback(() => {
         if (isMuted) return;
         const ctx = getAudioContext();
@@ -534,33 +612,51 @@ export default function MyeongsimGalagaGame({
         return stars;
     };
 
-    // 적 에일리언 스폰
-    const spawnEnemyWave = (canvasWidth: number) => {
+    // ── 단계별 WAVE 스폰 로직 (웨이브 1 ~ 3 및 파이널 보스) ──
+    const spawnEnemyWave = (canvasWidth: number, currentWave: number) => {
         const enemies = [];
-        const rows = 3;
-        const cols = 5;
-        const spacingX = 64;
-        const spacingY = 44;
-        const startX = (canvasWidth - cols * spacingX) / 2 + 32;
+        
+        let rows = 3;
+        let cols = 4; // Wave 1: 12마리
+        let speedMultiplier = 1.0;
+
+        if (currentWave === 2) {
+            rows = 3;
+            cols = 5; // Wave 2: 15마리
+            speedMultiplier = 1.3;
+        } else if (currentWave >= 3) {
+            rows = 4;
+            cols = 5; // Wave 3: 20마리
+            speedMultiplier = 1.6;
+        }
+
+        const spacingX = Math.min(62, Math.floor((canvasWidth - 40) / cols));
+        const spacingY = 40;
+        const startX = (canvasWidth - cols * spacingX) / 2 + spacingX / 2;
 
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-                const thought = thoughts[(r * cols + c) % thoughts.length];
+                const thoughtIndex = (r * cols + c + (currentWave - 1) * 4) % thoughts.length;
+                const thought = thoughts[thoughtIndex];
+                const isElite = (currentWave >= 3 && r === 0); // Wave 3 상단열은 엘리트 잡념 (HP 2)
+
                 enemies.push({
                     x: startX + c * spacingX,
-                    y: 40 + r * spacingY,
-                    vx: (Math.random() > 0.5 ? 1 : -1) * (0.8 + Math.random() * 0.5),
+                    y: 36 + r * spacingY,
+                    vx: (Math.random() > 0.5 ? 1 : -1) * (0.8 + Math.random() * 0.5) * speedMultiplier,
                     vy: 0,
-                    width: 48,
-                    height: 30,
+                    width: 46,
+                    height: 28,
                     text: thought.text,
                     insight: thought.insight,
-                    color: thought.color,
-                    points: thought.points,
-                    hp: 1,
-                    maxHp: 1,
-                    diveTimer: 180 + Math.floor(Math.random() * 280),
-                    hitFlash: 0
+                    tag: thought.tag,
+                    color: isElite ? '#e11d48' : thought.color,
+                    points: thought.points * (isElite ? 2 : 1),
+                    hp: isElite ? 2 : 1,
+                    maxHp: isElite ? 2 : 1,
+                    diveTimer: 140 + Math.floor(Math.random() * 260) / speedMultiplier,
+                    hitFlash: 0,
+                    isElite
                 });
             }
         }
@@ -578,14 +674,14 @@ export default function MyeongsimGalagaGame({
             y: 50,
             width: 120,
             height: 60,
-            hp: 35,
-            maxHp: 35,
-            vx: 2,
+            hp: 65, // 플레이 타임과 스릴을 위한 65 HP
+            maxHp: 65,
+            vx: 2.2,
             active: true,
-            shootTimer: 55,
+            shootTimer: 45,
             hitFlash: 0,
             tractorState: 'idle' as const,
-            tractorTimer: 180,
+            tractorTimer: 150,
             tractorHits: 0
         };
     };
@@ -599,7 +695,7 @@ export default function MyeongsimGalagaGame({
         gameEngineRef.current = {
             player: { x: w / 2, y: h - 55, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120 },
             bullets: [],
-            enemies: spawnEnemyWave(w),
+            enemies: spawnEnemyWave(w, 1),
             enemyBullets: [],
             particles: [],
             floatingTexts: [],
@@ -628,10 +724,12 @@ export default function MyeongsimGalagaGame({
         setComboCount(0);
         setIsFeverMode(false);
         setTractorNotice(null);
+        setWaveBanner(t.waveBanner[1]);
+        setTimeout(() => setWaveBanner(null), 2500);
         setPurifiedStats({});
         setGameState('playing');
         unlockAudio();
-    }, [unlockAudio, thoughts]);
+    }, [unlockAudio, thoughts, t.waveBanner]);
 
     useEffect(() => {
         resetAndStartGame();
@@ -685,7 +783,7 @@ export default function MyeongsimGalagaGame({
             ctx.fillStyle = '#060814';
             ctx.fillRect(0, 0, w, h);
 
-            // 피버 모드 시 외곽 오라 연출
+            // 피버 모드 외곽 오라
             if (ge.feverTimer > 0) {
                 ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
                 ctx.lineWidth = 6;
@@ -729,7 +827,6 @@ export default function MyeongsimGalagaGame({
             if (ge.keys['ArrowRight'] || ge.keys['d'] || ge.keys['D']) {
                 p.x += p.speed;
             }
-            // 부드러운 마우스/터치 트래킹
             if (ge.mousePos.x !== p.x) {
                 p.x += (ge.mousePos.x - p.x) * 0.28;
             }
@@ -737,15 +834,14 @@ export default function MyeongsimGalagaGame({
 
             if (p.shieldTimer > 0) p.shieldTimer--;
 
-            // 5. 무기 자동 연사 (피버 모드 시 3-WAY 트윈 플라즈마)
+            // 5. 무기 자동 연사
             const now = performance.now();
-            const currentFireInterval = ge.feverTimer > 0 ? 110 : ge.fireInterval;
+            const currentFireInterval = ge.feverTimer > 0 ? 105 : ge.fireInterval;
             if (now - ge.lastFireTime >= currentFireInterval) {
                 ge.lastFireTime = now;
                 const isFever = ge.feverTimer > 0;
 
                 if (isFever) {
-                    // 3-WAY 레이저
                     ge.bullets.push({ x: p.x, y: p.y - 18, vx: 0, vy: -10, radius: 4, color: '#fbbf24', isFever: true });
                     ge.bullets.push({ x: p.x - 12, y: p.y - 14, vx: -2.2, vy: -9.5, radius: 3.5, color: '#34d399', isFever: true });
                     ge.bullets.push({ x: p.x + 12, y: p.y - 14, vx: 2.2, vy: -9.5, radius: 3.5, color: '#34d399', isFever: true });
@@ -790,15 +886,15 @@ export default function MyeongsimGalagaGame({
 
                 e.diveTimer--;
                 if (e.diveTimer <= 0) {
-                    e.y += 2.2;
-                    e.x += Math.sin(e.y * 0.05) * 2;
+                    e.y += 2.4;
+                    e.x += Math.sin(e.y * 0.05) * 2.2;
 
                     if (e.y > h + 20) {
                         e.y = 35;
-                        e.diveTimer = 180 + Math.floor(Math.random() * 200);
+                        e.diveTimer = 160 + Math.floor(Math.random() * 220);
                     }
 
-                    if (Math.random() < 0.02) {
+                    if (Math.random() < 0.022) {
                         ge.enemyBullets.push({ x: e.x, y: e.y + 12, vx: 0, vy: 4.2, radius: 3 });
                     }
                 }
@@ -816,11 +912,13 @@ export default function MyeongsimGalagaGame({
                 ctx.closePath();
                 ctx.fill();
 
+                // 콕핏 눈
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(e.x - 8, e.y - 2, 4, 4);
                 ctx.fillRect(e.x + 4, e.y - 2, 4, 4);
                 ctx.shadowBlur = 0;
 
+                // 잡념 텍스트 (위쪽에 렌더링)
                 ctx.font = 'bold 10px sans-serif';
                 ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
@@ -836,7 +934,6 @@ export default function MyeongsimGalagaGame({
                         e.hitFlash = 5;
 
                         if (e.hp <= 0) {
-                            // 폭발 파티클
                             for (let pIdx = 0; pIdx < 16; pIdx++) {
                                 ge.particles.push({
                                     x: e.x,
@@ -850,7 +947,7 @@ export default function MyeongsimGalagaGame({
                                 });
                             }
 
-                            // 💡 인지 재구성: 초록빛 긍정 승화 플로팅 텍스트 팝업!
+                            // 💡 인지 재구성 승화 플로팅 텍스트
                             ge.floatingTexts.push({
                                 x: e.x,
                                 y: e.y - 8,
@@ -862,7 +959,7 @@ export default function MyeongsimGalagaGame({
                             });
                             playInsightSound();
 
-                            // 콤보 증가 및 피버 체크
+                            // 콤보 및 피버
                             ge.combo++;
                             ge.comboTimer = 160;
                             if (ge.combo > ge.maxCombo) ge.maxCombo = ge.combo;
@@ -870,22 +967,22 @@ export default function MyeongsimGalagaGame({
                             playComboSound(ge.combo);
 
                             if (ge.combo >= 8 && ge.feverTimer <= 0) {
-                                ge.feverTimer = 340; // 약 5.6초간 피버
+                                ge.feverTimer = 340;
                                 setIsFeverMode(true);
                                 playFeverSound();
                             }
 
                             // 정화 통계 누적
                             setPurifiedStats(prev => {
-                                const current = prev[e.text] || { count: 0, insight: e.insight };
+                                const current = prev[e.text] || { count: 0, insight: e.insight, tag: e.tag };
                                 return {
                                     ...prev,
-                                    [e.text]: { count: current.count + 1, insight: e.insight }
+                                    [e.text]: { count: current.count + 1, insight: e.insight, tag: e.tag }
                                 };
                             });
 
                             // 아이템 드롭
-                            if (Math.random() < 0.24) {
+                            if (Math.random() < 0.22) {
                                 const types: Array<'power' | 'shield' | 'life'> = ['power', 'shield', 'life'];
                                 const itemType = types[Math.floor(Math.random() * types.length)];
                                 ge.items.push({
@@ -901,7 +998,7 @@ export default function MyeongsimGalagaGame({
                             const earnedPoints = ge.feverTimer > 0 ? e.points * 2 : e.points;
                             ge.score += earnedPoints;
                             setScore(ge.score);
-                            setStressPct(prev => Math.max(0, prev - 6));
+                            setStressPct(prev => Math.max(0, prev - (ge.wave >= 3 ? 3 : 5)));
                             if (onExpEarned) onExpEarned(10);
                             ge.enemies.splice(i, 1);
                             break;
@@ -931,7 +1028,7 @@ export default function MyeongsimGalagaGame({
                 }
             }
 
-            // 8. 거대 에고 보스 & 트랙터 빔 메커니즘
+            // 8. 거대 에고 보스
             if (ge.boss && ge.boss.active) {
                 const b = ge.boss;
 
@@ -948,11 +1045,11 @@ export default function MyeongsimGalagaGame({
 
                 if (b.hitFlash > 0) b.hitFlash--;
 
-                // 보스 일반 총알 발사
+                // 보스 일반 총알
                 if (b.tractorState !== 'stunned') {
                     b.shootTimer--;
                     if (b.shootTimer <= 0) {
-                        b.shootTimer = 50;
+                        b.shootTimer = 48;
                         ge.enemyBullets.push({ x: b.x - 30, y: b.y + 30, vx: -1.2, vy: 3.8, radius: 4 });
                         ge.enemyBullets.push({ x: b.x, y: b.y + 35, vx: 0, vy: 4.5, radius: 5 });
                         ge.enemyBullets.push({ x: b.x + 30, y: b.y + 30, vx: 1.2, vy: 3.8, radius: 4 });
@@ -979,7 +1076,7 @@ export default function MyeongsimGalagaGame({
                     b.tractorTimer--;
                     if (Math.random() < 0.1) playTractorSound();
 
-                    // 트랙터 빔 홀로그램 부채꼴 렌더링
+                    // 트랙터 빔 홀로그램 부채꼴
                     const beamGrad = ctx.createLinearGradient(b.x, b.y + 25, b.x, h);
                     beamGrad.addColorStop(0, 'rgba(6, 182, 212, 0.6)');
                     beamGrad.addColorStop(1, 'rgba(192, 132, 252, 0.15)');
@@ -993,12 +1090,12 @@ export default function MyeongsimGalagaGame({
                     ctx.closePath();
                     ctx.fill();
 
-                    // 트랙터 빔 영역 내부 흡인 로직
+                    // 흡인 로직
                     const beamLeft = b.x - 65;
                     const beamRight = b.x + 65;
                     if (p.x >= beamLeft && p.x <= beamRight && p.y > b.y + 40) {
-                        p.y -= 1.8; // 위로 끌려감!
-                        p.x += (b.x - p.x) * 0.05; // 중심부로 유도
+                        p.y -= 1.8;
+                        p.x += (b.x - p.x) * 0.05;
                     }
 
                     if (b.tractorTimer <= 0) {
@@ -1008,7 +1105,7 @@ export default function MyeongsimGalagaGame({
                     }
                 }
 
-                // 보스 외형 렌더링
+                // 보스 외형
                 ctx.save();
                 ctx.translate(b.x, b.y);
                 
@@ -1035,7 +1132,7 @@ export default function MyeongsimGalagaGame({
                 ctx.fill();
                 ctx.restore();
 
-                // 보스 HP 게이지
+                // 보스 HP 바
                 const hpPct = b.hp / b.maxHp;
                 ctx.fillStyle = 'rgba(0,0,0,0.6)';
                 ctx.fillRect(w / 2 - 80, 16, 160, 8);
@@ -1049,7 +1146,7 @@ export default function MyeongsimGalagaGame({
                 ctx.textAlign = 'center';
                 ctx.fillText(b.tractorState === 'stunned' ? '⚡ STUNNED (그로기)' : t.bossName, w / 2, 12);
 
-                // 총알과 보스 충돌 판정
+                // 총알과 보스 충돌
                 for (let bi = ge.bullets.length - 1; bi >= 0; bi--) {
                     const blt = ge.bullets[bi];
                     if (blt.x > b.x - 60 && blt.x < b.x + 60 && blt.y > b.y - 28 && blt.y < b.y + 28) {
@@ -1057,12 +1154,11 @@ export default function MyeongsimGalagaGame({
                         b.hp -= (ge.feverTimer > 0 ? 2 : 1);
                         b.hitFlash = 5;
 
-                        // 트랙터 빔 가동 중일 때 맞추면 카운터 브레이크!
                         if (b.tractorState === 'firing') {
                             b.tractorHits++;
                             if (b.tractorHits >= 4) {
                                 b.tractorState = 'stunned';
-                                b.tractorTimer = 160; // 약 2.6초간 그로기
+                                b.tractorTimer = 160;
                                 setTractorNotice(t.tractorBroken);
                                 setTimeout(() => setTractorNotice(null), 2500);
                                 playExplosionSound();
@@ -1070,7 +1166,6 @@ export default function MyeongsimGalagaGame({
                             }
                         }
 
-                        // 보스 피격 파티클
                         for (let pIdx = 0; pIdx < 8; pIdx++) {
                             ge.particles.push({
                                 x: blt.x,
@@ -1099,10 +1194,10 @@ export default function MyeongsimGalagaGame({
                             }
                             playExplosionSound();
                             ge.boss = null;
-                            ge.score += 600;
+                            ge.score += 800;
                             setScore(ge.score);
                             setStressPct(0);
-                            if (onExpEarned) onExpEarned(60);
+                            if (onExpEarned) onExpEarned(70);
                             
                             const examResult = passAcademyExam('quiz_galaga_boss', 2);
                             if (onExamClear) onExamClear(examResult.newLevel);
@@ -1116,19 +1211,25 @@ export default function MyeongsimGalagaGame({
                 }
             }
 
-            // 적 전멸 시 웨이브 진행 또는 보스 소환
+            // ── 9. 웨이브 진행 로직 (WAVE 1 ➔ 2 ➔ 3 ➔ FINAL BOSS) ──
             if (ge.enemies.length === 0 && (!ge.boss || !ge.boss.active)) {
-                if (ge.wave === 1) {
-                    ge.boss = spawnBoss(w);
-                } else {
+                if (ge.wave < 3) {
                     ge.wave++;
                     setWave(ge.wave);
-                    ge.enemies = spawnEnemyWave(w);
+                    ge.enemies = spawnEnemyWave(w, ge.wave);
+                    setWaveBanner(t.waveBanner[ge.wave as 2 | 3]);
+                    setTimeout(() => setWaveBanner(null), 2500);
                     playPowerupSound();
+                } else if (ge.wave === 3) {
+                    ge.wave = 4;
+                    setWave(4);
+                    setWaveBanner(t.waveBanner[4]);
+                    setTimeout(() => setWaveBanner(null), 2500);
+                    ge.boss = spawnBoss(w);
                 }
             }
 
-            // 9. 적 총알
+            // 10. 적 총알
             for (let i = ge.enemyBullets.length - 1; i >= 0; i--) {
                 const eb = ge.enemyBullets[i];
                 eb.x += eb.vx;
@@ -1167,7 +1268,7 @@ export default function MyeongsimGalagaGame({
                 if (eb.y > h + 10) ge.enemyBullets.splice(i, 1);
             }
 
-            // 10. 파워업 아이템
+            // 11. 파워업 아이템
             for (let i = ge.items.length - 1; i >= 0; i--) {
                 const it = ge.items[i];
                 it.y += it.vy;
@@ -1201,7 +1302,7 @@ export default function MyeongsimGalagaGame({
                 if (it.y > h + 20) ge.items.splice(i, 1);
             }
 
-            // 11. 💡 초록빛 긍정 승화 플로팅 텍스트 렌더링
+            // 12. 💡 초록빛 긍정 승화 플로팅 텍스트
             for (let i = ge.floatingTexts.length - 1; i >= 0; i--) {
                 const ft = ge.floatingTexts[i];
                 ft.y += ft.vy;
@@ -1221,7 +1322,7 @@ export default function MyeongsimGalagaGame({
                 if (ft.life <= 0) ge.floatingTexts.splice(i, 1);
             }
 
-            // 12. 파티클
+            // 13. 파티클
             for (let i = ge.particles.length - 1; i >= 0; i--) {
                 const pt = ge.particles[i];
                 pt.x += pt.vx;
@@ -1239,7 +1340,7 @@ export default function MyeongsimGalagaGame({
                 if (pt.life <= 0) ge.particles.splice(i, 1);
             }
 
-            // 13. 🚀 갤러그 스타일 원작 화이트/레드 플레이어 비행기
+            // 14. 🚀 갤러그 스타일 원작 화이트/레드 플레이어 비행기
             ctx.save();
             ctx.translate(ge.player.x, ge.player.y);
 
@@ -1254,7 +1355,6 @@ export default function MyeongsimGalagaGame({
                 ctx.shadowBlur = 0;
             }
 
-            // 비행기 동체 (화이트)
             ctx.fillStyle = '#ffffff';
             ctx.shadowColor = ge.feverTimer > 0 ? '#fbbf24' : '#38bdf8';
             ctx.shadowBlur = ge.feverTimer > 0 ? 18 : 12;
@@ -1268,7 +1368,7 @@ export default function MyeongsimGalagaGame({
             ctx.closePath();
             ctx.fill();
 
-            // 레드 날개 팁
+            // 레드 날개
             ctx.fillStyle = '#ef4444';
             ctx.beginPath();
             ctx.moveTo(22, 16);
@@ -1284,7 +1384,7 @@ export default function MyeongsimGalagaGame({
             ctx.closePath();
             ctx.fill();
 
-            // 콕핏 (시안 / 골드)
+            // 콕핏
             ctx.fillStyle = ge.feverTimer > 0 ? '#f59e0b' : '#06b6d4';
             ctx.beginPath();
             ctx.arc(0, -4, 6, 0, Math.PI * 2);
@@ -1295,7 +1395,7 @@ export default function MyeongsimGalagaGame({
             ctx.arc(-2, -6, 2, 0, Math.PI * 2);
             ctx.fill();
 
-            // 트윈 부스터 화염
+            // 화염
             const flameLen = 14 + Math.random() * (ge.feverTimer > 0 ? 14 : 8);
             ctx.fillStyle = ge.feverTimer > 0 ? '#38bdf8' : '#f59e0b';
             ctx.beginPath();
@@ -1329,7 +1429,7 @@ export default function MyeongsimGalagaGame({
     }, [
         gameState, playLaserSound, playExplosionSound, playComboSound, playFeverSound, 
         playInsightSound, playTractorSound, playPowerupSound, onExpEarned, onExamClear, 
-        t.bossName, t.tractorWarning, t.tractorBroken
+        t.bossName, t.tractorWarning, t.tractorBroken, t.waveBanner
     ]);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -1366,13 +1466,13 @@ export default function MyeongsimGalagaGame({
         if (score > highScore) setHighScore(score);
     }, [score, highScore]);
 
-    // 처방전 텍스트 클립보드 복사
+    // 인증서 텍스트 클립보드 복사 (의료법 오인 용어 배제)
     const handleCopyCertificate = () => {
         const statsSummary = Object.entries(purifiedStats)
-            .map(([thought, data]) => `- ${thought} (${data.count}회 격퇴) ➔ "${data.insight}" 승화`)
+            .map(([thought, data]) => `- [#${data.tag}] ${thought} (${data.count}회 격퇴) ➔ "${data.insight}" 승화`)
             .join('\n');
 
-        const certText = `[명심 인지치유 연구소 공인 마음 처방전]
+        const certText = `[명심 마음자각 연구소 공인 마인드 리셋 인증서]
 ------------------------------------
 🎯 격추 점수: ${score} PTS
 🔥 최대 연속 콤보: ${gameEngineRef.current.maxCombo} 연타
@@ -1380,10 +1480,10 @@ export default function MyeongsimGalagaGame({
 🌿 잔여 스트레스: 0% 완벽 영점(Zero-Point) 복귀
 
 [정화된 인지왜곡 및 승화 목록]
-${statsSummary || '- 모든 잡념 즉각 정화 완료'}
+${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
 
-✨ "잡념은 내가 아닙니다. 바라보고 자각하는 순간 빛으로 흩어집니다."
-검증: myeongsimcoaching.com`;
+✨ "잡념은 내가 아닙니다. 바라보고 자각하는 순간 순수한 빛으로 흩어집니다."
+공식 인증: myeongsimcoaching.com`;
 
         navigator.clipboard.writeText(certText).then(() => {
             setCopied(true);
@@ -1396,32 +1496,31 @@ ${statsSummary || '- 모든 잡념 즉각 정화 완료'}
             onClick={unlockAudio}
             className="flex flex-col items-center justify-center w-full max-w-lg mx-auto select-none"
         >
-            {/* 상단 HUD 바 */}
-            <div className="w-full px-3 py-2 bg-[#0c1022] rounded-2xl border border-white/10 flex items-center justify-between text-xs mb-2 shadow-md">
-                <div className="flex items-center gap-2.5">
-                    <div className="flex items-center gap-1 font-mono font-bold text-cyan-300">
-                        <Trophy size={14} className="text-amber-400" />
+            {/* 상단 HUD 바 (모바일 반응형 최적화) */}
+            <div className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#0c1022] rounded-2xl border border-white/10 flex items-center justify-between text-xs mb-2 shadow-md">
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 font-mono font-bold text-cyan-300 text-[11px] sm:text-xs">
+                        <Trophy size={13} className="text-amber-400" />
                         <span>{score} PTS</span>
                     </div>
 
+                    <div className="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 font-mono text-[10px] text-purple-300 font-bold">
+                        WAVE {wave}/4
+                    </div>
+
                     {comboCount > 1 && (
-                        <div className="flex items-center gap-1 font-mono font-extrabold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/40 animate-pulse">
-                            <Flame size={12} />
-                            <span>{comboCount} {t.comboLabel}</span>
+                        <div className="flex items-center gap-0.5 font-mono font-extrabold text-amber-400 bg-amber-500/20 px-1.5 py-0.5 rounded-full border border-amber-400/40 animate-pulse text-[10px]">
+                            <Flame size={11} />
+                            <span>{comboCount}</span>
                         </div>
                     )}
-
-                    <div className="hidden sm:flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded-lg border border-white/5">
-                        <span className="text-[10px] text-gray-400 font-mono">{t.stressLevel}:</span>
-                        <span className="text-[10px] font-mono font-bold text-rose-400">{stressPct}%</span>
-                    </div>
                 </div>
 
                 <div className="flex items-center gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
                         <Heart
                             key={i}
-                            size={14}
+                            size={13}
                             className={i < lives ? 'text-rose-500 fill-rose-500' : 'text-white/10'}
                         />
                     ))}
@@ -1433,17 +1532,17 @@ ${statsSummary || '- 모든 잡념 즉각 정화 완료'}
                         unlockAudio();
                         setIsMuted(!isMuted);
                     }}
-                    className="p-1.5 rounded-xl border flex items-center gap-1 cursor-pointer transition-all bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-sm"
+                    className="p-1 sm:p-1.5 rounded-xl border flex items-center gap-1 cursor-pointer transition-all bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-sm"
                 >
-                    {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} className="animate-pulse" />}
-                    <span className="text-[10px] font-mono font-bold">{isMuted ? 'MUTE' : '8-BIT ON'}</span>
+                    {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} className="animate-pulse" />}
+                    <span className="text-[9px] sm:text-[10px] font-mono font-bold">{isMuted ? 'MUTE' : '8-BIT'}</span>
                 </button>
             </div>
 
-            {/* 캔버스 게임 화면 프레임 */}
+            {/* 캔버스 게임 화면 프레임 (모바일 높이 짤림 방지: h-[360px] sm:h-[460px]) */}
             <div 
                 onClick={unlockAudio}
-                className="relative w-full aspect-[4/5] max-h-[460px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]"
+                className="relative w-full h-[370px] sm:h-[450px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]"
             >
                 <canvas
                     ref={canvasRef}
@@ -1454,27 +1553,42 @@ ${statsSummary || '- 모든 잡념 즉각 정화 완료'}
                     className="w-full h-full cursor-crosshair touch-none"
                 />
 
-                {/* 사운드 활성화 안내 오버레이 */}
+                {/* 사운드 활성화 안내 */}
                 {!soundActive && (
                     <div 
                         onClick={unlockAudio}
-                        className="absolute top-3 inset-x-4 mx-auto py-1.5 px-3 rounded-xl bg-cyan-950/90 border border-cyan-400/60 text-cyan-200 text-xs font-bold text-center cursor-pointer shadow-lg animate-bounce flex items-center justify-center gap-1.5 z-20"
+                        className="absolute top-2 inset-x-4 mx-auto py-1 px-2.5 rounded-xl bg-cyan-950/90 border border-cyan-400/60 text-cyan-200 text-[11px] font-bold text-center cursor-pointer shadow-lg animate-bounce flex items-center justify-center gap-1.5 z-20"
                     >
-                        <Volume1 size={14} />
+                        <Volume1 size={13} />
                         <span>{t.soundPrompt}</span>
                     </div>
                 )}
 
-                {/* 과몰입 피버 모드 배너 */}
+                {/* 웨이브 알림 배너 */}
+                <AnimatePresence>
+                    {waveBanner && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            className="absolute top-1/3 inset-x-6 mx-auto py-2 px-4 rounded-2xl bg-indigo-950/90 border-2 border-cyan-400 text-cyan-200 text-xs sm:text-sm font-black text-center shadow-[0_0_30px_rgba(6,182,212,0.7)] z-20 flex items-center justify-center gap-1.5"
+                        >
+                            <Sparkles size={16} className="text-yellow-400 animate-spin" />
+                            <span>{waveBanner}</span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* 과몰입 피버 배너 */}
                 <AnimatePresence>
                     {isFeverMode && (
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
-                            className="absolute top-3 inset-x-6 mx-auto py-1.5 px-3 rounded-xl bg-gradient-to-r from-amber-500/90 via-rose-500/90 to-amber-500/90 border border-amber-300 text-slate-950 text-xs font-black text-center shadow-[0_0_25px_rgba(245,158,11,0.8)] flex items-center justify-center gap-1.5 z-20"
+                            className="absolute top-2 inset-x-6 mx-auto py-1 px-3 rounded-xl bg-gradient-to-r from-amber-500/90 via-rose-500/90 to-amber-500/90 border border-amber-300 text-slate-950 text-[11px] font-black text-center shadow-lg flex items-center justify-center gap-1 z-20"
                         >
-                            <Flame size={14} className="text-white fill-white animate-bounce" />
+                            <Flame size={13} className="text-white fill-white animate-bounce" />
                             <span>{t.feverBanner}</span>
                         </motion.div>
                     )}
@@ -1499,9 +1613,9 @@ ${statsSummary || '- 모든 잡념 즉각 정화 완료'}
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0 }}
-                            className="absolute top-16 inset-x-4 mx-auto py-2 px-3 bg-cyan-950/90 border border-cyan-400 text-cyan-200 text-xs font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 z-20"
+                            className="absolute top-12 inset-x-4 mx-auto py-1.5 px-3 bg-cyan-950/90 border border-cyan-400 text-cyan-200 text-[11px] font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 z-20"
                         >
-                            <Zap size={14} className="text-yellow-400" />
+                            <Zap size={13} className="text-yellow-400" />
                             <span>{tractorNotice}</span>
                         </motion.div>
                     )}
@@ -1510,28 +1624,28 @@ ${statsSummary || '- 모든 잡념 즉각 정화 완료'}
                 {/* 게임 오버 모달 */}
                 {gameState === 'gameover' && (
                     <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-4 z-30"
+                        className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center space-y-3 z-30"
                     >
-                        <div className="size-14 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
-                            <Skull size={32} />
+                        <div className="size-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
+                            <Skull size={28} />
                         </div>
-                        <div className="space-y-1">
-                            <h3 className="text-base sm:text-lg font-black text-white">
+                        <div className="space-y-0.5">
+                            <h3 className="text-sm sm:text-base font-black text-white">
                                 {t.gameOver}
                             </h3>
-                            <p className="text-xs text-gray-400">
-                                괜찮습니다! 잡념은 그저 지나가는 구름일 뿐입니다.
+                            <p className="text-[11px] text-gray-400">
+                                잡념은 지나가는 구름일 뿐입니다. 다시 호흡을 가다듬어보세요.
                             </p>
                         </div>
 
-                        <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-xs font-mono space-y-1 w-52">
-                            <div className="flex justify-between text-gray-300">
+                        <div className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-xs font-mono space-y-1 w-48">
+                            <div className="flex justify-between text-gray-300 text-[11px]">
                                 <span>최종 점수</span>
                                 <span className="font-bold text-cyan-300">{score} PTS</span>
                             </div>
-                            <div className="flex justify-between text-gray-300">
+                            <div className="flex justify-between text-gray-300 text-[11px]">
                                 <span>최대 콤보</span>
                                 <span className="font-bold text-amber-400">{gameEngineRef.current.maxCombo} 연타</span>
                             </div>
@@ -1539,89 +1653,96 @@ ${statsSummary || '- 모든 잡념 즉각 정화 완료'}
 
                         <button
                             onClick={resetAndStartGame}
-                            className="py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-amber-500/30 cursor-pointer active:scale-95 transition-all"
+                            className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/30 cursor-pointer active:scale-95 transition-all"
                         >
-                            <RotateCcw size={16} />
+                            <RotateCcw size={14} />
                             <span>{t.restartBtn}</span>
                         </button>
                     </motion.div>
                 )}
 
-                {/* 🎉 게임 클리어: 디지털 마음 처방전 & 영점 인증 카드 모달 */}
+                {/* 🎉 게임 클리어: 마인드 영점 리셋 & 자각 인증 카드 모달 (모바일 짤림 완벽 방지 레이아웃) */}
                 {gameState === 'clear' && (
                     <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-6 text-center space-y-3 z-30 overflow-y-auto"
+                        className="absolute inset-0 bg-black/92 backdrop-blur-md flex flex-col justify-between p-3 sm:p-4 text-center z-30 overflow-y-auto"
                     >
-                        <div className="size-14 rounded-3xl bg-gradient-to-tr from-cyan-400 to-emerald-400 flex items-center justify-center text-slate-950 shadow-2xl shadow-cyan-500/40 animate-pulse">
-                            <Brain size={30} />
-                        </div>
-
-                        <div className="space-y-1">
-                            <span className="text-[10px] font-mono tracking-widest text-cyan-400 uppercase">
-                                {t.certSub}
-                            </span>
-                            <h3 className="text-base sm:text-lg font-black text-white">
+                        {/* 상단 뱃지 & 타이틀 */}
+                        <div className="space-y-1 pt-1 shrink-0">
+                            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-[9px] font-mono text-cyan-300">
+                                <Sparkles size={11} className="text-cyan-300" />
+                                <span>{t.certSub}</span>
+                            </div>
+                            <h3 className="text-sm sm:text-base font-black text-white">
                                 {t.certTitle}
                             </h3>
-                            <p className="text-[11px] text-cyan-200/90 leading-tight max-w-xs">
+                            <p className="text-[10px] text-cyan-200/80 leading-tight">
                                 {t.pureFactMsg}
                             </p>
                         </div>
 
-                        {/* 처방전 카드 본문 */}
-                        <div className="w-full max-w-xs p-3 bg-cyan-950/60 rounded-2xl border border-cyan-400/40 text-xs font-mono space-y-2 text-left">
-                            <div className="flex justify-between items-center pb-1.5 border-b border-white/10 text-gray-300">
-                                <span>격추 점수 / 콤보</span>
+                        {/* 본문 통계 및 정화된 왜곡 상세 목록 (스크롤 가능) */}
+                        <div className="w-full my-1.5 p-2.5 bg-cyan-950/60 rounded-2xl border border-cyan-400/40 text-left text-xs font-mono space-y-1.5">
+                            <div className="flex justify-between items-center pb-1 border-b border-white/10 text-gray-300 text-[11px]">
+                                <span>점수 / 콤보</span>
                                 <span className="font-bold text-cyan-300">{score} PTS ({gameEngineRef.current.maxCombo} COMBO)</span>
                             </div>
 
-                            <div className="text-[11px] text-emerald-300 flex items-center gap-1">
-                                <Activity size={12} />
+                            <div className="text-[10px] text-emerald-300 flex items-center gap-1">
+                                <Activity size={11} />
                                 <span>{t.brainwaveStatus}</span>
                             </div>
 
-                            {/* 정화된 잡념 목록 */}
-                            <div className="space-y-1 pt-1">
-                                <span className="text-[10px] text-gray-400 font-bold block">
-                                    {t.purifiedTitle}:
-                                </span>
-                                <div className="max-h-20 overflow-y-auto space-y-1 pr-1">
+                            {/* 🌟 상세 인지왜곡 정화 목록 🌟 */}
+                            <div className="space-y-1">
+                                <div className="flex justify-between items-center text-[10px] text-gray-400 font-bold">
+                                    <span>{t.purifiedTitle}:</span>
+                                    <span className="text-cyan-400">총 {Object.values(purifiedStats).reduce((acc, cur) => acc + cur.count, 0)}개 정화</span>
+                                </div>
+                                <div className="max-h-24 sm:max-h-32 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
                                     {Object.entries(purifiedStats).length > 0 ? (
                                         Object.entries(purifiedStats).map(([thought, data], idx) => (
-                                            <div key={idx} className="flex justify-between text-[10px] bg-black/40 px-2 py-0.5 rounded border border-white/5">
-                                                <span className="text-rose-300 line-through truncate max-w-[100px]">{thought} ({data.count})</span>
-                                                <span className="text-emerald-300 font-bold truncate max-w-[140px]">➔ {data.insight}</span>
+                                            <div key={idx} className="p-1.5 bg-black/40 rounded-lg border border-white/5 text-[10px] space-y-0.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-amber-400 font-bold text-[9px] bg-amber-400/10 px-1 py-0.2 rounded border border-amber-400/20">
+                                                        #{data.tag}
+                                                    </span>
+                                                    <span className="text-gray-400 text-[9px]">{data.count}회 격퇴</span>
+                                                </div>
+                                                <div className="flex items-center justify-between gap-1">
+                                                    <span className="text-rose-300 line-through truncate max-w-[110px]">{thought}</span>
+                                                    <span className="text-emerald-300 font-bold truncate max-w-[160px]">➔ {data.insight}</span>
+                                                </div>
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="text-[10px] text-gray-400">모든 잡념 즉각 완전 정화 완료!</div>
+                                        <div className="text-[10px] text-gray-400">모든 잡념 완전 정화 완료!</div>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="flex justify-between text-amber-300 font-bold pt-1 border-t border-white/10 text-[11px]">
+                            <div className="flex justify-between text-amber-300 font-bold pt-1 border-t border-white/10 text-[10px]">
                                 <span>자각 EXP 보너스</span>
-                                <span>+60 EXP (자격 승급)</span>
+                                <span>+70 EXP (자격 승급)</span>
                             </div>
                         </div>
 
-                        {/* 버튼 그룹 */}
-                        <div className="flex flex-col gap-2 w-full max-w-xs">
+                        {/* 하단 버튼 그룹 (모바일에서 짤리지 않는 가로 flex) */}
+                        <div className="flex items-center gap-2 w-full pt-1 shrink-0">
                             <button
                                 onClick={handleCopyCertificate}
-                                className="py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                                className="flex-1 py-2 px-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 font-bold text-[11px] flex items-center justify-center gap-1 cursor-pointer transition-all"
                             >
-                                {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                                {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
                                 <span>{copied ? t.certCopied : t.copyCert}</span>
                             </button>
 
                             <button
                                 onClick={resetAndStartGame}
-                                className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/30 cursor-pointer active:scale-95 transition-all"
+                                className="flex-1 py-2 px-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-[11px] flex items-center justify-center gap-1 shadow-lg shadow-cyan-500/30 cursor-pointer active:scale-95 transition-all"
                             >
-                                <RotateCcw size={14} />
+                                <RotateCcw size={13} />
                                 <span>{t.nextStage}</span>
                             </button>
                         </div>
@@ -1630,27 +1751,27 @@ ${statsSummary || '- 모든 잡념 즉각 정화 완료'}
             </div>
 
             {/* 모바일 화면용 원터치 좌우 이동 패드 */}
-            <div className="w-full flex items-center justify-between gap-3 mt-2 px-1">
+            <div className="w-full flex items-center justify-between gap-2.5 mt-2 px-1">
                 <button
                     onClick={moveLeft}
-                    className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/40 text-white font-bold text-xs flex items-center justify-center gap-1 border border-white/10 cursor-pointer transition-all"
+                    className="flex-1 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/40 text-white font-bold text-xs flex items-center justify-center gap-1 border border-white/10 cursor-pointer transition-all"
                 >
-                    <ArrowLeft size={16} />
+                    <ArrowLeft size={15} />
                     <span>좌측 이동</span>
                 </button>
-                <div className="text-[10px] text-cyan-300 font-mono text-center">
+                <div className="text-[10px] text-cyan-300 font-mono text-center shrink-0">
                     자동 연사 ⚡
                 </div>
                 <button
                     onClick={moveRight}
-                    className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/40 text-white font-bold text-xs flex items-center justify-center gap-1 border border-white/10 cursor-pointer transition-all"
+                    className="flex-1 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/40 text-white font-bold text-xs flex items-center justify-center gap-1 border border-white/10 cursor-pointer transition-all"
                 >
                     <span>우측 이동</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={15} />
                 </button>
             </div>
 
-            <p className="text-[11px] text-gray-400 font-mono mt-2 text-center">
+            <p className="text-[10px] text-gray-400 font-mono mt-1.5 text-center">
                 {t.controlsGuide}
             </p>
         </div>

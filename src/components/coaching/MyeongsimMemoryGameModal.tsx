@@ -32,25 +32,25 @@ interface MyeongsimMemoryGameModalProps {
 const GAME_I18N = {
     kr: {
         modalTitle: "명심 멘탈 피트니스 훈련소",
-        modalSubtitle: "뇌과학 3단계 기억법으로 마시는 마음 0점 리셋 디지털 캡슐",
+        modalSubtitle: "뇌과학 3단계 기억법으로 마주하는 마음 0점 리셋 자각 훈련",
         medicalDisclaimer: "본 시스템은 의료법상 질병의 치료를 위한 의약품이나 의료기기가 아니며, 인지과학 원리를 게임화한 '멘탈 피트니스 및 자기자각 코칭' 솔루션입니다.",
-        tabCapsule: "💊 3초 캡슐",
+        tabCapsule: "✨ 3초 자각",
         tabSmasher: "⚔️ 패턴 슬라이서",
         tabGalaga: "👾 갤러그 잡념격퇴",
         tabPractice: "🧬 5-STEP 도장",
-        tabCabinet: "🗄️ 비타민 도감",
+        tabCabinet: "🗄️ 마음 서재",
         levelLabel: "Lv.",
         levelTitle: ["자각의 입문자", "렌즈의 관찰자", "패턴 브레이커", "감정 연금술사", "제로포인트 마스터"],
         expLabel: "자각 EXP",
-        streakLabel: "일 연속 복용",
+        streakLabel: "일 연속 실천",
         capsuleHoldGuide: "가슴에 손을 얹고 3초간 꾹 눌러 숨을 고르세요",
         capsuleInhaling: "숨을 천천히 들이쉬며 자각을 모읍니다... (1s)",
         capsuleHolding: "숨을 멈추고 내면의 공간을 관찰합니다... (2s)",
         capsuleExhaling: "후- 내쉬며 왜곡된 생각을 비워냅니다! (3s)",
-        capsuleDissolvedTitle: "캡슐 복용 완료! 마음 0점 리셋",
-        amygdalaCoolDown: "편도체 과열도",
+        capsuleDissolvedTitle: "자각 훈련 완료! 마음 0점 리셋",
+        amygdalaCoolDown: "편도체 진정도",
         prefrontalActive: "전두엽 메타인지 활성도",
-        btnNextCapsule: "다음 마인드 캡슐 복용 ➔",
+        btnNextCapsule: "다음 자각 루틴 시작 ➔",
         btnSaveToCabinet: "✨ 완전 체화 & 도감 저장 (+20 EXP)",
         btnReviewCapsule: "🔄 다시 음미하기 (+5 EXP)",
         smasherTitle: "왜곡된 인지 사슬 싹둑 분쇄기",
@@ -64,7 +64,7 @@ const GAME_I18N = {
         stepPrev: "이전 단계",
         stepFinish: "🎉 5단계 완료 & 멘탈 피트니스 완주증 발급",
         practiceReset: "새로운 고민으로 다시 훈련하기",
-        cabinetTitle: "내 디지털 마음 약통 (수집 도감)",
+        cabinetTitle: "내 디지털 마음 서재 (자각 도감)",
         cabinetSubtitle: "에빙하우스 망각곡선에 맞서 일상에서 실시간으로 떠올릴 내면의 방패",
         masteredBadge: "완전 체화",
         learningBadge: "훈련 중",
@@ -75,14 +75,14 @@ const GAME_I18N = {
         certificateSubtitle: "본 학습자는 POINT-LINE-LENS 인지 해체 프로토콜을 성실히 이수하여 마인드 0점 리셋 역량을 입증하였습니다."
     },
     en: {
-        modalTitle: "Mind Fitness Dojo & Digital Capsule",
-        modalSubtitle: "Reset your mind to Zero Point with 3-Stage Neuro-Habit Capsules",
+        modalTitle: "Mind Fitness Dojo & Awareness Routine",
+        modalSubtitle: "Reset your mind to Zero Point with 3-Stage Neuro-Habit Training",
         medicalDisclaimer: "This service is a mental fitness & self-coaching tool, not a medical drug or medical device.",
-        tabCapsule: "💊 3-Sec Capsule",
+        tabCapsule: "✨ 3-Sec Focus",
         tabSmasher: "⚔️ Pattern Smasher",
         tabGalaga: "👾 Galaga Buster",
         tabPractice: "🧬 5-STEP Dojo",
-        tabCabinet: "🗄️ Vitamin Cabinet",
+        tabCabinet: "🗄️ Mind Library",
         levelLabel: "Lv.",
         levelTitle: ["Awareness Novice", "Lens Observer", "Pattern Breaker", "Emotional Alchemist", "Zero Point Master"],
         expLabel: "Awareness EXP",
@@ -122,23 +122,23 @@ const GAME_I18N = {
         modalTitle: "明心 メンタルフィットネス訓練所",
         modalSubtitle: "脳科学3段階記憶法で飲むマインドゼロポイントデジタルカプセル",
         medicalDisclaimer: "本サービスは医療機器や医薬品ではなく、認知科学に基づくメンタルフィットネス・コーチングゲームです。",
-        tabCapsule: "💊 3秒カプセル",
+        tabCapsule: "✨ 3秒自覚",
         tabSmasher: "⚔️ パターンスライサー",
         tabGalaga: "👾 ギャラガ雑念撃退",
         tabPractice: "🧬 5-STEP 道場",
-        tabCabinet: "🗄️ ビタミン図鑑",
+        tabCabinet: "🗄️ 心の書斎",
         levelLabel: "Lv.",
         levelTitle: ["自覚の初心者", "レンズの観察者", "パターンブレイカー", "感情の錬金術師", "ゼロポイントマスター"],
         expLabel: "自覚EXP",
-        streakLabel: "日連続服用",
+        streakLabel: "日連続実践",
         capsuleHoldGuide: "胸に手を当てて3秒間長押しし、呼吸を整えてください",
         capsuleInhaling: "深く息を吸い込み、意識を集中させます... (1秒)",
         capsuleHolding: "息を止め、内なる空間を静かに見つめます... (2秒)",
         capsuleExhaling: "ふーっと吐き出し、歪んだ思考を空っぽにします！ (3秒)",
-        capsuleDissolvedTitle: "カプセル服用完了！ゼロポイントへ帰還",
+        capsuleDissolvedTitle: "自覚訓練完了！ゼロポイントへ帰還",
         amygdalaCoolDown: "扁桃体クールダウン",
         prefrontalActive: "前頭葉メタ認知活性度",
-        btnNextCapsule: "次のカプセルを服用 ➔",
+        btnNextCapsule: "次の自覚ルーティン ➔",
         btnSaveToCabinet: "✨ 完全体得＆保存 (+20 EXP)",
         btnReviewCapsule: "🔄 もう一度 (+5 EXP)",
         smasherTitle: "認知の歪み連鎖スライサー",
@@ -152,7 +152,7 @@ const GAME_I18N = {
         stepPrev: "前のステップ",
         stepFinish: "🎉 5段階完了＆修了証発行",
         practiceReset: "新しい悩みで再訓練",
-        cabinetTitle: "デジタル心の薬箱 (図鑑)",
+        cabinetTitle: "デジタル心の書斎 (自覚図鑑)",
         cabinetSubtitle: "忘却曲線に抗い、日常で即座に発動する心の盾",
         masteredBadge: "完全体得",
         learningBadge: "訓練中",
@@ -164,13 +164,13 @@ const GAME_I18N = {
     },
     cn: {
         modalTitle: "明心心智健身训练所",
-        modalSubtitle: "基于脑科学三阶段记忆法的心理归零数字胶囊",
+        modalSubtitle: "基于脑科学三阶段记忆法的心理归零觉察工坊",
         medicalDisclaimer: "本系统并非用于医疗诊疗的药品或器械，属于基于认知科学的心智健身与自我觉察教练游戏。",
-        tabCapsule: "💊 3秒胶囊",
+        tabCapsule: "✨ 3秒觉察",
         tabSmasher: "⚔️ 模式粉碎机",
         tabGalaga: "👾 大蜜蜂消消乐",
         tabPractice: "🧬 5步工坊",
-        tabCabinet: "🗄️ 维他命柜",
+        tabCabinet: "🗄️ 心智书斋",
         levelLabel: "Lv.",
         levelTitle: ["自知入门者", "滤镜观察者", "模式粉碎者", "情绪炼金师", "零点宗师"],
         expLabel: "觉察EXP",
@@ -515,65 +515,65 @@ export default function MyeongsimMemoryGameModal({
                     </div>
                 </div>
 
-                {/* ── 3. 5대 아케이드 탭 (반응형 그리드 & 캡슐 칩) ── */}
-                <div className="px-3 py-2 bg-[#0e1226] border-b border-white/10 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+                {/* ── 3. 5대 아케이드 탭 (반응형 칩 바) ── */}
+                <div className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#0e1226] border-b border-white/10 flex items-center gap-1.5 overflow-x-auto scrollbar-none no-scrollbar">
                     <button
                         onClick={() => setActiveTab('capsule')}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                        className={`py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0 ${
                             activeTab === 'capsule'
                                 ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.25)]'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Pill size={14} className="text-cyan-400" />
+                        <Sparkles size={13} className="text-cyan-400" />
                         <span>{t.tabCapsule}</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('smasher')}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                        className={`py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0 ${
                             activeTab === 'smasher'
                                 ? 'bg-amber-500/25 text-amber-300 border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.25)]'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Scissors size={14} className="text-amber-400" />
+                        <Scissors size={13} className="text-amber-400" />
                         <span>{t.tabSmasher}</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('galaga')}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                        className={`py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0 ${
                             activeTab === 'galaga'
                                 ? 'bg-rose-500/25 text-rose-300 border border-rose-400/50 shadow-[0_0_15px_rgba(244,63,94,0.3)] animate-pulse'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Gamepad2 size={14} className="text-rose-400" />
+                        <Gamepad2 size={13} className="text-rose-400" />
                         <span>{t.tabGalaga}</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('practice')}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                        className={`py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0 ${
                             activeTab === 'practice'
                                 ? 'bg-purple-500/25 text-purple-300 border border-purple-400/50 shadow-[0_0_15px_rgba(168,85,247,0.25)]'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Brain size={14} className="text-purple-400" />
+                        <Brain size={13} className="text-purple-400" />
                         <span>{t.tabPractice}</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('cabinet')}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                        className={`py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0 ${
                             activeTab === 'cabinet'
                                 ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
                                 : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Award size={14} className="text-emerald-400" />
+                        <Award size={13} className="text-emerald-400" />
                         <span>{t.tabCabinet}</span>
                     </button>
                 </div>
