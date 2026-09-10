@@ -14,6 +14,8 @@ interface MyeongsimGalagaGameProps {
     onExpEarned?: (amount: number) => void;
     onExamClear?: (level: number) => void;
     language?: 'kr' | 'en' | 'jp' | 'cn';
+    defaultExpanded?: boolean;
+    onCloseModal?: () => void;
 }
 
 const GALAGA_I18N = {
@@ -258,7 +260,9 @@ const THOUGHT_DATA: Record<string, Array<ThoughtItem>> = {
 export default function MyeongsimGalagaGame({
     onExpEarned,
     onExamClear,
-    language = 'kr'
+    language = 'kr',
+    defaultExpanded = false,
+    onCloseModal
 }: MyeongsimGalagaGameProps) {
     const t = GALAGA_I18N[language] || GALAGA_I18N.kr;
     const thoughts = THOUGHT_DATA[language] || THOUGHT_DATA.kr;
@@ -286,7 +290,7 @@ export default function MyeongsimGalagaGame({
     const [copied, setCopied] = useState<boolean>(false);
 
     // 📱 모바일/PC 화면 확대 (Fullscreen / Cinema Expand) 상태
-    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
 
     // 🌟 실시간 자각 승화 통찰 텍스트 (크고 선명하게 상단 노출)
     const [latestInsight, setLatestInsight] = useState<string | null>("잡념을 격퇴하면 자각의 빛이 깨어납니다!");
@@ -1916,7 +1920,9 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
             onClick={unlockAudio}
             className={
                 isExpanded
-                    ? "fixed inset-0 z-[9999] w-screen h-[100dvh] bg-[#060814] flex flex-col items-center justify-between p-2 sm:p-3 select-none overflow-hidden"
+                    ? (onCloseModal 
+                        ? "flex-1 w-full max-w-lg flex flex-col items-center justify-between select-none overflow-hidden h-full"
+                        : "fixed inset-0 z-[9999] w-screen h-[100dvh] bg-[#060814] flex flex-col items-center justify-between p-2 sm:p-3 select-none overflow-hidden")
                     : "flex flex-col items-center justify-center w-full max-w-lg mx-auto select-none"
             }
         >
@@ -1955,18 +1961,22 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            toggleExpand();
+                            if (onCloseModal) {
+                                onCloseModal();
+                            } else {
+                                toggleExpand();
+                            }
                         }}
                         className={`p-1 sm:p-1.5 rounded-xl border flex items-center gap-1 cursor-pointer transition-all ${
                             isExpanded 
                                 ? 'bg-amber-500/25 text-amber-300 border-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.3)]' 
                                 : 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40 hover:bg-cyan-500/30'
                         }`}
-                        title={isExpanded ? t.shrinkScreen : t.expandScreen}
+                        title={onCloseModal ? "전체화면 창 닫기" : (isExpanded ? t.shrinkScreen : t.expandScreen)}
                     >
                         {isExpanded ? <Minimize2 size={13} className="text-amber-400" /> : <Maximize2 size={13} className="animate-pulse text-cyan-300" />}
                         <span className="text-[9px] sm:text-[10px] font-mono font-bold">
-                            {isExpanded ? t.shrinkScreen : t.expandScreen}
+                            {onCloseModal ? "창 닫기" : (isExpanded ? t.shrinkScreen : t.expandScreen)}
                         </span>
                     </button>
 
@@ -2311,12 +2321,16 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
-                        toggleExpand();
+                        if (onCloseModal) {
+                            onCloseModal();
+                        } else {
+                            toggleExpand();
+                        }
                     }}
                     className="mt-1 py-1 px-3.5 rounded-xl bg-white/5 hover:bg-white/10 active:bg-white/20 text-gray-400 hover:text-white text-[10px] font-mono flex items-center gap-1.5 border border-white/10 cursor-pointer transition-all shrink-0"
                 >
                     <Minimize2 size={12} className="text-amber-400" />
-                    <span>기본 화면으로 축소 (Esc)</span>
+                    <span>{onCloseModal ? "전체화면 창 닫기 (Esc)" : "기본 화면으로 축소 (Esc)"}</span>
                 </button>
             )}
 

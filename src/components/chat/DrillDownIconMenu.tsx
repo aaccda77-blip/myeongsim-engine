@@ -78,6 +78,8 @@ const TargetCoachingDashboard = dynamic(() => import('@/components/coaching/Targ
 const MyeongsimMemoryGameModal = dynamic(() => import('@/components/coaching/MyeongsimMemoryGameModal'), { ssr: false });
 // [NEW] 🏛️ 명심코칭 평생교육원 공인 커리큘럼 & 5단계 자격 사다리 모달
 const MyeongsimAcademyCurriculumModal = dynamic(() => import('@/components/modals/MyeongsimAcademyCurriculumModal'), { ssr: false });
+// [NEW] 👾 네오 명심 갤러그 (전체화면 모드 창) 모달
+const MyeongsimGalagaModal = dynamic(() => import('@/components/coaching/MyeongsimGalagaModal'), { ssr: false });
 import { 
     isSkillUnlocked, 
     getRequiredCourseForSkill, 
@@ -590,6 +592,7 @@ export default function DrillDownIconMenu({
     const [targetDashboardCardId, setTargetDashboardCardId] = useState<string | null>(null); // [NEW] 타겟 코칭 특정 전술 카드 선택
     const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'psych' | 'business' | 'bio' | 'ai'>('all');
     const [showMemoryGameModal, setShowMemoryGameModal] = useState(false); // [NEW] 명심 자각 기억 훈련소 (단기·중기·장기 기억 게임)
+    const [showGalagaModal, setShowGalagaModal] = useState(false); // [NEW] 👾 네오 명심 갤러그 (전체화면 모드 창)
     // [NEW] 🏛️ 명심 평생교육원 공인 커리큘럼 모달 및 자격 잠금 알림 상태
     const [showCurriculumModal, setShowCurriculumModal] = useState(false);
     const [lockedSkillNotice, setLockedSkillNotice] = useState<{ skillId: string; name: string; course: any } | null>(null);
@@ -1572,6 +1575,32 @@ export default function DrillDownIconMenu({
                         </div>
                         <div style={styles.neuroTrigger}>
                             {language === 'en' ? '3-Stage Game' : language === 'jp' ? '記憶ゲーム' : language === 'cn' ? '三阶演练' : '단·중·장기 게임'}
+                        </div>
+                    </div>
+                </button>
+
+                {/* 👾 [대표님 요청 신규] 🕹️ 네오 명심 갤러그 게임 [전체화면 모드 창] */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => setShowGalagaModal(true)}
+                    title="방해 요소 없는 100% 몰입형 네오 명심 갤러그 전체화면 창"
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.35), rgba(59, 130, 246, 0.3))',
+                        border: '1.5px solid rgba(6, 182, 212, 0.7)',
+                        boxShadow: '0 4px 15px rgba(6, 182, 212, 0.35)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🕹️</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#38bdf8', fontWeight: 'bold' }}>
+                            {language === 'en' ? 'Neo Galaga' : language === 'jp' ? 'ギャラガ' : language === 'cn' ? '大蜜蜂' : '갤러그 게임'}
+                        </div>
+                        <div style={styles.neuroTrigger}>
+                            {language === 'en' ? 'Fullscreen' : language === 'jp' ? '全画面' : language === 'cn' ? '全屏模式' : '전체화면'}
                         </div>
                     </div>
                 </button>
@@ -3206,6 +3235,13 @@ export default function DrillDownIconMenu({
 <MyeongsimMemoryGameModal
                 isOpen={showMemoryGameModal}
                 onClose={() => setShowMemoryGameModal(false)}
+            />
+
+            {/* 👾 [대표님 요청 신규] 네오 명심 갤러그 전용 전체화면 모드 창 */}
+            <MyeongsimGalagaModal
+                isOpen={showGalagaModal}
+                onClose={() => setShowGalagaModal(false)}
+                language={language as any}
             />
 
             {/* 👑 [대표님 요청] 공식 통합 월 98,000원 VIP 정액권 & 스마트스토어 도서구매 잠금 모달 */}

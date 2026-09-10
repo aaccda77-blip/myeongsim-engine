@@ -21,6 +21,7 @@ import {
 import { passAcademyExam, getAcademyState } from '@/lib/questUnlockManager';
 import { ACADEMY_COURSES, ACADEMY_EXAMS } from '@/data/MyeongsimAcademyDB';
 import MyeongsimGalagaGame from './MyeongsimGalagaGame';
+import MyeongsimGalagaModal from './MyeongsimGalagaModal';
 
 interface MyeongsimMemoryGameModalProps {
     isOpen: boolean;
@@ -218,6 +219,7 @@ export default function MyeongsimMemoryGameModal({
 
     // ── 1. 5대 탭 상태 (capsule, smasher, galaga, practice, cabinet) ──
     const [activeTab, setActiveTab] = useState<'capsule' | 'smasher' | 'galaga' | 'practice' | 'cabinet'>('capsule');
+    const [showGalagaModal, setShowGalagaModal] = useState<boolean>(false);
 
     // ── 2. 게임 진행 상황 ──
     const [progress, setProgress] = useState<UserGameProgress>(INITIAL_GAME_PROGRESS);
@@ -847,7 +849,26 @@ export default function MyeongsimMemoryGameModal({
 
                     {/* [모드 3: 👾 갤러그 잡념격퇴 아케이드 (NEW!)] */}
                     {activeTab === 'galaga' && (
-                        <div className="max-w-lg mx-auto py-1">
+                        <div className="max-w-lg mx-auto py-1 space-y-2">
+                            {/* 🚀 전체화면 모드 창 열기 퀵 배너 버튼 */}
+                            <button
+                                onClick={() => setShowGalagaModal(true)}
+                                className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-black text-xs sm:text-sm flex items-center justify-between shadow-lg shadow-cyan-500/25 border border-cyan-300/40 cursor-pointer active:scale-98 transition-all group"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <span className="text-base sm:text-lg animate-bounce">🚀</span>
+                                    <span className="tracking-tight">
+                                        {langKey === 'en' ? '[ Launch Galaga Fullscreen Window ]' :
+                                         langKey === 'jp' ? '[ ギャラガ全画面専用ウィンドウを開く ]' :
+                                         langKey === 'cn' ? '[ 开启大蜜蜂全屏沉浸窗口 ]' :
+                                         '[ 🚀 갤러그 전용 전체화면 모드 창 열기 ]'}
+                                    </span>
+                                </div>
+                                <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full text-cyan-200 group-hover:bg-white/30 transition-all font-mono font-bold">
+                                    100% 몰입
+                                </span>
+                            </button>
+
                             <MyeongsimGalagaGame
                                 language={langKey}
                                 onExpEarned={(amt) => addExp(amt)}
@@ -1048,6 +1069,16 @@ export default function MyeongsimMemoryGameModal({
                         {t.closeBtn}
                     </button>
                 </div>
+                {/* ── 6. 🚀 갤러그 전용 100% 전체화면 모드 창 ── */}
+                <MyeongsimGalagaModal
+                    isOpen={showGalagaModal}
+                    onClose={() => setShowGalagaModal(false)}
+                    language={langKey}
+                    onExpEarned={(amt) => addExp(amt)}
+                    onExamClear={(lvl) => {
+                        setUnlockedNotice({ level: lvl, skills: ['Galaga Master'] });
+                    }}
+                />
             </motion.div>
         </div>
     );
