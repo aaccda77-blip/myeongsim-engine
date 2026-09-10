@@ -4,7 +4,8 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Zap, RotateCcw, Award, Play, Pause, Volume2, VolumeX, 
-    Sparkles, Flame, Shield, Heart, Skull, Trophy, ArrowLeft, ArrowRight
+    Sparkles, Flame, Shield, Heart, Skull, Trophy, ArrowLeft, ArrowRight,
+    Volume1, CheckCircle2, RefreshCw
 } from 'lucide-react';
 import { passAcademyExam } from '@/lib/questUnlockManager';
 
@@ -21,16 +22,16 @@ const GALAGA_I18N = {
         score: "격추 점수",
         highScore: "최고 기록",
         wave: "WAVE",
+        stressLevel: "잔여 스트레스",
+        soundPrompt: "🔊 화면을 탭하거나 조작하면 8-Bit 사운드가 켜집니다!",
         bossWarning: "⚠️ WARNING: 거대 에고 보스 출현! ⚠️",
         gameOver: "게임 오버 (호흡을 가다듬으세요)",
         gameClear: "🎉 축하합니다! 모든 잡념 소멸 & 마음 0점 리셋!",
         startBtn: "🚀 출격! 잡념 격퇴 시작",
         restartBtn: "🔄 다시 출격하기",
-        resumeBtn: "계속하기",
-        pauseBtn: "일시정지",
-        controlsGuide: "PC: 마우스/좌우 방향키 / 모바일: 터치 드래그 (자동 발사)",
+        controlsGuide: "PC: 마우스 이동 / 모바일: 터치 드래그 또는 하단 버튼 (자동 연사)",
         bossName: "거대한 인지 왜곡의 에고",
-        pureFactMsg: "✨ 모든 잡념이 가라앉고 고요한 영점(0)에 도달했습니다!",
+        pureFactMsg: "✨ 모든 잡념이 우주 먼지로 소멸되어 고요한 영점(0)에 도달했습니다!",
         expEarned: "자각 EXP 획득!"
     },
     en: {
@@ -39,14 +40,14 @@ const GALAGA_I18N = {
         score: "Score",
         highScore: "High Score",
         wave: "WAVE",
+        stressLevel: "Stress Level",
+        soundPrompt: "🔊 Tap screen to enable authentic 8-Bit retro sounds!",
         bossWarning: "⚠️ WARNING: Giant Ego Boss Approaching! ⚠️",
         gameOver: "GAME OVER (Take a deep breath)",
         gameClear: "🎉 Victory! All Dark Thoughts Destroyed!",
         startBtn: "🚀 Launch Fighter!",
         restartBtn: "🔄 Try Again",
-        resumeBtn: "Resume",
-        pauseBtn: "Pause",
-        controlsGuide: "PC: Mouse/Arrow Keys / Mobile: Touch Drag",
+        controlsGuide: "PC: Mouse Move / Mobile: Touch Drag or Bottom Buttons",
         bossName: "The Giant Distorted Ego",
         pureFactMsg: "✨ Mind cleared of illusions, returning to pure Zero Point!",
         expEarned: "Awareness EXP Earned!"
@@ -57,14 +58,14 @@ const GALAGA_I18N = {
         score: "スコア",
         highScore: "ハイスコア",
         wave: "WAVE",
+        stressLevel: "残留ストレス",
+        soundPrompt: "🔊 画面タップで8-BitサウンドがONになります！",
         bossWarning: "⚠️ WARNING: 巨大エゴボス出現！ ⚠️",
         gameOver: "ゲームオーバー (深呼吸しましょう)",
         gameClear: "🎉 勝利！全ての雑念が消滅しゼロポイントへ帰還！",
         startBtn: "🚀 出撃！",
         restartBtn: "🔄 もう一度出撃",
-        resumeBtn: "再開",
-        pauseBtn: "一時停止",
-        controlsGuide: "PC: マウス・矢印キー / スマホ: タッチ操作",
+        controlsGuide: "PC: マウス移動 / スマホ: タッチドラッグまたは下部ボタン",
         bossName: "巨大な認知歪曲のエゴ",
         pureFactMsg: "✨ すべての雑念が浄化され、静寂なゼロポイントへ戻りました！",
         expEarned: "自覚EXP獲得！"
@@ -75,14 +76,14 @@ const GALAGA_I18N = {
         score: "击落分数",
         highScore: "最高分",
         wave: "WAVE",
+        stressLevel: "残留压力值",
+        soundPrompt: "🔊 点击屏幕开启原汁原味8-Bit街机音效！",
         bossWarning: "⚠️ WARNING: 巨型执念魔王降临！ ⚠️",
         gameOver: "游戏结束 (请深呼吸)",
         gameClear: "🎉 大获全胜！一切杂念灰飞烟灭，心智归零！",
         startBtn: "🚀 战机出击！",
         restartBtn: "🔄 重新出击",
-        resumeBtn: "继续",
-        pauseBtn: "暂停",
-        controlsGuide: "PC: 鼠标/左右方向键 / 手机: 触摸滑动",
+        controlsGuide: "PC: 移动鼠标 / 手机: 触摸滑动或下方按钮",
         bossName: "巨型认知扭曲之自我",
         pureFactMsg: "✨ 杂念散尽，重归清明安详的零点纯境！",
         expEarned: "觉察EXP增加！"
@@ -106,29 +107,35 @@ export default function MyeongsimGalagaGame({
     const t = GALAGA_I18N[language] || GALAGA_I18N.kr;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-    // 게임 상태: 마운트 즉시 바로 플레이 가능하도록 'playing'으로 초기화
+    // 오디오 컨텍스트 싱글톤 관리
+    const audioCtxRef = useRef<AudioContext | null>(null);
+    const [soundActive, setSoundActive] = useState<boolean>(false);
+
+    // 게임 상태
     const [gameState, setGameState] = useState<'playing' | 'paused' | 'gameover' | 'clear'>('playing');
     const [score, setScore] = useState<number>(0);
     const [highScore, setHighScore] = useState<number>(0);
     const [lives, setLives] = useState<number>(3);
     const [wave, setWave] = useState<number>(1);
+    const [stressPct, setStressPct] = useState<number>(100);
     const [isMuted, setIsMuted] = useState<boolean>(false);
     const [bossWarning, setBossWarning] = useState<boolean>(false);
 
     const gameEngineRef = useRef<{
         player: { x: number; y: number; width: number; height: number; speed: number; power: number; shieldTimer: number };
         bullets: Array<{ x: number; y: number; vx: number; vy: number; radius: number; color: string }>;
-        enemies: Array<{ x: number; y: number; vx: number; vy: number; width: number; height: number; text: string; color: string; points: number; hp: number; maxHp: number; diveTimer: number }>;
+        enemies: Array<{ x: number; y: number; vx: number; vy: number; width: number; height: number; text: string; color: string; points: number; hp: number; maxHp: number; diveTimer: number; hitFlash: number }>;
         enemyBullets: Array<{ x: number; y: number; vx: number; vy: number; radius: number }>;
         particles: Array<{ x: number; y: number; vx: number; vy: number; color: string; life: number; maxLife: number; size: number }>;
         items: Array<{ x: number; y: number; vy: number; type: 'power' | 'shield' | 'life'; label: string }>;
         stars: Array<{ x: number; y: number; speed: number; size: number; opacity: number }>;
-        boss: { x: number; y: number; width: number; height: number; hp: number; maxHp: number; vx: number; active: boolean; shootTimer: number } | null;
+        boss: { x: number; y: number; width: number; height: number; hp: number; maxHp: number; vx: number; active: boolean; shootTimer: number; hitFlash: number } | null;
         lastFireTime: number;
         fireInterval: number;
         score: number;
         lives: number;
         wave: number;
+        shakeTimer: number;
         keys: { [key: string]: boolean };
         mousePos: { x: number; y: number };
         animId: number | null;
@@ -146,53 +153,142 @@ export default function MyeongsimGalagaGame({
         score: 0,
         lives: 3,
         wave: 1,
+        shakeTimer: 0,
         keys: {},
         mousePos: { x: 200, y: 430 },
         animId: null
     });
 
-    // 🔊 8-Bit 레트로 사운드
-    const play8BitTone = useCallback((freq: number, type: OscillatorType = 'square', duration: number = 0.08, gainVal: number = 0.1) => {
-        if (isMuted) return;
-        try {
-            if (typeof window === 'undefined') return;
+    // ── 🔊 Web Audio API 레트로 신디사이저 2.0 ──
+    const getAudioContext = useCallback(() => {
+        if (typeof window === 'undefined') return null;
+        if (!audioCtxRef.current) {
             const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
+            if (AudioCtx) {
+                audioCtxRef.current = new AudioCtx();
+            }
+        }
+        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+            audioCtxRef.current.resume().then(() => {
+                setSoundActive(true);
+            }).catch(() => {});
+        } else if (audioCtxRef.current && audioCtxRef.current.state === 'running') {
+            setSoundActive(true);
+        }
+        return audioCtxRef.current;
+    }, []);
+
+    const unlockAudio = useCallback(() => {
+        const ctx = getAudioContext();
+        if (ctx && ctx.state === 'suspended') {
+            ctx.resume().then(() => setSoundActive(true)).catch(() => {});
+        } else {
+            setSoundActive(true);
+        }
+    }, [getAudioContext]);
+
+    // 1. 🚀 갤러그 레이저 피치 드롭 발사음 (1100Hz -> 160Hz 쀼웅!)
+    const playLaserSound = useCallback(() => {
+        if (isMuted) return;
+        const ctx = getAudioContext();
+        if (!ctx || ctx.state !== 'running') return;
+
+        try {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            gain.gain.setValueAtTime(gainVal, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(1150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.08);
+
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start();
-            osc.stop(ctx.currentTime + duration);
+            osc.stop(ctx.currentTime + 0.08);
         } catch (e) {}
-    }, [isMuted]);
+    }, [isMuted, getAudioContext]);
 
-    const playLaserSound = useCallback(() => {
-        play8BitTone(880, 'square', 0.06, 0.05);
-        setTimeout(() => play8BitTone(440, 'square', 0.06, 0.04), 20);
-    }, [play8BitTone]);
-
+    // 2. 💥 백색 노이즈 아케이드 폭발음
     const playExplosionSound = useCallback(() => {
-        play8BitTone(180, 'sawtooth', 0.2, 0.14);
-        setTimeout(() => play8BitTone(90, 'triangle', 0.22, 0.12), 40);
-    }, [play8BitTone]);
+        if (isMuted) return;
+        const ctx = getAudioContext();
+        if (!ctx || ctx.state !== 'running') return;
 
+        try {
+            const bufferSize = Math.floor(ctx.sampleRate * 0.18);
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(750, ctx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(70, ctx.currentTime + 0.18);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.18, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            noise.start();
+            noise.stop(ctx.currentTime + 0.18);
+        } catch (e) {}
+    }, [isMuted, getAudioContext]);
+
+    // 3. ✨ 파워업 획득 사운드 (528Hz 솔페지오)
     const playPowerupSound = useCallback(() => {
-        [528, 660, 792, 1056].forEach((f, idx) => {
-            setTimeout(() => play8BitTone(f, 'sine', 0.12, 0.07), idx * 40);
-        });
-    }, [play8BitTone]);
+        if (isMuted) return;
+        const ctx = getAudioContext();
+        if (!ctx || ctx.state !== 'running') return;
 
+        try {
+            [528, 660, 792, 1056].forEach((f, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(f, ctx.currentTime + idx * 0.04);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime + idx * 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.04 + 0.14);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + idx * 0.04);
+                osc.stop(ctx.currentTime + idx * 0.04 + 0.14);
+            });
+        } catch (e) {}
+    }, [isMuted, getAudioContext]);
+
+    // 4. 🚨 보스 경보음
     const playBossAlertSound = useCallback(() => {
-        [300, 200, 300, 200].forEach((f, idx) => {
-            setTimeout(() => play8BitTone(f, 'sawtooth', 0.2, 0.14), idx * 170);
-        });
-    }, [play8BitTone]);
+        if (isMuted) return;
+        const ctx = getAudioContext();
+        if (!ctx || ctx.state !== 'running') return;
+
+        try {
+            [440, 220, 440, 220].forEach((f, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(f, ctx.currentTime + idx * 0.18);
+                gain.gain.setValueAtTime(0.14, ctx.currentTime + idx * 0.18);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.18 + 0.16);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + idx * 0.18);
+                osc.stop(ctx.currentTime + idx * 0.18 + 0.16);
+            });
+        } catch (e) {}
+    }, [isMuted, getAudioContext]);
 
     // 별 생성
     const initStars = (width: number, height: number) => {
@@ -209,7 +305,7 @@ export default function MyeongsimGalagaGame({
         return stars;
     };
 
-    // 적 에일리언 스폰 (편대 형성)
+    // 적 에일리언 스폰
     const spawnEnemyWave = (canvasWidth: number) => {
         const enemies = [];
         const rows = 3;
@@ -233,7 +329,8 @@ export default function MyeongsimGalagaGame({
                     points: thought.points,
                     hp: 1,
                     maxHp: 1,
-                    diveTimer: 180 + Math.floor(Math.random() * 280)
+                    diveTimer: 180 + Math.floor(Math.random() * 280),
+                    hitFlash: 0
                 });
             }
         }
@@ -255,12 +352,13 @@ export default function MyeongsimGalagaGame({
             maxHp: 30,
             vx: 2,
             active: true,
-            shootTimer: 55
+            shootTimer: 55,
+            hitFlash: 0
         };
     };
 
     // 리셋 / 시작
-    const resetAndStartGame = () => {
+    const resetAndStartGame = useCallback(() => {
         const canvas = canvasRef.current;
         const w = canvas ? canvas.width : 400;
         const h = canvas ? canvas.height : 500;
@@ -279,6 +377,7 @@ export default function MyeongsimGalagaGame({
             score: 0,
             lives: 3,
             wave: 1,
+            shakeTimer: 0,
             keys: {},
             mousePos: { x: w / 2, y: h - 55 },
             animId: null
@@ -287,18 +386,19 @@ export default function MyeongsimGalagaGame({
         setScore(0);
         setLives(3);
         setWave(1);
+        setStressPct(100);
         setGameState('playing');
-        playPowerupSound();
-    };
+        unlockAudio();
+    }, [unlockAudio]);
 
-    // 초기 마운트 시 게임 자동 시작
     useEffect(() => {
         resetAndStartGame();
-    }, []);
+    }, [resetAndStartGame]);
 
-    // 키보드 조작 이벤트 리스너
+    // 키보드 조작
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            unlockAudio();
             gameEngineRef.current.keys[e.key] = true;
         };
         const handleKeyUp = (e: KeyboardEvent) => {
@@ -311,7 +411,7 @@ export default function MyeongsimGalagaGame({
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, []);
+    }, [unlockAudio]);
 
     // ── 메인 게임 루프 (60 FPS) ──
     useEffect(() => {
@@ -331,7 +431,15 @@ export default function MyeongsimGalagaGame({
             const w = canvas.width;
             const h = canvas.height;
 
-            // 1. 화면 클리어 (깊은 우주 배경)
+            ctx.save();
+            if (ge.shakeTimer > 0) {
+                ge.shakeTimer--;
+                const shakeX = (Math.random() - 0.5) * 8;
+                const shakeY = (Math.random() - 0.5) * 8;
+                ctx.translate(shakeX, shakeY);
+            }
+
+            // 1. 화면 클리어
             ctx.fillStyle = '#060814';
             ctx.fillRect(0, 0, w, h);
 
@@ -348,7 +456,7 @@ export default function MyeongsimGalagaGame({
             });
             ctx.globalAlpha = 1.0;
 
-            // 3. 플레이어 이동 (키보드 또는 마우스/터치)
+            // 3. 플레이어 이동
             if (ge.keys['ArrowLeft'] || ge.keys['a'] || ge.keys['A']) {
                 ge.player.x -= ge.player.speed;
                 ge.mousePos.x = ge.player.x;
@@ -356,18 +464,16 @@ export default function MyeongsimGalagaGame({
                 ge.player.x += ge.player.speed;
                 ge.mousePos.x = ge.player.x;
             } else {
-                // 마우스/터치 추종
                 const targetX = ge.mousePos.x;
                 ge.player.x += (targetX - ge.player.x) * 0.3;
             }
 
-            // 화면 경계 제한
             ge.player.x = Math.max(26, Math.min(w - 26, ge.player.x));
-            ge.player.y = h - 55; // 하단 위치 고정
+            ge.player.y = h - 55;
 
             if (ge.player.shieldTimer > 0) ge.player.shieldTimer--;
 
-            // 4. 자동 발사 (Auto Fire)
+            // 4. 자동 발사
             const now = Date.now();
             if (now - ge.lastFireTime > ge.fireInterval) {
                 ge.lastFireTime = now;
@@ -409,9 +515,9 @@ export default function MyeongsimGalagaGame({
                 const e = ge.enemies[i];
                 e.x += e.vx;
 
-                if (e.x < 30 || e.x > w - 30) {
-                    e.vx *= -1;
-                }
+                if (e.x < 30 || e.x > w - 30) e.vx *= -1;
+
+                if (e.hitFlash > 0) e.hitFlash--;
 
                 e.diveTimer--;
                 if (e.diveTimer <= 0) {
@@ -428,12 +534,10 @@ export default function MyeongsimGalagaGame({
                     }
                 }
 
-                // 갤러그 에일리언 그리기 (화려한 픽셀 형태)
-                ctx.fillStyle = e.color;
+                ctx.fillStyle = e.hitFlash > 0 ? '#ffffff' : e.color;
                 ctx.shadowColor = e.color;
-                ctx.shadowBlur = 8;
+                ctx.shadowBlur = e.hitFlash > 0 ? 16 : 8;
                 
-                // 외계인 본체
                 ctx.beginPath();
                 ctx.moveTo(e.x, e.y - 12);
                 ctx.lineTo(e.x + 20, e.y - 2);
@@ -443,14 +547,11 @@ export default function MyeongsimGalagaGame({
                 ctx.closePath();
                 ctx.fill();
 
-                // 외계인 눈 (노란색/하늘색 2점)
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(e.x - 8, e.y - 2, 4, 4);
                 ctx.fillRect(e.x + 4, e.y - 2, 4, 4);
-
                 ctx.shadowBlur = 0;
 
-                // 잡념 문구 텍스트
                 ctx.font = 'bold 10px sans-serif';
                 ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
@@ -463,14 +564,15 @@ export default function MyeongsimGalagaGame({
                     if (dist < 22) {
                         ge.bullets.splice(bi, 1);
                         e.hp--;
+                        e.hitFlash = 5;
 
                         if (e.hp <= 0) {
-                            for (let p = 0; p < 14; p++) {
+                            for (let p = 0; p < 16; p++) {
                                 ge.particles.push({
                                     x: e.x,
                                     y: e.y,
-                                    vx: (Math.random() - 0.5) * 7,
-                                    vy: (Math.random() - 0.5) * 7,
+                                    vx: (Math.random() - 0.5) * 8,
+                                    vy: (Math.random() - 0.5) * 8,
                                     color: e.color,
                                     life: 25,
                                     maxLife: 25,
@@ -478,7 +580,7 @@ export default function MyeongsimGalagaGame({
                                 });
                             }
 
-                            if (Math.random() < 0.2) {
+                            if (Math.random() < 0.22) {
                                 const types: Array<'power' | 'shield' | 'life'> = ['power', 'shield', 'life'];
                                 const itemType = types[Math.floor(Math.random() * types.length)];
                                 ge.items.push({
@@ -493,6 +595,7 @@ export default function MyeongsimGalagaGame({
                             playExplosionSound();
                             ge.score += e.points;
                             setScore(ge.score);
+                            setStressPct(prev => Math.max(0, prev - 6));
                             if (onExpEarned) onExpEarned(10);
                             ge.enemies.splice(i, 1);
                             break;
@@ -500,49 +603,51 @@ export default function MyeongsimGalagaGame({
                     }
                 }
 
-                // 플레이어와 충돌
                 if (ge.player.shieldTimer <= 0) {
                     const playerDist = Math.hypot(ge.player.x - e.x, ge.player.y - e.y);
                     if (playerDist < 28) {
                         ge.lives--;
                         setLives(ge.lives);
                         ge.player.shieldTimer = 90;
+                        ge.shakeTimer = 10;
                         playExplosionSound();
 
                         if (ge.lives <= 0) {
                             setGameState('gameover');
                             isRunning = false;
+                            ctx.restore();
                             return;
                         }
                     }
                 }
             }
 
-            // 7. 거대 에고 보스 업데이트 & 렌더링
+            // 7. 거대 에고 보스
             if (ge.boss && ge.boss.active) {
                 const b = ge.boss;
                 b.x += b.vx;
                 if (b.x < 70 || b.x > w - 70) b.vx *= -1;
 
+                if (b.hitFlash > 0) b.hitFlash--;
+
                 b.shootTimer--;
                 if (b.shootTimer <= 0) {
-                    b.shootTimer = 50;
-                    ge.enemyBullets.push({ x: b.x - 30, y: b.y + 30, vx: -1, vy: 3.5, radius: 4 });
-                    ge.enemyBullets.push({ x: b.x, y: b.y + 35, vx: 0, vy: 4.2, radius: 5 });
-                    ge.enemyBullets.push({ x: b.x + 30, y: b.y + 30, vx: 1, vy: 3.5, radius: 4 });
+                    b.shootTimer = 48;
+                    ge.enemyBullets.push({ x: b.x - 30, y: b.y + 30, vx: -1.2, vy: 3.8, radius: 4 });
+                    ge.enemyBullets.push({ x: b.x, y: b.y + 35, vx: 0, vy: 4.5, radius: 5 });
+                    ge.enemyBullets.push({ x: b.x + 30, y: b.y + 30, vx: 1.2, vy: 3.8, radius: 4 });
                 }
 
                 ctx.save();
                 ctx.translate(b.x, b.y);
                 
-                ctx.shadowColor = '#f43f5e';
-                ctx.shadowBlur = 24;
-                ctx.fillStyle = '#4c0519';
+                ctx.shadowColor = b.hitFlash > 0 ? '#ffffff' : '#f43f5e';
+                ctx.shadowBlur = b.hitFlash > 0 ? 30 : 20;
+                ctx.fillStyle = b.hitFlash > 0 ? '#ffffff' : '#4c0519';
                 ctx.beginPath();
                 ctx.roundRect(-60, -28, 120, 56, 18);
                 ctx.fill();
 
-                // 찌그러진 안경
                 ctx.strokeStyle = '#fb7185';
                 ctx.lineWidth = 4;
                 ctx.strokeRect(-50, -20, 42, 40);
@@ -552,7 +657,6 @@ export default function MyeongsimGalagaGame({
                 ctx.lineTo(8, 0);
                 ctx.stroke();
 
-                // 붉은 악마의 눈
                 ctx.fillStyle = '#f43f5e';
                 ctx.beginPath();
                 ctx.arc(-29, 0, 9, 0, Math.PI * 2);
@@ -560,7 +664,6 @@ export default function MyeongsimGalagaGame({
                 ctx.fill();
                 ctx.restore();
 
-                // HP 바
                 const hpPct = b.hp / b.maxHp;
                 ctx.fillStyle = 'rgba(0,0,0,0.6)';
                 ctx.fillRect(w / 2 - 80, 16, 160, 8);
@@ -579,14 +682,16 @@ export default function MyeongsimGalagaGame({
                     if (Math.abs(blt.x - b.x) < 60 && Math.abs(blt.y - b.y) < 32) {
                         ge.bullets.splice(bi, 1);
                         b.hp--;
+                        b.hitFlash = 4;
 
                         if (b.hp <= 0) {
-                            for (let p = 0; p < 45; p++) {
+                            ge.shakeTimer = 25;
+                            for (let p = 0; p < 50; p++) {
                                 ge.particles.push({
                                     x: b.x + (Math.random() - 0.5) * 80,
                                     y: b.y + (Math.random() - 0.5) * 40,
-                                    vx: (Math.random() - 0.5) * 9,
-                                    vy: (Math.random() - 0.5) * 9,
+                                    vx: (Math.random() - 0.5) * 10,
+                                    vy: (Math.random() - 0.5) * 10,
                                     color: p % 2 === 0 ? '#38bdf8' : '#facc15',
                                     life: 45,
                                     maxLife: 45,
@@ -597,6 +702,7 @@ export default function MyeongsimGalagaGame({
                             ge.boss = null;
                             ge.score += 500;
                             setScore(ge.score);
+                            setStressPct(0);
                             if (onExpEarned) onExpEarned(50);
                             
                             const examResult = passAcademyExam('quiz_galaga_boss', 2);
@@ -604,6 +710,7 @@ export default function MyeongsimGalagaGame({
 
                             setGameState('clear');
                             isRunning = false;
+                            ctx.restore();
                             return;
                         }
                     }
@@ -642,11 +749,13 @@ export default function MyeongsimGalagaGame({
                         ge.lives--;
                         setLives(ge.lives);
                         ge.player.shieldTimer = 90;
+                        ge.shakeTimer = 8;
                         playExplosionSound();
 
                         if (ge.lives <= 0) {
                             setGameState('gameover');
                             isRunning = false;
+                            ctx.restore();
                             return;
                         }
                         continue;
@@ -708,11 +817,10 @@ export default function MyeongsimGalagaGame({
                 if (p.life <= 0) ge.particles.splice(i, 1);
             }
 
-            // 11. 🚀 [핵심!] 갤러그 스타일 원작 오마주 화이트/레드 플레이어 비행기 (ZERO-SHIP)
+            // 11. 🚀 갤러그 스타일 원작 화이트/레드 플레이어 비행기
             ctx.save();
             ctx.translate(ge.player.x, ge.player.y);
 
-            // 실드 배리어 (무적 시)
             if (ge.player.shieldTimer > 0) {
                 ctx.strokeStyle = '#38bdf8';
                 ctx.shadowColor = '#38bdf8';
@@ -724,21 +832,19 @@ export default function MyeongsimGalagaGame({
                 ctx.shadowBlur = 0;
             }
 
-            // 비행기 메인 날개 (화이트 & 실버)
             ctx.fillStyle = '#ffffff';
             ctx.shadowColor = '#38bdf8';
             ctx.shadowBlur = 12;
             ctx.beginPath();
-            ctx.moveTo(0, -22);       // 기두 (코 끝)
-            ctx.lineTo(22, 16);       // 우측 날개 끝
-            ctx.lineTo(8, 12);        // 우측 안쪽
-            ctx.lineTo(0, 16);        // 꼬리 중앙
-            ctx.lineTo(-8, 12);       // 좌측 안쪽
-            ctx.lineTo(-22, 16);      // 좌측 날개 끝
+            ctx.moveTo(0, -22);
+            ctx.lineTo(22, 16);
+            ctx.lineTo(8, 12);
+            ctx.lineTo(0, 16);
+            ctx.lineTo(-8, 12);
+            ctx.lineTo(-22, 16);
             ctx.closePath();
             ctx.fill();
 
-            // 양 날개 팁 (갤러그 고유의 빨간색 팁)
             ctx.fillStyle = '#ef4444';
             ctx.beginPath();
             ctx.moveTo(22, 16);
@@ -754,19 +860,16 @@ export default function MyeongsimGalagaGame({
             ctx.closePath();
             ctx.fill();
 
-            // 콕핏 캐노피 (선명한 네온 시안 블루)
             ctx.fillStyle = '#06b6d4';
             ctx.beginPath();
             ctx.arc(0, -4, 6, 0, Math.PI * 2);
             ctx.fill();
 
-            // 콕핏 하이라이트 (빛 반사 점)
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.arc(-2, -6, 2, 0, Math.PI * 2);
             ctx.fill();
 
-            // 트윈 부스터 엔진 화염 (주황-노랑 불꽃 펄스)
             const flameLen = 14 + Math.random() * 8;
             ctx.fillStyle = '#f59e0b';
             ctx.beginPath();
@@ -784,6 +887,7 @@ export default function MyeongsimGalagaGame({
             ctx.fill();
 
             ctx.restore();
+            ctx.restore();
 
             ge.animId = requestAnimationFrame(loop);
         };
@@ -798,8 +902,8 @@ export default function MyeongsimGalagaGame({
         };
     }, [gameState, playLaserSound, playExplosionSound, playPowerupSound, onExpEarned, onExamClear, t.bossName]);
 
-    // 마우스 / 터치 위치 이동
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        unlockAudio();
         const canvas = canvasRef.current;
         if (!canvas) return;
         const rect = canvas.getBoundingClientRect();
@@ -809,6 +913,7 @@ export default function MyeongsimGalagaGame({
     };
 
     const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+        unlockAudio();
         const canvas = canvasRef.current;
         if (!canvas || e.touches.length === 0) return;
         const rect = canvas.getBoundingClientRect();
@@ -817,32 +922,36 @@ export default function MyeongsimGalagaGame({
         gameEngineRef.current.mousePos.x = x;
     };
 
-    // 모바일 좌우 버튼 클릭 이동
     const moveLeft = () => {
+        unlockAudio();
         gameEngineRef.current.mousePos.x = Math.max(30, gameEngineRef.current.player.x - 45);
     };
 
     const moveRight = () => {
+        unlockAudio();
         gameEngineRef.current.mousePos.x = Math.min(370, gameEngineRef.current.player.x + 45);
     };
 
     useEffect(() => {
-        if (score > highScore) {
-            setHighScore(score);
-        }
+        if (score > highScore) setHighScore(score);
     }, [score, highScore]);
 
     return (
-        <div className="flex flex-col items-center justify-center w-full max-w-lg mx-auto select-none">
-            {/* 상단 HUD 바: 점수 & 라이프 & 웨이브 & 사운드 토글 */}
+        <div 
+            onClick={unlockAudio}
+            className="flex flex-col items-center justify-center w-full max-w-lg mx-auto select-none"
+        >
+            {/* 상단 HUD 바 */}
             <div className="w-full px-3 py-2 bg-[#0c1022] rounded-2xl border border-white/10 flex items-center justify-between text-xs mb-2 shadow-md">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                     <div className="flex items-center gap-1 font-mono font-bold text-cyan-300">
                         <Trophy size={14} className="text-amber-400" />
                         <span>{score} PTS</span>
                     </div>
-                    <div className="flex items-center gap-1 font-mono text-gray-400 text-[11px]">
-                        <span>HI: {highScore}</span>
+
+                    <div className="hidden sm:flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded-lg border border-white/5">
+                        <span className="text-[10px] text-gray-400 font-mono">{t.stressLevel}:</span>
+                        <span className="text-[10px] font-mono font-bold text-rose-400">{stressPct}%</span>
                     </div>
                 </div>
 
@@ -857,15 +966,23 @@ export default function MyeongsimGalagaGame({
                 </div>
 
                 <button
-                    onClick={() => setIsMuted(!isMuted)}
-                    className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 cursor-pointer"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        unlockAudio();
+                        setIsMuted(!isMuted);
+                    }}
+                    className="p-1.5 rounded-xl border flex items-center gap-1 cursor-pointer transition-all bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-sm"
                 >
-                    {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                    {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} className="animate-pulse" />}
+                    <span className="text-[10px] font-mono font-bold">{isMuted ? 'MUTE' : '8-BIT ON'}</span>
                 </button>
             </div>
 
             {/* 캔버스 게임 화면 프레임 */}
-            <div className="relative w-full aspect-[4/5] max-h-[460px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]">
+            <div 
+                onClick={unlockAudio}
+                className="relative w-full aspect-[4/5] max-h-[460px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]"
+            >
                 <canvas
                     ref={canvasRef}
                     width={400}
@@ -875,7 +992,16 @@ export default function MyeongsimGalagaGame({
                     className="w-full h-full cursor-crosshair touch-none"
                 />
 
-                {/* 보스 경보 */}
+                {!soundActive && (
+                    <div 
+                        onClick={unlockAudio}
+                        className="absolute top-3 inset-x-4 mx-auto py-1.5 px-3 rounded-xl bg-cyan-950/90 border border-cyan-400/60 text-cyan-200 text-xs font-bold text-center cursor-pointer shadow-lg animate-bounce flex items-center justify-center gap-1.5 z-20"
+                    >
+                        <Volume1 size={14} />
+                        <span>{t.soundPrompt}</span>
+                    </div>
+                )}
+
                 <AnimatePresence>
                     {bossWarning && (
                         <motion.div
@@ -890,7 +1016,6 @@ export default function MyeongsimGalagaGame({
                     )}
                 </AnimatePresence>
 
-                {/* 게임 오버 화면 */}
                 {gameState === 'gameover' && (
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -926,7 +1051,6 @@ export default function MyeongsimGalagaGame({
                     </motion.div>
                 )}
 
-                {/* 게임 클리어 화면 */}
                 {gameState === 'clear' && (
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -977,7 +1101,7 @@ export default function MyeongsimGalagaGame({
                     <span>좌측 이동</span>
                 </button>
                 <div className="text-[10px] text-cyan-300 font-mono text-center">
-                    자동 연사 중 ⚡
+                    자동 연사 ⚡
                 </div>
                 <button
                     onClick={moveRight}
