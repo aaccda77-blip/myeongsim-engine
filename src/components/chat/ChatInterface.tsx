@@ -1615,7 +1615,23 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     bioSyncStatusText={typeof window !== 'undefined' && Boolean(localStorage.getItem('myeongsim_user_profile') || localStorage.getItem('saju_input_data')) ? '기질·생체 동기화 (432Hz)' : '생체데이터 미연동'}
                     onOpenBioModal={() => setShowFusionView(true)}
                     actionButtons={(
-                        <div className="flex items-center gap-1.5 sm:gap-2">
+                        <div className="flex items-center gap-1 sm:gap-1.5">
+                            {/* 🔮 [대표님 요청] 생년월일 입력 바로가기 버튼 */}
+                            <button
+                                onClick={() => {
+                                    handleChatClose();
+                                    useReportStore.getState().setStep(1);
+                                    if (typeof window !== 'undefined') {
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }
+                                }}
+                                className="px-2 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 text-amber-300 text-[10.5px] font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                                title="생년월일 입력 및 사주 만세력 1단계 화면으로 이동"
+                            >
+                                <span>🔮</span>
+                                <span>생년월일</span>
+                            </button>
+
                             <button
                                 onClick={() => setIsFocusMode(!isFocusMode)}
                                 className={`p-1.5 sm:p-2 rounded-full transition-all text-xs ${isFocusMode

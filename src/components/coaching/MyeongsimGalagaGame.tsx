@@ -50,11 +50,17 @@ const GALAGA_I18N = {
         novaBtn: "💥 제로 노바 (全화면 정화)",
         expandScreen: "화면 확대",
         shrinkScreen: "화면 축소",
+        continueBtn: "💖 자각 에너지 충전 이어하기 (+5 생명)",
+        endlessBtn: "🌌 무한 자각 마인드 수호 모드 계속하기",
         waveBanner: {
-            1: "WAVE 1: 일상 잡념 정찰대",
-            2: "WAVE 2: 불안 & 과잉일반화 편대",
-            3: "WAVE 3: 심층 자책 엘리트 편대",
-            4: "FINAL WAVE: 거대 에고 보스 결전!"
+            1: "WAVE 1: 일상 잡념 정찰대 (기초 정화)",
+            2: "WAVE 2: 조급함 & 비교함정 편대 (쾌속 회피)",
+            3: "WAVE 3: 불안 & 과잉일반화 편대 (급강하)",
+            4: "WAVE 4: 흑백논리 & 파국화 정예 편대 (2HP 엘리트)",
+            5: "WAVE 5: 피해의식 & 거절공포 중형 편대 (탄막 살포)",
+            6: "WAVE 6: 무력감 & 후회집착 심층 편대 (고속 선회)",
+            7: "WAVE 7: 심층 에고 총동원 왜곡 폭풍 (최종 관문)",
+            8: "FINAL WAVE: 👹 거대 에고 보스 결전!"
         }
     },
     en: {
@@ -88,11 +94,17 @@ const GALAGA_I18N = {
         novaBtn: "💥 ZERO NOVA (Full Cleansing)",
         expandScreen: "Expand",
         shrinkScreen: "Shrink",
+        continueBtn: "💖 Continue with Full Energy (+5 Lives)",
+        endlessBtn: "🌌 Continue in Infinite Zero-Point Mode",
         waveBanner: {
             1: "WAVE 1: Routine Thought Scouts",
-            2: "WAVE 2: Anxiety & Generalization Fleet",
-            3: "WAVE 3: Deep Guilt Elite Squadron",
-            4: "FINAL WAVE: Giant Distorted Ego Boss!"
+            2: "WAVE 2: Impatience & Comparison Fleet",
+            3: "WAVE 3: Anxiety & Overgeneralizing Fleet",
+            4: "WAVE 4: All-or-Nothing Elite Squadron",
+            5: "WAVE 5: Victimhood & Rejection Fleet",
+            6: "WAVE 6: Helplessness & Regret Heavy Fleet",
+            7: "WAVE 7: Deep Distortion Storm (Penultimate)",
+            8: "FINAL WAVE: 👹 Giant Distorted Ego Boss!"
         }
     },
     jp: {
@@ -126,11 +138,17 @@ const GALAGA_I18N = {
         novaBtn: "💥 ゼロ・ノヴァ (全体浄化)",
         expandScreen: "画面拡大",
         shrinkScreen: "画面縮小",
+        continueBtn: "💖 エネルギー満充填でコンティニュー (+5 ライフ)",
+        endlessBtn: "🌌 無限自覚マインド守護モードで継続",
         waveBanner: {
-            1: "WAVE 1: 日常雑念偵察隊",
-            2: "WAVE 2: 不安と過度な一般化編隊",
-            3: "WAVE 3: 深層自責エリート編隊",
-            4: "FINAL WAVE: 巨大エゴボス決戦！"
+            1: "WAVE 1: 日常雑念偵察隊 (基礎浄化)",
+            2: "WAVE 2: 焦燥＆比較の罠編隊 (高速回避)",
+            3: "WAVE 3: 不安と過度な一般化編隊 (急降下)",
+            4: "WAVE 4: 白黒思考＆破局化精鋭編隊 (2HP)",
+            5: "WAVE 5: 被害者意識＆拒絶恐怖中型編隊 (弾幕)",
+            6: "WAVE 6: 無力感＆後悔執着深層編隊 (旋回)",
+            7: "WAVE 7: 深層エゴ総動員・歪みの嵐 (最終関門)",
+            8: "FINAL WAVE: 👹 巨大エゴボス決戦！"
         }
     },
     cn: {
@@ -164,11 +182,17 @@ const GALAGA_I18N = {
         novaBtn: "💥 零点新星 (全屏净化)",
         expandScreen: "放大画面",
         shrinkScreen: "缩小画面",
+        continueBtn: "💖 充能复活继续挑战 (+5 生命)",
+        endlessBtn: "🌌 进入无尽零点心智守护模式",
         waveBanner: {
-            1: "WAVE 1: 日常杂念先锋队",
-            2: "WAVE 2: 焦虑与过度概括编队",
-            3: "WAVE 3: 深层自责精锐编队",
-            4: "FINAL WAVE: 巨型执念魔王决战！"
+            1: "WAVE 1: 日常杂念先锋队 (基础净化)",
+            2: "WAVE 2: 焦虑与攀比陷阱编队 (机动躲避)",
+            3: "WAVE 3: 焦虑与过度概括编队 (急俯冲)",
+            4: "WAVE 4: 非黑即白精锐编队 (2HP 精英)",
+            5: "WAVE 5: 受害者心态中型编队 (弹幕扫射)",
+            6: "WAVE 6: 习得无助与后悔执念编队 (回旋)",
+            7: "WAVE 7: 深层执念扭曲风暴 (终极关卡)",
+            8: "FINAL WAVE: 👹 巨型执念魔王决战！"
         }
     }
 };
@@ -278,7 +302,7 @@ export default function MyeongsimGalagaGame({
     const [gameState, setGameState] = useState<'playing' | 'paused' | 'gameover' | 'clear'>('playing');
     const [score, setScore] = useState<number>(0);
     const [highScore, setHighScore] = useState<number>(0);
-    const [lives, setLives] = useState<number>(3);
+    const [lives, setLives] = useState<number>(5);
     const [wave, setWave] = useState<number>(1);
     const [stressPct, setStressPct] = useState<number>(100);
     const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -375,6 +399,7 @@ export default function MyeongsimGalagaGame({
         fireInterval: number;
         score: number;
         lives: number;
+        hasUsedEmergencyRevive: boolean;
         wave: number;
         shakeTimer: number;
         keys: { [key: string]: boolean };
@@ -401,7 +426,8 @@ export default function MyeongsimGalagaGame({
         lastFireTime: 0,
         fireInterval: 135,
         score: 0,
-        lives: 3,
+        lives: 5,
+        hasUsedEmergencyRevive: false,
         wave: 1,
         shakeTimer: 0,
         keys: {},
@@ -755,38 +781,56 @@ export default function MyeongsimGalagaGame({
         return stars;
     };
 
-    // ── 단계별 WAVE 스폰 로직 (웨이브 1 ~ 3 및 파이널 보스) ──
+    // ── 단계별 WAVE 스폰 로직 (웨이브 1 ~ 7 및 파이널 보스 웨이브 8, 무한 모드 9+) ──
     const spawnEnemyWave = (canvasWidth: number, currentWave: number) => {
         const enemies = [];
         
         let rows = 3;
-        let cols = 4;
+        let cols = 5; // 15마리 기초 정화
         let speedMultiplier = 1.0;
 
         if (currentWave === 2) {
             rows = 3;
-            cols = 5;
-            speedMultiplier = 1.3;
-        } else if (currentWave >= 3) {
+            cols = 6; // 18마리
+            speedMultiplier = 1.15;
+        } else if (currentWave === 3) {
             rows = 4;
-            cols = 5;
-            speedMultiplier = 1.6;
+            cols = 5; // 20마리
+            speedMultiplier = 1.25;
+        } else if (currentWave === 4) {
+            rows = 4;
+            cols = 6; // 24마리
+            speedMultiplier = 1.35;
+        } else if (currentWave === 5) {
+            rows = 4;
+            cols = 6; // 24마리
+            speedMultiplier = 1.45;
+        } else if (currentWave === 6) {
+            rows = 5;
+            cols = 5; // 25마리
+            speedMultiplier = 1.55;
+        } else if (currentWave >= 7) {
+            rows = 5;
+            cols = 6; // 30마리 왜곡 폭풍
+            speedMultiplier = 1.65;
         }
 
-        const spacingX = Math.min(62, Math.floor((canvasWidth - 40) / cols));
-        const spacingY = 40;
+        const spacingX = Math.min(58, Math.floor((canvasWidth - 30) / cols));
+        const spacingY = 38;
         const startX = (canvasWidth - cols * spacingX) / 2 + spacingX / 2;
 
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-                const thoughtIndex = (r * cols + c + (currentWave - 1) * 4) % thoughts.length;
+                const thoughtIndex = (r * cols + c + (currentWave - 1) * 3) % thoughts.length;
                 const thought = thoughts[thoughtIndex];
-                const isElite = (currentWave >= 3 && r === 0);
+                
+                const isElite = (currentWave >= 3 && r === 0) || (currentWave >= 5 && r <= 1) || (currentWave >= 7 && r <= 2);
+                const enemyHp = isElite ? (currentWave >= 6 ? 3 : 2) : 1;
 
                 enemies.push({
                     x: startX + c * spacingX,
-                    y: 36 + r * spacingY,
-                    vx: (Math.random() > 0.5 ? 1 : -1) * (0.8 + Math.random() * 0.5) * speedMultiplier,
+                    y: 34 + r * spacingY,
+                    vx: (Math.random() > 0.5 ? 1 : -1) * (0.85 + Math.random() * 0.45) * speedMultiplier,
                     vy: 0,
                     width: 46,
                     height: 28,
@@ -795,9 +839,9 @@ export default function MyeongsimGalagaGame({
                     tag: thought.tag,
                     color: isElite ? '#e11d48' : thought.color,
                     points: thought.points * (isElite ? 2 : 1),
-                    hp: isElite ? 2 : 1,
-                    maxHp: isElite ? 2 : 1,
-                    diveTimer: 140 + Math.floor(Math.random() * 260) / speedMultiplier,
+                    hp: enemyHp,
+                    maxHp: enemyHp,
+                    diveTimer: 160 + Math.floor(Math.random() * 280) / speedMultiplier,
                     hitFlash: 0,
                     isElite,
                     wingPhase: Math.random() * Math.PI * 2
@@ -806,6 +850,39 @@ export default function MyeongsimGalagaGame({
         }
         return enemies;
     };
+
+    // 💖 자각 에너지 충전 이어하기 (Continue with 5 Lives)
+    const continueGame = useCallback(() => {
+        const ge = gameEngineRef.current;
+        ge.lives = 5;
+        setLives(5);
+        ge.player.shieldTimer = 200; // 3.3초 무적
+        ge.enemyBullets = []; // 적 탄막 즉시 소거
+        ge.hasUsedEmergencyRevive = false; // 부활 기회 리셋
+        setGameState('playing');
+        playPowerupSound();
+        setWaveBanner("💖 자각 에너지 완충! 전선 복귀 (+5 생명)");
+        setTimeout(() => setWaveBanner(null), 2200);
+    }, [playPowerupSound]);
+
+    // 🌌 무한 자각 마인드 수호 모드 (Infinity Mode) 계속하기
+    const continueInfiniteMode = useCallback(() => {
+        const ge = gameEngineRef.current;
+        const canvas = canvasRef.current;
+        const w = canvas ? canvas.width : 400;
+        ge.wave = 9;
+        setWave(9);
+        ge.lives = Math.min(7, ge.lives + 2); // 2생명 보너스
+        setLives(ge.lives);
+        ge.player.shieldTimer = 180;
+        ge.boss = null;
+        ge.enemyBullets = [];
+        ge.enemies = spawnEnemyWave(w, 9);
+        setGameState('playing');
+        playPowerupSound();
+        setWaveBanner("🌌 무한 자각 마인드 수호 모드 시작!");
+        setTimeout(() => setWaveBanner(null), 2500);
+    }, [playPowerupSound, spawnEnemyWave]);
 
     // 거대 에고 보스
     const spawnBoss = (canvasWidth: number) => {
@@ -819,8 +896,8 @@ export default function MyeongsimGalagaGame({
             y: 50,
             width: 120,
             height: 60,
-            hp: 65,
-            maxHp: 65,
+            hp: 180,
+            maxHp: 180,
             vx: 2.2,
             active: true,
             shootTimer: 45,
@@ -923,7 +1000,8 @@ export default function MyeongsimGalagaGame({
             lastFireTime: 0,
             fireInterval: 135,
             score: 0,
-            lives: 3,
+            lives: 5,
+            hasUsedEmergencyRevive: false,
             wave: 1,
             shakeTimer: 0,
             keys: {},
@@ -933,7 +1011,7 @@ export default function MyeongsimGalagaGame({
         };
 
         setScore(0);
-        setLives(3);
+        setLives(5);
         setWave(1);
         setStressPct(100);
         setComboCount(0);
@@ -1265,7 +1343,7 @@ export default function MyeongsimGalagaGame({
                                 };
                             });
 
-                            if (Math.random() < 0.24) {
+                            if (Math.random() < 0.35) {
                                 const types: Array<'power' | 'shield' | 'life' | 'drone'> = ['power', 'shield', 'life', 'drone'];
                                 const itemType = types[Math.floor(Math.random() * types.length)];
                                 ge.items.push({
@@ -1302,10 +1380,23 @@ export default function MyeongsimGalagaGame({
                         triggerHaptic(40);
 
                         if (ge.lives <= 0) {
-                            setGameState('gameover');
-                            isRunning = false;
-                            ctx.restore();
-                            return;
+                            if (!ge.hasUsedEmergencyRevive) {
+                                ge.hasUsedEmergencyRevive = true;
+                                ge.lives = 3;
+                                setLives(3);
+                                ge.player.shieldTimer = 210; // 3.5초 무적
+                                ge.shakeTimer = 16;
+                                ge.enemyBullets = []; // 적 탄막 전량 소거
+                                playZeroNovaSound();
+                                triggerHaptic([50, 50, 100, 50, 150]);
+                                setWaveBanner("⚡ 마음 0점 리셋 발동! 자각의 빛으로 기사회생! (+3 생명)");
+                                setTimeout(() => setWaveBanner(null), 2800);
+                            } else {
+                                setGameState('gameover');
+                                isRunning = false;
+                                ctx.restore();
+                                return;
+                            }
                         }
                     }
                 }
@@ -1494,21 +1585,45 @@ export default function MyeongsimGalagaGame({
                 }
             }
 
-            // 9. 웨이브 진행 로직
+            // 9. 웨이브 진행 로직 (총 8개 스테이지 + 무한 아케이드 모드)
             if (ge.enemies.length === 0 && (!ge.boss || !ge.boss.active)) {
-                if (ge.wave < 3) {
+                if (ge.wave < 7) {
                     ge.wave++;
                     setWave(ge.wave);
+                    // 💖 웨이브 클리어 보너스: 체력 +1 회복 (최대 7) 및 2초 무적 보호막!
+                    ge.lives = Math.min(7, ge.lives + 1);
+                    setLives(ge.lives);
+                    ge.player.shieldTimer = 130;
                     ge.enemies = spawnEnemyWave(w, ge.wave);
-                    setWaveBanner(t.waveBanner[ge.wave as 2 | 3]);
-                    setTimeout(() => setWaveBanner(null), 1800);
+                    const bMsg = t.waveBanner[ge.wave as keyof typeof t.waveBanner] || `WAVE ${ge.wave}: 심층 왜곡 정화 편대`;
+                    setWaveBanner(bMsg);
+                    setTimeout(() => setWaveBanner(null), 2000);
                     playPowerupSound();
-                } else if (ge.wave === 3) {
-                    ge.wave = 4;
-                    setWave(4);
-                    setWaveBanner(t.waveBanner[4]);
-                    setTimeout(() => setWaveBanner(null), 1800);
+                } else if (ge.wave === 7) {
+                    ge.wave = 8;
+                    setWave(8);
+                    ge.lives = Math.min(7, ge.lives + 1);
+                    setLives(ge.lives);
+                    ge.player.shieldTimer = 160;
+                    setWaveBanner(t.waveBanner[8]);
+                    setTimeout(() => setWaveBanner(null), 2500);
                     ge.boss = spawnBoss(w);
+                } else if (ge.wave >= 9) {
+                    // 무한 자각 아케이드 모드
+                    ge.wave++;
+                    setWave(ge.wave);
+                    ge.lives = Math.min(7, ge.lives + 1);
+                    setLives(ge.lives);
+                    ge.player.shieldTimer = 130;
+                    if (ge.wave % 5 === 0) {
+                        ge.boss = spawnBoss(w);
+                        setWaveBanner(`⚠️ WAVE ${ge.wave}: 거대 에고 보스 재출현!`);
+                    } else {
+                        ge.enemies = spawnEnemyWave(w, ge.wave);
+                        setWaveBanner(`🌌 무한 WAVE ${ge.wave}: 마인드 수호 편대`);
+                    }
+                    setTimeout(() => setWaveBanner(null), 2000);
+                    playPowerupSound();
                 }
             }
 
@@ -1540,10 +1655,23 @@ export default function MyeongsimGalagaGame({
                         triggerHaptic(40);
 
                         if (ge.lives <= 0) {
-                            setGameState('gameover');
-                            isRunning = false;
-                            ctx.restore();
-                            return;
+                            if (!ge.hasUsedEmergencyRevive) {
+                                ge.hasUsedEmergencyRevive = true;
+                                ge.lives = 3;
+                                setLives(3);
+                                ge.player.shieldTimer = 210; // 3.5초 무적
+                                ge.shakeTimer = 16;
+                                ge.enemyBullets = []; // 적 탄막 전량 소거
+                                playZeroNovaSound();
+                                triggerHaptic([50, 50, 100, 50, 150]);
+                                setWaveBanner("⚡ 마음 0점 리셋 발동! 자각의 빛으로 기사회생! (+3 생명)");
+                                setTimeout(() => setWaveBanner(null), 2800);
+                            } else {
+                                setGameState('gameover');
+                                isRunning = false;
+                                ctx.restore();
+                                return;
+                            }
                         }
                         continue;
                     }
@@ -1935,7 +2063,7 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     </div>
 
                     <div className="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 font-mono text-[10px] text-purple-300 font-bold">
-                        WAVE {wave}/4
+                        WAVE {wave > 8 ? `${wave} (무한)` : `${wave}/8`}
                     </div>
 
                     {comboCount > 1 && (
@@ -1946,14 +2074,15 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     )}
                 </div>
 
-                <div className="flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
+                <div className="flex items-center gap-0.5 sm:gap-1">
+                    {Array.from({ length: Math.min(7, Math.max(5, lives)) }).map((_, i) => (
                         <Heart
                             key={i}
-                            size={13}
-                            className={i < lives ? 'text-rose-500 fill-rose-500' : 'text-white/10'}
+                            size={12}
+                            className={i < lives ? 'text-rose-500 fill-rose-500 animate-pulse' : 'text-white/15'}
                         />
                     ))}
+                    <span className="text-[10px] font-mono font-bold text-rose-300 ml-0.5">{lives}</span>
                 </div>
 
                 <div className="flex items-center gap-1 sm:gap-1.5">
@@ -2156,13 +2285,22 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                             </div>
                         </div>
 
-                        <button
-                            onClick={resetAndStartGame}
-                            className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/30 cursor-pointer active:scale-95 transition-all"
-                        >
-                            <RotateCcw size={14} />
-                            <span>{t.restartBtn}</span>
-                        </button>
+                        <div className="flex flex-col sm:flex-row items-center gap-2 w-full max-w-xs">
+                            <button
+                                onClick={continueGame}
+                                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/30 cursor-pointer active:scale-95 transition-all"
+                            >
+                                <Sparkles size={14} />
+                                <span>{t.continueBtn}</span>
+                            </button>
+                            <button
+                                onClick={resetAndStartGame}
+                                className="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 font-bold text-xs flex items-center justify-center gap-1 border border-white/10 cursor-pointer transition-all"
+                            >
+                                <RotateCcw size={13} />
+                                <span>{t.restartBtn}</span>
+                            </button>
+                        </div>
                     </motion.div>
                 )}
 
@@ -2241,22 +2379,33 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 w-full pt-1 shrink-0">
+                        <div className="flex flex-col gap-2 w-full pt-1 shrink-0">
+                            {/* 🌌 무한 자각 마인드 수호 모드 (Infinity Mode) */}
                             <button
-                                onClick={handleCopyCertificate}
-                                className="flex-1 py-2 px-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 font-bold text-[11px] flex items-center justify-center gap-1 cursor-pointer transition-all"
+                                onClick={continueInfiniteMode}
+                                className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-500 via-cyan-400 to-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/30 cursor-pointer active:scale-95 transition-all"
                             >
-                                {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                                <span>{copied ? t.certCopied : t.copyCert}</span>
+                                <span className="text-sm animate-spin">🌌</span>
+                                <span>{t.endlessBtn}</span>
                             </button>
 
-                            <button
-                                onClick={resetAndStartGame}
-                                className="flex-1 py-2 px-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-[11px] flex items-center justify-center gap-1 shadow-lg shadow-cyan-500/30 cursor-pointer active:scale-95 transition-all"
-                            >
-                                <RotateCcw size={13} />
-                                <span>{t.nextStage}</span>
-                            </button>
+                            <div className="flex items-center gap-2 w-full">
+                                <button
+                                    onClick={handleCopyCertificate}
+                                    className="flex-1 py-2 px-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 font-bold text-[11px] flex items-center justify-center gap-1 cursor-pointer transition-all"
+                                >
+                                    {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                                    <span>{copied ? t.certCopied : t.copyCert}</span>
+                                </button>
+
+                                <button
+                                    onClick={resetAndStartGame}
+                                    className="flex-1 py-2 px-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-black text-[11px] flex items-center justify-center gap-1 border border-white/20 cursor-pointer active:scale-95 transition-all"
+                                >
+                                    <RotateCcw size={13} />
+                                    <span>{t.restartBtn}</span>
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 )}

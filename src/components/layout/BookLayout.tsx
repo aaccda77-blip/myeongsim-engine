@@ -18,7 +18,7 @@ import PaymentLockOverlay from '@/components/auth/PaymentLockOverlay';
 import { isUserApprovedSync, grantUserApprovalSync } from '@/lib/authGuardUtils';
 import { getTargetStepForStage } from '@/utils/StageMapping';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import MyeongsimContentGridView from '../coaching/MyeongsimContentGridView';
 import MicroPassModal from '../coaching/MicroPassModal';
 import Myeongsim64KeysModal from '../coaching/Myeongsim64KeysModal';
@@ -57,6 +57,22 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
     const [showOhaengModal, setShowOhaengModal] = useState(false);
     const [showGeniusModal, setShowGeniusModal] = useState(false);
     const [showNtsModal, setShowNtsModal] = useState(false);
+    const router = useRouter();
+
+    // 🔮 생년월일 입력 페이지(Step 1: CoverView) 즉시 이동 핸들러
+    const handleGoToBirthInput = () => {
+        setIsChatOpen(false);
+        setIsMapOpen(false);
+        setViewMode('dashboard');
+        useReportStore.getState().setStep(1);
+        if (typeof window !== 'undefined') {
+            if (window.location.pathname !== '/report') {
+                router.push('/report');
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+    };
 
     useEffect(() => {
         try {
@@ -314,6 +330,17 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                             title="문의하기 게시판"
                         >
                             <MessageCircle className="w-5 h-5" />
+                        </button>
+
+                        {/* 🔮 [대표님 요청] 생년월일 입력 페이지 상단 바로가기 메뉴 버튼 */}
+                        <button
+                            type="button"
+                            onClick={handleGoToBirthInput}
+                            className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-cyan-500/20 hover:from-amber-500/30 hover:to-cyan-500/30 border border-amber-400/40 text-amber-200 text-[11px] sm:text-xs font-black flex items-center gap-1 shadow-[0_0_12px_rgba(245,158,11,0.25)] cursor-pointer active:scale-95 transition-all"
+                            title="생년월일 입력 및 사주 만세력 원국 분석 페이지로 이동"
+                        >
+                            <span className="text-sm animate-pulse">🔮</span>
+                            <span className="font-extrabold text-amber-300">생년월일 입력</span>
                         </button>
                     </div>
 

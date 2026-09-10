@@ -104,6 +104,34 @@ export default function StageMap({ currentStage, onSelectStage, onClose }: Stage
                     />
 
                     <div className="space-y-6 relative z-10">
+                        {/* 🔮 [대표님 요청] 생년월일 & 사주 만세력 1단계 메인 입력 바로가기 */}
+                        <motion.button
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            onClick={() => {
+                                useReportStore.getState().setStep(1);
+                                onClose();
+                                if (typeof window !== 'undefined') {
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }
+                            }}
+                            className="w-full mb-5 p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-cyan-500/20 border border-amber-400/50 text-left flex items-center justify-between shadow-lg shadow-amber-500/15 cursor-pointer active:scale-98 transition-all group"
+                        >
+                            <div className="flex items-center gap-2.5">
+                                <div className="size-9 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-lg group-hover:scale-110 transition-transform">
+                                    🔮
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-black text-amber-300 flex items-center gap-1">
+                                        <span>생년월일·사주 원국 입력</span>
+                                        <span className="text-[9px] bg-amber-400/20 px-1.5 py-0.5 rounded text-amber-200">1단계</span>
+                                    </h4>
+                                    <p className="text-[10px] text-gray-400">만세력 정보 수정 및 새 사주 입력</p>
+                                </div>
+                            </div>
+                            <ChevronRight size={16} className="text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                        </motion.button>
+
                         {STAGES.map((stage) => {
                             const isUnlocked = true; // [Demo] 모든 단계 잠금 해제 for Testing
                             const isCurrent = stage.id === currentStage;
