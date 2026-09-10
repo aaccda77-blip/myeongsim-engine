@@ -29,7 +29,6 @@ export interface QuizScenario {
         feedback: { kr: string; en: string; jp: string; cn: string };
     }[];
 }
-
 export interface MemoryCard {
     id: string;
     category: 'KEY_CONCEPT' | 'POWER_QUESTION' | 'MICRO_PRACTICE' | 'ANCHOR_LINE';
@@ -41,6 +40,21 @@ export interface MemoryCard {
     memoryLevel: 'short' | 'mid' | 'long'; // 단기(3초 퀴즈), 중기(패턴브레이커), 장기(5-STEP 실습)
     quiz?: QuizScenario;
     practiceSteps?: PracticeStep[];
+    // 💊 디지털 마인드 캡슐 (의료법 준수 멘탈 피트니스/비타민 게임 메타포)
+    capsuleTheme?: {
+        gradient: string;
+        glowColor: string;
+        vitaminName: { kr: string; en: string; jp: string; cn: string };
+        symptomTarget: { kr: string; en: string; jp: string; cn: string };
+        funSideEffect: { kr: string; en: string; jp: string; cn: string };
+        coolDownScore: number;
+    };
+    smasherData?: {
+        pointText: { kr: string; en: string; jp: string; cn: string };
+        lineText: { kr: string; en: string; jp: string; cn: string };
+        lensText: { kr: string; en: string; jp: string; cn: string };
+        cleanFactText: { kr: string; en: string; jp: string; cn: string };
+    };
 }
 
 export const MEMORY_CARDS_DB: MemoryCard[] = [
@@ -732,3 +746,253 @@ export const INITIAL_GAME_PROGRESS: UserGameProgress = {
     todayCompletedCount: 0,
     lastPlayedDate: ''
 };
+
+// 💊 카드별 디지털 마음 비타민(캡슐) 테마 매핑
+export const CAPSULE_THEMES_MAP: { [cardId: string]: NonNullable<MemoryCard['capsuleTheme']> } = {
+    'card_01': {
+        gradient: 'from-rose-500 via-amber-500 to-yellow-400',
+        glowColor: 'rgba(244,63,94,0.5)',
+        vitaminName: {
+            kr: '알람-오프(Alarm-Off) 캡슐',
+            en: 'Alarm-Off Mind Capsule',
+            jp: 'アラームオフ・マインドカプセル',
+            cn: '警报熄灭·心智胶囊'
+        },
+        symptomTarget: {
+            kr: '급성 억울함 · 가슴 두근거림 · 감정 오해',
+            en: 'Acute Injustice · Palpitation · Emotional Distortion',
+            jp: '突発的な悔しさ · 動悸 · 感情の誤解',
+            cn: '突发委屈 · 心跳加速 · 情绪误解'
+        },
+        funSideEffect: {
+            kr: '부작용: 상대방의 잔소리가 빗소리처럼 편안하게 들림',
+            en: 'Side Effect: Others\' nagging starts sounding like calming rainfall',
+            jp: '副作用: 相手の小言が心地よい雨音のように聞こえる',
+            cn: '副作用：别人的唠叨听起来像雨声一样令人平静'
+        },
+        coolDownScore: 88
+    },
+    'card_02': {
+        gradient: 'from-cyan-400 via-blue-500 to-indigo-600',
+        glowColor: 'rgba(6,182,212,0.5)',
+        vitaminName: {
+            kr: '점·선·렌즈 분쇄 비타민',
+            en: 'Point-Line-Lens Smasher Vitamin',
+            jp: '点・線・レンズ粉砕ビタミン',
+            cn: '点线滤镜·粉碎维生素'
+        },
+        symptomTarget: {
+            kr: '뇌내 막장 드라마 상영 · 과대망상 · 관계 오독',
+            en: 'Overthinking Drama · Delusion · Over-analyzing',
+            jp: '脳内過剰ドラマ · 誇大妄想 · 関係の誤読',
+            cn: '脑内狗血剧场 · 夸大妄想 · 关系过度解读'
+        },
+        funSideEffect: {
+            kr: '부작용: 셜록 홈즈급의 차분한 객관적 시야 장착',
+            en: 'Side Effect: Instantly equipping Sherlock Holmes-level objective clarity',
+            jp: '副作用: シャーロック・ホームズ級の冷静な客観視を手に入れる',
+            cn: '副作用：瞬间装备福尔摩斯级别的冷静客观视野'
+        },
+        coolDownScore: 92
+    },
+    'card_03': {
+        gradient: 'from-emerald-400 via-teal-500 to-cyan-600',
+        glowColor: 'rgba(52,211,153,0.5)',
+        vitaminName: {
+            kr: '1초 의심 백신 (Question-Shot)',
+            en: '1-Sec Doubt Vaccine Shot',
+            jp: '1秒の疑問ワクチン',
+            cn: '1秒怀疑疫苗针'
+        },
+        symptomTarget: {
+            kr: '섣부른 흑백 판단 · 확증편향 · 급발진',
+            en: 'Premature Judgment · Confirmation Bias · Snapping',
+            jp: '早とちりの白黒思考 · 確証バイアス · 突発的怒り',
+            cn: '草率黑白判定 · 确认偏误 · 冲动暴走'
+        },
+        funSideEffect: {
+            kr: '부작용: 욱하고 화내려다 피식 웃음이 먼저 터짐',
+            en: 'Side Effect: A quiet chuckle bursts out right before getting angry',
+            jp: '副作用: 怒り出す直前に思わずクスッと笑ってしまう',
+            cn: '副作用：刚想发火却忍不住先扑哧笑出声'
+        },
+        coolDownScore: 85
+    },
+    'card_04': {
+        gradient: 'from-purple-500 via-violet-500 to-pink-500',
+        glowColor: 'rgba(168,85,247,0.5)',
+        vitaminName: {
+            kr: '프랑클 3초 자유 캡슐',
+            en: 'Frankl\'s 3-Sec Freedom Capsule',
+            jp: 'フランクルの3秒自由カプセル',
+            cn: '弗兰克尔3秒自由胶囊'
+        },
+        symptomTarget: {
+            kr: '충동적 말실수 · 후회할 행동 · 분노 표출',
+            en: 'Impulsive Remarks · Regretful Action · Anger Burst',
+            jp: '衝動的な失言 · 後悔する行動 · 怒りの爆発',
+            cn: '冲动失言 · 事后后悔的举动 · 怒气爆发'
+        },
+        funSideEffect: {
+            kr: '부작용: 3초 멈추었을 뿐인데 세상의 주인공이 된 느낌',
+            en: 'Side Effect: Feeling like the sovereign master of the universe after just 3s',
+            jp: '副作用: たった3秒止まっただけなのに人生の主役になった感覚',
+            cn: '副作用：仅仅暂停3秒，便感觉自己成了宇宙的主宰'
+        },
+        coolDownScore: 90
+    },
+    'card_05': {
+        gradient: 'from-blue-400 via-indigo-500 to-purple-600',
+        glowColor: 'rgba(96,165,250,0.5)',
+        vitaminName: {
+            kr: '오토파일럿 탈출 영양제',
+            en: 'Autopilot Breaker Nutrient',
+            jp: 'オートパイロット脱出栄養剤',
+            cn: '自动驾驶逃逸营养素'
+        },
+        symptomTarget: {
+            kr: '습관적 멍때림 · 무기력 쇼츠 중독 · 기계적 반복',
+            en: 'Mindless Scrolling · Chronic Lethargy · Robot Habits',
+            jp: '無意識のSNS中毒 · 慢性無気力 · 機械的ルーティン',
+            cn: '无意识刷短视频 · 慢性无力感 · 机械式重复'
+        },
+        funSideEffect: {
+            kr: '부작용: 온몸에 신선한 생명력이 샘솟으며 당장 산책하고 싶어짐',
+            en: 'Side Effect: Fresh vitality rushes in, creating an urge to go for a brisk walk',
+            jp: '副作用: 新鮮な生命力が湧き、今すぐ散歩したくなる',
+            cn: '副作用：全身涌入新鲜生命力，迫不及待想要出门散步'
+        },
+        coolDownScore: 82
+    },
+    'card_06': {
+        gradient: 'from-pink-400 via-rose-500 to-red-500',
+        glowColor: 'rgba(251,113,133,0.5)',
+        vitaminName: {
+            kr: '라벨 제거 스트립 (Anti-Labeling)',
+            en: 'Anti-Labeling Peel Strip',
+            jp: 'ラベル剥離ストリップ',
+            cn: '撕除标签·解毒贴片'
+        },
+        symptomTarget: {
+            kr: '‘난 실패자야’ 자책 · 자기비하 · 타인 낙인찍기',
+            en: 'Self-Blame "I\'m a failure" · Inferiority · Pigeonholing',
+            jp: '「私は落伍者」という自責 · 自己否定 · 決めつけ',
+            cn: '“我是失败者”的自责 · 自我贬低 · 给他人贴标签'
+        },
+        funSideEffect: {
+            kr: '부작용: 거울 속 자신을 보며 윙크를 날리게 됨',
+            en: 'Side Effect: High chance of winking at your own reflection in the mirror',
+            jp: '副作用: 鏡の中の自分に向かってウインクしてしまう',
+            cn: '副作用：忍不住对着镜子里的自己俏皮眨眼'
+        },
+        coolDownScore: 94
+    },
+    'card_07': {
+        gradient: 'from-amber-300 via-orange-400 to-yellow-500',
+        glowColor: 'rgba(251,191,36,0.5)',
+        vitaminName: {
+            kr: '제로포인트(0) 호흡 캡슐',
+            en: 'Zero-Point Breath Capsule',
+            jp: 'ゼロポイント呼吸カプセル',
+            cn: '零点(0)呼吸纯净胶囊'
+        },
+        symptomTarget: {
+            kr: '머리 과열 · 불면증 · 잡념의 폭풍',
+            en: 'Brain Overheating · Insomnia · Thought Tornado',
+            jp: '頭脳のオーバーヒート · 不眠 · 雑念の嵐',
+            cn: '大脑严重过热 · 失眠难眠 · 杂念风暴'
+        },
+        funSideEffect: {
+            kr: '부작용: 3초 만에 알프스 산꼭대기의 고요함에 도달',
+            en: 'Side Effect: Feeling the serene stillness of the Swiss Alps in 3 seconds',
+            jp: '副作用: 3秒でスイスのアルプス山頂のような静寂に到達する',
+            cn: '副作用：3秒内仿佛置身于阿尔卑斯山巅的极度宁静'
+        },
+        coolDownScore: 96
+    },
+    'card_08': {
+        gradient: 'from-lime-400 via-emerald-500 to-teal-600',
+        glowColor: 'rgba(163,230,53,0.5)',
+        vitaminName: {
+            kr: '실수 전환 나침반 비타민',
+            en: 'Mistake-to-Compass Vitamin',
+            jp: 'ミス変換コンパスビタミン',
+            cn: '错误转化指南针维生素'
+        },
+        symptomTarget: {
+            kr: '과거 실수 반추 · 이불킥 · 완벽주의 압박',
+            en: 'Past Regret Ruminating · Cringing · Perfectionist Burden',
+            jp: '過去の失敗反芻 · 激しい後悔 · 完璧主義のプレッシャー',
+            cn: '过去失误反刍 · 深夜悔恨 · 完美主义压力'
+        },
+        funSideEffect: {
+            kr: '부작용: 실패를 볼 때마다 "오예, 귀한 데이터 획득!"을 외침',
+            en: 'Side Effect: Shouting "Awesome, precious learning data!" whenever stumbling',
+            jp: '副作用: 失敗するたびに「よっしゃ、貴重なデータ獲得！」と叫ぶ',
+            cn: '副作用：每当受挫便高呼“太棒了，收获宝贵新数据！”'
+        },
+        coolDownScore: 89
+    }
+};
+
+// ⚔️ 카드별 패턴 슬라이서(Point-Line-Lens 분쇄) 게임 데이터 매핑
+export const SMASHER_DATA_MAP: { [cardId: string]: NonNullable<MemoryCard['smasherData']> } = {
+    'card_01': {
+        pointText: { kr: '사건: 중요한 메시지 읽씹', en: 'Event: Message left unread', jp: '事件: メッセージ未読スルー', cn: '事件：重要信息未读未回' },
+        lineText: { kr: '망상선: "나를 깔보고 무시하는 게 틀림없어"', en: 'Drama Line: "They despise and disrespect me"', jp: '妄想線: 「見下して無視しているに違いない」', cn: '妄想线：“他肯定看不起我，故意无视我”' },
+        lensText: { kr: '왜곡렌즈: [모두가 나를 적대시한다]', en: 'Distorted Lens: [Everyone opposes me]', jp: '歪んだレンズ: [皆が私を敵視している]', cn: '扭曲滤镜：[所有人都在针对我]' },
+        cleanFactText: { kr: '순수 사실: "상대방이 지금 회의 중이거나 바쁠 뿐이다."', en: 'Pure Fact: "They are simply busy or in a meeting."', jp: '純粋な事実: 「相手が会議中か多忙なだけだ。」', cn: '纯净事实：“对方此刻只是在开会或正在忙碌。”' }
+    },
+    'card_02': {
+        pointText: { kr: '사건: 발표 중 한 사람이 하품함', en: 'Event: An audience yawns during presentation', jp: '事件: 発表中に一人があくびをした', cn: '事件：演讲时台下一人打了哈欠' },
+        lineText: { kr: '망상선: "내 발표가 형편없고 지루해서 망했어"', en: 'Drama Line: "My talk is boring garbage and ruined"', jp: '妄想線: 「私の発表がつまらなくて台無しだ」', cn: '妄想线：“我的演讲太烂太无聊，全搞砸了”' },
+        lensText: { kr: '왜곡렌즈: [나는 인정받을 수 없는 존재다]', en: 'Distorted Lens: [I will never be accepted]', jp: '歪んだレンズ: [私は認められない存在だ]', cn: '扭曲滤镜：[我是一个永远不被认可的人]' },
+        cleanFactText: { kr: '순수 사실: "그 사람은 어제 야근해서 피곤했을 뿐이다."', en: 'Pure Fact: "That person simply stayed up late last night."', jp: '純粋な事実: 「その人が昨夜の残業で疲れているだけだ。」', cn: '纯净事实：“那个人只是昨晚加班太累罢了。”' }
+    },
+    'card_03': {
+        pointText: { kr: '사건: 친구가 약속 시간보다 30분 늦음', en: 'Event: Friend is 30 mins late', jp: '事件: 友人が約束に30分遅刻した', cn: '事件：朋友赴约迟到了30分钟' },
+        lineText: { kr: '망상선: "나와의 약속을 하찮게 여기는 거야"', en: 'Drama Line: "They don\'t care about our friendship"', jp: '妄想線: 「私との約束を軽視しているんだ」', cn: '妄想线：“他根本不在乎和我的约定”' },
+        lensText: { kr: '왜곡렌즈: [사람들은 나를 소중히 여기지 않는다]', en: 'Distorted Lens: [People don\'t value me]', jp: '歪んだレンズ: [他人は私を大切にしない]', cn: '扭曲滤镜：[没有人在乎珍惜我]' },
+        cleanFactText: { kr: '순수 사실: "지하철 연착이나 예기치 못한 도로 정체가 발생했다."', en: 'Pure Fact: "Unforeseen traffic jam or train delay occurred."', jp: '純粋な事実: 「電車の遅延か渋滞が発生しただけだ。」', cn: '纯净事实：“遇到了地铁延误或突发堵车。”' }
+    },
+    'card_04': {
+        pointText: { kr: '사건: 도로에서 깜빡이 없이 끼어드는 차량', en: 'Event: Car cuts in without blinker', jp: '事件: ウインカーなしで割り込む車', cn: '事件：前车未打转向灯强行加塞' },
+        lineText: { kr: '망상선: "나를 도발했으니 따라가서 갚아줘야 해"', en: 'Drama Line: "They provoked me! I must retaliate"', jp: '妄想線: 「私を挑発した！追いついて仕返しだ」', cn: '妄想线：“竟敢挑衅我！必须追上去报复”' },
+        lensText: { kr: '왜곡렌즈: [세상은 양보 없는 약육강식 전쟁터다]', en: 'Distorted Lens: [The world is a ruthless jungle]', jp: '歪んだレンズ: [世界は弱肉強食の戦場だ]', cn: '扭曲滤镜：[世界是弱肉强食的残酷战场]' },
+        cleanFactText: { kr: '순수 사실: "위급한 환자가 타고 있거나 초보 운전자일 수 있다. 3초간 숨을 내쉰다."', en: 'Pure Fact: "Could be an emergency or beginner. Exhale for 3 seconds."', jp: '純粋な事実: 「急患か初心者かもしれない。3秒息を吐く。」', cn: '纯净事实：“可能有急症患者或新手驾驶。深呼气3秒。”' }
+    },
+    'card_05': {
+        pointText: { kr: '사건: 퇴근 후 소파에 쓰러져 폰만 봄', en: 'Event: Collapsed on sofa scrolling phone', jp: '事件: 帰宅後ソファに倒れ込みスマホを凝視', cn: '事件：下班瘫在沙发上机械刷手机' },
+        lineText: { kr: '망상선: "난 오늘도 게으르고 의지박약 실패자야"', en: 'Drama Line: "I am a weak-willed, lazy loser today too"', jp: '妄想線: 「私は意志薄弱で怠惰な落伍者だ」', cn: '妄想线：“我今天也是意志薄弱的懒惰废物”' },
+        lensText: { kr: '왜곡렌즈: [나는 영원히 게으름을 고칠 수 없다]', en: 'Distorted Lens: [I can never overcome laziness]', jp: '歪んだレンズ: [私は永遠に怠惰を直せない]', cn: '扭曲滤镜：[我永远也改不掉劣根性]' },
+        cleanFactText: { kr: '순수 사실: "오늘 뇌 에너지를 많이 썼으니 15분간 전자기기를 끄고 충전하면 된다."', en: 'Pure Fact: "Brain spent a lot of energy. 15 mins screen-free rest will recharge."', jp: '純粋な事実: 「今日脳エネルギーを使い果たした。15分画面を消して充電しよう。」', cn: '纯净事实：“今天大脑消耗过度，关机休息15分钟即可恢复电量。”' }
+    },
+    'card_06': {
+        pointText: { kr: '사건: 프로젝트 마감 일정 1일 지연', en: 'Event: Project deadline delayed by 1 day', jp: '事件: プロジェクト締め切りが1日延期', cn: '事件：项目截止期延误了1天' },
+        lineText: { kr: '망상선: "난 무능하고 팀에 민폐만 끼치는 짐짝이야"', en: 'Drama Line: "I am useless baggage burdening the whole team"', jp: '妄想線: 「私は無能でチームの迷惑なお荷物だ」', cn: '妄想线：“我是无能的包袱，连累了整个团队”' },
+        lensText: { kr: '왜곡렌즈: [완벽하지 못하면 가치가 없다]', en: 'Distorted Lens: [Unworthy unless 100% perfect]', jp: '歪んだレンズ: [完璧でなければ価値がない]', cn: '扭曲滤镜：[不完美就毫无价值]' },
+        cleanFactText: { kr: '순수 사실: "일정 추정에 오차가 있었을 뿐, 품질을 위해 조율하면 된다."', en: 'Pure Fact: "Estimation was slightly off. Adjust gracefully for quality."', jp: '純粋な事実: 「日程見積もりに誤差があっただけ。品質のために再調整すれば良い。」', cn: '纯净事实：“只是时间预估出现偏差，为了质量妥善协调即可。”' }
+    },
+    'card_07': {
+        pointText: { kr: '사건: 내일 있을 중요한 면접/계약', en: 'Event: High-stakes interview/deal tomorrow', jp: '事件: 明日の重要な面接・商談', cn: '事件：明天重要面试/签约' },
+        lineText: { kr: '망상선: "망치면 내 인생 전체가 나락으로 떨어져"', en: 'Drama Line: "If I blow this, my whole life will plummet"', jp: '妄想線: 「失敗したら私の人生すべてが崩壊する」', cn: '妄想线：“一旦搞砸，我的人生就彻底完蛋”' },
+        lensText: { kr: '왜곡렌즈: [세상은 단 한 번의 실수도 용납 안 한다]', en: 'Distorted Lens: [Life never forgives a single flaw]', jp: '歪んだレンズ: [世間はたった一度の失敗も許さない]', cn: '扭曲滤镜：[现实绝不容忍任何微小差错]' },
+        cleanFactText: { kr: '순수 사실: "지금 나는 안전한 방에 있다. 내일 일은 내일 마주하면 된다."', en: 'Pure Fact: "Right now I am safe in my room. Face tomorrow when it comes."', jp: '純粋な事実: 「今私は安全な部屋にいる。明日のことは明日向き合えばよい。」', cn: '纯净事实：“此时此刻我在安全的房间里。明天的事明天再去面对。”' }
+    },
+    'card_08': {
+        pointText: { kr: '사건: 과거에 내린 잘못된 선택으로 손실', en: 'Event: Financial or emotional loss from past choice', jp: '事件: 過去の誤った選択による損失', cn: '事件：过去的失误决策造成损失' },
+        lineText: { kr: '망상선: "그때 그러지 말았어야 했는데 내 손으로 인생을 망쳤어"', en: 'Drama Line: "I should not have done that, I ruined everything"', jp: '妄想線: 「あの時そうしなければ…自分の手で人生を壊した」', cn: '妄想线：“要是当初不那么做该多好，是我亲手毁了一切”' },
+        lensText: { kr: '왜곡렌즈: [나는 항상 치명적인 실수를 반복한다]', en: 'Distorted Lens: [I always repeat fatal mistakes]', jp: '歪んだレンズ: [私は常に致命的なミスを繰り返す]', cn: '扭曲滤镜：[我总会重蹈覆辙]' },
+        cleanFactText: { kr: '순수 사실: "과거는 바꿀 수 없지만, 그 데이터는 앞으로 10년의 나침반이 된다."', en: 'Pure Fact: "Past cannot change, but the data becomes a 10-year compass."', jp: '純粋な事実: 「過去は変えられないが、そのデータは今後の10年の羅針盤となる。」', cn: '纯净事实：“过去无法改写，但该数据将成为未来10年的导航针。”' }
+    }
+};
+
+// 헬퍼: 카드의 캡슐 테마 가져오기
+export function getCardCapsuleTheme(card: MemoryCard) {
+    return card.capsuleTheme || CAPSULE_THEMES_MAP[card.id] || CAPSULE_THEMES_MAP['card_01'];
+}
+
+// 헬퍼: 카드의 패턴 슬라이서 데이터 가져오기
+export function getCardSmasherData(card: MemoryCard) {
+    return card.smasherData || SMASHER_DATA_MAP[card.id] || SMASHER_DATA_MAP['card_01'];
+}

@@ -3,9 +3,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-    Brain, Zap, Target, BookMarked, Award, CheckCircle2, XCircle, 
+    Brain, Zap, Target, Award, CheckCircle2, XCircle, 
     ChevronRight, ChevronLeft, RotateCcw, Sparkles, Volume2, 
-    Flame, ArrowRight, Check, Share2, HelpCircle, Lock, X
+    Flame, ArrowRight, Check, Share2, HelpCircle, Lock, X,
+    Heart, Scissors, Activity, Pill, ShieldAlert, Sparkle, RefreshCw
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
@@ -13,7 +14,9 @@ import {
     MemoryCard, 
     UserGameProgress, 
     INITIAL_GAME_PROGRESS,
-    PracticeStep 
+    PracticeStep,
+    getCardCapsuleTheme,
+    getCardSmasherData
 } from '@/data/MyeongsimMemoryGameDB';
 import { passAcademyExam, getAcademyState } from '@/lib/questUnlockManager';
 import { ACADEMY_COURSES, ACADEMY_EXAMS } from '@/data/MyeongsimAcademyDB';
@@ -24,131 +27,179 @@ interface MyeongsimMemoryGameModalProps {
     initialExamQuizId?: string;
 }
 
-// 🌐 4개 국어 UI 사전
+// 🌐 4개 국어 UI 사전 (의료법 준수: 멘탈 피트니스 및 마음 자각 게임 메타포)
 const GAME_I18N = {
     kr: {
-        modalTitle: "명심 자각 기억 훈련소",
-        modalSubtitle: "뇌과학 3단계 기억법(단기·중기·장기)으로 체화하는 실습 게임",
-        tabShort: "⚡ 3초 스냅 플래시 (단기)",
-        tabMid: "🎯 패턴 브레이커 (중기)",
-        tabLong: "🥋 5-STEP 자각 도장 (장기)",
-        tabDeck: "🏆 마스터리 도감",
+        modalTitle: "명심 멘탈 피트니스 훈련소",
+        modalSubtitle: "뇌과학 3단계 기억법으로 마시는 마음 0점 리셋 디지털 캡슐",
+        medicalDisclaimer: "본 시스템은 의료법상 질병의 치료를 위한 의약품이나 의료기기가 아니며, 인지과학 원리를 게임화한 '멘탈 피트니스 및 자기자각 코칭' 솔루션입니다.",
+        tabCapsule: "💊 3초 마인드 캡슐",
+        tabSmasher: "⚔️ 패턴 슬라이서",
+        tabPractice: "🧬 5-STEP 신경 도장",
+        tabCabinet: "🗄️ 마음 비타민 도감",
         levelLabel: "Lv.",
         levelTitle: ["자각의 입문자", "렌즈의 관찰자", "패턴 브레이커", "감정 연금술사", "제로포인트 마스터"],
         expLabel: "자각 EXP",
-        streakLabel: "일 연속 달성",
-        cardFlipHint: "💡 카드를 클릭하면 통찰 해설이 뒤집힙니다!",
-        btnKnown: "✨ 마스터했어요 (+20 EXP)",
-        btnReview: "🔄 다시 볼래요 (+5 EXP)",
-        quizTitle: "상황 시나리오 퀴즈",
-        quizNext: "다음 퀘스트 도전 ➔",
-        practiceTitle: "POINT → LINE → LENS 5단계 실전 워크시트",
+        streakLabel: "일 연속 복용",
+        capsuleHoldGuide: "가슴에 손을 얹고 3초간 꾹 눌러 숨을 고르세요",
+        capsuleInhaling: "숨을 천천히 들이쉬며 자각을 모읍니다... (1s)",
+        capsuleHolding: "숨을 멈추고 내면의 공간을 관찰합니다... (2s)",
+        capsuleExhaling: "후- 내쉬며 왜곡된 생각을 비워냅니다! (3s)",
+        capsuleDissolvedTitle: "캡슐 복용 완료! 마음 0점 리셋",
+        amygdalaCoolDown: "편도체 과열도",
+        prefrontalActive: "전두엽 메타인지 활성도",
+        btnNextCapsule: "다음 마인드 캡슐 복용 ➔",
+        btnSaveToCabinet: "✨ 완전 체화 & 도감 저장 (+20 EXP)",
+        btnReviewCapsule: "🔄 다시 음미하기 (+5 EXP)",
+        smasherTitle: "왜곡된 인지 사슬 싹둑 분쇄기",
+        smasherSubtitle: "사건(Point)과 망상(Line)과 왜곡(Lens)을 1초 만에 분리 절단하세요",
+        smasherSliceBtn: "✂️ 왜곡의 사슬 싹둑 자르기!",
+        smasherShatterNotice: "💥 왜곡된 렌즈가 산산조각 나며 순수 사실로 정화되었습니다!",
+        smasherFactHeader: "✨ 정화된 순수 사실 (Pure Fact)",
+        practiceTitle: "5-STEP 실전 자각 워크시트",
         practiceIntro: "내 머릿속 소설에서 빠져나와 1초 만에 영점(Zero Point)으로 복귀하는 5단계",
         stepNext: "다음 단계로 ➔",
         stepPrev: "이전 단계",
-        stepFinish: "🎉 5단계 자각 훈련 완료 & 리포트 발급",
+        stepFinish: "🎉 5단계 완료 & 멘탈 피트니스 완주증 발급",
         practiceReset: "새로운 고민으로 다시 훈련하기",
-        deckTitle: "내가 수집한 골든 앵커 카드",
-        deckSubtitle: "에빙하우스 망각곡선에 따라 일상에서 실시간으로 떠올릴 내면의 방패",
+        cabinetTitle: "내 디지털 마음 약통 (수집 도감)",
+        cabinetSubtitle: "에빙하우스 망각곡선에 맞서 일상에서 실시간으로 떠올릴 내면의 방패",
         masteredBadge: "완전 체화",
         learningBadge: "훈련 중",
         closeBtn: "닫기",
-        loadExampleBtn: "💡 예시 답변 채우기",
+        loadExampleBtn: "💡 뇌과학 예시 답변 채우기",
         congratsLevelUp: "축하합니다! 의식 레벨이 올랐습니다! 🎊",
-        audioNotice: "사운드 효과 켜짐"
+        certificateTitle: "명심 멘탈 피트니스 공인 완주 증명서",
+        certificateSubtitle: "본 학습자는 POINT-LINE-LENS 인지 해체 프로토콜을 성실히 이수하여 마인드 0점 리셋 역량을 입증하였습니다."
     },
     en: {
-        modalTitle: "Zero Point Memory Dojo",
-        modalSubtitle: "Gamified 3-Stage Neuro-Memory Training (Short, Mid, Long-Term)",
-        tabShort: "⚡ 3-Sec Flash (Short)",
-        tabMid: "🎯 Pattern Breaker (Mid)",
-        tabLong: "🥋 5-STEP Practice (Long)",
-        tabDeck: "🏆 Mastery Deck",
+        modalTitle: "Mind Fitness Dojo & Digital Capsule",
+        modalSubtitle: "Reset your mind to Zero Point with 3-Stage Neuro-Habit Capsules",
+        medicalDisclaimer: "This service is a mental fitness & self-coaching tool, not a medical drug or medical device.",
+        tabCapsule: "💊 3-Sec Mind Capsule",
+        tabSmasher: "⚔️ Pattern Smasher",
+        tabPractice: "🧬 5-STEP Neuro Dojo",
+        tabCabinet: "🗄️ Vitamin Cabinet",
         levelLabel: "Lv.",
         levelTitle: ["Awareness Novice", "Lens Observer", "Pattern Breaker", "Emotional Alchemist", "Zero Point Master"],
         expLabel: "Awareness EXP",
         streakLabel: "Day Streak",
-        cardFlipHint: "💡 Click card to flip for core insights!",
-        btnKnown: "✨ Mastered (+20 EXP)",
-        btnReview: "🔄 Review Later (+5 EXP)",
-        quizTitle: "Real-Life Scenario Quiz",
-        quizNext: "Next Quest ➔",
-        practiceTitle: "POINT → LINE → LENS 5-Step Worksheet",
+        capsuleHoldGuide: "Place hand on chest and press & hold for 3s to breathe",
+        capsuleInhaling: "Inhale deeply, gathering raw awareness... (1s)",
+        capsuleHolding: "Hold breath, observing the inner space... (2s)",
+        capsuleExhaling: "Exhale gently, clearing distorted thoughts! (3s)",
+        capsuleDissolvedTitle: "Capsule Dissolved! Reset to Zero Point",
+        amygdalaCoolDown: "Amygdala Cool-down",
+        prefrontalActive: "Prefrontal Meta-Cognition",
+        btnNextCapsule: "Take Next Capsule ➔",
+        btnSaveToCabinet: "✨ Mastered & Save (+20 EXP)",
+        btnReviewCapsule: "🔄 Review Later (+5 EXP)",
+        smasherTitle: "Cognitive Chain Smasher",
+        smasherSubtitle: "Slice the drama line between Point and Lens in seconds",
+        smasherSliceBtn: "✂️ Slice the Distorted Chain!",
+        smasherShatterNotice: "💥 Distorted lens shattered into crystal clarity!",
+        smasherFactHeader: "✨ Purified Reality (Pure Fact)",
+        practiceTitle: "5-STEP Real-Life Awareness Worksheet",
         practiceIntro: "5 steps to escape cognitive drama and recalibrate to Zero Point in seconds.",
         stepNext: "Next Step ➔",
         stepPrev: "Previous",
-        stepFinish: "🎉 Complete Training & Issue Report",
+        stepFinish: "🎉 Complete & Issue Certificate",
         practiceReset: "Start New Practice",
-        deckTitle: "My Golden Anchor Collection",
-        deckSubtitle: "Your inner cognitive shields anchored against the forgetting curve.",
+        cabinetTitle: "My Digital Vitamin Cabinet",
+        cabinetSubtitle: "Your inner cognitive shields anchored against the forgetting curve.",
         masteredBadge: "Mastered",
         learningBadge: "Training",
         closeBtn: "Close",
         loadExampleBtn: "💡 Load Example Answer",
         congratsLevelUp: "Level Up! Consciousness Expanded! 🎊",
-        audioNotice: "Audio Enabled"
+        certificateTitle: "Mind Fitness Completion Certificate",
+        certificateSubtitle: "Successfully accomplished the POINT-LINE-LENS cognitive deconstruction protocol."
     },
     jp: {
-        modalTitle: "明心 自覚記憶トレーニング道場",
-        modalSubtitle: "脳科学3段階記憶法(短期・中期・長期)で体得する実践ゲーム",
-        tabShort: "⚡ 3秒フラッシュ (短期)",
-        tabMid: "🎯 パターンブレイカー (中期)",
-        tabLong: "🥋 5-STEP 自覚道場 (長期)",
-        tabDeck: "🏆 マスター図鑑",
+        modalTitle: "明心 メンタルフィットネス訓練所",
+        modalSubtitle: "脳科学3段階記憶法で飲むマインドゼロポイントデジタルカプセル",
+        medicalDisclaimer: "本サービスは医療機器や医薬品ではなく、認知科学に基づくメンタルフィットネス・コーチングゲームです。",
+        tabCapsule: "💊 3秒マインドカプセル",
+        tabSmasher: "⚔️ パターンスライサー",
+        tabPractice: "🧬 5-STEP 神経道場",
+        tabCabinet: "🗄️ 心のビタミン図鑑",
         levelLabel: "Lv.",
         levelTitle: ["自覚の初心者", "レンズの観察者", "パターンブレイカー", "感情の錬金術師", "ゼロポイントマスター"],
         expLabel: "自覚EXP",
-        streakLabel: "日連続達成",
-        cardFlipHint: "💡 カードをクリックすると解説が裏返ります！",
-        btnKnown: "✨ 覚えました (+20 EXP)",
-        btnReview: "🔄 もう一度 (+5 EXP)",
-        quizTitle: "状況シナリオクイズ",
-        quizNext: "次のクエストへ ➔",
-        practiceTitle: "POINT → LINE → LENS 5段階実践ワークシート",
+        streakLabel: "日連続服用",
+        capsuleHoldGuide: "胸に手を当てて3秒間長押しし、呼吸を整えてください",
+        capsuleInhaling: "深く息を吸い込み、意識を集中させます... (1秒)",
+        capsuleHolding: "息を止め、内なる空間を静かに見つめます... (2秒)",
+        capsuleExhaling: "ふーっと吐き出し、歪んだ思考を空っぽにします！ (3秒)",
+        capsuleDissolvedTitle: "カプセル服用完了！ゼロポイントへ帰還",
+        amygdalaCoolDown: "扁桃体クールダウン",
+        prefrontalActive: "前頭葉メタ認知活性度",
+        btnNextCapsule: "次のカプセルを服用 ➔",
+        btnSaveToCabinet: "✨ 完全体得＆保存 (+20 EXP)",
+        btnReviewCapsule: "🔄 もう一度 (+5 EXP)",
+        smasherTitle: "認知の歪み連鎖スライサー",
+        smasherSubtitle: "出来事(点)と妄想(線)とレンズを1秒で切り離します",
+        smasherSliceBtn: "✂️ 歪みの鎖を一刀両断！",
+        smasherShatterNotice: "💥 歪んだレンズが砕け散り、純粋な事実へと浄化されました！",
+        smasherFactHeader: "✨ 浄化された純粋な事実",
+        practiceTitle: "5-STEP 実践ワークシート",
         practiceIntro: "脳内ドラマから脱出し、一瞬でゼロポイントへ立ち返る5段階",
         stepNext: "次のステップ ➔",
         stepPrev: "前のステップ",
-        stepFinish: "🎉 5段階完了＆処方箋発行",
+        stepFinish: "🎉 5段階完了＆修了証発行",
         practiceReset: "新しい悩みで再訓練",
-        deckTitle: "獲得したゴールデンアンカー図鑑",
-        deckSubtitle: "忘却曲線に抗い、日常で即座に発動する心の盾",
+        cabinetTitle: "デジタル心の薬箱 (図鑑)",
+        cabinetSubtitle: "忘却曲線に抗い、日常で即座に発動する心の盾",
         masteredBadge: "完全体得",
         learningBadge: "訓練中",
         closeBtn: "閉じる",
         loadExampleBtn: "💡 模範例を入力",
         congratsLevelUp: "レベルアップ！意識が拡張しました！ 🎊",
-        audioNotice: "サウンド効果ON"
+        certificateTitle: "メンタルフィットネス修了証明書",
+        certificateSubtitle: "POINT-LINE-LENS認知解体プロトコルを修了し、ゼロリセット能力を証明します。"
     },
     cn: {
-        modalTitle: "明心自知记忆演练所",
-        modalSubtitle: "基于脑科学三阶段记忆法（短期·中期·长期）的游戏化心智实操",
-        tabShort: "⚡ 3秒闪记卡 (短期)",
-        tabMid: "🎯 模式粉碎者 (中期)",
-        tabLong: "🥋 5步自知工坊 (长期)",
-        tabDeck: "🏆 掌握图鉴",
+        modalTitle: "明心心智健身训练所",
+        modalSubtitle: "基于脑科学三阶段记忆法的心理归零数字胶囊",
+        medicalDisclaimer: "本系统并非用于医疗诊疗的药品或器械，属于基于认知科学的心智健身与自我觉察教练游戏。",
+        tabCapsule: "💊 3秒心智胶囊",
+        tabSmasher: "⚔️ 模式粉碎机",
+        tabPractice: "🧬 5步神经工坊",
+        tabCabinet: "🗄️ 心灵维他命柜",
         levelLabel: "Lv.",
         levelTitle: ["自知入门者", "滤镜观察者", "模式粉碎者", "情绪炼金师", "零点宗师"],
         expLabel: "觉察EXP",
         streakLabel: "天连续打卡",
-        cardFlipHint: "💡 点击卡片翻转查看深层洞见！",
-        btnKnown: "✨ 已熟练掌握 (+20 EXP)",
-        btnReview: "🔄 稍后复习 (+5 EXP)",
-        quizTitle: "现实情境测验",
-        quizNext: "进入下一关 ➔",
-        practiceTitle: "POINT → LINE → LENS 5步实战工坊",
+        capsuleHoldGuide: "手抚胸口长按3秒，跟随指引调整呼吸",
+        capsuleInhaling: "缓慢深吸气，汇聚纯净觉知... (1秒)",
+        capsuleHolding: "屏住呼吸，静观内在空间... (2秒)",
+        capsuleExhaling: "长呼一口气，彻底清空执念！ (3秒)",
+        capsuleDissolvedTitle: "胶囊服用完毕！心智瞬间归零",
+        amygdalaCoolDown: "杏仁核快速降温",
+        prefrontalActive: "前额叶元认知激活度",
+        btnNextCapsule: "服用下一粒胶囊 ➔",
+        btnSaveToCabinet: "✨ 完全掌握并入柜 (+20 EXP)",
+        btnReviewCapsule: "🔄 稍后复习 (+5 EXP)",
+        smasherTitle: "认知扭曲锁链粉碎机",
+        smasherSubtitle: "1秒斩断事件(点)、脑补(线)与歪曲滤镜(面)",
+        smasherSliceBtn: "✂️ 瞬间斩断扭曲锁链！",
+        smasherShatterNotice: "💥 歪曲滤镜应声碎裂，还原纯净现实！",
+        smasherFactHeader: "✨ 净化后的纯净事实",
+        practiceTitle: "5步实战觉察工坊",
         practiceIntro: "跳脱思想剧场、瞬间校准回归零点的5个关键步骤",
         stepNext: "下一步 ➔",
         stepPrev: "上一步",
-        stepFinish: "🎉 完成5步觉察并生成报告",
+        stepFinish: "🎉 完成5步觉察并生成证书",
         practiceReset: "载入新困惑再次演练",
-        deckTitle: "已解锁的黄金心锚图鉴",
-        deckSubtitle: "对抗艾宾浩斯遗忘曲线、日常生活中即时唤醒的心灵之盾",
+        cabinetTitle: "我的数字心灵药箱 (图鉴)",
+        cabinetSubtitle: "对抗艾宾浩斯遗忘曲线、日常生活中即时唤醒的心灵之盾",
         masteredBadge: "完全掌握",
         learningBadge: "演练中",
         closeBtn: "关闭",
         loadExampleBtn: "💡 一键填入范例答案",
         congratsLevelUp: "升级啦！心智意识进一步拓展！ 🎊",
-        audioNotice: "音效已开启"
+        certificateTitle: "心智健身结业证明书",
+        certificateSubtitle: "圆满完成POINT-LINE-LENS认知解构，具备瞬间心理归零能力。"
     }
 };
 
@@ -160,31 +211,35 @@ export default function MyeongsimMemoryGameModal({
     const t = GAME_I18N[language as keyof typeof GAME_I18N] || GAME_I18N.kr;
     const langKey = (language as 'kr' | 'en' | 'jp' | 'cn') || 'kr';
 
-    // ── 1. 탭 상태 (short, mid, long, deck) ──
-    const [activeTab, setActiveTab] = useState<'short' | 'mid' | 'long' | 'deck'>('short');
+    // ── 1. 탭 상태 (capsule, smasher, practice, cabinet) ──
+    const [activeTab, setActiveTab] = useState<'capsule' | 'smasher' | 'practice' | 'cabinet'>('capsule');
 
-    // ── 2. 게임 진행 상황 (로컬 스토리지 연동) ──
+    // ── 2. 게임 진행 상황 ──
     const [progress, setProgress] = useState<UserGameProgress>(INITIAL_GAME_PROGRESS);
     const [comboCount, setComboCount] = useState<number>(0);
 
-    // ── 3. 단기 플래시카드 상태 ──
-    const [flashIndex, setFlashIndex] = useState<number>(0);
-    const [isFlipped, setIsFlipped] = useState<boolean>(false);
+    // ── 3. [모드 1] 3초 바이오 캡슐 상태 ──
+    const [capsuleIndex, setCapsuleIndex] = useState<number>(0);
+    const [isHolding, setIsHolding] = useState<boolean>(false);
+    const [holdProgress, setHoldProgress] = useState<number>(0);
+    const [isCapsuleDissolved, setIsCapsuleDissolved] = useState<boolean>(false);
+    const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-    // ── 4. 중기 퀴즈 상태 ──
-    const [quizCardIndex, setQuizCardIndex] = useState<number>(0);
-    const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
-    const [isAnswerSubmitted, setIsAnswerSubmitted] = useState<boolean>(false);
+    // ── 4. [모드 2] ⚔️ 패턴 슬라이서 상태 ──
+    const [smasherIndex, setSmasherIndex] = useState<number>(0);
+    const [isSliced, setIsSliced] = useState<boolean>(false);
+    const [isShattered, setIsShattered] = useState<boolean>(false);
 
-    // ── 5. 장기 5-STEP 실습 상태 ──
+    // ── 5. [모드 3] 🧬 5-STEP 실전 자각 도장 상태 ──
     const [practiceStepIndex, setPracticeStepIndex] = useState<number>(0);
     const [userAnswers, setUserAnswers] = useState<{ [step: number]: string }>({});
     const [isPracticeComplete, setIsPracticeComplete] = useState<boolean>(false);
-    // [NEW] 평생교육원 공인 자격 승급 알림
+
+    // [NEW] 자격 승급 알림
     const [unlockedNotice, setUnlockedNotice] = useState<{ level: number; skills: string[] } | null>(null);
 
-    // ── 6. 사운드 효과 (Web Audio API) ──
-    const playTone = (freq: number, type: OscillatorType = 'sine', duration: number = 0.15) => {
+    // ── 6. 🔊 Web Audio API 사운드 신디사이저 ──
+    const playTone = (freq: number, type: OscillatorType = 'sine', duration: number = 0.15, gainVal: number = 0.12) => {
         try {
             if (typeof window === 'undefined') return;
             const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
@@ -194,7 +249,7 @@ export default function MyeongsimMemoryGameModal({
             const gain = ctx.createGain();
             osc.type = type;
             osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            gain.gain.setValueAtTime(0.12, ctx.currentTime);
+            gain.gain.setValueAtTime(gainVal, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
             osc.connect(gain);
             gain.connect(ctx.destination);
@@ -205,18 +260,30 @@ export default function MyeongsimMemoryGameModal({
         }
     };
 
-    const playSuccessChime = () => {
-        playTone(528, 'triangle', 0.18);
-        setTimeout(() => playTone(660, 'sine', 0.25), 100);
+    const playCapsulePop = () => {
+        playTone(320, 'sine', 0.08, 0.2);
+        setTimeout(() => playTone(528, 'triangle', 0.45, 0.15), 60);
+        setTimeout(() => playTone(660, 'sine', 0.5, 0.12), 120);
+        setTimeout(() => playTone(792, 'sine', 0.6, 0.1), 180);
     };
 
-    const playLevelUpFanfare = () => {
-        [440, 554, 659, 880].forEach((freq, idx) => {
-            setTimeout(() => playTone(freq, 'triangle', 0.3), idx * 120);
+    const playSliceSound = () => {
+        playTone(900, 'sawtooth', 0.07, 0.18);
+        setTimeout(() => playTone(450, 'triangle', 0.12, 0.15), 40);
+    };
+
+    const playShatterSound = () => {
+        [880, 1100, 1320, 1760, 2200].forEach((freq, i) => {
+            setTimeout(() => playTone(freq, 'sine', 0.25, 0.1 - i * 0.015), i * 35);
         });
     };
 
-    // 로컬 스토리지 불러오기
+    const playLevelUpFanfare = () => {
+        [440, 554, 659, 880, 1108].forEach((freq, idx) => {
+            setTimeout(() => playTone(freq, 'triangle', 0.35, 0.15), idx * 100);
+        });
+    };
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('myeongsim_memory_game_progress');
@@ -230,7 +297,6 @@ export default function MyeongsimMemoryGameModal({
         }
     }, []);
 
-    // EXP 증가 및 레벨업 함수
     const addExp = (amount: number, cardId?: string) => {
         setProgress(prev => {
             const newExp = prev.exp + amount;
@@ -256,111 +322,136 @@ export default function MyeongsimMemoryGameModal({
 
             if (isLevelUp) {
                 playLevelUpFanfare();
-            } else {
-                playSuccessChime();
             }
 
             return updated;
         });
     };
 
-    const currentFlashCard = MEMORY_CARDS_DB[flashIndex % MEMORY_CARDS_DB.length];
-    const quizCards = useMemo(() => MEMORY_CARDS_DB.filter(c => c.quiz), []);
-    const currentQuizCard = quizCards[quizCardIndex % quizCards.length];
+    const currentCard = MEMORY_CARDS_DB[capsuleIndex % MEMORY_CARDS_DB.length];
+    const capsuleTheme = getCardCapsuleTheme(currentCard);
+
+    const currentSmasherCard = MEMORY_CARDS_DB[smasherIndex % MEMORY_CARDS_DB.length];
+    const smasherData = getCardSmasherData(currentSmasherCard);
+
     const practiceCard = MEMORY_CARDS_DB.find(c => c.id === 'card_02') || MEMORY_CARDS_DB[1];
     const steps = practiceCard.practiceSteps || [];
 
-    // 단기 플래시 카드 다음으로
-    const handleFlashNext = (mastered: boolean) => {
-        if (mastered) {
-            setComboCount(prev => prev + 1);
-            addExp(20, currentFlashCard.id);
-        } else {
-            setComboCount(0);
-            addExp(5);
-        }
-        setIsFlipped(false);
-        setFlashIndex(prev => (prev + 1) % MEMORY_CARDS_DB.length);
+    // 3초 캡슐 홀드
+    const startHold = () => {
+        if (isCapsuleDissolved) return;
+        setIsHolding(true);
+        const startTime = Date.now();
+        const duration = 2400;
+
+        holdTimerRef.current = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const pct = Math.min(100, (elapsed / duration) * 100);
+            setHoldProgress(pct);
+
+            if (pct >= 100) {
+                if (holdTimerRef.current) clearInterval(holdTimerRef.current);
+                setIsHolding(false);
+                setIsCapsuleDissolved(true);
+                playCapsulePop();
+                addExp(20, currentCard.id);
+                setComboCount(prev => prev + 1);
+            }
+        }, 30);
     };
 
-    // 퀴즈 옵션 선택
-    const handleSelectOption = (optId: string) => {
-        if (isAnswerSubmitted) return;
-        setSelectedOptionId(optId);
-        setIsAnswerSubmitted(true);
+    const cancelHold = () => {
+        if (holdTimerRef.current) clearInterval(holdTimerRef.current);
+        setIsHolding(false);
+        setHoldProgress(0);
+    };
 
-        const currentOpt = currentQuizCard.quiz?.options.find(o => o.id === optId);
-        if (currentOpt?.isCorrect) {
+    const handleNextCapsule = () => {
+        setIsCapsuleDissolved(false);
+        setHoldProgress(0);
+        setCapsuleIndex(prev => (prev + 1) % MEMORY_CARDS_DB.length);
+    };
+
+    // 패턴 슬라이서
+    const handleSliceAction = () => {
+        if (isSliced) return;
+        playSliceSound();
+        setIsSliced(true);
+
+        setTimeout(() => {
+            playShatterSound();
+            setIsShattered(true);
+            addExp(25, currentSmasherCard.id);
             setComboCount(prev => prev + 1);
-            addExp(30, currentQuizCard.id);
 
-            // [NEW] 🏛️ 평생교육원 공인 자격 승급 시험 자동 연동 (레벨업 & 스킬 해금)
-            const targetExamLevel = Math.min(5, Math.floor(quizCardIndex / 2) + 1);
+            const targetExamLevel = Math.min(5, Math.floor(smasherIndex / 2) + 1);
             const examId = `quiz_lvl${targetExamLevel}`;
             const examResult = passAcademyExam(examId, targetExamLevel);
             if (examResult.leveledUp) {
-                setUnlockedNotice({
-                    level: examResult.newLevel,
-                    skills: examResult.newlyUnlockedSkills
-                });
+                setUnlockedNotice({ level: examResult.newLevel, skills: examResult.newlyUnlockedSkills });
             }
-        } else {
-            setComboCount(0);
-            playTone(220, 'sawtooth', 0.2);
-        }
+        }, 400);
     };
 
-    const handleQuizNext = () => {
-        setSelectedOptionId(null);
-        setIsAnswerSubmitted(false);
-        setQuizCardIndex(prev => (prev + 1) % quizCards.length);
+    const handleNextSmasher = () => {
+        setIsSliced(false);
+        setIsShattered(false);
+        setSmasherIndex(prev => (prev + 1) % MEMORY_CARDS_DB.length);
     };
 
-    // 5-STEP 실습 단계 이동
-    const handleStepAnswerChange = (val: string) => {
-        setUserAnswers(prev => ({ ...prev, [practiceStepIndex]: val }));
+    // 5-STEP 실습
+    const handleStepAnswerChange = (text: string) => {
+        setUserAnswers(prev => ({
+            ...prev,
+            [practiceStepIndex]: text
+        }));
     };
 
     const handleLoadExample = () => {
-        const curr = steps[practiceStepIndex];
-        if (curr) {
-            setUserAnswers(prev => ({
-                ...prev,
-                [practiceStepIndex]: curr.exampleAnswer[langKey] || curr.exampleAnswer.kr
-            }));
+        const currentStep = steps[practiceStepIndex];
+        if (currentStep) {
+            handleStepAnswerChange(currentStep.exampleAnswer[langKey] || currentStep.exampleAnswer.kr);
+            playTone(660, 'triangle', 0.1);
         }
     };
 
-    const handleNextStep = () => {
+    const handlePracticeNext = () => {
         if (practiceStepIndex < steps.length - 1) {
-            playTone(480, 'sine', 0.1);
             setPracticeStepIndex(prev => prev + 1);
+            playTone(550, 'sine', 0.1);
         } else {
-            // 5단계 완료
             setIsPracticeComplete(true);
-            addExp(50, 'card_02');
+            addExp(50, practiceCard.id);
+            playLevelUpFanfare();
         }
+    };
+
+    const handlePracticeReset = () => {
+        setPracticeStepIndex(0);
+        setUserAnswers({});
+        setIsPracticeComplete(false);
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-4 select-none">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-fade-in overflow-y-auto select-none">
+            {/* ── 메인 모달 프레임 ── */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                initial={{ opacity: 0, scale: 0.96, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative w-full max-w-2xl bg-gradient-to-b from-[#101428] via-[#0d1020] to-[#070913] border-2 border-cyan-400/40 rounded-3xl shadow-[0_20px_70px_rgba(6,182,212,0.25)] flex flex-col max-h-[92vh] overflow-hidden text-left"
+                exit={{ opacity: 0, scale: 0.96, y: 15 }}
+                className="relative w-full max-w-2xl bg-gradient-to-b from-[#11162d] via-[#0c1021] to-[#070914] border-2 border-cyan-400/40 rounded-3xl shadow-[0_20px_80px_rgba(6,182,212,0.28)] flex flex-col max-h-[92vh] overflow-hidden text-left"
             >
-                {/* ── 1. 상단 바: 타이틀 & 레벨 & EXP ── */}
-                <div className="relative z-10 px-5 py-4 border-b border-white/10 bg-[#141a33]/90 backdrop-blur-md flex items-center justify-between">
+                {/* ── 1. 상단 헤더: 타이틀 & 뇌파 펄스 & 닫기 ── */}
+                <div className="relative z-10 px-5 pt-4 pb-3.5 border-b border-white/10 bg-[#151b36]/95 backdrop-blur-md flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30">
-                            <Brain size={22} className="animate-pulse" />
+                        <div className="size-10 rounded-2xl bg-gradient-to-tr from-cyan-400 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30 shrink-0">
+                            <Activity size={22} className="animate-pulse text-cyan-200" />
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h2 className="text-sm sm:text-base font-black text-white">
+                                <h2 className="text-sm sm:text-base font-black text-white tracking-tight">
                                     {t.modalTitle}
                                 </h2>
                                 <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-full border border-amber-400/30 flex items-center gap-1">
@@ -368,22 +459,22 @@ export default function MyeongsimMemoryGameModal({
                                     <span>{progress.streakDays}{t.streakLabel}</span>
                                 </span>
                             </div>
-                            <p className="text-[11px] text-cyan-300/80 line-clamp-1">
+                            <p className="text-[11px] text-cyan-300/85 line-clamp-1">
                                 {t.modalSubtitle}
                             </p>
                         </div>
                     </div>
 
                     {/* 우측 닫기 & 콤보 */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                         {comboCount > 1 && (
                             <motion.div 
-                                initial={{ scale: 0.7 }} 
-                                animate={{ scale: [1, 1.15, 1] }} 
-                                transition={{ repeat: Infinity, duration: 0.8 }}
-                                className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 text-slate-950 text-[10px] font-black shadow-md flex items-center gap-1"
+                                initial={{ scale: 0.8 }} 
+                                animate={{ scale: [1, 1.12, 1] }} 
+                                transition={{ repeat: Infinity, duration: 0.9 }}
+                                className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 text-slate-950 text-[10px] font-black shadow-md flex items-center gap-1"
                             >
-                                <Zap size={12} className="fill-slate-950" />
+                                <Zap size={11} className="fill-slate-950" />
                                 <span>COMBO x{comboCount}</span>
                             </motion.div>
                         )}
@@ -397,7 +488,7 @@ export default function MyeongsimMemoryGameModal({
                 </div>
 
                 {/* ── 2. 의식 레벨 & EXP 진행 바 ── */}
-                <div className="px-5 py-2.5 bg-[#0a0d1a] border-b border-white/5 flex items-center justify-between text-xs gap-3">
+                <div className="px-5 py-2.5 bg-[#090c19] border-b border-white/5 flex items-center justify-between text-xs gap-3">
                     <div className="flex items-center gap-2">
                         <span className="text-[11px] font-black text-cyan-300 font-mono">
                             {t.levelLabel}{progress.level}
@@ -407,7 +498,6 @@ export default function MyeongsimMemoryGameModal({
                         </span>
                     </div>
 
-                    {/* EXP 바 */}
                     <div className="flex-1 max-w-xs flex items-center gap-2">
                         <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden relative">
                             <motion.div 
@@ -422,221 +512,333 @@ export default function MyeongsimMemoryGameModal({
                     </div>
                 </div>
 
-                {/* ── 3. 4대 모드 탭 ── */}
-                <div className="px-3 pt-2 bg-[#0d1022] border-b border-white/10 flex items-center gap-1 overflow-x-auto scrollbar-none">
+                {/* ── 3. 4대 알약 모드 탭 ── */}
+                <div className="px-4 py-2 bg-[#0e1226] border-b border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                     <button
-                        onClick={() => setActiveTab('short')}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                            activeTab === 'short'
-                                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm'
-                                : 'text-gray-400 hover:text-white'
+                        onClick={() => setActiveTab('capsule')}
+                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            activeTab === 'capsule'
+                                ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.25)]'
+                                : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Zap size={14} />
-                        <span>{t.tabShort}</span>
+                        <Pill size={14} className="text-cyan-400" />
+                        <span className="truncate">{t.tabCapsule}</span>
                     </button>
 
                     <button
-                        onClick={() => setActiveTab('mid')}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                            activeTab === 'mid'
-                                ? 'bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm'
-                                : 'text-gray-400 hover:text-white'
+                        onClick={() => setActiveTab('smasher')}
+                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            activeTab === 'smasher'
+                                ? 'bg-amber-500/25 text-amber-300 border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.25)]'
+                                : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Target size={14} />
-                        <span>{t.tabMid}</span>
+                        <Scissors size={14} className="text-amber-400" />
+                        <span className="truncate">{t.tabSmasher}</span>
                     </button>
 
                     <button
-                        onClick={() => setActiveTab('long')}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                            activeTab === 'long'
-                                ? 'bg-purple-500/20 text-purple-300 border border-purple-400/40 shadow-sm'
-                                : 'text-gray-400 hover:text-white'
+                        onClick={() => setActiveTab('practice')}
+                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            activeTab === 'practice'
+                                ? 'bg-purple-500/25 text-purple-300 border border-purple-400/50 shadow-[0_0_15px_rgba(168,85,247,0.25)]'
+                                : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Brain size={14} />
-                        <span>{t.tabLong}</span>
+                        <Brain size={14} className="text-purple-400" />
+                        <span className="truncate">{t.tabPractice}</span>
                     </button>
 
                     <button
-                        onClick={() => setActiveTab('deck')}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                            activeTab === 'deck'
-                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 shadow-sm'
-                                : 'text-gray-400 hover:text-white'
+                        onClick={() => setActiveTab('cabinet')}
+                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            activeTab === 'cabinet'
+                                ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
+                                : 'text-gray-400 hover:text-white bg-white/5'
                         }`}
                     >
-                        <Award size={14} />
-                        <span>{t.tabDeck} ({progress.masteredCardIds.length}/{MEMORY_CARDS_DB.length})</span>
+                        <Award size={14} className="text-emerald-400" />
+                        <span className="truncate">{t.tabCabinet} ({progress.masteredCardIds.length}/{MEMORY_CARDS_DB.length})</span>
                     </button>
                 </div>
 
                 {/* ── 4. 탭별 컨텐츠 바디 ── */}
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-                    {/* [탭 1: ⚡ 3초 스냅 플래시 카드] */}
-                    {activeTab === 'short' && (
-                        <div className="max-w-md mx-auto space-y-5">
-                            <p className="text-center text-[11px] text-cyan-200/70 font-mono">
-                                {t.cardFlipHint} ({flashIndex + 1} / {MEMORY_CARDS_DB.length})
-                            </p>
+                    
+                    {/* [모드 1: 💊 3초 마인드 캡슐 복용] */}
+                    {activeTab === 'capsule' && (
+                        <div className="max-w-md mx-auto space-y-5 text-center">
+                            <div className="flex items-center justify-between text-[11px] text-gray-400 font-mono px-1">
+                                <span>No. {capsuleIndex + 1} / {MEMORY_CARDS_DB.length}</span>
+                                <span className="text-cyan-300 font-bold bg-cyan-950/60 px-2.5 py-0.5 rounded-full border border-cyan-500/30">
+                                    {capsuleTheme.vitaminName[langKey] || capsuleTheme.vitaminName.kr}
+                                </span>
+                            </div>
 
-                            {/* 회전 플래시 카드 */}
-                            <div 
-                                onClick={() => setIsFlipped(!isFlipped)}
-                                className="cursor-pointer perspective-1000 group select-none"
-                            >
-                                <motion.div
-                                    animate={{ rotateY: isFlipped ? 180 : 0 }}
-                                    transition={{ duration: 0.5, type: 'spring', damping: 20 }}
-                                    style={{ transformStyle: 'preserve-3d' }}
-                                    className="relative w-full min-h-[260px] rounded-3xl p-6 sm:p-7 shadow-2xl flex flex-col justify-between border-2 transition-all bg-gradient-to-br from-[#161f38] via-[#10172c] to-[#0a0f1d] border-cyan-400/40 group-hover:border-cyan-300/70"
-                                >
-                                    {!isFlipped ? (
-                                        /* 🎴 카드 앞면: 핵심 키워드 & 3초 인지 */
-                                        <div className="space-y-4 text-center my-auto">
-                                            <div className="size-14 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-3xl mx-auto shadow-lg shadow-cyan-500/20">
-                                                {currentFlashCard.icon}
+                            <div className="relative py-4 select-none">
+                                <AnimatePresence mode="wait">
+                                    {!isCapsuleDissolved ? (
+                                        <motion.div
+                                            key="capsule-active"
+                                            initial={{ scale: 0.9, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            exit={{ scale: 1.05, opacity: 0 }}
+                                            onMouseDown={startHold}
+                                            onMouseUp={cancelHold}
+                                            onMouseLeave={cancelHold}
+                                            onTouchStart={startHold}
+                                            onTouchEnd={cancelHold}
+                                            className="cursor-pointer group flex flex-col items-center"
+                                        >
+                                            <div className="relative size-44 sm:size-48 rounded-full flex items-center justify-center bg-gradient-to-b from-white/5 to-white/0 border border-white/10 shadow-2xl">
+                                                <svg className="absolute inset-0 size-full -rotate-90">
+                                                    <circle
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        r="45%"
+                                                        className="stroke-white/10 fill-none"
+                                                        strokeWidth="6"
+                                                    />
+                                                    <circle
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        r="45%"
+                                                        className="stroke-cyan-400 fill-none transition-all duration-75"
+                                                        strokeWidth="6"
+                                                        strokeDasharray="280"
+                                                        strokeDashoffset={280 - (280 * holdProgress) / 100}
+                                                        strokeLinecap="round"
+                                                    />
+                                                </svg>
+
+                                                <motion.div 
+                                                    animate={{ 
+                                                        scale: isHolding ? [1, 1.08, 1] : [1, 1.02, 1],
+                                                        rotate: isHolding ? [0, 2, -2, 0] : 0
+                                                    }}
+                                                    transition={{ repeat: Infinity, duration: isHolding ? 0.6 : 3 }}
+                                                    className={`w-20 h-28 rounded-full bg-gradient-to-b ${capsuleTheme.gradient} shadow-[0_0_35px_${capsuleTheme.glowColor}] flex flex-col items-center justify-between p-2 border-2 border-white/60 relative overflow-hidden`}
+                                                >
+                                                    <div className="w-12 h-5 rounded-full bg-white/40 blur-[1px]" />
+                                                    <span className="text-2xl drop-shadow-md">
+                                                        {currentCard.icon}
+                                                    </span>
+                                                    <span className="text-[9px] font-mono font-black text-slate-950 uppercase tracking-tighter">
+                                                        ZERO-PT
+                                                    </span>
+                                                </motion.div>
                                             </div>
-                                            <div className="space-y-1">
-                                                <span className="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase px-2.5 py-0.5 rounded-full bg-cyan-950 border border-cyan-400/20">
-                                                    {currentFlashCard.subCode}
+
+                                            <div className="mt-4 space-y-1">
+                                                <p className="text-xs sm:text-sm font-black text-white">
+                                                    {isHolding ? (
+                                                        holdProgress < 33 
+                                                            ? t.capsuleInhaling 
+                                                            : holdProgress < 66 
+                                                                ? t.capsuleHolding 
+                                                                : t.capsuleExhaling
+                                                    ) : (
+                                                        `👆 ${t.capsuleHoldGuide}`
+                                                    )}
+                                                </p>
+                                                <p className="text-[11px] text-cyan-300/70">
+                                                    타깃: {capsuleTheme.symptomTarget[langKey] || capsuleTheme.symptomTarget.kr}
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="capsule-dissolved"
+                                            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#18203c] via-[#10162a] to-[#0a0f1e] border-2 border-cyan-400/50 shadow-[0_0_40px_rgba(6,182,212,0.3)] space-y-4 text-left"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-black text-amber-300 bg-amber-400/15 px-3 py-1 rounded-full border border-amber-400/40 flex items-center gap-1.5">
+                                                    <Sparkles size={14} className="text-amber-400" />
+                                                    <span>{t.capsuleDissolvedTitle}</span>
                                                 </span>
-                                                <h3 className="text-lg sm:text-xl font-black text-white pt-1">
-                                                    {currentFlashCard.keyword[langKey] || currentFlashCard.keyword.kr}
-                                                </h3>
+                                                <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                                                    528Hz Solfeggio Tuned
+                                                </span>
                                             </div>
-                                            <p className="text-xs text-gray-300 font-medium leading-relaxed max-w-xs mx-auto">
-                                                {currentFlashCard.oneLiner[langKey] || currentFlashCard.oneLiner.kr}
+
+                                            <div className="space-y-1.5 py-1">
+                                                <span className="text-[10px] font-mono font-bold text-cyan-300 uppercase tracking-wider">
+                                                    {currentCard.subCode}
+                                                </span>
+                                                <h3 className="text-base sm:text-lg font-black text-white leading-snug">
+                                                    {currentCard.keyword[langKey] || currentCard.keyword.kr}
+                                                </h3>
+                                                <p className="text-xs sm:text-sm text-gray-200 leading-relaxed font-medium bg-black/40 p-3.5 rounded-2xl border border-white/5">
+                                                    {currentCard.coreInsight[langKey] || currentCard.coreInsight.kr}
+                                                </p>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-3 p-3 rounded-2xl bg-black/30 border border-white/5 text-xs">
+                                                <div>
+                                                    <div className="flex justify-between text-[11px] font-bold text-rose-300">
+                                                        <span>{t.amygdalaCoolDown}</span>
+                                                        <span className="font-mono">88% ➔ {100 - capsuleTheme.coolDownScore}% ❄️</span>
+                                                    </div>
+                                                    <div className="w-full h-1.5 bg-white/10 rounded-full mt-1.5 overflow-hidden">
+                                                        <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${100 - capsuleTheme.coolDownScore}%` }} />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div className="flex justify-between text-[11px] font-bold text-emerald-300">
+                                                        <span>{t.prefrontalActive}</span>
+                                                        <span className="font-mono">{capsuleTheme.coolDownScore}% 💡</span>
+                                                    </div>
+                                                    <div className="w-full h-1.5 bg-white/10 rounded-full mt-1.5 overflow-hidden">
+                                                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${capsuleTheme.coolDownScore}%` }} />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="text-[11px] text-cyan-200/80 italic font-mono bg-cyan-950/40 p-2.5 rounded-xl border border-cyan-400/20">
+                                                {capsuleTheme.funSideEffect[langKey] || capsuleTheme.funSideEffect.kr}
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-3 pt-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setIsCapsuleDissolved(false);
+                                                        setHoldProgress(0);
+                                                    }}
+                                                    className="py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-gray-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                                                >
+                                                    <RotateCcw size={14} />
+                                                    <span>{t.btnReviewCapsule}</span>
+                                                </button>
+
+                                                <button
+                                                    onClick={handleNextCapsule}
+                                                    className="py-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/25 cursor-pointer active:scale-98 transition-all"
+                                                >
+                                                    <span>{t.btnNextCapsule}</span>
+                                                    <ChevronRight size={16} />
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* [모드 2: ⚔️ 패턴 슬라이서 미니게임] */}
+                    {activeTab === 'smasher' && (
+                        <div className="max-w-lg mx-auto space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-mono font-bold text-amber-300 bg-amber-400/15 px-3 py-0.5 rounded-full border border-amber-400/30">
+                                    {t.smasherTitle} ({smasherIndex + 1}/{MEMORY_CARDS_DB.length})
+                                </span>
+                                <span className="text-[11px] font-mono text-gray-400">
+                                    {currentSmasherCard.subCode}
+                                </span>
+                            </div>
+
+                            <div className="relative p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#191e36] via-[#121526] to-[#0a0d1a] border border-amber-400/40 shadow-xl overflow-hidden space-y-4">
+                                
+                                {/* 1. 사건 (Point) */}
+                                <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-400/30 flex items-center gap-3">
+                                    <span className="size-7 rounded-xl bg-cyan-500/20 text-cyan-300 font-mono font-black text-xs flex items-center justify-center shrink-0">
+                                        POINT
+                                    </span>
+                                    <p className="text-xs sm:text-sm font-bold text-cyan-100">
+                                        {smasherData.pointText[langKey] || smasherData.pointText.kr}
+                                    </p>
+                                </div>
+
+                                {/* 2. 왜곡된 선 (Line) & 슬라이스 절단 */}
+                                <div className="relative my-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-950/60 to-purple-950/60 border border-rose-500/40 text-center">
+                                    {!isSliced ? (
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-center gap-2 text-rose-300 text-xs font-black">
+                                                <span className="size-2 rounded-full bg-rose-500 animate-ping" />
+                                                <span>{smasherData.lineText[langKey] || smasherData.lineText.kr}</span>
+                                            </div>
+                                            <p className="text-[11px] text-gray-300">
+                                                사건을 왜곡된 소설로 엮어버린 자동반응의 사슬입니다!
+                                            </p>
+
+                                            <motion.button
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.96 }}
+                                                onClick={handleSliceAction}
+                                                className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 via-amber-500 to-yellow-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(244,63,94,0.4)] cursor-pointer"
+                                            >
+                                                <Scissors size={18} className="animate-bounce" />
+                                                <span>{t.smasherSliceBtn}</span>
+                                            </motion.button>
+                                        </div>
+                                    ) : (
+                                        <motion.div 
+                                            initial={{ scale: 0.8, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            className="space-y-2 py-1"
+                                        >
+                                            <div className="text-xs font-black text-emerald-300 flex items-center justify-center gap-2">
+                                                <CheckCircle2 size={16} />
+                                                <span>{t.smasherShatterNotice}</span>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </div>
+
+                                {/* 3. 찌그러진 안경 (Lens) ➔ 정화된 사실 */}
+                                <div className="p-4 rounded-2xl bg-black/40 border border-white/10 transition-all">
+                                    {!isShattered ? (
+                                        <div className="flex items-center gap-3 text-gray-400">
+                                            <span className="size-7 rounded-xl bg-white/10 text-gray-300 font-mono font-black text-xs flex items-center justify-center shrink-0">
+                                                LENS
+                                            </span>
+                                            <p className="text-xs sm:text-sm font-medium line-through decoration-rose-500 decoration-2 text-gray-400">
+                                                {smasherData.lensText[langKey] || smasherData.lensText.kr}
                                             </p>
                                         </div>
                                     ) : (
-                                        /* 🎴 카드 뒷면: 뇌과학 심층 원리 해설 */
-                                        <div 
-                                            style={{ transform: 'rotateY(180deg)' }} 
-                                            className="space-y-4 text-left my-auto bg-black/40 p-5 rounded-2xl border border-amber-400/30"
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="space-y-2"
                                         >
-                                            <div className="flex items-center gap-2 text-amber-300 text-xs font-bold">
-                                                <Sparkles size={16} />
-                                                <span>ZERO-POINT 뇌과학 핵심 원리</span>
+                                            <div className="flex items-center gap-2 text-emerald-300 text-xs font-black">
+                                                <Sparkle size={16} className="text-emerald-400" />
+                                                <span>{t.smasherFactHeader}</span>
                                             </div>
-                                            <p className="text-xs sm:text-sm text-gray-200 leading-relaxed font-medium">
-                                                {currentFlashCard.coreInsight[langKey] || currentFlashCard.coreInsight.kr}
+                                            <p className="text-xs sm:text-sm font-bold text-white bg-emerald-950/40 p-3 rounded-xl border border-emerald-400/30 leading-relaxed">
+                                                {smasherData.cleanFactText[langKey] || smasherData.cleanFactText.kr}
                                             </p>
-                                            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-gray-400 font-mono">
-                                                <span>카테고리: {currentFlashCard.category}</span>
-                                                <span className="text-cyan-300">클릭하여 다시 덮기</span>
-                                            </div>
-                                        </div>
+                                            <p className="text-[11px] text-cyan-300 font-mono">
+                                                💡 사건(Point)은 그대로 두되, 머릿속 소설(Line)을 0으로 완전히 리셋했습니다!
+                                            </p>
+                                        </motion.div>
                                     )}
-
-                                    {/* 하단 플립 힌트 바 */}
-                                    <div className="text-center pt-2">
-                                        <span className="text-[10px] font-mono text-gray-400">
-                                            {isFlipped ? '🔄 탭하여 앞면 보기' : '👆 탭하여 해설 확인'}
-                                        </span>
-                                    </div>
-                                </motion.div>
-                            </div>
-
-                            {/* 액션 버튼 2종 */}
-                            <div className="grid grid-cols-2 gap-3 pt-2">
-                                <button
-                                    onClick={() => handleFlashNext(false)}
-                                    className="py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-gray-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                                >
-                                    <RotateCcw size={14} />
-                                    <span>{t.btnReview}</span>
-                                </button>
-
-                                <button
-                                    onClick={() => handleFlashNext(true)}
-                                    className="py-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer active:scale-98"
-                                >
-                                    <CheckCircle2 size={16} />
-                                    <span>{t.btnKnown}</span>
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* [탭 2: 🎯 패턴 브레이커 퀴즈 (중기 기억)] */}
-                    {activeTab === 'mid' && currentQuizCard.quiz && (
-                        <div className="max-w-lg mx-auto space-y-5">
-                            {/* 상황 시나리오 카드 */}
-                            <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-[#1a1c33] to-[#121424] border border-amber-400/40 shadow-lg space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-400/15 px-2.5 py-0.5 rounded-full border border-amber-400/30">
-                                        {t.quizTitle} ({quizCardIndex + 1}/{quizCards.length})
-                                    </span>
-                                    <span className="text-xs font-mono text-gray-400">
-                                        {currentQuizCard.subCode}
-                                    </span>
                                 </div>
-                                <p className="text-xs sm:text-sm text-white leading-relaxed font-medium bg-black/30 p-3.5 rounded-2xl border border-white/5">
-                                    {currentQuizCard.quiz.scenario[langKey] || currentQuizCard.quiz.scenario.kr}
-                                </p>
-                                <h4 className="text-xs sm:text-sm font-black text-amber-200">
-                                    Q. {currentQuizCard.quiz.question[langKey] || currentQuizCard.quiz.question.kr}
-                                </h4>
+
+                                {isShattered && (
+                                    <motion.button
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        onClick={handleNextSmasher}
+                                        className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/25 cursor-pointer active:scale-98 transition-all"
+                                    >
+                                        <span>다음 왜곡 사슬 분쇄 도전 ➔</span>
+                                        <ChevronRight size={16} />
+                                    </motion.button>
+                                )}
                             </div>
-
-                            {/* 객관식 선택지들 */}
-                            <div className="space-y-2.5">
-                                {currentQuizCard.quiz.options.map((opt, oIdx) => {
-                                    const isSelected = selectedOptionId === opt.id;
-                                    let btnStyle = "bg-[#111628] border-white/10 text-gray-200 hover:border-white/30";
-                                    if (isAnswerSubmitted) {
-                                        if (opt.isCorrect) {
-                                            btnStyle = "bg-emerald-950/60 border-emerald-400 text-emerald-200 shadow-md";
-                                        } else if (isSelected && !opt.isCorrect) {
-                                            btnStyle = "bg-rose-950/60 border-rose-400 text-rose-200";
-                                        }
-                                    }
-
-                                    return (
-                                        <button
-                                            key={opt.id}
-                                            onClick={() => handleSelectOption(opt.id)}
-                                            disabled={isAnswerSubmitted}
-                                            className={`w-full p-3.5 rounded-2xl border text-left text-xs sm:text-sm font-medium transition-all flex items-start gap-2.5 cursor-pointer disabled:cursor-default ${btnStyle}`}
-                                        >
-                                            <span className="size-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-mono font-bold shrink-0 mt-0.5">
-                                                {oIdx + 1}
-                                            </span>
-                                            <div className="space-y-1 flex-1">
-                                                <p className="leading-snug">{opt.text[langKey] || opt.text.kr}</p>
-                                                {isAnswerSubmitted && (isSelected || opt.isCorrect) && (
-                                                    <p className={`text-xs font-bold pt-1 ${opt.isCorrect ? 'text-emerald-300' : 'text-rose-300'}`}>
-                                                        {opt.feedback[langKey] || opt.feedback.kr}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-
-                            {/* 다음 퀴즈 버튼 */}
-                            {isAnswerSubmitted && (
-                                <button
-                                    onClick={handleQuizNext}
-                                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20 cursor-pointer active:scale-98 animate-fade-in"
-                                >
-                                    <span>{t.quizNext}</span>
-                                    <ChevronRight size={16} />
-                                </button>
-                            )}
                         </div>
                     )}
 
-                    {/* [탭 3: 🥋 5-STEP 실전 자각 도장 (POINT → LINE → LENS)] */}
-                    {activeTab === 'long' && (
+                    {/* [모드 3: 🧬 5-STEP 실전 자각 도장] */}
+                    {activeTab === 'practice' && (
                         <div className="max-w-lg mx-auto space-y-4">
                             {!isPracticeComplete ? (
                                 <div className="space-y-4">
-                                    {/* 상단 5단계 진행 도트 */}
                                     <div className="flex items-center justify-between px-2">
                                         {steps.map((st, sIdx) => {
                                             const isActive = sIdx === practiceStepIndex;
@@ -645,14 +847,14 @@ export default function MyeongsimMemoryGameModal({
                                                 <div key={st.stepCode} className="flex items-center gap-1.5">
                                                     <div className={`size-7 rounded-full flex items-center justify-center text-xs font-mono font-bold border transition-all ${
                                                         isActive 
-                                                            ? 'bg-purple-500 border-purple-300 text-white ring-2 ring-purple-400/40'
+                                                            ? 'bg-purple-500 border-purple-300 text-white ring-2 ring-purple-400/40 shadow-lg'
                                                             : isDone
                                                                 ? 'bg-emerald-500/30 border-emerald-400 text-emerald-300'
-                                                                : 'bg-white/5 border-white/10 text-gray-500'
+                                                                : 'bg-white/5 border-white/20 text-gray-500'
                                                     }`}>
                                                         {isDone ? '✓' : sIdx + 1}
                                                     </div>
-                                                    <span className={`text-[10px] font-mono hidden sm:inline ${isActive ? 'text-purple-300 font-bold' : 'text-gray-500'}`}>
+                                                    <span className={`text-[10px] hidden sm:inline font-mono ${isActive ? 'text-purple-300 font-bold' : 'text-gray-500'}`}>
                                                         {st.stepCode}
                                                     </span>
                                                 </div>
@@ -660,138 +862,144 @@ export default function MyeongsimMemoryGameModal({
                                         })}
                                     </div>
 
-                                    {/* 현재 스텝 카드 */}
-                                    <div className="p-5 rounded-3xl bg-gradient-to-br from-[#1a142e] to-[#0f0c1c] border border-purple-500/40 shadow-xl space-y-3.5 text-left">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-mono font-bold text-purple-300 bg-purple-500/15 px-2.5 py-0.5 rounded-full border border-purple-400/30">
-                                                {steps[practiceStepIndex]?.title[langKey] || steps[practiceStepIndex]?.title.kr}
-                                            </span>
-                                            <button
-                                                onClick={handleLoadExample}
-                                                className="text-[11px] text-purple-300 hover:text-white underline cursor-pointer"
-                                            >
-                                                {t.loadExampleBtn}
-                                            </button>
+                                    {steps[practiceStepIndex] && (
+                                        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#1a1733] to-[#120f26] border border-purple-400/40 shadow-xl space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-mono font-bold text-purple-300 bg-purple-400/15 px-2.5 py-0.5 rounded-full border border-purple-400/30">
+                                                    STEP {practiceStepIndex + 1}: {steps[practiceStepIndex].stepCode}
+                                                </span>
+                                                <button
+                                                    onClick={handleLoadExample}
+                                                    className="text-[11px] text-amber-300 hover:text-amber-200 flex items-center gap-1 cursor-pointer bg-amber-400/10 px-2 py-1 rounded-lg border border-amber-400/20"
+                                                >
+                                                    <Sparkles size={12} />
+                                                    <span>{t.loadExampleBtn}</span>
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <h4 className="text-sm sm:text-base font-black text-white">
+                                                    {steps[practiceStepIndex].title[langKey] || steps[practiceStepIndex].title.kr}
+                                                </h4>
+                                                <p className="text-xs text-purple-200/80 leading-relaxed">
+                                                    {steps[practiceStepIndex].prompt[langKey] || steps[practiceStepIndex].prompt.kr}
+                                                </p>
+                                            </div>
+
+                                            <textarea
+                                                rows={3}
+                                                value={userAnswers[practiceStepIndex] || ''}
+                                                onChange={(e) => handleStepAnswerChange(e.target.value)}
+                                                placeholder={steps[practiceStepIndex].placeholder[langKey] || steps[practiceStepIndex].placeholder.kr}
+                                                className="w-full p-3.5 rounded-2xl bg-black/40 border border-purple-400/30 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-400 transition-all resize-none"
+                                            />
+
+                                            <div className="flex items-center justify-between gap-3 pt-2">
+                                                <button
+                                                    onClick={() => setPracticeStepIndex(prev => Math.max(0, prev - 1))}
+                                                    disabled={practiceStepIndex === 0}
+                                                    className="py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 disabled:opacity-30 text-xs font-bold transition-all cursor-pointer disabled:cursor-not-allowed"
+                                                >
+                                                    {t.stepPrev}
+                                                </button>
+
+                                                <button
+                                                    onClick={handlePracticeNext}
+                                                    className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/25 cursor-pointer active:scale-98 transition-all"
+                                                >
+                                                    <span>{practiceStepIndex === steps.length - 1 ? t.stepFinish : t.stepNext}</span>
+                                                    <ChevronRight size={16} />
+                                                </button>
+                                            </div>
                                         </div>
-
-                                        <p className="text-xs sm:text-sm text-gray-200 font-bold leading-relaxed">
-                                            {steps[practiceStepIndex]?.prompt[langKey] || steps[practiceStepIndex]?.prompt.kr}
-                                        </p>
-
-                                        {/* 입력 textarea */}
-                                        <textarea
-                                            value={userAnswers[practiceStepIndex] || ''}
-                                            onChange={(e) => handleStepAnswerChange(e.target.value)}
-                                            placeholder={steps[practiceStepIndex]?.placeholder[langKey] || steps[practiceStepIndex]?.placeholder.kr}
-                                            rows={3}
-                                            className="w-full p-3.5 rounded-2xl bg-[#090712] border border-white/10 text-white placeholder-gray-500 text-xs sm:text-sm focus:outline-none focus:border-purple-400 resize-none font-medium leading-relaxed"
-                                        />
-                                    </div>
-
-                                    {/* 하단 스텝 이동 버튼 */}
-                                    <div className="flex items-center justify-between gap-3 pt-1">
-                                        <button
-                                            onClick={() => setPracticeStepIndex(prev => Math.max(0, prev - 1))}
-                                            disabled={practiceStepIndex === 0}
-                                            className="px-4 py-2.5 rounded-xl bg-white/10 text-gray-300 text-xs font-bold disabled:opacity-30 cursor-pointer"
-                                        >
-                                            {t.stepPrev}
-                                        </button>
-
-                                        <button
-                                            onClick={handleNextStep}
-                                            disabled={!userAnswers[practiceStepIndex]?.trim()}
-                                            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 disabled:opacity-40 cursor-pointer active:scale-98"
-                                        >
-                                            <span>{practiceStepIndex === steps.length - 1 ? t.stepFinish : t.stepNext}</span>
-                                            <ArrowRight size={14} />
-                                        </button>
-                                    </div>
+                                    )}
                                 </div>
                             ) : (
-                                /* 5단계 완료 리포트 화면 */
-                                <div className="p-6 rounded-3xl bg-gradient-to-b from-[#1c1236] to-[#0f0a1f] border-2 border-purple-400/50 text-center space-y-4 animate-fade-in shadow-2xl">
-                                    <div className="size-14 rounded-2xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-3xl mx-auto text-purple-300">
-                                        🎉
+                                <div className="p-6 rounded-3xl bg-gradient-to-br from-[#1c183b] to-[#120f26] border-2 border-purple-400/50 shadow-2xl space-y-4 text-center animate-fade-in">
+                                    <div className="size-14 rounded-2xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 mx-auto">
+                                        <Award size={32} />
                                     </div>
                                     <div className="space-y-1">
                                         <h3 className="text-base sm:text-lg font-black text-white">
-                                            5단계 자각 퀘스트 클리어!
+                                            {t.certificateTitle}
                                         </h3>
-                                        <p className="text-xs text-purple-200">
-                                            사건(POINT)에서 소설(LINE)을 떼어내고 온전한 영점으로 돌아왔습니다.
+                                        <p className="text-xs text-purple-200/80 max-w-sm mx-auto">
+                                            {t.certificateSubtitle}
                                         </p>
                                     </div>
 
-                                    <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-left space-y-2 text-xs">
-                                        <p><strong className="text-cyan-300">• POINT (사실):</strong> {userAnswers[0]}</p>
-                                        <p><strong className="text-rose-300">• LINE (소설):</strong> {userAnswers[1]}</p>
-                                        <p><strong className="text-amber-300">• GAP (반증):</strong> {userAnswers[3]}</p>
-                                        <p><strong className="text-emerald-300">• TODAY (행동):</strong> {userAnswers[4]}</p>
+                                    <div className="text-left space-y-2 bg-black/40 p-4 rounded-2xl border border-white/5 text-xs">
+                                        {steps.map((st, i) => (
+                                            <div key={st.stepCode} className="flex items-start gap-2">
+                                                <span className="text-purple-400 font-mono font-bold shrink-0">[{st.stepCode}]</span>
+                                                <span className="text-gray-300 line-clamp-1">{userAnswers[i] || st.exampleAnswer.kr}</span>
+                                            </div>
+                                        ))}
                                     </div>
 
                                     <button
-                                        onClick={() => {
-                                            setIsPracticeComplete(false);
-                                            setPracticeStepIndex(0);
-                                            setUserAnswers({});
-                                        }}
-                                        className="w-full py-3 rounded-xl bg-purple-500/30 hover:bg-purple-500/40 text-purple-200 text-xs font-bold border border-purple-400/30 cursor-pointer"
+                                        onClick={handlePracticeReset}
+                                        className="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-gray-200 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
                                     >
-                                        {t.practiceReset}
+                                        <RotateCcw size={14} />
+                                        <span>{t.practiceReset}</span>
                                     </button>
                                 </div>
                             )}
                         </div>
                     )}
 
-                    {/* [탭 4: 🏆 마스터리 도감 (기억 보관함)] */}
-                    {activeTab === 'deck' && (
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between px-1">
-                                <div>
-                                    <h3 className="text-xs sm:text-sm font-black text-white">{t.deckTitle}</h3>
-                                    <p className="text-[11px] text-gray-400">{t.deckSubtitle}</p>
-                                </div>
-                                <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-400/30">
-                                    {progress.masteredCardIds.length} / {MEMORY_CARDS_DB.length} 완료
+                    {/* [모드 4: 🗄️ 마음 비타민 도감] */}
+                    {activeTab === 'cabinet' && (
+                        <div className="max-w-xl mx-auto space-y-4">
+                            <div className="flex items-center justify-between text-xs px-1">
+                                <h4 className="font-bold text-white">{t.cabinetTitle}</h4>
+                                <span className="text-cyan-300 font-mono">
+                                    수집률: {Math.round((progress.masteredCardIds.length / MEMORY_CARDS_DB.length) * 100)}%
                                 </span>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {MEMORY_CARDS_DB.map((c) => {
-                                    const isMastered = progress.masteredCardIds.includes(c.id);
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                {MEMORY_CARDS_DB.map((card, cIdx) => {
+                                    const isMastered = progress.masteredCardIds.includes(card.id);
+                                    const theme = getCardCapsuleTheme(card);
+
                                     return (
                                         <div
-                                            key={c.id}
-                                            className={`p-4 rounded-2xl border transition-all text-left space-y-2 ${
+                                            key={card.id}
+                                            onClick={() => {
+                                                setCapsuleIndex(cIdx);
+                                                setActiveTab('capsule');
+                                                setIsCapsuleDissolved(false);
+                                                setHoldProgress(0);
+                                            }}
+                                            className={`p-3 rounded-2xl border text-left flex flex-col justify-between min-h-[135px] cursor-pointer transition-all hover:scale-102 ${
                                                 isMastered
-                                                    ? 'bg-[#101b2a] border-emerald-400/40 shadow-sm'
-                                                    : 'bg-[#0e1220] border-white/10 opacity-70'
+                                                    ? 'bg-gradient-to-b from-[#18203c] to-[#0f1426] border-cyan-400/40 shadow-lg shadow-cyan-500/10'
+                                                    : 'bg-[#0f1326] border-white/5 opacity-75 hover:opacity-100'
                                             }`}
                                         >
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xl">{c.icon}</span>
-                                                    <span className="text-[10px] font-mono font-bold text-cyan-300">
-                                                        {c.subCode}
-                                                    </span>
-                                                </div>
-                                                <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border ${
-                                                    isMastered
-                                                        ? 'bg-emerald-400/15 border-emerald-400/40 text-emerald-300'
-                                                        : 'bg-white/5 border-white/10 text-gray-500'
+                                                <span className="text-xl">{card.icon}</span>
+                                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ${
+                                                    isMastered ? 'bg-cyan-400 text-slate-950' : 'bg-white/10 text-gray-400'
                                                 }`}>
-                                                    {isMastered ? t.masteredBadge : t.learningBadge}
+                                                    {isMastered ? '보유중' : '미복용'}
                                                 </span>
                                             </div>
 
-                                            <h4 className="text-xs sm:text-sm font-black text-white line-clamp-1">
-                                                {c.keyword[langKey] || c.keyword.kr}
-                                            </h4>
-                                            <p className="text-[11px] text-gray-300 line-clamp-2 leading-relaxed font-medium">
-                                                {c.oneLiner[langKey] || c.oneLiner.kr}
-                                            </p>
+                                            <div className="space-y-0.5 my-1">
+                                                <span className="text-[9px] font-mono font-bold text-cyan-300 block truncate">
+                                                    {theme.vitaminName[langKey] || theme.vitaminName.kr}
+                                                </span>
+                                                <p className="text-[11px] font-bold text-white line-clamp-2 leading-tight">
+                                                    {card.keyword[langKey] || card.keyword.kr}
+                                                </p>
+                                            </div>
+
+                                            <div className="text-[9px] font-mono text-gray-400 truncate">
+                                                쿨다운: {theme.coolDownScore}%
+                                            </div>
                                         </div>
                                     );
                                 })}
@@ -800,52 +1008,22 @@ export default function MyeongsimMemoryGameModal({
                     )}
                 </div>
 
-                {/* ── 5. 하단 닫기 바 ── */}
-                <div className="px-5 py-3 border-t border-white/10 bg-[#0d1020] flex items-center justify-between text-xs">
-                    <span className="text-[10px] text-gray-500 font-mono">
-                        🧠 Ebbinghaus Spaced Repetition Protocol Applied
-                    </span>
+                {/* ── 5. 하단 바: 의료법 준수 안심 면책 안내 & 닫기 ── */}
+                <div className="px-5 py-3 bg-[#080b17] border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-gray-400">
+                    <div className="flex items-center gap-1.5 text-center sm:text-left">
+                        <ShieldAlert size={13} className="text-amber-400/80 shrink-0" />
+                        <span className="line-clamp-1 sm:line-clamp-none text-gray-400">
+                            {t.medicalDisclaimer}
+                        </span>
+                    </div>
+
                     <button
                         onClick={onClose}
-                        className="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 font-bold transition-all cursor-pointer"
+                        className="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-200 font-bold transition-all cursor-pointer shrink-0"
                     >
                         {t.closeBtn}
                     </button>
                 </div>
-
-                {/* [NEW] 🏛️ 평생교육원 공인 자격 승급 & 스킬 해금 축하 팝업 */}
-                {unlockedNotice && (
-                    <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
-                        <div className="w-full max-w-sm bg-slate-950 border-2 border-amber-400 rounded-3xl p-5 shadow-2xl text-center space-y-4 relative overflow-hidden">
-                            <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-3xl mx-auto text-slate-950 shadow-xl shadow-amber-400/40 animate-bounce">
-                                🏆
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <span className="text-[11px] font-black px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">
-                                    공인 자격 승급 성공!
-                                </span>
-                                <h3 className="text-lg font-black text-white mt-1">
-                                    {ACADEMY_COURSES.find(c => c.levelNumber === unlockedNotice.level)?.title.kr || `Level ${unlockedNotice.level} 자격`}
-                                </h3>
-                                <p className="text-xs text-gray-300 leading-relaxed font-medium">
-                                    축하합니다! 시험을 통과하여 평생교육원 <strong className="text-amber-300">{ACADEMY_COURSES.find(c => c.levelNumber === unlockedNotice.level)?.badge}</strong> 자격을 취득하셨습니다.
-                                </p>
-                                <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 text-left font-bold">
-                                    ✨ 드릴메뉴의 새로운 고급 코칭 도구들이 즉시 잠금 해제되었습니다!
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={() => setUnlockedNotice(null)}
-                                className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-400/30 cursor-pointer"
-                            >
-                                <span>멋져요! 계속 훈련하기</span>
-                            </button>
-                        </div>
-                    </div>
-                )}
             </motion.div>
         </div>
     );
