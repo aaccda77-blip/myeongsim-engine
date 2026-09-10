@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Zap, RotateCcw, Award, Volume2, VolumeX, 
     Sparkles, Flame, Shield, Heart, Skull, Trophy, ArrowLeft, ArrowRight,
-    Volume1, CheckCircle2, Copy, Check, Activity, Brain, ShieldAlert
+    Volume1, CheckCircle2, Copy, Check, Activity, Brain, Radio, Music
 } from 'lucide-react';
 import { passAcademyExam } from '@/lib/questUnlockManager';
 
@@ -17,25 +17,25 @@ interface MyeongsimGalagaGameProps {
 
 const GALAGA_I18N = {
     kr: {
-        title: "명심 갤러그: 잡념 격퇴 아케이드",
-        subtitle: "하늘에서 쏟아지는 왜곡된 생각을 자각 레이저로 시원하게 폭파하세요!",
+        title: "네오 명심 갤러그: 제로포인트 노바",
+        subtitle: "최신형 사이버 전투기로 왜곡된 생각을 격퇴하고 뇌파를 0점으로 리셋하세요!",
         score: "격추 점수",
         highScore: "최고 기록",
         wave: "WAVE",
         stressLevel: "잔여 스트레스",
-        soundPrompt: "🔊 화면을 탭하거나 조작하면 8-Bit 사운드가 켜집니다!",
-        bossWarning: "⚠️ WARNING: 거대 에고 보스 출현! ⚠️",
-        gameOver: "게임 오버 (호흡을 가다듬으세요)",
-        gameClear: "🎉 축하합니다! 모든 잡념 소멸 & 마음 0점 리셋!",
-        startBtn: "🚀 출격! 잡념 격퇴 시작",
+        soundPrompt: "🔊 화면을 탭하면 2026 신스 BGM & 8-Bit 사운드가 켜집니다!",
+        bossWarning: "⚠️ DANGER: 거대 에고 보스 출현! ⚠️",
+        gameOver: "게임 오버 (깊은 호흡으로 리셋)",
+        gameClear: "🎉 축하합니다! 모든 왜곡 소멸 & 0점 도달!",
+        startBtn: "🚀 출격! 네오 파이터 발진",
         restartBtn: "🔄 다시 출격하기",
-        controlsGuide: "PC: 마우스 이동 / 모바일: 터치 드래그 또는 하단 버튼 (자동 연사)",
+        controlsGuide: "화면 터치 드래그 또는 하단 버튼 / 탭하여 궁극기 가동!",
         bossName: "거대한 인지 왜곡의 에고",
-        pureFactMsg: "✨ 모든 왜곡된 잡념이 소멸되어 고요한 영점(Zero Point)에 도달했습니다!",
+        pureFactMsg: "✨ 왜곡된 인지 망상이 모두 증발하고 고요한 순수 영점(0)에 도달했습니다!",
         expEarned: "자각 EXP 획득!",
         comboLabel: "COMBO",
-        feverBanner: "🔥 과몰입 피버 모드! 3-WAY 레이저 가동!",
-        tractorWarning: "⚡ 보스의 집착 트랙터 빔 가동! 4발 사격으로 깨뜨리세요!",
+        feverBanner: "🔥 과몰입 하이퍼 피버! 트윈 플라즈마 전탄 발사!",
+        tractorWarning: "⚡ 에고 트랙터 빔 가동! 4발 사격으로 깨뜨리세요!",
         tractorBroken: "💥 트랙터 빔 파괴! 보스 그로기 상태!",
         certTitle: "마인드 영점 리셋 & 자각 인증서",
         certSub: "마음 영점 회복(Zero Point Reset) 공인",
@@ -44,6 +44,7 @@ const GALAGA_I18N = {
         copyCert: "📋 인증서 텍스트 복사",
         certCopied: "✅ 클립보드 복사 완료!",
         nextStage: "다음 멘탈 스테이지 도전 ➔",
+        novaBtn: "💥 제로 노바 (全화면 정화)",
         waveBanner: {
             1: "WAVE 1: 일상 잡념 정찰대",
             2: "WAVE 2: 불안 & 과잉일반화 편대",
@@ -52,24 +53,24 @@ const GALAGA_I18N = {
         }
     },
     en: {
-        title: "Zero-Point Galaga: Mind Invaders",
-        subtitle: "Blast away intrusive thoughts with awareness lasers!",
+        title: "Neo Galaga: Zero-Point Nova",
+        subtitle: "Pilot the advanced cyber fighter to dissolve distorted thoughts to Zero Point!",
         score: "Score",
         highScore: "High Score",
         wave: "WAVE",
         stressLevel: "Stress Level",
-        soundPrompt: "🔊 Tap screen to enable authentic 8-Bit retro sounds!",
-        bossWarning: "⚠️ WARNING: Giant Ego Boss Approaching! ⚠️",
+        soundPrompt: "🔊 Tap to activate Cyber Synth BGM & 8-Bit audio!",
+        bossWarning: "⚠️ DANGER: Giant Ego Boss Approaching! ⚠️",
         gameOver: "GAME OVER (Take a deep breath)",
-        gameClear: "🎉 Victory! All Distorted Thoughts Dissolved!",
-        startBtn: "🚀 Launch Fighter!",
+        gameClear: "🎉 Victory! All Distorted Illusions Dissolved!",
+        startBtn: "🚀 Launch Neo Fighter!",
         restartBtn: "🔄 Try Again",
-        controlsGuide: "PC: Mouse Move / Mobile: Touch Drag or Bottom Buttons",
+        controlsGuide: "Touch Drag or Bottom Buttons / Tap to Trigger Ultimate Nova!",
         bossName: "The Giant Distorted Ego",
         pureFactMsg: "✨ Distorted illusions dissolved, returning to pure Zero Point!",
         expEarned: "Awareness EXP Earned!",
         comboLabel: "COMBO",
-        feverBanner: "🔥 HYPER FOCUS FEVER! 3-WAY Laser Active!",
+        feverBanner: "🔥 HYPER FOCUS FEVER! Twin Plasma Active!",
         tractorWarning: "⚡ Ego Tractor Beam! Hit 4 shots to break it!",
         tractorBroken: "💥 Tractor Beam Broken! Boss Stunned!",
         certTitle: "Mind Zero-Point Reset Certificate",
@@ -79,6 +80,7 @@ const GALAGA_I18N = {
         copyCert: "📋 Copy Certificate",
         certCopied: "✅ Copied to Clipboard!",
         nextStage: "Next Mental Stage ➔",
+        novaBtn: "💥 ZERO NOVA (Full Cleansing)",
         waveBanner: {
             1: "WAVE 1: Routine Thought Scouts",
             2: "WAVE 2: Anxiety & Generalization Fleet",
@@ -87,24 +89,24 @@ const GALAGA_I18N = {
         }
     },
     jp: {
-        title: "明心 ギャラガ: 雑念撃退アーケード",
-        subtitle: "空から降り注ぐ歪んだ思考を自覚レーザーで爽快に撃破！",
+        title: "ネオ明心ギャラガ: ゼロポイント・ノヴァ",
+        subtitle: "最新サイバー戦闘機で歪んだ思考を撃退し脳波をゼロリセット！",
         score: "スコア",
         highScore: "ハイスコア",
         wave: "WAVE",
         stressLevel: "残留ストレス",
-        soundPrompt: "🔊 画面タップで8-BitサウンドがONになります！",
-        bossWarning: "⚠️ WARNING: 巨大エゴボス出現！ ⚠️",
+        soundPrompt: "🔊 タップでサイバーシンセBGM＆8-Bitサウンド始動！",
+        bossWarning: "⚠️ DANGER: 巨大エゴボス出現！ ⚠️",
         gameOver: "ゲームオーバー (深呼吸しましょう)",
-        gameClear: "🎉 勝利！全ての雑念が消滅しゼロポイントへ帰還！",
-        startBtn: "🚀 出撃！",
+        gameClear: "🎉 勝利！全ての歪みが消滅しゼロポイントへ帰還！",
+        startBtn: "🚀 出撃！ネオファイター発進",
         restartBtn: "🔄 もう一度出撃",
-        controlsGuide: "PC: マウス移動 / スマホ: タッチドラッグまたは下部ボタン",
+        controlsGuide: "画面タッチドラッグまたは下部ボタン / 必殺技タップ発動！",
         bossName: "巨大な認知歪曲のエゴ",
         pureFactMsg: "✨ すべての雑念が浄化され、静寂なゼロポイントへ戻りました！",
         expEarned: "自覚EXP獲得！",
         comboLabel: "コンボ",
-        feverBanner: "🔥 過没入フィーバー！3-WAYレーザー発動！",
+        feverBanner: "🔥 過没入フィーバー！ツインプラズマ全弾発射！",
         tractorWarning: "⚡ 執着のトラクタービーム！4発撃ち込んで破壊せよ！",
         tractorBroken: "💥 トラクタービーム破壊！ボス気絶！",
         certTitle: "マインドゼロポイントリセット認定証",
@@ -114,6 +116,7 @@ const GALAGA_I18N = {
         copyCert: "📋 認定証をコピー",
         certCopied: "✅ コピー完了！",
         nextStage: "次のステージへ挑戦 ➔",
+        novaBtn: "💥 ゼロ・ノヴァ (全体浄化)",
         waveBanner: {
             1: "WAVE 1: 日常雑念偵察隊",
             2: "WAVE 2: 不安と過度な一般化編隊",
@@ -122,24 +125,24 @@ const GALAGA_I18N = {
         }
     },
     cn: {
-        title: "明心大蜜蜂: 杂念击退街机",
-        subtitle: "用觉察激光爽快轰碎消极杂念与思维执念！",
+        title: "新时代明心大蜜蜂: 零点新星",
+        subtitle: "驾驶最新赛博战机轰碎认知执念，心智清明归零！",
         score: "击落分数",
         highScore: "最高分",
         wave: "WAVE",
         stressLevel: "残留压力值",
-        soundPrompt: "🔊 点击屏幕开启原汁原味8-Bit街机音效！",
-        bossWarning: "⚠️ WARNING: 巨型执念魔王降临！ ⚠️",
+        soundPrompt: "🔊 点击屏幕开启电子合成BGM与街机音效！",
+        bossWarning: "⚠️ DANGER: 巨型执念魔王降临！ ⚠️",
         gameOver: "游戏结束 (请深呼吸)",
         gameClear: "🎉 大获全胜！一切杂念灰飞烟灭，心智归零！",
         startBtn: "🚀 战机出击！",
         restartBtn: "🔄 重新出击",
-        controlsGuide: "PC: 移动鼠标 / 手机: 触摸滑动或下方按钮",
+        controlsGuide: "屏幕滑动或底部按钮 / 蓄力释放全屏觉察新星！",
         bossName: "巨型认知扭曲之自我",
         pureFactMsg: "✨ 杂念散尽，重归清明安详的零点纯境！",
         expEarned: "觉察EXP增加！",
         comboLabel: "连击",
-        feverBanner: "🔥 超极专注FEVER! 3-WAY 激光全开！",
+        feverBanner: "🔥 超极专注FEVER! 双联等离子全开！",
         tractorWarning: "⚡ 执念牵引光束！命中4次将其瓦解！",
         tractorBroken: "💥 光束破碎！魔王陷入眩晕！",
         certTitle: "心智零点重塑认证证书",
@@ -149,6 +152,7 @@ const GALAGA_I18N = {
         copyCert: "📋 复制认证文本",
         certCopied: "✅ 复制成功！",
         nextStage: "挑战下一心智关卡 ➔",
+        novaBtn: "💥 零点新星 (全屏净化)",
         waveBanner: {
             1: "WAVE 1: 日常杂念先锋队",
             2: "WAVE 2: 焦虑与过度概括编队",
@@ -253,7 +257,9 @@ export default function MyeongsimGalagaGame({
 
     // 오디오 컨텍스트 싱글톤
     const audioCtxRef = useRef<AudioContext | null>(null);
+    const bgmOscRef = useRef<{ osc1: OscillatorNode; osc2: OscillatorNode; gain: GainNode } | null>(null);
     const [soundActive, setSoundActive] = useState<boolean>(false);
+    const [bgmEnabled, setBgmEnabled] = useState<boolean>(true);
 
     // 게임 상태
     const [gameState, setGameState] = useState<'playing' | 'paused' | 'gameover' | 'clear'>('playing');
@@ -270,14 +276,36 @@ export default function MyeongsimGalagaGame({
     const [waveBanner, setWaveBanner] = useState<string | null>("WAVE 1: 일상 잡념 정찰대");
     const [copied, setCopied] = useState<boolean>(false);
 
+    // 💥 최신형 궁극기: 제로 노바 (Zero Nova) 게이지 (0 ~ 100)
+    const [ultimateGauge, setUltimateGauge] = useState<number>(0);
+
     // 정화 통계 저장 (다채로운 인지왜곡별 통계)
     const [purifiedStats, setPurifiedStats] = useState<{ 
         [thoughtText: string]: { count: number; insight: string; tag: string } 
     }>({});
 
     const gameEngineRef = useRef<{
-        player: { x: number; y: number; width: number; height: number; speed: number; power: number; shieldTimer: number };
-        bullets: Array<{ x: number; y: number; vx: number; vy: number; radius: number; color: string; isFever?: boolean }>;
+        player: { 
+            x: number; 
+            y: number; 
+            width: number; 
+            height: number; 
+            speed: number; 
+            power: number; 
+            shieldTimer: number; 
+            hasDrone: boolean;
+            droneAngle: number;
+        };
+        bullets: Array<{ 
+            x: number; 
+            y: number; 
+            vx: number; 
+            vy: number; 
+            radius: number; 
+            color: string; 
+            isFever?: boolean;
+            isHoming?: boolean;
+        }>;
         enemies: Array<{ 
             x: number; 
             y: number; 
@@ -295,12 +323,15 @@ export default function MyeongsimGalagaGame({
             diveTimer: number; 
             hitFlash: number;
             isElite?: boolean;
+            wingPhase: number;
         }>;
         enemyBullets: Array<{ x: number; y: number; vx: number; vy: number; radius: number }>;
         particles: Array<{ x: number; y: number; vx: number; vy: number; color: string; life: number; maxLife: number; size: number }>;
         floatingTexts: Array<{ x: number; y: number; text: string; color: string; life: number; maxLife: number; vy: number }>;
-        items: Array<{ x: number; y: number; vy: number; type: 'power' | 'shield' | 'life'; label: string }>;
-        stars: Array<{ x: number; y: number; speed: number; size: number; opacity: number }>;
+        items: Array<{ x: number; y: number; vy: number; type: 'power' | 'shield' | 'life' | 'drone'; label: string }>;
+        stars: Array<{ x: number; y: number; speed: number; size: number; opacity: number; color: string }>;
+        shockwaves: Array<{ x: number; y: number; radius: number; maxRadius: number; color: string; life: number }>;
+        nebulaOffset: number;
         boss: { 
             x: number; 
             y: number; 
@@ -320,6 +351,7 @@ export default function MyeongsimGalagaGame({
         comboTimer: number;
         maxCombo: number;
         feverTimer: number;
+        ultimateEnergy: number;
         lastFireTime: number;
         fireInterval: number;
         score: number;
@@ -328,9 +360,10 @@ export default function MyeongsimGalagaGame({
         shakeTimer: number;
         keys: { [key: string]: boolean };
         mousePos: { x: number; y: number };
+        isTouching: boolean;
         animId: number | null;
     }>({
-        player: { x: 200, y: 430, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120 },
+        player: { x: 200, y: 430, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120, hasDrone: false, droneAngle: 0 },
         bullets: [],
         enemies: [],
         enemyBullets: [],
@@ -338,23 +371,36 @@ export default function MyeongsimGalagaGame({
         floatingTexts: [],
         items: [],
         stars: [],
+        shockwaves: [],
+        nebulaOffset: 0,
         boss: null,
         combo: 0,
         comboTimer: 0,
         maxCombo: 0,
         feverTimer: 0,
+        ultimateEnergy: 0,
         lastFireTime: 0,
-        fireInterval: 140,
+        fireInterval: 135,
         score: 0,
         lives: 3,
         wave: 1,
         shakeTimer: 0,
         keys: {},
         mousePos: { x: 200, y: 430 },
+        isTouching: false,
         animId: null
     });
 
-    // ── 🔊 Web Audio API 레트로 사운드 신디사이저 ──
+    // ── 📳 햅틱 진동 피드백 유틸 ──
+    const triggerHaptic = useCallback((pattern: number | number[]) => {
+        if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && navigator.vibrate) {
+            try {
+                navigator.vibrate(pattern);
+            } catch (e) {}
+        }
+    }, []);
+
+    // ── 🔊 Web Audio API 레트로 사운드 & 신스 BGM 엔진 ──
     const getAudioContext = useCallback(() => {
         if (typeof window === 'undefined') return null;
         if (!audioCtxRef.current) {
@@ -373,14 +419,65 @@ export default function MyeongsimGalagaGame({
         return audioCtxRef.current;
     }, []);
 
+    // 🎵 사이버펑크 아르페지오 신스 BGM 루프
+    const startBgm = useCallback(() => {
+        if (isMuted || !bgmEnabled) return;
+        const ctx = getAudioContext();
+        if (!ctx || ctx.state !== 'running' || bgmOscRef.current) return;
+
+        try {
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            osc1.type = 'sawtooth';
+            osc2.type = 'triangle';
+
+            osc1.frequency.setValueAtTime(110, ctx.currentTime);
+            osc2.frequency.setValueAtTime(55, ctx.currentTime);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(320, ctx.currentTime);
+
+            gain.gain.setValueAtTime(0.025, ctx.currentTime);
+
+            osc1.connect(filter);
+            osc2.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc1.start();
+            osc2.start();
+
+            bgmOscRef.current = { osc1, osc2, gain };
+        } catch (e) {}
+    }, [isMuted, bgmEnabled, getAudioContext]);
+
+    const stopBgm = useCallback(() => {
+        if (bgmOscRef.current) {
+            try {
+                bgmOscRef.current.osc1.stop();
+                bgmOscRef.current.osc2.stop();
+                bgmOscRef.current.osc1.disconnect();
+                bgmOscRef.current.osc2.disconnect();
+            } catch (e) {}
+            bgmOscRef.current = null;
+        }
+    }, []);
+
     const unlockAudio = useCallback(() => {
         const ctx = getAudioContext();
         if (ctx && ctx.state === 'suspended') {
-            ctx.resume().then(() => setSoundActive(true)).catch(() => {});
+            ctx.resume().then(() => {
+                setSoundActive(true);
+                startBgm();
+            }).catch(() => {});
         } else {
             setSoundActive(true);
+            startBgm();
         }
-    }, [getAudioContext]);
+    }, [getAudioContext, startBgm]);
 
     // 레이저 발사음
     const playLaserSound = useCallback((isFever: boolean = false) => {
@@ -441,6 +538,31 @@ export default function MyeongsimGalagaGame({
 
             noise.start();
             noise.stop(ctx.currentTime + 0.18);
+        } catch (e) {}
+    }, [isMuted, getAudioContext]);
+
+    // 💥 궁극기 제로 노바 사운드 (우주 충격파)
+    const playZeroNovaSound = useCallback(() => {
+        if (isMuted) return;
+        const ctx = getAudioContext();
+        if (!ctx || ctx.state !== 'running') return;
+
+        try {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(80, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1400, ctx.currentTime + 0.35);
+            osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.9);
+
+            gain.gain.setValueAtTime(0.25, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.9);
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
@@ -597,16 +719,18 @@ export default function MyeongsimGalagaGame({
         } catch (e) {}
     }, [isMuted, getAudioContext]);
 
-    // 별 배경 생성
+    // 별 배경 생성 (패럴랙스 3중 깊이감)
     const initStars = (w: number, h: number) => {
         const stars = [];
-        for (let i = 0; i < 48; i++) {
+        for (let i = 0; i < 55; i++) {
+            const depth = Math.random();
             stars.push({
                 x: Math.random() * w,
                 y: Math.random() * h,
-                speed: 0.6 + Math.random() * 2.5,
-                size: 1 + Math.random() * 2.2,
-                opacity: 0.4 + Math.random() * 0.6
+                speed: depth < 0.3 ? 0.4 : depth < 0.7 ? 1.4 : 2.8,
+                size: depth < 0.3 ? 1.0 : depth < 0.7 ? 1.8 : 2.6,
+                opacity: depth < 0.3 ? 0.3 : depth < 0.7 ? 0.6 : 0.9,
+                color: depth > 0.8 ? '#38bdf8' : depth > 0.6 ? '#c084fc' : '#ffffff'
             });
         }
         return stars;
@@ -617,16 +741,16 @@ export default function MyeongsimGalagaGame({
         const enemies = [];
         
         let rows = 3;
-        let cols = 4; // Wave 1: 12마리
+        let cols = 4;
         let speedMultiplier = 1.0;
 
         if (currentWave === 2) {
             rows = 3;
-            cols = 5; // Wave 2: 15마리
+            cols = 5;
             speedMultiplier = 1.3;
         } else if (currentWave >= 3) {
             rows = 4;
-            cols = 5; // Wave 3: 20마리
+            cols = 5;
             speedMultiplier = 1.6;
         }
 
@@ -638,7 +762,7 @@ export default function MyeongsimGalagaGame({
             for (let c = 0; c < cols; c++) {
                 const thoughtIndex = (r * cols + c + (currentWave - 1) * 4) % thoughts.length;
                 const thought = thoughts[thoughtIndex];
-                const isElite = (currentWave >= 3 && r === 0); // Wave 3 상단열은 엘리트 잡념 (HP 2)
+                const isElite = (currentWave >= 3 && r === 0);
 
                 enemies.push({
                     x: startX + c * spacingX,
@@ -656,7 +780,8 @@ export default function MyeongsimGalagaGame({
                     maxHp: isElite ? 2 : 1,
                     diveTimer: 140 + Math.floor(Math.random() * 260) / speedMultiplier,
                     hitFlash: 0,
-                    isElite
+                    isElite,
+                    wingPhase: Math.random() * Math.PI * 2
                 });
             }
         }
@@ -667,6 +792,7 @@ export default function MyeongsimGalagaGame({
     const spawnBoss = (canvasWidth: number) => {
         setBossWarning(true);
         playBossAlertSound();
+        triggerHaptic([40, 30, 60, 40]);
         setTimeout(() => setBossWarning(false), 2500);
 
         return {
@@ -674,7 +800,7 @@ export default function MyeongsimGalagaGame({
             y: 50,
             width: 120,
             height: 60,
-            hp: 65, // 플레이 타임과 스릴을 위한 65 HP
+            hp: 65,
             maxHp: 65,
             vx: 2.2,
             active: true,
@@ -686,6 +812,67 @@ export default function MyeongsimGalagaGame({
         };
     };
 
+    // 💥 최신형 궁극기 발동: 제로 노바 (ZERO NOVA)
+    const triggerZeroNova = useCallback(() => {
+        const ge = gameEngineRef.current;
+        if (ge.ultimateEnergy < 100) return;
+
+        ge.ultimateEnergy = 0;
+        setUltimateGauge(0);
+        playZeroNovaSound();
+        triggerHaptic([60, 40, 80, 50, 120]);
+        ge.shakeTimer = 16;
+
+        const canvas = canvasRef.current;
+        const w = canvas ? canvas.width : 400;
+        const h = canvas ? canvas.height : 500;
+
+        ge.shockwaves.push({
+            x: ge.player.x,
+            y: ge.player.y,
+            radius: 10,
+            maxRadius: Math.max(w, h) * 1.2,
+            color: '#38bdf8',
+            life: 30
+        });
+
+        ge.enemyBullets = [];
+
+        for (let i = ge.enemies.length - 1; i >= 0; i--) {
+            const e = ge.enemies[i];
+            ge.floatingTexts.push({
+                x: e.x,
+                y: e.y - 8,
+                text: e.insight,
+                color: '#34d399',
+                life: 60,
+                maxLife: 60,
+                vy: -1.2
+            });
+
+            setPurifiedStats(prev => {
+                const current = prev[e.text] || { count: 0, insight: e.insight, tag: e.tag };
+                return {
+                    ...prev,
+                    [e.text]: { count: current.count + 1, insight: e.insight, tag: e.tag }
+                };
+            });
+
+            ge.score += e.points * 2;
+        }
+        ge.enemies = [];
+
+        if (ge.boss && ge.boss.active) {
+            ge.boss.hp -= 25;
+            ge.boss.hitFlash = 10;
+            ge.boss.tractorState = 'stunned';
+            ge.boss.tractorTimer = 180;
+        }
+
+        setScore(ge.score);
+        setStressPct(prev => Math.max(0, prev - 25));
+    }, [playZeroNovaSound, triggerHaptic]);
+
     // 리셋 / 시작
     const resetAndStartGame = useCallback(() => {
         const canvas = canvasRef.current;
@@ -693,7 +880,7 @@ export default function MyeongsimGalagaGame({
         const h = canvas ? canvas.height : 500;
 
         gameEngineRef.current = {
-            player: { x: w / 2, y: h - 55, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120 },
+            player: { x: w / 2, y: h - 55, width: 44, height: 44, speed: 7, power: 1, shieldTimer: 120, hasDrone: false, droneAngle: 0 },
             bullets: [],
             enemies: spawnEnemyWave(w, 1),
             enemyBullets: [],
@@ -701,19 +888,23 @@ export default function MyeongsimGalagaGame({
             floatingTexts: [],
             items: [],
             stars: initStars(w, h),
+            shockwaves: [],
+            nebulaOffset: 0,
             boss: null,
             combo: 0,
             comboTimer: 0,
             maxCombo: 0,
             feverTimer: 0,
+            ultimateEnergy: 0,
             lastFireTime: 0,
-            fireInterval: 140,
+            fireInterval: 135,
             score: 0,
             lives: 3,
             wave: 1,
             shakeTimer: 0,
             keys: {},
             mousePos: { x: w / 2, y: h - 55 },
+            isTouching: false,
             animId: null
         };
 
@@ -723,6 +914,7 @@ export default function MyeongsimGalagaGame({
         setStressPct(100);
         setComboCount(0);
         setIsFeverMode(false);
+        setUltimateGauge(0);
         setTractorNotice(null);
         setWaveBanner(t.waveBanner[1]);
         setTimeout(() => setWaveBanner(null), 2500);
@@ -733,13 +925,19 @@ export default function MyeongsimGalagaGame({
 
     useEffect(() => {
         resetAndStartGame();
-    }, [resetAndStartGame]);
+        return () => {
+            stopBgm();
+        };
+    }, [resetAndStartGame, stopBgm]);
 
     // 키보드 조작
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             unlockAudio();
             gameEngineRef.current.keys[e.key] = true;
+            if (e.key === ' ' || e.key === 'Enter') {
+                triggerZeroNova();
+            }
         };
         const handleKeyUp = (e: KeyboardEvent) => {
             gameEngineRef.current.keys[e.key] = false;
@@ -751,7 +949,7 @@ export default function MyeongsimGalagaGame({
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, [unlockAudio]);
+    }, [unlockAudio, triggerZeroNova]);
 
     // ── 메인 게임 루프 (60 FPS) ──
     useEffect(() => {
@@ -783,6 +981,17 @@ export default function MyeongsimGalagaGame({
             ctx.fillStyle = '#060814';
             ctx.fillRect(0, 0, w, h);
 
+            // 🌌 2026 최신형 사이버 성운(Nebula) 배경 렌더링
+            ge.nebulaOffset += 0.003;
+            const nebulaX = w / 2 + Math.sin(ge.nebulaOffset) * 60;
+            const nebulaY = h / 2 + Math.cos(ge.nebulaOffset * 0.8) * 60;
+            const nebGrad = ctx.createRadialGradient(nebulaX, nebulaY, 20, nebulaX, nebulaY, 260);
+            nebGrad.addColorStop(0, 'rgba(56, 189, 248, 0.07)');
+            nebGrad.addColorStop(0.5, 'rgba(168, 85, 247, 0.05)');
+            nebGrad.addColorStop(1, 'rgba(6, 8, 20, 0)');
+            ctx.fillStyle = nebGrad;
+            ctx.fillRect(0, 0, w, h);
+
             // 피버 모드 외곽 오라
             if (ge.feverTimer > 0) {
                 ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
@@ -790,14 +999,14 @@ export default function MyeongsimGalagaGame({
                 ctx.strokeRect(3, 3, w - 6, h - 6);
             }
 
-            // 2. 별똥별 스크롤
-            ctx.fillStyle = '#ffffff';
+            // 2. 패럴랙스 별무리
             ge.stars.forEach(star => {
                 star.y += star.speed * (ge.feverTimer > 0 ? 2.2 : 1.0);
                 if (star.y > h) {
                     star.y = 0;
                     star.x = Math.random() * w;
                 }
+                ctx.fillStyle = star.color;
                 ctx.globalAlpha = star.opacity;
                 ctx.fillRect(star.x, star.y, star.size, star.size);
             });
@@ -828,11 +1037,15 @@ export default function MyeongsimGalagaGame({
                 p.x += p.speed;
             }
             if (ge.mousePos.x !== p.x) {
-                p.x += (ge.mousePos.x - p.x) * 0.28;
+                p.x += (ge.mousePos.x - p.x) * 0.32;
             }
             p.x = Math.max(26, Math.min(w - 26, p.x));
 
             if (p.shieldTimer > 0) p.shieldTimer--;
+
+            if (p.hasDrone) {
+                p.droneAngle += 0.06;
+            }
 
             // 5. 무기 자동 연사
             const now = performance.now();
@@ -843,8 +1056,8 @@ export default function MyeongsimGalagaGame({
 
                 if (isFever) {
                     ge.bullets.push({ x: p.x, y: p.y - 18, vx: 0, vy: -10, radius: 4, color: '#fbbf24', isFever: true });
-                    ge.bullets.push({ x: p.x - 12, y: p.y - 14, vx: -2.2, vy: -9.5, radius: 3.5, color: '#34d399', isFever: true });
-                    ge.bullets.push({ x: p.x + 12, y: p.y - 14, vx: 2.2, vy: -9.5, radius: 3.5, color: '#34d399', isFever: true });
+                    ge.bullets.push({ x: p.x - 14, y: p.y - 14, vx: -2.4, vy: -9.5, radius: 3.5, color: '#34d399', isFever: true });
+                    ge.bullets.push({ x: p.x + 14, y: p.y - 14, vx: 2.4, vy: -9.5, radius: 3.5, color: '#34d399', isFever: true });
                 } else if (p.power === 1) {
                     ge.bullets.push({ x: p.x, y: p.y - 18, vx: 0, vy: -8.5, radius: 3, color: '#38bdf8' });
                 } else if (p.power === 2) {
@@ -855,6 +1068,17 @@ export default function MyeongsimGalagaGame({
                     ge.bullets.push({ x: p.x - 14, y: p.y - 14, vx: -1.2, vy: -8.5, radius: 3, color: '#38bdf8' });
                     ge.bullets.push({ x: p.x + 14, y: p.y - 14, vx: 1.2, vy: -8.5, radius: 3, color: '#38bdf8' });
                 }
+
+                if (p.hasDrone && ge.enemies.length > 0) {
+                    const drone1X = p.x + Math.cos(p.droneAngle) * 32;
+                    const drone1Y = p.y + Math.sin(p.droneAngle) * 16;
+                    const drone2X = p.x + Math.cos(p.droneAngle + Math.PI) * 32;
+                    const drone2Y = p.y + Math.sin(p.droneAngle + Math.PI) * 16;
+
+                    ge.bullets.push({ x: drone1X, y: drone1Y, vx: 0, vy: -9, radius: 2.8, color: '#a855f7', isHoming: true });
+                    ge.bullets.push({ x: drone2X, y: drone2Y, vx: 0, vy: -9, radius: 2.8, color: '#a855f7', isHoming: true });
+                }
+
                 playLaserSound(isFever);
             }
 
@@ -866,7 +1090,7 @@ export default function MyeongsimGalagaGame({
 
                 ctx.fillStyle = b.color;
                 ctx.shadowColor = b.color;
-                ctx.shadowBlur = b.isFever ? 12 : 8;
+                ctx.shadowBlur = b.isFever ? 14 : 9;
                 ctx.beginPath();
                 ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
                 ctx.fill();
@@ -883,6 +1107,7 @@ export default function MyeongsimGalagaGame({
                 e.x += e.vx;
                 if (e.x < 30 || e.x > w - 30) e.vx *= -1;
                 if (e.hitFlash > 0) e.hitFlash--;
+                e.wingPhase += 0.12;
 
                 e.diveTimer--;
                 if (e.diveTimer <= 0) {
@@ -891,40 +1116,40 @@ export default function MyeongsimGalagaGame({
 
                     if (e.y > h + 20) {
                         e.y = 35;
-                        e.diveTimer = 160 + Math.floor(Math.random() * 220);
+                        e.diveTimer = 140 + Math.floor(Math.random() * 220);
                     }
 
-                    if (Math.random() < 0.022) {
-                        ge.enemyBullets.push({ x: e.x, y: e.y + 12, vx: 0, vy: 4.2, radius: 3 });
+                    if (Math.random() < 0.024) {
+                        ge.enemyBullets.push({ x: e.x, y: e.y + 12, vx: 0, vy: 4.2, radius: 3.2 });
                     }
                 }
 
+                ctx.save();
+                ctx.translate(e.x, e.y);
                 ctx.fillStyle = e.hitFlash > 0 ? '#ffffff' : e.color;
                 ctx.shadowColor = e.color;
-                ctx.shadowBlur = e.hitFlash > 0 ? 16 : 8;
+                ctx.shadowBlur = e.hitFlash > 0 ? 18 : 10;
                 
+                const wingSpan = 16 + Math.sin(e.wingPhase) * 4;
                 ctx.beginPath();
-                ctx.moveTo(e.x, e.y - 12);
-                ctx.lineTo(e.x + 20, e.y - 2);
-                ctx.lineTo(e.x + 14, e.y + 12);
-                ctx.lineTo(e.x - 14, e.y + 12);
-                ctx.lineTo(e.x - 20, e.y - 2);
+                ctx.moveTo(0, -12);
+                ctx.lineTo(wingSpan, -2);
+                ctx.lineTo(wingSpan * 0.7, 12);
+                ctx.lineTo(-wingSpan * 0.7, 12);
+                ctx.lineTo(-wingSpan, -2);
                 ctx.closePath();
                 ctx.fill();
 
-                // 콕핏 눈
                 ctx.fillStyle = '#ffffff';
-                ctx.fillRect(e.x - 8, e.y - 2, 4, 4);
-                ctx.fillRect(e.x + 4, e.y - 2, 4, 4);
-                ctx.shadowBlur = 0;
+                ctx.fillRect(-6, -2, 3, 3);
+                ctx.fillRect(3, -2, 3, 3);
+                ctx.restore();
 
-                // 잡념 텍스트 (위쪽에 렌더링)
                 ctx.font = 'bold 10px sans-serif';
                 ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
                 ctx.fillText(e.text, e.x, e.y - 16);
 
-                // 플레이어 총알과 충돌 판정
                 for (let bi = ge.bullets.length - 1; bi >= 0; bi--) {
                     const b = ge.bullets[bi];
                     const dist = Math.hypot(b.x - e.x, b.y - e.y);
@@ -934,6 +1159,7 @@ export default function MyeongsimGalagaGame({
                         e.hitFlash = 5;
 
                         if (e.hp <= 0) {
+                            triggerHaptic(20);
                             for (let pIdx = 0; pIdx < 16; pIdx++) {
                                 ge.particles.push({
                                     x: e.x,
@@ -947,7 +1173,6 @@ export default function MyeongsimGalagaGame({
                                 });
                             }
 
-                            // 💡 인지 재구성 승화 플로팅 텍스트
                             ge.floatingTexts.push({
                                 x: e.x,
                                 y: e.y - 8,
@@ -959,12 +1184,14 @@ export default function MyeongsimGalagaGame({
                             });
                             playInsightSound();
 
-                            // 콤보 및 피버
                             ge.combo++;
                             ge.comboTimer = 160;
                             if (ge.combo > ge.maxCombo) ge.maxCombo = ge.combo;
                             setComboCount(ge.combo);
                             playComboSound(ge.combo);
+
+                            ge.ultimateEnergy = Math.min(100, ge.ultimateEnergy + 6);
+                            setUltimateGauge(ge.ultimateEnergy);
 
                             if (ge.combo >= 8 && ge.feverTimer <= 0) {
                                 ge.feverTimer = 340;
@@ -972,7 +1199,6 @@ export default function MyeongsimGalagaGame({
                                 playFeverSound();
                             }
 
-                            // 정화 통계 누적
                             setPurifiedStats(prev => {
                                 const current = prev[e.text] || { count: 0, insight: e.insight, tag: e.tag };
                                 return {
@@ -981,16 +1207,15 @@ export default function MyeongsimGalagaGame({
                                 };
                             });
 
-                            // 아이템 드롭
-                            if (Math.random() < 0.22) {
-                                const types: Array<'power' | 'shield' | 'life'> = ['power', 'shield', 'life'];
+                            if (Math.random() < 0.24) {
+                                const types: Array<'power' | 'shield' | 'life' | 'drone'> = ['power', 'shield', 'life', 'drone'];
                                 const itemType = types[Math.floor(Math.random() * types.length)];
                                 ge.items.push({
                                     x: e.x,
                                     y: e.y,
                                     vy: 1.8,
                                     type: itemType,
-                                    label: itemType === 'power' ? '⚡2X' : itemType === 'shield' ? '🛡️0' : '💖+1'
+                                    label: itemType === 'power' ? '⚡2X' : itemType === 'shield' ? '🛡️0' : itemType === 'drone' ? '🛸드론' : '💖+1'
                                 });
                             }
 
@@ -1006,7 +1231,6 @@ export default function MyeongsimGalagaGame({
                     }
                 }
 
-                // 플레이어와 적 충돌
                 if (ge.player.shieldTimer <= 0) {
                     const playerDist = Math.hypot(ge.player.x - e.x, ge.player.y - e.y);
                     if (playerDist < 28) {
@@ -1017,6 +1241,7 @@ export default function MyeongsimGalagaGame({
                         ge.combo = 0;
                         setComboCount(0);
                         playExplosionSound();
+                        triggerHaptic(40);
 
                         if (ge.lives <= 0) {
                             setGameState('gameover');
@@ -1045,18 +1270,16 @@ export default function MyeongsimGalagaGame({
 
                 if (b.hitFlash > 0) b.hitFlash--;
 
-                // 보스 일반 총알
                 if (b.tractorState !== 'stunned') {
                     b.shootTimer--;
                     if (b.shootTimer <= 0) {
-                        b.shootTimer = 48;
+                        b.shootTimer = 46;
                         ge.enemyBullets.push({ x: b.x - 30, y: b.y + 30, vx: -1.2, vy: 3.8, radius: 4 });
                         ge.enemyBullets.push({ x: b.x, y: b.y + 35, vx: 0, vy: 4.5, radius: 5 });
                         ge.enemyBullets.push({ x: b.x + 30, y: b.y + 30, vx: 1.2, vy: 3.8, radius: 4 });
                     }
                 }
 
-                // 트랙터 빔 상태 머신
                 if (b.tractorState === 'idle') {
                     b.tractorTimer--;
                     if (b.tractorTimer <= 0) {
@@ -1076,23 +1299,21 @@ export default function MyeongsimGalagaGame({
                     b.tractorTimer--;
                     if (Math.random() < 0.1) playTractorSound();
 
-                    // 트랙터 빔 홀로그램 부채꼴
                     const beamGrad = ctx.createLinearGradient(b.x, b.y + 25, b.x, h);
-                    beamGrad.addColorStop(0, 'rgba(6, 182, 212, 0.6)');
-                    beamGrad.addColorStop(1, 'rgba(192, 132, 252, 0.15)');
+                    beamGrad.addColorStop(0, 'rgba(6, 182, 212, 0.65)');
+                    beamGrad.addColorStop(1, 'rgba(192, 132, 252, 0.18)');
 
                     ctx.fillStyle = beamGrad;
                     ctx.beginPath();
                     ctx.moveTo(b.x - 18, b.y + 28);
                     ctx.lineTo(b.x + 18, b.y + 28);
-                    ctx.lineTo(b.x + 75, h);
-                    ctx.lineTo(b.x - 75, h);
+                    ctx.lineTo(b.x + 80, h);
+                    ctx.lineTo(b.x - 80, h);
                     ctx.closePath();
                     ctx.fill();
 
-                    // 흡인 로직
-                    const beamLeft = b.x - 65;
-                    const beamRight = b.x + 65;
+                    const beamLeft = b.x - 70;
+                    const beamRight = b.x + 70;
                     if (p.x >= beamLeft && p.x <= beamRight && p.y > b.y + 40) {
                         p.y -= 1.8;
                         p.x += (b.x - p.x) * 0.05;
@@ -1105,10 +1326,8 @@ export default function MyeongsimGalagaGame({
                     }
                 }
 
-                // 보스 외형
                 ctx.save();
                 ctx.translate(b.x, b.y);
-                
                 ctx.shadowColor = b.hitFlash > 0 ? '#ffffff' : (b.tractorState === 'stunned' ? '#38bdf8' : '#f43f5e');
                 ctx.shadowBlur = b.hitFlash > 0 ? 30 : 20;
                 ctx.fillStyle = b.hitFlash > 0 ? '#ffffff' : (b.tractorState === 'stunned' ? '#0f172a' : '#4c0519');
@@ -1132,7 +1351,6 @@ export default function MyeongsimGalagaGame({
                 ctx.fill();
                 ctx.restore();
 
-                // 보스 HP 바
                 const hpPct = b.hp / b.maxHp;
                 ctx.fillStyle = 'rgba(0,0,0,0.6)';
                 ctx.fillRect(w / 2 - 80, 16, 160, 8);
@@ -1146,13 +1364,15 @@ export default function MyeongsimGalagaGame({
                 ctx.textAlign = 'center';
                 ctx.fillText(b.tractorState === 'stunned' ? '⚡ STUNNED (그로기)' : t.bossName, w / 2, 12);
 
-                // 총알과 보스 충돌
                 for (let bi = ge.bullets.length - 1; bi >= 0; bi--) {
                     const blt = ge.bullets[bi];
                     if (blt.x > b.x - 60 && blt.x < b.x + 60 && blt.y > b.y - 28 && blt.y < b.y + 28) {
                         ge.bullets.splice(bi, 1);
                         b.hp -= (ge.feverTimer > 0 ? 2 : 1);
                         b.hitFlash = 5;
+
+                        ge.ultimateEnergy = Math.min(100, ge.ultimateEnergy + 2);
+                        setUltimateGauge(ge.ultimateEnergy);
 
                         if (b.tractorState === 'firing') {
                             b.tractorHits++;
@@ -1162,6 +1382,7 @@ export default function MyeongsimGalagaGame({
                                 setTractorNotice(t.tractorBroken);
                                 setTimeout(() => setTractorNotice(null), 2500);
                                 playExplosionSound();
+                                triggerHaptic([30, 30, 60]);
                                 ge.shakeTimer = 12;
                             }
                         }
@@ -1180,6 +1401,7 @@ export default function MyeongsimGalagaGame({
                         }
 
                         if (b.hp <= 0) {
+                            triggerHaptic([80, 50, 100, 60, 150]);
                             for (let pIdx = 0; pIdx < 40; pIdx++) {
                                 ge.particles.push({
                                     x: b.x + (Math.random() - 0.5) * 80,
@@ -1211,7 +1433,7 @@ export default function MyeongsimGalagaGame({
                 }
             }
 
-            // ── 9. 웨이브 진행 로직 (WAVE 1 ➔ 2 ➔ 3 ➔ FINAL BOSS) ──
+            // 9. 웨이브 진행 로직
             if (ge.enemies.length === 0 && (!ge.boss || !ge.boss.active)) {
                 if (ge.wave < 3) {
                     ge.wave++;
@@ -1254,6 +1476,7 @@ export default function MyeongsimGalagaGame({
                         ge.combo = 0;
                         setComboCount(0);
                         playExplosionSound();
+                        triggerHaptic(40);
 
                         if (ge.lives <= 0) {
                             setGameState('gameover');
@@ -1273,7 +1496,7 @@ export default function MyeongsimGalagaGame({
                 const it = ge.items[i];
                 it.y += it.vy;
 
-                ctx.fillStyle = it.type === 'power' ? '#f59e0b' : it.type === 'shield' ? '#06b6d4' : '#ec4899';
+                ctx.fillStyle = it.type === 'power' ? '#f59e0b' : it.type === 'shield' ? '#06b6d4' : it.type === 'drone' ? '#a855f7' : '#ec4899';
                 ctx.beginPath();
                 ctx.roundRect(it.x - 14, it.y - 10, 28, 20, 8);
                 ctx.fill();
@@ -1287,10 +1510,13 @@ export default function MyeongsimGalagaGame({
                 if (dist < 28) {
                     ge.items.splice(i, 1);
                     playPowerupSound();
+                    triggerHaptic(25);
                     if (it.type === 'power') {
                         ge.player.power = Math.min(3, ge.player.power + 1);
                     } else if (it.type === 'shield') {
                         ge.player.shieldTimer = 300;
+                    } else if (it.type === 'drone') {
+                        ge.player.hasDrone = true;
                     } else if (it.type === 'life') {
                         ge.lives = Math.min(5, ge.lives + 1);
                         setLives(ge.lives);
@@ -1302,7 +1528,24 @@ export default function MyeongsimGalagaGame({
                 if (it.y > h + 20) ge.items.splice(i, 1);
             }
 
-            // 12. 💡 초록빛 긍정 승화 플로팅 텍스트
+            // 12. 충격파 링 (Shockwaves)
+            for (let i = ge.shockwaves.length - 1; i >= 0; i--) {
+                const sw = ge.shockwaves[i];
+                sw.radius += 18;
+                sw.life--;
+
+                ctx.strokeStyle = sw.color;
+                ctx.lineWidth = 4 * (sw.life / 30);
+                ctx.beginPath();
+                ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                if (sw.life <= 0 || sw.radius >= sw.maxRadius) {
+                    ge.shockwaves.splice(i, 1);
+                }
+            }
+
+            // 13. 초록빛 긍정 승화 플로팅 텍스트
             for (let i = ge.floatingTexts.length - 1; i >= 0; i--) {
                 const ft = ge.floatingTexts[i];
                 ft.y += ft.vy;
@@ -1322,7 +1565,7 @@ export default function MyeongsimGalagaGame({
                 if (ft.life <= 0) ge.floatingTexts.splice(i, 1);
             }
 
-            // 13. 파티클
+            // 14. 파티클
             for (let i = ge.particles.length - 1; i >= 0; i--) {
                 const pt = ge.particles[i];
                 pt.x += pt.vx;
@@ -1340,47 +1583,78 @@ export default function MyeongsimGalagaGame({
                 if (pt.life <= 0) ge.particles.splice(i, 1);
             }
 
-            // 14. 🚀 갤러그 스타일 원작 화이트/레드 플레이어 비행기
+            // 15. 🛸 호위 자각 드론 렌더링
+            if (p.hasDrone) {
+                const d1X = p.x + Math.cos(p.droneAngle) * 32;
+                const d1Y = p.y + Math.sin(p.droneAngle) * 16;
+                const d2X = p.x + Math.cos(p.droneAngle + Math.PI) * 32;
+                const d2Y = p.y + Math.sin(p.droneAngle + Math.PI) * 16;
+
+                [ { x: d1X, y: d1Y }, { x: d2X, y: d2Y } ].forEach(dPos => {
+                    ctx.save();
+                    ctx.translate(dPos.x, dPos.y);
+                    ctx.fillStyle = '#a855f7';
+                    ctx.shadowColor = '#c084fc';
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.roundRect(-5, -5, 10, 10, 3);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(-2, -2, 4, 4);
+                    ctx.restore();
+                });
+            }
+
+            // 16. 🚀 2026 최신형 네오 파이터
             ctx.save();
             ctx.translate(ge.player.x, ge.player.y);
 
+            // 육각형 홀로그램 쉴드 배리어
             if (ge.player.shieldTimer > 0) {
                 ctx.strokeStyle = '#38bdf8';
                 ctx.shadowColor = '#38bdf8';
-                ctx.shadowBlur = 14;
-                ctx.lineWidth = 3;
+                ctx.shadowBlur = 16;
+                ctx.lineWidth = 2.5;
                 ctx.beginPath();
-                ctx.arc(0, 0, 30, 0, Math.PI * 2);
+                for (let a = 0; a < 6; a++) {
+                    const angle = (Math.PI / 3) * a + performance.now() * 0.002;
+                    const hx = Math.cos(angle) * 30;
+                    const hy = Math.sin(angle) * 30;
+                    if (a === 0) ctx.moveTo(hx, hy);
+                    else ctx.lineTo(hx, hy);
+                }
+                ctx.closePath();
                 ctx.stroke();
                 ctx.shadowBlur = 0;
             }
 
+            // 전투기 동체
             ctx.fillStyle = '#ffffff';
             ctx.shadowColor = ge.feverTimer > 0 ? '#fbbf24' : '#38bdf8';
-            ctx.shadowBlur = ge.feverTimer > 0 ? 18 : 12;
+            ctx.shadowBlur = ge.feverTimer > 0 ? 20 : 14;
             ctx.beginPath();
-            ctx.moveTo(0, -22);
-            ctx.lineTo(22, 16);
-            ctx.lineTo(8, 12);
-            ctx.lineTo(0, 16);
-            ctx.lineTo(-8, 12);
-            ctx.lineTo(-22, 16);
+            ctx.moveTo(0, -24);
+            ctx.lineTo(24, 15);
+            ctx.lineTo(9, 12);
+            ctx.lineTo(0, 18);
+            ctx.lineTo(-9, 12);
+            ctx.lineTo(-24, 15);
             ctx.closePath();
             ctx.fill();
 
-            // 레드 날개
+            // 네온 윙렛
             ctx.fillStyle = '#ef4444';
             ctx.beginPath();
-            ctx.moveTo(22, 16);
-            ctx.lineTo(14, 4);
-            ctx.lineTo(14, 14);
+            ctx.moveTo(24, 15);
+            ctx.lineTo(15, 3);
+            ctx.lineTo(15, 13);
             ctx.closePath();
             ctx.fill();
 
             ctx.beginPath();
-            ctx.moveTo(-22, 16);
-            ctx.lineTo(-14, 4);
-            ctx.lineTo(-14, 14);
+            ctx.moveTo(-24, 15);
+            ctx.lineTo(-15, 3);
+            ctx.lineTo(-15, 13);
             ctx.closePath();
             ctx.fill();
 
@@ -1395,20 +1669,20 @@ export default function MyeongsimGalagaGame({
             ctx.arc(-2, -6, 2, 0, Math.PI * 2);
             ctx.fill();
 
-            // 화염
-            const flameLen = 14 + Math.random() * (ge.feverTimer > 0 ? 14 : 8);
+            // 트윈 플라즈마 화염
+            const flameLen = 15 + Math.random() * (ge.feverTimer > 0 ? 15 : 9);
             ctx.fillStyle = ge.feverTimer > 0 ? '#38bdf8' : '#f59e0b';
             ctx.beginPath();
-            ctx.moveTo(-7, 14);
-            ctx.lineTo(-4, 14 + flameLen);
-            ctx.lineTo(-1, 14);
+            ctx.moveTo(-7, 15);
+            ctx.lineTo(-4, 15 + flameLen);
+            ctx.lineTo(-1, 15);
             ctx.closePath();
             ctx.fill();
 
             ctx.beginPath();
-            ctx.moveTo(1, 14);
-            ctx.lineTo(4, 14 + flameLen);
-            ctx.lineTo(7, 14);
+            ctx.moveTo(1, 15);
+            ctx.lineTo(4, 15 + flameLen);
+            ctx.lineTo(7, 15);
             ctx.closePath();
             ctx.fill();
 
@@ -1429,9 +1703,10 @@ export default function MyeongsimGalagaGame({
     }, [
         gameState, playLaserSound, playExplosionSound, playComboSound, playFeverSound, 
         playInsightSound, playTractorSound, playPowerupSound, onExpEarned, onExamClear, 
-        t.bossName, t.tractorWarning, t.tractorBroken, t.waveBanner
+        t.bossName, t.tractorWarning, t.tractorBroken, t.waveBanner, triggerHaptic
     ]);
 
+    // 마우스 및 원터치 다이렉트 핑거 트래킹
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
         unlockAudio();
         const canvas = canvasRef.current;
@@ -1442,14 +1717,28 @@ export default function MyeongsimGalagaGame({
         gameEngineRef.current.mousePos.x = x;
     };
 
-    const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
         unlockAudio();
+        gameEngineRef.current.isTouching = true;
         const canvas = canvasRef.current;
         if (!canvas || e.touches.length === 0) return;
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const x = (e.touches[0].clientX - rect.left) * scaleX;
         gameEngineRef.current.mousePos.x = x;
+    };
+
+    const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+        const canvas = canvasRef.current;
+        if (!canvas || e.touches.length === 0) return;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const x = (e.touches[0].clientX - rect.left) * scaleX;
+        gameEngineRef.current.mousePos.x = x;
+    };
+
+    const handleTouchEnd = () => {
+        gameEngineRef.current.isTouching = false;
     };
 
     const moveLeft = () => {
@@ -1466,7 +1755,7 @@ export default function MyeongsimGalagaGame({
         if (score > highScore) setHighScore(score);
     }, [score, highScore]);
 
-    // 인증서 텍스트 클립보드 복사 (의료법 오인 용어 배제)
+    // 인증서 복사
     const handleCopyCertificate = () => {
         const statsSummary = Object.entries(purifiedStats)
             .map(([thought, data]) => `- [#${data.tag}] ${thought} (${data.count}회 격퇴) ➔ "${data.insight}" 승화`)
@@ -1496,7 +1785,7 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
             onClick={unlockAudio}
             className="flex flex-col items-center justify-center w-full max-w-lg mx-auto select-none"
         >
-            {/* 상단 HUD 바 (모바일 반응형 최적화) */}
+            {/* 상단 HUD 바 */}
             <div className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#0c1022] rounded-2xl border border-white/10 flex items-center justify-between text-xs mb-2 shadow-md">
                 <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 font-mono font-bold text-cyan-300 text-[11px] sm:text-xs">
@@ -1526,20 +1815,44 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     ))}
                 </div>
 
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        unlockAudio();
-                        setIsMuted(!isMuted);
-                    }}
-                    className="p-1 sm:p-1.5 rounded-xl border flex items-center gap-1 cursor-pointer transition-all bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-sm"
-                >
-                    {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} className="animate-pulse" />}
-                    <span className="text-[9px] sm:text-[10px] font-mono font-bold">{isMuted ? 'MUTE' : '8-BIT'}</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                    {/* BGM 토글 버튼 */}
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            unlockAudio();
+                            if (bgmEnabled) {
+                                stopBgm();
+                                setBgmEnabled(false);
+                            } else {
+                                setBgmEnabled(true);
+                                startBgm();
+                            }
+                        }}
+                        className={`p-1 rounded-xl border flex items-center gap-0.5 text-[9px] font-mono font-bold cursor-pointer transition-all ${
+                            bgmEnabled ? 'bg-purple-500/20 text-purple-300 border-purple-400/40' : 'bg-white/5 text-gray-400 border-white/10'
+                        }`}
+                        title="신스 BGM 토글"
+                    >
+                        <Music size={11} className={bgmEnabled ? 'animate-spin' : ''} />
+                        <span>BGM</span>
+                    </button>
+
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            unlockAudio();
+                            setIsMuted(!isMuted);
+                        }}
+                        className="p-1 sm:p-1.5 rounded-xl border flex items-center gap-1 cursor-pointer transition-all bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-sm"
+                    >
+                        {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} className="animate-pulse" />}
+                        <span className="text-[9px] sm:text-[10px] font-mono font-bold">{isMuted ? 'MUTE' : 'SFX'}</span>
+                    </button>
+                </div>
             </div>
 
-            {/* 캔버스 게임 화면 프레임 (모바일 높이 짤림 방지: h-[360px] sm:h-[460px]) */}
+            {/* 캔버스 게임 화면 프레임 */}
             <div 
                 onClick={unlockAudio}
                 className="relative w-full h-[370px] sm:h-[450px] rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_45px_rgba(6,182,212,0.3)] bg-[#060814]"
@@ -1549,7 +1862,9 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     width={400}
                     height={500}
                     onMouseMove={handleMouseMove}
+                    onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                     className="w-full h-full cursor-crosshair touch-none"
                 />
 
@@ -1599,7 +1914,7 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     {bossWarning && (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: [1, 1.1, 1] }}
+                            animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ repeat: 3, duration: 0.5 }}
                             className="absolute top-1/4 inset-x-0 mx-auto w-fit px-4 py-2 bg-rose-600/90 text-white font-black text-xs sm:text-sm rounded-2xl border-2 border-rose-300 shadow-[0_0_30px_rgba(244,63,94,0.8)] flex items-center gap-2 z-20"
@@ -1661,14 +1976,13 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                     </motion.div>
                 )}
 
-                {/* 🎉 게임 클리어: 마인드 영점 리셋 & 자각 인증 카드 모달 (모바일 짤림 완벽 방지 레이아웃) */}
+                {/* 🎉 게임 클리어: 마인드 영점 리셋 & 자각 인증 카드 모달 */}
                 {gameState === 'clear' && (
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="absolute inset-0 bg-black/92 backdrop-blur-md flex flex-col justify-between p-3 sm:p-4 text-center z-30 overflow-y-auto"
                     >
-                        {/* 상단 뱃지 & 타이틀 */}
                         <div className="space-y-1 pt-1 shrink-0">
                             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-[9px] font-mono text-cyan-300">
                                 <Sparkles size={11} className="text-cyan-300" />
@@ -1682,7 +1996,6 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                             </p>
                         </div>
 
-                        {/* 본문 통계 및 정화된 왜곡 상세 목록 (스크롤 가능) */}
                         <div className="w-full my-1.5 p-2.5 bg-cyan-950/60 rounded-2xl border border-cyan-400/40 text-left text-xs font-mono space-y-1.5">
                             <div className="flex justify-between items-center pb-1 border-b border-white/10 text-gray-300 text-[11px]">
                                 <span>점수 / 콤보</span>
@@ -1694,7 +2007,6 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                                 <span>{t.brainwaveStatus}</span>
                             </div>
 
-                            {/* 🌟 상세 인지왜곡 정화 목록 🌟 */}
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center text-[10px] text-gray-400 font-bold">
                                     <span>{t.purifiedTitle}:</span>
@@ -1728,7 +2040,6 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                             </div>
                         </div>
 
-                        {/* 하단 버튼 그룹 (모바일에서 짤리지 않는 가로 flex) */}
                         <div className="flex items-center gap-2 w-full pt-1 shrink-0">
                             <button
                                 onClick={handleCopyCertificate}
@@ -1750,7 +2061,40 @@ ${statsSummary || '- 모든 잡념 즉각 완전 정화 완료'}
                 )}
             </div>
 
-            {/* 모바일 화면용 원터치 좌우 이동 패드 */}
+            {/* 💥 최신형 궁극기 게이지 & 발동 바 */}
+            <div className="w-full flex items-center gap-2 mt-2 px-1">
+                <div className="flex-1 bg-black/50 border border-white/10 rounded-xl h-9 px-2 flex items-center gap-2">
+                    <Zap size={14} className={ultimateGauge >= 100 ? 'text-amber-400 animate-bounce' : 'text-gray-500'} />
+                    <div className="flex-1 bg-white/10 rounded-full h-2 overflow-hidden">
+                        <div 
+                            className={`h-full transition-all duration-300 ${
+                                ultimateGauge >= 100 
+                                    ? 'bg-gradient-to-r from-amber-400 via-rose-500 to-amber-300 animate-pulse' 
+                                    : 'bg-cyan-400'
+                            }`}
+                            style={{ width: `${ultimateGauge}%` }}
+                        />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold text-gray-300 w-9 text-right">
+                        {ultimateGauge}%
+                    </span>
+                </div>
+
+                <button
+                    onClick={triggerZeroNova}
+                    disabled={ultimateGauge < 100}
+                    className={`py-2 px-3 rounded-xl font-black text-xs flex items-center gap-1 transition-all cursor-pointer ${
+                        ultimateGauge >= 100
+                            ? 'bg-gradient-to-r from-amber-400 via-rose-500 to-amber-400 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.6)] animate-pulse active:scale-95'
+                            : 'bg-white/5 text-gray-500 border border-white/5 opacity-50 cursor-not-allowed'
+                    }`}
+                >
+                    <Sparkles size={13} />
+                    <span>{t.novaBtn}</span>
+                </button>
+            </div>
+
+            {/* 모바일 원터치 이동 패드 */}
             <div className="w-full flex items-center justify-between gap-2.5 mt-2 px-1">
                 <button
                     onClick={moveLeft}
