@@ -304,7 +304,12 @@ export default function ReportPage() {
 
     // ⌚ [웨어러블 워치모드 Presentation Layer] 초소형 스마트워치 최적화 뷰
     if (isWearable) {
-        return <WearableDashboard />;
+        return (
+            <>
+                <WearableDashboard />
+                <DailyMindWelcomeModal />
+            </>
+        );
     }
 
     // ⭐ [리파인모드 Presentation Layer] 프로덕션 프리미엄 AI 코칭 대시보드 & 리포트
@@ -312,37 +317,51 @@ export default function ReportPage() {
         const { currentStep, reportData } = useReportStore.getState();
         // Step 1에서 아직 생년정보를 입력하지 않은 신규 유저에게는 리파인 온보딩 폼을 보여줌
         if (currentStep === 1 && !reportData?.birthDate) {
-            return <RefinedCoverView />;
+            return (
+                <>
+                    <RefinedCoverView />
+                    <DailyMindWelcomeModal />
+                </>
+            );
         }
         
         // 사용자가 리포트 상세(14단계) 보기를 눌렀을 때 RefinedReportLayout으로 감싸서 렌더링
         if (isViewingReportDetail) {
             return (
-                <RefinedReportLayout onReturnToDashboard={() => setIsViewingReportDetail(false)}>
-                    <ReportContent />
-                </RefinedReportLayout>
+                <>
+                    <RefinedReportLayout onReturnToDashboard={() => setIsViewingReportDetail(false)}>
+                        <ReportContent />
+                    </RefinedReportLayout>
+                    <DailyMindWelcomeModal />
+                </>
             );
         }
 
         return (
-            <RefinedDashboard
-                onOpenReport={() => {
-                    useReportStore.getState().setStep(3);
-                    setIsViewingReportDetail(true);
-                }}
-            />
+            <>
+                <RefinedDashboard
+                    onOpenReport={() => {
+                        useReportStore.getState().setStep(3);
+                        setIsViewingReportDetail(true);
+                    }}
+                />
+                <DailyMindWelcomeModal />
+            </>
         );
     }
 
     // 🌟 [간편모드 Presentation Layer] 기존 로직 무수정, 렌더링 레이어만 분기 🌟
     if (isSimple) {
         return (
-            <SimpleDashboard
-                onSwitchToClassicReport={() => {
-                    setViewMode('classic');
-                    useReportStore.getState().setStep(3);
-                }}
-            />
+            <>
+                <SimpleDashboard
+                    onSwitchToClassicReport={() => {
+                        setViewMode('classic');
+                        useReportStore.getState().setStep(3);
+                    }}
+                />
+                <DailyMindWelcomeModal />
+            </>
         );
     }
 
@@ -350,7 +369,6 @@ export default function ReportPage() {
     return (
         <BookLayout>
             <ReportContent />
-            <DailyMindWelcomeModal />
         </BookLayout>
     );
 }

@@ -5,48 +5,54 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, Brain, CheckCircle2, Shield, Eye, RefreshCw, Zap, Award, Compass, ArrowDown } from 'lucide-react';
 
 interface DailyMindWelcomeModalProps {
+  isOpen?: boolean;
   onClose?: () => void;
 }
 
-export default function DailyMindWelcomeModal({ onClose }: DailyMindWelcomeModalProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function DailyMindWelcomeModal({ isOpen: externalIsOpen, onClose }: DailyMindWelcomeModalProps) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+
+  // 외부 prop이 명시되면 externalIsOpen을, 아니면 내부 상태 internalIsOpen을 사용
+  const isCurrentlyOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
   useEffect(() => {
-    // 1. 하루에 1번만 띄우는 로컬 스토리지 검사
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const hideDate = localStorage.getItem('myeongsim_daily_welcome_popup_hide_date');
+    // 1. 하루에 1번만 띄우는 로컬 스토리지 검사 (외부에서 직접 isOpen을 제어하지 않을 때만 동작)
+    if (externalIsOpen === undefined) {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const hideDate = localStorage.getItem('myeongsim_daily_welcome_popup_hide_date');
 
-    if (hideDate !== todayStr) {
-      // 0.4초 후 감성적으로 팝업 렌더링
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 400);
-      return () => clearTimeout(timer);
+      if (hideDate !== todayStr) {
+        // 0.4초 후 감성적으로 팝업 렌더링
+        const timer = setTimeout(() => {
+          setInternalIsOpen(true);
+        }, 400);
+        return () => clearTimeout(timer);
+      }
     }
-  }, []);
+  }, [externalIsOpen]);
 
   // 2. 상단 버튼 등에서 언제든 다시 열 수 있는 이벤트 리스너
   useEffect(() => {
     const handleOpenCustom = () => {
-      setIsOpen(true);
+      setInternalIsOpen(true);
     };
     window.addEventListener('open-3code-manifesto', handleOpenCustom);
     return () => window.removeEventListener('open-3code-manifesto', handleOpenCustom);
   }, []);
 
   const handleClose = () => {
-    setIsOpen(false);
+    setInternalIsOpen(false);
     if (onClose) onClose();
   };
 
   const handleHideToday = () => {
     const todayStr = new Date().toISOString().slice(0, 10);
     localStorage.setItem('myeongsim_daily_welcome_popup_hide_date', todayStr);
-    setIsOpen(false);
+    setInternalIsOpen(false);
     if (onClose) onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isCurrentlyOpen) return null;
 
   return (
     <AnimatePresence>

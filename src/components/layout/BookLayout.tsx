@@ -26,6 +26,7 @@ import OhaengContributionModal from '../coaching/OhaengContributionModal';
 import MyeongsimGeniusReportModal from '../coaching/MyeongsimGeniusReportModal';
 import NtsBusinessCareerModal from '../coaching/NtsBusinessCareerModal';
 import SupportInquiryModal from '../modals/SupportInquiryModal';
+import DailyMindWelcomeModal from '../modals/DailyMindWelcomeModal';
 import { ViewModeSwitcher } from '../simple/ViewModeSwitcher';
 
 export default function BookLayout({ children }: { children: React.ReactNode }) {
@@ -57,7 +58,15 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
     const [showOhaengModal, setShowOhaengModal] = useState(false);
     const [showGeniusModal, setShowGeniusModal] = useState(false);
     const [showNtsModal, setShowNtsModal] = useState(false);
+    const [isManifestoOpen, setIsManifestoOpen] = useState(false);
     const router = useRouter();
+
+    // ⚡ 3-Code × 3S Protocol 선언문 이벤트 리스너
+    useEffect(() => {
+        const handleOpenManifesto = () => setIsManifestoOpen(true);
+        window.addEventListener('open-3code-manifesto', handleOpenManifesto);
+        return () => window.removeEventListener('open-3code-manifesto', handleOpenManifesto);
+    }, []);
 
     // 🔮 생년월일 입력 페이지(Step 1: CoverView) 즉시 이동 핸들러
     const handleGoToBirthInput = () => {
@@ -348,7 +357,10 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         {/* ⚡ [명심코칭 3-Code × 3S Protocol 선언문 버튼] */}
                         <button
                             type="button"
-                            onClick={() => window.dispatchEvent(new CustomEvent('open-3code-manifesto'))}
+                            onClick={() => {
+                                setIsManifestoOpen(true);
+                                window.dispatchEvent(new CustomEvent('open-3code-manifesto'));
+                            }}
                             className="h-8 px-2 rounded-xl bg-amber-400/15 border border-amber-400/30 text-amber-300 hover:bg-amber-400/25 transition-all text-xs font-black flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
                             title="명심코칭 3-Code × 3S Protocol 선언문 열람"
                         >
@@ -521,6 +533,12 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                         onClose={() => setIsInquiryOpen(false)}
                     />
                 )}
+
+                {/* ⚡ [선언문 팝업 모달] 항상 마운트되어 3S 및 메인화면 카드 클릭 시 즉시 노출 보장 */}
+                <DailyMindWelcomeModal
+                    isOpen={isManifestoOpen}
+                    onClose={() => setIsManifestoOpen(false)}
+                />
 
                 {/* [Strict Payment Guardian] */}
                 <AnimatePresence>
