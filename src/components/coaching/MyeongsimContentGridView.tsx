@@ -79,6 +79,30 @@ export default function MyeongsimContentGridView({
       <FounderWelcomeLetterBanner userName={userName} />
 
       {/* ==========================================
+          ⚡ [3-Code × 3S Protocol 선언문] 메인화면 바로가기 배너 카드
+          ========================================== */}
+      <motion.div
+        whileHover={{ scale: 1.01, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => window.dispatchEvent(new CustomEvent('open-3code-manifesto'))}
+        className="w-full p-3.5 sm:p-4 rounded-2xl bg-[#141b2a] hover:bg-[#1a2337] border-2 border-amber-400/40 hover:border-amber-400 text-left flex items-center justify-between shadow-xl shadow-amber-500/10 cursor-pointer active:scale-98 transition-all group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="size-10 rounded-xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center text-amber-400 text-lg group-hover:scale-110 transition-transform shrink-0">
+            ⚡
+          </div>
+          <div>
+            <h4 className="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+              <span>3-Code × 3S Protocol 선언문</span>
+              <span className="text-[9px] bg-amber-400/20 text-amber-200 px-1.5 py-0.5 rounded font-mono border border-amber-400/30">선언문</span>
+            </h4>
+            <p className="text-[11px] text-gray-400 mt-0.5">명심코칭 혁신 헌장 및 원리 열람</p>
+          </div>
+        </div>
+        <ChevronRight size={18} className="text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
+      </motion.div>
+
+      {/* ==========================================
           1. [비즈니스 설계] 5단계 웰니스 심층 리포트 & 국세청 업종 매핑 배너 카드
           ========================================== */}
       <motion.div

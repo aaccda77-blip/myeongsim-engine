@@ -192,6 +192,73 @@ export default function HomePage() {
                 </div>
             </div>
 
+            {/* 📣 도서 구매 독자 VIP 혜택 안내 카드 */}
+            <div className="w-full max-w-md mt-5 relative z-10">
+                <div className="bg-gradient-to-br from-amber-950/60 via-slate-900/80 to-purple-950/60 border border-amber-400/30 rounded-3xl p-6 shadow-[0_0_40px_rgba(245,158,11,0.15)] backdrop-blur-xl">
+                    {/* 상단 뱃지 */}
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[11px] font-black font-mono tracking-widest">
+                            <Sparkles className="w-3 h-3" />
+                            <span>BOOK READER EXCLUSIVE</span>
+                        </div>
+                    </div>
+
+                    {/* 제목 */}
+                    <h2 className="text-white font-black text-base sm:text-lg leading-tight mb-2 break-keep">
+                        📖 도서 구매 독자님을 위한<br />
+                        <span className="text-amber-400">프라이빗 회원제 혜택 안내</span>
+                    </h2>
+
+                    {/* 본문 */}
+                    <p className="text-gray-300/85 text-[12px] sm:text-xs leading-relaxed break-keep mb-4">
+                        보다 깊이 있는 밀착 코칭과 최상의 서비스 품질을 위해,
+                        회원님들의 소중한 요청에 따라 <span className="text-amber-300 font-bold">임시적으로 프라이빗 회원제</span>로 전환 운영 중입니다.
+                        <br /><br />
+                        <span className="text-white font-bold">도서를 구매하신 독자 회원님께서는</span> 책에 수록된
+                        <span className="text-amber-300 font-bold"> 오픈 혜택 이벤트를 그대로 100% 온전히 받아보실 수 있도록</span> 아래 창구를 통해 개별 케어 중입니다.
+                    </p>
+
+                    {/* 연락처 목록 */}
+                    <div className="space-y-2.5">
+                        <a
+                            href="mailto:mindflowlabbooks@naver.com"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-800/60 border border-white/10 hover:border-amber-400/50 hover:bg-amber-400/10 transition-all group"
+                        >
+                            <span className="text-lg">✉️</span>
+                            <div>
+                                <p className="text-[10px] text-gray-400 font-bold">이메일 문의</p>
+                                <p className="text-amber-300 text-xs font-mono font-bold group-hover:text-amber-200">mindflowlabbooks@naver.com</p>
+                            </div>
+                        </a>
+
+                        <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-800/60 border border-white/10">
+                            <span className="text-lg">💬</span>
+                            <div>
+                                <p className="text-[10px] text-gray-400 font-bold">카카오톡 1:1 오픈채팅 문의</p>
+                                <p className="text-yellow-300 text-xs font-bold">카카오톡 오픈채팅으로 문의해주세요</p>
+                            </div>
+                        </div>
+
+                        <a
+                            href="tel:010-9114-2352"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-800/60 border border-white/10 hover:border-green-400/50 hover:bg-green-400/5 transition-all group"
+                        >
+                            <span className="text-lg">📞</span>
+                            <div>
+                                <p className="text-[10px] text-gray-400 font-bold">긴급 직통 문의</p>
+                                <p className="text-green-300 text-xs font-mono font-bold group-hover:text-green-200">010-9114-2352</p>
+                                <p className="text-[10px] text-gray-500">부재 시 문자를 남겨주시면 확인 즉시 연락드립니다</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    {/* 하단 마무리 문구 */}
+                    <p className="mt-4 text-center text-[11px] text-gray-400/70 border-t border-white/10 pt-3 break-keep">
+                        변함없는 관심과 성원에 진심으로 감사드립니다 🙏
+                    </p>
+                </div>
+            </div>
+
             {/* Bottom Copyright */}
             <p className="text-[11px] text-gray-400/60 mt-6 text-center">
                 © 2026 MYONGSIM COACHING. All Rights Reserved.

@@ -345,6 +345,17 @@ export default function BookLayout({ children }: { children: React.ReactNode }) 
                     </div>
 
                     <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                        {/* ⚡ [명심코칭 3-Code × 3S Protocol 선언문 버튼] */}
+                        <button
+                            type="button"
+                            onClick={() => window.dispatchEvent(new CustomEvent('open-3code-manifesto'))}
+                            className="h-8 px-2 rounded-xl bg-amber-400/15 border border-amber-400/30 text-amber-300 hover:bg-amber-400/25 transition-all text-xs font-black flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+                            title="명심코칭 3-Code × 3S Protocol 선언문 열람"
+                        >
+                            <span>⚡</span>
+                            <span className="font-bold">3S</span>
+                        </button>
+
                         {/* 🌟 [간편모드 / 기본모드 전환 스위처] 🌟 */}
                         <ViewModeSwitcher />
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { FileText, BookOpen, Music, Briefcase, Activity, ChevronRight } from 'lucide-react';
+import { FileText, BookOpen, Music, Briefcase, Activity, ChevronRight, Zap } from 'lucide-react';
 
 interface RefinedFeatureGridProps {
     onOpenReport: () => void;
@@ -51,6 +51,14 @@ export function RefinedFeatureGrid({ onOpenReport }: RefinedFeatureGridProps) {
             icon: <Activity size={18} className="text-cyan-300" />,
             badge: '특허출원',
             onClick: () => router.push('/bio-care')
+        },
+        {
+            id: 'manifesto',
+            title: '3-Code × 3S Protocol 선언문',
+            desc: '명심코칭 혁신 헌장 및 원리 열람',
+            icon: <Zap size={18} className="text-amber-400" />,
+            badge: '필독',
+            onClick: () => window.dispatchEvent(new CustomEvent('open-3code-manifesto'))
         }
     ];
 
