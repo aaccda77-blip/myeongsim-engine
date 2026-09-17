@@ -24,6 +24,7 @@ import { useReportStore } from '@/store/useReportStore'; // [New] Import for nav
 import { useSubscription } from '@/hooks/useSubscription'; // [NEW] 이용권 상태 확인
 import { isUserApprovedSync } from '@/lib/authGuardUtils'; // [NEW] 실시간 동기식 권한 검증
 import { useLanguage } from '@/contexts/LanguageContext'; // [Multi-Language]
+import { useAds } from '@/contexts/AdContext'; // [NEW] 3,300원 광고 제거 및 애드몹 연동
 import {
     ICON_DRILL_DOWN_MAP,
     getMainIconsWithRecommendations,
@@ -480,6 +481,7 @@ export default function DrillDownIconMenu({
 }: DrillDownIconMenuProps) {
     const { language, setLanguage, t } = useLanguage();
     const router = useRouter();
+    const { isAdFree, openRemoveAdsModal } = useAds();
     const { 
         isMonthlyVip, 
         isBookZeroPoint, 
@@ -1608,6 +1610,33 @@ export default function DrillDownIconMenu({
                     <div>
                         <div style={{ ...styles.iconLabel, color: '#38bdf8', fontWeight: 'bold' }}>도서 《ZERO POINT》</div>
                         <div style={styles.neuroTrigger}>YES24 이동하기 ➔</div>
+                    </div>
+                </button>
+
+                {/* 🌟 [대표님 요청] 🚫 평생 광고제거 ₩3,300 인앱 결제 버튼 🌟 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={openRemoveAdsModal}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: isAdFree 
+                            ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 182, 212, 0.25))'
+                            : 'linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(234, 88, 12, 0.25))',
+                        border: isAdFree ? '1px solid rgba(16, 185, 129, 0.6)' : '1px solid rgba(245, 158, 11, 0.6)',
+                        boxShadow: isAdFree ? '0 4px 15px rgba(16, 185, 129, 0.35)' : '0 4px 15px rgba(245, 158, 11, 0.4)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>{isAdFree ? '✨' : '🚫'}</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: isAdFree ? '#34d399' : '#fbbf24', fontWeight: 'bold' }}>
+                            {isAdFree ? '광고제거 VIP' : '광고제거 풀기'}
+                        </div>
+                        <div style={styles.neuroTrigger}>
+                            {isAdFree ? '평생 무제한 적용됨' : '₩3,300 평생 소장 ➔'}
+                        </div>
                     </div>
                 </button>
 

@@ -1,0 +1,49 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+android {
+    namespace 'com.mindflowlab.myeongsim'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.mindflowlab.myeongsim"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.webkit:webkit:1.11.0'
+
+    // 💰 Google Play Billing Library (3,300원 광고제거 인앱 결제)
+    implementation 'com.android.billingclient:billing-ktx:6.2.1'
+
+    // 📢 Google Mobile Ads (AdMob) SDK (무료 사용자 광고 노출)
+    implementation 'com.google.android.gms:play-services-ads:23.1.0'
+}

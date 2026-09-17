@@ -8,6 +8,9 @@ import GlobalPaymentLockGuard from "@/components/auth/GlobalPaymentLockGuard";
 import ChunkLoadErrorHandler from "@/components/common/ChunkLoadErrorHandler";
 import OpenFreeNoticeModal from "@/components/modals/OpenFreeNoticeModal";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { AdProvider } from "@/contexts/AdContext";
+import GoogleAdBanner from "@/components/ads/GoogleAdBanner";
+import RemoveAdsModal from "@/components/modals/RemoveAdsModal";
 
 // 1. 폰트 변수 선언
 const geistSans = Geist({
@@ -63,14 +66,18 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased notranslate`}
             >
                 <LanguageProvider>
-                    <ChunkLoadErrorHandler />
-                    <SafetyDisclaimerModal />
-                    <OpenFreeNoticeModal />
-                    {/* <PushTestButton /> - Debug Only */}
-                    <GoogleAuthSync />
-                    <VisitorTracker />
-                    <GlobalPaymentLockGuard />
-                    {children}
+                    <AdProvider>
+                        <ChunkLoadErrorHandler />
+                        <SafetyDisclaimerModal />
+                        <OpenFreeNoticeModal />
+                        {/* <PushTestButton /> - Debug Only */}
+                        <GoogleAuthSync />
+                        <VisitorTracker />
+                        <GlobalPaymentLockGuard />
+                        {children}
+                        <GoogleAdBanner />
+                        <RemoveAdsModal />
+                    </AdProvider>
                 </LanguageProvider>
             </body>
         </html>
