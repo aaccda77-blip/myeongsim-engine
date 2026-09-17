@@ -58,3 +58,8 @@ gabia_*.txt
 *private*
 *.sqlite
 *.db
+
+# android build cache
+android/.gradle/
+android/app/build/
+android/local.properties
