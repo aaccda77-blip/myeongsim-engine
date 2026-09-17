@@ -33,23 +33,28 @@ export class SecurityMiddleware {
             throw new Error(`Security Alert: ${firewallResult.reason}`);
         }
 
-        // 2. Legacy Fallback (SQLi, XSS, Cmd Injection - Redundant but Safe)
+        // 2. Legacy Fallback (SQLi, XSS, Cmd Injection, Path Traversal - Multi-layer Defense)
         const MALICIOUS_PATTERNS = [
             // SQL Injection
             /(\b(select|insert|update|delete|drop|union|exec)\b.*\b(from|into|table|database)\b)/i,
             /'\s*OR\s*'\d+'='\d+/i,
-            // XSS / Scripting
+            /--\s*$/m,
+            // XSS / Scripting & DOM Injection
             /<script\b[^>]*>([\s\S]*?)<\/script>/i,
             /javascript:/i,
-            // System Cmd
+            /<iframe\b[^>]*>/i,
+            /on(error|load|click|mouse\w+)\s*=/i,
+            /data:\s*text\/html/i,
+            // System Cmd & File Traversal
             /rm\s+-rf/i,
-            /\/etc\/passwd/i
+            /\/etc\/passwd/i,
+            /\.\.\/|\.\.\\/
         ];
 
         MALICIOUS_PATTERNS.forEach(pattern => {
             if (pattern.test(userInput)) {
                 console.warn(`🚨 [Security] Malicious Pattern Detected: ${pattern}`);
-                throw new Error("Security Alert: Malicious Request Blocked.");
+                throw new Error("보안 정책상 허용되지 않는 문자가 포함되어 있습니다.");
             }
         });
     }
@@ -58,10 +63,19 @@ export class SecurityMiddleware {
      * Honeypot Check: Detects bot activity accessing fake admin routes
      */
     static checkHoneypot(path: string): void {
-        const HONEYPOT_ROUTES = ['/api/admin/super-secret', '/admin/config', '/api/debug/env'];
-        if (HONEYPOT_ROUTES.some(r => path.includes(r))) {
-            console.error(`🚨 [HONEYPOT TRIGGERED] IP BAN REQUESTED for access to ${path}`);
-            // In a real scenario, we would insert this IP into a Supabase 'blacklist' table
+        const HONEYPOT_ROUTES = [
+            '/api/admin/super-secret',
+            '/admin/config',
+            '/api/debug/env',
+            '/.env',
+            '/.git',
+            '/wp-admin',
+            '/wp-login',
+            '/xmlrpc.php',
+            '/phpmyadmin'
+        ];
+        if (HONEYPOT_ROUTES.some(r => path.toLowerCase().includes(r))) {
+            console.error(`🚨 [HONEYPOT TRIGGERED] ACCESS DENIED for probe to ${path}`);
             throw new Error("ACCESS_DENIED_PERMANENT");
         }
     }

@@ -10,6 +10,7 @@ import { FairUsagePolicy } from '@/lib/fairUsagePolicy';
 import { MYEONGSIM_AI_PHILOSOPHY_PROMPT } from '@/modules/MyeongsimAiPhilosophyModule';
 import { SmartAiSimulationEngine } from '@/services/SmartAiSimulationEngine';
 import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
+import { SecurityMiddleware } from '@/modules/SecurityMiddleware';
 
 const chatLimiter = rateLimit({
     interval: 60 * 1000, // 1분
@@ -301,6 +302,24 @@ ${MYEONGSIM_AI_PHILOSOPHY_PROMPT}
         // 악의적인 장문 공격 방어 (최대 1,000자로 안전 절삭)
         const rawLastMessage = messages.length > 0 ? messages[messages.length - 1].content : '';
         const lastUserMessage = typeof rawLastMessage === 'string' ? rawLastMessage.slice(0, 1000) : '';
+
+        // 🛡️ [SECURITY FIREWALL] 유저 입력값 보안 검증 (탈옥/인젝션/악성스크립트 원천 차단)
+        try {
+            if (lastUserMessage) {
+                SecurityMiddleware.validateInput(lastUserMessage);
+            }
+        } catch (securityErr: any) {
+            console.warn(`🚨 [Myeongsim Chat Security Block]: ${securityErr.message}`);
+            return new Response(
+                JSON.stringify({ 
+                    error: '보안 정책상 처리할 수 없는 요청입니다. 품격 있는 질문으로 다시 시도해 주세요.' 
+                }),
+                {
+                    status: 400,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
+        }
 
         // 🌟 [방식 1. 스마트 AI 시뮬레이션 모드: API 미구동 & 100% 생년월일 사주 맞춤 실시간 생성]
         if (isMockMode || !apiKey) {

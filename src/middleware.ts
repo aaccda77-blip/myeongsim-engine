@@ -1,39 +1,70 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 
-// Rate limiting store (in-memory for serverless)
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+interface RateLimitRecord {
+    count: number;
+    resetTime: number;
+}
 
-// Rate limit configuration
-const RATE_LIMITS = {
-    '/api/meditation/generate': { maxRequests: 10, windowMs: 60000 }, // 10 requests per minute
-    '/api/tts/supertone': { maxRequests: 20, windowMs: 60000 }, // 20 requests per minute
-    '/api/chat': { maxRequests: 30, windowMs: 60000 }, // 30 requests per minute
-    '/api/report/generate': { maxRequests: 5, windowMs: 60000 }, // 5 requests per minute
+const rateLimitStore = new Map<string, RateLimitRecord>();
 
-    // [SECURITY] Admin Brute-Force Protection
-    // Increased limit for usability: 100 attempts per 5 minutes.
-    '/api/admin': { maxRequests: 100, windowMs: 5 * 60 * 1000 },
+// 만료된 레이트 리밋 기록 주기적 청소 (메모리 누수 방지)
+if (typeof setInterval !== 'undefined') {
+    setInterval(() => {
+        const now = Date.now();
+        for (const [key, record] of rateLimitStore.entries()) {
+            if (now > record.resetTime) {
+                rateLimitStore.delete(key);
+            }
+        }
+    }, 5 * 60 * 1000);
+}
+
+// 엔드포인트별 세밀한 Rate Limiting (AI API 토큰 소진 방어 및 DDoS 차단)
+const RATE_LIMITS: Record<string, { maxRequests: number; windowMs: number }> = {
+    '/api/chat': { maxRequests: 25, windowMs: 60000 },
+    '/api/myeongsim-chat': { maxRequests: 25, windowMs: 60000 },
+    '/api/coaching': { maxRequests: 30, windowMs: 60000 },
+    '/api/zero-capsule': { maxRequests: 20, windowMs: 60000 },
+    '/api/decode': { maxRequests: 15, windowMs: 60000 },
+    '/api/deep-scan': { maxRequests: 10, windowMs: 60000 },
+    '/api/report/generate': { maxRequests: 5, windowMs: 60000 },
+    '/api/meditation/generate': { maxRequests: 10, windowMs: 60000 },
+    '/api/tts': { maxRequests: 20, windowMs: 60000 },
+    '/api/payment': { maxRequests: 15, windowMs: 60000 },
+    '/api/auth': { maxRequests: 20, windowMs: 60000 },
+    '/api/admin': { maxRequests: 25, windowMs: 5 * 60 * 1000 },
 };
 
-function getRateLimitKey(ip: string, path: string): string {
-    return `${ip}:${path}`;
+function getRateLimitConfig(pathname: string) {
+    for (const [prefix, config] of Object.entries(RATE_LIMITS)) {
+        if (pathname.startsWith(prefix)) {
+            return config;
+        }
+    }
+    if (pathname.startsWith('/api/')) {
+        return { maxRequests: 60, windowMs: 60000 };
+    }
+    return null;
+}
+
+function getRateLimitKey(ip: string, pathname: string): string {
+    const apiGroup = pathname.split('/').slice(0, 3).join('/');
+    return `${ip}:${apiGroup}`;
 }
 
 function checkRateLimit(request: NextRequest): NextResponse | null {
-    const ip = request.headers.get('x-forwarded-for') ||
-        request.headers.get('x-real-ip') ||
-        'unknown';
-    const pathname = request.nextUrl.pathname;
-
-    // Find matching rate limit config
-    const rateLimitConfig = Object.entries(RATE_LIMITS).find(([path]) =>
-        pathname.startsWith(path)
-    )?.[1];
+    const { pathname } = request.nextUrl;
+    const rateLimitConfig = getRateLimitConfig(pathname);
 
     if (!rateLimitConfig) {
         return null; // No rate limit for this path
     }
+
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+               request.headers.get('x-real-ip') ||
+               'anonymous';
 
     const key = getRateLimitKey(ip, pathname);
     const now = Date.now();
@@ -75,12 +106,54 @@ function checkRateLimit(request: NextRequest): NextResponse | null {
     return null;
 }
 
-import { createServerClient } from '@supabase/ssr';
+// 악성 취약점 스캐너 및 침투 도구 User-Agent 블랙리스트
+const BLOCKED_USER_AGENTS = [
+    'sqlmap', 'nikto', 'masscan', 'wpscan', 'acunetix', 
+    'nmap', 'nessus', 'havij', 'dirbuster', 'gobuster', 
+    'zgrab', 'censys', 'shodan', 'openvas'
+];
+
+// 악의적인 경로 탐색, 레거시 PHP 익스플로잇 및 민감 파일 접근 차단 패턴
+const BLOCKED_PATH_PATTERNS = [
+    /\/\.env/i,
+    /\/\.git/i,
+    /\/\.vscode/i,
+    /\/\.aws/i,
+    /\/\.ssh/i,
+    /wp-admin/i,
+    /wp-login/i,
+    /xmlrpc\.php/i,
+    /phpmyadmin/i,
+    /\.(php|asp|aspx|jsp|cgi|pl|sh|bash)$/i,
+    /\.\.\/|\.\.\\|%2e%2e/i, // Path Traversal
+    /\/api\/admin\/super-secret/i,
+    /\/admin\/config/i,
+    /\/api\/debug\/env/i,
+    /dump\.sql/i,
+    /backup\.sql/i,
+];
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
+    const userAgent = (request.headers.get('user-agent') || '').toLowerCase();
 
-    // [SECURITY DRM] 원본 PDF 직접 접근 및 다운로드 차단
+    // 🛡️ [SECURITY LAYER 1] 악성 취약점 스캐너 및 자동화 공격 봇 원천 차단
+    if (BLOCKED_USER_AGENTS.some(agent => userAgent.includes(agent))) {
+        return new NextResponse('Access Denied: Malicious Scanner Detected', { 
+            status: 403,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
+    }
+
+    // 🛡️ [SECURITY LAYER 2] 민감 설정 파일, 디렉터리 순회(Path Traversal), 허니팟 탐색 차단
+    if (BLOCKED_PATH_PATTERNS.some(pattern => pattern.test(pathname))) {
+        return new NextResponse('Access Denied: Forbidden Resource', { 
+            status: 403,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
+    }
+
+    // 🛡️ [SECURITY LAYER 3] 원본 PDF 직접 접근 및 다운로드 차단
     if (pathname.includes('zero-point.pdf') || pathname.startsWith('/books/')) {
         return new NextResponse(
             JSON.stringify({
