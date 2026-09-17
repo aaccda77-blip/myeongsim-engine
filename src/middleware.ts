@@ -170,42 +170,88 @@ export async function middleware(request: NextRequest) {
         );
     }
 
+    // 🛡️ [SECURITY LAYER 4] 외부 도메인의 API 무단 호출 및 토큰 착취 차단 (CORS & Origin Hardening)
+    const origin = request.headers.get('origin');
+    if (pathname.startsWith('/api/')) {
+        // OPTIONS 프리플라이트 처리
+        if (request.method === 'OPTIONS') {
+            if (origin) {
+                const isAllowedOrigin = 
+                    origin === 'https://myeongsimcoaching.com' ||
+                    origin.endsWith('.myeongsimcoaching.com') ||
+                    origin.endsWith('.vercel.app') ||
+                    origin.startsWith('http://localhost:') ||
+                    origin.startsWith('http://127.0.0.1:');
+                if (isAllowedOrigin) {
+                    return new NextResponse(null, {
+                        status: 204,
+                        headers: {
+                            'Access-Control-Allow-Origin': origin,
+                            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+                            'Access-Control-Max-Age': '86400',
+                        },
+                    });
+                }
+            }
+            return new NextResponse(null, { status: 204 });
+        }
+
+        // 제3자 악성 사이트에서 브라우저 fetch로 API 도용 시 403 차단
+        if (origin) {
+            const isAllowedOrigin = 
+                origin === 'https://myeongsimcoaching.com' ||
+                origin.endsWith('.myeongsimcoaching.com') ||
+                origin.endsWith('.vercel.app') ||
+                origin.startsWith('http://localhost:') ||
+                origin.startsWith('http://127.0.0.1:');
+
+            if (!isAllowedOrigin) {
+                return new NextResponse('Access Denied: Unauthorized Cross-Origin Request', {
+                    status: 403,
+                    headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+                });
+            }
+        }
+    }
+
     let response = NextResponse.next({
         request: {
             headers: request.headers,
         },
     });
 
-    // 1. Supabase Session Refresh
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return request.cookies.getAll();
+    // 🛡️ [SECURITY LAYER 5] Supabase Session Refresh
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            {
+                cookies: {
+                    getAll() {
+                        return request.cookies.getAll();
+                    },
+                    setAll(cookiesToSet) {
+                        cookiesToSet.forEach(({ name, value }) => {
+                            request.cookies.set(name, value);
+                        });
+                        response = NextResponse.next({
+                            request: {
+                                headers: request.headers,
+                            },
+                        });
+                        cookiesToSet.forEach(({ name, value, options }) => {
+                            response.cookies.set(name, value, options);
+                        });
+                    },
                 },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => {
-                        request.cookies.set(name, value);
-                    });
-                    response = NextResponse.next({
-                        request: {
-                            headers: request.headers,
-                        },
-                    });
-                    cookiesToSet.forEach(({ name, value, options }) => {
-                        response.cookies.set(name, value, options);
-                    });
-                },
-            },
-        }
-    );
+            }
+        );
 
-    // Refresh session if expired - required for Server Components
-    await supabase.auth.getUser();
+        await supabase.auth.getUser();
+    }
 
-    // 2. Rate Limiting check
+    // 🛡️ [SECURITY LAYER 6] Rate Limiting check
     const rateLimitResponse = checkRateLimit(request);
     if (rateLimitResponse) {
         return rateLimitResponse;

@@ -1,8 +1,12 @@
 package com.mindflowlab.myeongsim
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import android.net.http.SslError
 import android.os.Bundle
 import android.webkit.JavascriptInterface
+import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -38,14 +42,21 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
         // 2. Google Play Billing Client 초기화 (인앱 상품 3,300원)
         setupBillingClient()
 
-        // 3. 네이티브 웹뷰 생성 및 세팅
+        // 3. 네이티브 웹뷰 생성 및 세팅 (시스템 락다운 보안 설정)
         webView = WebView(this).apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.databaseEnabled = true
             settings.cacheMode = WebSettings.LOAD_DEFAULT
-            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-            webViewClient = WebViewClient()
+            
+            // 🛡️ [SECURITY HARDENING] 모바일 웹뷰 시스템 락다운
+            settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW // 암호화되지 않은 HTTP 혼합 로드 원천 차단
+            settings.allowFileAccess = false // 앱 내부 로컬 파일 탈취 차단
+            settings.allowContentAccess = false // ContentProvider 로컬 자원 접근 차단
+            settings.allowFileAccessFromFileURLs = false // 파일 URL 간 크로스 접근 차단
+            settings.allowUniversalAccessFromFileURLs = false // 파일 URL 유니버설 접근 차단
+
+            webViewClient = SecureWebViewClient()
             webChromeClient = WebChromeClient()
 
             // 자바스크립트 브릿지 연결: window.AndroidBridge
@@ -281,6 +292,58 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
             webView.goBack()
         } else {
             super.onBackPressed()
+        }
+    }
+
+    // 🛡️ [SECURITY] 악성 피싱 리다이렉트 차단 및 SSL 보안 강제 웹뷰 클라이언트
+    inner class SecureWebViewClient : WebViewClient() {
+        override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
+            val url = request?.url?.toString() ?: return false
+            return handleUrl(url)
+        }
+
+        @Suppress("DEPRECATION")
+        override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+            if (url == null) return false
+            return handleUrl(url)
+        }
+
+        private fun handleUrl(url: String): Boolean {
+            val uri = Uri.parse(url)
+            val host = uri.host?.lowercase() ?: ""
+            val scheme = uri.scheme?.lowercase() ?: ""
+
+            // 전화걸기, 이메일, 문자 등 전용 스키마 인텐트 실행
+            if (scheme == "tel" || scheme == "mailto" || scheme == "sms") {
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                startActivity(intent)
+                return true
+            }
+
+            // 명심 공식 도메인 및 필수 인가 도메인은 웹뷰 내부에서 안전하게 실행
+            val isInternalHost = host == "myeongsimcoaching.com" ||
+                    host.endsWith(".myeongsimcoaching.com") ||
+                    host.endsWith(".vercel.app") ||
+                    host.endsWith(".supabase.co") ||
+                    host == "accounts.google.com"
+
+            if (isInternalHost) {
+                return false // 웹뷰에서 정상 로드
+            }
+
+            // 그 외 외부 링크는 외부 시스템 브라우저로 격리 실행 (피싱 및 세션 탈취 방지)
+            return try {
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                startActivity(intent)
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+            // [CRITICAL SECURITY] SSL 인증서 에러 발생 시 위변조 방지를 위해 즉시 연결 중단
+            handler?.cancel()
         }
     }
 }

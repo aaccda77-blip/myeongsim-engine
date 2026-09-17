@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
     // output: "standalone", // [DISABLED] Trying default build to fix Vercel error
     // swcMinify: true, // Deprecated in Next.js 15+ (Enabled by default)
     productionBrowserSourceMaps: false, // [Security] Disable Source Maps in Prod
+    poweredByHeader: false, // [Security] Hide X-Powered-By: Next.js header
+    compiler: {
+        removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false, // [Security] Strip debug logs in production
+    },
     images: {
         remotePatterns: [
             { protocol: 'https', hostname: 'e7.pngegg.com' },

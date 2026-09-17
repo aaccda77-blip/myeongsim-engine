@@ -302,6 +302,16 @@ export class TextSanitizer {
         result = result.replace(/onload\s*=/gi, '');
         result = result.replace(/onerror\s*=/gi, '');
 
+        // 5. 🛡️ [REVERSE FIREWALL / DLP] 민감 시크릿/API 키/JWT 토큰 역방향 유출 원천 차단
+        // Google Gemini API Key 패턴 마스킹
+        result = result.replace(/AIzaSy[A-Za-z0-9_-]{33}/g, '[PROTECTED_API_KEY]');
+        // OpenAI 등 제3자 API Key 패턴 마스킹
+        result = result.replace(/sk-[A-Za-z0-9_-]{20,}/g, '[PROTECTED_API_KEY]');
+        // JWT Access Token 패턴 마스킹
+        result = result.replace(/eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/g, '[PROTECTED_SECURITY_TOKEN]');
+        // Supabase / DB 접속 URL 패턴 마스킹
+        result = result.replace(/postgres:\/\/[^@\s]+:[^@\s]+@[^\s]+/gi, '[PROTECTED_DB_URL]');
+
         return result;
     }
 }
