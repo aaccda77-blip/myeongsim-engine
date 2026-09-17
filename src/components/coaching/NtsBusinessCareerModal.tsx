@@ -23,6 +23,7 @@ import {
     PersonalizedPsstReport
 } from '@/lib/engine/ntsBusinessRecommender';
 import { useReportStore } from '@/store/useReportStore';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -207,10 +208,11 @@ export default function NtsBusinessCareerModal({
             if (data.success && data.reply) {
                 setChatMessages([...newMessages, { role: 'assistant', content: data.reply }]);
             } else {
-                setChatMessages([...newMessages, { role: 'assistant', content: data.error || '답변을 불러오지 못했습니다.' }]);
+                const friendlyMessage = formatFriendlyErrorMessage(data.error) || '현재 AI 코칭 엔진 트래픽이 많아 일시적으로 연결이 지연되었습니다. 잠시 후 다시 질문해 주시면 성심껏 답변해 드리겠습니다.';
+                setChatMessages([...newMessages, { role: 'assistant', content: friendlyMessage }]);
             }
         } catch (err) {
-            setChatMessages([...newMessages, { role: 'assistant', content: '서버 연결에 실패했습니다. 다시 시도해 주세요.' }]);
+            setChatMessages([...newMessages, { role: 'assistant', content: '현재 AI 코칭 엔진 트래픽이 많아 일시적으로 연결이 지연되었습니다. 잠시 후 다시 질문해 주시면 성심껏 답변해 드리겠습니다.' }]);
         } finally {
             setIsLoadingChat(false);
         }

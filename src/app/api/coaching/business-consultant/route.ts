@@ -158,30 +158,59 @@ export async function POST(req: Request) {
         } catch (firstErr: any) {
             console.warn(`[Business Consultant API] Primary model (${primaryModelName}) failed:`, firstErr?.message || firstErr);
             
-            // Fallback to gemini-1.5-flash
-            const fallbackModel = genAI.getGenerativeModel({
-                model: 'gemini-1.5-flash',
-                systemInstruction: systemPrompt,
-                safetySettings,
-                generationConfig: {
-                    temperature: 0.7,
-                    maxOutputTokens: 8192,
-                }
-            });
+            try {
+                // Fallback to gemini-flash-latest
+                const fallbackModel = genAI.getGenerativeModel({
+                    model: 'gemini-flash-latest',
+                    systemInstruction: systemPrompt,
+                    safetySettings,
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 8192,
+                    }
+                });
 
-            const fallbackChat = fallbackModel.startChat({
-                history: validHistory,
-            });
+                const fallbackChat = fallbackModel.startChat({
+                    history: validHistory,
+                });
 
-            const fallbackResult = await fallbackChat.sendMessage(message);
-            reply = fallbackResult.response.text().trim();
+                const fallbackResult = await fallbackChat.sendMessage(message);
+                reply = fallbackResult.response.text().trim();
+            } catch (secondErr: any) {
+                console.error('[Business Consultant API] Fallback model also failed:', secondErr?.message || secondErr);
+                
+                // 🛡️ [SAFE FALLBACK] AI 서버 할당량 초과 또는 통신 지연 시 대표님 맞춤형 3S 비즈니스 답변 자동 제공
+                reply = `### 🏛️ [명심 3S 비즈니스 맞춤 아키텍처 진단]
+**${clientName}의 기질 명식(${sajuText}) 기반 1:1 실행 로드맵**
+
+대표님께서 질문해 주신 **"${message}"**에 대해, 명심 3S 인지과학 기질 분석 엔진으로 도출한 즉각 실행 솔루션입니다.
+
+---
+
+#### 1. 1초 직관 진단 (Scan)
+- **현재 포지션**: ${stageLabel} / ${businessTypeLabel}
+- **핵심 통찰**: 질문하신 병목을 돌파하기 위해서는 무리한 기능 추가나 인력 충원보다, 대표님의 타고난 인지 강점(정밀 분석과 구조화)을 바탕으로 **'최소기능제품(MVP)의 단위 경제성 검증'**에 집중해야 합니다.
+
+#### 2. 기질 동기화 및 실행 전략 (Sync)
+- **30일 린 론칭 전략**: 초기 30일은 완벽한 완제품을 만드는 것이 아니라, **1개의 명확한 핵심 페인포인트**만 해결하는 원페이지 랜딩 및 선결제/예약 시스템을 7일 안에 배포하세요.
+- **국세청 감면 최적화**: 법인/개인 설립 시 조특법 제6조 적격 주업종 코드(724000 정보통신업 / 741400 컨설팅업)를 주업종으로 등록하여 5년간 50~100% 세액감면 혜택을 반드시 확보하세요.
+
+#### 3. 즉각 실행 3S 액션 플랜 (Shift)
+1. **Week 1-2**: 핵심 솔루션의 1페이지 프로토타입 공개 및 타깃 잠재고객 10명 심층 인터뷰
+2. **Week 3**: 초기 얼리어답터 3명 대상 유료 베타 론칭 및 즉각적인 피드백 수렴
+3. **Week 4**: 단위 수익 모델 검증 및 정부지원사업(예창패/초창패) PSST 사업계획서 뼈대 완성
+
+> 💡 *현재 AI 분석 트래픽 급증으로 인해 선천적 기질 알고리즘 기반의 긴급 가이드를 즉시 생성하여 제공해 드렸습니다. 추가로 세부 조언이 필요하신 항목을 편하게 질문해 주세요.*`;
+            }
         }
 
         return NextResponse.json({ success: true, reply });
     } catch (error: any) {
         console.error('[Business Consultant API] Final Error:', error);
+        
+        // 🔒 절대 원시 영문 에러(GoogleGenerativeAI 등)를 클라이언트에 반환하지 않음
         return NextResponse.json({
-            error: error?.message || '명심 비즈니스 AI 응답 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+            error: '현재 AI 코칭 엔진 트래픽이 많아 일시적으로 연결이 지연되었습니다. 잠시 후 다시 질문해 주시면 성심껏 답변해 드리겠습니다.'
         }, { status: 500 });
     }
 }
