@@ -50,7 +50,7 @@ export default function AiServerUnlockModal() {
                     명심 앱내 모든 인공지능 상세 API 서버 이용료 해제 서비스
                 </h2>
                 <p className="text-xs sm:text-sm text-purple-300/90 font-medium mt-1">
-                    최신 제미나이 2.5 플래시 고성능 AI 연산 서버 무제한 가동 + 광고 영구 중지
+                    AI 상세 분석 무제한 가동 + 광고 영구 중지
                 </p>
 
                 {/* 가격 안내 박스 */}
@@ -76,10 +76,10 @@ export default function AiServerUnlockModal() {
                         <CheckCircle2 className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
                         <div>
                             <p className="text-sm font-bold text-white leading-snug">
-                                제미나이 2.5 플래시 최신 AI 상세 분석 서버 무제한
+                                AI 상세 분석
                             </p>
                             <p className="text-xs text-gray-400 mt-0.5">
-                                서버 토큰 한도 걱정 없이 24시간 실시간 초고속 AI 상담 및 심층 분석을 제공합니다.
+                                24시간 실시간 초고속 AI 상담 및 심층 분석을 무제한으로 제공합니다.
                             </p>
                         </div>
                     </div>

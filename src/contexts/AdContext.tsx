@@ -113,7 +113,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             const confirmPurchase = window.confirm(
                 '【구글 플레이 98,000원 정기구독】\n\n' +
                 '명심 앱내 모든 인공지능 상세 API 서버 이용료 해제 서비스 (월 ₩98,000)\n\n' +
-                '• 제미나이 2.5 플래시 AI 연산 서버 무제한 가동\n' +
+                '• AI 상세 분석 무제한\n' +
                 '• 3S 비즈니스 코칭 및 108 심층 리포트 전면 해금\n' +
                 '• 모든 광고 100% 영구 중지\n\n' +
                 '구글 플레이로 정기 결제를 진행하시겠습니까?'
@@ -126,7 +126,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 setIsAiServerUnlocked(true);
                 grantUserApprovalSync('AI_SERVER_98000');
                 setIsAiModalOpen(false);
-                alert('🎉 축하합니다! [명심 앱내 모든 인공지능 상세 API 서버 이용료 해제 서비스]가 정상 활성화되었습니다.\n모든 광고가 중지되고 최신 제미나이 2.5 플래시 AI가 무제한 가동됩니다.');
+                alert('🎉 축하합니다! [명심 앱내 모든 인공지능 상세 API 서버 이용료 해제 서비스]가 정상 활성화되었습니다.\n모든 광고가 중지되고 AI 상세 분석이 무제한 가동됩니다.');
                 return true;
             }
             return false;
