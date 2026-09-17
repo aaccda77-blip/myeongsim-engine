@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 
 export const metadata = {
@@ -60,21 +60,61 @@ export default function DownloadPage() {
             <span className="text-sm text-slate-400">다운로드</span>
           </a>
 
-          {/* Assets ZIP */}
-          <a
-            href="/download/google_play_assets.zip"
-            download="google_play_assets.zip"
-            className="flex items-center justify-between p-4 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-2xl text-slate-200 transition-all"
-          >
-            <div className="flex items-center gap-3.5">
-              <span className="text-2xl">🎨</span>
-              <div className="text-left">
-                <div className="text-sm font-bold text-slate-100">스토어 그래픽 애셋 패키지 (ZIP)</div>
-                <div className="text-xs text-slate-400">512x512 아이콘, 1024x500 배너, 스크린샷 3종</div>
-              </div>
+          {/* Assets ZIP & Individual Assets */}
+          <div className="bg-slate-800/50 border border-slate-700/80 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-amber-300">🖼️ 스토어 등록용 이미지 파일들</span>
+              <a
+                href="/download/google_play_assets.zip"
+                download="google_play_assets.zip"
+                className="text-xs bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 px-2.5 py-1 rounded-lg font-bold"
+              >
+                ZIP 전체받기
+              </a>
             </div>
-            <span className="text-sm text-slate-400">다운로드</span>
-          </a>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <a
+                href="/download/app_icon_512.png"
+                download="app_icon_512.png"
+                className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200"
+              >
+                <span>앱 아이콘 (512x512)</span>
+                <span className="text-amber-400 font-bold">받기 ➔</span>
+              </a>
+              <a
+                href="/download/feature_graphic_1024x500.png"
+                download="feature_graphic_1024x500.png"
+                className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200"
+              >
+                <span>그래픽 배너 (1024x500)</span>
+                <span className="text-amber-400 font-bold">받기 ➔</span>
+              </a>
+              <a
+                href="/download/screenshot_1.png"
+                download="screenshot_1.png"
+                className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200"
+              >
+                <span>스크린샷 1 (리포트)</span>
+                <span className="text-amber-400 font-bold">받기 ➔</span>
+              </a>
+              <a
+                href="/download/screenshot_2.png"
+                download="screenshot_2.png"
+                className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200"
+              >
+                <span>스크린샷 2 (사운드)</span>
+                <span className="text-amber-400 font-bold">받기 ➔</span>
+              </a>
+              <a
+                href="/download/screenshot_3.png"
+                download="screenshot_3.png"
+                className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200 sm:col-span-2"
+              >
+                <span>스크린샷 3 (코칭)</span>
+                <span className="text-amber-400 font-bold">받기 ➔</span>
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Installation Tip */}
