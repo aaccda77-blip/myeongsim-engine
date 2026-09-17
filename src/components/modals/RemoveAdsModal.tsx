@@ -5,7 +5,7 @@ import { useAds } from '@/contexts/AdContext';
 import { X, Sparkles, CheckCircle2, ShieldCheck, Zap, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function RemoveAdsModal() {
-    const { isModalOpen, closeRemoveAdsModal, purchaseRemoveAds, restorePurchases } = useAds();
+    const { isModalOpen, closeRemoveAdsModal, purchaseRemoveAds, restorePurchases, openAiServerModal } = useAds();
     const [isProcessing, setIsProcessing] = useState(false);
 
     if (!isModalOpen) return null;
@@ -102,6 +102,20 @@ export default function RemoveAdsModal() {
                         </>
                     )}
                 </button>
+
+                {/* 98,000원 VVIP 옵션 바로가기 배너 */}
+                <div
+                    onClick={() => { closeRemoveAdsModal(); openAiServerModal(); }}
+                    className="mt-3 p-3 rounded-2xl bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 transition-all cursor-pointer flex items-center justify-between group"
+                >
+                    <div>
+                        <span className="text-[10px] text-purple-300 font-bold block">👑 VVIP 올인원 서버 해제 플랜</span>
+                        <p className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">
+                            명심 앱내 모든 인공지능 상세 API 서버 이용료 해제
+                        </p>
+                    </div>
+                    <span className="text-xs font-black text-amber-400 shrink-0 ml-2">월 ₩98,000 →</span>
+                </div>
 
                 {/* 복원 안내 버튼 */}
                 <div className="mt-4 flex items-center justify-between text-[11px] text-gray-400 pt-2 border-t border-white/5">

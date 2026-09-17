@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
 
     companion object {
         const val PRODUCT_REMOVE_ADS = "remove_ads_3300"
+        const val PRODUCT_AI_SERVER_98000 = "myeongsim_ai_api_server_98000"
         const val WEB_APP_URL = "https://myeongsimcoaching.com"
     }
 
@@ -56,9 +57,13 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
     }
 
     private fun setupBillingClient() {
+        val pendingPurchasesParams = PendingPurchasesParams.newBuilder()
+            .enableOneTimeProducts()
+            .build()
+
         billingClient = BillingClient.newBuilder(this)
             .setListener(this)
-            .enablePendingPurchases()
+            .enablePendingPurchases(pendingPurchasesParams)
             .build()
 
         billingClient.startConnection(object : BillingClientStateListener {
@@ -74,30 +79,71 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
         })
     }
 
-    // 인앱 상품(3,300원) 구매창 호출
-    fun launchPurchaseFlow() {
+    // 인앱/구독 상품 구매창 호출 (3,300원 광고 제거 또는 98,000원 AI 서버 해제)
+    fun launchPurchaseFlow(productId: String = PRODUCT_REMOVE_ADS) {
+        val isSubscription = productId == PRODUCT_AI_SERVER_98000
+        val productType = if (isSubscription) BillingClient.ProductType.SUBS else BillingClient.ProductType.INAPP
+
         val productList = listOf(
             QueryProductDetailsParams.Product.newBuilder()
-                .setProductId(PRODUCT_REMOVE_ADS)
-                .setProductType(BillingClient.ProductType.INAPP)
+                .setProductId(productId)
+                .setProductType(productType)
                 .build()
         )
 
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
 
-        billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList.isNotEmpty()) {
+        billingClient.queryProductDetailsAsync(params) { billingResult, queryProductDetailsResult ->
+            val productDetailsList = queryProductDetailsResult.productDetailsList
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !productDetailsList.isNullOrEmpty()) {
                 val productDetails = productDetailsList[0]
-                val productDetailsParamsList = listOf(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(productDetails)
-                        .build()
-                )
+                val productDetailsParamsBuilder = BillingFlowParams.ProductDetailsParams.newBuilder()
+                    .setProductDetails(productDetails)
+
+                if (isSubscription) {
+                    val offerToken = productDetails.subscriptionOfferDetails?.firstOrNull()?.offerToken
+                    if (!offerToken.isNullOrEmpty()) {
+                        productDetailsParamsBuilder.setOfferToken(offerToken)
+                    }
+                }
 
                 val billingFlowParams = BillingFlowParams.newBuilder()
-                    .setProductDetailsParamsList(productDetailsParamsList)
+                    .setProductDetailsParamsList(listOf(productDetailsParamsBuilder.build()))
                     .build()
 
+                runOnUiThread {
+                    billingClient.launchBillingFlow(this, billingFlowParams)
+                }
+            } else {
+                // 구독으로 조회 실패 시 인앱 상품(INAPP)으로 폴백 조회 (개발자 콘솔 설정 유연성 보장)
+                if (isSubscription) {
+                    launchInAppFallback(productId)
+                } else {
+                    runOnUiThread {
+                        Toast.makeText(this@MainActivity, "상품 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun launchInAppFallback(productId: String) {
+        val productList = listOf(
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(productId)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build()
+        )
+        val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
+        billingClient.queryProductDetailsAsync(params) { billingResult, queryProductDetailsResult ->
+            val productDetailsList = queryProductDetailsResult.productDetailsList
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !productDetailsList.isNullOrEmpty()) {
+                val productDetails = productDetailsList[0]
+                val billingFlowParams = BillingFlowParams.newBuilder()
+                    .setProductDetailsParamsList(listOf(
+                        BillingFlowParams.ProductDetailsParams.newBuilder().setProductDetails(productDetails).build()
+                    ))
+                    .build()
                 runOnUiThread {
                     billingClient.launchBillingFlow(this, billingFlowParams)
                 }
@@ -119,29 +165,54 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
 
     private fun handlePurchase(purchase: Purchase) {
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+            val isAiServer = purchase.products.contains(PRODUCT_AI_SERVER_98000)
             if (!purchase.isAcknowledged) {
                 val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
                     .setPurchaseToken(purchase.purchaseToken)
                     .build()
                 billingClient.acknowledgePurchase(acknowledgePurchaseParams) { billingResult ->
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                        notifyAdRemovedToWeb()
+                        if (isAiServer) {
+                            notifyAiServerUnlockedToWeb()
+                        } else {
+                            notifyAdRemovedToWeb()
+                        }
                     }
                 }
             } else {
-                notifyAdRemovedToWeb()
+                if (isAiServer) {
+                    notifyAiServerUnlockedToWeb()
+                } else {
+                    notifyAdRemovedToWeb()
+                }
             }
         }
     }
 
     private fun queryPurchases() {
+        // 1. INAPP 조회 (3,300원 및 1회권)
         billingClient.queryPurchasesAsync(
             QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build()
         ) { _, purchases ->
             for (purchase in purchases) {
-                if (purchase.products.contains(PRODUCT_REMOVE_ADS) && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                    notifyAdRemovedToWeb()
-                    break
+                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                    if (purchase.products.contains(PRODUCT_AI_SERVER_98000)) {
+                        notifyAiServerUnlockedToWeb()
+                    } else if (purchase.products.contains(PRODUCT_REMOVE_ADS)) {
+                        notifyAdRemovedToWeb()
+                    }
+                }
+            }
+        }
+        // 2. SUBS 조회 (98,000원 월정액 구독)
+        billingClient.queryPurchasesAsync(
+            QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build()
+        ) { _, purchases ->
+            for (purchase in purchases) {
+                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                    if (purchase.products.contains(PRODUCT_AI_SERVER_98000)) {
+                        notifyAiServerUnlockedToWeb()
+                    }
                 }
             }
         }
@@ -152,6 +223,14 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
         runOnUiThread {
             webView.evaluateJavascript("if (window.onAdRemovedPurchased) { window.onAdRemovedPurchased(); }", null)
             Toast.makeText(this, "3,300원 광고 제거가 정상 적용되었습니다! 🎉", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // 웹뷰에 자바스크립트 콜백 전달 (모든 AI API 서버 이용료 해제 완료)
+    private fun notifyAiServerUnlockedToWeb() {
+        runOnUiThread {
+            webView.evaluateJavascript("if (window.onAiServerUnlocked) { window.onAiServerUnlocked(); }", null)
+            Toast.makeText(this, "명심 앱내 모든 인공지능 상세 API 서버 이용료 해제 완료! 🎉", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -170,7 +249,12 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
     inner class WebAppInterface {
         @JavascriptInterface
         fun purchaseRemoveAds() {
-            launchPurchaseFlow()
+            launchPurchaseFlow(PRODUCT_REMOVE_ADS)
+        }
+
+        @JavascriptInterface
+        fun purchaseAiServerService() {
+            launchPurchaseFlow(PRODUCT_AI_SERVER_98000)
         }
 
         @JavascriptInterface

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -67,6 +68,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('[Mind Reset API Error]:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: formatFriendlyErrorMessage(error) }, { status: 500 });
   }
 }

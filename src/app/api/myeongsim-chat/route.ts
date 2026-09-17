@@ -349,11 +349,32 @@ ${MYEONGSIM_AI_PHILOSOPHY_PROMPT}
             return SmartAiSimulationEngine.createStreamResponse(simulatedText);
         }
 
-        const chat = model.startChat({
-            history: formattedHistory,
-        });
-
-        const streamResult = await chat.sendMessageStream(lastUserMessage);
+        let streamResult: any = null;
+        try {
+            const chat = model.startChat({
+                history: formattedHistory,
+            });
+            streamResult = await chat.sendMessageStream(lastUserMessage);
+        } catch (geminiErr: any) {
+            console.warn('[Myeongsim Chat] Gemini API Call failed, falling back to SmartAiSimulationEngine:', geminiErr?.message || geminiErr);
+            const userContext = {
+                userName,
+                birthDate,
+                birthTime,
+                calendarType,
+                gender,
+                dayMaster: dayStem,
+                energyLevel,
+                sleepQuality,
+                stressFactors: currentStressors,
+                mbti,
+                enneagram,
+                disc,
+                big5
+            };
+            const simulatedText = SmartAiSimulationEngine.generatePersonalizedResponse(userContext, lastUserMessage);
+            return SmartAiSimulationEngine.createStreamResponse(simulatedText);
+        }
 
         const encoder = new TextEncoder();
         let fullAiText = '';

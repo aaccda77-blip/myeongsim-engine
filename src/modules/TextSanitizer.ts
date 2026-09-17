@@ -6,12 +6,18 @@
  * 초보자도 쉽게 이해할 수 있는 따뜻하고 감동적인 메타포 에세이 어조로 런타임 변환합니다.
  */
 
+import { OPEN_FREE_NOTICE_MESSAGE } from '@/utils/errorMessage';
+
 export class TextSanitizer {
 
     public static ensureTwoStepStructure(text: string, userMessage: string = ''): string {
         if (!text || typeof text !== 'string') return text;
 
         let cleaned = this.sanitize(text);
+
+        if (cleaned === OPEN_FREE_NOTICE_MESSAGE) {
+            return cleaned;
+        }
 
         if (cleaned.includes('IT·전문 용어 100% 정제') || cleaned.includes('복잡한 용어, 따뜻한 마음 언어로 풀어보기')) {
             return cleaned;
@@ -242,6 +248,29 @@ export class TextSanitizer {
      * AI 응답 텍스트에서 남은 전통/학술 용어를 따뜻한 메타포로 최종 런타임 변환
      */
     static sanitize(text: string): string {
+        if (!text || typeof text !== 'string') return text;
+
+        // [CRITICAL] 구글 AI 시스템 기술 에러 및 장애 메시지 원천 차단:
+        // 사용자 화면에는 개발자용 영문 에러 대신 언제나 품격 있고 따뜻한 안내 문구만 노출되도록 보장합니다.
+        const isTechnicalError = 
+            text.includes('GoogleGenerativeAI') ||
+            text.includes('generativelanguage') ||
+            text.includes('models/gemini') ||
+            text.includes('ModelService') ||
+            text.includes('generateContent') ||
+            text.includes('404 Not Found') ||
+            text.includes('429 Too Many Requests') ||
+            text.includes('spending cap') ||
+            text.includes('monthly spending cap') ||
+            text.includes('RESOURCE_EXHAUSTED') ||
+            text.includes('exceeded your current quota') ||
+            text.includes('Quota exceeded') ||
+            (text.includes('[') && text.includes('Error]:') && (text.includes('http') || text.includes('models/')));
+
+        if (isTechnicalError) {
+            return OPEN_FREE_NOTICE_MESSAGE;
+        }
+
         let result = text;
         
         // 1. 모델 사고 과정(영어) 런타임 제거

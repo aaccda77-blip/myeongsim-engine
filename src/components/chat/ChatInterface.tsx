@@ -1,5 +1,6 @@
 'use client';
 import { TextSanitizer } from '@/modules/TextSanitizer';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Send, User, Bot, X, Loader2, Lock, FileText, Check, Trash2, ArrowUp, Zap, Volume2, CircleStop } from 'lucide-react';
@@ -1585,7 +1586,7 @@ export default function ChatInterface({ onClose, currentStage = 1, initialIntent
                     type: 'payment'
                 }]);
             } else {
-                const fallbackMessage = `...(잠시 깊은 침묵)... \n\n[System Debug] ${error.message || 'Unknown Error'}\n\n우주의 파동이 잠시 고르지 못했습니다. 님의 마음을 다시 한 번 들려주시겠습니까?`;
+                const fallbackMessage = formatFriendlyErrorMessage(error);
                 setMessages(prev => [...prev, { id: 'err', role: 'assistant', content: fallbackMessage }]);
             }
         } finally {

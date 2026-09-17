@@ -24,6 +24,7 @@ import { analyzeFrequency, generateFrequencyPromptBlock, detectCrisisSignal } fr
 import { SajuPerspectiveRotator } from '@/modules/SajuPerspectiveRotator'; // [NEW] Pillar Rotation
 import { analyzeForZenMode, generateZenPromptBlock, generateZenResponse } from '@/modules/ZenProtocol'; // [NEW] Zen Intervention
 import { TextSanitizer } from '@/modules/TextSanitizer'; // [NEW] Runtime Term Sanitizer
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 import { LifeResurrectorModule } from '@/modules/LifeResurrectorModule'; // [NEW] Life Resurrector Protocol
 import {
     analyzeTextForPersonality,
@@ -1888,8 +1889,8 @@ c) "action_plan": 정확히 3개의 일일 미션 배열(Day 1, 2, 3)
             }
         }
 
-        // [Explicit User Directive] API Model strictly set to gemini-2.5-flash
-        const candidateModels = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash'];
+        // [Explicit User Directive] API Model strictly set to gemini-2.5-flash with resilient fallbacks
+        const candidateModels = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest'];
         let result: any = null;
         let lastError: any = null;
 
@@ -2054,7 +2055,7 @@ c) "action_plan": 정확히 3개의 일일 미션 배열(Day 1, 2, 3)
     } catch (error: any) {
         console.error('Chat API Error:', error);
         return new Response(JSON.stringify({
-            reply: "대화 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+            reply: formatFriendlyErrorMessage(error)
         }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }

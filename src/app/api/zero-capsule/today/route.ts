@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { calculateSaju } from '@/lib/saju/SajuEngine';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 export const dynamic = 'force-dynamic';
 
@@ -301,7 +302,7 @@ ${mbti ? `- 심리 성향: ${mbti}` : ''}
 
   } catch (error: any) {
     console.error("제로 캡슐 API 에러:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: formatFriendlyErrorMessage(error) }, { status: 500 });
   }
 }
 

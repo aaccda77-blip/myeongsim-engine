@@ -1,6 +1,7 @@
 'use client';
 import DrillDownIconMenu from './DrillDownIconMenu';
 import { TextSanitizer } from '@/modules/TextSanitizer';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 import dynamic from 'next/dynamic';
 const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/coaching/DarkCodeCompassionTransformerModal'), { ssr: false });
 
@@ -179,6 +180,20 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
         body: { userId, sessionId, sajuData: clientSajuData },
         onError: (err) => {
             console.error('[Myeongsim Chat UI Error]', err);
+            const friendlyMsg = formatFriendlyErrorMessage(err);
+            setMessages((prev) => {
+                if (prev.length > 0 && prev[prev.length - 1].role === 'user') {
+                    return [
+                        ...prev,
+                        {
+                            id: 'error-' + Date.now(),
+                            role: 'assistant',
+                            content: friendlyMsg
+                        }
+                    ];
+                }
+                return prev;
+            });
         }
     });
 

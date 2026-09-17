@@ -270,7 +270,7 @@ ${currentProfile.metaphor}
 
         // 🚀 1순위: Gemini 2.5 Flash (최신 차세대 고성능 플래시 모델)
         const primaryModel = 'gemini-2.5-flash';
-        const fallbackModels = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+        const fallbackModels = ['gemini-2.0-flash', 'gemini-flash-latest'];
         const allModels = [primaryModel, ...fallbackModels];
 
         const payload = {

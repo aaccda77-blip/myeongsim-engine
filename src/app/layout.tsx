@@ -11,6 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AdProvider } from "@/contexts/AdContext";
 import GoogleAdBanner from "@/components/ads/GoogleAdBanner";
 import RemoveAdsModal from "@/components/modals/RemoveAdsModal";
+import AiServerUnlockModal from "@/components/modals/AiServerUnlockModal";
 
 // 1. 폰트 변수 선언
 const geistSans = Geist({
@@ -77,6 +78,7 @@ export default function RootLayout({
                         {children}
                         <GoogleAdBanner />
                         <RemoveAdsModal />
+                        <AiServerUnlockModal />
                     </AdProvider>
                 </LanguageProvider>
             </body>
