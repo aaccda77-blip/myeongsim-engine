@@ -44,6 +44,72 @@ export async function POST(request: NextRequest) {
             return `${startAge}세 대운 시작 (${d.startYear}년~${d.endYear}년) : ${d.ganZhi}`;
         }).join('\n');
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline premium deep report.");
+            const offlineReport = {
+                overview: {
+                    title: `${saju?.userName || '회원'}님만을 위한 프리미엄 심층 리포트`,
+                    saju_analysis_name: `${dayPillarGan}일간의 고결한 지혜형`
+                },
+                part0: {
+                    title: "0. 나를 알아보기",
+                    subtitle: "성격 · 기질 · 장단점",
+                    core_element: `${dayPillarGan} 일간 — 단단한 원석의 깊은 통찰과 중심`,
+                    core_description: `${dayPillarGan}의 에너지는 겉으로 드러나는 요란함보다 내면에 축적된 단단한 지혜와 섬세한 감각을 상징합니다.`,
+                    dark_code_analysis: "완벽해야만 안전하다는 생각의 방어막(다크코드)이 스스로를 쉽게 지치게 할 수 있습니다.",
+                    neural_code_blueprint: "결과보다 과정의 리듬을 신뢰하는 유연한 인지 재배선(뉴럴코드)을 통해 고유한 에너지를 회복합니다.",
+                    meta_code_analysis: "흔들리는 감정의 파도를 고요히 비추는 순수 자각(메타코드)의 자리에서 언제나 평온을 유지합니다."
+                },
+                part1: {
+                    title: "1. 타이밍의 기술",
+                    subtitle: "대운 흐름과 인생 날씨",
+                    content: "대운의 흐름은 인생의 사계절과 같습니다. 봄에는 씨를 뿌리고 겨울에는 뿌리를 깊게 내리듯, 조급함을 내려놓을 때 최적의 타이밍이 찾아옵니다.",
+                    mbsr_coaching: "호흡에 온전히 주의를 기울이며 현재 순간에 머무르는 스트레스 완화 훈련을 실천하세요.",
+                    wealth_flow: {
+                        labels: ["현재", "10년 뒤", "20년 뒤", "30년 뒤"],
+                        values: [70, 85, 90, 95],
+                        description: "전문성과 신뢰를 축적할수록 장기적인 부의 흐름이 단단하게 확장됩니다."
+                    },
+                    daewoon_flow: {
+                        cycle_description: "대운의 전환기마다 새로운 지평이 열립니다.",
+                        milestones: [
+                            { year: 2026, age: 30, stem: "丙", branch: "午", score: 85, is_active: true, label: "개화기" }
+                        ]
+                    }
+                },
+                part2: {
+                    title: "2. 마인드 디버깅",
+                    subtitle: "생각과 감정 회로 리부트",
+                    content: "불안과 두려움은 나를 지키기 위해 뇌가 띄우는 경고 신호일 뿐입니다. 판단 없이 가만히 바라볼 때 힘을 잃습니다.",
+                    recursive_question: {
+                        question: "내가 불안해하지 않는다면, 이 상황에서 지금 당장 할 수 있는 가장 단순한 행동은 무엇인가?",
+                        guide: "머릿속 복잡한 계산을 멈추고 몸의 감각으로 돌아오세요."
+                    },
+                    meta_question: {
+                        question: "이 모든 생각을 바라보고 있는 고요한 앎 자체는 누구인가?",
+                        guide: "생각 뒤편의 텅 빈 공간에 편안히 머무르세요."
+                    }
+                },
+                part3: {
+                    title: "3. 관계의 기술",
+                    subtitle: "관계의 거울과 온기",
+                    content: "상대방의 반응에 휘둘리지 않고 내 안의 중심을 지킬 때, 가장 건강하고 자유로운 파트너십이 형성됩니다.",
+                    socratic_question: "타인의 인정을 받지 않아도 나는 이미 온전한 존재인가?",
+                    action_tip: "경계선을 지키되 따뜻한 감사의 말을 먼저 건네기"
+                },
+                part4: {
+                    title: "4. 실천의 시작 & 마스터의 편지",
+                    subtitle: "실천 수칙 및 인생 나침반",
+                    content: "원석에서 보석으로 세공되는 과정에는 인내와 따스한 자비가 필요합니다.",
+                    master_letter: `소중한 그대여, 그동안 스스로를 증명하려 얼마나 많은 긴장과 책임을 홀로 짊어져 왔습니까. 이제는 무거운 짐을 내려놓고 그대 본연의 맑고 고결한 빛을 믿으십시오. 그대의 길은 언제나 안전하게 빛나고 있습니다.`
+                }
+            };
+
+            return NextResponse.json(offlineReport);
+        }
+
         const prompt = `
         You are 'MyeongI Master Mentor', a legendary spiritual counselor and psychotherapist.
         

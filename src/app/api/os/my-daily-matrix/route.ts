@@ -38,12 +38,41 @@ export async function POST(req: Request) {
     // 2. 당일 일진 및 바이오리듬 연산
     const biorhythm = DailyLuckEngine.calculate(cleanDayMaster);
     
-    // 3. Gemini AI 프롬프트 조립 및 호출
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-    const model = genAI.getGenerativeModel({ model: modelName });
+    // 3. Gemini AI 또는 오프라인 맞춤 매트릭스 생성
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
 
-    const prompt = `당신은 인간의 무의식과 에고를 분석하고 치유하는 명심(Myeongsim) 시스템입니다.
+    let parsedData: any = null;
+
+    if (isMockMode || !apiKey) {
+      parsedData = {
+        code: `[${cleanDayMaster}일간] 완벽하게 통제하고 대비해야만 안전하다는 생존 방어코드`,
+        reality: `주변 사람들의 예기치 않은 행동과 통제할 수 없는 환경적 지연의 연속`,
+        theme: {
+          bg: "bg-emerald-950/40",
+          border: "border-emerald-500/20",
+          textTitle: "text-emerald-300",
+          textLight: "text-emerald-100",
+          textDark: "text-emerald-400/70",
+          dot: "bg-emerald-400"
+        },
+        coaching: {
+          desc: `오늘 일진(${biorhythm.ganji})의 에너지는 당신의 [${cleanDayMaster}] 기질과 만나 통제 욕구를 자극합니다. 내면에서 '상황을 완벽히 쥐어야 한다'는 집착이 강해질수록, 외부 현실은 오히려 그 통제를 벗어나는 정반대의 사건들을 비추어 줍니다.`,
+          socratic: `통제하려 애쓰지 않아도 이 세상이 스스로 굴러가고 있음을 오늘 문득 알아차린 순간이 있나요?`,
+          recursive: `언제부터 당신은 모든 것을 혼자 완벽하게 짊어져야만 안전하다고 믿게 되었을까요?`,
+          meta: `지금 가슴과 어깨를 조여오는 '통제하고 싶은 욕구'를 한 걸음 물러나 관찰자 입장에서 조용히 지켜보세요.`,
+          pureAwareness: `그 긴장과 불안 뒤편에, 이 모든 흐름을 판단 없이 묵묵히 품어주고 있는 텅 빈 알아차림의 공간을 느껴보세요.`,
+          awareness: `상황을 바꾸려는 필사적인 애쓰기를 내려놓고, '통제할 수 없는 것을 기꺼이 흘려보낸다'는 영점(Zero Point)의 참된 수용에 머무르세요.`,
+          msc_common_humanity: `불확실한 세상에서 안전을 갈망하는 것은 모든 인간의 보편적인 마음입니다. 결코 당신의 나약함이 아닙니다.`,
+          msc_self_kindness: `모든 것을 완벽하게 책임지느라 지친 당신의 어깨를 토닥여주며 '오늘도 정말 수고 많았어'라고 자비롭게 말해주세요.`
+        }
+      };
+    } else {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+      const model = genAI.getGenerativeModel({ model: modelName });
+
+      const prompt = `당신은 인간의 무의식과 에고를 분석하고 치유하는 명심(Myeongsim) 시스템입니다.
 이 사용자는 타고난 기질(사주 일간)이 [${cleanDayMaster}]이며, 오늘 일진(오늘의 기운)은 [${biorhythm.ganji}]입니다.
 오늘 이 사용자의 바이오리듬 종합 에너지 점수는 [${biorhythm.energyScore}/100]이며 에너지 레벨은 [${biorhythm.energyLevel}]이고, 현재 에고 대응 모드는 [${biorhythm.mode}]입니다.
 오늘의 사주 심리학적 권고: "${biorhythm.advice}"
@@ -54,8 +83,8 @@ export async function POST(req: Request) {
 반드시 아래 JSON 구조를 정확히 지켜서 순수한 JSON만 반환해 주세요. (마크다운 포맷이나 백틱 기호 외에 다른 텍스트는 섞지 마세요)
 
 {
-  "code": "오늘의 소스코드 (예: 과도한 완벽주의와 책임감에 짓눌려 다 때려치우고 싶다는 도피 심리)",
-  "reality": "오늘의 투사된 현실 (예: 결정적인 순간에 협조하지 않고 일을 망쳐버리는 동료나 지인)",
+  "code": "오늘의 소스코드",
+  "reality": "오늘의 투사된 현실",
   "theme": { 
     "bg": "bg-emerald-950/40", 
     "border": "border-emerald-500/20", 
@@ -65,30 +94,31 @@ export async function POST(req: Request) {
     "dot": "bg-emerald-400" 
   },
   "coaching": {
-    "desc": "명심 코칭 풀이 (가장 핵심적인 훈련 목적: '사용자가 내면의 소스코드(예: 배신당할 것에 대한 불안, 통제 욕구 등)와 자신을 동일시하여 그 생각과 감정을 강하게 품으면, 마치 자석처럼 정확히 그에 상응하는 투사된 현실(예: 믿었던 사람의 거짓말, 상황의 악화 등)이 외부 세계에 끌려와 창조된다'는 무의식의 투사-창조 원리를 매일매일 다양한 예시와 비유로 날카롭게 일깨워 주는 해설을 작성할 것)",
-    "socratic": "소크라테스 문답 (오늘 하루 동안 스스로에게 던져볼 만한 날카로운 관찰 질문)",
-    "recursive": "재귀적 질문 (이 상태를 촉발한 과거의 최초 기원이나 내면의 집착 원인을 추적하는 질문)",
-    "meta": "메타인지 (객관적 관찰) - 오늘 일진의 파동에 의해 요동치거나 가라앉은 감정과 생각을 제3자 관점(관찰자 시점)에서 가만히 바라보게 만드는 문구. 예: '지금 ...를 느끼는 나 자신을 있는 그대로 지켜볼 수 있는가?'",
-    "pureAwareness": "알아차림의 알아차림 (순수 자각) - 그 관찰하는 주체마저도 묵묵히 감싸 안아 비추고 있는 텅 빈 알아차림의 공간 그 자체를 직접 깨닫고 현존하게 만드는 고차원의 지문. 예: '그 생각과 느낌 뒤에, 이 모든 변화를 바라보는 텅 빈 알아차림의 공간을 자각할 수 있는가? 그 공간은 판단하지 않고, 그저 존재하고 있음을 느껴보라.'",
-    "awareness": "Zero Point 솔루션(True Acceptance) - 외부 현실의 변화(예: 타인의 인정, 고통의 소멸)를 얻으려는 '애쓰기(Striving)'를 철저히 배제하고, 저항 없이 떠오르는 감정을 100% 허용하여 '온전한 자립'과 균형(Zero Point)에 이르는 진정한 수용(True Acceptance) 해결책 문구",
-    "msc_common_humanity": "[보편적 연결 - Common Humanity] 소크라테스/재귀적 질문 후, 이 고통이나 감정적 투사가 나만의 결함이 아니라 인간이라면 누구나 겪는 보편적 본성임을 일깨워 고립감을 해소하는 위로의 문구",
-    "msc_self_kindness": "[연민의 자각 - Self-Kindness] 날카로운 통찰 후, 내면의 방어기제나 상처가 역류하지 않도록 가장 아끼는 친구를 대하듯 스스로에게 친절과 지지를 보내는 따뜻한 자애 문구"
+    "desc": "명심 코칭 풀이",
+    "socratic": "소크라테스 문답",
+    "recursive": "재귀적 질문",
+    "meta": "메타인지",
+    "pureAwareness": "알아차림의 알아차림",
+    "awareness": "Zero Point 솔루션",
+    "msc_common_humanity": "보편적 연결",
+    "msc_self_kindness": "연민의 자각"
   }
 }
 
 테마의 색상은 fuchsia, cyan, amber, rose, emerald, indigo, orange, teal, pink, violet, yellow 중에서 당일 에너지 레벨에 맞춰 어울리는 색을 선택하여 작성하세요.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    // Extract JSON from markdown or raw text
-    const jsonMatch = text.match(/```(?:json)?\n([\s\S]*?)\n```/) || text.match(/{[\s\S]*}/);
-    if (!jsonMatch) {
-      throw new Error("Invalid JSON format from Gemini");
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      
+      // Extract JSON from markdown or raw text
+      const jsonMatch = text.match(/```(?:json)?\n([\s\S]*?)\n```/) || text.match(/{[\s\S]*}/);
+      if (!jsonMatch) {
+        throw new Error("Invalid JSON format from Gemini");
+      }
+      
+      parsedData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
     }
-    
-    const parsedData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
 
     // 4. Supabase DB에 영구 저장 (로그인한 정상 유저일 경우)
     if (userId && userId !== 'anonymous') {

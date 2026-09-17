@@ -14,7 +14,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import MyeongsimChat from '@/components/chat/MyeongsimChat';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, BookOpen, ArrowLeft, Home, HelpCircle, Check, Copy, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, BookOpen, ArrowLeft, Home, HelpCircle, Check, Copy, ChevronDown, ChevronUp, Globe, ExternalLink } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ViewModeSwitcher } from '@/components/simple/ViewModeSwitcher';
 
@@ -83,7 +83,7 @@ export default function MyeongsimChatWrapper() {
                         <span>대시보드</span>
                     </button>
                     <button
-                        onClick={() => router.push('/library')}
+                        onClick={() => window.open('https://www.yes24.com/Product/Goods/195946431', '_blank')}
                         className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-xs font-bold text-purple-300 border border-purple-400/20 transition-all cursor-pointer"
                     >
                         <BookOpen size={13} />

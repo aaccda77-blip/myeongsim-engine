@@ -12,9 +12,25 @@ export class HealthPromotionModule {
         envData: string,
         todayIljin: string
     ): Promise<string> {
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
-        if (!apiKey) {
-            return "오류: AI 코치 API 키가 설정되지 않았습니다.";
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline health promotion coaching.");
+            return `🏥 **[결론부터: 진통제 대신 내 몸의 '세포 에너지(미토콘드리아)'를 채워보세요! 🔋]**
+
+> 🌡️ **오늘의 환경/운세 반영 포인트**: 오늘 ${todayIljin}의 기운과 환경(${envData}) 속에서, 신체 신경계의 에너지를 안정화하고 미토콘드리아 회복을 돕는 생활 습관이 무엇보다 중요합니다.
+
+**💡 이해하기: 왜 [${symptom}] 증상이 나타날까요? (세포 관점)**
+신체가 호소하는 [${symptom}] 증상은 세포 내 발전소인 미토콘드리아의 ATP 생산 저하 및 일시적 긴장 누적에서 기인합니다. 몸이 피로를 회복하고 균형을 되찾으려는 자연스러운 신호입니다.
+
+**📋 실천하기: 보건교육사가 제안하는 '세포 에너지 충전 미션'**
+*   **🍽️ 1. 혈당을 안정시키는 식단 습관:** 정제 탄수화물을 줄이고 통곡물과 풍부한 단백질, 신선한 채소를 먼저 섭취하세요.
+*   **🥦 2. 신경을 안정시키는 영양소:** 견과류, 시금치 등 마그네슘과 비타민 B군이 풍부한 식품을 챙겨드세요.
+*   **🚶 3. 세포를 깨우는 가벼운 움직임:** 식후 15분간 가볍게 산책하며 세포에 산소를 공급해 주세요.
+*   **💤 4. 수면과 심호흡 (명심 포인트!):** 잠들기 전 5분간 복식호흡을 통해 부교감신경을 활성화하세요.
+
+_⚠️ 면책 조항: 본 가이드라인은 보건교육 관점의 생활습관 개선 코칭이며, 의료적 분석이나 코칭를 대신할 수 없습니다. 심각한 증상은 전문의와 상담하세요._`;
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);

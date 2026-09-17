@@ -40,6 +40,34 @@ export class EmergencySafeModeModule {
 "당신은 안전합니다. 이 에러는 곧 지나갑니다.
 생각(OS)의 전원을 끄고, 지금 이 순간 생명(하드웨어) 자체의 고요함에 머무십시오."`;
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+        const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+
+        if (isMockMode || !apiKey) {
+            return {
+                reportStr: `### 🔴 초과 부하 감지: 시스템 안전 모드로 진입합니다.
+
+> "자아 프로세스(Ego.exe)를 강제 종료합니다.
+생각은 당신이 아닙니다. 이 감정은 바이러스 팝업창일 뿐입니다."
+
+지금부터 이 텍스트 외의 모든 생각을 멈추십시오.
+오직 화면과 당신의 호흡(하드웨어)에만 집중합니다.
+
+:::BREAK:::
+1. **시선 고정**: 지금 주변에서 보이는 가장 평범한 물건 하나를 응시하세요. (색깔, 질감을 3초간 봅니다)
+:::BREAK:::
+2. **접지(Grounding)**: 발바닥이 바닥에 닿아 있는 감각, 엉덩이가 의자에 닿아 있는 무게감을 느끼세요. 당신의 하드웨어는 지금 이 순간 여기에 안전하게 존재합니다.
+:::BREAK:::
+3. **호흡 동기화**:
+   - 숨을 코로 깊게 들이마십니다. (1... 2... 3... 4...) 서늘한 공기가 들어옵니다.
+   - 잠시 멈춥니다. (1... 2...)
+   - 입으로 천천히 아주 길게 내쉽니다. (1... 2... 3... 4... 5... 6...) 뜨거운 감정이 빠져나갑니다.
+:::BREAK:::
+"당신은 안전합니다. 이 에러는 곧 지나갑니다.
+생각(OS)의 전원을 끄고, 지금 이 순간 생명(하드웨어) 자체의 고요함에 머무십시오."`
+            };
+        }
+
         const response = await generateText({
             model: google('gemini-2.5-flash') as any,
             system: systemPrompt,

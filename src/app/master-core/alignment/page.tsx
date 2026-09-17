@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useReportStore } from '@/store/useReportStore';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import { playTechBeep, playSuccessChime } from '@/utils/sfx';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { formatFriendlyErrorMessage, OPEN_FREE_NOTICE_MESSAGE } from '@/utils/errorMessage';
 
 interface AlignmentAnalysis {
   structure_type: '정격' | '종격';
@@ -49,89 +50,89 @@ export default function AlignmentPage() {
   const [userProfile, setUserProfile] = useState<any>(null);
 
   // 1. 유저 정보 조회 및 API 호출
-  useEffect(() => {
-    const fetchAlignment = async () => {
-      setIsLoading(true);
-      setErrorMsg(null);
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          router.push('/login');
-          return;
-        }
-
-        // DB의 users 테이블에서 메인 생년월일 및 정보 최우선 조회
-        let dbUser: any = null;
-        try {
-          const { data, error } = await supabase
-            .from('users')
-            .select('birth_date, birth_time, calendar_type, gender, name')
-            .eq('id', session.user.id)
-            .single();
-          
-          if (!error && data) {
-            dbUser = data;
-          }
-        } catch (dbErr) {
-          console.warn("Failed to fetch user profile from DB, using session fallback:", dbErr);
-        }
-
-        const meta = session.user.user_metadata || {};
-        
-        // [우선순위 재정렬] 1순위: 클라이언트 전역 스토어(reportData) / 2순위: DB users 테이블 / 3순위: 세션 메타데이터
-        const storeSaju = (reportData?.saju || {}) as any;
-        const storeMeta = (reportData?.meta || {}) as any;
-
-        const effectiveName = reportData?.userName || dbUser?.name || meta.userName || meta.name || '사용자';
-        const effectiveBirthDate = reportData?.birthDate || dbUser?.birth_date || meta.birth_date || storeSaju?.birthDate || (reportData as any)?.birthDate;
-        const effectiveBirthTime = reportData?.birthTime || dbUser?.birth_time || meta.birth_time || storeSaju?.birthTime || (reportData as any)?.birthTime || '12:00';
-        const effectiveCalendarType = storeMeta?.calendarType || dbUser?.calendar_type || meta.calendar_type || storeSaju?.calendarType || (reportData as any)?.calendarType || 'solar';
-        const effectiveGender = reportData?.gender || dbUser?.gender || meta.gender || storeSaju?.gender || (reportData as any)?.gender || 'male';
-
-        const profile = {
-          userId: session.user.id,
-          userName: effectiveName,
-          birthDate: effectiveBirthDate,
-          birthTime: effectiveBirthTime === 'unknown' ? '12:00' : effectiveBirthTime,
-          calendarType: effectiveCalendarType,
-          gender: effectiveGender,
-        };
-
-        setUserProfile(profile);
-
-        if (!profile.birthDate) {
-          setErrorMsg('사주 생년월일 정보가 존재하지 않습니다. 프로필을 먼저 등록해 주세요.');
-          setIsLoading(false);
-          return;
-        }
-
-        setIsAnalyzing(true);
-        const res = await fetch('/api/coaching/alignment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...profile,
-            locale: language
-          }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || '격국 분석 API 호출 중 에러가 발생했습니다.');
-
-        setSaju(data.saju);
-        setAnalysis(data.analysis);
-        playSuccessChime();
-      } catch (err: any) {
-        console.error(err);
-        setErrorMsg(err.message || '격국 분석 정보를 불러오는 데 실패했습니다.');
-      } finally {
-        setIsLoading(false);
-        setIsAnalyzing(false);
+  const fetchAlignment = useCallback(async () => {
+    setIsLoading(true);
+    setErrorMsg(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
       }
-    };
 
+      // DB의 users 테이블에서 메인 생년월일 및 정보 최우선 조회
+      let dbUser: any = null;
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('birth_date, birth_time, calendar_type, gender, name')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (!error && data) {
+          dbUser = data;
+        }
+      } catch (dbErr) {
+        console.warn("Failed to fetch user profile from DB, using session fallback:", dbErr);
+      }
+
+      const meta = session.user.user_metadata || {};
+      
+      // [우선순위 재정렬] 1순위: 클라이언트 전역 스토어(reportData) / 2순위: DB users 테이블 / 3순위: 세션 메타데이터
+      const storeSaju = (reportData?.saju || {}) as any;
+      const storeMeta = (reportData?.meta || {}) as any;
+
+      const effectiveName = reportData?.userName || dbUser?.name || meta.userName || meta.name || '사용자';
+      const effectiveBirthDate = reportData?.birthDate || dbUser?.birth_date || meta.birth_date || storeSaju?.birthDate || (reportData as any)?.birthDate;
+      const effectiveBirthTime = reportData?.birthTime || dbUser?.birth_time || meta.birth_time || storeSaju?.birthTime || (reportData as any)?.birthTime || '12:00';
+      const effectiveCalendarType = storeMeta?.calendarType || dbUser?.calendar_type || meta.calendar_type || storeSaju?.calendarType || (reportData as any)?.calendarType || 'solar';
+      const effectiveGender = reportData?.gender || dbUser?.gender || meta.gender || storeSaju?.gender || (reportData as any)?.gender || 'male';
+
+      const profile = {
+        userId: session.user.id,
+        userName: effectiveName,
+        birthDate: effectiveBirthDate,
+        birthTime: effectiveBirthTime === 'unknown' ? '12:00' : effectiveBirthTime,
+        calendarType: effectiveCalendarType,
+        gender: effectiveGender,
+      };
+
+      setUserProfile(profile);
+
+      if (!profile.birthDate) {
+        setErrorMsg('사주 생년월일 정보가 존재하지 않습니다. 프로필을 먼저 등록해 주세요.');
+        setIsLoading(false);
+        return;
+      }
+
+      setIsAnalyzing(true);
+      const res = await fetch('/api/coaching/alignment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...profile,
+          locale: language
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '격국 분석 API 호출 중 에러가 발생했습니다.');
+
+      setSaju(data.saju);
+      setAnalysis(data.analysis);
+      playSuccessChime();
+    } catch (err: any) {
+      console.error('Alignment analysis error:', err);
+      setErrorMsg(formatFriendlyErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+      setIsAnalyzing(false);
+    }
+  }, [router, reportData, language]);
+
+  useEffect(() => {
     fetchAlignment();
-  }, [router, reportData]);
+  }, [fetchAlignment]);
 
   // 오행 컬러 맵
   const ELEMENT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
@@ -176,17 +177,47 @@ export default function AlignmentPage() {
         
         {errorMsg ? (
           /* Error State */
-          <div className="bg-[#0f111a] border border-red-500/20 rounded-2xl p-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
-              <span className="text-2xl">⚠️</span>
+          <div className="bg-gradient-to-b from-[#131728] to-[#0c0e18] border border-amber-500/30 rounded-3xl p-6 sm:p-7 text-center space-y-5 shadow-2xl backdrop-blur-md">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto shadow-inner">
+              <span className="text-3xl">💡</span>
             </div>
-            <p className="text-sm text-gray-300 leading-relaxed break-keep">{errorMsg}</p>
-            <button
-              onClick={() => router.push('/report')}
-              className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-xs font-bold transition-all"
-            >
-              생년월일 등록하러 가기
-            </button>
+            
+            <div className="space-y-2">
+              <h3 className="text-base font-extrabold text-amber-300">
+                서비스 이용 안내
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-200 leading-relaxed break-keep font-medium px-2">
+                {errorMsg}
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col gap-2.5 max-w-xs mx-auto">
+              {!userProfile?.birthDate ? (
+                <button
+                  onClick={() => router.push('/report')}
+                  className="w-full px-5 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-lg cursor-pointer"
+                >
+                  생년월일 등록하러 가기
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => fetchAlignment()}
+                    className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black transition-all shadow-lg cursor-pointer"
+                  >
+                    <RefreshCw size={14} className={isAnalyzing ? 'animate-spin' : ''} />
+                    <span>다시 시도하기</span>
+                  </button>
+                  <button
+                    onClick={() => router.push('/master-core')}
+                    className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-gray-300 hover:text-white text-xs font-semibold transition-all border border-white/10 cursor-pointer"
+                  >
+                    <ArrowLeft size={14} />
+                    <span>마스터 코어로 돌아가기</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         ) : (
           /* Active Analysis View */

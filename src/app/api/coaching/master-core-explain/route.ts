@@ -19,6 +19,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized master core explain reply.");
+      const uName = userName || '소중한 님';
+      const offlineExplain = `🌸 마음의 노크
+${uName}님, [${moduleLabel}] 공간에 오신 것을 환영해요. 지금 이 순간, 당신의 마음이 가장 편안한 쉼과 지혜를 만나는 시간입니다.
+
+🌿 따뜻한 메타포
+마치 메마른 대지 아래서 조용히 봄을 기다리는 씨앗처럼, [${moduleLabel}]은(는) 밖으로만 쏟아지던 당신의 소중한 에너지를 내면의 따뜻한 중심(제로포인트)으로 모아주는 마음의 오아시스예요.
+
+🔍 우리만의 비밀 이야기
+이 과정에서는 남들과 비교하느라 놓쳤던 ${uName}님만의 고유한 기질과 잠재력을 발견하게 됩니다. 불안과 긴장을 억누르지 않고 다정하게 수용할 때, 마음에 놀라운 회복 탄력성과 여유가 피어납니다.
+
+💡 오늘의 작은 알아차림
+1. 따뜻한 차 한 잔을 마시며 30초 동안 오직 온기와 향기에만 집중해 보세요.
+2. 어깨의 힘을 툭 빼고 "지금 이대로도 나는 충분히 괜찮아"라고 스스로에게 말해주세요.
+
+✨ 당신을 향한 한 장의 편지
+"흔들리는 파도에 놀라지 마세요. 당신은 언제나 그 깊고 푸른 바다 그 자체랍니다." 💖`;
+
+      return NextResponse.json({ text: offlineExplain });
+    }
+
     const model = genAI.getGenerativeModel({
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     });

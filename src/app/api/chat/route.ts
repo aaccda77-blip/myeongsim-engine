@@ -40,6 +40,7 @@ import { requireAuth } from '@/lib/auth'; // [NEW] Authentication Middleware
 import { PersonaProfileModule } from '@/modules/PersonaProfileModule'; // [NEW] Core Memory Module
 import { CrisisInterventionModule } from '@/modules/CrisisInterventionModule'; // [NEW] Suicide Prevention Module
 import { CommunicationEngineModule } from '@/modules/CommunicationEngineModule'; // [NEW] Relationship Handling
+import { SmartAiSimulationEngine } from '@/services/SmartAiSimulationEngine';
 
 // import { ScenarioEngine } from '@/services/ScenarioEngine'; // [Disabled] File missing
 
@@ -1799,6 +1800,28 @@ c) "action_plan": 정확히 3개의 일일 미션 배열(Day 1, 2, 3)
         if (isCrisisMode) {
             console.log("🚨 [CRISIS] Forcing CrisisInterventionModule override on finalSystemPrompt");
             finalSystemPrompt = CrisisInterventionModule.constructCrisisPrompt(mergedSaju, userName || '회원');
+        }
+
+        // 🌟 [방식 1. 스마트 AI 시뮬레이션 모드: 외부 Gemini 2.5 Flash API 미구동]
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || 
+                           process.env.NEXT_PUBLIC_MOCK_AI === 'true' || 
+                           process.env.FORCE_SIMULATION_MODE === 'true';
+
+        if (isMockMode) {
+            console.log(`🤖 [Chat Simulation] 100% 사주 맞춤 실시간 생성: ${userName}`);
+            const userContext = {
+                userName: userName || '명심가',
+                birthDate: (typeof birthDate === 'string' ? birthDate : '') || '',
+                birthTime: (typeof birthTime === 'string' ? birthTime : '12:00') || '12:00',
+                calendarType: (typeof calendarType === 'string' ? calendarType : 'solar') || 'solar',
+                gender: effectiveGender,
+                dayMaster: (mergedSaju?.dayMaster) || '신',
+                energyLevel: 50,
+                sleepQuality: 3,
+                stressFactors: '마음의 부담감'
+            };
+            const simulatedText = SmartAiSimulationEngine.generatePersonalizedResponse(userContext, currentMessageContent);
+            return SmartAiSimulationEngine.createStreamResponse(simulatedText);
         }
 
         // 5. Call Gemini AI (Context-Aware Chat with Auto Fallback)

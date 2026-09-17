@@ -17,13 +17,27 @@ export async function POST(request: NextRequest) {
 
         if (!trait) return NextResponse.json({ error: 'Trait Missing' }, { status: 400 });
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '';
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         // Extract Five Elements for personalization
-        const dayMaster = saju?.dayPillar?.stem || 'Unknown';
+        const dayMaster = saju?.dayPillar?.stem || '금(金)';
         const dominantEl = getDominantElement(saju?.ohaeng);
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline trait description.");
+            return NextResponse.json({
+                title: `${trait}의 고요한 빛`,
+                subTitle: `선천적 ${dayMaster} 기질에서 발현되는 ${trait}의 고유한 능력`,
+                desc: `${trait}은(는) 인위적으로 애써서 만든 것이 아니라, ${dayMaster}의 원석처럼 깊은 내면에서 저절로 우러나오는 천부적 에너지입니다. 복잡한 상황 속에서도 본질을 지켜내는 중심축이 되어줍니다.`,
+                advice: "이 기질을 타인과의 비교를 위해 쓰지 말고, 나만의 고유한 삶을 정렬하는 데 활용하세요.",
+                mission: "오늘 하루, 내 안의 강점을 의식하며 1분간 깊은 감사 호흡하기",
+                superpower_badge: `${trait} 마스터`
+            });
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
         You are 'MyeongI', a wise destiny counselor.

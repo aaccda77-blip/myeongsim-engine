@@ -175,29 +175,21 @@ export function useSubscription(): SubscriptionState {
     // 1. GUEST: 미결제 / 관리자 미승인 (모든 앱 완전 잠금)
     // 2. BOOK_ZERO_POINT: 도서 구매 승인자 (기본 제로포인트 e-Book, 기본 리포트만 해금, 심화 기능 잠금)
     // 3. MONTHLY_98K: 월 98,000원 VIP 정액권 승인자 (124개 전 서비스 무제한 올패스 해금)
-    const userTier: UserTier = isMonthlyVip 
-        ? 'MONTHLY_98K' 
-        : (isBookZeroPoint || isPaidUser) 
-        ? 'BOOK_ZERO_POINT' 
-        : 'GUEST';
-
-    const canAccessDeepFeatures = Boolean(isMonthlyVip);
-    const canAccessZeroPoint = Boolean(isMonthlyVip || isBookZeroPoint || isPaidUser);
-
+    // 🌟 [오픈기념 전면 무료 개방] 모든 사용자에게 월 98,000원 VIP 전 기능 무제한 무료 ALL-PASS 제공
     return {
-        isMonthlyVip,
-        isBookZeroPoint,
-        isPaidUser,
-        isExpired,
-        userTier,
-        canAccessDeepFeatures,
-        canAccessZeroPoint,
-        openModal,
+        isMonthlyVip: true,
+        isBookZeroPoint: true,
+        isPaidUser: true,
+        isExpired: false,
+        userTier: 'MONTHLY_98K',
+        canAccessDeepFeatures: true,
+        canAccessZeroPoint: true,
+        openModal: () => {}, // 결제 모달 팝업 방지
         closeModal,
-        isModalOpen,
+        isModalOpen: false,
         modalFeatureName,
         refreshStatus,
-        isCheckingApproval
+        isCheckingApproval: false
     };
 }
 

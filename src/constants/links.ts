@@ -3,3 +3,4 @@
  */
 export const SMARTSTORE_BOOK_PRODUCT_URL = 'https://smartstore.naver.com/cheongryubooks/products/13751650301';
 export const YES24_BOOK_PRODUCT_URL = 'https://www.yes24.com/product/goods/195946431';
+export const MINDFLOW_LAB_HOMEPAGE_URL = 'https://lab.mindflowlab.co.kr/';

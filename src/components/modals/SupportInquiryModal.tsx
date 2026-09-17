@@ -268,7 +268,7 @@ export default function SupportInquiryModal({ isOpen, onClose, initialView = 'ma
                                 </div>
                                 <h3 className="text-lg font-bold text-white">문의가 정상 접수되었습니다!</h3>
                                 <p className="text-xs text-gray-400 leading-relaxed">
-                                    접수하신 내용은 <span className="text-amber-300 font-mono font-bold">mindflowlabbooks@naver.com</span>으로 안전하게 전달되었으며, 24시간 이내에 신속히 답변드리겠습니다.
+                                    접수하신 내용은 <span className="text-amber-300 font-mono font-bold">admin@mindflowlab.co.kr</span>으로 안전하게 전달되었으며, 24시간 이내에 신속히 답변드리겠습니다.
                                 </p>
                             </div>
                         )}
@@ -446,8 +446,8 @@ export default function SupportInquiryModal({ isOpen, onClose, initialView = 'ma
                                         <div className="space-y-1.5 text-xs">
                                             <div className="flex items-center justify-between">
                                                 <span className="text-gray-400">문의 이메일:</span>
-                                                <a href="mailto:mindflowlabbooks@naver.com" className="font-mono text-amber-300 hover:underline font-bold">
-                                                    mindflowlabbooks@naver.com
+                                                <a href="mailto:admin@mindflowlab.co.kr" className="font-mono text-amber-300 hover:underline font-bold">
+                                                    admin@mindflowlab.co.kr
                                                 </a>
                                             </div>
                                             <div className="flex items-center justify-between">

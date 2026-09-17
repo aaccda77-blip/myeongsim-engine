@@ -59,6 +59,79 @@ export async function POST(req: NextRequest) {
     };
     const pillarName = pillarNames[pillarId] || '종합 에너지';
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline daily questions.");
+      return NextResponse.json({
+        dayGanZhi: dayGanZhi,
+        dayTheme: `${dayGanZhi}일 ${dayMaster}일간 ${pillarName} 정렬`,
+        steps: [
+          {
+            depth: 1,
+            title: "Somatic Grounding",
+            subtitle: "신체 자각 (SCAN)",
+            color: "#3b82f6",
+            icon: "🔍",
+            question: `오늘 ${dayGanZhi}의 기운 속에서 몸의 어느 부위(어깨, 가슴, 호흡)에 가장 큰 긴장이나 묵직함이 느껴지시나요?`,
+            tip: "신체 감각은 무의식이 보내는 가장 정직한 첫 번째 신호입니다.",
+            choices: ["어깨와 목덜미의 긴장감", "가슴의 답답함이나 얕은 호흡"],
+            answer: "몸의 느낌을 억누르지 말고 3초간 그 부위에 따뜻한 주의를 기울여 보세요.",
+            inputPlaceholder: "현재 느껴지는 감각을 가만히 적어보세요..."
+          },
+          {
+            depth: 2,
+            title: "Cognitive Defusion",
+            subtitle: "표면 인지 자각 (SCAN)",
+            color: "#6366f1",
+            icon: "🧠",
+            question: "지금 머릿속을 맴도는 자동 반사적인 생각이나 걱정은 어떤 목소리인가요?",
+            tip: "생각은 팩트가 아니라 뇌가 출력하는 임시 자막일 뿐입니다.",
+            choices: ["완벽하게 해내야 한다는 강박", "시간이 부족하다는 조급함"],
+            answer: "생각과 나 사이에 '그렇구나'라는 1초의 여백을 두세요.",
+            inputPlaceholder: "머릿속 생각을 한 문장으로 적어보세요..."
+          },
+          {
+            depth: 3,
+            title: "Socratic Inquiry",
+            subtitle: "자아 객관화 분리 (SYNC)",
+            color: "#8b5cf6",
+            icon: "🔗",
+            question: "이 생각 없이 지금 이 순간의 나는 어떤 상태로 존재할 수 있나요?",
+            tip: "생각의 거품을 걷어내면 본래의 고요한 관찰자가 드러납니다.",
+            choices: ["훨씬 홀가분하고 자유로운 상태", "지금 할 일에 온전히 몰입하는 상태"],
+            answer: "당신은 지나가는 생각의 내용이 아니라, 그것을 비추는 하늘입니다.",
+            inputPlaceholder: "한 걸음 물러선 느낌을 적어보세요..."
+          },
+          {
+            depth: 4,
+            title: "Radical Acceptance",
+            subtitle: "모순 직면 (SYNC)",
+            color: "#ec4899",
+            icon: "⚖️",
+            question: "상황이 내 뜻대로 풀리지 않더라도, 지금 이대로를 품어줄 용기가 있나요?",
+            tip: "저항을 멈출 때 에너지의 누수가 차단됩니다.",
+            choices: ["있는 그대로 인정하고 수용하기", "통제 욕구를 내려놓고 흐름 믿기"],
+            answer: "급진적 수용은 포기가 아닌 지혜로운 주파수 동기화입니다.",
+            inputPlaceholder: "내려놓고 싶은 집착을 적어보세요..."
+          },
+          {
+            depth: 5,
+            title: "Action Shift",
+            subtitle: "주파수 도약 (SHIFT)",
+            color: "#10b981",
+            icon: "🚀",
+            question: `오늘 ${pillarName}의 지혜를 위해 지금 즉시 실천할 수 있는 가장 작은 행동은 무엇인가요?`,
+            tip: "작은 1개의 완수가 시스템의 패러다임을 바꿉니다.",
+            choices: ["따뜻한 물 마시며 1분 심호흡", "가장 중요한 단 1가지 업무에 20분 집중"],
+            answer: "당신의 새로운 선택이 삶의 궤적을 찬란하게 전환합니다.",
+            inputPlaceholder: "오늘의 작은 1단계 실천을 약속해보세요..."
+          }
+        ]
+      });
+    }
+
     const modelName = process.env.GEMINI_MODEL === 'gemini-2.5-flash' ? 'gemini-2.5-flash' : (process.env.GEMINI_MODEL || 'gemini-2.5-flash');
     const model = google.getGenerativeModel({
       model: modelName,

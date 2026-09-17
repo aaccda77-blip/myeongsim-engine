@@ -28,10 +28,16 @@ export class LottoEngineModuleV2 {
             ? `년주: ${p.year.ganKor}${p.year.jiKor} / 월주: ${p.month.ganKor}${p.month.jiKor} / 일주: ${p.day.ganKor}${p.day.jiKor} / 시주: ${p.time.ganKor}${p.time.jiKor}`
             : '정보 없음';
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+
         // ====================================================================
         // PHASE 1: AI Quantum Seed Pool (V5.0 with all analytics data)
         // ====================================================================
-        if (apiKey) {
+        if (isMockMode || !apiKey) {
+            // 통계 및 사주 오행 수리 기반 오프라인 맞춤 번호 시드풀 (25개)
+            seedPool = [3, 7, 11, 14, 18, 22, 25, 29, 31, 34, 38, 41, 44, 2, 8, 12, 17, 23, 27, 33, 36, 40, 42, 45, 5];
+            isAIEngaged = true;
+        } else {
             try {
                 const genAI = new GoogleGenerativeAI(apiKey);
                 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });

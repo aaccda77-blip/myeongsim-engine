@@ -247,7 +247,8 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        if (!apiKey) {
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true' || !apiKey;
+        if (isMockMode) {
             const dynamicReply = `당신의 ${dayMasterChar}(${currentProfile.nature}) 기질은 ${currentProfile.strength}을 품고 있습니다.
 
 하지만 때로는 ${currentProfile.shadow}으로 인해 스스로를 무겁게 짓누르고 계시진 않나요?

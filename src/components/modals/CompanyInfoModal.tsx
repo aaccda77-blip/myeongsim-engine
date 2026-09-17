@@ -81,7 +81,7 @@ export default function CompanyInfoModal({ isOpen, onClose }: CompanyInfoModalPr
                         </h4>
                         <div className="space-y-1 text-gray-300 text-xs">
                             <p>전화번호: <strong className="text-white font-mono">010-9114-2352</strong></p>
-                            <p>이메일: <span className="font-mono text-amber-300 font-semibold">mindflowlabbooks@naver.com</span></p>
+                            <p>이메일: <span className="font-mono text-amber-300 font-semibold">admin@mindflowlab.co.kr</span></p>
                         </div>
                         <p className="text-amber-200/90 text-[11px] leading-relaxed font-medium">
                             ※ 전화 부재 시 이메일이나, 문자메시지로 부탁드립니다. (확인 후 신속히 연락드립니다)

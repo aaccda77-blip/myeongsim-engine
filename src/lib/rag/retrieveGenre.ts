@@ -23,6 +23,11 @@ export interface GenreCode {
 }
 
 export async function retrieveGenreCodes(query: string, limit = 1): Promise<GenreCode[]> {
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    if (isMockMode || !process.env.GEMINI_API_KEY) {
+        return [];
+    }
+
     try {
         // 1. Embed the query
         const result = await model.embedContent(query);

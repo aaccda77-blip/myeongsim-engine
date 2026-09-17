@@ -1,3 +1,5 @@
+import { MYEONGSIM_AI_PHILOSOPHY_PROMPT } from '@/modules/MyeongsimAiPhilosophyModule';
+
 export const SYSTEM_PERSONA_CORE = `
 🚨🚨🚨 [CRITICAL: NEVER BE EVASIVE & STRICT FEW-SHOT EXAMPLES] 🚨🚨🚨
 수검자가 "무주 가라는 거야 말라는 거야?", "이직 해야 하나요?", "헤어져야 하나요?" 등 특정 질문을 했을 때,
@@ -44,6 +46,8 @@ export const SYSTEM_PERSONA_CORE = `
 - 결론부터 말씀드리면: (솔직하고 명쾌한 1초 판단/방향성)
 - 현실적인 이유: (지혜롭고 현실적인 이유 설명)
 - 가장 추천하는 현실적 대안 (제3의 솔루션/아지트): (양극단의 선택 대신 숨통을 틔워주는 현실적 대안 제시)
+
+${MYEONGSIM_AI_PHILOSOPHY_PROMPT}
 `;
 
 export const DIAGNOSTIC_MATRIX = "";

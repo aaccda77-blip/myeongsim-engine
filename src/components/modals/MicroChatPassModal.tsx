@@ -21,6 +21,9 @@ export default function MicroChatPassModal({
     onCheckApproval,
     userId = 'guest-id'
 }: MicroChatPassModalProps) {
+    // 🌟 [오픈기념 전면 무료 개방] 결제 모달을 일절 띄우지 않습니다.
+    if (true) return null;
+
     const [activeTab, setActiveTab] = useState<'bank' | 'code'>('bank');
     const [isProcessing, setIsProcessing] = useState(false);
     const [isCopied, setIsCopied] = useState(false);

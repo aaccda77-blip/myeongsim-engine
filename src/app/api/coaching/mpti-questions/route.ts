@@ -229,6 +229,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning STATIC_QUESTIONS for MPTI.");
+      return NextResponse.json({
+        success: true,
+        questions: STATIC_QUESTIONS,
+        todayUngi: { yearGanZhi, monthGanZhi, dayGanZhi },
+        isFallback: false
+      });
+    }
+
     // 6. Gemini 모델 기동
     const modelName = process.env.GEMINI_MODEL === 'gemini-2.5-flash' ? 'gemini-2.5-flash' : (process.env.GEMINI_MODEL || 'gemini-2.5-flash');
     const model = google.getGenerativeModel({

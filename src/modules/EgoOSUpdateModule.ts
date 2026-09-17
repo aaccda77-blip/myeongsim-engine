@@ -33,6 +33,25 @@ export class EgoOSUpdateModule {
 
 출력은 반드시 한국어로 작성하고, 사용자가 이 고민이 '진짜 나'의 문제가 아니라 단지 'OS의 버그'일 뿐임을 깨닫고 미소지으며 안도할 수 있도록 쿨하고 따뜻하게 작성해주세요.`;
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+        const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+
+        if (isMockMode || !apiKey) {
+            const dayMaster = sajuData?.dayMaster || sajuData?.dayGan || '갑';
+            return {
+                reportStr: `### 💻 자아 OS 시스템 스캔 보고서
+* **감지된 프로세스**: '타인_시선_모니터링.exe' 과부하 (CPU 점유율 88%)
+* **발생 원인**: [${dayMaster}]일간 고유의 책임감 및 완벽주의 방어벽이 과도하게 설정되어 주변 기대에 동기화되었습니다.
+:::BREAK:::
+### ⚠️ 에러 팝업창 분석
+"${userPrompt || '불안과 타인 시선에 대한 우려'}"는 당신의 본질적 결함이 아니라, 취약해진 환경에서 마음을 보호하기 위해 뜬 낡은 'OS 생존 팝업창'일 뿐입니다.
+:::BREAK:::
+### 🔄 최적화 권장 사항
+1. **프로세스 강제 중지**: '내가 증명해야 한다'는 백그라운드 프로세스를 3초간 일시정지하고 날숨을 길게 내쉬세요.
+2. **도구적 사용**: 자아(Ego)는 세상을 살아가는 편리한 소프트웨어일 뿐, 당신의 본래 정체성은 그 프로그램을 지켜보는 맑은 하늘(영점)입니다.`
+            };
+        }
+
         const response = await generateText({
             model: google('gemini-2.5-flash') as any,
             system: systemPrompt,

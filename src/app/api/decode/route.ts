@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 // Initialize Gemini API
 const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
@@ -62,6 +63,56 @@ export async function POST(request: Request) {
       languageInstruction = "必须使用中文（简体）温暖且条理清晰地回答。所有属性의 텍스트를 중국어로 채우세요.";
     } else {
       languageInstruction = "반드시 한국어로 따뜻하고 논리정연하게 작성하세요.";
+    }
+
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline dark decoding.");
+      const dayGan = (effectiveSaju as any)?.day?.gan?.char || (effectiveSaju as any)?.dayMaster || '신';
+      const ganElements: Record<string, string> = {
+        '갑': '목(木)', '을': '목(木)', '병': '화(火)', '정': '화(火)',
+        '무': '토(土)', '기': '토(土)', '경': '금(金)', '신': '금(金)',
+        '임': '수(水)', '계': '수(水)'
+      };
+      const element = ganElements[dayGan] || '금(金)';
+
+      const reportData = {
+        status_line: `내면의 ${element} 에너지 수렴 및 방어 기제 전환 상태`,
+        saju_sync: {
+          activated_elements: [`${element}`, "수(水)"],
+          environmental_analysis: `입력하신 감정("${rawText.slice(0, 30)}")과 증상(${physicalSymptom || '피로/긴장'})은 선천적 기질 에너지가 외부 환경과 상호작용하며 발생하는 지극히 자연스러운 내면 신호입니다. 이는 시스템 에러가 아닌, 새로운 도약을 위한 수렴(음)의 과정입니다.`
+        },
+        psychological_patch: {
+          acceptance_guide: "올라오는 부정적 감정을 억지로 밀어내지 마세요. '아, 내 무의식이 나를 보호하기 위해 이렇게 경고등을 켜고 있구나'라고 인정하며 3번의 깊은 복식호흡으로 가만히 머물러 주세요.",
+          action_step: "따뜻한 물 한 잔을 마시며 어깨와 턱의 긴장을 5초간 툭 풀어주고, 5분간 외부 스크린을 끈 채 나만의 고요한 제로포인트를 유지하세요."
+        },
+        crystal_growth_increment: 15
+      };
+
+      let logId = `fallback-log-${Date.now()}`;
+      try {
+        const { data: logData, error: logError } = await supabase
+          .from('dark_logs')
+          .insert({
+            user_id: userId,
+            raw_emotion_text: rawText,
+            physical_symptom: physicalSymptom,
+            current_saju_transit: effectiveSaju,
+            decoded_analysis: reportData,
+            stone_growth_stage: 1
+          })
+          .select()
+          .single();
+
+        if (!logError && logData) {
+          logId = logData.id;
+        }
+      } catch (dbErr: any) {
+        console.warn("Supabase insert skipped in mock mode:", dbErr?.message);
+      }
+
+      return NextResponse.json({ logId, report: reportData });
     }
 
     const systemInstruction = `
@@ -160,6 +211,6 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('Dark Decoding Error:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: formatFriendlyErrorMessage(error) }, { status: 500 });
   }
 }

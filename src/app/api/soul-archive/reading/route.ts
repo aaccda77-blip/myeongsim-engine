@@ -7,12 +7,44 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { userName, dayMaster, sajuPillars, codeTitle, codeCategory, codeType } = body;
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
-        if (!apiKey) {
-            return NextResponse.json({ success: false, message: 'API Key not configured' }, { status: 400 });
-        }
 
         const isBusinessMode = codeType === '비즈니스 메커니즘' || codeType === '천명 BM' || codeType === '직업 아키텍처';
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline soul-archive reading.");
+            const uName = userName || '도반';
+
+            if (isBusinessMode) {
+                return NextResponse.json({
+                    success: true,
+                    data: {
+                        oneLinerIdentity: `타인의 인지적 혼란을 명쾌한 ${codeTitle} 프레임워크로 해방시키고 지식 비즈니스로 현실화하는 아키텍트`,
+                        stage1Title: `1단계: 진단 영역 — 문제와 병목의 포착`,
+                        stage1Role: "진단자 (Analyst)",
+                        stage1Desc: `${uName}님의 날카로운 통찰력은 타인이 겪는 비효율과 심리적 병목을 첫눈에 꿰뚫어 봅니다.`,
+                        stage2Title: `2단계: 솔루션 영역 — 급소 타격과 프레임워크`,
+                        stage2Role: "설계자 (Solution Architect)",
+                        stage2Desc: `복잡한 문제를 단순하고 직관적인 3단계 프로세스로 구조화하여 즉각 실행 가능한 대안을 제시합니다.`,
+                        stage3Title: `3단계: 수익 영역 — 시스템화와 실질적 부가가치`,
+                        stage3Role: "프로덕트 빌더 (Product Builder)",
+                        stage3Desc: `자신의 고유한 지식을 디지털 콘텐츠와 1:1 컨설팅 모델로 패키징하여 지속 가능한 부가가치를 창출합니다.`,
+                        productPackaging: "핵심 전자책 + 실행 템플릿 + VIP 1:1 진단 컨설팅",
+                        targetAudience: "기존의 막연한 조언에 지쳐 명쾌한 시스템적 해결책을 찾는 전문가 및 창업가"
+                    }
+                });
+            }
+
+            return NextResponse.json({
+                success: true,
+                data: {
+                    readingEssay: `${uName}님, [${codeTitle}] 코드는 당신의 영혼이 세상에 전하고자 하는 가장 깊은 울림입니다. 타고난 기질의 원석이 현실의 경험을 만나 다듬어질 때, 그 어떤 불안도 당신의 찬란한 본질을 가리지 못합니다.`,
+                    actionAnchor: "오늘 하루, 고요한 마음으로 내면의 중심축을 확인하고 한 걸음 나아가세요.",
+                    mantra: "나는 이미 온전하며, 나의 길은 우주의 질서 속에 조화롭게 열려 있습니다. ✨"
+                }
+            });
+        }
 
         let prompt = '';
 

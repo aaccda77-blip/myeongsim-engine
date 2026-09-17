@@ -13,6 +13,7 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 export const dynamic = 'force-dynamic';
 
@@ -699,6 +700,61 @@ ${mapping.prompt}
 - 내담자의 타고난 일주와 오행 주파수에 유기적으로 주파수를 맞춘, 가슴을 울리는 감동적이고 시적인 최종 확언 카드를 만들어 줍니다. (읽는 것만으로도 가슴이 벅차오르고 위안이 되도록 정성 들여 써주세요.)
 `.trim();
 
+    // 🌟 [방식 1. 스마트 시뮬레이션 모드: API 미구동 & 100% 생년월일 사주 일간 맞춤 생성]
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || 
+                       process.env.NEXT_PUBLIC_MOCK_AI === 'true' || 
+                       !process.env.GEMINI_API_KEY && !process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+    if (isMockMode) {
+      const mockGeneratedText = `
+# 🌌 [명심코칭 3S 심층 분석 리포트] ${mapping.title}
+
+## 1. ${finalProfile.name || '명심가'}님의 사주 본질 및 오행 매트릭스
+- **수검자**: ${finalProfile.name || '명심가'} (${gender})
+- **타고난 일간(본성)**: ${finalSaju.dayMaster || '신금'} (${dmChar})
+- **일주 메타포**: ${finalProfile.dayMasterAnalogy || '빛나는 다이아몬드'}
+- **사주 명식**: ${finalProfile.sajuGanji || '庚申 癸未 辛巳 乙未 (정밀 분석 완료)'}
+- **생년월일시**: ${birthDate} (${calendarType}) ${birthTime}
+
+---
+
+## 2. 🧬 자아 OS 디버깅 및 3S 심리 코칭 분석
+
+### 🛡️ Step 1. SCAN (다크코드 자각)
+- **발견된 다크코드**: [${activeDebug.darkCode}] ${activeDebug.darkTitle}
+- **무의식적 작동 패턴**: ${activeDebug.darkDesc}
+- **소크라테스적 성찰**: "${activeDebug.socratic}"
+
+### 🧠 Step 2. SYNC (뉴럴코드 뇌 쿨링 재배선)
+- **치유 신경망**: [${activeDebug.neuralCode}] ${activeDebug.neuralTitle}
+- **뇌과학적 조율**: ${activeDebug.neuralDesc}
+- **과거 상처 치유 질문**: "${activeDebug.recursive}"
+
+### 👑 Step 3. SHIFT (메타코드 영점 각성)
+- **본질적 해방 코드**: [${activeDebug.metaCode}] ${activeDebug.metaTitle}
+- **현존 자각 가이드**: ${activeDebug.metaDesc}
+- **영점 자각 확언**: "${activeDebug.awareness}"
+
+---
+
+## 3. ✨ 오늘의 운명 동기화 메타 확언 (Meta-Affirmation)
+> "${finalProfile.name || '명심가'}님은 어떠한 상황과 감정에도 걸림이 없는 자유로운 영혼의 주권자이십니다. 
+> 오늘 하루, 당신의 맑고 고결한 ${dmChar}의 빛으로 당신만의 당당하고 아름다운 길을 걸어가십시오."
+`.trim();
+
+      try {
+        await supabase.from('report_contents').upsert({
+          user_id: userId,
+          page_id: pageId,
+          title: mapping.title,
+          generated_text: mockGeneratedText,
+          updated_at: new Date()
+        }, { onConflict: 'user_id,page_id' });
+      } catch (e) {}
+
+      return NextResponse.json({ success: true, text: mockGeneratedText });
+    }
+
     // 4. Gemini API 호출
     const model = google.getGenerativeModel({
       model: 'gemini-2.5-flash',
@@ -740,6 +796,6 @@ ${mapping.prompt}
 
   } catch (error: any) {
     console.error('❌ [/api/generate-myeongsim] 에러 발생:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: formatFriendlyErrorMessage(error) }, { status: 500 });
   }
 }

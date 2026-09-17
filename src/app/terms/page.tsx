@@ -57,7 +57,7 @@ export default function TermsPage() {
               <li>통신판매업신고번호: 2026-세종-0576</li>
               <li>사업장 소재지: 세종특별자치시 산울7로 10 (산울마을8단지) 808동 204호 (우 : 30091)</li>
               <li>고객센터 전화번호: 010-9114-2352</li>
-              <li>고객센터 전자우편: mindflowlabbooks@naver.com</li>
+              <li>고객센터 전자우편: admin@mindflowlab.co.kr</li>
               <li>개인정보처리방침 및 서비스 이용약관</li>
             </ul>
           </section>

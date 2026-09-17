@@ -83,9 +83,18 @@ export class PersonaProfileModule {
             `;
 
             // 2. AI 요약 수행
-            console.log("📝 [PersonaProfile] Generating AI Summary...");
-            const result = await model.generateContent(prompt);
-            const newProfileContent = result.response.text();
+            const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+            let newProfileContent = '';
+
+            if (isMockMode || !apiKey) {
+                console.log("📝 [PersonaProfile] Mock Mode - Generating offline profile summary...");
+                const lastMsg = recentMessages[recentMessages.length - 1]?.content || '';
+                newProfileContent = `사용자 프로필: 내면의 평온과 성장을 추구하며, 최근 "${lastMsg.slice(0, 30)}" 관련 주제로 성찰을 진행함.`;
+            } else {
+                console.log("📝 [PersonaProfile] Generating AI Summary...");
+                const result = await model.generateContent(prompt);
+                newProfileContent = result.response.text();
+            }
 
             console.log(`📝 [PersonaProfile] AI Summary Generated: ${newProfileContent?.substring(0, 50)}...`);
 

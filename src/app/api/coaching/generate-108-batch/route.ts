@@ -27,6 +27,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline 108 batch results.");
+      const dayMaster = sajuData?.dayMaster || '신(辛)';
+      const results: Record<string, any> = {};
+
+      for (const p of pages) {
+        if (p.pageKey) {
+          results[p.pageKey] = {
+            title: p.title || `${p.pageKey} 자각 탐색`,
+            desc: `${dayMaster} 일간의 선천적 기질이 ${p.title || p.pageKey}의 맥락과 연결되어 깊은 통찰을 제공합니다. ${p.desc || '자신의 내면을 편안하게 관조하세요.'}`,
+            socratic: p.socratic || `'지금 일어나는 이 생각이 과연 불변의 진실인가?'`,
+            recursive: p.recursive || `'나는 모든 경험을 품어 안는 맑고 평화로운 참나입니다.'`
+          };
+        }
+      }
+
+      return NextResponse.json({ success: true, results });
+    }
+
     const model = google.getGenerativeModel({
       model: 'gemini-2.5-flash',
       safetySettings: [

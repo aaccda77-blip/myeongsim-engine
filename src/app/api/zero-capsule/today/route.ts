@@ -198,17 +198,27 @@ ${mbti ? `- 심리 성향: ${mbti}` : ''}
                    process.env.GOOGLE_GEMINI_API_KEY || 
                    process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
 
-    if (!apiKey) {
-      throw new Error("Missing GEMINI_API_KEY environment variable.");
-    }
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    let pillData: any = null;
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
-      generationConfig: { responseMimeType: 'application/json' }
-    });
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline zero capsule.");
+      pillData = {
+        flavor: `${dayMaster} 맞춤형 뇌 쿨링 100mg`,
+        keyword: `${dayMaster}와 ${todayIljinText}의 조화 - 고요한 중심`,
+        scan: `${userName}님, 오늘 일진(${todayIljinText})의 기운 속에서 올라올 수 있는 사소한 조급함이나 긴장은 당신의 시스템이 고장 난 것이 아니라 최선의 결실을 맺으려는 자연스러운 반응입니다.`,
+        sync: `이제는 모든 것을 통제하려는 애씀을 내려놓고, ${userName}님 본연의 유연한 지혜로 호흡을 맞추세요. 어깨의 힘을 툭 빼고 현재에 머무를 때 놀라운 통찰이 열립니다.`,
+        shift: `생각과 감정의 파도를 바라보는 깊고 고요한 바다, 바로 그 텅 빈 순수 자각(제로포인트)으로 주파수를 이동하세요. ${userName}님은 지금 이대로도 이미 온전합니다.`,
+        log: `"${userName}님의 하루는 맑고 평화로운 영점의 빛으로 보호받고 있습니다."`
+      };
+    } else {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({
+        model: 'gemini-2.5-flash',
+        generationConfig: { responseMimeType: 'application/json' }
+      });
 
-    const systemInstruction = `
+      const systemInstruction = `
 너는 마음에 완벽한 해방을 배달하는 '명심코칭 AI 오퍼레이터'다.
 사용자의 정확한 [생년월일 / 사주 일간 / 4주 원국]과 [오늘의 일진]의 십성·신살 상호작용을 정밀 분석하여,
 오늘 사용자가 겪을 수 있는 다크코드(무의식적 불안/조급함/예민함)를 뉴럴코드(성장/지혜/안목)로 뒤집고, 
@@ -230,16 +240,17 @@ ${mbti ? `- 심리 성향: ${mbti}` : ''}
 }
 `;
 
-    const prompt = `사용자 성함: ${userName}\n사용자 사주 및 생년월일 조건:\n${userSajuSummary}\n\n위 사용자 맞춤 조건을 완벽히 반영하여 오늘의 제로 캡슐 알사탕을 정교하게 프로그래밍해라. 사용자의 성함은 반드시 한 글자도 빠짐없이 정확하게 "${userName}님"으로만 부르고 친절하고 감동적인 뇌 쿨링 에세이를 처방하라.`;
+      const prompt = `사용자 성함: ${userName}\n사용자 사주 및 생년월일 조건:\n${userSajuSummary}\n\n위 사용자 맞춤 조건을 완벽히 반영하여 오늘의 제로 캡슐 알사탕을 정교하게 프로그래밍해라. 사용자의 성함은 반드시 한 글자도 빠짐없이 정확하게 "${userName}님"으로만 부르고 친절하고 감동적인 뇌 쿨링 에세이를 처방하라.`;
 
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      systemInstruction: { role: 'system', parts: [{ text: systemInstruction }] }
-    });
-    
-    const responseText = result.response.text();
-    const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-    const pillData = JSON.parse(cleanedText);
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        systemInstruction: { role: 'system', parts: [{ text: systemInstruction }] }
+      });
+      
+      const responseText = result.response.text();
+      const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      pillData = JSON.parse(cleanedText);
+    }
 
     // [성함 오타/누락 자동 보정 필터] AI가 글자를 빼먹거나 축약했을 경우 원본 성함으로 완벽 복구
     const fixName = (text: string) => {

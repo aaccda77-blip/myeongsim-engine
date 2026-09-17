@@ -10,6 +10,9 @@ interface ChargeModalProps {
 }
 
 export default function ChargeModal({ onClose, userId }: ChargeModalProps) {
+    // 🌟 [오픈기념 전면 무료 개방] 결제 충전 모달 비활성화
+    if (true) return null;
+
     const [amount, setAmount] = useState<number | null>(null);
     const [depositorName, setDepositorName] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);

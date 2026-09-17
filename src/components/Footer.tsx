@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { LEGAL_NOTICES } from '@/constants/LegalNotices';
-import { ShieldCheck, Scale, FileText, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Scale, FileText, ExternalLink, Globe } from 'lucide-react';
 
 export default function Footer() {
     const handleOpenLegalModal = (e: React.MouseEvent) => {
@@ -42,7 +42,19 @@ export default function Footer() {
 
                 {/* 브랜드명 & 대표자 / 사업자 / 통신판매 정보 */}
                 <div className="space-y-1.5 pt-1">
-                    <h3 className="text-sm font-black text-gray-100">마인드플로우랩</h3>
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <h3 className="text-sm font-black text-gray-100">마인드플로우랩</h3>
+                        <a
+                            href="https://lab.mindflowlab.co.kr/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/30 text-emerald-300 font-bold text-xs transition-all cursor-pointer shadow-sm"
+                        >
+                            <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>공식 홈페이지 바로가기</span>
+                            <ExternalLink className="w-3 h-3" />
+                        </a>
+                    </div>
                     <div className="space-y-0.5 text-gray-400 text-xs">
                         <p>대표자 <strong className="text-gray-300 font-normal">이경윤</strong></p>
                         <p>사업자등록번호 <strong className="text-gray-300 font-normal">838-03-03892</strong></p>
@@ -62,7 +74,7 @@ export default function Footer() {
                     <h4 className="text-xs font-bold text-gray-200">고객센터</h4>
                     <div className="text-gray-300 text-xs space-y-1">
                         <p>전화번호: <strong className="text-gray-200 font-mono">010-9114-2352</strong></p>
-                        <p>이메일: <span className="font-mono text-amber-300">mindflowlabbooks@naver.com</span></p>
+                        <p>이메일: <span className="font-mono text-amber-300">admin@mindflowlab.co.kr</span></p>
                     </div>
                     <p className="text-amber-200/90 text-[11px] leading-normal font-medium">
                         ※ 전화 부재 시 이메일이나, 문자메시지로 부탁드립니다. (확인 후 신속히 연락드립니다)

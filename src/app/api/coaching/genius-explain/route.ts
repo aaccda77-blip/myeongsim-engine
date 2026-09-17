@@ -12,10 +12,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '지표 정보가 필요합니다.' }, { status: 400 });
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
 
-    if (!apiKey) {
-      // API 키가 없어도 사용자에게 에러 대신 고품질 기본 1:1 맞춤 코칭을 제공
+    if (isMockMode || !apiKey) {
+      // 오프라인 모드 또는 API 키 부재 시: 생년월일/사주 기반 1:1 맞춤 코칭 제공
       return NextResponse.json({
         success: true,
         data: {

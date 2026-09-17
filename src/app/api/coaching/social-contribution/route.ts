@@ -12,6 +12,21 @@ export async function POST(req: NextRequest) {
       receiveElement 
     } = await req.json();
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline social-contribution report.");
+      const fallbackData = {
+        harmonyScore: 88,
+        intro: `${userName || '명심가'}님의 가득 찬 기운을 세상에 흘려보내고, 비어 있는 틈새로 상생의 온기를 담아내는 아름다운 궤적`,
+        giveInsight: `${giveElement || '강한'} 오행 기운은 세상을 널리 이롭게 할 준비를 마친 소중한 선물입니다. 이를 혼자 가두어 두지 않고 타인과 나눌 때 내면의 시스템은 막힘없이 맑은 에너지를 유지하게 됩니다.`,
+        receiveInsight: `${receiveElement || '비어 있는'} 오행 기운은 결코 결핍이 아닙니다. 타인의 지혜가 들어와 조화를 이룰 수 있도록 남겨둔 '고마운 마음의 공터'입니다. 타인의 도움을 기꺼이 감사히 수용해 보세요.`,
+        microAction: '주변 동료나 소중한 사람에게 "당신 덕분에 참 든든하고 고맙습니다"라고 다정한 진심 전하기.'
+      };
+      return NextResponse.json({ success: true, data: fallbackData });
+    }
+
     const model = genAI.getGenerativeModel({ 
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       generationConfig: {

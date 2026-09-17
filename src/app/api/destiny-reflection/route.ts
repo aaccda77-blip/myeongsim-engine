@@ -71,9 +71,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing sajuData or zimidusuChart' }, { status: 400 });
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.warn("Gemini API key is not configured, falling back to local destiny reflection.");
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline destiny reflection.");
       const fallback = getDestinyReflectionFallback(userNameLocal, sajuDataLocal);
       return NextResponse.json(fallback);
     }

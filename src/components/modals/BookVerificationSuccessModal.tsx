@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, CheckCircle2, BookOpen, Music } from 'lucide-react';
+import { Sparkles, CheckCircle2, BookOpen, Music, ExternalLink } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BookVerificationSuccessModalProps {
@@ -19,40 +19,40 @@ const VERIFY_SUCCESS_I18N = {
         badge: '정품 인증 성공',
         congrats: (name: string) => `축하합니다, ${name}님!`,
         license: '라이선스:',
-        benefit1: '📖 《ZERO POINT》 309p 전자책 무제한 열람 해금',
+        benefit1: '📗 YES24 정품 독자 인증 완료',
         benefit2: '🎵 1:1 헌정 힐링송 작곡 무료 신청권 자동 지급',
         benefit3: '💬 명심 AI 수석 코치 20회 VIP 대화권 즉시 활성화',
-        btnStartReading: 'e-Book 바로 읽기 시작 ➔',
+        btnStartReading: '📗 YES24 도서 바로가기 ➔',
         btnHealingSong: '🎵 1:1 헌정 힐링송 작곡 무료 신청하기'
     },
     en: {
         badge: 'Official License Verified',
         congrats: (name: string) => `Congratulations, ${name}!`,
         license: 'License:',
-        benefit1: '📖 《ZERO POINT》 309p e-Book Unlimited Reading Unlocked',
+        benefit1: '📗 YES24 Official Reader Verified',
         benefit2: '🎵 1:1 Custom Dedicated Healing Song Composition Pass Included',
         benefit3: '💬 Myeongsim AI Head Coach 20 VIP Coaching Sessions Activated',
-        btnStartReading: 'Start Reading e-Book ➔',
+        btnStartReading: '📗 Go to YES24 Book Page ➔',
         btnHealingSong: '🎵 Apply for Free 1:1 Healing Song'
     },
     jp: {
         badge: '正規認証成功',
         congrats: (name: string) => `おめでとうございます、${name}様！`,
         license: 'ライセンス:',
-        benefit1: '📖 《ZERO POINT》 309p 電子書籍 無制限閲覧解除',
+        benefit1: '📗 YES24 正規読者認証完了',
         benefit2: '🎵 1:1 献呈ヒーリングソング無料作曲権 自動付与',
         benefit3: '💬 明心AI首席コーチ 20回VIP対話権 即時有効化',
-        btnStartReading: 'e-Bookを今すぐ読む ➔',
+        btnStartReading: '📗 YES24 書籍ページへ移動 ➔',
         btnHealingSong: '🎵 1:1 献呈ヒーリングソング無料作曲を申し込む'
     },
     cn: {
         badge: '正版认证成功',
         congrats: (name: string) => `恭喜您，${name}！`,
         license: '授权许可:',
-        benefit1: '📖 《ZERO POINT》 309页电子书 无限阅读解锁',
+        benefit1: '📗 YES24 正版读者验证完成',
         benefit2: '🎵 1:1 专属疗愈歌曲免费定制申请权 自动发放',
         benefit3: '💬 明心AI首席教练 20次VIP对话权限 立即激活',
-        btnStartReading: '立即开始阅读电子书 ➔',
+        btnStartReading: '📗 前往 YES24 图书购买页面 ➔',
         btnHealingSong: '🎵 免费申请1:1专属疗愈歌曲'
     }
 };
@@ -116,16 +116,16 @@ export default function BookVerificationSuccessModal({
 
                 {/* 액션 버튼 */}
                 <div className="space-y-2">
-                    <button
-                        onClick={() => {
-                            onClose();
-                            onStartReading();
-                        }}
-                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+                    <a
+                        href="https://www.yes24.com/Product/Goods/195946431"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
                     >
                         <BookOpen size={16} />
                         <span>{t.btnStartReading}</span>
-                    </button>
+                        <ExternalLink size={14} />
+                    </a>
 
                     <button
                         onClick={() => {

@@ -1274,7 +1274,7 @@ function NeuralDiagnosisContent() {
                                             </span>
                                         </div>
                                         <p className="text-[10px] text-gray-200 leading-relaxed">
-                                            방금 경험하신 30초의 영점 상태를 24시간 내 일상과 사업의 무기로 체화하는 비법이 도서 《제로 포인트》 제3장에 수록되어 있습니다. 구매 후 <strong>[명심코칭도서관]</strong>에서 인증하시면 전자책을 즉시 읽으실 수 있습니다!
+                                            방금 경험하신 30초의 영점 상태를 24시간 내 일상과 사업의 무기로 체화하는 비법이 도서 《ZERO POINT》에 수록되어 있습니다. 대한민국 대표 서점 YES24에서 정식 도서(종이책/전자책)로 만나보실 수 있습니다.
                                         </p>
 
                                         {/* 🛒 구매 링크 버튼 2종 */}
@@ -1300,13 +1300,7 @@ function NeuralDiagnosisContent() {
                                         </div>
 
                                         {/* 📖 명심코칭도서관 바로가기 */}
-                                        <button
-                                            onClick={() => router.push('/library')}
-                                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md hover:brightness-110 transition-all cursor-pointer mt-1"
-                                        >
-                                            <BookOpen size={14} />
-                                            <span>📖 구매 인증하고 [명심코칭도서관]에서 e-Book 바로 읽기 ➔</span>
-                                        </button>
+                                        <a href="https://www.yes24.com/Product/Goods/195946431" target="_blank" rel="noopener noreferrer" className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md hover:brightness-110 transition-all cursor-pointer mt-1"><BookOpen size={14} /><span>📗 YES24에서 공식 도서 구매하기 ➔</span></a>
                                     </div>
                                 </div>
                             </div>

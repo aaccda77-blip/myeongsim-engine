@@ -8,8 +8,27 @@ export class LottoEngineModule {
         let seedPool: number[] = [];
         let isAIEngaged = false;
 
-        // 1. Option A & B: Gemini Matrix & Stats Inferencing
-        if (apiKey) {
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+
+        // 1. Option A & B: Gemini Matrix & Stats Inferencing or Offline Saju Numerology
+        if (isMockMode || !apiKey) {
+            // 하도낙서 오행 수리 기반 오프라인 맞춤 번호 시드풀 생성
+            const dayMaster = sajuData?.dayMasterChar || '신';
+            const baseMap: Record<string, number[]> = {
+                '갑': [3, 8, 13, 18, 23, 28, 33, 38, 43, 1, 11, 21, 31, 41, 7],
+                '을': [3, 8, 13, 18, 23, 28, 33, 38, 43, 2, 12, 22, 32, 42, 9],
+                '병': [2, 7, 12, 17, 22, 27, 32, 37, 42, 3, 14, 25, 36, 44, 1],
+                '정': [2, 7, 12, 17, 22, 27, 32, 37, 42, 4, 15, 26, 35, 45, 6],
+                '무': [5, 10, 15, 20, 25, 30, 35, 40, 45, 2, 11, 23, 33, 41, 8],
+                '기': [5, 10, 15, 20, 25, 30, 35, 40, 45, 6, 16, 27, 34, 43, 9],
+                '경': [4, 9, 14, 19, 24, 29, 34, 39, 44, 5, 15, 22, 31, 42, 7],
+                '신': [4, 9, 14, 19, 24, 29, 34, 39, 44, 1, 12, 23, 32, 41, 8],
+                '임': [1, 6, 11, 16, 21, 26, 31, 36, 41, 4, 13, 25, 37, 43, 2],
+                '계': [1, 6, 11, 16, 21, 26, 31, 36, 41, 7, 18, 28, 38, 45, 3]
+            };
+            seedPool = baseMap[dayMaster] || [4, 9, 14, 19, 24, 29, 34, 39, 44, 1, 12, 23, 32, 41, 8];
+            isAIEngaged = true;
+        } else {
             try {
                 const genAI = new GoogleGenerativeAI(apiKey);
                 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });

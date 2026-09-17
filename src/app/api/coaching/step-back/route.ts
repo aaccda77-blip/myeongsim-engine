@@ -20,6 +20,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = (process.env.GEMINI_API_KEY || '').trim();
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline step-back report.");
+      const uName = userName || '구도자';
+      const offlineResult = {
+        greeting: `${uName}님, 생년월일(${birthDate})의 맑은 기운 속에 담긴 고유한 빛이 지금 겪으시는 고민을 넉넉히 품어 안을 수 있습니다.`,
+        metaphor: "거친 파도가 바다의 본질을 결코 훼손하지 못하듯, 마음의 파문은 그저 수면에 비친 일시적 그림자일 뿐입니다.",
+        coaching_insight: `호소하시는 고민("${(userConcern || '내면의 흔들림').slice(0, 30)}")은 생물학적 감각에 불과하며, '내가 괴롭다'는 생각과 결합될 때만 실체처럼 느껴집니다. 한 걸음 물러서서 그 감정을 바라보는 순수한 관찰자로 머물 때 쇠사슬은 즉각 끊어집니다.`,
+        self_dialogue: [
+          "지금 이 아픔을 바라보고 알아차리는 '나'는 정녕 누구인가?",
+          "내가 아프다고 생각하기 전, 이 느낌 자체는 단지 지나가는 에너지 흐름이 아닌가?",
+          "육체와 눈앞의 공간을 동시에 조망할 때, 이 고통은 어디에 머무는가?"
+        ],
+        action_anchor: "불안이나 통증이 일어날 때, 눈을 감고 시야를 뒤로 30cm 물러나 나와 세상을 한눈에 담아보는 1분의 쉼을 실천하세요.",
+        blessing: "당신은 아파하는 그 작은 육체가 아니라, 온 우주를 품은 맑고 투명한 거울 그 자체입니다. ✨"
+      };
+
+      return NextResponse.json(offlineResult);
+    }
+
     const model = genAI.getGenerativeModel({
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       generationConfig: {

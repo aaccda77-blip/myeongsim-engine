@@ -113,9 +113,23 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { sajuData, userConcern, isGongmang } = body;
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            return NextResponse.json({ error: 'GEMINI_API_KEY가 설정되지 않았습니다.' }, { status: 500 });
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline social coaching report.");
+            const offlineReport: SocialCoachingReport = {
+                career_analysis: `내담자의 사주 기질은 깊은 분석력과 정밀한 구조화 역량을 지니고 있습니다. 이는 단순한 반복 실무보다 전문 지식 기획, 교육 컨설팅, 시스템 아키텍트 등의 영역에서 타인의 복잡한 문제를 해결할 때 가장 강력한 사회적 기여로 이어집니다.`,
+                meta_awareness: `현재 느끼는 고민이나 망설임에 대해 "아, 내 마음이 완벽한 확신을 얻기 전까지 스스로를 지키려 애쓰고 있구나"라고 알아차리며 생각과 자신을 한 걸음 분리하십시오.`,
+                socratic_questions: [
+                    "타인의 인정이나 실패에 대한 두려움이 전혀 없다면, 지금 당장 세상에 내어놓고 싶은 나만의 고유한 전문성은 무엇입니까?",
+                    "내가 겪었던 가장 큰 시련 속에서 얻은 지혜 중, 지금 비슷한 고통을 겪는 이들에게 나누어 줄 수 있는 것은 무엇입니까?"
+                ],
+                coaching_strategy: `자신의 기질적 강점인 본질 파악 능력을 중심으로, 작은 단위의 지식 프로덕트(칼럼, 가이드 문서, 1:1 상담)부터 단계적으로 사회와 연결하십시오.`,
+                action_plan: `1단계: 내가 가장 잘 해결할 수 있는 타인의 문제 1가지를 명문화하십시오. 2단계: 그 문제를 겪는 사람에게 건넬 수 있는 실천 팁 3가지를 정리하여 공유하십시오.`
+            };
+
+            return NextResponse.json({ success: true, report: offlineReport });
         }
 
         // 사주 컨텍스트 빌드

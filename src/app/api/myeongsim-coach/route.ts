@@ -34,6 +34,21 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+        const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+
+        if (isMockMode || !apiKey) {
+            const stepReplies: Record<string, string> = {
+                'SOCRATIC': `그 감정이나 불안은 사실 당신의 [${sajuCode || '본성'}] 코드가 무엇을 지키기 위해 가동한 방어기제였습니까?`,
+                'RECURSIVE': `그 상황에서 느끼는 부담과 억울함을 보며, 당신은 지금 내면에서 또 어떤 자기 비판이나 자책을 하고 있나요?`,
+                'META': `자, 이제 그 모든 생각과 감정의 소용돌이를 조용히 지켜보고 있는 당신의 '투명한 관찰자'가 느껴지나요? 그 지켜보는 존재조차 상처받고 있습니까?`,
+                'QUEST_ASSIGNED': `당신의 관찰자 모드가 켜졌습니다. 오늘의 Shift 퀘스트: [${sajuCode || '명심'}] 코어의 과부하를 끄기 위해, 3분간 하던 일을 멈추고 창밖을 바라보며 깊은 날숨 5회를 뱉어내십시오.`
+            };
+
+            const replyContent = stepReplies[targetStep] || `내면의 중심(영점)으로 돌아와, 그 감정을 있는 그대로 바라보세요.`;
+            return NextResponse.json({ reply: replyContent, step: targetStep });
+        }
+
         const systemPromptText = getSystemPromptForStep(targetStep, sajuCode || "알 수 없음");
 
         // Configure Gemini Model

@@ -5,47 +5,8 @@
  * 페이지 이동 시 결제 잠금 오버레이가 1프레임도 깜빡이지 않도록 보장합니다.
  */
 export const isUserApprovedSync = (): boolean => {
-    if (typeof window === 'undefined') return true; // SSR 중에는 오버레이 노출 방지
-
-    try {
-        // 1. 관리자 세션
-        if (
-            document.cookie.includes('admin_session=') ||
-            sessionStorage.getItem('myeongsim_admin_authenticated') === 'true' ||
-            localStorage.getItem('myeongsim_admin_authenticated') === 'true'
-        ) {
-            return true;
-        }
-
-        // 2. 서버 승인 완료 플래그 (관리자가 승인했거나 결제 확인된 경우만)
-        if (localStorage.getItem('myeongsim_server_approved') === 'true') {
-            return true;
-        }
-
-        // 3. 월정액 VIP 및 도서 구매자 인증 상태 (반드시 서버 승인 플래그와 함께 있을 때만 유효)
-        const isBookVerified = localStorage.getItem('myeongsim_book_verified') === 'true';
-        const hasServerApproval = localStorage.getItem('myeongsim_server_approved') === 'true';
-
-        if (isBookVerified && hasServerApproval) {
-            return true;
-        }
-
-        // 5. 활성 체험 기간 확인 (유료 회원이 아닌 경우에만 시간 검사)
-        const isTrialActive = localStorage.getItem('myeongsim_trial_active') === 'true';
-        if (isTrialActive) {
-            const expStr = localStorage.getItem('myeongsim_expires_at');
-            if (expStr) {
-                const expTime = new Date(expStr).getTime();
-                if (!isNaN(expTime) && Date.now() <= expTime) {
-                    return true;
-                }
-            }
-        }
-    } catch (e) {
-        console.warn('[isUserApprovedSync] Check error:', e);
-    }
-
-    return false;
+    // 🌟 [오픈기념 전면 무료 개방 모드] 모든 결제 잠금 해제 및 전체 무료 이용 제공
+    return true;
 };
 
 /**

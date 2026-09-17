@@ -54,7 +54,7 @@ export function SimpleAllFeaturesDrawer({
         {
             category: '정보 & 비즈니스',
             items: [
-                { title: '명심코칭 디지털 도서관', desc: '도서 《제로 포인트》 e-Book 전문', action: () => { onClose(); router.push('/library'); } },
+                { title: '도서 《ZERO POINT》 공식 도서', desc: 'YES24 공식 서점 바로가기', action: () => { onClose(); window.open('https://www.yes24.com/Product/Goods/195946431', '_blank'); } },
                 { title: '국세청 창업·N잡 매핑', desc: '홈택스 6자리 표준 업종 추천', action: () => { onClose(); router.push('/startup'); } },
                 { title: '서비스 소개 & 특허 정보', desc: '특허출원 제10-2025-0166877호', action: () => { onClose(); router.push('/intro'); } }
             ]

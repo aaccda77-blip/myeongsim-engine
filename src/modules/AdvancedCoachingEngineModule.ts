@@ -31,7 +31,28 @@ export class AdvancedCoachingEngineModule {
         const currentTimeString = currentDate.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
 
         // Use an LLM to dynamically calculate the interaction, timing, and role-play
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline relationship strategy.");
+            return `### ⚔️ 1. 관계 역학 (나 vs 상대방 상성 분석)
+- **힘의 균형**: 정밀한 다이아몬드와 유연한 호수의 조화 (서로의 결핍을 채우는 지혜로운 파트너십)
+- **승리 공식**: 직선적인 논리나 결론 제시보다는 상대방의 감정적 안전감을 먼저 확보해 주는 '3초 경청'이 최고의 공략법입니다.
+
+### ⏱️ 2. 타이밍 전략 (오늘의 일진 & 골든 타임)
+- **골든 타임**: 오후 2시 ~ 4시 (상대방의 인지 과부하가 줄어들고 마음의 여유가 생기는 최적의 타이밍)
+- **데스 타임**: 오전 출근 직후 및 늦은 밤 피로 누적 시간대
+
+### 🎭 3. 맥락 맞춤형 행동 지침 ([${contextMode}] 목적 달성용)
+1. **첫 마디**: 상대방의 최근 노고나 상태에 대한 공감으로 대화의 문을 여세요.
+2. **핵심 전달**: 원하는 바를 간결하고 정중하게 제시하되, 상대방에게 선택의 여지를 남겨주세요.
+3. **마무리**: "언제든 편하실 때 의견 편하게 말씀해 주세요"라는 안정감을 전달하세요.
+
+### 🎮 4. 실전 시뮬레이션
+상대방: "요즘 신경 쓸 게 많아서 정신이 없었는데, 먼저 배려해 주셔서 고마워요. 말씀하신 부분 차분히 검토해 볼게요."`;
+        }
+
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 

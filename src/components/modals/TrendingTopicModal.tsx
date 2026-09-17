@@ -12,6 +12,16 @@ interface TrendingTopicModalProps {
 
 export const TRENDING_TOPICS = [
     {
+        icon: Sparkles,
+        color: 'from-emerald-950/80 via-[#06241a]/90 to-[#02120c] border-emerald-400/70 text-emerald-200 shadow-[0_0_25px_rgba(16,185,129,0.3)] hover:border-emerald-300 hover:shadow-[0_0_40px_rgba(16,185,129,0.5)]',
+        badge: '💡 Q38 AI 시대 핵심 질문',
+        badgeColor: 'bg-emerald-400/20 text-emerald-200 border-emerald-400/50 shadow-[0_0_10px_rgba(16,185,129,0.4)]',
+        btnBg: 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black shadow-md',
+        title: '🤖 ChatGPT vs 명심AI: 왜 굳이 명심AI인가요?',
+        desc: "범용 AI가 '좋은 답'을 준다면, 명심AI는 '내 반복패턴과 이전 실험을 시간 축으로 이어서 추적'하는 나만의 평생 코칭 시스템입니다.",
+        prompt: 'ChatGPT에 고민 말하면 되는데 굳이 명심AI가 왜 필요한가요? 범용 AI와 명심AI의 본질적인 차이점을 사이다 한 줄 요약과 4대 시간 축으로 명쾌하게 알려줘'
+    },
+    {
         icon: DollarSign,
         color: 'from-amber-950/80 via-[#211a09]/90 to-[#0e0a02] border-yellow-400/60 text-yellow-200 shadow-[0_0_25px_rgba(234,179,8,0.25)] hover:border-yellow-300 hover:shadow-[0_0_40px_rgba(234,179,8,0.5)]',
         badge: '🔥 인기 1위',
@@ -120,9 +130,9 @@ export default function TrendingTopicModal({
                             </div>
                             <div>
                                 <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
-                                    <span>🔥 2026 트렌딩 탐구 주제 8선</span>
-                                    <span className="text-[10px] font-mono bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-2.5 py-0.5 rounded-full font-black shadow-md">
-                                        인기 TOP 8
+                                    <span>🔥 2026 트렌딩 탐구 주제 9선</span>
+                                    <span className="text-[10px] font-mono bg-gradient-to-r from-emerald-500 to-indigo-500 text-white px-2.5 py-0.5 rounded-full font-black shadow-md">
+                                        Q38 특별탑재 & TOP 9
                                     </span>
                                 </h3>
                                 <p className="text-xs text-gray-300 mt-1 font-medium leading-relaxed">

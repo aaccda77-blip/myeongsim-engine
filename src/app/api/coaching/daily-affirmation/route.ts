@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { SmartAiSimulationEngine } from '@/services/SmartAiSimulationEngine';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -9,6 +10,12 @@ export async function POST(req: NextRequest) {
 
     if (!dayMaster || !todayGanji) {
       return NextResponse.json({ affirmation: defaultAffirmation || '오늘도 온전한 나의 중심으로 하루를 시작합니다.' });
+    }
+
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true' || !process.env.GEMINI_API_KEY;
+    if (isMockMode) {
+      const affirmationText = SmartAiSimulationEngine.generateDailyAffirmation(dayMaster);
+      return NextResponse.json({ affirmation: affirmationText });
     }
 
     const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 통찰력 있는 마음 웰니스 코치입니다.

@@ -10,19 +10,11 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: '메시지가 누락되었습니다.' }, { status: 400 });
         }
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GEMINI_API_KEY || 
                        process.env.GOOGLE_GENERATIVE_AI_API_KEY || 
                        process.env.GOOGLE_GEMINI_API_KEY || 
                        process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
-
-        if (!apiKey) {
-            console.error('[Business Consultant API] API Key is missing in environment variables');
-            return NextResponse.json({
-                error: 'Gemini API 키가 설정되지 않았습니다. 관리자에게 문의해 주세요.'
-            }, { status: 500 });
-        }
-
-        const genAI = new GoogleGenerativeAI(apiKey);
 
         const clientName = userName || '대표님';
         const sajuText = sajuSummary || '辛巳 일주 · 癸未 월주 · 庚申 년주 · 乙未 시주';
@@ -44,6 +36,29 @@ export async function POST(req: Request) {
         const problemText = intakeAnswers?.problemKeyword || '기존 솔루션의 추상성과 높은 비용, 실행 공백';
         const solutionText = intakeAnswers?.solutionKeyword || '기질 데이터 기반 표준 행정 코드 매핑 및 AI 자동화 솔루션';
         const bottleneckText = intakeAnswers?.biggestBottleneck || '사업계획서 작성 및 자금 조달';
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline business advice.");
+            const offlineReply = `### [3S 비즈니스 아키텍처 진단]
+**${clientName}의 기질 명식(${sajuText}) 기반 1:1 맞춤 사업 전략 보고서**
+
+#### 1. 1초 직관 진단 (Scan)
+- **현재 포지션**: ${stageLabel} / ${businessTypeLabel}
+- **핵심 통찰**: 현재 겪고 계신 병목인 **"${bottleneckText}"**은 단순한 스킬 부족이 아니라, 대표님의 선천적 기질 강점(정밀 분석과 구조화)이 실무 실행 속도와 일시적 마찰을 빚는 자연스러운 전환점입니다.
+
+#### 2. 기질 동기화 및 2026 병오년 전략 (Sync)
+- **시장 결핍 공략**: ${problemText} 시장에서 대표님의 솔루션("${solutionText}")은 차별화된 가치를 지닙니다.
+- **2026 세운 맞춤**: 올해는 무리한 외형 확장보다는 **핵심 비즈니스 모델(BM)의 단위 경제성 검증 및 표준화**가 최고의 수익률을 보장합니다.
+
+#### 3. 즉각 실행 3S 액션 플랜 (Shift)
+1. **이번 주 즉시 실행**: ${bottleneckText} 해소를 위해 일정을 3단계 마일스톤으로 쪼개고 1차 최소기능버전(MVP)을 48시간 내 완성하세요.
+2. **자원 최적화**: 모든 것을 직접 해결하려 하지 마시고, 반복 업무는 AI 자동화 도구에 위임하여 기획과 고객 검증에 에너지를 집중하세요.
+3. **확언**: "${clientName}의 독창적인 기질 자산은 이미 시장의 거대한 결핍을 해결할 준비가 되어 있습니다."`;
+
+            return NextResponse.json({ success: true, reply: offlineReply });
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
 
         const systemPrompt = `[System Instruction: Myeongsim Business Aptitude & Architecture AI Coach]
 

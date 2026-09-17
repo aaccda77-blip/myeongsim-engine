@@ -12,9 +12,28 @@ export class YouTubePlannerModule {
         userSaju: any,
         todayIljin: string
     ): Promise<string> {
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
-        if (!apiKey) {
-            return "오류: AI 코치 API 키가 설정되지 않았습니다.";
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline YouTube planner.");
+            return `🎬 **[명심 튜브 기획: ${topic}]**
+
+> 🔮 **크리에이터 에너지 분석**: 오늘 ${todayIljin}의 기운과 크리에이터의 사주 체질을 바탕으로 볼 때, 과장된 연출보다는 진정성 있는 팩트와 명쾌한 해결책을 담담하게 전할 때 시청자의 폭발적인 공감을 얻을 수 있습니다.
+
+🔥 **1. 하이퍼 후킹 제목 3선 (CTR 최적화)**
+1. "${topic}, 왜 아무도 이 불편한 진실을 말해주지 않을까?"
+2. "99%가 여기서 포기합니다: ${topic} 단번에 뚫어내는 3단계 시스템"
+3. "이 영상 하나로 끝냅니다: ${topic}에 대한 가장 현실적인 해답"
+
+🗣️ **2. 명심 코치 스타일의 오프닝 스크립트 (첫 30초)**
+"(카메라를 정면으로 응시하며) 여러분, 언제까지 남들이 짜놓은 정답에 내 인생을 끼워 맞추실 건가요? 오늘 영상에서는 막연한 위로 대신, ${topic}을 대하는 가장 명쾌한 기준과 실행 프레임워크를 전해드립니다."
+
+🖼️ **3. 썸네일 시각화 큐레이션**
+*   **핵심 텍스트:** "더 이상 속지 마세요"
+*   **디자인 구도:** 단호하면서도 따뜻한 눈빛의 크리에이터 정면 클로즈업, 흑백 배경에 대비되는 강렬한 옐로우 타이포그래피.
+
+_💡 명심 코치: 유튜브 알고리즘은 결국 진정성과 본질을 이길 수 없습니다. 자, 카메라를 켜보시죠!_`;
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);

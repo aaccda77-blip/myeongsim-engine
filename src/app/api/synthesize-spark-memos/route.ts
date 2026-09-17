@@ -133,8 +133,10 @@ export async function POST(request: Request) {
     const apiKey =
       process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
-    if (!apiKey || memos.length === 0) {
-      // API 키가 없거나 메모가 없으면 mock 데이터 반환
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    if (isMockMode || !apiKey || memos.length === 0) {
+      // API 키가 없거나 메모가 없거나 Mock 모드이면 mock 데이터 반환
+      console.log("Mock AI Mode enabled, returning MOCK_BLUEPRINT for spark memos.");
       return NextResponse.json({
         success: true,
         blueprint: MOCK_BLUEPRINT,

@@ -41,6 +41,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '필수 데이터가 누락되었습니다.' }, { status: 400 });
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline 108 report.");
+      const uName = userName || '소중한 님';
+      const pageName = originalPage?.title || pageKey;
+      const dayMasterChar = sajuProfile?.dayMasterChar || sajuData?.dayMaster || '신(辛)';
+
+      const offlineContent = {
+        title: `${uName}님을 위한 [${pageName}] 자아 깨어남의 여정`,
+        healingEssay: `${uName}님, 타고난 ${dayMasterChar} 기질의 에너지는 거친 세파 속에서도 고유한 결을 잃지 않는 단단한 원석과 같습니다. [${pageName}]에서 마주하는 내면의 고민이나 생각의 긴장은 시스템의 결함이 아니라, 당신의 무의식이 소중한 자아를 지키기 위해 펼쳐놓은 다정한 보호막입니다. 이제는 통제하려는 애씀을 잠시 내려놓고, 있는 그대로의 나를 온전히 수용할 때 내면 깊은 곳에서 찬란한 지혜가 피어납니다.`,
+        sajuAnalysis: `선천적 ${dayMasterChar} 일간의 에너지가 이 주제와 맞물려 내면의 정밀한 탐색과 성찰을 유도합니다.`,
+        darkCodeCbt: "완벽해야 한다는 생각의 프레임을 알아차리고, '충분히 잘하고 있다'로 인지적 시프트를 실천하세요.",
+        metaCodeAct: "불안과 긴장을 억지로 밀어내지 않고, 가치 있는 행동을 향해 한 걸음 내딛는 수용의 힘을 발휘합니다.",
+        neuralCodeDbt: "감정이 격해질 때 5초간 찬물을 마시거나 천천히 호흡하며 신체 신경계를 즉각 안정시킵니다.",
+        socraticMbct: "'지금 이 순간 나를 괴롭히는 생각은 100% 사실인가, 아니면 마음의 파문인가?'",
+        relaxMbsr: "어깨와 턱의 긴장을 툭 풀고, 3분 동안 날숨에 몸의 모든 피로를 흘려보내세요.",
+        selfCompassionMsc: "실수한 나 자신을 따뜻한 손길로 감싸 안으며 다정한 친구처럼 친절한 말을 건넵니다.",
+        coachingSolution: "오늘 하루, 나를 위한 작은 쉼 10분을 확보하고 우선순위 하나에만 집중하세요.",
+        mantra: "나는 존재 자체로 이미 온전하며, 모든 순간 순수한 생명의 빛으로 충만합니다. ✨"
+      };
+
+      return NextResponse.json({
+        success: true,
+        content: offlineContent
+      });
+    }
+
     // 11개 모듈 초고도화 JSON 스키마 (융합 에세이 포함)
     const jsonSchema: any = {
       type: SchemaType.OBJECT,

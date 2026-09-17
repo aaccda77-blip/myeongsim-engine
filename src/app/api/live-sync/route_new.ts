@@ -183,8 +183,28 @@ SCAN 결과에 따라 최적 프로토콜 자동 선택:
 ❓ **[META - 선택의 순간]** (관찰자 '나'로서의 선택을 묻는 열린 질문)
 `;
 
-    const result = await model.generateContent(prompt);
-    const rawReply = result.response.text();
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    let rawReply = '';
+    if (isMockMode || !apiKey) {
+      rawReply = `🔍 **[SCAN - 자율신경 및 기질 데이터 스캔]**
+- **생체 및 기질 패턴 분석**: 현재 심박수(${wearableData.heartRate} BPM)와 스트레스(${wearableData.stressLevel}%)는 ${userDayStem}일간의 선천적 기질이 오늘 일진(${dailyState.codeName})과 만나 발생한 자연스러운 신체 반응입니다.
+
+🧬 **[SYNC - 메타인지 개입]**
+- 지금 머릿속에 맴도는 생각이나 긴장은 당신의 정체가 아니라, 뇌 신경계가 일시적으로 출력하는 신호일 뿐입니다.
+- "그 생각 없이, 지금 이 순간의 나는 누구인가?"
+
+🎯 **[SHIFT - 명심 3S 자각 가이드]**
+1. 어깨의 긴장을 풀고 3번의 깊은 복식호흡을 진행하세요.
+2. 현재 통제할 수 없는 외부 변수를 내려놓고 내면의 고요한 중심(제로포인트)으로 돌아오세요.
+
+❓ **[META - 선택의 순간]**
+- 요동치는 파도가 아닌 깊고 평온한 바다로서, 오늘 당신은 어떤 평화로운 선택을 하시겠습니까?`;
+    } else {
+      const result = await model.generateContent(prompt);
+      rawReply = result.response.text();
+    }
 
     // ─── 마이크로 질문 JSON 파싱 ───
     let reply = rawReply;

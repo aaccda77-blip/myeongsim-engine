@@ -11,9 +11,19 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Text required' }, { status: 400 });
         }
 
-        if (!process.env.GOOGLE_AI_API_KEY) {
-            console.error("Missing GOOGLE_AI_API_KEY");
-            return NextResponse.json({ error: 'Server Config Error: Missing Gemini Key' }, { status: 500 });
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+        const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline TTS script.");
+            const offlineScript = [
+                { speaker: "host", text: `아이고, 그러셨군요! "${text.slice(0, 30)}..."라는 말씀을 들으니 마음 한구석이 찡해지네요. 코치님, 이 말씀 어떻게 보시나요?` },
+                { speaker: "expert", text: "네, 참으로 자연스러운 내면의 호소입니다. 사람은 누구나 새로운 도약을 앞두고 에너지를 수렴할 때 이러한 긴장과 불안을 마주하게 됩니다." },
+                { speaker: "host", text: "아! 그러니까 결코 시스템 고장이 아니라, 더 높이 뛰기 위해 움츠리는 과정이라는 거군요?" },
+                { speaker: "expert", text: "정확합니다. 조급해하지 마시고 오늘 하루는 어깨의 힘을 툭 빼고 깊은 호흡으로 자신을 다정하게 안아주십시오." },
+                { speaker: "host", text: "맞아요! 여러분, 지금 이대로도 충분히 멋지시니까요, 힘내세요! 저희가 늘 응원할게요!" }
+            ];
+            return NextResponse.json(offlineScript);
         }
 
         const systemPrompt = `

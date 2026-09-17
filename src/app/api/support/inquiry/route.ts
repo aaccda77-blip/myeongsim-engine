@@ -44,8 +44,8 @@ export async function POST(request: Request) {
             console.warn('[Inquiry API] DB insert warning:', dbError);
         }
 
-        // 2. Email Notification to mindflowlabbooks@naver.com
-        const targetEmail = process.env.SUPPORT_EMAIL || 'mindflowlabbooks@naver.com';
+        // 2. Email Notification to admin@mindflowlab.co.kr
+        const targetEmail = process.env.SUPPORT_EMAIL || 'admin@mindflowlab.co.kr';
         const smtpUser = process.env.SMTP_USER || process.env.NAVER_EMAIL || 'mindflowlabbooks@naver.com';
         const smtpPass = process.env.SMTP_PASS || process.env.NAVER_PASSWORD;
         const smtpHost = process.env.SMTP_HOST || 'smtp.naver.com';

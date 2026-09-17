@@ -170,8 +170,24 @@ ${levelState.emoji} **[${levelState.label} 주파수 감지]**
 마크다운 볼드·이모지로 모바일 최적화. 문장이 중간에 끊기지 않도록 끝까지 완성.
 `;
 
-    const result = await model.generateContent(prompt);
-    const aiReply = result.response.text();
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    let aiReply = '';
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline meta-frequency reply.");
+      aiReply = `${levelState.emoji} **[${levelState.label} 주파수 감지]**
+오늘 ${todayPillar}일의 기운 속에서 회원님의 의식은 ${levelState.label} 영역에 동기화되어 있습니다. 외부의 자극이나 감정에 휩쓸리지 않고, 한 걸음 물러서서 내면의 흐름을 조율할 수 있는 상태입니다.
+
+🪞 **[재귀적 자기질문]**
+"${selfInquiry}"
+
+🌅 **[의식의 다음 단계]**
+생각과 감정을 억지로 통제하려 애쓰지 마세요. 그것들을 품고 있는 더 거대하고 고요한 순수 자각(메타코드)의 공간으로 편안히 안착할 때, 삶은 언제나 지혜롭고 자연스럽게 흘러갑니다. ✨`;
+    } else {
+      const result = await model.generateContent(prompt);
+      aiReply = result.response.text();
+    }
 
     return NextResponse.json({
       success: true,

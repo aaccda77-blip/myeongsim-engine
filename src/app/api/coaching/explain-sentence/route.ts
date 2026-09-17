@@ -27,6 +27,16 @@ export async function POST(req: NextRequest) {
 
 반드시 지혜롭고 눈물 나게 아름다운 한글로 출력해 주세요.`;
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline sentence explanation.");
+      const offlineExplanation = `이 문장은 당신이 부족하거나 잘못되었다는 뜻이 결코 아니랍니다. 🌸\n\n마치 비가 올 때 우산을 꼭 쥐고 있던 것처럼, 상처받지 않으려고 마음이 온 힘을 다해 비상등을 켜두었던 것이지요. 이제는 비가 그쳤으니 무거운 우산을 잠시 내려놓고 어깨의 힘을 툭 빼도 괜찮다는 다정한 위로의 신호예요. 지금 이대로도 당신은 충분히 안전하고 소중하답니다.`;
+
+      return NextResponse.json({ success: true, explanation: offlineExplanation });
+    }
+
     const model = genAI.getGenerativeModel({ 
       model: 'gemini-2.5-flash',
     });

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,6 +25,24 @@ export async function POST(request: Request) {
 
     if (!gate || !gateName) {
       return NextResponse.json({ error: '오라클 카드 괘 정보가 누락되었습니다.' }, { status: 400 });
+    }
+
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true' || !apiKey;
+    if (isMockMode) {
+      const mockAdvice = `✨ ${userName || '명심가'}님을 위한 오늘의 명심 오라클 ${gate}번 [${gateName}] 깊은 조언
+
+🌿 [1단계: 다크코드 자각 & 자비로운 위로]
+오늘 ${userName || '명심가'}님의 마음속에서 문득 피어오를 수 있는 망설임과 조급함은 결함이 아닙니다.
+"${darkAdvice || gateKeyword}"라는 신호는 오랫동안 당신을 지켜주려 했던 내면의 소중한 방어기제였습니다. 오늘 하루는 나 자신을 채찍질하지 마시고 "내가 많이 애썼구나" 하고 따뜻하게 품어주세요.
+
+🧠 [2단계: 뉴럴코드 1분 치유 행동]
+${neuralAdvice || '창문을 열고 차가운 바깥 공기를 깊게 3번 들이마시며 손바닥의 따뜻한 온기에 집중해 보세요.'}
+머리로 복잡하게 고민하기보다, 지금 이 순간 1분만 온전히 멈추어 서서 숨을 고르는 것만으로도 뇌 신경망의 과열이 시원하게 식어내립니다.
+
+👑 [3단계: 메타코드 현존 알아차림 & 축복]
+그물에 걸리지 않는 바람처럼, 어떤 파도가 몰아쳐도 ${userName || '명심가'}님은 바다 그 자체로 이미 완전하고 온전하십니다.
+오늘 [${gateName}]의 지혜가 ${userName || '명심가'}님의 걸음걸음마다 든든한 등불이 되어드릴 것입니다. 축복합니다! ✨`;
+      return NextResponse.json({ advice: mockAdvice });
     }
 
     const systemPrompt = `당신은 동양의 명리 사주와 제3세대 뇌과학·심리코칭(ACT, MBCT, MBSR, DBT, CBT, MSC)을 결합하여, 사용자가 뽑은 오늘의 주역 오라클 카드를 토대로 오늘 하루 마음을 치유하고 번영으로 이끌어 주는 "명심 오라클 AI 치유 코치"입니다.
@@ -72,7 +91,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Oracle Advice API Error:', error);
     return NextResponse.json(
-      { error: error.message || 'AI 오라클 조언을 생성하는 중에 오류가 발생했습니다.' },
+      { error: formatFriendlyErrorMessage(error) },
       { status: 500 }
     );
   }

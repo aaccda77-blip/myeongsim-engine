@@ -1560,6 +1560,29 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
+                {/* 🌟 [대표님 요청 신규] 🌐 마인드플로우랩 공식 홈페이지 🌟 */}
+                <button
+                    style={styles.iconButton}
+                    onClick={() => {
+                        window.open('https://lab.mindflowlab.co.kr/', '_blank');
+                    }}
+                >
+                    <div style={{
+                        ...styles.iconWrapper,
+                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(14, 165, 233, 0.25))',
+                        border: '1px solid rgba(16, 185, 129, 0.5)',
+                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.35)',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <span style={{ fontSize: '20px' }}>🌐</span>
+                    </div>
+                    <div>
+                        <div style={{ ...styles.iconLabel, color: '#34d399', fontWeight: 'bold' }}>마인드플로우랩</div>
+                        <div style={styles.neuroTrigger}>공식 홈페이지 ➔</div>
+                    </div>
+                </button>
+
                 {/* 🌟 [대표님 요청 신규] 📖 명심코칭도서관 (도서 《제로 포인트》 독자 전용 서재) 🌟 */}
                 <button
                     style={styles.iconButton}
@@ -1583,8 +1606,8 @@ export default function DrillDownIconMenu({
                         <span style={{ fontSize: '20px' }}>📖</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#38bdf8', fontWeight: 'bold' }}>{t('menu.library') || '명심코칭도서관'}</div>
-                        <div style={styles.neuroTrigger}>{t('menu.library_desc') || '제로포인트 e-Book'}</div>
+                        <div style={{ ...styles.iconLabel, color: '#38bdf8', fontWeight: 'bold' }}>도서 《ZERO POINT》</div>
+                        <div style={styles.neuroTrigger}>YES24 이동하기 ➔</div>
                     </div>
                 </button>
 

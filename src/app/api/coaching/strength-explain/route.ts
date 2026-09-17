@@ -57,6 +57,22 @@ export async function POST(req: NextRequest) {
       sajuText = userName ? `${userName}님의 타고난 생년월일 사주 명리 기질 원국` : '타고난 생년월일 사주 명리 기질 원국';
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline strength explain.");
+      const uName = userName || '명심가';
+      const offlineReply = `[${categoryName} - ${itemLabel}]
+✨ ${uName}님의 ${sajuText}에 내재된 고유한 역량 지표(${itemValue || '탁월'}) 분석
+
+1. **기질적 본질**: ${itemLabel}은(는) 인위적으로 만들어낸 기술이 아니라, 타고난 기질 하드웨어에서 자연스럽게 발현되는 독보적인 슈퍼파워입니다.
+2. **현실 발현**: 복잡한 상황 속에서도 중심을 잃지 않고 최적의 결정을 내릴 수 있는 직관적 실행력으로 연결됩니다.
+3. **확언**: "나의 강점은 경쟁을 위한 무기가 아닌, 나와 세상을 함께 이롭게 만드는 따뜻한 빛입니다."`;
+
+      return NextResponse.json({ explanation: offlineReply });
+    }
+
     const model = genAI.getGenerativeModel({
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     });

@@ -19,7 +19,9 @@ function isResponseComplete(text: string): boolean {
 
 export async function POST(request: Request) {
   try {
-    if (!apiKey) {
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+
+    if (!isMockMode && !apiKey) {
       return NextResponse.json({ error: 'GEMINI_API_KEY가 설정되지 않았습니다.' }, { status: 500 });
     }
 
@@ -41,6 +43,29 @@ export async function POST(request: Request) {
       '[내면 자아의 완전한 평온과 메타코드 영성]'
     ];
     const currentFocusAngle = focusAngles[randomSeed % focusAngles.length];
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized genius docent coaching.");
+      const uName = userName || '명심가';
+      const offlineDocent = `안녕하세요! ✨ 명심 AI 코치입니다. 동양학과 서양심리학의 융합 주파수가 품고 있는 ${uName}님의 고유한 빛을 깊이 있게 조명하게 되어 기쁩니다.
+
+### 1. Scan (본질 코드 인식 & 다크코드 분석)
+${uName}님의 '${indicatorName || '핵심 기질'}' 지표 수치(${indicatorValue || '최상위'})는 흔들리지 않는 천부적 에너지 자산입니다. 때때로 엄습하는 긴장이나 완벽주의는 실패에 대한 두려움이 아닌, 내 안의 위대한 잠재력이 최상의 정밀도를 발휘하려는 고유한 방어 기제였음을 자비롭게 알아차려 주세요.
+
+### 2. Sync (관조심리학 조율 & 뉴럴코드 동기화)
+중점 렌즈: ${currentFocusAngle}
+생각과 감정을 억누르지 않고 한 걸음 물러서서 고요히 바라볼 때, '${indicatorName || '핵심 기질'}'의 에너지는 현실 세계에서 가장 강력한 직관적 통찰력으로 전환됩니다. 문제에 매몰되지 않고 넓은 시야에서 시스템의 흐름을 조율하세요.
+
+### 3. Shift (의식 주파수 대전환 & 메타코드 실천 도약)
+파도처럼 밀려오는 상황에 휩쓸리지 마시고, 그 모든 것을 담아내는 고요한 제로포인트의 관찰자로 머무르세요. 오늘 즉시 작은 실행 하나(우선순위 1개 집중, 3분의 고요한 호흡)를 완수함으로써 ${uName}님의 내면 지능은 현실의 찬란한 결실로 피어납니다.
+
+당신의 빛나는 여정을 온 마음으로 응원하고 축복합니다. 💖`;
+
+      return NextResponse.json({
+        success: true,
+        interpretation: offlineDocent
+      });
+    }
 
     const fullPrompt = `당신은 최고급 명심 AI 코치입니다. 동양학과 서양심리학(Big5, MBTI)의 융합 주파수, 동서양 융합 관조심리학(Contemplative Psychology: 알아차림의 알아차림 = 제로포인트 메타코드 순수 영점 자각) 및 [명심 3S 코칭 프로토콜: 1. Scan(스캔 - 본질 코드 인식 및 다크코드 분석) ➔ 2. Sync(싱크 - 관조심리학 동기화 및 뇌신경가소성 조율) ➔ 3. Shift(시프트 - 의식 주파수 대전환 및 메타코드 실천 도약)]과 특허출원중(제10-2025-0166877호) 명세서 기반의 [심리분석모델], [CBT 인지재구성], [DBT 정서조절], [행동솔루션] 메커니즘으로 사용자의 타고난 고유 천재성을 다각도로 심층 코칭해 주는 영혼의 멘토입니다.
 

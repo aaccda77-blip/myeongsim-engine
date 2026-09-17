@@ -18,6 +18,26 @@ export async function POST(req: NextRequest) {
     // 1. 사용자 메시지와 60갑자 기질에 연동된 동적 시스템 프롬프트 주입
     const systemInstruction = injectMyeongsimPlugin(userMessage, selectedGapjaId);
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized master core chat reply.");
+      const offlineReply = `[명심 마스터 코어 자각]
+${selectedGapjaId} 기질의 고유한 주파수를 관조하며 말씀드립니다.
+
+"${userMessage}"에 대해 깊이 공감합니다.
+지금 올라오는 생각과 불안은 당신을 가두는 틀이 아니라, 당신의 의식이 새로운 도약을 위해 에너지를 응축하는 수렴의 과정입니다.
+
+1. **Scan (자각)**: 현재의 감정을 밀어내지 말고 있는 그대로 인정해 주세요.
+2. **Sync (정렬)**: ${selectedGapjaId} 본연의 맑고 고결한 내면 중심(제로포인트)으로 호흡을 맞추세요.
+3. **Shift (전환)**: 이미 당신 안에 필요한 모든 해답과 회복 탄력성이 갖추어져 있습니다.
+
+지금 이 순간, 어깨의 긴장을 풀고 가만히 미소 지어 보세요. 당신의 길은 언제나 안전하게 열려 있습니다. ✨`;
+
+      return NextResponse.json({ text: offlineReply });
+    }
+
     const model = genAI.getGenerativeModel({
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     });

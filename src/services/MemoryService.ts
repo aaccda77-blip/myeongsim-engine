@@ -46,6 +46,14 @@ export class MemoryService {
      * Embeds text using Gemini
      */
     private static async getEmbedding(text: string): Promise<number[]> {
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+        if (isMockMode) {
+            const arr = new Array(768).fill(0);
+            for (let i = 0; i < text.length; i++) {
+                arr[i % 768] = (arr[i % 768] + text.charCodeAt(i)) / 1000;
+            }
+            return arr;
+        }
         const result = await this.embeddingModel.embedContent({
             content: { parts: [{ text }] },
             outputDimensionality: 768

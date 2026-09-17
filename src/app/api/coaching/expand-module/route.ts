@@ -48,6 +48,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline expanded module detail.");
+      const uName = userName || '소중한 내담자';
+      const offlineDetail = `${uName}님, [${pageTitle || '자아 탐색'}]의 핵심 내용을 더 깊이 들여다볼게요.\n\n현재 확인하신 내용("${shortContent.slice(0, 40)}...")은 타고난 기질의 고유한 결이 일상과 맞닿는 중요한 지점이에요. 사주에서 나타나는 본연의 에너지는 절대 결함이 아니며, 외부 상황과 부딪힐 때 생기는 생각의 긴장을 한 걸음 물러서서 관찰하면 오히려 가장 강력한 직관과 지혜로 전환된답니다.\n\n재물과 일의 영역에서도 무리하게 자신을 쥐어짜기보다는 내 기질의 자연스러운 리듬에 맞춰 한 걸음씩 실행해 나갈 때 가장 풍요롭고 안전한 결실을 맺을 수 있어요.`;
+
+      return NextResponse.json({
+        success: true,
+        detail: offlineDetail,
+        cached: false
+      });
+    }
+
     // ━━━ 2순위: AI로 상세 풀이 생성 ━━━
     const sp = sajuProfile || {};
 

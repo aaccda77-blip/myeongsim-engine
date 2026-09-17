@@ -9,11 +9,12 @@ interface UserStatus {
 }
 
 export const useAuthGuard = () => {
+    // 🌟 [오픈기념 전면 무료 개방] 모든 사용자에게 무제한 활성 이용권 기본 부여
     const [userStatus, setUserStatus] = useState<UserStatus>({
-        isLoggedIn: false,
-        hasActivePass: false,
-        remainingCredits: 0,
-        userName: ''
+        isLoggedIn: true,
+        hasActivePass: true,
+        remainingCredits: 9999,
+        userName: '명심가'
     });
 
     useEffect(() => {

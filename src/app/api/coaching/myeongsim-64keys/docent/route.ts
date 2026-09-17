@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import fs from 'fs';
 import path from 'path';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -54,6 +55,28 @@ ${line}효: ${lineData?.title || ''} / 뉴럴코드: ${lineData?.potential || ''
       } catch (dbErr) {
         console.error('RAG DB Error:', dbErr);
       }
+    }
+
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized 64keys docent interpretation.");
+      const uName = userName || '명심가';
+      const offlineDocent = `안녕하세요! ✨ 명심 AI 코치입니다.
+
+🔮 맞춤형 기질 은유: 깊은 대지 속에 감춰진 고결한 원석처럼, 스스로를 자각할수록 세상에 유일무이한 빛을 발하는 존재
+
+1. **1. Scan (다크코드 자각 & 수용)**: [${label}] 지표에서 감지되는 다크코드(${darkCodeText || '긴장과 통제감'})는 ${uName}님이 스스로와 소중한 가치를 지키기 위해 온 힘을 다해 구축해온 다정한 방어막이었습니다. 나를 보호하려 했던 마음의 노고를 따스하게 알아차리고 안아주세요.
+
+2. **2. Sync (뉴럴코드 조율 & 정렬)**: 이제는 모든 것을 억지로 긴장 속에 통제하려 하지 않아도 안전합니다. 뉴럴코드(${neuralCodeText || '유연한 흐름과 신뢰'})의 방향처럼, 어깨의 긴장을 풀고 현실을 유연하게 마주할 때 내면의 고유한 시스템 밸런스가 즉각 복원됩니다.
+
+3. **3. Shift (메타코드 영점 각성 & 만개)**: 요동치는 파도가 아닌 그것을 품고 있는 깊고 넓은 바다 자체가 되세요. 메타코드(${metaCodeText || '순수 영점 자각'})의 눈으로 바라볼 때, ${uName}님의 삶은 언제나 안전하며 이미 풍요로운 가능성으로 가득 차 있습니다.
+
+당신의 빛나는 여정을 온 마음으로 응원하고 축복합니다. 💖`;
+
+      return NextResponse.json({
+        success: true,
+        interpretation: offlineDocent
+      });
     }
 
     // 각 항목별 고유 데이터를 모두 프롬프트에 포함 (맞춤 해설의 핵심!)
@@ -145,7 +168,7 @@ ${ragText}
   } catch (error: any) {
     console.error('Docent API Error:', error);
     return NextResponse.json(
-      { error: error.message || '명심 AI 코치 해설을 생성하는 중에 오류가 발생했습니다.' },
+      { error: formatFriendlyErrorMessage(error) },
       { status: 500 }
     );
   }

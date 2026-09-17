@@ -180,16 +180,42 @@ export async function POST(req: Request) {
     3. 사용자의 타고난 기질과 오늘 일진의 흐름이 만들어낸 감정의 날씨를 섬세하게 다루어, '오직 나만을 위해 창조된 리포트'라는 특별한 경험을 선물하세요.
     4. 문장이 끝날 때마다 따뜻하게 다독이는 느낌을 주고, 읽는 것만으로도 무거운 마음의 짐이 내려놓아질 만큼 문장 하나하나에 진심어린 치유의 힘을 담아주세요.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY;
 
-    const jsonMatch = text.match(/```(?:json)?\n([\s\S]*?)\n```/) || text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('Invalid JSON format from Gemini');
+    let parsedData: any = null;
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline daily debugging report.");
+      parsedData = {
+        innerSourceCode: `오늘 일진과 기질의 상호작용 속에서, '완벽하게 해내지 못하면 어쩌지'라는 내면 아이의 불안이 일시적으로 자극받았습니다. 이는 나를 보호하려는 무의식의 다정한 방어 기제(CBT: 다정한 생각 점검)입니다.`,
+        projectedReality: `이 작은 두려움은 일상의 사소한 실수나 타인의 무심한 반응에도 마음을 조이게 만들며, 세상이 나를 시험하는 것처럼 느끼게 합니다(ACT: 마음의 나침반).`,
+        coachingInsight: `그러나 그 어떤 비바람도 하늘 자체를 훼손할 수 없듯, 오늘 스쳐 지나가는 감정의 파도는 결코 당신의 본질을 상처 입히지 못합니다. 있는 그대로의 부족함을 품어 안는 전면적 수용(DBT)을 통해 본래의 깊고 평온한 참나로 돌아오세요.`,
+        socraticQuestion: "지금 나를 괴롭히는 이 불안은 100% 진실인가요? 이 생각이 없다면 지금 나는 어떤 마음일까요?",
+        recursiveQuestion: "이 두려움은 언제 처음 나를 보호하기 위해 시작되었으며, 지금도 나에게 필요한가요?",
+        step1_metaCognition: "생각과 감정을 판단 없이 구름 보듯 바라보며 '아, 내 마음에 이런 긴장이 지나가는구나'라고 다정하게 이름 붙여주세요.",
+        step2_pureAwareness: "그 모든 폭풍 뒤편에서 변함없이 고요하게 지켜보고 있는 맑고 투명한 순수 자각의 바다에 편안히 머무르세요.",
+        zeroPointSolution: {
+          intro: "지금 이 순간, 모든 애씀을 내려놓고 온전한 평화로 돌아오는 4단계 마음 처방전입니다.",
+          step1_acceptance: "[수용] 긴장하고 있는 나 자신을 따스하게 안아주며 '괜찮아, 그동안 애썼어'라고 말해줍니다.",
+          step2_anchoring: "[지금 이 순간] 발바닥이 바닥에 닿는 단단한 감각과 고요한 호흡에 10초간 주의를 모읍니다.",
+          step3_cleanCode: "[마음 다시 쓰기] '나는 언제나 안전하며, 지금 이대로도 이미 충분히 온전하다'는 확언을 심어줍니다.",
+          step4_commitment: "[한 걸음 내딛기] 과거의 후회나 미래의 걱정 대신, 지금 내 눈앞의 소중한 일 하나에 가볍게 집중합니다.",
+          closing: "폭풍이 걷힌 자리마다 눈부신 평화의 햇살이 가득 차오릅니다. 당신의 오늘은 안전합니다. ✨"
+        }
+      };
+    } else {
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      const jsonMatch = text.match(/```(?:json)?\n([\s\S]*?)\n```/) || text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('Invalid JSON format from Gemini');
+      }
+
+      parsedData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
     }
-
-    const parsedData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
 
     // 5. DB 저장
     let savedReport: any = {

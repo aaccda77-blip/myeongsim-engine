@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { calculateSaju, generateSajuPromptBlock } from '@/lib/saju/SajuEngine';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey || '');
@@ -14,7 +15,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '생년월일 정보가 필요합니다.' }, { status: 400 });
     }
 
-    if (!apiKey) {
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+
+    if (!isMockMode && !apiKey) {
       return NextResponse.json({ error: 'Gemini API 키가 설정되지 않았습니다.' }, { status: 500 });
     }
 
@@ -52,6 +55,73 @@ export async function POST(request: Request) {
         elementCounts[el]++;
       }
     });
+
+    const dayMaster = sajuResult.dayMaster || '갑';
+    const dayStem = dayMaster.charAt(0);
+
+    // 오프라인 모의 모드: 실제 사주 기반 완벽한 천부 성정 리포트
+    if (isMockMode || !apiKey) {
+      const geniusPresets: Record<string, {
+        role: string;
+        talents: string[];
+        financial: string;
+      }> = {
+        '갑': { role: '비전 아키텍트', talents: ['진취적 돌파력', '구조적 기획력', '시스템 설계'], financial: '가치 성장 지향형 투자자' },
+        '을': { role: '유연한 네트워크 중재자', talents: ['탁월한 친화력', '환경 적응력', '섬세한 협상력'], financial: '다각화 안정 수익 추구형' },
+        '병': { role: '에너지 확장 촉진자', talents: ['열정적 동기부여', '직관적 통찰', '영향력 확장'], financial: '과감한 비전 투자자' },
+        '정': { role: '심층 본질 탐구자', talents: ['정밀한 집중력', '내면 통찰력', '본질 파악력'], financial: '가치 분석 집중 투자자' },
+        '무': { role: '안정적 수용 리더', talents: ['흔들림 없는 신뢰', '포용적 리더십', '위기 방어력'], financial: '안정적 자산 보존형' },
+        '기': { role: '세심한 자원 육성가', talents: ['현실적 배려심', '실무 관리력', '자원 최적화'], financial: '체계적 현금흐름 관리자' },
+        '경': { role: '단호한 혁신 설계자', talents: ['원칙적 결단력', '구조적 개혁', '강력한 추진력'], financial: '원칙 중심 가치 실현형' },
+        '신': { role: '완벽한 프리미엄 장인', talents: ['정밀한 심미안', '독창적 차별성', '고품질 완성도'], financial: '희소 가치 집중 투자형' },
+        '임': { role: '거시적 전략 사색가', talents: ['유연한 지혜', '심층적 전략', '광범위한 통찰'], financial: '흐름 파악 유연 대응형' },
+        '계': { role: '공감적 직관 힐러', talents: ['감성적 직관', '유연한 소통', '심리적 통찰'], financial: '정서적 안정 중심 자산형' }
+      };
+
+      const preset = geniusPresets[dayStem] || geniusPresets['갑'];
+
+      const reportData = {
+        forceField: {
+          analysis: `일간 [${dayMaster}]을 중심으로 사주 8글자의 오행 에너지가 조화롭게 배치되어 있습니다. 목(${elementCounts.목}) 화(${elementCounts.화}) 토(${elementCounts.토}) 금(${elementCounts.금}) 수(${elementCounts.수})의 기운 배치가 지닌 고유한 역동성은 외부의 압력 속에서도 내면의 고요한 축을 지켜낼 수 있는 뛰어난 잠재력을 보장합니다.`,
+          open_points: `자신의 주체적 통찰과 직관을 세상에 선명하게 드러낼 때 주변의 에너지를 능동적으로 정렬시키는 강한 발산력이 작동합니다.`,
+          receptive_points: `타인의 다양한 관점을 비판 없이 수용하면서 이를 고유한 시스템 안에서 정제해내는 유연한 감응력이 내재되어 있습니다.`
+        },
+        myeongsimAlgorithm: {
+          talents: preset.talents,
+          dynamic_expression: `사주 원국의 십신 기운이 결합하여, 문제 상황을 마주했을 때 즉흥적인 당황 대신 한 걸음 물러나 전체 판을 조망하고 최적의 해법을 직관적으로 도출해내는 뇌신경 회로가 활성화됩니다.`
+        },
+        positioning: {
+          role_name: preset.role,
+          influence_desc: `조직이나 공동체에서 요란하게 앞서지 않으면서도, 결정적인 순간에 방향타를 쥐어주는 신뢰의 구심점 역할을 자연스럽게 수행합니다.`,
+          environmental_sync: `간섭이 적고 자율성이 보장되는 환경, 상호 존중과 명확한 전문성이 인정받는 관계망 속에서 최상의 성취를 발휘합니다.`
+        },
+        decisionFilter: {
+          mechanism: `감정에 치우치지 않고 직관적 통찰과 현실적 데이터의 교차점을 냉철하게 검증한 뒤 확신을 갖고 나아가는 2단계 필터를 사용합니다.`,
+          brain_science_tip: `중요한 의사결정 직전 3분간의 호흡 이완(부교감신경 활성화)을 거치면 전두엽의 인지 과부하를 예방하고 통찰을 극대화할 수 있습니다.`,
+          recommendation: `마음이 조급할 때는 즉시 답을 내지 말고 '하룻밤 재워두기(Sleep on it)' 원칙을 적용하여 무의식의 정리를 기다리세요.`
+        },
+        prosperity: {
+          financial_type: preset.financial,
+          behavioral_economics: `단기적인 유행이나 주변의 불안에 휘둘리지 않고, 본질적인 가치와 장기적인 효용을 중심으로 자산을 축적하고 운용하는 성향입니다.`,
+          stress_reduction_tip: `재정적 불안이 들 때 숫자에만 매몰되지 말고, 자신이 지닌 무형의 가치(지식, 네트워크, 건강)가 이미 거대한 자산임을 자각하세요.`
+        },
+        stressShift: {
+          vulnerability: `과도한 책임감이나 스스로에 대한 엄격한 잣대로 인해 번아웃 및 인지 피로가 발생할 수 있습니다.`,
+          cbt_mission: `"내가 모든 것을 통제할 필요는 없다. 세상은 내가 힘을 빼도 자연스럽게 흘러간다"는 비판적 사고 수용 문장을 소리 내어 읽어보세요.`,
+          recovery_action: `디지털 기기를 끄고 10분간 따뜻한 차를 마시며 맨발로 바닥을 딛는 감각(그라운딩)에 온전히 집중해 보세요.`
+        }
+      };
+
+      return NextResponse.json({
+        success: true,
+        saju: {
+          fourPillars: sajuResult.fourPillars,
+          dayMaster: sajuResult.dayMaster,
+          elementCounts
+        },
+        geniusReport: reportData
+      });
+    }
 
     // 2. Gemini 2.5-flash 구조화 출력 정의
     const model = genAI.getGenerativeModel({
@@ -254,7 +324,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Genius API Error:', error);
     return NextResponse.json(
-      { error: error.message || '천부 성정 분석 처리 중 서버 오류가 발생했습니다.' },
+      { error: formatFriendlyErrorMessage(error) },
       { status: 500 }
     );
   }

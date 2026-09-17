@@ -45,7 +45,8 @@ export default function TeaserBlurPaywall({
     }
   };
 
-  const isActuallyLocked = !isUnlockedDefault && !lockStatus.isApproved && lockStatus.isLocked;
+  // 🌟 [오픈기념 전면 무료 개방] 블러 및 결제 페이월 없이 100% 전체 콘텐츠 무료 공개
+  const isActuallyLocked = false;
 
   return (
     <div className="w-full relative space-y-4 text-left font-sans">

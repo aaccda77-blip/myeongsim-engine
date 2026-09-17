@@ -5,6 +5,9 @@ import { Lock, Sparkles, ArrowRight, ShieldCheck, AlertCircle, RefreshCw } from 
 import { usePathname } from 'next/navigation';
 
 export default function SiteAccessGateOverlay() {
+    // 🌟 [오픈기념 전면 무료 개방] 사이트 접속 게이트 해제
+    if (true) return null;
+
     const pathname = usePathname();
     const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
     const [mounted, setMounted] = useState<boolean>(false);

@@ -7,7 +7,35 @@ export const dynamic = 'force-dynamic';
 
 const getDailyMatrix = unstable_cache(
   async (dateString: string) => {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+
+    if (isMockMode || !apiKey) {
+      return {
+        code: "스스로를 증명해야만 사랑받을 수 있다는 인정 결핍",
+        reality: "타인의 평가에 대한 극심한 불안과 끊임없는 자기 검열",
+        theme: {
+          bg: "bg-fuchsia-950/40",
+          border: "border-fuchsia-500/20",
+          textTitle: "text-fuchsia-300",
+          textLight: "text-fuchsia-100",
+          textDark: "text-fuchsia-400/70",
+          dot: "bg-fuchsia-400"
+        },
+        coaching: {
+          desc: "내면에서 '나는 증명하지 못하면 버림받는다'는 방어코드가 켜져 있기에, 현실에서 주변의 작은 반응에도 과도하게 레이더를 곤두세우게 됩니다.",
+          socratic: "지금 당신이 불안해하는 그 평가가 정말 당신이라는 존재 자체의 가치를 규정할 수 있습니까?",
+          recursive: "완벽해야 한다는 강박 밑에 숨어 울고 있는 어린 시절의 당신에게 지금 무엇이 가장 필요할까요?",
+          meta: "지금 인정받고 싶어 긴장하고 있는 내면아이의 목소리가 들려오는 것을 한 걸음 물러나 고요히 지켜보세요.",
+          pureAwareness: "그 불안과 긴장을 바라보고 있는 고요하고 텅 빈 알아차림의 공간 자체를 자각해 보세요. 그 공간은 이미 상처받지 않고 온전합니다.",
+          awareness: "외부의 인정이나 칭찬을 갈구하는 애쓰기를 내려놓고, '부족해 보여도 나는 이미 존재 자체로 완전하다'는 영점(Zero Point)의 자립으로 돌아오세요.",
+          msc_common_humanity: "인정받고 사랑받고 싶어 하는 것은 인간이라면 누구나 느끼는 자연스러운 본성입니다. 결코 당신만의 약점이 아닙니다.",
+          msc_self_kindness: "지금까지 혼자 고군분투하며 버텨온 당신 자신에게 가장 따뜻한 친구가 되어 주며 다정하게 안아주세요."
+        }
+      };
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
     const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
     const model = genAI.getGenerativeModel({ model: modelName });
 

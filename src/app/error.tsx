@@ -2,6 +2,7 @@
  
 import { useEffect, useState } from 'react';
 import { AlertTriangle, RefreshCcw, Trash2, Home, Sparkles } from 'lucide-react';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
  
 export default function Error({
     error,
@@ -76,8 +77,9 @@ export default function Error({
                         </>
                     ) : (
                         <>
-                            죄송합니다. 앱 실행 중 예기치 못한 문제가 발생했습니다.<br />
-                            <span className="text-xs text-gray-500 font-mono mt-1 block">({error.message || 'Unknown Context'})</span>
+                            <span className="block mb-2 font-medium text-amber-200">
+                                {formatFriendlyErrorMessage(error)}
+                            </span>
                         </>
                     )}
                 </p>

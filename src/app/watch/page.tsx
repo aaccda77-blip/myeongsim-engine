@@ -47,12 +47,7 @@ export default function WatchShowcasePage() {
                         )}
                     </div>
 
-                    <Link
-                        href="/library"
-                        className="text-xs text-gray-400 hover:text-cyan-300 font-medium transition-colors"
-                    >
-                        도서관
-                    </Link>
+                    <a href="https://www.yes24.com/Product/Goods/195946431" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-cyan-300 font-medium transition-colors">도서 《ZERO POINT》</a>
                 </div>
             </header>
 

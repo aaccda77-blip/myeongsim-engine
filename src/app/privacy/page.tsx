@@ -141,7 +141,7 @@ export default function PrivacyPage() {
               <p>• <strong>사업장 소재지:</strong> 세종특별자치시 산울7로 10 (산울마을8단지) 808동 204호 (우 : 30091)</p>
               <p>• <strong>개인정보 보호책임자:</strong> 이경윤 대표</p>
               <p>• <strong>고객센터 전화:</strong> 010-9114-2352</p>
-              <p>• <strong>전자우편 문의:</strong> <span className="font-mono text-amber-300">mindflowlabbooks@naver.com</span></p>
+              <p>• <strong>전자우편 문의:</strong> <span className="font-mono text-amber-300">admin@mindflowlab.co.kr</span></p>
               <p className="text-[10px] text-amber-300/90 pt-1">※ 전화 부재 시 이메일이나, 문자메시지로 부탁드립니다. (확인 후 신속히 연락드립니다)</p>
             </div>
           </section>

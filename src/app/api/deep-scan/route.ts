@@ -250,6 +250,37 @@ export async function POST(req: NextRequest) {
 
     const currentModule = TEN_GOD_MODULES[tenGod] || TEN_GOD_MODULES['비견'];
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline deep-scan report.");
+      const offlineReport = {
+        level: "CAUTION",
+        levelLabel: `${tenGod}의 에너지 조율 상태`,
+        levelEmoji: "⚡",
+        headline: `[${tenGod}] 오늘 일진 ${dayGanZhi}과 ${clientDayMaster}일간 원국 공명 분석`,
+        intro: `오늘 일진 ${dayGanZhi}의 ${todayGan} 기운이 내담자의 [${clientDayMaster}일간]과 만나 ${currentModule.theme} 현상이 감지되었습니다.`,
+        clashes: [
+          {
+            term: `${tenGod} 작용`,
+            title: currentModule.theme,
+            logic: `세운 ${yearGanZhi}년, 월운 ${monthGanZhi}월의 기류 속에서 일진 ${dayGanZhi}의 ${todayGan}가 ${clientDayMaster}일간의 코어 주파수를 자극합니다.`,
+            reality: currentModule.instruction,
+            deepExplanation: `선천적 기질(${neural.pillars})의 자원이 외부 환경 자극과 만나는 지점으로, 의식적인 주의 전환이 요구됩니다.`
+          }
+        ],
+        narrative: `오늘 일진 ${dayGanZhi}(${tenGod})의 기운이 내담자의 [${clientDayMaster}일간]과 만나 선천적 원국(${neural.pillars})의 고유 패턴을 강하게 자극하고 있습니다. Scan: 현재 ${currentModule.theme}의 전조 증상이 나타날 수 있으며, Sync: 세운(${yearGanZhi})과 월운(${monthGanZhi})의 외부 압력이 내부 에너지와 맞물리며 일시적 병목을 형성합니다. Shift: ${currentModule.shiftContext} ${biorhythm ? `현재 내담자의 생체 에너지 통합 점수는 [${biorhythm.overallScore}점]으로 기록되어 있으므로 신체적 쿨링과 멘탈 이완을 함께 병행할 때 최고의 돌파구가 열립니다.` : ''}`,
+        shift: currentModule.shiftContext
+      };
+
+      return NextResponse.json({
+        success: true,
+        report: offlineReport,
+        todayUngi: { yearGanZhi, monthGanZhi, dayGanZhi },
+      });
+    }
+
     const model = google.getGenerativeModel({
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       safetySettings: [

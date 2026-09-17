@@ -9,11 +9,16 @@ export async function GET(req: NextRequest) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
-        const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY!);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+        const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
-        const result = await model.generateContent("테스트용 문장 하나를 생성해줘.");
-        const text = result.response.text();
+        let text = '오프라인 시뮬레이션 모드 테스트 프로필 텍스트입니다.';
+        if (!isMockMode && apiKey) {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            const result = await model.generateContent("테스트용 문장 하나를 생성해줘.");
+            text = result.response.text();
+        }
 
         // Simulate exact insert from PersonaProfileModule
         const { error, data } = await supabase

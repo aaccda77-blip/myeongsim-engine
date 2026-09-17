@@ -114,13 +114,45 @@ export async function POST(req: Request) {
     const relation = getRelation(GAN_ELEMENTS_EN[cleanDayMaster] || 'metal', GAN_ELEMENTS_EN[todayGan] || 'metal');
     const dailyKeyword = getDailyKeyword(relation, biorhythm.ganji);
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    const model = genAI.getGenerativeModel({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-      generationConfig: { responseMimeType: 'application/json' }
-    });
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
 
-    const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 지혜로운 심리 코치입니다.
+    let parsedData: any = null;
+
+    if (isMockMode || !apiKey) {
+      parsedData = {
+        targetOS: `${pillarsDisplay} (${cleanDayMaster} 일간 중심의 고유 기질) / ${gender || '사용자'}`,
+        dailyKeyword: `오늘 겪기 쉬운 감정적 피로와 완벽주의 내려놓기`,
+        biorhythmAnalysis: `오늘의 일진(${biorhythm.ganji})은 [${cleanDayMaster}]의 기질과 만나 에너지가 특정 영역으로 집중되기 쉬운 날입니다. 감정이 다소 격해지거나 책임감이 무겁게 느껴질 수 있으나, 이는 당신의 결함이 아니라 일시적인 기운의 파도일 뿐입니다.`,
+        level1_darkCode: {
+          errorLog: `내가 완벽하게 통제하지 못하면 모든 것이 무너질 것 같아요`,
+          projectedReality: `주변 사람들의 작은 실수나 상황의 지연이 극심한 답답함으로 다가와 스스로를 고립시키기 쉽습니다.`,
+          currentFrequency: `🌧️ 긴장과 통제감으로 어깨가 무겁게 굳어있는 상태`,
+          systemMessage: `괜찮습니다. 당신은 이미 충분히 애써왔고, 있는 그대로 소중합니다.`
+        },
+        level2_neuralCode: {
+          debugging1_metaCognition: `지금 머릿속을 스치는 불안과 조급함은 '진짜 나'가 아니라, 일시적으로 흘러가는 마음의 날씨일 뿐임을 가만히 알아차려 보세요.`,
+          debugging2_radicalAcceptance: `모든 것을 내 뜻대로 통제하려는 욕심을 내려놓고, 지금 이 순간 벌어지는 현실을 부드럽게 숨 쉬며 허용해 줍니다.`,
+          systemStabilization: `가슴에 가만히 손을 얹고 세 번의 깊은 날숨과 함께 내면의 중심(영점)으로 의식을 정렬합니다.`,
+          currentFrequency: `⛅ 먹구름이 걷히고 내면을 평온하게 바라보는 안정 상태`,
+          systemMessage: `나는 파도가 아닌 깊은 바다임을 스스로에게 다정하게 알려줍니다.`
+        },
+        level3_metaCode: {
+          dimensionShift: `생각과 감정의 파도를 넘어, 애초에 어떤 상처도 입을 수 없는 텅 비고 맑은 본래의 순수 자각으로 시선을 넓힙니다.`,
+          zeroPointSolution: `Zero Point(영점) 솔루션: 결과를 통제하려는 불안 에너지를 완전히 거두고, '지금 여기'에서 내가 할 수 있는 가장 사소하고 친절한 행동 하나를 선택하세요.`,
+          currentFrequency: `✨ 어떤 조건 없이도 이미 온전하고 자유로운 평온`,
+          systemMessage: `모든 무게를 내려놓고 온전한 자유 속에 머무릅니다.`
+        },
+        aiCoachNotice: `💡 명심 코칭 코멘트: 비록 오늘 하루가 흔들렸을지라도, 당신 안에는 언제나 눈부신 회복 탄력성이 살아 숨쉬고 있습니다. 스스로에게 자비로운 미소를 건네보세요.`
+      };
+    } else {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({
+        model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+        generationConfig: { responseMimeType: 'application/json' }
+      });
+
+      const prompt = `당신은 명심코칭(Myeongsim Coaching)의 따뜻하고 지혜로운 심리 코치입니다.
 아래 사용자의 사주 기질을 오늘 일진 에너지와 바탕으로, 상처받은 마음을 어루만지고 의식 주파수를 끌어올려주는 3단계 '내면 주파수 레벨업' 리포트를 작성하세요.
 
 === 사용자 프로필 ===
@@ -135,47 +167,42 @@ export async function POST(req: Request) {
 - **Tone & Manner**: 차가운 분석이 아닌, 따뜻하고 공감하는 명심(明心) 코치의 관점. 간결하고 감동적인 은유 사용.
 
 {
-  "targetOS": "이 사용자의 사주 4주를 자연과 마음의 은유로 요약한 한 줄 (예: 경신년(흔들림 없는 단단한 바위) 계축월(생명을 깨우는 맑은 단비) 갑진일(깊게 뿌리내린 든든한 나무) 을미시(어디서든 피어나는 부드러운 화초) / 남성)",
+  "targetOS": "이 사용자의 사주 4주를 자연과 마음의 은유로 요약한 한 줄",
   "dailyKeyword": "오늘 겪기 쉬운 감정적 어려움을 공감해주는 따뜻한 제목",
   "biorhythmAnalysis": "오늘 일진이 나의 기질에 어떤 영향을 주어 감정이 흔들리는지, 초보자도 이해하기 쉬운 친절한 언어로 3~4줄 분석",
   "level1_darkCode": {
-    "errorLog": "마음속 가장 깊은 곳에서 두려워하는 상처받은 내면아이의 목소리 (예: '나만 혼자 남겨질 것 같아 두려워요')",
+    "errorLog": "마음속 가장 깊은 곳에서 두려워하는 상처받은 내면아이의 목소리",
     "projectedReality": "그 두려움 때문에 오늘 현실에서 벌어지기 쉬운 오해나 힘든 상황을 공감하며 설명",
-    "currentFrequency": "현재 감정 상태 분석 (예: 🌧️ 깊은 불안과 외로움에 웅크린 상태)",
+    "currentFrequency": "현재 감정 상태 분석",
     "systemMessage": "스스로를 자책하지 않도록 다독여주는 1줄 위로 메시지"
   },
   "level2_neuralCode": {
-    "debugging1_metaCognition": "지금 느끼는 감정이 '진짜 나'가 아니라 그저 잠시 스쳐가는 날씨일 뿐임을 부드럽게 일깨워주는 메타인지 가이드",
-    "debugging2_radicalAcceptance": "내 마음대로 되지 않는 현실의 고통을 있는 그대로 따뜻하게 끌어안고 수용하는 방법",
-    "systemStabilization": "불안했던 마음이 고요해지며 내면의 중심을 되찾는 평화로운 시각화 가이드",
-    "currentFrequency": "주파수 상승 결과 (예: ⛅ 먹구름이 걷히고 내면을 차분히 바라보는 상태)",
-    "systemMessage": "스스로를 안아주며 안정을 찾았음을 알리는 1줄 지지 메시지"
+    "debugging1_metaCognition": "메타인지 가이드",
+    "debugging2_radicalAcceptance": "수용 방법",
+    "systemStabilization": "시각화 가이드",
+    "currentFrequency": "주파수 상승 결과",
+    "systemMessage": "1줄 지지 메시지"
   },
   "level3_metaCode": {
-    "dimensionShift": "생각과 감정의 파도를 넘어, 원래부터 상처받을 수 없는 텅 비고 맑은 '본래의 나'로 시선을 넓히는 가이드",
-    "zeroPointSolution": "Zero Point(영점) 솔루션: 과거의 상처나 미래의 불안에 낭비되던 에너지를 되찾아, '지금 여기'에서 내가 진짜 원하는 아름다운 행동으로 나아가게 하는 따뜻한 응원",
-    "currentFrequency": "최종 도달 상태 (예: ✨ 어떤 조건 없이도 이미 온전하고 완벽한 나, 빛나는 자유)",
-    "systemMessage": "모든 짐을 내려놓고 완전한 자유를 얻었음을 축복하는 1줄 메시지"
+    "dimensionShift": "시선 넓히기 가이드",
+    "zeroPointSolution": "Zero Point(영점) 솔루션",
+    "currentFrequency": "최종 도달 상태",
+    "systemMessage": "축복의 1줄 메시지"
   },
-  "aiCoachNotice": "💡 명심 코칭 코멘트: 비록 오늘 하루가 흔들렸을지라도, 당신 안에는 언제나 눈부신 회복 탄력성이 숨쉬고 있음을 다정하게 일깨워주는 2~3줄의 통찰력 있는 조언"
-}
+  "aiCoachNotice": "💡 명심 코칭 코멘트"
+}`;
 
-중요 규칙:
-1. 차갑고 딱딱한 IT 용어나 어려운 심리학/사주 용어(에고, 매트릭스, 다크코드, 과동기화 등)를 초보자도 이해하기 쉽고 감동적인 일상 언어로 순화해서 작성하세요.
-2. 사용자가 글을 읽는 것만으로도 치유받고 눈물이 날 만큼 다정하고 포근한 톤앤매너를 유지하세요.
-3. 명심 코칭의 영점(Zero Point) 철학(모든 통제를 내려놓고 텅 빈 마음에 내맡길 때 진정한 온전함을 만난다)을 부드럽게 녹여내세요.
-4. 매일 일진과 사주 기질에 따라 완전히 독창적이고 섬세한 맞춤형 시나리오가 나와야 합니다.`;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+      const jsonMatch = text.match(/```(?:json)?\n([\s\S]*?)\n```/) || text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('Invalid JSON format from Gemini');
+      }
 
-    const jsonMatch = text.match(/```(?:json)?\n([\s\S]*?)\n```/) || text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('Invalid JSON format from Gemini');
+      parsedData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
     }
-
-    const parsedData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
 
     let savedReport: any = {
       id: 'temp-' + Date.now(),

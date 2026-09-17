@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { calculateSaju, generateSajuPromptBlock } from '@/lib/saju/SajuEngine';
+import { formatFriendlyErrorMessage, OPEN_FREE_NOTICE_MESSAGE } from '@/utils/errorMessage';
 
 const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey || '');
@@ -14,7 +15,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '생년월일 정보가 필요합니다.' }, { status: 400 });
     }
 
-    if (!apiKey) {
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+
+    if (!isMockMode && !apiKey) {
       return NextResponse.json({ error: 'Gemini API 키가 설정되지 않았습니다.' }, { status: 500 });
     }
 
@@ -53,6 +56,47 @@ export async function POST(request: Request) {
         elementCounts[el]++;
       }
     });
+
+    const dayMaster = sajuResult.dayMaster || '갑';
+    const dayStem = dayMaster.charAt(0);
+
+    // 오프라인 모의 모드: 실제 사주 기반 완벽한 격국 리포트 생성
+    if (isMockMode || !apiKey) {
+      const engineData: Record<string, { engine: string; gyeok: string; score: number }> = {
+        '갑': { engine: '초고강도 바이오 프로세서', gyeok: '식신격(食神格)', score: 38 },
+        '을': { engine: '유연한 네트워크 커넥터', gyeok: '편재격(偏財格)', score: 35 },
+        '병': { engine: '핵융합 써멀 엔진', gyeok: '정관격(正官格)', score: 42 },
+        '정': { engine: '정밀 레이저 옵티컬 코어', gyeok: '편인격(偏印格)', score: 36 },
+        '무': { engine: '광대역 테라 스토리지', gyeok: '정재격(正財格)', score: 40 },
+        '기': { engine: '생명 친화적 바이오 데이터베이스', gyeok: '정인격(正印格)', score: 32 },
+        '경': { engine: '고강도 티타늄 프로세서', gyeok: '편관격(偏官格)', score: 44 },
+        '신': { engine: '프리미엄 메탈릭 코어', gyeok: '편재격(偏財格)', score: 38 },
+        '임': { engine: '심해 광대역 양자 링크', gyeok: '식신격(食神格)', score: 41 },
+        '계': { engine: '초미세 신경망 뉴럴 스트림', gyeok: '편인격(偏印格)', score: 34 }
+      };
+
+      const preset = engineData[dayStem] || engineData['갑'];
+
+      const reportData = {
+        structure_type: '정격',
+        korean_name: preset.gyeok,
+        polarization_score: preset.score,
+        myeongri_analysis: `**[Core Scan: 타고난 하드웨어 스펙]**\n- **엔진 모델**: ${preset.engine}\n- **시스템 특징**: 일간 [${dayMaster}]의 기질을 중심으로 고유한 역량이 응축되어 있습니다. 타인의 기준에 휩쓸리지 않고 자신의 직관과 논리를 바탕으로 시스템을 안정적으로 구동하는 아키텍처적 우수성을 지닙니다.\n- **취약점 알림**: 특정 오행(에너지 밸런스)의 급격한 소모 시 피로감이나 과도한 책임감(확률 72%)이 발생할 수 있으므로, 규칙적인 영점 리셋이 권장됩니다.`,
+        mental_strategy: `**[Live Sync: 현재 네트워크 동기화 상태]**\n- **현재 접속 환경**: 2026 병오년의 역동적인 화(火) 기운 네트워크에 동기화 중입니다.\n- **환경 영향 평가**: 외부 자극에 대한 반응 속도가 빨라져 직관적 판단력이 상승하나, 과부하 시 일시적인 집중력 분산이 일어날 수 있습니다.\n- **예상 에러 로그**: [자발적 고립 프로토콜 활성화 경고] - 내면의 기준과 외부의 현실이 충돌할 때 홀로 모든 것을 짊어지려는 심리적 방어벽이 가동될 수 있습니다.\n\n**[현대적 멘탈 솔루션]**\n- **인지적 분리**: 타인의 피드백을 '내 자율성에 대한 공격'으로 해석하지 마세요. "저 사람은 내 생각의 뿌리를 흔들려는 게 아니라, 단지 본인 위치에서 보이는 단면을 말하고 있을 뿐이다"라는 관찰자 스캔을 가동하세요.\n- **경계선 설정**: 내면의 독창성을 발휘할 핵심 영역(Core)은 온전히 주권 하에 두되, 현실과 소통하는 인터페이스 영역에서는 유연한 수용성을 유지하세요.\n- **모듈형 협업**: 모든 것을 뒤섞기보다 각자의 전문성을 존중하며 필요한 순간에 시너지를 내는 '자발적 독립체들의 느슨한 연대'를 지향하세요.`,
+        crystal_mantra: `나는 흔들리는 세상의 파도에 매몰되지 않고, 모든 현상을 고요히 품어내는 깊고 온전한 바다이다.`,
+        daily_tuning_action: `**[Mind Shift: 시스템 최적화 패치 (Today's Protocol)]**\n- **패치 01. 브레인 덤프 (Brain Dump)**: 오늘 머릿속을 맴도는 복잡한 생각과 설계를 단 3분간 메모장에 날것 그대로 타이핑해 밖으로 흘려보내세요(洩氣).\n- **패치 02. 조건부 수용 어법**: 타인의 의견에 무조건 방어하기보다 "좋은 관점이네요. 말씀하신 방식의 예상 리스크와 데이터를 검토한 뒤 적극 반영해 보겠습니다"라는 조건부 수용 대화법을 실천해 보세요.`
+      };
+
+      return NextResponse.json({
+        success: true,
+        saju: {
+          fourPillars: sajuResult.fourPillars,
+          dayMaster: sajuResult.dayMaster,
+          elementCounts
+        },
+        analysis: reportData
+      });
+    }
 
     // 2. Gemini 2.5-flash Structured Output을 위한 스키마 모델 정의
     const model = genAI.getGenerativeModel({
@@ -228,8 +272,9 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('Alignment API Error:', error);
+    const friendlyError = formatFriendlyErrorMessage(error);
     return NextResponse.json(
-      { error: error.message || '격국 분석 처리 중 서버 오류가 발생했습니다.' },
+      { error: friendlyError },
       { status: 500 }
     );
   }

@@ -7,6 +7,9 @@ import { supabase } from '@/lib/supabaseClient';
 import { isUserApprovedSync, grantUserApprovalSync } from '@/lib/authGuardUtils';
 
 export default function GlobalPaymentLockGuard() {
+    // 🌟 [오픈기념 전면 무료 개방] 결제 잠금 오버레이를 일절 띄우지 않습니다.
+    if (true) return null;
+
     const pathname = usePathname();
     const [isLocked, setIsLocked] = useState<boolean>(false);
     const [mounted, setMounted] = useState<boolean>(false);

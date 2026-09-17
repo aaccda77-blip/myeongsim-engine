@@ -21,6 +21,27 @@ export async function POST(req: NextRequest) {
     } = body;
 
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline stage analysis.");
+      const uName = userName || '명심가';
+      const offlineResult = {
+        stageName: stageTitle || `STEP ${stageId} 성장과 성찰`,
+        summary: `${uName}님의 타고난 ${dayMaster || '고유'} 기질 에너지가 현재 ${stageTitle || '성장 단계'}의 문턱에서 아름답게 조율되고 있습니다.`,
+        deepInsight: `지금 경험하시는 내면의 질문과 고민은 후퇴가 아니라, 선천적 기질(${dayMaster || '원석'})이 다음 차원의 지혜로 확장되기 위한 필수적인 성장통입니다. 결핍으로 느껴졌던 부분들은 사실 새로운 가능성을 담기 위해 비워둔 거룩한 틈새(공망)입니다.`,
+        actionSteps: [
+          "오늘 하루, 나를 재촉하던 무의식적 긴장을 알아차리고 3번 깊이 호흡하기",
+          "나의 고유한 기질 장점을 인정하고 타인과의 비교 프로세스를 멈추기",
+          "가장 가벼운 마음으로 실행할 수 있는 작은 일상 루틴 하나 완성하기"
+        ],
+        comfortQuote: "나무는 겨울에 자라지 않는 것처럼 보여도, 땅속 깊이 뿌리를 내리며 눈부신 봄을 준비합니다. 🌿"
+      };
+
+      return NextResponse.json(offlineResult);
+    }
+
     const model = genAI.getGenerativeModel({ 
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       generationConfig: {

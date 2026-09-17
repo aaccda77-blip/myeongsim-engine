@@ -15,6 +15,7 @@ import CompanyInfoModal from '../modals/CompanyInfoModal';
 import MicroChatPassModal from '../modals/MicroChatPassModal';
 import MindStateSelectorModal from '../modals/MindStateSelectorModal';
 import TrendingTopicModal from '../modals/TrendingTopicModal';
+import Q38PhilosophyCardModal from './modules/Q38PhilosophyCardModal';
 import ChatMessageList from './modules/ChatMessageList';
 import ChatMoodSwitchBar from './modules/ChatMoodSwitchBar';
 import ChatTrendingChipsBar from './modules/ChatTrendingChipsBar';
@@ -69,6 +70,7 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
     const [showMindStateModal, setShowMindStateModal] = useState<boolean>(false);
     const [showDarkCodeModal, setShowDarkCodeModal] = useState<boolean>(false);
     const [showTrendingTopicModal, setShowTrendingTopicModal] = useState<boolean>(false);
+    const [showQ38Modal, setShowQ38Modal] = useState<boolean>(false);
     const [isPaidUser, setIsPaidUser] = useState<boolean>(() => isUserApprovedSync());
     const [isPendingApproval, setIsPendingApproval] = useState<boolean>(() => {
         if (typeof window !== 'undefined') {
@@ -1014,10 +1016,21 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     <span>🔥 추천 질문</span>
                 </button>
 
+                {/* 2.5) Q38 ChatGPT vs 명심AI 철학 모달 트리거 */}
+                <button
+                    type="button"
+                    onClick={() => setShowQ38Modal(true)}
+                    className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-400/50 text-emerald-300 text-[11px] font-black shrink-0 flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap shadow-sm"
+                >
+                    <Sparkles size={13} className="text-emerald-400" />
+                    <span>💡 Q38 철학</span>
+                </button>
+
                 <span className="text-white/20 shrink-0 font-light">|</span>
 
                 {/* 3) 원터치 퀵 추천 질문 칩들 (팝업 단어 100% 제거 & 즉시 질문 전송) */}
                 {[
+                    { label: '🤖 ChatGPT vs 명심AI', prompt: 'ChatGPT에 고민 말하면 되는데 굳이 명심AI가 왜 필요한가요? 범용 AI와 명심AI의 차별점을 사이다 한 줄 요약과 4대 시간 축으로 명쾌하게 알려줘' },
                     { label: '🛡️ 완벽주의 뇌 쿨링', prompt: '내 안의 완벽주의 다크코드를 80% 미학으로 뇌 쿨링(ACT) 해줘' },
                     { label: '🔥 번아웃 메타인지', prompt: '엔진 과열로 가슴이 답답하고 번아웃 오는데 메타인지로 정밀 교정해줘' },
                     { label: '💰 2026 사업·재물운', prompt: '내 사주 기반 2026년 사업·재물운과 B2B 스케일업 방향을 분석해줘' },
@@ -1171,6 +1184,20 @@ export default function MyeongsimChat({ userId = 'guest-id' }: MyeongsimChatProp
                     }
                     handleChipClick(topicPrompt);
                     setShowTrendingTopicModal(false);
+                }}
+            />
+
+            {/* Q38 ChatGPT vs 명심AI 전용 철학 모달 */}
+            <Q38PhilosophyCardModal
+                isOpen={showQ38Modal}
+                onClose={() => setShowQ38Modal(false)}
+                onAskQuestion={(promptText) => {
+                    if (userMessageCount >= 3 && !isPaidUser) {
+                        setShowMicroPassModal(true);
+                        return;
+                    }
+                    handleChipClick(promptText);
+                    setShowQ38Modal(false);
                 }}
             />
 

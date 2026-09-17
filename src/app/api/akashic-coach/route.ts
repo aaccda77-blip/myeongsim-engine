@@ -16,6 +16,15 @@ export async function POST(req: Request) {
     const dayMaster = sajuData?.dayMasterHanja || '알수없음';
     const bioScore = biorhythm?.overallScore || 50;
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline akashic coach reply.");
+      const reply = `오늘 ${gan}${zhi}일의 기운 속에서 '${detailData.title || '에너지 조율'}' 현상이 감지됩니다. 현재 회원님의 생체 에너지(바이오리듬) 점수는 [${bioScore}점]으로 기록되어 있어, 내면의 중심을 유지하는 데 든든한 기반이 되어주고 있습니다. ${detailData.action || '불필요한 충돌을 피하고 차분히 호흡하세요.'} 일시적인 감정의 파문에 휘둘리지 마시고, 깊은 호흡과 함께 3분간 여유를 가져보세요. 당신의 내면은 언제나 안전합니다.`;
+      return NextResponse.json({ success: true, reply });
+    }
+
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       safetySettings: [

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { SmartAiSimulationEngine } from '@/services/SmartAiSimulationEngine';
 
 const genAI = new GoogleGenerativeAI((process.env.GEMINI_API_KEY || '').trim());
 
@@ -18,6 +19,25 @@ export async function POST(req: NextRequest) {
         { error: '생년월일 정보가 필요합니다.' },
         { status: 400 }
       );
+    }
+
+    // 🌟 [방식 1. 스마트 AI 시뮬레이션 모드: 외부 API 미구동 & 사주 100% 맞춤 생성]
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || 
+                       process.env.NEXT_PUBLIC_MOCK_AI === 'true' || 
+                       !process.env.GEMINI_API_KEY;
+
+    if (isMockMode) {
+      const dayMasterChar = sajuPillars?.day?.gan || '辛';
+      const analysis = SmartAiSimulationEngine.generateDarkCodeAnalysis(dayMasterChar, userConcern || '완벽주의와 조급함');
+      return NextResponse.json({
+        errorCode: `DC-${Math.floor(1000 + Math.random() * 9000)}`,
+        errorName: `${analysis.nature} 기질의 자동 방어코드`,
+        diagnose: `${userName || '구도자'}님의 고민("${(userConcern || '일상의 번뇌').slice(0, 30)}")은 결함이 아닙니다. ${analysis.nature} 고유의 ${analysis.darkCodePattern}가 작동한 것으로, 나를 지켜주려던 소중한 뇌의 생존 기제입니다.`,
+        neuralRewrite: `첫째, ${analysis.solutionStep1_Scan}\n\n둘째, ${analysis.solutionStep2_Sync}\n\n셋째, ${analysis.solutionStep3_Shift}. ${userName || '구도자'}님은 이미 온전한 주권자이십니다.`,
+        metaMantra: `"나는 생각과 감정에 끌려다니는 단말기가 아니라, 그 모든 파도를 고요히 비추는 우주의 순수한 거울(Zero Point)이다."`,
+        rebootLog: `2026 병오년(丙午年) ${analysis.fortune2026}`,
+        rebootRecommendation: '432Hz 제로포인트 순수 자각 명상'
+      });
     }
 
     const model = genAI.getGenerativeModel({

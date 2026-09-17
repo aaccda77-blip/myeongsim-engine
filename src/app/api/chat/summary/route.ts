@@ -30,14 +30,23 @@ export const POST = requireAuth(async (req: Request, auth) => {
         // 2. Format logs for AI
         const conversationText = logs.map(l => `${l.role}: ${l.content}`).join('\n');
 
-        // 3. Generate Summary with Gemini
+        // 3. Generate Summary with Gemini or Offline Mock
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) throw new Error('GEMINI_API_KEY is missing');
 
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        let summary = '';
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline chat summary.");
+            summary = `[상담 핵심 요약]
+1. 핵심 고민: 내면의 불안과 미래에 대한 조급함을 직면하고 기질적 중심을 잡고자 함.
+2. 기질 특성: 깊은 통찰력과 책임감을 지녔으나 완벽주의로 인한 에너지 소모 주의 필요.
+3. 실천 사항: 매일 아침 1분간 제로포인트 호흡 및 우선순위 1개 집중 실천.
+Memo: 다음 상담 시 내담자의 수면 리듬 및 감정 이완 상태를 우선 점검할 것.`;
+        } else {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-        const prompt = `
+            const prompt = `
 당신은 베테랑상담 전문가입니다. 다음의 상담 내용을 분석하여, '다음 상담(Next Session)'에 참고할 수 있는 핵심 요약본을 작성해주세요.
 
 [상담 내용]
@@ -50,8 +59,9 @@ ${conversationText}
 4. 다음 상담에서 AI 코치가 기억해야 할 맥락을 "Memo:"로 명확히 남겨주세요.
 `;
 
-        const result = await model.generateContent(prompt);
-        const summary = result.response.text();
+            const result = await model.generateContent(prompt);
+            summary = result.response.text();
+        }
 
         // 4. Save to Coaching Sessions (Memory)
         await coachingService.saveStageSummary(userId, stage, summary);

@@ -7,6 +7,9 @@ import { Solar, Lunar } from 'lunar-javascript';
 import { optionalAuth } from '@/lib/auth';
 import { rateLimit } from '@/lib/rateLimit';
 import { FairUsagePolicy } from '@/lib/fairUsagePolicy';
+import { MYEONGSIM_AI_PHILOSOPHY_PROMPT } from '@/modules/MyeongsimAiPhilosophyModule';
+import { SmartAiSimulationEngine } from '@/services/SmartAiSimulationEngine';
+import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 
 const chatLimiter = rateLimit({
     interval: 60 * 1000, // 1분
@@ -57,7 +60,11 @@ export async function POST(req: NextRequest) {
                        process.env.GOOGLE_GEMINI_API_KEY || 
                        process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
 
-        if (!apiKey) {
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || 
+                           process.env.NEXT_PUBLIC_MOCK_AI === 'true' || 
+                           process.env.FORCE_SIMULATION_MODE === 'true';
+
+        if (!apiKey && !isMockMode) {
             console.error('[Myeongsim Chat] API Key missing');
             return new Response(JSON.stringify({ error: 'Gemini API 키가 설정되지 않았습니다.' }), {
                 status: 500,
@@ -264,6 +271,8 @@ ${userName} 선생님, 질문해 주셔서 감사합니다! 선생님의 섬세�
      특히 4대 행동 프로토콜 중 '${discProtocolTitle}'의 강한 추진력과, 5대 멘탈 매트릭스 중 '${big5MatrixTitle}'가 함께 가동되면서 최근 ${currentStressors}에서 마음을 태우셨던 조급함 다크코드가 형성되었습니다.
      지친 에너지(${energyLevel}%)와 무거웠던 수면 쿨링(${sleepQuality}점)을 정밀 디버깅하여, 오늘 AI 코치가 가장 다정하고 우아하게 뇌 회로 재배선을 도와드리겠습니다.
 4. 위 공식으로 수검자의 기질, 동기, 행동, 멘탈을 1:1로 엮어서, 수검자가 "와! 내 내면의 모든 특성이 사주와 완벽하게 맞아떨어지다니!" 하고 감동적인 3S(Scan ➔ Sync ➔ Shift) 뇌 쿨링 코칭을 완수하십시오!
+
+${MYEONGSIM_AI_PHILOSOPHY_PROMPT}
 `;
 
         const genAI = new GoogleGenerativeAI(apiKey);
@@ -292,6 +301,53 @@ ${userName} 선생님, 질문해 주셔서 감사합니다! 선생님의 섬세�
         // 악의적인 장문 공격 방어 (최대 1,000자로 안전 절삭)
         const rawLastMessage = messages.length > 0 ? messages[messages.length - 1].content : '';
         const lastUserMessage = typeof rawLastMessage === 'string' ? rawLastMessage.slice(0, 1000) : '';
+
+        // 🌟 [방식 1. 스마트 AI 시뮬레이션 모드: API 미구동 & 100% 생년월일 사주 맞춤 실시간 생성]
+        if (isMockMode || !apiKey) {
+            console.log(`[Myeongsim Chat] 🧪 스마트 AI 시뮬레이션 가동: ${userName} (${birthDate}, ${dayStem})`);
+            const userContext = {
+                userName,
+                birthDate,
+                birthTime,
+                calendarType,
+                gender,
+                dayMaster: dayStem,
+                energyLevel,
+                sleepQuality,
+                stressFactors: currentStressors,
+                mbti,
+                enneagram,
+                disc,
+                big5
+            };
+            const simulatedText = SmartAiSimulationEngine.generatePersonalizedResponse(userContext, lastUserMessage);
+
+            // 로그인 사용자 대화 로그 저장
+            if (effectiveUserId && !effectiveUserId.startsWith('guest-')) {
+                try {
+                    if (lastUserMessage) {
+                        await supabase.from('myeongsim_chat_logs').insert({
+                            user_id: effectiveUserId,
+                            session_id: sessionId || null,
+                            role: 'user',
+                            content: lastUserMessage
+                        });
+                    }
+                    if (simulatedText) {
+                        await supabase.from('myeongsim_chat_logs').insert({
+                            user_id: effectiveUserId,
+                            session_id: sessionId || null,
+                            role: 'assistant',
+                            content: simulatedText
+                        });
+                    }
+                } catch (err) {
+                    console.error('[Myeongsim Chat Simulation] History save error:', err);
+                }
+            }
+
+            return SmartAiSimulationEngine.createStreamResponse(simulatedText);
+        }
 
         const chat = model.startChat({
             history: formattedHistory,
@@ -361,7 +417,7 @@ ${userName} 선생님, 질문해 주셔서 감사합니다! 선생님의 섬세�
     } catch (error: any) {
         console.error('[Myeongsim Chat] API Error:', error);
         return new Response(JSON.stringify({
-            error: error.message || '명심 AI 챗봇 연결 중 오류가 발생했습니다.'
+            error: formatFriendlyErrorMessage(error)
         }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }

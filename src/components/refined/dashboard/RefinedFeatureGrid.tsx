@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { FileText, BookOpen, Music, Briefcase, Activity, ChevronRight, Zap } from 'lucide-react';
+import { FileText, BookOpen, Music, Briefcase, Activity, ChevronRight, Zap, Globe } from 'lucide-react';
 
 interface RefinedFeatureGridProps {
     onOpenReport: () => void;
@@ -22,11 +22,11 @@ export function RefinedFeatureGrid({ onOpenReport }: RefinedFeatureGridProps) {
         },
         {
             id: 'library',
-            title: '명심코칭 디지털 도서관',
-            desc: '도서 《제로 포인트》 e-Book 전문',
+            title: '도서 《ZERO POINT》',
+            desc: 'YES24 공식 도서 구매',
             icon: <BookOpen size={18} className="text-[#18C5D9]" />,
-            badge: '신간',
-            onClick: () => router.push('/library')
+            badge: '공식도서',
+            onClick: () => window.open('https://www.yes24.com/Product/Goods/195946431', '_blank')
         },
         {
             id: 'today',

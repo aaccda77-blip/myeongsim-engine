@@ -17,10 +17,8 @@ interface PaymentLockOverlayProps {
 }
 
 export default function PaymentLockOverlay({ onRefresh, userId }: PaymentLockOverlayProps) {
-    // ⚡ [최종 무적 방패] 이미 승인된 사용자라면 어떤 경우에도 오버레이 렌더링 0초 원천 차단!
-    if (typeof window !== 'undefined' && isUserApprovedSync()) {
-        return null;
-    }
+    // 🌟 [오픈기념 전면 무료 개방] 결제 잠금 오버레이 완전 차단
+    return null;
 
     const router = useRouter();
     const [isRefreshing, setIsRefreshing] = useState(false);

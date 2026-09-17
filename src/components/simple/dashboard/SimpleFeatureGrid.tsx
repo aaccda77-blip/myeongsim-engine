@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, FileText, Music, Briefcase, ChevronRight, Layers, ArrowUpRight } from 'lucide-react';
+import { BookOpen, FileText, Music, Briefcase, ChevronRight, Layers, ArrowUpRight, Globe } from 'lucide-react';
 
 interface SimpleFeatureGridProps {
     onOpenAllFeatures: () => void;
@@ -26,14 +26,14 @@ export function SimpleFeatureGrid({ onOpenAllFeatures, onOpenReport }: SimpleFea
         },
         {
             id: 'library',
-            title: '명심코칭 도서관',
-            desc: '《제로 포인트》 e-Book',
-            tag: 'BOOK',
+            title: '도서 《ZERO POINT》',
+            desc: 'YES24 공식 도서 구매',
+            tag: 'YES24',
             cardBg: 'from-cyan-950/20 via-[#101b2e] to-[#0c1524]',
             border: 'border-cyan-400/20 hover:border-cyan-400/50',
             iconBg: 'bg-cyan-400/10 text-cyan-400 border-cyan-400/30',
             icon: <BookOpen size={18} />,
-            onClick: () => router.push('/library')
+            onClick: () => window.open('https://www.yes24.com/Product/Goods/195946431', '_blank')
         },
         {
             id: 'music',

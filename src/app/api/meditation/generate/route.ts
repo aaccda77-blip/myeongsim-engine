@@ -12,10 +12,22 @@ export const POST = requireAuth(async (req: NextRequest, auth) => {
             return NextResponse.json({ error: 'Code data required' }, { status: 400 });
         }
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
-        if (!apiKey) {
-            console.error("Missing GEMINI_API_KEY or GOOGLE_AI_API_KEY");
-            return NextResponse.json({ error: 'Server Config Error: Missing Gemini Key' }, { status: 500 });
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline meditation script.");
+            const offlineScript = `숨을 깊이 들이마시고... 천천히 내쉽니다.
+오늘 우리가 함께 마주하는 주파수는 ${codeNumber}번, '${title}'입니다.
+
+내면에서 올라오는 그림자(${darkCode?.name || '불안'})를 억지로 밀어내지 마세요. 그것은 당신이 상처받지 않도록 온 힘을 다해 지켜온 다정한 흔적입니다. 가만히 숨을 쉬며 그 그림자를 안아줍니다.
+
+이제 그 너머에서 깨어나는 선물(${gift?.name || '지혜'})의 빛을 느껴보세요. 모든 애씀이 멈춘 고요한 자리, 바로 그 순수 자각의 메타코드(${metaCode?.name || '평온'}) 속에서 당신은 이미 온전합니다.
+
+오늘의 질문을 마음에 품어봅니다: "${journalPrompt || '지금 이 순간 가장 진실한 나의 마음은 무엇인가요?'}"
+평화로운 호흡과 함께 이 고요함에 머무르세요.`;
+
+            return NextResponse.json({ script: offlineScript });
         }
 
         const systemPrompt = `

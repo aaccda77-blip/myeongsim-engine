@@ -14,9 +14,27 @@ export class SoulFoodEngineModule {
         todayIljin: string,
         targetSaju?: any
     ): Promise<string> {
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
         const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
-        if (!apiKey) {
-            return "오류: AI 코치 API 키가 설정되지 않았습니다.";
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline soul food recipe.");
+            return `> 🌡️ **현재 환경**: ${envData || '쾌적한 실내'}
+> ☯️ **가이드 이유 (오행적 해석)**: 오늘 ${todayIljin}의 기운과 사주 체질의 밸런스를 고려할 때, 뭉친 기운을 부드럽게 순환시키고 체내 수분과 온기를 보충해 주는 식재료가 최상의 보약입니다.
+
+🍲 **[옵션 1. 일반 건강식: 따뜻한 버섯 들깨탕]**
+🧑‍🍳 **초간단 레시피**
+1. 냄비에 다시마 육수를 붓고 표고버섯과 느타리버섯을 썰어 넣습니다.
+2. 끓어오르면 들깻가루 3큰술과 국간장 1작은술을 넣고 중불에서 5분간 끓입니다.
+3. 송송 썬 대파를 올리고 따뜻하게 한 그릇 비워냅니다.
+
+🥗 **[옵션 2. 저탄고지(Keto): 소고기 아보카도 웜샐러드]**
+🧑‍🍳 **키토 레시피**
+1. 얇게 썬 소고기(우삼겹/차돌)를 팬에 바삭하게 굽습니다.
+2. 볼에 신선한 어린잎 채소와 깍둑썰기한 아보카도를 담습니다.
+3. 구운 소고기를 올리고 올리브오일과 소금, 후추를 살짝 둘러 즐깁니다.
+
+_💡 명심 코치: 정성껏 준비한 따뜻한 한 끼가 내 몸과 마음에 가장 깊은 평화를 선물합니다. ✨_`;
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);

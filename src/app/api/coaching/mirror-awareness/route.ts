@@ -17,6 +17,26 @@ export async function POST(req: NextRequest) {
       '108Answers': answers108
     } = await req.json();
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline mirror-awareness report.");
+      const uName = userName || '명심가';
+      const offlineResult = {
+        title: "순수 의식 각성 마스터 리포트",
+        emptinessContemplation: `${uName}님이 몸의 긴장과 일시적 감각을 내려놓으며 걸어온 자각의 여정은 참으로 숭고합니다. 몸에서 느껴지는 피로와 감정은 내가 머무는 집의 창문에 부는 바람일 뿐, 그 방 안의 고요한 관찰자인 ${uName}님 자신은 결코 훼손되지 않습니다.`,
+        trueSelfNature: `신체의 변화나 세월의 흐름에도 전혀 닳거나 오염되지 않는 순수한 앎의 빛깔을 지니고 계십니다. 텅 빈 하늘처럼 맑고 고요하게 모든 경험을 비추는 영점 의식의 평화가 언제나 당신과 함께합니다.`,
+        dailyAwarenessAnchor: [
+          "신체적 피로나 통증이 느껴질 때, '이 감각을 알아차리는 나는 누구인가?'를 가만히 자각하며 3번 깊이 숨을 쉽니다.",
+          "거울을 볼 때 비치는 육체 뒤편에서 그것을 바라보고 있는 맑고 투명한 관찰자의 시선에 10초간 머무릅니다."
+        ],
+        soulQuote: "육체는 내가 입은 옷일 뿐, 나는 영원히 맑고 고요한 생명의 하늘입니다."
+      };
+
+      return NextResponse.json(offlineResult);
+    }
+
     const model = genAI.getGenerativeModel({
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       generationConfig: {

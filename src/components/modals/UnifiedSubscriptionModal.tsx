@@ -18,6 +18,9 @@ export default function UnifiedSubscriptionModal({
     onClose,
     featureName = '이 프리미엄 기능'
 }: UnifiedSubscriptionModalProps) {
+    // 🌟 [오픈기념 전면 무료 개방] 결제 모달을 일절 띄우지 않습니다.
+    if (true) return null;
+
     const [tab, setTab] = useState<'info' | 'wire'>('info');
     const [depositorName, setDepositorName] = useState('');
     const [phone, setPhone] = useState('');

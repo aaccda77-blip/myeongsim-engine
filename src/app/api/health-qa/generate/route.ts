@@ -23,6 +23,30 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+        const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+        if (isMockMode || !apiKey) {
+            console.log("Mock AI Mode enabled, returning customized offline health QA.");
+            return NextResponse.json({
+                id: `offline_qa_${Date.now()}`,
+                category: 'general',
+                question: question,
+                answer: {
+                    greeting: `안녕하세요! 건강한 활력을 지키는 명심 AI 코치입니다.`,
+                    core_message: `질문해주신 "${question}"에 대해 무리하지 않고 안전하게 실천할 수 있는 핵심 지침을 안내해 드립니다.`,
+                    advice_cards: [
+                        { icon: "fitness_center", title: "점진적 강도 조절", content: "현재 체력에 맞춰 가벼운 스트레칭과 유산소부터 점진적으로 시작하세요." },
+                        { icon: "restaurant", title: "균형 잡힌 영양", content: "규칙적인 수분 섭취와 비타민·단백질 중심의 식단을 유지하세요." },
+                        { icon: "schedule", title: "충분한 수면과 회복", content: "운동 후에는 7~8시간의 충분한 수면으로 신체 회복 시간을 보장하세요." }
+                    ],
+                    closing: "💡 작은 습관 하나가 내 몸의 건강한 기적을 만듭니다!"
+                },
+                tags: ['맞춤건강', level],
+                difficulty: level
+            });
+        }
+
         // 레벨별 프롬프트 설정
         const levelInstructions: Record<string, string> = {
             beginner: `

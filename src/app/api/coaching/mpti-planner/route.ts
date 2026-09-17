@@ -7,6 +7,50 @@ export async function POST(req: NextRequest) {
   try {
     const { userName, resultType, birthOhaeng, answers, worry, chatHistory, currentStep, avatarCode, crossoverMode, sajuPillars, psychologyScores } = await req.json();
 
+    const isMockMode = process.env.GEMINI_MOCK_MODE === 'true' || process.env.NEXT_PUBLIC_MOCK_AI === 'true';
+    const apiKey = process.env.GEMINI_API_KEY || '';
+
+    if (isMockMode || !apiKey) {
+      console.log("Mock AI Mode enabled, returning customized offline mpti-planner response.");
+      const uName = userName || '명심가';
+
+      if (worry !== undefined) {
+        return NextResponse.json({
+          reply: `${uName}님, 지금 말씀해주신 고민("${worry.slice(0, 30)}...")은 내면의 에고가 나를 보호하려 켜둔 경고 신호입니다. 이 생각을 억지로 고치려 하지 마시고, '아, 내 마음에 이런 소음이 잠시 지나가는구나'라며 한 걸음 물러서서 가만히 지켜보세요. 당신의 본질은 언제나 평온합니다.`,
+          current_step: currentStep || 1,
+          next_step: Math.min((currentStep || 1) + 1, 4),
+          should_move_to_next_step: true,
+          insight_tag: "에고 관조 및 수용",
+          noise_label: "과잉 방어 기제",
+          micro_shift_action: "어깨의 긴장을 풀고 3초간 코로 깊게 숨을 들이마신 뒤 길게 내쉬기"
+        });
+      }
+
+      if (crossoverMode) {
+        return NextResponse.json({
+          harmonyScore: 88,
+          analysisIntro: `${uName}님의 선천적 그릇과 후천적 삶의 궤적이 융합된 나만의 종합 운명 우주 총평입니다.`,
+          sajuAnalysis: `타고난 선천 오행의 분포와 일주 기질은 깊은 성찰력과 확고한 내면의 중심축을 상징합니다.`,
+          psychologyAnalysis: `후천적 심리 검사 지표는 높은 통찰력과 적응력을 보여주며, 외부 상황에 유연하게 대응하는 잠재력을 드러냅니다.`,
+          crossoverAnalysis: `선천적 기질의 원석이 후천적 지혜와 맞물리며 일상에서 강력한 문제 해결 역량으로 발현되고 있습니다.`,
+          lifeGuide: `결핍을 두려워하지 말고 타인과의 상생을 위한 고마운 공간으로 수용하세요. 일상의 리듬을 정렬할 때 최고의 성과가 열립니다.`,
+          customTraits: ["깊은 분석력과 본질 꿰뚫기", "신중하고 책임감 있는 실행력", "내면의 고요한 회복 탄력성"],
+          customWeaknesses: ["완벽주의로 인한 실행 지연", "과도한 타인 배려로 인한 피로", "혼자 감당하려는 책임감"]
+        });
+      }
+
+      return NextResponse.json({
+        systemWarning: "[NOTICE] MYONGSIM KERNEL OPTIMIZED. ZERO-POINT SYNC ACTIVE.",
+        oneLiner: `${uName}님의 타고난 기질 에너지에 최적화된 1일 맞춤형 마음 플래너가 활성화되었습니다.`,
+        missions: [
+          "거절하기 전 10초 동안 호흡하며 내면의 중심 확인하기",
+          "나의 에너지를 소모시키는 불필요한 알림 끄기",
+          "가장 중요한 핵심 과제 1개에만 25분간 집중 몰입하기"
+        ],
+        meditation: "나는 모든 소음에서 벗어나 온전히 나로서 여기에 평화롭게 머무릅니다."
+      });
+    }
+
     const model = genAI.getGenerativeModel({ 
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       generationConfig: {
