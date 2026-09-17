@@ -30,7 +30,7 @@ export default function DownloadPage() {
         {/* Primary Download: APK */}
         <div className="space-y-4 mb-8">
           <a
-            href="/download/myeongsim-release.apk"
+            href="/api/download/myeongsim-release.apk"
             download="myeongsim-release.apk"
             className="flex items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-2xl font-bold shadow-lg shadow-amber-500/20 transition-all transform hover:-translate-y-0.5"
           >
@@ -46,7 +46,7 @@ export default function DownloadPage() {
 
           {/* Secondary Download: AAB for Store */}
           <a
-            href="/download/myeongsim-release.aab"
+            href="/api/download/myeongsim-release.aab"
             download="myeongsim-release.aab"
             className="flex items-center justify-between p-4 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-2xl text-slate-200 transition-all"
           >
@@ -65,7 +65,7 @@ export default function DownloadPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-amber-300">🖼️ 스토어 등록용 이미지 파일들</span>
               <a
-                href="/download/google_play_assets.zip"
+                href="/api/download/google_play_assets.zip"
                 download="google_play_assets.zip"
                 className="text-xs bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 px-2.5 py-1 rounded-lg font-bold"
               >
@@ -74,7 +74,7 @@ export default function DownloadPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <a
-                href="/download/app_icon_512.png"
+                href="/api/download/app_icon_512.png"
                 download="app_icon_512.png"
                 className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200"
               >
@@ -82,7 +82,7 @@ export default function DownloadPage() {
                 <span className="text-amber-400 font-bold">받기 ➔</span>
               </a>
               <a
-                href="/download/feature_graphic_1024x500.png"
+                href="/api/download/feature_graphic_1024x500.png"
                 download="feature_graphic_1024x500.png"
                 className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200"
               >
@@ -90,7 +90,7 @@ export default function DownloadPage() {
                 <span className="text-amber-400 font-bold">받기 ➔</span>
               </a>
               <a
-                href="/download/screenshot_1.png"
+                href="/api/download/screenshot_1.png"
                 download="screenshot_1.png"
                 className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200"
               >
@@ -98,7 +98,7 @@ export default function DownloadPage() {
                 <span className="text-amber-400 font-bold">받기 ➔</span>
               </a>
               <a
-                href="/download/screenshot_2.png"
+                href="/api/download/screenshot_2.png"
                 download="screenshot_2.png"
                 className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200"
               >
@@ -106,7 +106,7 @@ export default function DownloadPage() {
                 <span className="text-amber-400 font-bold">받기 ➔</span>
               </a>
               <a
-                href="/download/screenshot_3.png"
+                href="/api/download/screenshot_3.png"
                 download="screenshot_3.png"
                 className="p-2.5 bg-slate-900/80 hover:bg-slate-700/80 rounded-xl flex items-center justify-between border border-slate-700 text-slate-200 sm:col-span-2"
               >
