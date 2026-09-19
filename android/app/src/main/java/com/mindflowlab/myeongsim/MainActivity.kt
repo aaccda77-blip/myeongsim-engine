@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.net.http.SslError
 import android.os.Bundle
+import android.view.WindowManager
 import android.webkit.JavascriptInterface
 import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
@@ -33,6 +34,12 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 🛡️ [SECURITY FLAG_SECURE] 금융/보안 앱 수준: 악성 스파이웨어 화면 캡처 및 백그라운드 녹화 차단
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+
         super.onCreate(savedInstanceState)
 
         // 1. Google Mobile Ads (AdMob) 초기화

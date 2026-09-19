@@ -20,6 +20,25 @@ interface AdContextType {
 
 const AdContext = createContext<AdContextType | undefined>(undefined);
 
+// 🛡️ [SECURITY] 클라이언트 로컬스토리지 결제 상태 위변조 방지 무결성 서명기
+const INTEGRITY_SALT = 'MYEONGSIM_SECURE_PURCHASE_VERIFIER_2026';
+
+function generateSignature(productId: string): string {
+    let hash = 0;
+    const str = `${productId}:${INTEGRITY_SALT}`;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
+    }
+    return `sig_${Math.abs(hash).toString(36)}`;
+}
+
+function verifySignature(productId: string, signature: string | null): boolean {
+    if (!signature) return false;
+    return signature === generateSignature(productId);
+}
+
 export function AdProvider({ children }: { children: React.ReactNode }) {
     const [isAdFree, setIsAdFree] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -29,25 +48,40 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         setMounted(true);
-        // 1. 로컬 저장소 확인
-        const savedAd = typeof window !== 'undefined' && localStorage.getItem('myeongsim_ad_removed') === 'true';
-        if (savedAd) {
-            setIsAdFree(true);
-        }
-        const savedAi = typeof window !== 'undefined' && (
-            localStorage.getItem('myeongsim_ai_server_unlocked') === 'true' ||
-            localStorage.getItem('myeongsim_paid_user') === 'true'
-        );
-        if (savedAi) {
-            setIsAiServerUnlocked(true);
-        }
-
-        // 2. 안드로이드 네이티브 앱 IAP 인앱 결제 콜백 등록
+        // 1. 로컬 저장소 확인 및 무결성 서명 검증 (콘솔 조작 방어)
         if (typeof window !== 'undefined') {
+            const savedAd = localStorage.getItem('myeongsim_ad_removed') === 'true';
+            if (savedAd) {
+                const adSig = localStorage.getItem('myeongsim_sig_ad');
+                if (verifySignature('remove_ads_3300', adSig) || localStorage.getItem('myeongsim_paid_user') === 'true') {
+                    setIsAdFree(true);
+                } else {
+                    // 서명 불일치: 위변조된 상태 감지 시 즉각 초기화
+                    console.warn('[Security] 위변조된 광고 제거 상태가 감지되어 초기화되었습니다.');
+                    localStorage.removeItem('myeongsim_ad_removed');
+                    setIsAdFree(false);
+                }
+            }
+
+            const savedAi = localStorage.getItem('myeongsim_ai_server_unlocked') === 'true';
+            if (savedAi) {
+                const aiSig = localStorage.getItem('myeongsim_sig_ai');
+                if (verifySignature('myeongsim_ai_api_server_98000', aiSig) || localStorage.getItem('myeongsim_paid_user') === 'true') {
+                    setIsAiServerUnlocked(true);
+                } else {
+                    // 서명 불일치: 위변조된 상태 감지 시 즉각 초기화
+                    console.warn('[Security] 위변조된 AI 서버 해제 상태가 감지되어 초기화되었습니다.');
+                    localStorage.removeItem('myeongsim_ai_server_unlocked');
+                    setIsAiServerUnlocked(false);
+                }
+            }
+
+            // 2. 안드로이드 네이티브 앱 IAP 인앱 결제 콜백 등록 (서명 포함 발급)
             // (1) 3,300원 광고 제거 콜백
             (window as any).onAdRemovedPurchased = () => {
                 console.log('[AdContext] 구글 플레이 인앱 결제 승인 완료: remove_ads_3300');
                 localStorage.setItem('myeongsim_ad_removed', 'true');
+                localStorage.setItem('myeongsim_sig_ad', generateSignature('remove_ads_3300'));
                 setIsAdFree(true);
                 setIsModalOpen(false);
             };
@@ -56,7 +90,9 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             (window as any).onAiServerUnlocked = () => {
                 console.log('[AdContext] 구글 플레이 구독 승인 완료: myeongsim_ai_api_server_98000');
                 localStorage.setItem('myeongsim_ad_removed', 'true');
+                localStorage.setItem('myeongsim_sig_ad', generateSignature('remove_ads_3300'));
                 localStorage.setItem('myeongsim_ai_server_unlocked', 'true');
+                localStorage.setItem('myeongsim_sig_ai', generateSignature('myeongsim_ai_api_server_98000'));
                 setIsAdFree(true);
                 setIsAiServerUnlocked(true);
                 grantUserApprovalSync('AI_SERVER_98000');

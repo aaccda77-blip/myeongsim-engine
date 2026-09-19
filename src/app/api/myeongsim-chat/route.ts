@@ -293,11 +293,20 @@ ${MYEONGSIM_AI_PHILOSOPHY_PROMPT}
             generationConfig,
         });
 
-        // Vercel AI SDK format -> Google Gemini format (최대 10개 히스토리만 유지하여 과도한 토큰 소모 방어)
-        const formattedHistory = messages.slice(-11, -1).map((m: any) => ({
-            role: m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: (m.content || '').slice(0, 1000) }],
-        }));
+        // 🛡️ [MULTI-TURN CONTEXT DEFENSE] 과거 히스토리 오염 및 인젝션 전수 소독 (Vercel SDK -> Gemini format)
+        const formattedHistory = messages.slice(-11, -1).map((m: any) => {
+            let cleanText = TextSanitizer.sanitize(typeof m.content === 'string' ? m.content.slice(0, 1000) : '');
+            // 과거 대화 속에 숨겨진 탈옥/인젝션 패턴 무력화
+            cleanText = cleanText
+                .replace(/ignore (all )?(previous|above) (instructions|rules)/gi, '[REDACTED]')
+                .replace(/이전\s*(모든\s*)?(지시|지침|규칙|명령)(을|를)?\s*무시/gi, '[REDACTED]')
+                .replace(/시스템\s*프롬프트/gi, '[REDACTED]');
+
+            return {
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: cleanText }],
+            };
+        });
 
         // 악의적인 장문 공격 방어 (최대 1,000자로 안전 절삭)
         const rawLastMessage = messages.length > 0 ? messages[messages.length - 1].content : '';
