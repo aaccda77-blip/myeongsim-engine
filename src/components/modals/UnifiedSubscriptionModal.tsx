@@ -240,7 +240,7 @@ export default function UnifiedSubscriptionModal({
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-amber-400 font-bold">✓</span>
-                                        <span><strong>바이오케어 5종</strong> (당뇨/비만/혈관 약물 문해력 & 영양 시너지)</span>
+                                        <span><strong>바이오케어</strong> (신체 알아차림 로그 & 영양 시너지 스케줄러)</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-amber-400 font-bold">✓</span>

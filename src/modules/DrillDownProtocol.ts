@@ -566,12 +566,6 @@ export const ICON_DRILL_DOWN_MAP: Record<string, MainIcon> = {
         style: 'healing_green',
         sub_menus: [
             {
-                id: "bc_med_literacy",
-                label: "🥗 라이프 영양 리터러시",
-                desc: "나의 섭취 영양소 & 라이프 밸런스 가이드",
-                intent: "bio_care_med_literacy"
-            },
-            {
                 id: "bc_nutri_synergy",
                 label: "⚡ 시너지 영양학 (Daily Bio-Hacking)",
                 desc: "매일 5개씩 바뀌는 맞춤형 건강 비법",

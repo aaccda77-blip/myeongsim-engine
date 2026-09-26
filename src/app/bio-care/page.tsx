@@ -24,16 +24,6 @@ interface MenuCard {
 
 const MENU_CARDS: MenuCard[] = [
     {
-        id: 'med-literacy',
-        title: '라이프 영양 리터러시',
-        subtitle: 'Nutri-Literacy',
-        description: '나의 섭취 영양소와 라이프 밸런스 가이드',
-        icon: 'nutrition',
-        gradient: 'from-emerald-900/40 to-slate-900',
-        glowColor: 'bg-emerald-500/10',
-        route: '/bio-care/med-literacy'
-    },
-    {
         id: 'nutri-synergy',
         title: '영양소 타이밍 스케줄러',
         subtitle: 'Nutri-Timing',
