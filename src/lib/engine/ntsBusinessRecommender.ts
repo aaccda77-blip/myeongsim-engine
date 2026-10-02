@@ -238,7 +238,7 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
             mainIndustry: '전문, 과학 및 기술 서비스업',
             subIndustryAndCodes: [
                 { name: '경영 컨설팅업', code: '741400' },
-                { name: '인문 및 사회과학 연구개발업', code: '732002' }
+                { name: '응용 소프트웨어 개발 및 공급업', code: '722000' }
             ],
             businessModel: 'B2B 기업 리더십 진단, 1:1 프리미엄 경영·커리어 솔루션 자문 용역',
             colorTheme: 'cyan'
@@ -276,14 +276,14 @@ export const PRE_STARTUP_REPORT: NtsBusinessArchitectureReport = {
         realWorldApplication: '사용자가 생년월일과 고민을 입력하면 맞춤 알고리즘으로 자동 분석 리포트를 제공하는 SaaS'
     },
     primaryBusiness2: {
-        sectionTitle: '신뢰 자산 엔진: B2B 경영 컨설팅 & R&D',
+        sectionTitle: '신뢰 자산 엔진: B2B 경영 컨설팅 & 교육지원',
         badge: '주업종 2순위 (공신력)',
         matchReason: '巳火(정관)의 제도권 공신력과 辛金(전문 분석력)의 결합',
         mainCategory: '전문, 과학 및 기술 서비스업',
         colorTheme: 'cyan',
         subCategories: [
             { code: '741400', title: '경영 컨설팅업', businessModel: '스타트업 팀 진단, B2B 조직 코칭' },
-            { code: '732002', title: '인문 및 사회과학 연구개발업', businessModel: '사주·기질 분석 프레임워크 연구용역' }
+            { code: '809003', title: '기타 교육지원 서비스업', businessModel: '사주·기질 분석 프레임워크 기업 워크숍 및 훈련' }
         ],
         realWorldApplication: '기업 고객에게 리더십 진단 및 조직 케미스트리 분석 보고서를 납품하는 고단가 용역'
     },
@@ -972,7 +972,7 @@ function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
                 mainIndustry: '전문, 과학 및 기술 서비스업',
                 subIndustryAndCodes: [
                     { name: '경영 컨설팅업 (비즈니스 코칭)', code: '741400' },
-                    { name: '인문 및 사회과학 연구개발업', code: '732002' }
+                    { name: '응용 소프트웨어 개발 및 공급업', code: '722000' }
                 ],
                 businessModel: `창업가 1:1 맞춤 성장 코칭, 스타트업 비전 기획 & 조직 브랜딩 자문 용역`,
                 colorTheme: 'cyan' as const
@@ -1098,7 +1098,7 @@ function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
                 mainIndustry: '전문, 과학 및 기술 서비스업',
                 subIndustryAndCodes: [
                     { name: '심리·진로 전문 상담 및 자문업', code: '741400' },
-                    { name: '인문 및 사회과학 연구개발업', code: '732002' }
+                    { name: '기타 교육지원 서비스업 (기업 코칭/강의)', code: '809003' }
                 ],
                 businessModel: `1:1 심층 마인드셋 & 커리어 전환 코칭, 거시 트렌드 인사이트 자문`,
                 colorTheme: 'purple' as const
@@ -1141,7 +1141,7 @@ function buildDynamicTaxonomyTable(p: ReturnType<typeof parseSajuFourPillars>) {
                 mainIndustry: '전문, 과학 및 기술 서비스업',
                 subIndustryAndCodes: [
                     { name: '경영 컨설팅업', code: '741400' },
-                    { name: '인문 및 사회과학 연구개발업', code: '732002' }
+                    { name: '응용 소프트웨어 개발 및 공급업', code: '722000' }
                 ],
                 businessModel: `B2B 기업 리더십 진단, 1:1 프리미엄 품질 관리 및 표준 프로토콜 자문 용역`,
                 colorTheme: 'cyan' as const
