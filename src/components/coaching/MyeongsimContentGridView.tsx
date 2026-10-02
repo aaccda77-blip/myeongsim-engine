@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
 import FounderWelcomeLetterBanner from './FounderWelcomeLetterBanner';
 import { useReportStore } from '@/store/useReportStore';
+import AdminBizAuthModal from '@/components/modals/AdminBizAuthModal';
 
 const MultiDimensionalBlueprint = dynamic(() => import('@/components/chat/MultiDimensionalBlueprint'), { ssr: false });
 
@@ -33,6 +34,7 @@ export default function MyeongsimContentGridView({
 }: MyeongsimContentGridViewProps) {
   const userName = userProfile?.userName || '명심가';
   const [showBlueprintModal, setShowBlueprintModal] = useState(false);
+  const [showAdminBizPasswordModal, setShowAdminBizPasswordModal] = useState(false);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-5 pb-20 animate-in fade-in duration-500 text-left">
@@ -103,43 +105,50 @@ export default function MyeongsimContentGridView({
       </motion.div>
 
       {/* ==========================================
-          1. [비즈니스 설계] 5단계 웰니스 심층 리포트 & 국세청 업종 매핑 배너 카드
+          1. [비즈니스 아키텍트] 5단계 창업 구조화 리포트 & KSIC 업종 매핑 배너 카드 (관리자 잠금)
           ========================================== */}
       <motion.div
         whileHover={{ scale: 1.01, y: -2 }}
         whileTap={{ scale: 0.98 }}
-        onClick={onOpenNtsModal}
+        onClick={() => {
+          const isUnlocked = typeof window !== 'undefined' && sessionStorage.getItem('myeongsim_biz_admin_unlocked') === 'true';
+          if (!isUnlocked) {
+            setShowAdminBizPasswordModal(true);
+            return;
+          }
+          onOpenNtsModal?.();
+        }}
         className="group relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#1c1830] via-[#101428] to-[#1a1226] border-2 border-emerald-500/50 p-5 sm:p-6 shadow-2xl hover:border-emerald-400 transition-all cursor-pointer flex flex-col justify-between"
       >
         <div className="flex items-center justify-between z-10">
           <span className="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
             <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
-            <span>[비즈니스 설계] 5단계 웰니스 심층 리포트</span>
+            <span>[비즈니스 아키텍트] 5단계 창업 구조화 리포트</span>
           </span>
           <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 text-slate-950 font-black text-[11px] px-3.5 py-1 rounded-full shadow-lg flex items-center gap-1">
-            🏛️ 국세청 1:1 매핑
+            🔒 관리자 전용 · KSIC 매핑
           </span>
         </div>
 
         <div className="my-3 z-10 space-y-1">
           <h3 className="text-lg sm:text-xl font-black text-white tracking-tight group-hover:text-emerald-300 transition-colors font-serif">
-            국세청 업태·종목 분류 기반 1:1 비즈니스 아키텍처
+            표준산업분류(KSIC) 기반 1:1 비즈니스 아키텍처
           </h3>
           <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed font-sans">
-            인지 아키타입 진단 ➔ 표준 업종 매핑(724000/741400) ➔ 번아웃 방지 ➔ 원클릭 행정/절세 ➔ 3단계 스케일업 로드맵
+            인지 스타일 진단 ➔ 표준 업종 매핑(공공코드) ➔ 지속가능 실행 관리 ➔ 기초 설립 절차 가이드 ➔ 3단계 린 로드맵
           </p>
           <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[10px] text-emerald-300/90 font-mono">
-            <span className="bg-slate-950/80 border border-emerald-500/30 px-2 py-0.5 rounded">1. 아키타입</span>
+            <span className="bg-slate-950/80 border border-emerald-500/30 px-2 py-0.5 rounded">1. 인지 스타일</span>
             <span className="bg-slate-950/80 border border-emerald-500/30 px-2 py-0.5 rounded">2. 업종 매핑</span>
-            <span className="bg-slate-950/80 border border-rose-500/30 px-2 py-0.5 rounded text-rose-300">3. 번아웃 방지</span>
-            <span className="bg-slate-950/80 border border-cyan-500/30 px-2 py-0.5 rounded text-cyan-300">4. 실전 행정</span>
-            <span className="bg-slate-950/80 border border-purple-500/30 px-2 py-0.5 rounded text-purple-300">5. 스케일업</span>
+            <span className="bg-slate-950/80 border border-rose-500/30 px-2 py-0.5 rounded text-rose-300">3. 실행 밸런스</span>
+            <span className="bg-slate-950/80 border border-cyan-500/30 px-2 py-0.5 rounded text-cyan-300">4. 절차 가이드</span>
+            <span className="bg-slate-950/80 border border-purple-500/30 px-2 py-0.5 rounded text-purple-300">5. 린 스케일업</span>
           </div>
         </div>
 
         <div className="z-10 flex items-center justify-between border-t border-white/10 pt-3 text-[11px]">
           <span className="text-emerald-400 font-bold flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5" /> 1:1 비즈니스 챗봇 어시스턴트 즉시 연동
+            <Sparkles className="w-3.5 h-3.5" /> 1:1 비즈니스 빌딩 AI 어시스턴트 연동
           </span>
           <span className="text-emerald-300 font-extrabold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             열람하기 <ChevronRight className="w-4 h-4" />
@@ -426,6 +435,15 @@ export default function MyeongsimContentGridView({
         <div className="pt-8">
           <Footer />
         </div>
+
+        {/* [NEW] 비즈니스 아키텍트 관리자 비밀번호 인증 모달 */}
+        <AdminBizAuthModal
+          isOpen={showAdminBizPasswordModal}
+          onClose={() => setShowAdminBizPasswordModal(false)}
+          onSuccess={() => {
+            onOpenNtsModal?.();
+          }}
+        />
       </AnimatePresence>
     </div>
   );

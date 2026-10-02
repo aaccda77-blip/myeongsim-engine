@@ -71,6 +71,7 @@ const MyeongsimGeniusReportModal = dynamic(() => import('@/components/coaching/M
 const MyeongsimOracleCardModal = dynamic(() => import('@/components/coaching/MyeongsimOracleCardModal'), { ssr: false });
 const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/coaching/DarkCodeCompassionTransformerModal'), { ssr: false });
 const NtsBusinessCareerModal = dynamic(() => import('@/components/coaching/NtsBusinessCareerModal'), { ssr: false });
+import AdminBizAuthModal from '@/components/modals/AdminBizAuthModal';
 const ZeroPointMusicModal = dynamic(() => import('@/components/coaching/ZeroPointMusicModal'), { ssr: false });
 const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/AwarenessQuestDashboard'), { ssr: false });
 const UnifiedSubscriptionModal = dynamic(() => import('@/components/modals/UnifiedSubscriptionModal'), { ssr: false });
@@ -583,7 +584,8 @@ export default function DrillDownIconMenu({
     const [showMyeongsimGenius, setShowMyeongsimGenius] = useState(false);
     const [showMyeongsimOracle, setShowMyeongsimOracle] = useState(false);
     const [showDarkCodeTransformer, setShowDarkCodeTransformer] = useState(false);
-    const [showNtsCareerModal, setShowNtsCareerModal] = useState(false); // [NEW] 국세청 창업·N잡 모달 상태
+    const [showNtsCareerModal, setShowNtsCareerModal] = useState(false); // [NEW] 비즈니스 아키텍트 모달 상태
+    const [showAdminBizPasswordModal, setShowAdminBizPasswordModal] = useState(false); // [NEW] 비즈니스 아키텍트 관리자 비밀번호 모달 상태
     const [showZeroPointMusic, setShowZeroPointMusic] = useState(false); // [NEW] 사주 맞춤 제로포인트 음악 모달
     const [showAwarenessQuestDashboard, setShowAwarenessQuestDashboard] = useState(false); // [NEW] 108 핵심 자각 퀘스트 대시보드
     const [awarenessQuestInitialPhase, setAwarenessQuestInitialPhase] = useState('all');
@@ -951,9 +953,14 @@ export default function DrillDownIconMenu({
             return;
         }
 
-        // [NEW] 국세청 창업·N잡 실전 업태/종목 모달
+        // [NEW] 비즈니스 아키텍트 실전 업태/종목 모달 (관리자 잠금 검증)
         if (subItem.intent === 'nts_business_career' || subItem.intent === 'nts_business_view') {
             setSelectedIcon(null);
+            const isUnlocked = typeof window !== 'undefined' && sessionStorage.getItem('myeongsim_biz_admin_unlocked') === 'true';
+            if (!isUnlocked) {
+                setShowAdminBizPasswordModal(true);
+                return;
+            }
             setShowNtsCareerModal(true);
             return;
         }
@@ -1704,38 +1711,55 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 💼 국세청 공식 업태·종목 추천 (Level 3 전문코치) */}
+                {/* [NEW] 💼 비즈니스 아키텍트 (관리자 전용 비밀번호 잠금) */}
                 <button
-                    style={{ ...styles.iconButton, ...getSkillLockStyle('NTS_CAREER') }}
-                    onClick={() => handleSkillClick('NTS_CAREER', '국세청 공식 창업·N잡 리포트', () => {
-                        if (!canAccessDeepFeatures) {
-                            openModal('국세청 공식 업태·종목 창업 리포트');
+                    style={{ ...styles.iconButton }}
+                    onClick={() => {
+                        const isUnlocked = typeof window !== 'undefined' && sessionStorage.getItem('myeongsim_biz_admin_unlocked') === 'true';
+                        if (!isUnlocked) {
+                            setShowAdminBizPasswordModal(true);
                             return;
                         }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) {
-                            alert('1:1 맞춤형 국세청 업태·종목 추천을 위해 생년월일을 먼저 등록해주세요.');
+                            alert('1:1 맞춤형 표준 업종·BM 설계를 위해 생년월일을 먼저 등록해주세요.');
                             useReportStore.getState().setStep(1);
                             return;
                         }
                         setShowNtsCareerModal(true);
-                    })}
+                    }}
                 >
                     <div style={{
                         ...styles.iconWrapper,
                         background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.25))',
-                        border: '1px solid rgba(245, 158, 11, 0.5)',
+                        border: '1.5px solid rgba(245, 158, 11, 0.6)',
                         boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
                         position: 'relative',
                         zIndex: 10
                     }}>
-                        {renderAcademyLockBadge('NTS_CAREER')}
-                        {renderLockBadge(true)}
+                        {/* 관리자 전용 자물쇠 뱃지 상시 고정 표시 */}
+                        <span style={{
+                            position: 'absolute',
+                            top: '-4px',
+                            right: '-4px',
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            border: '1.5px solid #F59E0B',
+                            borderRadius: '9999px',
+                            padding: '1.5px 4.5px',
+                            fontSize: '9px',
+                            lineHeight: 1,
+                            zIndex: 25,
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.8)',
+                            color: '#FCD34D',
+                            fontWeight: 'bold'
+                        }}>
+                            🔒 관리자
+                        </span>
                         <span style={{ fontSize: '20px' }}>💼</span>
                     </div>
                     <div>
-                        <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>{t('menu.nts_career') || '국세청 창업·N잡'}</div>
-                        <div style={styles.neuroTrigger}>{t('menu.nts_career_desc') || '1:1 실전 업태·종목'}</div>
+                        <div style={{ ...styles.iconLabel, color: '#fbbf24', fontWeight: 'bold' }}>{t('menu.nts_career') || '비즈니스 아키텍트'}</div>
+                        <div style={styles.neuroTrigger}>{t('menu.nts_career_desc') || '1:1 표준 업종·BM'}</div>
                     </div>
                 </button>
 
@@ -3044,13 +3068,22 @@ export default function DrillDownIconMenu({
                 gongWang={userProfile?.saju?.gongWang || (reportData as any)?.saju?.gongWang || []}
             />
 
-            {/* [NEW] 국세청 공식 업태·종목 1:1 맞춤형 창업 코칭 모달 */}
+            {/* [NEW] 비즈니스 아키텍트 1:1 맞춤형 창업 설계 모달 */}
             <NtsBusinessCareerModal
                 isOpen={showNtsCareerModal}
                 onClose={() => setShowNtsCareerModal(false)}
                 userProfile={userProfile || reportData}
                 onStartChatCoaching={(prompt) => {
                     onSelectIntent('nts_business_coaching', prompt);
+                }}
+            />
+
+            {/* [NEW] 비즈니스 아키텍트 관리자 전용 비밀번호 인증 모달 */}
+            <AdminBizAuthModal
+                isOpen={showAdminBizPasswordModal}
+                onClose={() => setShowAdminBizPasswordModal(false)}
+                onSuccess={() => {
+                    setShowNtsCareerModal(true);
                 }}
             />
 

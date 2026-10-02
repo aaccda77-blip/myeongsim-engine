@@ -26,6 +26,7 @@ import { useReportStore } from '@/store/useReportStore';
 import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import AdminBizAuthModal from '@/components/modals/AdminBizAuthModal';
 
 interface NtsBusinessCareerModalProps {
     isOpen: boolean;
@@ -61,7 +62,7 @@ export default function NtsBusinessCareerModal({
     const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([
         {
             role: 'assistant',
-            content: `반갑습니다, ${userProfile?.userName || '대표'}님! 명심코칭의 3S(Scan-Sync-Shift) 인지과학 기질 분석 엔진을 탑재한 [명심 사업적성 1:1 맞춤 AI 코치]입니다. 국세청 업종 매핑, 중기부 PSST 사업계획서, 정부지원사업(예창패/초창패) 합격 전략에 대해 무엇이든 질문해 주세요.`
+            content: `반갑습니다, ${userProfile?.userName || '대표'}님! 인지행동 프레임워크와 3S(Scan-Sync-Shift) 진단 모델 기반의 [명심 비즈니스 아키텍트 AI]입니다. 표준산업분류(KSIC) 코드 매핑, 표준 PSST 사업계획서 구조화, 정부지원사업(예창패/초창패) 심사 대응 전략에 대해 무엇이든 질문해 주세요.`
         }
     ]);
     const [inputMessage, setInputMessage] = useState('');
@@ -76,7 +77,25 @@ export default function NtsBusinessCareerModal({
         }
     }, [chatMessages, isLoadingChat]);
 
+    const [isUnlocked, setIsUnlocked] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setIsUnlocked(sessionStorage.getItem('myeongsim_biz_admin_unlocked') === 'true');
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
+
+    if (!isUnlocked) {
+        return (
+            <AdminBizAuthModal
+                isOpen={isOpen}
+                onClose={onClose}
+                onSuccess={() => setIsUnlocked(true)}
+            />
+        );
+    }
 
     // 글로벌 스토어의 reportData와 props userProfile을 안전하게 병합
     const globalReportData = useReportStore.getState().reportData;
@@ -228,11 +247,11 @@ export default function NtsBusinessCareerModal({
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                             <span className="text-[11px] font-mono font-bold text-amber-400">
-                                🏛️ [명심 사업적성 1:1 맞춤코칭] PSST 사업계획서 & B2B 비즈니스 아키텍처
+                                🏛️ [명심 비즈니스 아키텍트] AI 기반 자가진단 및 PSST 사업계획서 구조화 솔루션
                             </span>
                         </div>
 
-                        {/* Switch: 내 명식 ↔ 베스트 롤모델 예시 */}
+                        {/* Switch: 내 인지 프로파일 ↔ 베스트 롤모델 벤치마크 */}
                         <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-[10.5px] font-bold">
                             <button
                                 onClick={() => setViewRoleModel(false)}
@@ -242,7 +261,7 @@ export default function NtsBusinessCareerModal({
                                         : 'text-gray-400 hover:text-white'
                                 }`}
                             >
-                                ✨ 내 명식 분석
+                                ✨ 내 인지 프로파일 분석
                             </button>
                             <button
                                 onClick={() => setViewRoleModel(true)}
@@ -252,7 +271,7 @@ export default function NtsBusinessCareerModal({
                                         : 'text-gray-400 hover:text-white'
                                 }`}
                             >
-                                👑 롤모델 예시 (辛巳)
+                                👑 롤모델 벤치마크 (표준 모델)
                             </button>
                         </div>
                     </div>
@@ -345,7 +364,7 @@ export default function NtsBusinessCareerModal({
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            1. 아키타입
+                            1. 업무 아키타입
                         </button>
                         <button
                             onClick={() => setActiveTab('step2')}
@@ -355,7 +374,7 @@ export default function NtsBusinessCareerModal({
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            2. 국세청 매핑
+                            2. 업종분류(KSIC) 매핑
                         </button>
                         <button
                             onClick={() => setActiveTab('step3')}
@@ -365,7 +384,7 @@ export default function NtsBusinessCareerModal({
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            3. 비즈니스 4대실행
+                            3. 핵심 비즈니스 실행
                         </button>
                         <button
                             onClick={() => setActiveTab('step4')}
@@ -375,7 +394,7 @@ export default function NtsBusinessCareerModal({
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            4. PSST 계획서
+                            4. PSST 사업계획서
                         </button>
                         <button
                             onClick={() => setActiveTab('step5')}
@@ -385,7 +404,7 @@ export default function NtsBusinessCareerModal({
                                     : 'text-gray-400 hover:text-white'
                             }`}
                         >
-                            5. 행정&스케일업
+                            5. 설립 절차 & 린 스케일업
                         </button>
                     </div>
 
@@ -410,7 +429,7 @@ export default function NtsBusinessCareerModal({
                             <div className="space-y-2">
                                 <div className="font-bold text-gray-200 flex items-center gap-1.5 text-xs">
                                     <Compass className="w-3.5 h-3.5 text-amber-400" />
-                                    <span>기질 프로파일링: 십신과 오행의 에너지 흐름</span>
+                                    <span>인지행동 프로파일링: 4차원 다면적 업무 역량 및 행동 패턴 분석</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -1056,7 +1075,7 @@ export default function NtsBusinessCareerModal({
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-300">
                                 <MessageSquare className="w-4 h-4 text-indigo-400" />
-                                <span>명심 사업적성 1:1 AI 비즈니스 자문실</span>
+                                <span>명심 비즈니스 아키텍트: AI 창업 자가진단 및 구조화 랩(Lab)</span>
                             </div>
                         </div>
 
@@ -1122,7 +1141,7 @@ export default function NtsBusinessCareerModal({
                             {isLoadingChat && (
                                 <div className="p-3 rounded-2xl bg-slate-900 text-indigo-300 border border-slate-800 mr-8 flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
-                                    <span className="text-xs">명심 비즈니스 AI 코치가 사업적성과 행정 코드를 분석 중입니다...</span>
+                                    <span className="text-xs">명심 비즈니스 AI 코치가 표준 업종과 PSST 구조를 분석 중입니다...</span>
                                 </div>
                             )}
                             <div ref={chatBottomRef} />
@@ -1131,10 +1150,10 @@ export default function NtsBusinessCareerModal({
                         {/* Quick Prompts */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                             {[
-                                { title: '예창패/초창패 통과 전략', prompt: '내 기질과 비즈니스 형태를 바탕으로, 정부지원사업 서류 심사에서 가산점을 받는 차별화 스토리라인을 작성해줘.' },
-                                { title: '국세청 창업감면 세무 행정', prompt: '국세청 사업자등록 시 주업종 724000과 741400을 활용해 연령별(청년 100%, 일반 50%) 5개년 소득세 감면을 안전하게 받는 비상주 사업장 등록 팁을 알려줘.' },
-                                { title: '1인 MVP 30일 로드맵', prompt: '직원 채용 없이 초기 30일 안에 최소기능제품(MVP)을 론칭하고 첫 유료 고객을 만드는 실행 계획을 짜줘.' },
-                                { title: '공망 ➔ 클라우드 플랫폼', prompt: '공망(비움)의 기질을 결핍이 아닌 무한 대역폭의 클라우드 플랫폼으로 전환하여 1인 기업을 스케일업하는 3단계 실행 전략을 짜줘.' }
+                                { title: '예창패/초창패 심사 대응 전략', prompt: '내 인지 스타일과 비즈니스 모델을 바탕으로, 정부지원사업(예창패/초창패) 서류 심사에서 높은 평가를 받는 차별화 PSST 스토리라인을 구조화해줘.' },
+                                { title: '표준업종(KSIC) 및 공공 세제 가이드', prompt: '표준산업분류 주업종 724000과 741400을 활용해 창업중소기업 세제 혜택 가이드와 적합한 사업장 등록 시 주의사항을 공공데이터 기준으로 안내해줘.' },
+                                { title: '1인 린 스타트업 30일 로드맵', prompt: '직원 채용 없이 초기 30일 안에 최소기능제품(MVP)을 론칭하고 초기 고객을 확보하기 위한 3단계 린(Lean) 실행 계획을 짜줘.' },
+                                { title: '자원 제약 극복 ➔ 플랫폼 전환', prompt: '물리적 자원의 제약을 극복하고, 클라우드와 디지털 지식 자산(IP)을 레버리지하여 1인 기업을 스케일업하는 3단계 플랫폼 전략을 짜줘.' }
                             ].map((cp, idx) => (
                                 <button
                                     key={idx}
@@ -1159,7 +1178,7 @@ export default function NtsBusinessCareerModal({
                                         handleSendMessage();
                                     }
                                 }}
-                                placeholder="사업계획서 작성, 정부지원사업, 국세청 코드 관련 질문을 입력하세요..."
+                                placeholder="비즈니스 모델 설계, 표준 업종 매핑, PSST 구조화 관련 질문을 입력하세요..."
                                 className="flex-1 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-gray-500 focus:outline-none focus:border-indigo-400 text-xs"
                             />
                             <button
@@ -1177,17 +1196,17 @@ export default function NtsBusinessCareerModal({
                         <button
                             onClick={() => {
                                 handleSendMessage(
-                                    `내 비즈니스명("${personalizedPsst.identityTitle}")과 국세청 코드(${personalizedPsst.onePointCheck.recommendedMainCode})를 바탕으로, PSST 사업계획서 [1. 문제 인식]과 [2. 실현 가능성] 항목을 심사위원 기준에서 가장 매력적인 문장으로 정밀 작성해 줘!`
+                                    `내 비즈니스명("${personalizedPsst.identityTitle}")과 표준업종 코드(${personalizedPsst.onePointCheck.recommendedMainCode})를 바탕으로, PSST 사업계획서 [1. 문제 인식]과 [2. 실현 가능성] 항목을 심사위원 기준에서 가장 매력적인 문장으로 정밀 구조화해 줘!`
                                 );
                             }}
                             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(245,158,11,0.35)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
                         >
                             <Briefcase className="w-4 h-4 fill-slate-950" />
-                            <span>💼 이 아키텍처로 1:1 맞춤 사업계획서 코칭 시작하기 ↗</span>
+                            <span>💼 이 아키텍처로 1:1 맞춤 PSST 사업계획서 구조화 시작하기 ↗</span>
                         </button>
 
                         <p className="text-[10px] text-gray-500 text-center">
-                            💡 내면의 본질(Being)을 정의하고 현실의 행동(Doing)을 표준 행정 체계로 풀어내는 글로벌 웰니스 솔루션
+                            💡 창업자의 인지 강점을 데이터 기반 표준 비즈니스 아키텍처로 구체화하는 HR-Tech 솔루션
                         </p>
                     </div>
                 </div>

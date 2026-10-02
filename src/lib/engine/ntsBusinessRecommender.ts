@@ -851,18 +851,18 @@ function buildDynamicCompetencies(p: ReturnType<typeof parseSajuFourPillars>) {
     return [
         {
             title: `1. 본원적 핵심 역량: ${dStem.trait}`,
-            tenGodFormula: `${dStem.name} + ${dBranch.name}`,
-            description: `나만의 고유한 선천적 강점(${dStem.name})을 기반으로 흔들리지 않는 튼튼한 사업 뼈대와 코어 비즈니스 엔진을 설계합니다.`
+            tenGodFormula: `본원 실행 지표 · 시스템 구축`,
+            description: `나만의 고유한 인지적 강점(${dStem.shortTrait})을 기반으로 흔들리지 않는 튼튼한 비즈니스 뼈대와 코어 엔진을 설계합니다.`
         },
         {
-            title: `2. 실전 세일즈 무기: ${mStem.trait}`,
-            tenGodFormula: `${mStem.name} + ${mBranch.name}`,
-            description: `시장의 가려운 곳과 고객의 결핍을 정확하게 짚어내고, ${mBranch.env}을 활용하여 즉각적인 신뢰와 선택을 받는 독보적 필살기입니다.`
+            title: `2. 시장 진입(GTM) 무기: ${mStem.trait}`,
+            tenGodFormula: `시장 통찰 지표 · 고밀도 지식 자산`,
+            description: `시장의 페인 포인트와 고객의 결핍을 정확하게 짚어내고, ${mBranch.env}을 활용하여 즉각적인 신뢰와 선택을 받는 독보적 차별화 역량입니다.`
         },
         {
-            title: `3. 미래 수익 파이프라인: ${tStem.trait}`,
-            tenGodFormula: `${tStem.name} + ${tBranch.name}`,
-            description: `1회성 일거리에 그치지 않고 ${tBranch.env}을 디지털 자산(강의/전자책/자동화툴)으로 축적하여 지속적으로 돈이 들어오는 시스템을 완성합니다.`
+            title: `3. 중장기 확장 파이프라인: ${tStem.trait}`,
+            tenGodFormula: `선제 실행 지표 · 디지털 자산화`,
+            description: `1회성 용역에 그치지 않고 ${tBranch.env}을 디지털 지식 자산(소프트웨어/지식 IP/자동화툴)으로 축적하여 지속 가능한 반복 수익(Recurring Revenue) 엔진을 구축합니다.`
         }
     ];
 }
