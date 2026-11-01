@@ -9,7 +9,6 @@ import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
 import FounderWelcomeLetterBanner from './FounderWelcomeLetterBanner';
 import { useReportStore } from '@/store/useReportStore';
-import AdminBizAuthModal from '@/components/modals/AdminBizAuthModal';
 
 const MultiDimensionalBlueprint = dynamic(() => import('@/components/chat/MultiDimensionalBlueprint'), { ssr: false });
 
@@ -34,7 +33,6 @@ export default function MyeongsimContentGridView({
 }: MyeongsimContentGridViewProps) {
   const userName = userProfile?.userName || '명심가';
   const [showBlueprintModal, setShowBlueprintModal] = useState(false);
-  const [showAdminBizPasswordModal, setShowAdminBizPasswordModal] = useState(false);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-5 pb-20 animate-in fade-in duration-500 text-left">
@@ -105,17 +103,12 @@ export default function MyeongsimContentGridView({
       </motion.div>
 
       {/* ==========================================
-          1. [비즈니스 아키텍트] 5단계 창업 구조화 리포트 & KSIC 업종 매핑 배너 카드 (관리자 잠금)
+          1. [비즈니스 아키텍트] 5단계 창업 구조화 리포트 & KSIC 업종 매핑 배너 카드
           ========================================== */}
       <motion.div
         whileHover={{ scale: 1.01, y: -2 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => {
-          const isUnlocked = typeof window !== 'undefined' && sessionStorage.getItem('myeongsim_biz_admin_unlocked') === 'true';
-          if (!isUnlocked) {
-            setShowAdminBizPasswordModal(true);
-            return;
-          }
           onOpenNtsModal?.();
         }}
         className="group relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#1c1830] via-[#101428] to-[#1a1226] border-2 border-emerald-500/50 p-5 sm:p-6 shadow-2xl hover:border-emerald-400 transition-all cursor-pointer flex flex-col justify-between"
@@ -126,7 +119,7 @@ export default function MyeongsimContentGridView({
             <span>[비즈니스 아키텍트] 5단계 창업 구조화 리포트</span>
           </span>
           <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 text-slate-950 font-black text-[11px] px-3.5 py-1 rounded-full shadow-lg flex items-center gap-1">
-            🔒 관리자 전용 · KSIC 매핑
+            ✨ 제11차 KSIC 매핑
           </span>
         </div>
 
@@ -435,15 +428,6 @@ export default function MyeongsimContentGridView({
         <div className="pt-8">
           <Footer />
         </div>
-
-        {/* [NEW] 비즈니스 아키텍트 관리자 비밀번호 인증 모달 */}
-        <AdminBizAuthModal
-          isOpen={showAdminBizPasswordModal}
-          onClose={() => setShowAdminBizPasswordModal(false)}
-          onSuccess={() => {
-            onOpenNtsModal?.();
-          }}
-        />
       </AnimatePresence>
     </div>
   );

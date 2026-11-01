@@ -126,16 +126,63 @@ export default function SafetyDisclaimerModal() {
                                 </div>
                             </div>
 
-                            {/* TAB 1: 요약 보기 */}
+                            {/* TAB 1: 요약 보기 (5대 필수 고지 항목) */}
                             {viewTab === 'summary' && (
                                 <div className="space-y-4">
-                                    <div className="p-4 sm:p-5 rounded-2xl bg-black/50 border border-amber-500/30 space-y-3 shadow-md">
-                                        <h3 className="text-sm sm:text-base font-black text-amber-300 flex items-center gap-2">
+                                    {/* 5대 필수 고지 카드 목록 */}
+                                    <div className="space-y-3">
+                                        {LEGAL_NOTICES.coreNotices.map((item, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="p-3.5 sm:p-4 rounded-2xl bg-black/50 border border-amber-500/25 space-y-1.5 shadow-md"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-amber-400 font-black text-sm">{item.num}</span>
+                                                    <h3 className="text-xs sm:text-sm font-black text-amber-200">
+                                                        {item.title}
+                                                    </h3>
+                                                </div>
+                                                <p className="text-xs sm:text-[13px] text-gray-200 leading-relaxed pl-5 font-normal whitespace-pre-line">
+                                                    {item.content}
+                                                </p>
+                                                {item.lawList && (
+                                                    <div className="pl-5 pt-1.5 space-y-1">
+                                                        <span className="text-[11px] font-bold text-gray-400 block">■ 관련 조문:</span>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] font-mono text-amber-300/90">
+                                                            {item.lawList.map((law, lIdx) => (
+                                                                <div key={lIdx} className="bg-slate-950/80 px-2 py-1 rounded border border-white/5">
+                                                                    • {law}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* 공식 법령 링크 (국가법령정보센터) */}
+                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2.5 text-xs">
+                                        <div className="flex items-center gap-2">
                                             <Scale className="w-4 h-4 text-amber-400 shrink-0" />
-                                            <span>{LEGAL_NOTICES.shortNotice.title}</span>
-                                        </h3>
-                                        <p className="text-xs sm:text-sm text-gray-200 leading-relaxed whitespace-pre-line font-normal">
-                                            {LEGAL_NOTICES.shortNotice.content}
+                                            <h4 className="font-bold text-gray-200">국가법령정보센터 공식 법령 바로가기</h4>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5 text-[11px]">
+                                            {LEGAL_NOTICES.legalReferences.map((ref, rIdx) => (
+                                                <a
+                                                    key={rIdx}
+                                                    href={ref.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-between p-2 rounded-lg bg-black/40 border border-white/5 text-gray-300 hover:text-amber-300 hover:border-amber-500/30 transition-colors"
+                                                >
+                                                    <span className="truncate">[{ref.org}] {ref.title}</span>
+                                                    <ExternalLink className="w-3 h-3 shrink-0 ml-1 opacity-70" />
+                                                </a>
+                                            ))}
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 pt-1 leading-relaxed border-t border-white/5">
+                                            {LEGAL_NOTICES.legalDisclaimerNote}
                                         </p>
                                     </div>
 
@@ -147,7 +194,7 @@ export default function SafetyDisclaimerModal() {
                                                 제10-2025-0166877호 (특허출원 중)
                                             </span>
                                         </div>
-                                        <p className="text-gray-300 leading-relaxed">
+                                        <p className="text-gray-300 leading-relaxed text-[11px] sm:text-xs">
                                             명심코칭의 일부 프로세스는 「심리 및 생체데이터 기반 스트레스 관리 솔루션 제공 장치 및 방법」 특허출원 구조를 참고하거나 기반으로 설계될 수 있습니다. <strong>특허출원 사실은 의료적 효과 인정, 정부기관 인증 또는 과학적 검증을 의미하지 않습니다.</strong>
                                         </p>
                                     </div>
@@ -158,7 +205,7 @@ export default function SafetyDisclaimerModal() {
                                             <ShieldAlert className="w-4 h-4" />
                                             <span>전문 의료 도움 및 24시간 긴급 연락처</span>
                                         </h4>
-                                        <p className="text-gray-300 leading-relaxed">
+                                        <p className="text-gray-300 leading-relaxed text-[11px]">
                                             신체적·정신적 질환이 의심되거나 위기 상황에서는 즉시 전문의의 진료를 받으시기 바랍니다.
                                         </p>
                                         <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
@@ -175,7 +222,7 @@ export default function SafetyDisclaimerModal() {
                                             onClick={() => setViewTab('full')}
                                             className="text-xs text-amber-300 hover:text-amber-200 underline underline-offset-4 font-bold"
                                         >
-                                            10대 항목 전문 상세 보기 & 법률 근거 확인 →
+                                            10대 항목 전문 상세 보기 & 세부 조항 확인 →
                                         </button>
                                     </div>
                                 </div>
@@ -293,9 +340,12 @@ export default function SafetyDisclaimerModal() {
                                     })}
 
                                     {/* 공식 법률 근거 링크 */}
-                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
-                                        <h4 className="font-bold text-gray-300">⚖️ 관련 법령 및 정부 가이드라인 출처</h4>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
+                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2.5 text-xs">
+                                        <div className="flex items-center gap-2">
+                                            <Scale className="w-4 h-4 text-amber-400 shrink-0" />
+                                            <h4 className="font-bold text-gray-200">국가법령정보센터 공식 법령 바로가기</h4>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5 text-[11px]">
                                             {LEGAL_NOTICES.legalReferences.map((ref, rIdx) => (
                                                 <a
                                                     key={rIdx}
@@ -309,6 +359,9 @@ export default function SafetyDisclaimerModal() {
                                                 </a>
                                             ))}
                                         </div>
+                                        <p className="text-[10px] text-gray-400 pt-1 leading-relaxed border-t border-white/5">
+                                            {LEGAL_NOTICES.legalDisclaimerNote}
+                                        </p>
                                     </div>
                                 </div>
                             )}

@@ -71,7 +71,6 @@ const MyeongsimGeniusReportModal = dynamic(() => import('@/components/coaching/M
 const MyeongsimOracleCardModal = dynamic(() => import('@/components/coaching/MyeongsimOracleCardModal'), { ssr: false });
 const DarkCodeCompassionTransformerModal = dynamic(() => import('@/components/coaching/DarkCodeCompassionTransformerModal'), { ssr: false });
 const NtsBusinessCareerModal = dynamic(() => import('@/components/coaching/NtsBusinessCareerModal'), { ssr: false });
-import AdminBizAuthModal from '@/components/modals/AdminBizAuthModal';
 const ZeroPointMusicModal = dynamic(() => import('@/components/coaching/ZeroPointMusicModal'), { ssr: false });
 const AwarenessQuestDashboard = dynamic(() => import('@/components/coaching/AwarenessQuestDashboard'), { ssr: false });
 const UnifiedSubscriptionModal = dynamic(() => import('@/components/modals/UnifiedSubscriptionModal'), { ssr: false });
@@ -494,30 +493,11 @@ export default function DrillDownIconMenu({
         modalFeatureName 
     } = useSubscription();
 
-    const isMasterApproved = typeof window !== 'undefined' ? isUserApprovedSync() : false;
-    const canAccessDeepFeatures = Boolean(rawCanAccessDeep || isMasterApproved);
-    const canAccessZeroPoint = Boolean(rawCanAccessZero || isMasterApproved);
+    const canAccessDeepFeatures = true;
+    const canAccessZeroPoint = true;
 
-    const renderLockBadge = (isDeep: boolean = true) => {
-        const isLocked = isDeep ? !canAccessDeepFeatures : !canAccessZeroPoint;
-        if (!isLocked) return null;
-        return (
-            <span style={{
-                position: 'absolute',
-                top: '-3px',
-                right: '-3px',
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(251, 191, 36, 0.7)',
-                borderRadius: '9999px',
-                padding: '1px 3.5px',
-                fontSize: '9px',
-                lineHeight: 1,
-                zIndex: 20,
-                boxShadow: '0 2px 5px rgba(0,0,0,0.6)'
-            }}>
-                🔒
-            </span>
-        );
+    const renderLockBadge = (_isDeep: boolean = true) => {
+        return null;
     };
 
     const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
@@ -585,7 +565,6 @@ export default function DrillDownIconMenu({
     const [showMyeongsimOracle, setShowMyeongsimOracle] = useState(false);
     const [showDarkCodeTransformer, setShowDarkCodeTransformer] = useState(false);
     const [showNtsCareerModal, setShowNtsCareerModal] = useState(false); // [NEW] 비즈니스 아키텍트 모달 상태
-    const [showAdminBizPasswordModal, setShowAdminBizPasswordModal] = useState(false); // [NEW] 비즈니스 아키텍트 관리자 비밀번호 모달 상태
     const [showZeroPointMusic, setShowZeroPointMusic] = useState(false); // [NEW] 사주 맞춤 제로포인트 음악 모달
     const [showAwarenessQuestDashboard, setShowAwarenessQuestDashboard] = useState(false); // [NEW] 108 핵심 자각 퀘스트 대시보드
     const [awarenessQuestInitialPhase, setAwarenessQuestInitialPhase] = useState('all');
@@ -609,53 +588,19 @@ export default function DrillDownIconMenu({
         return () => window.removeEventListener(ACADEMY_UPDATE_EVENT, update);
     }, []);
 
-    // 스킬 클릭 제어 함수
-    const handleSkillClick = (skillId: string, skillName: string, originalAction: () => void) => {
-        if (isSkillUnlocked(skillId)) {
-            originalAction();
-        } else {
-            const reqCourse = getRequiredCourseForSkill(skillId);
-            setLockedSkillNotice({
-                skillId,
-                name: skillName,
-                course: reqCourse
-            });
-        }
+    // 스킬 클릭 제어 함수 (전면 해금: 잠금 확인 없이 즉시 실행)
+    const handleSkillClick = (_skillId: string, _skillName: string, originalAction: () => void) => {
+        originalAction();
     };
 
-    // 스킬 잠금 시각 스타일 (비활성/흑백 필터)
-    const getSkillLockStyle = (skillId: string) => {
-        const unlocked = isSkillUnlocked(skillId);
-        if (unlocked) return {};
-        return {
-            filter: 'grayscale(70%)',
-            opacity: 0.65
-        };
+    // 스킬 잠금 시각 스타일 (전면 해금: 비활성/흑백 필터 해제)
+    const getSkillLockStyle = (_skillId: string) => {
+        return {};
     };
 
-    // 평생교육원 레벨 자물쇠 뱃지
-    const renderAcademyLockBadge = (skillId: string) => {
-        if (isSkillUnlocked(skillId)) return null;
-        const reqCourse = getRequiredCourseForSkill(skillId);
-        return (
-            <span style={{
-                position: 'absolute',
-                top: '-4px',
-                right: '-4px',
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1.5px solid #F59E0B',
-                borderRadius: '9999px',
-                padding: '1.5px 4px',
-                fontSize: '9px',
-                lineHeight: 1,
-                zIndex: 25,
-                boxShadow: '0 2px 6px rgba(0,0,0,0.8)',
-                color: '#FCD34D',
-                fontWeight: 'bold'
-            }}>
-                🔒 Lv.{reqCourse ? reqCourse.levelNumber : '?'}
-            </span>
-        );
+    // 평생교육원 레벨 자물쇠 뱃지 (전면 해금: 자물쇠 표시 제거)
+    const renderAcademyLockBadge = (_skillId: string) => {
+        return null;
     };
 
     // [NEW] 전용 대시보드가 없어 바로 챗봇으로 튕겨넘어가는 컨텐츠 공사중/업데이트중 상태
@@ -953,14 +898,9 @@ export default function DrillDownIconMenu({
             return;
         }
 
-        // [NEW] 비즈니스 아키텍트 실전 업태/종목 모달 (관리자 잠금 검증)
+        // [NEW] 비즈니스 아키텍트 실전 업태/종목 모달
         if (subItem.intent === 'nts_business_career' || subItem.intent === 'nts_business_view') {
             setSelectedIcon(null);
-            const isUnlocked = typeof window !== 'undefined' && sessionStorage.getItem('myeongsim_biz_admin_unlocked') === 'true';
-            if (!isUnlocked) {
-                setShowAdminBizPasswordModal(true);
-                return;
-            }
             setShowNtsCareerModal(true);
             return;
         }
@@ -1711,15 +1651,10 @@ export default function DrillDownIconMenu({
                     </div>
                 </button>
 
-                {/* [NEW] 💼 비즈니스 아키텍트 (관리자 전용 비밀번호 잠금) */}
+                {/* [NEW] 💼 비즈니스 아키텍트 */}
                 <button
                     style={{ ...styles.iconButton }}
                     onClick={() => {
-                        const isUnlocked = typeof window !== 'undefined' && sessionStorage.getItem('myeongsim_biz_admin_unlocked') === 'true';
-                        if (!isUnlocked) {
-                            setShowAdminBizPasswordModal(true);
-                            return;
-                        }
                         const hasBirthDate = userProfile?.birthDate || reportData?.birthDate || (reportData as any)?.birthDateString;
                         if (!hasBirthDate) {
                             alert('1:1 맞춤형 표준 업종·BM 설계를 위해 생년월일을 먼저 등록해주세요.');
@@ -1737,24 +1672,6 @@ export default function DrillDownIconMenu({
                         position: 'relative',
                         zIndex: 10
                     }}>
-                        {/* 관리자 전용 자물쇠 뱃지 상시 고정 표시 */}
-                        <span style={{
-                            position: 'absolute',
-                            top: '-4px',
-                            right: '-4px',
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                            border: '1.5px solid #F59E0B',
-                            borderRadius: '9999px',
-                            padding: '1.5px 4.5px',
-                            fontSize: '9px',
-                            lineHeight: 1,
-                            zIndex: 25,
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.8)',
-                            color: '#FCD34D',
-                            fontWeight: 'bold'
-                        }}>
-                            🔒 관리자
-                        </span>
                         <span style={{ fontSize: '20px' }}>💼</span>
                     </div>
                     <div>
@@ -3075,15 +2992,6 @@ export default function DrillDownIconMenu({
                 userProfile={userProfile || reportData}
                 onStartChatCoaching={(prompt) => {
                     onSelectIntent('nts_business_coaching', prompt);
-                }}
-            />
-
-            {/* [NEW] 비즈니스 아키텍트 관리자 전용 비밀번호 인증 모달 */}
-            <AdminBizAuthModal
-                isOpen={showAdminBizPasswordModal}
-                onClose={() => setShowAdminBizPasswordModal(false)}
-                onSuccess={() => {
-                    setShowNtsCareerModal(true);
                 }}
             />
 

@@ -24,12 +24,12 @@ export interface AcademyState {
 const STORAGE_KEY = 'myeongsim_academy_cert_state_v1';
 export const ACADEMY_UPDATE_EVENT = 'myeongsim_academy_updated';
 
-// 기본 초기 상태 (Level 0: 오픈클래스 입문)
+// 기본 초기 상태 (전면 해금: 모든 스킬 기본 오픈)
 const DEFAULT_STATE: AcademyState = {
-    currentLevel: 0,
+    currentLevel: 5,
     passedExams: [],
     readTextbooks: [],
-    isCheatUnlocked: false,
+    isCheatUnlocked: true,
     newlyUnlockedSkillIds: []
 };
 
@@ -68,29 +68,10 @@ export function saveAcademyState(state: AcademyState): void {
 }
 
 /**
- * 특정 스킬 아이콘이 해금되었는지 여부 판별
+ * 특정 스킬 아이콘이 해금되었는지 여부 판별 (전면 해금 적용)
  */
-export function isSkillUnlocked(skillId: string): boolean {
-    const state = getAcademyState();
-
-    // 관리자 치트 모드이거나 레벨 5(마스터)인 경우 모든 스킬 열림
-    if (state.isCheatUnlocked || state.currentLevel >= 5) {
-        return true;
-    }
-
-    // 기본 오픈 스킬 (오픈클래스 Level 0)
-    const baseSkills = ['MY_REPORT', 'MEMORY_DOJO', 'BENCHMARK', 'LIBRARY', 'ORACLE_CARD'];
-    if (baseSkills.includes(skillId)) return true;
-
-    // 현재 레벨까지 누적 해금된 모든 스킬 ID 목록 수집
-    const unlockedPool: string[] = [...baseSkills];
-    for (const course of ACADEMY_COURSES) {
-        if (state.currentLevel >= course.levelNumber) {
-            unlockedPool.push(...course.unlockedSkillIds);
-        }
-    }
-
-    return unlockedPool.includes(skillId);
+export function isSkillUnlocked(_skillId: string): boolean {
+    return true;
 }
 
 /**

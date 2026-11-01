@@ -37,7 +37,6 @@ import { useReportStore } from '@/store/useReportStore';
 import { formatFriendlyErrorMessage } from '@/utils/errorMessage';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import AdminBizAuthModal from '@/components/modals/AdminBizAuthModal';
 
 interface NtsBusinessCareerModalProps {
     isOpen: boolean;
@@ -102,25 +101,7 @@ AI가 임의로 코드를 지어내지 않고, 대표님이 실제로 판매하�
         }
     }, [chatMessages, isLoadingChat]);
 
-    const [isUnlocked, setIsUnlocked] = useState(false);
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setIsUnlocked(sessionStorage.getItem('myeongsim_biz_admin_unlocked') === 'true');
-        }
-    }, [isOpen]);
-
     if (!isOpen) return null;
-
-    if (!isUnlocked) {
-        return (
-            <AdminBizAuthModal
-                isOpen={isOpen}
-                onClose={onClose}
-                onSuccess={() => setIsUnlocked(true)}
-            />
-        );
-    }
 
     // 글로벌 스토어의 reportData와 props userProfile을 안전하게 병합
     const globalReportData = useReportStore.getState().reportData;

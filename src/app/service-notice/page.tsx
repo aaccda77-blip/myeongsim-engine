@@ -116,16 +116,63 @@ export default function ServiceNoticePage() {
                     </div>
                 </div>
 
-                {/* TAB 1: 요약 안내 (한눈에 보기) */}
+                {/* TAB 1: 요약 안내 (5대 필수 고지 항목) */}
                 {viewTab === 'summary' && (
                     <div className="space-y-6 mb-8">
-                        <div className="p-5 sm:p-6 rounded-2xl bg-black/50 border border-amber-500/30 space-y-3 shadow-md">
-                            <h2 className="text-base sm:text-lg font-black text-amber-300 flex items-center gap-2">
+                        {/* 5대 필수 고지 카드 목록 */}
+                        <div className="space-y-4">
+                            {LEGAL_NOTICES.coreNotices.map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className="p-5 rounded-2xl bg-black/50 border border-amber-500/25 space-y-2 shadow-md"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-amber-400 font-black text-base">{item.num}</span>
+                                        <h3 className="text-sm sm:text-base font-black text-amber-200">
+                                            {item.title}
+                                        </h3>
+                                    </div>
+                                    <p className="text-xs sm:text-sm text-gray-200 leading-relaxed pl-6 font-normal whitespace-pre-line">
+                                        {item.content}
+                                    </p>
+                                    {item.lawList && (
+                                        <div className="pl-6 pt-2 space-y-1.5">
+                                            <span className="text-xs font-bold text-gray-400 block">■ 관련 조문:</span>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-amber-300/90">
+                                                {item.lawList.map((law, lIdx) => (
+                                                    <div key={lIdx} className="bg-slate-950/80 px-2.5 py-1.5 rounded-lg border border-white/5">
+                                                        • {law}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* 공식 법령 링크 (국가법령정보센터) */}
+                        <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 text-xs sm:text-sm">
+                            <div className="flex items-center gap-2">
                                 <Scale className="w-5 h-5 text-amber-400 shrink-0" />
-                                <span>{LEGAL_NOTICES.shortNotice.title}</span>
-                            </h2>
-                            <p className="text-xs sm:text-sm text-gray-200 leading-relaxed whitespace-pre-line font-normal">
-                                {LEGAL_NOTICES.shortNotice.content}
+                                <h3 className="font-bold text-gray-200">국가법령정보센터 공식 법령 바로가기</h3>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
+                                {LEGAL_NOTICES.legalReferences.map((ref, rIdx) => (
+                                    <a
+                                        key={rIdx}
+                                        href={ref.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-white/5 text-gray-300 hover:text-amber-300 hover:border-amber-500/30 transition-colors"
+                                    >
+                                        <span className="truncate">[{ref.org}] {ref.title}</span>
+                                        <ExternalLink className="w-3.5 h-3.5 shrink-0 ml-1.5 opacity-70" />
+                                    </a>
+                                ))}
+                            </div>
+                            <p className="text-[11px] text-gray-400 pt-1 leading-relaxed border-t border-white/5">
+                                {LEGAL_NOTICES.legalDisclaimerNote}
                             </p>
                         </div>
 
@@ -137,7 +184,7 @@ export default function ServiceNoticePage() {
                                     제10-2025-0166877호 (특허출원 중)
                                 </span>
                             </div>
-                            <p className="text-gray-300 leading-relaxed">
+                            <p className="text-gray-300 leading-relaxed text-xs sm:text-sm">
                                 명심코칭의 일부 프로세스는 「심리 및 생체데이터 기반 스트레스 관리 솔루션 제공 장치 및 방법」 특허출원 구조를 참고하거나 기반으로 설계될 수 있습니다. <strong>특허출원 사실은 의료적 효과 인정, 정부기관 인증 또는 과학적 검증을 의미하지 않습니다.</strong>
                             </p>
                         </div>
@@ -148,7 +195,7 @@ export default function ServiceNoticePage() {
                                 <ShieldAlert className="w-4 h-4 text-red-400" />
                                 <span>전문 의료 도움 및 24시간 긴급 연락처</span>
                             </h3>
-                            <p className="text-gray-300 leading-relaxed">
+                            <p className="text-gray-300 leading-relaxed text-xs">
                                 신체적·정신적 질환이 의심되거나 위기 상황에서는 즉시 전문의의 진료를 받으시기 바랍니다.
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-xs">
@@ -165,7 +212,7 @@ export default function ServiceNoticePage() {
                                 onClick={() => setViewTab('full')}
                                 className="text-xs sm:text-sm text-amber-300 hover:text-amber-200 underline underline-offset-4 font-bold cursor-pointer"
                             >
-                                10대 항목 전문 상세 보기 & 관련 법령 확인하기 →
+                                10대 항목 전문 상세 보기 & 세부 조항 확인하기 →
                             </button>
                         </div>
                     </div>
@@ -286,12 +333,12 @@ export default function ServiceNoticePage() {
                             );
                         })}
 
-                        {/* 관련 법령 및 정부 가이드라인 출처 */}
+                        {/* 관련 법령 출처 (국가법령정보센터) */}
                         <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 text-xs sm:text-sm">
-                            <h3 className="font-bold text-gray-200 flex items-center gap-2">
-                                <Scale className="w-4 h-4 text-amber-400" />
-                                <span>⚖️ 관련 법령 및 정부 가이드라인 출처</span>
-                            </h3>
+                            <div className="flex items-center gap-2">
+                                <Scale className="w-5 h-5 text-amber-400 shrink-0" />
+                                <h3 className="font-bold text-gray-200">국가법령정보센터 공식 법령 바로가기</h3>
+                            </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
                                 {LEGAL_NOTICES.legalReferences.map((ref, rIdx) => (
                                     <a
@@ -306,6 +353,9 @@ export default function ServiceNoticePage() {
                                     </a>
                                 ))}
                             </div>
+                            <p className="text-[11px] text-gray-400 pt-1 leading-relaxed border-t border-white/5">
+                                {LEGAL_NOTICES.legalDisclaimerNote}
+                            </p>
                         </div>
                     </div>
                 )}
